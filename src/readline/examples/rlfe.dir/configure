@@ -625,6 +625,7 @@ ac_subst_vars='LTLIBOBJS
 XTERMPATH
 WRITEPATH
 LIBOBJS
+LD_ARCHFLAGS
 AWK
 INSTALL_DATA
 INSTALL_SCRIPT
@@ -2230,7 +2231,6 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 ac_config_headers="$ac_config_headers config.h"
 
 VERSION=0.4
-
 ac_aux_dir=
 for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
   if test -f "$ac_dir/install-sh"; then
@@ -2373,7 +2373,7 @@ test -n "$target_alias" &&
 
 
 # Checks for programs.
-old_CFLAGS="$CFLAGS"
+old_CFLAGS="${CFLAGS}"
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -3696,9 +3696,8 @@ if test "$ac_res" != no; then :
 
 fi
 
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if your $CC actually works" >&5
-$as_echo "$as_me: checking if your $CC actually works" >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if your ${CC} actually works" >&5
+$as_echo "$as_me: checking if your ${CC} actually works" >&6;}
 if test "$cross_compiling" = yes; then :
 
 echo "- cross-compiling, not checking" 1>&6
@@ -3711,26 +3710,25 @@ main(){exit(0);}
 _ACEOF
 if ac_fn_c_try_run "$LINENO"; then :
 
-echo "- Your $CC works" 1>&6
+echo "- Your ${CC} works" 1>&6
 
 
 else
 
-if test $CC != cc ; then
-echo "- Your $CC failed - restarting with CC=cc" 1>&6
+if test "x${CC}" != "xcc"; then
+echo "- Your ${CC} failed - restarting with CC=cc" 1>&6
 
 echo "" 1>&6
 
 CC=cc
 export CC
-exec $0 $configure_args
+exec $0 ${configure_args}
 fi
 
 fi
 rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
-
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if the compiler actually works (i.e. runs)" >&5
 $as_echo "$as_me: checking if the compiler actually works (i.e. runs)" >&6;}
@@ -3752,10 +3750,10 @@ echo "- Your compiler works" 1>&6
 else
 
 exec 5>&2
-eval $ac_link
-echo "CC=$CC;CFLAGS=$CFLAGS;LIBS=$LIBS;" 1>&6
+eval ${ac_link}
+echo "CC=${CC};CFLAGS=${CFLAGS};LIBS=${LIBS};" 1>&6
 
-echo "$ac_compile" 1>&6
+echo "${ac_compile}" 1>&6
 
 as_fn_error $? "Cannot run the compiler - sorry" "$LINENO" 5
 
@@ -3763,7 +3761,6 @@ fi
 rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
-
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if your compiler sets the exit status" >&5
 $as_echo "$as_me: checking if your compiler sets the exit status" >&6;}
@@ -3776,7 +3773,7 @@ else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-main()
+int main(void)
 {
   int __something_strange_();
   __something_strange_(0);
@@ -3795,7 +3792,6 @@ fi
 rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
-
 
 for ac_prog in gawk mawk nawk awk
 do
@@ -3847,6 +3843,44 @@ sh etc/toolcheck 1>&6
 fi
 
 # Checks for libraries.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for linker flag to verify linked libraries have the correct architecture" >&5
+$as_echo_n "checking for linker flag to verify linked libraries have the correct architecture... " >&6; }
+# Make sure this is done up here first:
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+pre_saved_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-arch_errors_fatal"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  LD_ARCHFLAGS="${acl_cv_wl}-arch_errors_fatal"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LDFLAGS="${pre_saved_LDFLAGS}"
+if test "x${LD_ARCHFLAGS}" != "x"; then
+  test -n "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${LD_ARCHFLAGS}" >&5
+$as_echo "${LD_ARCHFLAGS}" >&6; }
+    ## that should be all we need to do with them for now...
+else
+  test -z "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: none" >&5
+$as_echo "none" >&6; }
+fi
+# check arch when "main()" is the only function for which we check:
+ARCHLESS_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
 # FIXME: Replace `main' with a function in `-lhistory':
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lhistory" >&5
 $as_echo_n "checking for main in -lhistory... " >&6; }
@@ -3886,7 +3920,6 @@ _ACEOF
   LIBS="-lhistory $LIBS"
 
 fi
-
 # FIXME: Replace `main' with a function in `-lncurses':
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lncurses" >&5
 $as_echo_n "checking for main in -lncurses... " >&6; }
@@ -3926,7 +3959,6 @@ _ACEOF
   LIBS="-lncurses $LIBS"
 
 fi
-
 # FIXME: Replace `main' with a function in `-lreadline':
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lreadline" >&5
 $as_echo_n "checking for main in -lreadline... " >&6; }
@@ -3966,7 +3998,8 @@ _ACEOF
   LIBS="-lreadline $LIBS"
 
 fi
-
+  ## reset these:
+LDFLAGS="${ARCHLESS_LDFLAGS}"
 
 # Checks for header files.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ANSI C header files" >&5
@@ -4207,9 +4240,7 @@ _ACEOF
 fi
 
 done
-
-# Force use of our own headers
-
+# Force use of our own headers:
 
 # Checks for typedefs, structures, and compiler characteristics.
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
@@ -4513,7 +4544,6 @@ _ACEOF
 
 
 fi
-
 
 # Checks for library functions.
 for ac_header in unistd.h
@@ -4983,7 +5013,6 @@ fi
 done
 
 
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for System V..." >&5
 $as_echo "$as_me: checking for System V..." >&6;}
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -5014,21 +5043,20 @@ $as_echo "#define SYSV 1" >>confdefs.h
 
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Solaris 2.x..." >&5
 $as_echo "$as_me: checking for Solaris 2.x..." >&6;}
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #if defined(SVR4) && defined(sun)
   this_is_solaris
-#endif
+#endif /* SVR4 && sun */
 
 _ACEOF
 if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
   $EGREP "this_is_solaris" >/dev/null 2>&1; then :
   echo "- using Solaris libs" 1>&6
 
-LIBS="$LIBS -lsocket -lnsl -lkstat"
+LIBS="${LIBS} -lsocket -lnsl -lkstat"
 
 else
 
@@ -5037,7 +5065,6 @@ echo "- not on Solaris" 1>&6
 
 fi
 rm -f conftest*
-
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking select..." >&5
@@ -5060,9 +5087,9 @@ echo "- found select by itself" 1>&6
 
 else
 
-LIBS="$LIBS -lnet -lnsl"
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking select with $LIBS" >&5
-$as_echo "$as_me: checking select with $LIBS" >&6;}
+LIBS="${LIBS} -lnet -lnsl"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking select with ${LIBS}" >&5
+$as_echo "$as_me: checking select with ${LIBS}" >&6;}
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -5076,7 +5103,7 @@ select(0, 0, 0, 0, 0);
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
 
-echo "- found select with $LIBS" 1>&6
+echo "- found select with ${LIBS}" 1>&6
 
 
 else
@@ -5117,7 +5144,7 @@ char *nam = "/tmp/conftest$$";
 # define S_IFIFO 0010000
 #endif /* !S_IFIFO */
 
-main()
+int main(void)
 {
 #ifdef FD_SET
   fd_set f;
@@ -5151,7 +5178,7 @@ main()
 #include <sys/socket.h>
 #include <sys/un.h>
 
-main()
+int main(void)
 {
   int s1, s2, l;
   struct sockaddr_un a;
@@ -5240,8 +5267,8 @@ if ac_fn_c_try_link "$LINENO"; then :
 
 else
 
-  olibs="$LIBS"
-  LIBS="-lcurses $olibs"
+  olibs="${LIBS}"
+  LIBS="-lcurses ${olibs}"
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking libcurses" >&5
 $as_echo "$as_me: checking libcurses" >&6;}
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -5268,7 +5295,7 @@ if ac_fn_c_try_link "$LINENO"; then :
 
 else
 
-    LIBS="-ltermcap $olibs"
+    LIBS="-ltermcap ${olibs}"
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking libtermcap" >&5
 $as_echo "$as_me: checking libtermcap" >&6;}
     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -5289,7 +5316,7 @@ if ac_fn_c_try_link "$LINENO"; then :
 
 else
 
-      LIBS="-ltermlib $olibs"
+      LIBS="-ltermlib ${olibs}"
       { $as_echo "$as_me:${as_lineno-$LINENO}: checking libtermlib" >&5
 $as_echo "$as_me: checking libtermlib" >&6;}
       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -5310,7 +5337,7 @@ if ac_fn_c_try_link "$LINENO"; then :
 
 else
 
-        LIBS="-lncurses $olibs"
+        LIBS="-lncurses ${olibs}"
         { $as_echo "$as_me:${as_lineno-$LINENO}: checking libncurses" >&5
 $as_echo "$as_me: checking libncurses" >&6;}
         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -5336,23 +5363,18 @@ else
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
-
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
-
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
-
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
-
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking terminfo database" >&5
 $as_echo "$as_me: checking terminfo database" >&6;}
 sleep 1
@@ -5366,9 +5388,9 @@ else
 /* end confdefs.h.  */
 
 #ifdef __APPLE__
-# error Erroring out early (while compiling) to prevent runtime errors
+# error "Erroring out early (while compiling) to prevent runtime errors"
 #endif /* __APPLE__ */
-main()
+int main(void)
 {
  exit(strcmp(tgoto("%p1%d", 0, 1), "1") ? 0 : 1);
 }
@@ -5419,21 +5441,19 @@ echo "- need ospeed" 1>&6
 
 $as_echo "#define NEED_OSPEED 1" >>confdefs.h
 
-
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /dev/ptc..." >&5
 $as_echo "$as_me: checking for /dev/ptc..." >&6;}
 if test -r /dev/ptc; then
-echo "- yes, we have /dev/ptc" 1>&6
+  echo "- yes, we have /dev/ptc" 1>&6
 
 
 $as_echo "#define HAVE_DEV_PTC 1" >>confdefs.h
 
 else
-echo "- no, /dev/ptc is not present" 1>&6
+  echo "- no, /dev/ptc is not present" 1>&6
 
 fi
 
@@ -5483,7 +5503,7 @@ fi
 done
 
 
-if test -z "$sysvr4ptys"; then
+if test -z "${sysvr4ptys}"; then
 for ac_func in openpty
 do :
   ac_fn_c_check_func "$LINENO" "openpty" "ac_cv_func_openpty"
@@ -5534,7 +5554,7 @@ if test "x$ac_cv_lib_util_openpty" = xyes; then :
 
 $as_echo "#define HAVE_OPENPTY 1" >>confdefs.h
 
-  LIBS="$LIBS -lutil"
+  LIBS="${LIBS} -lutil"
 fi
 
 
@@ -5546,9 +5566,9 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ptyranges..." >&5
 $as_echo "$as_me: checking for ptyranges..." >&6;}
 if test -d /dev/ptym ; then
-pdir='/dev/ptym'
+  pdir='/dev/ptym'
 else
-pdir='/dev'
+  pdir='/dev'
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -5564,24 +5584,24 @@ echo "- ptys end in "p"" 1>&6
 
 
 else
-  ptys=`echo $pdir/pty??`
+  ptys=`echo ${pdir}/pty??`
 echo "- ptys are not required to end in "p"" 1>&6
 
 
 fi
 rm -f conftest*
 
-if test "$ptys" != "$pdir/pty??" ; then
-p0=`echo $ptys | tr ' ' '\012' | sed -e 's/^.*\(.\).$/\1/g' | sort -u | tr -d '\012'`
-p1=`echo $ptys | tr ' ' '\012' | sed -e 's/^.*\(.\)$/\1/g'  | sort -u | tr -d '\012'`
+if test "${ptys}" != "${pdir}/pty??" ; then
+p0=`echo ${ptys} | tr ' ' '\012' | sed -e 's/^.*\(.\).$/\1/g' | sort -u | tr -d '\012'`
+p1=`echo ${ptys} | tr ' ' '\012' | sed -e 's/^.*\(.\)$/\1/g'  | sort -u | tr -d '\012'`
 
 cat >>confdefs.h <<_ACEOF
-#define PTYRANGE0 "$p0"
+#define PTYRANGE0 "${p0}"
 _ACEOF
 
 
 cat >>confdefs.h <<_ACEOF
-#define PTYRANGE1 "$p1"
+#define PTYRANGE1 "${p1}"
 _ACEOF
 
 fi
@@ -5592,22 +5612,21 @@ if test "${with_pty_mode+set}" = set; then :
   withval=$with_pty_mode; ptymode="${withval}"
 fi
 
-
 # Check whether --with-pty-group was given.
 if test "${with_pty_group+set}" = set; then :
   withval=$with_pty_group; ptygrp="${withval}"
 fi
 
-test -n "$ptymode" || ptymode=0620
-if test -n "$ptygrp" ; then
+test -n "${ptymode}" || ptymode=0620
+if test -n "${ptygrp}" ; then
 
 cat >>confdefs.h <<_ACEOF
-#define PTYMODE $ptymode
+#define PTYMODE ${ptymode}
 _ACEOF
 
 
 cat >>confdefs.h <<_ACEOF
-#define PTYGROUP $ptygrp
+#define PTYGROUP ${ptygrp}
 _ACEOF
 
 else
@@ -5628,7 +5647,7 @@ else
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
-main()
+int main(void)
 {
   struct stat sb;
   char *x,*ttyname();
@@ -5658,16 +5677,16 @@ if ac_fn_c_try_run "$LINENO"; then :
 
     if test -f conftest_grp; then
 	ptygrp=`cat conftest_grp`
-	    echo "- pty mode: $ptymode, group: $ptygrp" 1>&6
+	    echo "- pty mode: ${ptymode}, group: ${ptygrp}" 1>&6
 
 
 cat >>confdefs.h <<_ACEOF
-#define PTYMODE $ptymode
+#define PTYMODE ${ptymode}
 _ACEOF
 
 
 cat >>confdefs.h <<_ACEOF
-#define PTYGROUP $ptygrp
+#define PTYGROUP ${ptygrp}
 _ACEOF
 
     else
@@ -5762,35 +5781,35 @@ fi
 
 
     found=""
-    if test -n "$WRITEPATH$XTERMPATH"; then
+    if test -n "${WRITEPATH}${XTERMPATH}"; then
       findfollow=""
       lsfollow=""
-      found=`find $WRITEPATH $XTERMPATH -follow -print 2>/dev/null`
-      if test -n "$found"; then
+      found=`find $WRITEPATH ${XTERMPATH} -follow -print 2>/dev/null`
+      if test -n "${found}"; then
 	    findfollow=-follow
 	    lsfollow=L
       fi
-      if test -n "$XTERMPATH"; then
-	    ptygrpn=`ls -l$lsfollow $XTERMPATH | sed -n -e 1p | $AWK '{print $4}'`
-	    if test tty != "$ptygrpn"; then
+      if test -n "${XTERMPATH}"; then
+	    ptygrpn=`ls -l${lsfollow} ${XTERMPATH} | sed -n -e 1p | ${AWK} '{print $4}'`
+	    if test "xtty" != "x${ptygrpn}"; then
 	      XTERMPATH=""
 	    fi
       fi
     fi
-    if test -n "$WRITEPATH$XTERMPATH"; then
-      found=`find $WRITEPATH $XTERMPATH $findfollow -perm -2000 -print`
-      if test -n "$found"; then
-	    ptygrp=`ls -ln$lsfollow $found | sed -n -e 1p | $AWK '{print $4}'`
-	    echo "- pty mode: $ptymode, group: $ptygrp" 1>&6
+    if test -n "${WRITEPATH}${XTERMPATH}"; then
+      found=`find ${WRITEPATH} ${XTERMPATH} ${findfollow} -perm -2000 -print`
+      if test -n "${found}"; then
+	    ptygrp=`ls -ln${lsfollow} ${found} | sed -n -e 1p | ${AWK} '{print $4}'`
+	    echo "- pty mode: ${ptymode}, group: ${ptygrp}" 1>&6
 
 
 cat >>confdefs.h <<_ACEOF
-#define PTYMODE $ptymode
+#define PTYMODE ${ptymode}
 _ACEOF
 
 
 cat >>confdefs.h <<_ACEOF
-#define PTYGROUP $ptygrp
+#define PTYGROUP ${ptygrp}
 _ACEOF
 
       else
@@ -5812,14 +5831,12 @@ fi
 
 sleep 1
 
-if test -n "$posix" ; then
-
-echo "assuming posix signal definition" 1>&6
+if test -n "${posix}"; then
+    echo "assuming posix signal definition" 1>&6
 
 
 $as_echo "#define SIGVOID 1" >>confdefs.h
-
-
+  ## nothing else to do here...
 else
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking return type of signal handlers..." >&5
@@ -5919,12 +5936,12 @@ int got;
 #ifdef SIGVOID
 void
 #endif /* SIGVOID */
-hand()
+hand(void)
 {
   got++;
 }
 
-main()
+int main(void)
 {
   /* on hpux we use sigvec to get bsd signals */
 #ifdef __hpux
@@ -5950,17 +5967,15 @@ echo "- SYSV signals" 1>&6
 
 $as_echo "#define SYSVSIGS 1" >>confdefs.h
 
-
 fi
 rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
 
-
 fi
 
+# Output.
 ac_config_files="$ac_config_files Makefile"
-
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure

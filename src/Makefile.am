@@ -1,4 +1,5 @@
-
+## automake Makefile for the "src/" directory that is shared among many
+## projects
 # Makefile.in is generated from Makefile.am by 'automake'.
 #
 # Makefile for directory with subdirs to build.
@@ -23,6 +24,9 @@
 #
 
 ACLOCAL_AMFLAGS = -I m4 -I config --install
+AUTOMAKE_OPTIONS = 1.11.1 gnits no-dist
+## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
+AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 # -------------------------------
 # Standard Autoconf-set variables

@@ -83,3 +83,7 @@ Makefile: Makefile.in config.status
 config.status: configure
 	$(SHELL) config.status --recheck
 
+am--refresh:
+	@true
+.PHONY: am--refresh
+

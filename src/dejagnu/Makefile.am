@@ -1,3 +1,4 @@
+## automake Makefile for dejagnu
 ## Process this file with automake to generate Makefile.in
 
 ACLOCAL_AMFLAGS = -I./m4 --install
@@ -9,13 +10,13 @@ EXTRA_DIST = MAINTAINERS runtest site.tmpl
 
 SUBDIRS = doc testsuite example .
 
-# Install the bourne shell script driver in the bindir
+# Install the bourne shell script driver in the bindir:
 bin_SCRIPTS = runtest
 
-# Install the header
+# Install the header:
 include_HEADERS = dejagnu.h
 
-# Install the main DejaGnu expect file in the datadir
+# Install the main DejaGnu expect file in the datadir:
 pkgdata_SCRIPTS = runtest.exp \
   lib/debugger.exp lib/dejagnu.exp lib/dg.exp lib/framework.exp \
   lib/ftp.exp lib/kermit.exp lib/libgloss.exp lib/remote.exp \

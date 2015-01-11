@@ -159,7 +159,7 @@ _bfd_dummy_target (bfd *ignore_abfd ATTRIBUTE_UNUSED)
 }
 
 /* Allocate memory using malloc: */
-void *
+void * ATTRIBUTE_MALLOC
 bfd_malloc(bfd_size_type size)
 {
   void *ptr;
@@ -183,25 +183,25 @@ bfd_malloc2(bfd_size_type nmemb, bfd_size_type size)
 {
   void *ptr;
 
-  if ((nmemb | size) >= HALF_BFD_SIZE_TYPE
-      && size != 0
-      && nmemb > ~(bfd_size_type) 0 / size)
+  if (((nmemb | size) >= HALF_BFD_SIZE_TYPE)
+      && (size != 0UL)
+      && (nmemb > (~(bfd_size_type)0UL / size)))
     {
-      bfd_set_error (bfd_error_no_memory);
+      bfd_set_error(bfd_error_no_memory);
       return NULL;
     }
 
   size *= nmemb;
 
-  if (size != (size_t) size)
+  if (size != (size_t)size)
     {
-      bfd_set_error (bfd_error_no_memory);
+      bfd_set_error(bfd_error_no_memory);
       return NULL;
     }
 
-  ptr = malloc ((size_t) size);
-  if (ptr == NULL && (size_t) size != 0)
-    bfd_set_error (bfd_error_no_memory);
+  ptr = malloc((size_t)size);
+  if ((ptr == NULL) && ((size_t)size != 0UL))
+    bfd_set_error(bfd_error_no_memory);
 
   return ptr;
 }
@@ -535,14 +535,14 @@ bfd_signed_vma
 bfd_getb_signed_16(const void *p)
 {
   const bfd_byte *addr = (const bfd_byte *)p;
-  return COERCE16((addr[0] << 8U) | addr[1]);
+  return COERCE16((const bfd_byte)(addr[0] << 8U) | addr[1]);
 }
 
 bfd_signed_vma
 bfd_getl_signed_16(const void *p)
 {
   const bfd_byte *addr = (const bfd_byte *)p;
-  return COERCE16((addr[1] << 8U) | addr[0]);
+  return COERCE16((const bfd_byte)(addr[1] << 8U) | addr[0]);
 }
 
 void
@@ -826,28 +826,25 @@ bfd_get_bits(const void *p, int bits, bfd_boolean big_p)
   return data;
 }
 
-/* Default implementation */
-
+/* Default implementation: */
 bfd_boolean
-_bfd_generic_get_section_contents (bfd *abfd,
-				   sec_ptr section,
-				   void *location,
-				   file_ptr offset,
-				   bfd_size_type count)
+_bfd_generic_get_section_contents(bfd *abfd, sec_ptr section,
+                                  void *location, file_ptr offset,
+                                  bfd_size_type count)
 {
   bfd_size_type sz;
   if (count == 0)
     return TRUE;
 
-  sz = section->rawsize ? section->rawsize : section->size;
-  if (offset + count > sz)
+  sz = (section->rawsize ? section->rawsize : section->size);
+  if (((bfd_size_type)offset + count) > sz)
     {
-      bfd_set_error (bfd_error_invalid_operation);
+      bfd_set_error(bfd_error_invalid_operation);
       return FALSE;
     }
 
-  if (bfd_seek (abfd, section->filepos + offset, SEEK_SET) != 0
-      || bfd_bread (location, count, abfd) != count)
+  if ((bfd_seek(abfd, section->filepos + offset, SEEK_SET) != 0)
+      || (bfd_bread(location, count, abfd) != count))
     return FALSE;
 
   return TRUE;
@@ -1062,7 +1059,7 @@ read_signed_leb128(bfd *abfd ATTRIBUTE_UNUSED, bfd_byte *buf,
     result |= (((bfd_vma)-1) << shift);
   }
   *bytes_read_ptr = num_read;
-  return result;
+  return (bfd_signed_vma)result;
 }
 
 bfd_boolean

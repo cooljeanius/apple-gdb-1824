@@ -2311,7 +2311,7 @@ lookup_line (abfd, debug_info, debug_swap, line_info)
 		      SYMR nextsym;
 
 		      (*debug_swap->swap_sym_in)(abfd,
-                                                 sym_ptr + external_sym_size,
+                                                 (sym_ptr + external_sym_size),
                                                  &nextsym);
 		      if (ECOFF_IS_STAB(&nextsym)
 			  && (ECOFF_UNMARK_STAB(nextsym.index) == N_SO))

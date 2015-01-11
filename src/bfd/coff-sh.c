@@ -2285,7 +2285,7 @@ _bfd_sh_align_load_span(bfd *abfd, asection *sec, bfd_byte *contents,
 {
   int dsp = ((abfd->arch_info->mach == bfd_mach_sh_dsp)
 	     || (abfd->arch_info->mach == bfd_mach_sh3_dsp));
-  bfd_vma i;
+  bfd_vma prev_i, i;
 
   /* The SH4 has a Harvard architecture, hence aligning loads is not
      desirable.  In fact, it is counter-productive, since it interferes
@@ -2298,72 +2298,71 @@ _bfd_sh_align_load_span(bfd *abfd, asection *sec, bfd_byte *contents,
   if (dsp)
     {
       sh_opcodes[0xf].minor_opcodes = sh_dsp_opcodef;
-      sh_opcodes[0xf].count = sizeof sh_dsp_opcodef / sizeof sh_dsp_opcodef;
+      sh_opcodes[0xf].count = (sizeof(sh_dsp_opcodef) / sizeof(sh_dsp_opcodef));
     }
 
   /* Instructions should be aligned on 2 byte boundaries.  */
   if ((start & 1) == 1)
     ++start;
 
-  /* Now look through the unaligned addresses.  */
-  i = start;
-  if ((i & 2) == 0)
-    i += 2;
-  for (; i < stop; i += 4)
+  /* Now look through the unaligned addresses: */
+  prev_i = start;
+  if ((prev_i & 2) == 0)
+    prev_i += 2UL;
+  for (i = prev_i; i < stop; i += 4UL)
     {
       unsigned int insn;
       const struct sh_opcode *op;
-      unsigned int prev_insn = 0;
+      unsigned int prev_insn = 0U;
       const struct sh_opcode *prev_op = NULL;
 
-      insn = bfd_get_16 (abfd, contents + i);
-      op = sh_insn_info (insn);
-      if (op == NULL
-	  || (op->flags & (LOAD | STORE)) == 0)
+      insn = bfd_get_16(abfd, (contents + i));
+      op = sh_insn_info(insn);
+      if ((op == NULL)
+	  || ((op->flags & (LOAD | STORE)) == 0))
 	continue;
 
-      /* This is a load or store which is not on a four byte boundary.  */
-
-      while (*plabel < label_end && **plabel < i)
+      /* This is a load or store which is not on a four byte boundary: */
+      while ((*plabel < label_end) && (**plabel < i))
 	++*plabel;
 
       if (i > start)
 	{
-	  prev_insn = bfd_get_16 (abfd, contents + i - 2);
-	  /* If INSN is the field b of a parallel processing insn, it is not
-	     a load / store after all.  Note that the test here might mistake
-	     the field_b of a pcopy insn for the starting code of a parallel
-	     processing insn; this might miss a swapping opportunity, but at
-	     least we're on the safe side.  */
-	  if (dsp && (prev_insn & 0xfc00) == 0xf800)
+	  prev_insn = bfd_get_16(abfd, (contents + i - 2UL));
+          /* If INSN is the field b of a parallel processing insn, then it
+           * is not a load/store after all.  Note that the test here might
+           * mistake the field_b of a pcopy insn for the starting code of
+           * a parallel processing insn; this might miss a swapping
+           * opportunity, but at least we are on the safe side: */
+	  if (dsp && ((prev_insn & 0xfc00) == 0xf800))
 	    continue;
 
 	  /* Check if prev_insn is actually the field b of a parallel
 	     processing insn.  Again, this can give a spurious match
 	     after a pcopy.  */
-	  if (dsp && i - 2 > start)
+	  if (dsp && ((i - 2) > start))
 	    {
-	      unsigned pprev_insn = bfd_get_16 (abfd, contents + i - 4);
+	      unsigned pprev_insn = bfd_get_16(abfd, (contents + i - 4UL));
 
 	      if ((pprev_insn & 0xfc00) == 0xf800)
 		prev_op = NULL;
 	      else
-		prev_op = sh_insn_info (prev_insn);
+		prev_op = sh_insn_info(prev_insn);
 	    }
 	  else
-	    prev_op = sh_insn_info (prev_insn);
+	    prev_op = sh_insn_info(prev_insn);
 
-	  /* If the load/store instruction is in a delay slot, we
-	     can't swap.  */
-	  if (prev_op == NULL
-	      || (prev_op->flags & DELAY) != 0)
+	  /* If the load/store instruction is in a delay slot, then we
+	     cannot swap.  */
+	  if ((prev_op == NULL)
+	      || ((prev_op->flags & DELAY) != 0))
 	    continue;
 	}
-      if (i > start
-	  && (*plabel >= label_end || **plabel != i)
-	  && prev_op != NULL
-	  && (prev_op->flags & (LOAD | STORE)) == 0
-	  && ! sh_insns_conflict (prev_insn, prev_op, insn, op))
+      if ((i > start)
+	  && ((*plabel >= label_end) || (**plabel != i))
+	  && (prev_op != NULL)
+	  && ((prev_op->flags & (LOAD | STORE)) == 0)
+	  && ! sh_insns_conflict(prev_insn, prev_op, insn, op))
 	{
 	  bfd_boolean ok;
 
@@ -2374,19 +2373,19 @@ _bfd_sh_align_load_span(bfd *abfd, asection *sec, bfd_byte *contents,
 
 	  ok = TRUE;
 
-	  if (i >= start + 4)
+	  if (i >= (start + 4))
 	    {
 	      unsigned int prev2_insn;
 	      const struct sh_opcode *prev2_op;
 
-	      prev2_insn = bfd_get_16 (abfd, contents + i - 4);
-	      prev2_op = sh_insn_info (prev2_insn);
+	      prev2_insn = bfd_get_16(abfd, (contents + i - 4UL));
+	      prev2_op = sh_insn_info(prev2_insn);
 
 	      /* If the instruction before PREV_INSN has a delay
 		 slot--that is, PREV_INSN is in a delay slot--we
 		 can not swap.  */
-	      if (prev2_op == NULL
-		  || (prev2_op->flags & DELAY) != 0)
+	      if ((prev2_op == NULL)
+		  || ((prev2_op->flags & DELAY) != 0))
 		ok = FALSE;
 
 	      /* If the instruction before PREV_INSN is a load,
@@ -2395,36 +2394,36 @@ _bfd_sh_align_load_span(bfd *abfd, asection *sec, bfd_byte *contents,
 		 cause a pipeline bubble, so there is no point to
 		 making the swap.  */
 	      if (ok
-		  && (prev2_op->flags & LOAD) != 0
-		  && sh_load_use (prev2_insn, prev2_op, insn, op))
+		  && ((prev2_op->flags & LOAD) != 0)
+		  && sh_load_use(prev2_insn, prev2_op, insn, op))
 		ok = FALSE;
 	    }
 
 	  if (ok)
 	    {
-	      if (! (*swap) (abfd, sec, relocs, contents, i - 2))
+	      if (!(*swap)(abfd, sec, relocs, contents, (i - 2UL)))
 		return FALSE;
 	      *pswapped = TRUE;
 	      continue;
 	    }
 	}
 
-      while (*plabel < label_end && **plabel < i + 2)
+      while ((*plabel < label_end) && (**plabel < (i + 2UL)))
 	++*plabel;
 
-      if (i + 2 < stop
-	  && (*plabel >= label_end || **plabel != i + 2))
+      if (((i + 2UL) < stop)
+	  && ((*plabel >= label_end) || (**plabel != (i + 2UL))))
 	{
 	  unsigned int next_insn;
 	  const struct sh_opcode *next_op;
 
 	  /* There is an instruction after the load/store
 	     instruction, and it does not have a label.  */
-	  next_insn = bfd_get_16 (abfd, contents + i + 2);
-	  next_op = sh_insn_info (next_insn);
-	  if (next_op != NULL
-	      && (next_op->flags & (LOAD | STORE)) == 0
-	      && ! sh_insns_conflict (insn, op, next_insn, next_op))
+	  next_insn = bfd_get_16(abfd, (contents + i + 2UL));
+	  next_op = sh_insn_info(next_insn);
+	  if ((next_op != NULL)
+	      && ((next_op->flags & (LOAD | STORE)) == 0)
+	      && ! sh_insns_conflict(insn, op, next_insn, next_op))
 	    {
 	      bfd_boolean ok;
 
@@ -2436,10 +2435,10 @@ _bfd_sh_align_load_span(bfd *abfd, asection *sec, bfd_byte *contents,
 	      /* If PREV_INSN is a load, and it sets a register
 		 which NEXT_INSN uses, then putting NEXT_INSN
 		 immediately after PREV_INSN will cause a pipeline
-		 bubble, so there is no reason to make this swap.  */
-	      if (prev_op != NULL
-		  && (prev_op->flags & LOAD) != 0
-		  && sh_load_use (prev_insn, prev_op, next_insn, next_op))
+		 bubble, so there is no reason to make this swap: */
+	      if ((prev_op != NULL)
+		  && ((prev_op->flags & LOAD) != 0)
+		  && sh_load_use(prev_insn, prev_op, next_insn, next_op))
 		ok = FALSE;
 
 	      /* If INSN is a load, and it sets a register which
@@ -2450,24 +2449,24 @@ _bfd_sh_align_load_span(bfd *abfd, asection *sec, bfd_byte *contents,
 		 instruction, then it is misaligned, so
 		 optimistically hope that it will be swapped
 		 itself, and just live with the pipeline bubble if
-		 it isn't.  */
+		 it is NOT.  */
 	      if (ok
-		  && i + 4 < stop
-		  && (op->flags & LOAD) != 0)
+		  && ((i + 4UL) < stop)
+		  && ((op->flags & LOAD) != 0))
 		{
 		  unsigned int next2_insn;
 		  const struct sh_opcode *next2_op;
 
-		  next2_insn = bfd_get_16 (abfd, contents + i + 4);
-		  next2_op = sh_insn_info (next2_insn);
-		  if ((next2_op->flags & (LOAD | STORE)) == 0
-		      && sh_load_use (insn, op, next2_insn, next2_op))
+		  next2_insn = bfd_get_16(abfd, (contents + i + 4UL));
+		  next2_op = sh_insn_info(next2_insn);
+		  if (((next2_op->flags & (LOAD | STORE)) == 0)
+		      && sh_load_use(insn, op, next2_insn, next2_op))
 		    ok = FALSE;
 		}
 
 	      if (ok)
 		{
-		  if (! (*swap) (abfd, sec, relocs, contents, i))
+		  if (!(*swap)(abfd, sec, relocs, contents, i))
 		    return FALSE;
 		  *pswapped = TRUE;
 		  continue;
@@ -2475,6 +2474,7 @@ _bfd_sh_align_load_span(bfd *abfd, asection *sec, bfd_byte *contents,
 	    }
 	}
     }
+  /* end for-loop */
 
   return TRUE;
 }

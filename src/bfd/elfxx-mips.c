@@ -736,30 +736,29 @@ _bfd_mips_elf_new_section_hook (bfd *abfd, asection *sec)
   return _bfd_elf_new_section_hook (abfd, sec);
 }
 
-/* Read ECOFF debugging information from a .mdebug section into a
-   ecoff_debug_info structure.  */
-
+/* Read ECOFF debugging information from a .mdebug section into an
+ * ecoff_debug_info structure.  */
 bfd_boolean
-_bfd_mips_elf_read_ecoff_info (bfd *abfd, asection *section,
-			       struct ecoff_debug_info *debug)
+_bfd_mips_elf_read_ecoff_info(bfd *abfd, asection *section,
+			      struct ecoff_debug_info *debug)
 {
   HDRR *symhdr;
   const struct ecoff_debug_swap *swap;
   char *ext_hdr;
 
-  swap = get_elf_backend_data (abfd)->elf_backend_ecoff_debug_swap;
-  memset (debug, 0, sizeof (*debug));
+  swap = get_elf_backend_data(abfd)->elf_backend_ecoff_debug_swap;
+  memset(debug, 0, sizeof(*debug));
 
-  ext_hdr = bfd_malloc (swap->external_hdr_size);
-  if (ext_hdr == NULL && swap->external_hdr_size != 0)
+  ext_hdr = (char *)bfd_malloc(swap->external_hdr_size);
+  if ((ext_hdr == NULL) && (swap->external_hdr_size != 0))
     goto error_return;
 
-  if (! bfd_get_section_contents (abfd, section, ext_hdr, 0,
-				  swap->external_hdr_size))
+  if (! bfd_get_section_contents(abfd, section, ext_hdr, 0,
+				 swap->external_hdr_size))
     goto error_return;
 
   symhdr = &debug->symbolic_header;
-  (*swap->swap_hdr_in) (abfd, ext_hdr, symhdr);
+  (*swap->swap_hdr_in)(abfd, ext_hdr, symhdr);
 
   /* The symbolic header contains absolute file offsets and sizes to
      read.  */
@@ -768,27 +767,27 @@ _bfd_mips_elf_read_ecoff_info (bfd *abfd, asection *section,
     debug->ptr = NULL;							\
   else									\
     {									\
-      bfd_size_type amt = (bfd_size_type) size * symhdr->count;		\
-      debug->ptr = bfd_malloc (amt);					\
+      bfd_size_type amt = (bfd_size_type)size * symhdr->count;		\
+      debug->ptr = (type)bfd_malloc(amt);				\
       if (debug->ptr == NULL)						\
 	goto error_return;						\
-      if (bfd_seek (abfd, symhdr->offset, SEEK_SET) != 0		\
-	  || bfd_bread (debug->ptr, amt, abfd) != amt)			\
+      if ((bfd_seek(abfd, symhdr->offset, SEEK_SET) != 0)		\
+	  || (bfd_bread(debug->ptr, amt, abfd) != amt))			\
 	goto error_return;						\
     }
 
-  READ (line, cbLineOffset, cbLine, sizeof (unsigned char), unsigned char *);
-  READ (external_dnr, cbDnOffset, idnMax, swap->external_dnr_size, void *);
-  READ (external_pdr, cbPdOffset, ipdMax, swap->external_pdr_size, void *);
-  READ (external_sym, cbSymOffset, isymMax, swap->external_sym_size, void *);
-  READ (external_opt, cbOptOffset, ioptMax, swap->external_opt_size, void *);
-  READ (external_aux, cbAuxOffset, iauxMax, sizeof (union aux_ext),
-	union aux_ext *);
-  READ (ss, cbSsOffset, issMax, sizeof (char), char *);
-  READ (ssext, cbSsExtOffset, issExtMax, sizeof (char), char *);
-  READ (external_fdr, cbFdOffset, ifdMax, swap->external_fdr_size, void *);
-  READ (external_rfd, cbRfdOffset, crfd, swap->external_rfd_size, void *);
-  READ (external_ext, cbExtOffset, iextMax, swap->external_ext_size, void *);
+  READ(line, cbLineOffset, cbLine, sizeof(unsigned char), unsigned char *);
+  READ(external_dnr, cbDnOffset, idnMax, swap->external_dnr_size, void *);
+  READ(external_pdr, cbPdOffset, ipdMax, swap->external_pdr_size, void *);
+  READ(external_sym, cbSymOffset, isymMax, swap->external_sym_size, void *);
+  READ(external_opt, cbOptOffset, ioptMax, swap->external_opt_size, void *);
+  READ(external_aux, cbAuxOffset, iauxMax, sizeof(union aux_ext),
+       union aux_ext *);
+  READ(ss, cbSsOffset, issMax, sizeof(char), char *);
+  READ(ssext, cbSsExtOffset, issExtMax, sizeof(char), char *);
+  READ(external_fdr, cbFdOffset, ifdMax, swap->external_fdr_size, void *);
+  READ(external_rfd, cbRfdOffset, crfd, swap->external_rfd_size, void *);
+  READ(external_ext, cbExtOffset, iextMax, swap->external_ext_size, void *);
 #undef READ
 
   debug->fdr = NULL;
@@ -797,29 +796,29 @@ _bfd_mips_elf_read_ecoff_info (bfd *abfd, asection *section,
 
  error_return:
   if (ext_hdr != NULL)
-    free (ext_hdr);
+    free(ext_hdr);
   if (debug->line != NULL)
-    free (debug->line);
+    free(debug->line);
   if (debug->external_dnr != NULL)
-    free (debug->external_dnr);
+    free(debug->external_dnr);
   if (debug->external_pdr != NULL)
-    free (debug->external_pdr);
+    free(debug->external_pdr);
   if (debug->external_sym != NULL)
-    free (debug->external_sym);
+    free(debug->external_sym);
   if (debug->external_opt != NULL)
-    free (debug->external_opt);
+    free(debug->external_opt);
   if (debug->external_aux != NULL)
-    free (debug->external_aux);
+    free(debug->external_aux);
   if (debug->ss != NULL)
-    free (debug->ss);
+    free(debug->ss);
   if (debug->ssext != NULL)
-    free (debug->ssext);
+    free(debug->ssext);
   if (debug->external_fdr != NULL)
-    free (debug->external_fdr);
+    free(debug->external_fdr);
   if (debug->external_rfd != NULL)
-    free (debug->external_rfd);
+    free(debug->external_rfd);
   if (debug->external_ext != NULL)
-    free (debug->external_ext);
+    free(debug->external_ext);
   return FALSE;
 }
 
@@ -6942,7 +6941,7 @@ _bfd_mips_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
   for (rel = relocs; rel < relend; ++rel)
     {
       const char *name;
-      bfd_vma value;
+      bfd_vma value = 0UL;
       reloc_howto_type *howto;
       bfd_boolean require_jalx;
       /* TRUE if the relocation is a RELA relocation, rather than a
@@ -8940,11 +8939,10 @@ _bfd_mips_elf_link_hash_table_create (bfd *abfd)
 }
 
 /* We need to use a special link routine to handle the .reginfo and
-   the .mdebug sections.  We need to merge all instances of these
-   sections together, not write them all out sequentially.  */
-
+ * the .mdebug sections.  We need to merge all instances of these
+ * sections together, not write them all out sequentially.  */
 bfd_boolean
-_bfd_mips_elf_final_link (bfd *abfd, struct bfd_link_info *info)
+_bfd_mips_elf_final_link(bfd *abfd, struct bfd_link_info *info)
 {
   asection *o;
   struct bfd_link_order *p;
@@ -8952,7 +8950,7 @@ _bfd_mips_elf_final_link (bfd *abfd, struct bfd_link_info *info)
   asection *rtproc_sec;
   Elf32_RegInfo reginfo;
   struct ecoff_debug_info debug;
-  const struct elf_backend_data *bed = get_elf_backend_data (abfd);
+  const struct elf_backend_data *bed = get_elf_backend_data(abfd);
   const struct ecoff_debug_swap *swap = bed->elf_backend_ecoff_debug_swap;
   HDRR *symhdr = &debug.symbolic_header;
   void *mdebug_handle = NULL;
@@ -8972,11 +8970,11 @@ _bfd_mips_elf_final_link (bfd *abfd, struct bfd_link_info *info)
     scRData, scSData, scSBss, scBss
   };
 
-  /* We'd carefully arranged the dynamic symbol indices, and then the
+  /* We had carefully arranged the dynamic symbol indices, and then the
      generic size_dynamic_sections renumbered them out from under us.
      Rather than trying somehow to prevent the renumbering, just do
      the sort again.  */
-  if (elf_hash_table (info)->dynamic_sections_created)
+  if (elf_hash_table(info)->dynamic_sections_created)
     {
       bfd *dynobj;
       asection *got;
@@ -8984,8 +8982,8 @@ _bfd_mips_elf_final_link (bfd *abfd, struct bfd_link_info *info)
       bfd_size_type dynsecsymcount;
 
       /* When we resort, we must tell mips_elf_sort_hash_table what
-	 the lowest index it may use is.  That's the number of section
-	 symbols we're going to add.  The generic ELF linker only
+	 the lowest index it may use is.  That is the number of section
+	 symbols we are going to add.  The generic ELF linker only
 	 adds these symbols when building a shared object.  Note that
 	 we count the sections after (possibly) removing the .options
 	 section above.  */
@@ -8995,7 +8993,7 @@ _bfd_mips_elf_final_link (bfd *abfd, struct bfd_link_info *info)
 	{
 	  asection * p;
 
-	  for (p = abfd->sections; p ; p = p->next)
+	  for (p = abfd->sections; p; p = p->next)
 	    if ((p->flags & SEC_EXCLUDE) == 0
 		&& (p->flags & SEC_ALLOC) != 0
 		&& !(*bed->elf_backend_omit_section_dynsym) (abfd, info, p))
@@ -9262,18 +9260,18 @@ _bfd_mips_elf_final_link (bfd *abfd, struct bfd_link_info *info)
 		  h->esym = ext;
 		}
 
-	      /* Free up the information we just read.  */
-	      free (input_debug.line);
-	      free (input_debug.external_dnr);
-	      free (input_debug.external_pdr);
-	      free (input_debug.external_sym);
-	      free (input_debug.external_opt);
-	      free (input_debug.external_aux);
-	      free (input_debug.ss);
-	      free (input_debug.ssext);
-	      free (input_debug.external_fdr);
-	      free (input_debug.external_rfd);
-	      free (input_debug.external_ext);
+	      /* Free up the information that we just read: */
+	      free(input_debug.line);
+	      free(input_debug.external_dnr);
+	      free(input_debug.external_pdr);
+	      free(input_debug.external_sym);
+	      free(input_debug.external_opt);
+	      free(input_debug.external_aux);
+	      free(input_debug.ss);
+	      free(input_debug.ssext);
+	      free(input_debug.external_fdr);
+	      free(input_debug.external_rfd);
+	      free(input_debug.external_ext);
 
 	      /* Hack: reset the SEC_HAS_CONTENTS flag so that
 		 elf_link_input_bfd ignores this section.  */
@@ -9395,19 +9393,19 @@ _bfd_mips_elf_final_link (bfd *abfd, struct bfd_link_info *info)
 	      else
 		o->name = ".gptab.bss";
 	      subname = o->name + sizeof ".gptab" - 1;
-	      BFD_ASSERT (bfd_get_section_by_name (abfd, subname) != NULL);
+	      BFD_ASSERT (bfd_get_section_by_name(abfd, subname) != NULL);
 	    }
 
-	  /* Set up the first entry.  */
+	  /* Set up the first entry: */
 	  c = 1;
-	  amt = c * sizeof (Elf32_gptab);
-	  tab = bfd_malloc (amt);
+	  amt = (c * sizeof(Elf32_gptab));
+	  tab = bfd_malloc(amt);
 	  if (tab == NULL)
 	    return FALSE;
-	  tab[0].gt_header.gt_current_g_value = elf_gp_size (abfd);
+	  tab[0].gt_header.gt_current_g_value = elf_gp_size(abfd);
 	  tab[0].gt_header.gt_unused = 0;
 
-	  /* Combine the input sections.  */
+	  /* Combine the input sections: */
 	  for (p = o->map_head.link_order; p != NULL; p = p->next)
 	    {
 	      asection *input_section;
@@ -9420,7 +9418,7 @@ _bfd_mips_elf_final_link (bfd *abfd, struct bfd_link_info *info)
 		{
 		  if (p->type == bfd_data_link_order)
 		    continue;
-		  abort ();
+		  abort();
 		}
 
 	      input_section = p->u.indirect.section;
@@ -9431,9 +9429,9 @@ _bfd_mips_elf_final_link (bfd *abfd, struct bfd_link_info *info)
 		 sorted by ascending -G value.  */
 	      size = input_section->size;
 	      last = 0;
-	      for (gpentry = sizeof (Elf32_External_gptab);
+	      for (gpentry = sizeof(Elf32_External_gptab);
 		   gpentry < size;
-		   gpentry += sizeof (Elf32_External_gptab))
+		   gpentry += sizeof(Elf32_External_gptab))
 		{
 		  Elf32_External_gptab ext_gptab;
 		  Elf32_gptab int_gptab;
@@ -9442,18 +9440,18 @@ _bfd_mips_elf_final_link (bfd *abfd, struct bfd_link_info *info)
 		  bfd_boolean exact;
 		  unsigned int look;
 
-		  if (! (bfd_get_section_contents
-			 (input_bfd, input_section, &ext_gptab, gpentry,
-			  sizeof (Elf32_External_gptab))))
+		  if (!(bfd_get_section_contents(input_bfd, input_section,
+                                                 &ext_gptab, gpentry,
+                                                 sizeof(Elf32_External_gptab))))
 		    {
-		      free (tab);
+		      free(tab);
 		      return FALSE;
 		    }
 
-		  bfd_mips_elf32_swap_gptab_in (input_bfd, &ext_gptab,
-						&int_gptab);
+		  bfd_mips_elf32_swap_gptab_in(input_bfd, &ext_gptab,
+                                               &int_gptab);
 		  val = int_gptab.gt_entry.gt_g_value;
-		  add = int_gptab.gt_entry.gt_bytes - last;
+		  add = (int_gptab.gt_entry.gt_bytes - last);
 
 		  exact = FALSE;
 		  for (look = 1; look < c; look++)
@@ -9470,8 +9468,8 @@ _bfd_mips_elf_final_link (bfd *abfd, struct bfd_link_info *info)
 		      Elf32_gptab *new_tab;
 		      unsigned int max;
 
-		      /* We need a new table entry.  */
-		      amt = (bfd_size_type) (c + 1) * sizeof (Elf32_gptab);
+		      /* We need a new table entry: */
+		      amt = (bfd_size_type)(c + 1) * sizeof(Elf32_gptab);
 		      new_tab = bfd_realloc (tab, amt);
 		      if (new_tab == NULL)
 			{

@@ -4801,15 +4801,16 @@ struct absaddr
     bfd_vma offset;
   };
 
+struct ia64_unw_table_entry
+  {
+    struct absaddr start;
+    struct absaddr end;
+    struct absaddr info;
+  };
+
 struct ia64_unw_aux_info
   {
-    struct ia64_unw_table_entry
-      {
-	struct absaddr start;
-	struct absaddr end;
-	struct absaddr info;
-      }
-    *table;			/* Unwind table.  */
+    struct ia64_unw_table_entry *table;		/* Unwind table.  */
     unsigned long table_len;	/* Length of unwind table.  */
     unsigned char *info;	/* Unwind info.  */
     unsigned long info_size;	/* Size of unwind info.  */
@@ -5188,45 +5189,46 @@ ia64_process_unwind (FILE *file)
   return 1;
 }
 
+struct hppa_unw_table_entry
+  {
+    struct absaddr start;
+    struct absaddr end;
+    unsigned int Cannot_unwind:1;			/* 0 */
+    unsigned int Millicode:1;			/* 1 */
+    unsigned int Millicode_save_sr0:1;		/* 2 */
+    unsigned int Region_description:2;		/* 3..4 */
+    unsigned int reserved1:1;			/* 5 */
+    unsigned int Entry_SR:1;			/* 6 */
+    unsigned int Entry_FR:4;     /* number saved */	/* 7..10 */
+    unsigned int Entry_GR:5;     /* number saved */	/* 11..15 */
+    unsigned int Args_stored:1;			/* 16 */
+    unsigned int Variable_Frame:1;			/* 17 */
+    unsigned int Separate_Package_Body:1;		/* 18 */
+    unsigned int Frame_Extension_Millicode:1;	/* 19 */
+    unsigned int Stack_Overflow_Check:1;		/* 20 */
+    unsigned int Two_Instruction_SP_Increment:1;	/* 21 */
+    unsigned int Ada_Region:1;			/* 22 */
+    unsigned int cxx_info:1;			/* 23 */
+    unsigned int cxx_try_catch:1;			/* 24 */
+    unsigned int sched_entry_seq:1;			/* 25 */
+    unsigned int reserved2:1;			/* 26 */
+    unsigned int Save_SP:1;				/* 27 */
+    unsigned int Save_RP:1;				/* 28 */
+    unsigned int Save_MRP_in_frame:1;		/* 29 */
+    unsigned int extn_ptr_defined:1;		/* 30 */
+    unsigned int Cleanup_defined:1;			/* 31 */
+
+    unsigned int MPE_XL_interrupt_marker:1;		/* 0 */
+    unsigned int HP_UX_interrupt_marker:1;		/* 1 */
+    unsigned int Large_frame:1;			/* 2 */
+    unsigned int Pseudo_SP_Set:1;			/* 3 */
+    unsigned int reserved4:1;			/* 4 */
+    unsigned int Total_frame_size:27;		/* 5..31 */
+  };
+
 struct hppa_unw_aux_info
   {
-    struct hppa_unw_table_entry
-      {
-	struct absaddr start;
-	struct absaddr end;
-	unsigned int Cannot_unwind:1;			/* 0 */
-	unsigned int Millicode:1;			/* 1 */
-	unsigned int Millicode_save_sr0:1;		/* 2 */
-	unsigned int Region_description:2;		/* 3..4 */
-	unsigned int reserved1:1;			/* 5 */
-	unsigned int Entry_SR:1;			/* 6 */
-	unsigned int Entry_FR:4;     /* number saved */	/* 7..10 */
-	unsigned int Entry_GR:5;     /* number saved */	/* 11..15 */
-	unsigned int Args_stored:1;			/* 16 */
-	unsigned int Variable_Frame:1;			/* 17 */
-	unsigned int Separate_Package_Body:1;		/* 18 */
-	unsigned int Frame_Extension_Millicode:1;	/* 19 */
-	unsigned int Stack_Overflow_Check:1;		/* 20 */
-	unsigned int Two_Instruction_SP_Increment:1;	/* 21 */
-	unsigned int Ada_Region:1;			/* 22 */
-	unsigned int cxx_info:1;			/* 23 */
-	unsigned int cxx_try_catch:1;			/* 24 */
-	unsigned int sched_entry_seq:1;			/* 25 */
-	unsigned int reserved2:1;			/* 26 */
-	unsigned int Save_SP:1;				/* 27 */
-	unsigned int Save_RP:1;				/* 28 */
-	unsigned int Save_MRP_in_frame:1;		/* 29 */
-	unsigned int extn_ptr_defined:1;		/* 30 */
-	unsigned int Cleanup_defined:1;			/* 31 */
-
-	unsigned int MPE_XL_interrupt_marker:1;		/* 0 */
-	unsigned int HP_UX_interrupt_marker:1;		/* 1 */
-	unsigned int Large_frame:1;			/* 2 */
-	unsigned int Pseudo_SP_Set:1;			/* 3 */
-	unsigned int reserved4:1;			/* 4 */
-	unsigned int Total_frame_size:27;		/* 5..31 */
-      }
-    *table;			/* Unwind table.  */
+    struct hppa_unw_table_entry *table;		/* Unwind table.  */
     unsigned long table_len;	/* Length of unwind table.  */
     bfd_vma seg_base;		/* Starting address of segment.  */
     Elf_Internal_Sym *symtab;	/* The symbol table.  */
@@ -9844,23 +9846,22 @@ display_debug_pubnames (Elf_Internal_Shdr *section,
 }
 
 static int
-display_debug_macinfo (Elf_Internal_Shdr *section,
-		       unsigned char *start,
-		       FILE *file ATTRIBUTE_UNUSED)
+display_debug_macinfo(Elf_Internal_Shdr *section, unsigned char *start,
+		      FILE *file ATTRIBUTE_UNUSED)
 {
-  unsigned char *end = start + section->sh_size;
+  unsigned char *end = (start + section->sh_size);
   unsigned char *curr = start;
   unsigned int bytes_read;
   enum dwarf_macinfo_record_type op;
 
-  printf (_("Contents of the %s section:\n\n"), SECTION_NAME (section));
+  printf(_("Contents of the %s section:\n\n"), SECTION_NAME(section));
 
   while (curr < end)
     {
       unsigned int lineno;
       const char *string;
 
-      op = *curr;
+      op = (enum dwarf_macinfo_record_type)*curr;
       curr++;
 
       switch (op)

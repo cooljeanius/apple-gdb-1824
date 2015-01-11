@@ -1597,7 +1597,7 @@ static bfd_boolean coff_new_section_hook(bfd * abfd, asection * section)
   native->u.syment.n_type = T_NULL;
   native->u.syment.n_sclass = C_STAT;
 
-  coffsymbol (section->symbol)->native = native;
+  coffsymbol(section->symbol)->native = native;
 
   coff_set_custom_section_alignment(abfd, section, coff_section_alignment_table,
 				    coff_section_alignment_table_size);
@@ -1611,16 +1611,16 @@ static void
 coff_set_alignment_hook(bfd *abfd ATTRIBUTE_UNUSED, asection *section,
 			void *scnhdr)
 {
-  struct internal_scnhdr *hdr = (struct internal_scnhdr *) scnhdr;
+  struct internal_scnhdr *hdr = (struct internal_scnhdr *)scnhdr;
   unsigned int i;
 
 #ifdef I960
   /* Extract ALIGN from 2**ALIGN stored in section header.  */
-	for (i = 0; i < 32; i++) {
-	  if ((1 << i) >= hdr->s_align) {
-		  break;
-	  }
-	}
+  for (i = 0; i < 32; i++) {
+    if ((1 << i) >= hdr->s_align) {
+      break;
+    }
+  }
 #endif /* I960 */
 #ifdef TIC80COFF
   /* TI tools puts the alignment power in bits 8-11.  */
@@ -1632,7 +1632,7 @@ coff_set_alignment_hook(bfd *abfd ATTRIBUTE_UNUSED, asection *section,
   section->alignment_power = i;
 
 #ifdef coff_set_section_load_page
-  coff_set_section_load_page (section, hdr->s_page);
+  coff_set_section_load_page(section, hdr->s_page);
 #endif /* coff_set_section_load_page */
 }
 
@@ -1671,49 +1671,50 @@ coff_set_alignment_hook(bfd *abfd ATTRIBUTE_UNUSED, asection *section,
      section, while the s_size field holds the raw size.  We also keep
      the original section flag value, since not every bit can be
      mapped onto a generic BFD section bit.  */
-  if (coff_section_data (abfd, section) == NULL)
+  if (coff_section_data(abfd, section) == NULL)
     {
-      amt = sizeof (struct coff_section_tdata);
-      section->used_by_bfd = bfd_zalloc (abfd, amt);
+      amt = sizeof(struct coff_section_tdata);
+      section->used_by_bfd = bfd_zalloc(abfd, amt);
       if (section->used_by_bfd == NULL)
 	/* FIXME: Return error: */
 	abort();
     }
 
-  if (pei_section_data (abfd, section) == NULL)
+  if (pei_section_data(abfd, section) == NULL)
     {
-      amt = sizeof (struct pei_section_tdata);
-      coff_section_data (abfd, section)->tdata = bfd_zalloc (abfd, amt);
-      if (coff_section_data (abfd, section)->tdata == NULL)
-	/* FIXME: Return error.  */
-	abort ();
+      amt = sizeof(struct pei_section_tdata);
+      coff_section_data(abfd, section)->tdata = bfd_zalloc(abfd, amt);
+      if (coff_section_data(abfd, section)->tdata == NULL)
+	/* FIXME: Return error: */
+	abort();
     }
-  pei_section_data (abfd, section)->virt_size = hdr->s_paddr;
-  pei_section_data (abfd, section)->pe_flags = hdr->s_flags;
+  pei_section_data(abfd, section)->virt_size = hdr->s_paddr;
+  pei_section_data(abfd, section)->pe_flags = hdr->s_flags;
 
   section->lma = hdr->s_vaddr;
 
-  /* Check for extended relocs.  */
+  /* Check for extended relocs: */
   if (hdr->s_flags & IMAGE_SCN_LNK_NRELOC_OVFL)
     {
       struct external_reloc dst;
       struct internal_reloc n;
-      file_ptr oldpos = bfd_tell (abfd);
-      bfd_size_type relsz = bfd_coff_relsz (abfd);
+      file_ptr oldpos = bfd_tell(abfd);
+      bfd_size_type relsz = bfd_coff_relsz(abfd);
 
-      bfd_seek (abfd, (file_ptr) hdr->s_relptr, 0);
-      if (bfd_bread (& dst, relsz, abfd) != relsz)
+      bfd_seek(abfd, (file_ptr)hdr->s_relptr, 0);
+      if (bfd_bread(& dst, relsz, abfd) != relsz)
 	return;
 
-      coff_swap_reloc_in (abfd, &dst, &n);
-      bfd_seek (abfd, oldpos, 0);
-      section->reloc_count = hdr->s_nreloc = n.r_vaddr - 1;
+      coff_swap_reloc_in(abfd, &dst, &n);
+      bfd_seek(abfd, oldpos, 0);
+      hdr->s_nreloc = (unsigned long)(n.r_vaddr - 1UL);
+      section->reloc_count = (unsigned)hdr->s_nreloc;
       section->rel_filepos += relsz;
     }
   else if (hdr->s_nreloc == 0xffff)
     (*_bfd_error_handler)
       ("%s: warning: claims to have 0xffff relocs, without overflow",
-       bfd_get_filename (abfd));
+       bfd_get_filename(abfd));
 }
 #undef ALIGN_SET
 #undef ELIFALIGN_SET
@@ -2968,7 +2969,7 @@ coff_compute_section_file_positions(bfd *abfd)
 
   if (coff_data(abfd)->link_info)
     {
-      page_size = pe_data(abfd)->pe_opthdr.FileAlignment;
+      page_size = (int)pe_data(abfd)->pe_opthdr.FileAlignment;
 
       /* If no file alignment has been set, default to one.
        * This repairs 'ld -r' for arm-wince-pe target.  */
@@ -3166,7 +3167,7 @@ coff_compute_section_file_positions(bfd *abfd)
 
 	      if (pad)
 		{
-		  pad = align - pad;
+		  pad = (align - pad);
 		  sofar += pad;
 		}
 	    }
@@ -3260,9 +3261,9 @@ coff_compute_section_file_positions(bfd *abfd)
   /* Make sure the relocations are aligned.  We do NOT need to make
      sure that this byte exists, because it will only matter if there
      really are relocs.  */
-  sofar = BFD_ALIGN (sofar, 1 << COFF_DEFAULT_SECTION_ALIGNMENT_POWER);
+  sofar = BFD_ALIGN(sofar, 1 << COFF_DEFAULT_SECTION_ALIGNMENT_POWER);
 
-  obj_relocbase (abfd) = sofar;
+  obj_relocbase(abfd) = sofar;
   abfd->output_has_begun = TRUE;
 
   return TRUE;
@@ -3274,24 +3275,24 @@ static unsigned int pelength;
 static unsigned int peheader;
 
 static bfd_boolean
-coff_read_word (bfd *abfd, unsigned int *value)
+coff_read_word(bfd *abfd, unsigned int *value)
 {
   unsigned char b[2];
   int status;
 
-  status = bfd_bread (b, (bfd_size_type) 2, abfd);
+  status = (int)bfd_bread(b, (bfd_size_type)2UL, abfd);
   if (status < 1)
     {
-      *value = 0;
+      *value = 0U;
       return FALSE;
     }
 
   if (status == 1)
-    *value = (unsigned int) b[0];
+    *value = (unsigned int)b[0];
   else
-    *value = (unsigned int) (b[0] + (b[1] << 8));
+    *value = (unsigned int)(b[0] + (b[1] << 8U));
 
-  pelength += (unsigned int) status;
+  pelength += (unsigned int)status;
 
   return TRUE;
 }
@@ -5092,22 +5093,25 @@ coff_canonicalize_reloc(bfd * abfd, sec_ptr section, arelent **relptr,
 
 #ifndef coff_reloc16_estimate
 # define coff_reloc16_estimate dummy_reloc16_estimate
-static int
+static int ATTRIBUTE_NORETURN
 dummy_reloc16_estimate(bfd *abfd ATTRIBUTE_UNUSED,
 		       asection *input_section ATTRIBUTE_UNUSED,
 		       arelent *reloc ATTRIBUTE_UNUSED,
 		       unsigned int shrink ATTRIBUTE_UNUSED,
 		       struct bfd_link_info *link_info ATTRIBUTE_UNUSED)
 {
+# ifdef ATTRIBUTE_NORETURN
   abort();
+# else
   return 0;
+# endif /* ATTRIBUTE_NORETURN */
 }
 #endif /* !coff_reloc16_estimate */
 
 #ifndef coff_reloc16_extra_cases
 # define coff_reloc16_extra_cases dummy_reloc16_extra_cases
 /* This works even if abort is not declared in any header file: */
-static void
+static void ATTRIBUTE_NORETURN
 dummy_reloc16_extra_cases(bfd *abfd ATTRIBUTE_UNUSED,
 			  struct bfd_link_info *link_info ATTRIBUTE_UNUSED,
 			  struct bfd_link_order *link_order ATTRIBUTE_UNUSED,

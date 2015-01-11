@@ -6159,8 +6159,8 @@ sh_elf_optimized_tls_reloc (struct bfd_link_info *info, int r_type,
    virtual table relocs for gc.  */
 
 static bfd_boolean
-sh_elf_check_relocs (bfd *abfd, struct bfd_link_info *info, asection *sec,
-		     const Elf_Internal_Rela *relocs)
+sh_elf_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
+                    const Elf_Internal_Rela *relocs)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes, **sym_hashes_end;
@@ -6181,23 +6181,23 @@ sh_elf_check_relocs (bfd *abfd, struct bfd_link_info *info, asection *sec,
   if (info->relocatable)
     return TRUE;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (abfd);
-  sym_hashes_end = sym_hashes + symtab_hdr->sh_size/sizeof (Elf32_External_Sym);
-  if (!elf_bad_symtab (abfd))
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(abfd);
+  sym_hashes_end = (sym_hashes + (symtab_hdr->sh_size / sizeof(Elf32_External_Sym)));
+  if (!elf_bad_symtab(abfd))
     sym_hashes_end -= symtab_hdr->sh_info;
 
-  htab = sh_elf_hash_table (info);
-  local_got_offsets = elf_local_got_offsets (abfd);
+  htab = sh_elf_hash_table(info);
+  local_got_offsets = elf_local_got_offsets(abfd);
 
-  rel_end = relocs + sec->reloc_count;
+  rel_end = (relocs + sec->reloc_count);
   for (rel = relocs; rel < rel_end; rel++)
     {
       struct elf_link_hash_entry *h;
       unsigned long r_symndx;
 #ifdef INCLUDE_SHMEDIA
       int seen_stt_datalabel = 0;
-#endif
+#endif /* INCLUDE_SHMEDIA */
 
       r_symndx = ELF32_R_SYM (rel->r_info);
       r_type = ELF32_R_TYPE (rel->r_info);
@@ -6429,7 +6429,7 @@ sh_elf_check_relocs (bfd *abfd, struct bfd_link_info *info, asection *sec,
 
 	  h->needs_plt = 1;
 	  h->plt.refcount += 1;
-	  ((struct elf_sh_link_hash_entry *) h)->gotplt_refcount += 1;
+	  ((struct elf_sh_link_hash_entry *)h)->gotplt_refcount += 1;
 
 	  break;
 
@@ -6439,7 +6439,7 @@ sh_elf_check_relocs (bfd *abfd, struct bfd_link_info *info, asection *sec,
 	case R_SH_PLT_MEDLOW16:
 	case R_SH_PLT_MEDHI16:
 	case R_SH_PLT_HI16:
-#endif
+#endif /* INCLUDE_SHMEDIA */
 	  /* This symbol requires a procedure linkage table entry.  We
 	     actually build the entry in adjust_dynamic_symbol,
 	     because this might be a case of linking PIC code which is
@@ -6466,8 +6466,8 @@ sh_elf_check_relocs (bfd *abfd, struct bfd_link_info *info, asection *sec,
 	case R_SH_IMM_MEDLOW16_PCREL:
 	case R_SH_IMM_MEDHI16_PCREL:
 	case R_SH_IMM_HI16_PCREL:
-#endif
-	  if (h != NULL && ! info->shared)
+#endif /* INCLUDE_SHMEDIA */
+	  if ((h != NULL) && ! info->shared)
 	    {
 	      h->non_got_ref = 1;
 	      h->plt.refcount += 1;
@@ -6557,21 +6557,21 @@ sh_elf_check_relocs (bfd *abfd, struct bfd_link_info *info, asection *sec,
 		{
 		  asection *s;
 
-		  /* Track dynamic relocs needed for local syms too.  */
-		  s = bfd_section_from_r_symndx (abfd, &htab->sym_sec,
-						 sec, r_symndx);
+		  /* Track dynamic relocs needed for local syms too: */
+		  s = bfd_section_from_r_symndx(abfd, &htab->sym_sec, sec,
+                                                r_symndx);
 		  if (s == NULL)
 		    return FALSE;
 
 		  head = ((struct elf_sh_dyn_relocs **)
-			  &elf_section_data (s)->local_dynrel);
+			  &elf_section_data(s)->local_dynrel);
 		}
 
 	      p = *head;
-	      if (p == NULL || p->sec != sec)
+	      if ((p == NULL) || (p->sec != sec))
 		{
-		  bfd_size_type amt = sizeof (*p);
-		  p = bfd_alloc (htab->root.dynobj, amt);
+		  bfd_size_type amt = sizeof(*p);
+		  p = (struct elf_sh_dyn_relocs *)bfd_alloc(htab->root.dynobj, amt);
 		  if (p == NULL)
 		    return FALSE;
 		  p->next = *head;
@@ -6684,34 +6684,33 @@ sh_elf_copy_private_data (bfd * ibfd, bfd * obfd)
       || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
     return TRUE;
 
-  return sh_elf_set_private_flags (obfd, elf_elfheader (ibfd)->e_flags);
+  return sh_elf_set_private_flags(obfd, elf_elfheader(ibfd)->e_flags);
 }
 #endif /* not sh_elf_copy_private_data */
 
 #ifndef sh_elf_merge_private_data
 
-/* This function returns the ELF architecture number that
-   corresponds to the given arch_sh* flags.  */
+extern unsigned long sh_get_bfd_mach_from_arch_set(unsigned int);
 
+/* This function returns the ELF architecture number that corresponds
+ * to the given arch_sh* flags: */
 int
-sh_find_elf_flags (unsigned int arch_set)
+sh_find_elf_flags(unsigned int arch_set)
 {
-  extern unsigned long sh_get_bfd_mach_from_arch_set (unsigned int);
-  unsigned long bfd_mach = sh_get_bfd_mach_from_arch_set (arch_set);
+  unsigned long bfd_mach = sh_get_bfd_mach_from_arch_set(arch_set);
 
-  return sh_elf_get_flags_from_mach (bfd_mach);
+  return sh_elf_get_flags_from_mach(bfd_mach);
 }
 
-/* This routine initialises the elf flags when required and
-   calls sh_merge_bfd_arch() to check dsp/fpu compatibility.  */
+extern bfd_boolean sh_merge_bfd_arch(bfd *, bfd *);
 
+/* This routine initialises the elf flags when required and calls
+ * sh_merge_bfd_arch() to check dsp/fpu compatibility: */
 static bfd_boolean
-sh_elf_merge_private_data (bfd *ibfd, bfd *obfd)
+sh_elf_merge_private_data(bfd *ibfd, bfd *obfd)
 {
-  extern bfd_boolean sh_merge_bfd_arch (bfd *, bfd *);
-
-  if (   bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+  if ((bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
+      || (bfd_get_flavour(obfd) != bfd_target_elf_flavour))
     return TRUE;
 
   if (! elf_flags_init (obfd))

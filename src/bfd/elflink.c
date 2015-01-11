@@ -4009,11 +4009,11 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 
 	      /* Take the balance of OTHER from the definition.  */
 	      other = (definition ? isym->st_other : h->other);
-	      other &= ~ ELF_ST_VISIBILITY (-1);
+	      other &= ~ ELF_ST_VISIBILITY(-1);
 
-	      /* Combine visibilities, using the most constraining one.  */
-	      hvis   = ELF_ST_VISIBILITY (h->other);
-	      symvis = ELF_ST_VISIBILITY (isym->st_other);
+	      /* Combine visibilities, using the most constraining one: */
+	      hvis = ELF_ST_VISIBILITY(h->other);
+	      symvis = ELF_ST_VISIBILITY(isym->st_other);
 	      if (! hvis)
 		nvis = symvis;
 	      else if (! symvis)
@@ -4053,31 +4053,31 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 		h->def_dynamic = 1;
 	      if (h->def_regular
 		  || h->ref_regular
-		  || (h->u.weakdef != NULL
+		  || ((h->u.weakdef != NULL)
 		      && ! new_weakdef
-		      && h->u.weakdef->dynindx != -1))
+		      && (h->u.weakdef->dynindx != -1)))
 		dynsym = TRUE;
 	    }
 
 	  /* Check to see if we need to add an indirect symbol for
 	     the default name.  */
-	  if (definition || h->root.type == bfd_link_hash_common)
-	    if (!_bfd_elf_add_default_symbol (abfd, info, h, name, isym,
-					      &sec, &value, &dynsym,
-					      override))
+	  if (definition || (h->root.type == bfd_link_hash_common))
+	    if (!_bfd_elf_add_default_symbol(abfd, info, h, name, isym,
+					     &sec, &value, &dynsym,
+					     override))
 	      goto error_free_vers;
 
 	  if (definition && !dynamic)
 	    {
-	      char *p = strchr (name, ELF_VER_CHR);
-	      if (p != NULL && p[1] != ELF_VER_CHR)
+	      char *p = strchr(name, ELF_VER_CHR);
+	      if ((p != NULL) && (p[1] != ELF_VER_CHR))
 		{
 		  /* Queue non-default versions so that .symver x, x@FOO
 		     aliases can be checked.  */
 		  if (! nondeflt_vers)
 		    {
-		      amt = (isymend - isym + 1)
-			    * sizeof (struct elf_link_hash_entry *);
+		      amt = (bfd_size_type)((size_t)(isymend - isym + 1UL)
+                                            * sizeof(struct elf_link_hash_entry *));
 		      nondeflt_vers = bfd_malloc (amt);
 		    }
 		  nondeflt_vers [nondeflt_vers_cnt++] = h;
@@ -4166,9 +4166,9 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 	  shortname[amt] = '\0';
 
 	  hi = (struct elf_link_hash_entry *)
-	       bfd_link_hash_lookup (&hash_table->root, shortname,
-				     FALSE, FALSE, FALSE);
-	  if (hi != NULL
+	       bfd_link_hash_lookup(&hash_table->root, shortname,
+                                    FALSE, FALSE, FALSE);
+	  if ((hi != NULL)
 	      && hi->root.type == h->root.type
 	      && hi->root.u.def.value == h->root.u.def.value
 	      && hi->root.u.def.section == h->root.u.def.section)
@@ -4550,7 +4550,7 @@ _bfd_elf_archive_symbol_lookup (bfd *abfd,
    Unfortunately, we do have to make multiple passes over the symbol
    table until nothing further is resolved.  */
 
-static bfd_boolean
+extern bfd_boolean
 elf_link_add_archive_symbols(bfd *abfd, struct bfd_link_info *info)
 {
   symindex c;
@@ -8854,19 +8854,18 @@ _bfd_elf_gc_mark (struct bfd_link_info *info,
   return ret;
 }
 
-/* Sweep symbols in swept sections.  Called via elf_link_hash_traverse.  */
-
+/* Sweep symbols in swept sections.  Called via elf_link_hash_traverse: */
 static bfd_boolean
-elf_gc_sweep_symbol (struct elf_link_hash_entry *h, void *idxptr)
+elf_gc_sweep_symbol(struct elf_link_hash_entry *h, void *idxptr)
 {
-  int *idx = idxptr;
+  int *idx = (int *)idxptr;
 
   if (h->root.type == bfd_link_hash_warning)
-    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 
-  if (h->dynindx != -1
-      && ((h->root.type != bfd_link_hash_defined
-	   && h->root.type != bfd_link_hash_defweak)
+  if ((h->dynindx != -1)
+      && (((h->root.type != bfd_link_hash_defined)
+	   && (h->root.type != bfd_link_hash_defweak))
 	  || h->root.u.def.section->gc_mark))
     h->dynindx = (*idx)++;
 

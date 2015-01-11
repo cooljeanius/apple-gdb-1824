@@ -13,7 +13,7 @@
 # Reproduce an unmodified copy with: gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib --m4-base=gnulib/m4 --doc-base=doc --aux-dir=gnulib/extra --no-libtool --macro-prefix=gl memmem
 
 ACLOCAL_AMFLAGS = -I./import/m4 -I./m4 --install
-AUTOMAKE_OPTIONS = 1.11.1 gnits -Wall
+AUTOMAKE_OPTIONS = 1.11.1 gnits -Wall no-dist
 
 SUBDIRS = import
 

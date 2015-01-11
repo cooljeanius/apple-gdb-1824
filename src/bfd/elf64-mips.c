@@ -2376,22 +2376,22 @@ mips_elf64_slurp_one_reloc_table (bfd *abfd, asection *asect,
   int entsize;
   bfd_boolean rela_p;
 
-  allocated = bfd_malloc (rel_hdr->sh_size);
+  allocated = bfd_malloc(rel_hdr->sh_size);
   if (allocated == NULL)
     return FALSE;
 
-  if (bfd_seek (abfd, rel_hdr->sh_offset, SEEK_SET) != 0
-      || (bfd_bread (allocated, rel_hdr->sh_size, abfd)
+  if ((bfd_seek(abfd, rel_hdr->sh_offset, SEEK_SET) != 0)
+      || (bfd_bread(allocated, rel_hdr->sh_size, abfd)
 	  != rel_hdr->sh_size))
     goto error_return;
 
-  native_relocs = allocated;
+  native_relocs = (bfd_byte *)allocated;
 
   entsize = rel_hdr->sh_entsize;
-  BFD_ASSERT (entsize == sizeof (Elf64_Mips_External_Rel)
-	      || entsize == sizeof (Elf64_Mips_External_Rela));
+  BFD_ASSERT((entsize == sizeof(Elf64_Mips_External_Rel))
+	     || (entsize == sizeof(Elf64_Mips_External_Rela)));
 
-  if (entsize == sizeof (Elf64_Mips_External_Rel))
+  if (entsize == sizeof(Elf64_Mips_External_Rel))
     rela_p = FALSE;
   else
     rela_p = TRUE;
@@ -2573,31 +2573,29 @@ mips_elf64_slurp_reloc_table (bfd *abfd, asection *asect,
 	return TRUE;
 
       rel_hdr = &d->this_hdr;
-      reloc_count = NUM_SHDR_ENTRIES (rel_hdr);
+      reloc_count = NUM_SHDR_ENTRIES(rel_hdr);
       rel_hdr2 = NULL;
       reloc_count2 = 0;
     }
 
-  /* Allocate space for 3 arelent structures for each Rel structure.  */
-  amt = (reloc_count + reloc_count2) * 3 * sizeof (arelent);
-  relents = bfd_alloc (abfd, amt);
+  /* Allocate space for 3 arelent structures for each Rel structure: */
+  amt = (reloc_count + reloc_count2) * 3 * sizeof(arelent);
+  relents = (arelent *)bfd_alloc(abfd, amt);
   if (relents == NULL)
     return FALSE;
 
-  /* The slurp_one_reloc_table routine increments reloc_count.  */
+  /* The slurp_one_reloc_table routine increments reloc_count: */
   asect->reloc_count = 0;
 
-  if (! mips_elf64_slurp_one_reloc_table (abfd, asect,
-					  rel_hdr, reloc_count,
-					  relents,
-					  symbols, dynamic))
+  if (! mips_elf64_slurp_one_reloc_table(abfd, asect, rel_hdr, reloc_count,
+					 relents, symbols, dynamic))
     return FALSE;
   if (d->rel_hdr2 != NULL)
     {
-      if (! mips_elf64_slurp_one_reloc_table (abfd, asect,
-					      rel_hdr2, reloc_count2,
-					      relents + reloc_count * 3,
-					      symbols, dynamic))
+      if (! mips_elf64_slurp_one_reloc_table(abfd, asect,
+					     rel_hdr2, reloc_count2,
+					     (relents + reloc_count * 3),
+					     symbols, dynamic))
 	return FALSE;
     }
 
@@ -2605,17 +2603,16 @@ mips_elf64_slurp_reloc_table (bfd *abfd, asection *asect,
   return TRUE;
 }
 
-/* Write out the relocations.  */
-
+/* Write out the relocations: */
 static void
-mips_elf64_write_relocs (bfd *abfd, asection *sec, void *data)
+mips_elf64_write_relocs(bfd *abfd, asection *sec, void *data)
 {
-  bfd_boolean *failedp = data;
+  bfd_boolean *failedp = (bfd_boolean *)data;
   int count;
   Elf_Internal_Shdr *rel_hdr;
   unsigned int idx;
 
-  /* If we have already failed, don't do anything.  */
+  /* If we have already failed, then do NOT do anything: */
   if (*failedp)
     return;
 
@@ -2671,18 +2668,17 @@ mips_elf64_write_relocs (bfd *abfd, asection *sec, void *data)
 }
 
 static void
-mips_elf64_write_rel (bfd *abfd, asection *sec,
-		      Elf_Internal_Shdr *rel_hdr,
-		      int *count, void *data)
+mips_elf64_write_rel(bfd *abfd, asection *sec, Elf_Internal_Shdr *rel_hdr,
+                     int *count, void *data)
 {
-  bfd_boolean *failedp = data;
+  bfd_boolean *failedp = (bfd_boolean *)data;
   Elf64_Mips_External_Rel *ext_rel;
   unsigned int idx;
   asymbol *last_sym = 0;
   int last_sym_idx = 0;
 
-  rel_hdr->sh_size = rel_hdr->sh_entsize * *count;
-  rel_hdr->contents = bfd_alloc (abfd, rel_hdr->sh_size);
+  rel_hdr->sh_size = (rel_hdr->sh_entsize * *count);
+  rel_hdr->contents = (unsigned char *)bfd_alloc(abfd, rel_hdr->sh_size);
   if (rel_hdr->contents == NULL)
     {
       *failedp = TRUE;
@@ -2764,23 +2760,22 @@ mips_elf64_write_rel (bfd *abfd, asection *sec,
       mips_elf64_swap_reloc_out (abfd, &int_rel, ext_rel);
     }
 
-  BFD_ASSERT (ext_rel - (Elf64_Mips_External_Rel *) rel_hdr->contents
-	      == *count);
+  BFD_ASSERT((ext_rel - (Elf64_Mips_External_Rel *)rel_hdr->contents)
+             == *count);
 }
 
 static void
-mips_elf64_write_rela (bfd *abfd, asection *sec,
-		       Elf_Internal_Shdr *rela_hdr,
-		       int *count, void *data)
+mips_elf64_write_rela(bfd *abfd, asection *sec,
+                      Elf_Internal_Shdr *rela_hdr, int *count, void *data)
 {
-  bfd_boolean *failedp = data;
+  bfd_boolean *failedp = (bfd_boolean *)data;
   Elf64_Mips_External_Rela *ext_rela;
   unsigned int idx;
   asymbol *last_sym = 0;
   int last_sym_idx = 0;
 
-  rela_hdr->sh_size = rela_hdr->sh_entsize * *count;
-  rela_hdr->contents = bfd_alloc (abfd, rela_hdr->sh_size);
+  rela_hdr->sh_size = (rela_hdr->sh_entsize * *count);
+  rela_hdr->contents = (unsigned char *)bfd_alloc(abfd, rela_hdr->sh_size);
   if (rela_hdr->contents == NULL)
     {
       *failedp = TRUE;

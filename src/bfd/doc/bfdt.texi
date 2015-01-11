@@ -10,6 +10,15 @@ to the rest of the data.
 
 @example
 
+/* used in the struct after this; see the comment there for more info: */
+enum bfd_direction
+@{
+  no_direction = 0,
+  read_direction = 1,
+  write_direction = 2,
+  both_direction = 3
+@};
+
 struct bfd
 @{
   /* A unique identifier of the BFD  */
@@ -59,15 +68,8 @@ struct bfd
   /* The format which belongs to the BFD. (object, core, etc.)  */
   bfd_format format;
 
-  /* The direction with which the BFD was opened.  */
-  enum bfd_direction
-    @{
-      no_direction = 0,
-      read_direction = 1,
-      write_direction = 2,
-      both_direction = 3
-    @}
-  direction;
+  /* The direction with which the BFD was opened: */
+  enum bfd_direction direction;
 
   /* Format_specific flags.  */
   flagword flags;
@@ -550,7 +552,7 @@ Not enough memory exists to create private data for @var{obfd}.
 @end itemize
 @example
 #define bfd_set_private_flags(abfd, flags) \
-     BFD_SEND (abfd, _bfd_set_private_flags, (abfd, flags))
+     BFD_SEND(abfd, _bfd_set_private_flags, (abfd, flags))
 @end example
 
 @findex Other functions
@@ -559,7 +561,7 @@ Not enough memory exists to create private data for @var{obfd}.
 The following functions exist but have not yet been documented.
 @example
 #define bfd_sizeof_headers(abfd, reloc) \
-       BFD_SEND (abfd, _bfd_sizeof_headers, (abfd, reloc))
+       BFD_SEND(abfd, _bfd_sizeof_headers, (abfd, reloc))
 
 #define bfd_find_nearest_line(abfd, sec, syms, off, file, func, line) \
        BFD_SEND (abfd, _bfd_find_nearest_line, \
@@ -574,74 +576,74 @@ The following functions exist but have not yet been documented.
                  (abfd, file, func, line))
 
 #define bfd_debug_info_start(abfd) \
-       BFD_SEND (abfd, _bfd_debug_info_start, (abfd))
+       BFD_SEND(abfd, _bfd_debug_info_start, (abfd))
 
 #define bfd_debug_info_end(abfd) \
-       BFD_SEND (abfd, _bfd_debug_info_end, (abfd))
+       BFD_SEND(abfd, _bfd_debug_info_end, (abfd))
 
 #define bfd_debug_info_accumulate(abfd, section) \
-       BFD_SEND (abfd, _bfd_debug_info_accumulate, (abfd, section))
+       BFD_SEND(abfd, _bfd_debug_info_accumulate, (abfd, section))
 
 #define bfd_stat_arch_elt(abfd, stat) \
-       BFD_SEND (abfd, _bfd_stat_arch_elt,(abfd, stat))
+       BFD_SEND(abfd, _bfd_stat_arch_elt,(abfd, stat))
 
 #define bfd_update_armap_timestamp(abfd) \
-       BFD_SEND (abfd, _bfd_update_armap_timestamp, (abfd))
+       BFD_SEND(abfd, _bfd_update_armap_timestamp, (abfd))
 
 #define bfd_set_arch_mach(abfd, arch, mach)\
-       BFD_SEND ( abfd, _bfd_set_arch_mach, (abfd, arch, mach))
+       BFD_SEND(abfd, _bfd_set_arch_mach, (abfd, arch, mach))
 
 #define bfd_relax_section(abfd, section, link_info, again) \
-       BFD_SEND (abfd, _bfd_relax_section, (abfd, section, link_info, again))
+       BFD_SEND(abfd, _bfd_relax_section, (abfd, section, link_info, again))
 
 #define bfd_gc_sections(abfd, link_info) \
-       BFD_SEND (abfd, _bfd_gc_sections, (abfd, link_info))
+       BFD_SEND(abfd, _bfd_gc_sections, (abfd, link_info))
 
 #define bfd_merge_sections(abfd, link_info) \
-       BFD_SEND (abfd, _bfd_merge_sections, (abfd, link_info))
+       BFD_SEND(abfd, _bfd_merge_sections, (abfd, link_info))
 
 #define bfd_is_group_section(abfd, sec) \
-       BFD_SEND (abfd, _bfd_is_group_section, (abfd, sec))
+       BFD_SEND(abfd, _bfd_is_group_section, (abfd, sec))
 
 #define bfd_discard_group(abfd, sec) \
-       BFD_SEND (abfd, _bfd_discard_group, (abfd, sec))
+       BFD_SEND(abfd, _bfd_discard_group, (abfd, sec))
 
 #define bfd_link_hash_table_create(abfd) \
-       BFD_SEND (abfd, _bfd_link_hash_table_create, (abfd))
+       BFD_SEND(abfd, _bfd_link_hash_table_create, (abfd))
 
 #define bfd_link_hash_table_free(abfd, hash) \
-       BFD_SEND (abfd, _bfd_link_hash_table_free, (hash))
+       BFD_SEND(abfd, _bfd_link_hash_table_free, (hash))
 
 #define bfd_link_add_symbols(abfd, info) \
-       BFD_SEND (abfd, _bfd_link_add_symbols, (abfd, info))
+       BFD_SEND(abfd, _bfd_link_add_symbols, (abfd, info))
 
 #define bfd_link_just_syms(abfd, sec, info) \
-       BFD_SEND (abfd, _bfd_link_just_syms, (sec, info))
+       BFD_SEND(abfd, _bfd_link_just_syms, (sec, info))
 
 #define bfd_final_link(abfd, info) \
-       BFD_SEND (abfd, _bfd_final_link, (abfd, info))
+       BFD_SEND(abfd, _bfd_final_link, (abfd, info))
 
 #define bfd_free_cached_info(abfd) \
-       BFD_SEND (abfd, _bfd_free_cached_info, (abfd))
+       BFD_SEND(abfd, _bfd_free_cached_info, (abfd))
 
 #define bfd_get_dynamic_symtab_upper_bound(abfd) \
-       BFD_SEND (abfd, _bfd_get_dynamic_symtab_upper_bound, (abfd))
+       BFD_SEND(abfd, _bfd_get_dynamic_symtab_upper_bound, (abfd))
 
 #define bfd_print_private_bfd_data(abfd, file)\
-       BFD_SEND (abfd, _bfd_print_private_bfd_data, (abfd, file))
+       BFD_SEND(abfd, _bfd_print_private_bfd_data, (abfd, file))
 
 #define bfd_canonicalize_dynamic_symtab(abfd, asymbols) \
-       BFD_SEND (abfd, _bfd_canonicalize_dynamic_symtab, (abfd, asymbols))
+       BFD_SEND(abfd, _bfd_canonicalize_dynamic_symtab, (abfd, asymbols))
 
 #define bfd_get_synthetic_symtab(abfd, count, syms, dyncount, dynsyms, ret) \
        BFD_SEND (abfd, _bfd_get_synthetic_symtab, (abfd, count, syms, \
                                                    dyncount, dynsyms, ret))
 
 #define bfd_get_dynamic_reloc_upper_bound(abfd) \
-       BFD_SEND (abfd, _bfd_get_dynamic_reloc_upper_bound, (abfd))
+       BFD_SEND(abfd, _bfd_get_dynamic_reloc_upper_bound, (abfd))
 
 #define bfd_canonicalize_dynamic_reloc(abfd, arels, asyms) \
-       BFD_SEND (abfd, _bfd_canonicalize_dynamic_reloc, (abfd, arels, asyms))
+       BFD_SEND(abfd, _bfd_canonicalize_dynamic_reloc, (abfd, arels, asyms))
 
 extern bfd_byte *bfd_get_relocated_section_contents
   (bfd *, struct bfd_link_info *, struct bfd_link_order *, bfd_byte *,

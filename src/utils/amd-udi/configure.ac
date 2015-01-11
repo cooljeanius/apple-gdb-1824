@@ -1,5 +1,5 @@
-#                                               -*- Autoconf -*-
-# Process this file with autoconf to produce a configure script.
+dnl#                                               -*- Autoconf -*-
+dnl# Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.12])
 AC_INIT([amd-udi],[2.2],[/dev/null])
@@ -11,7 +11,7 @@ AC_OBJEXT
 AM_INIT_AUTOMAKE([gnits dejagnu])
 AM_MAINTAINER_MODE
 AC_MSG_NOTICE([host is "${host}"])
-dnl# TODO: fix this test
+dnl# TODO: fix this test:
 case "${host}" in
   *-*-msdosdjgpp* | *-moss-msdos)
     if test ! -z "${DEFS}"; then
@@ -38,7 +38,7 @@ esac
 
 # Checks for programs.
 MY_CC=${CC-cc}
-AC_SUBST([MY_CC])
+AC_SUBST([MY_CC])dnl
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_CXX
@@ -48,7 +48,7 @@ AC_PROG_INSTALL
 AC_PROG_MKDIR_P
 AC_PROG_RANLIB
 AM_PROG_AS
-AM_CONDITIONAL([LINKER_IS_COMPILER],[test "x${LD}" = "x${CC}"])
+AM_CONDITIONAL([LINKER_IS_COMPILER],[test "x${LD}" = "x${CC}"])dnl
 
 # Checks for header files.
 AC_HEADER_TIME
@@ -59,7 +59,7 @@ AC_CHECK_HEADERS([arpa/inet.h bios.h conio.h ctype.h dos.h errno.h \
                   netdb.h netinet/in.h  setjmp.h sgtty.h signal.h \
                   socket.h stdio.h sys/fcntl.h sys/file.h sys/ioctl.h \
                   sys/socket.h sys/sockio.h sys/time.h sys/timeb.h \
-                  term.h termio.h termios.h])
+                  term.h termio.h termios.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
@@ -79,17 +79,19 @@ BASH_STRUCT_WINSIZE
 BASH_CHECK_SPEED_T
 AC_EXPECT_TCGETS_OR_TCGETA
 AC_EXPECT_TIOCGWINSZ
-AC_CHECK_DECLS([sys_errlist])
-AC_CHECK_DECLS([sys_nerr])
+AC_CHECK_DECLS([sys_errlist])dnl
+AC_CHECK_DECLS([sys_nerr])dnl
 AC_CHECK_DECLS([sys_siglist],[],[],
 [#include <signal.h>
-/* NetBSD declares sys_siglist in unistd.h.  */
+/* NetBSD declares sys_siglist in <unistd.h>: */
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning this conftest for sys_siglist expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "the conftest for sys_siglist wants to include <unistd.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
-])
+])dnl
 
 # Checks for library functions.
 AC_FUNC_ALLOCA
@@ -99,11 +101,11 @@ AC_CHECK_FUNCS([atoi bcopy close execlp exit fprintf free ftime \
                 gethostbyname gethostname getpid inet_addr ioctl \
                 memmove memset printf read setpgrp sleep socket \
                 strcasecmp strchr strcmp strlen strpbrk strrchr \
-                system unlink write])
+                system unlink write])dnl
 
-# Output
-AC_CONFIG_FILES([Makefile Makefile.orig \
-                 mondfe/Makefile mondfe/Makefile.orig \
-                 montip/Makefile montip/Makefile.orig \
-                 udi/Makefile udi/Makefile.orig])
+# Output.
+AC_CONFIG_FILES([Makefile Makefile_orig \
+                 mondfe/Makefile mondfe/Makefile_orig \
+                 montip/Makefile montip/Makefile_orig \
+                 udi/Makefile udi/Makefile_orig])dnl
 AC_OUTPUT

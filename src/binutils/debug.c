@@ -67,11 +67,10 @@ struct debug_handle
   struct debug_type_compare_list *compare_list;
 };
 
-/* Information we keep for a single compilation unit.  */
-
+/* Information we keep for a single compilation unit: */
 struct debug_unit
 {
-  /* The next compilation unit.  */
+  /* The next compilation unit: */
   struct debug_unit *next;
   /* A list of files included in this compilation unit.  The first
      file is always the main one, and that is where the main file name
@@ -83,8 +82,7 @@ struct debug_unit
   struct debug_lineno *linenos;
 };
 
-/* Information kept for a single source file.  */
-
+/* Information kept for a single source file: */
 struct debug_file
 {
   /* The next source file in this compilation unit.  */
@@ -95,8 +93,7 @@ struct debug_file
   struct debug_namespace *globals;
 };
 
-/* A type.  */
-
+/* A type: */
 struct debug_type
 {
   /* Kind of type.  */
@@ -143,18 +140,16 @@ struct debug_type
     } u;
 };
 
-/* Information kept for an indirect type.  */
-
+/* Information kept for an indirect type: */
 struct debug_indirect_type
 {
-  /* Slot where the final type will appear.  */
+  /* Slot where the final type will appear: */
   debug_type *slot;
-  /* Tag.  */
+  /* Tag: */
   const char *tag;
 };
 
-/* Information kept for a struct, union, or class.  */
-
+/* Information kept for a struct, union, or class: */
 struct debug_class_type
 {
   /* NULL terminated array of fields.  */
@@ -175,8 +170,7 @@ struct debug_class_type
   debug_type vptrbase;
 };
 
-/* Information kept for an enum.  */
-
+/* Information kept for an enum: */
 struct debug_enum_type
 {
   /* NULL terminated array of names.  */
@@ -198,8 +192,7 @@ struct debug_function_type
   bfd_boolean varargs;
 };
 
-/* Information kept for a range.  */
-
+/* Information kept for a range: */
 struct debug_range_type
 {
   /* Range base type.  */
@@ -210,8 +203,7 @@ struct debug_range_type
   bfd_signed_vma upper;
 };
 
-/* Information kept for an array.  */
-
+/* Information kept for an array: */
 struct debug_array_type
 {
   /* Element type.  */
@@ -226,8 +218,7 @@ struct debug_array_type
   bfd_boolean stringp;
 };
 
-/* Information kept for a set.  */
-
+/* Information kept for a set: */
 struct debug_set_type
 {
   /* Base type.  */
@@ -236,8 +227,7 @@ struct debug_set_type
   bfd_boolean bitstringp;
 };
 
-/* Information kept for an offset type (a based pointer).  */
-
+/* Information kept for an offset type (a based pointer): */
 struct debug_offset_type
 {
   /* The type the pointer is an offset from.  */
@@ -246,8 +236,7 @@ struct debug_offset_type
   debug_type target_type;
 };
 
-/* Information kept for a method type.  */
-
+/* Information kept for a method type: */
 struct debug_method_type
 {
   /* The return type.  */
@@ -260,8 +249,7 @@ struct debug_method_type
   bfd_boolean varargs;
 };
 
-/* Information kept for a named type.  */
-
+/* Information kept for a named type: */
 struct debug_named_type
 {
   /* Name.  */
@@ -270,8 +258,7 @@ struct debug_named_type
   debug_type type;
 };
 
-/* A field in a struct or union.  */
-
+/* A field in a struct or union: */
 struct debug_field
 {
   /* Name of the field.  */
@@ -373,8 +360,7 @@ struct debug_function
   struct debug_block *blocks;
 };
 
-/* A function parameter.  */
-
+/* A function parameter: */
 struct debug_parameter
 {
   /* Next parameter.  */
@@ -389,8 +375,7 @@ struct debug_parameter
   bfd_vma val;
 };
 
-/* A typed constant.  */
-
+/* A typed constant: */
 struct debug_typed_constant
 {
   /* Type.  */
@@ -400,8 +385,7 @@ struct debug_typed_constant
   bfd_vma val;
 };
 
-/* Information about a block within a function.  */
-
+/* Information about a block within a function: */
 struct debug_block
 {
   /* Next block with the same parent.  */
@@ -446,8 +430,7 @@ struct debug_namespace
   struct debug_name **tail;
 };
 
-/* Kinds of objects that appear in a namespace.  */
-
+/* Kinds of objects that appear in a namespace: */
 enum debug_object_kind
 {
   /* A type.  */
@@ -466,8 +449,7 @@ enum debug_object_kind
   DEBUG_OBJECT_TYPED_CONSTANT
 };
 
-/* Linkage of an object that appears in a namespace.  */
-
+/* Linkage of an object that appears in a namespace: */
 enum debug_object_linkage
 {
   /* Local variable.  */
@@ -481,8 +463,7 @@ enum debug_object_linkage
   DEBUG_LINKAGE_NONE
 };
 
-/* A name in a namespace.  */
-
+/* A name in a namespace: */
 struct debug_name
 {
   /* Next name in this namespace.  */
@@ -520,11 +501,11 @@ struct debug_name
 
 struct debug_class_id
 {
-  /* Next ID number.  */
+  /* Next ID number: */
   struct debug_class_id *next;
-  /* The type with the ID.  */
+  /* The type with the ID: */
   struct debug_type *type;
-  /* The tag; NULL if no tag.  */
+  /* The tag; NULL if no tag: */
   const char *tag;
 };
 
@@ -533,9 +514,9 @@ struct debug_class_id
 
 struct debug_type_compare_list
 {
-  /* Next type on list.  */
+  /* Next type on list: */
   struct debug_type_compare_list *next;
-  /* The types we are comparing.  */
+  /* The types we are comparing: */
   struct debug_type *t1;
   struct debug_type *t2;
 };
@@ -545,14 +526,13 @@ struct debug_type_compare_list
 
 struct debug_type_real_list
 {
-  /* Next type on list.  */
+  /* Next type on list: */
   struct debug_type_real_list *next;
-  /* The type we are checking.  */
+  /* The type we are checking: */
   struct debug_type *t;
 };
 
-/* Local functions.  */
-
+/* Local functions: */
 static void debug_error (const char *);
 static struct debug_name *debug_add_to_namespace
   (struct debug_handle *, struct debug_namespace **, const char *,
@@ -588,16 +568,14 @@ static bfd_boolean debug_type_samep
 static bfd_boolean debug_class_type_samep
   (struct debug_handle *, struct debug_type *, struct debug_type *);
 
-/* Issue an error message.  */
-
+/* Issue an error message: */
 static void
-debug_error (const char *message)
+debug_error(const char *message)
 {
-  fprintf (stderr, "%s\n", message);
+  fprintf(stderr, "%s\n", message);
 }
 
-/* Add an object to a namespace.  */
-
+/* Add an object to a namespace: */
 static struct debug_name *
 debug_add_to_namespace (struct debug_handle *info ATTRIBUTE_UNUSED,
 			struct debug_namespace **nsp, const char *name,

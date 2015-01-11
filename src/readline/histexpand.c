@@ -22,24 +22,24 @@
 
 #define READLINE_LIBRARY
 
-#if defined (HAVE_CONFIG_H)
-#  include <config.h>
-#endif
+#if defined(HAVE_CONFIG_H)
+# include <config.h>
+#endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
 
-#if defined (HAVE_STDLIB_H)
-#  include <stdlib.h>
+#if defined(HAVE_STDLIB_H)
+# include <stdlib.h>
 #else
-#  include "ansi_stdlib.h"
+# include "ansi_stdlib.h"
 #endif /* HAVE_STDLIB_H */
 
-#if defined (HAVE_UNISTD_H)
-#  ifndef _MINIX
-#    include <sys/types.h>
-#  endif
-#  include <unistd.h>
-#endif
+#if defined(HAVE_UNISTD_H)
+# ifndef _MINIX
+#  include <sys/types.h>
+# endif /* _MINIX */
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
 
 #include "rlmbutil.h"
 
@@ -181,14 +181,14 @@ get_history_event (string, caller_index, delimiting_quote)
     {
       /* Get the extent of the digits and compute the value. */
       for (which = 0; _rl_digit_p (string[i]); i++)
-	which = (which * 10) + _rl_digit_value (string[i]);
+	which = ((which * 10) + _rl_digit_value(string[i]));
 
       *caller_index = i;
 
       if (sign < 0)
-	which = (history_length + history_base) - which;
+	which = ((history_length + history_base) - which);
 
-      RETURN_ENTRY (entry, which);
+      RETURN_ENTRY(entry, which);
     }
 
   /* This must be something to search for.  If the spec begins with
@@ -203,34 +203,34 @@ get_history_event (string, caller_index, delimiting_quote)
   /* Only a closing `?' or a newline delimit a substring search string. */
   for (local_index = i; c = string[i]; i++)
 #if defined (HANDLE_MULTIBYTE)
-    if (MB_CUR_MAX > 1 && rl_byte_oriented == 0)
+    if ((MB_CUR_MAX > 1) && (rl_byte_oriented == 0))
       {
 	int v;
 	mbstate_t ps;
 
-	memset (&ps, 0, sizeof (mbstate_t));
-	/* These produce warnings because we're passing a const string to a
-	   function that takes a non-const string. */
-	_rl_adjust_point (string, i, &ps);
-	if ((v = _rl_get_char_len (string + i, &ps)) > 1)
+	memset(&ps, 0, sizeof(mbstate_t));
+	/* These next 2 lines produce warnings because we are passing a
+         * const string to functions that take a non-const string: */
+	_rl_adjust_point(string, i, &ps);
+	if ((v = _rl_get_char_len((string + i), &ps)) > 1)
 	  {
-	    i += v - 1;
+	    i += (v - 1);
 	    continue;
 	  }
       }
     else
 #endif /* HANDLE_MULTIBYTE */
-      if ((!substring_okay && (whitespace (c) || c == ':' ||
-	  (history_search_delimiter_chars && member (c, history_search_delimiter_chars)) ||
-	  string[i] == delimiting_quote)) ||
-	  string[i] == '\n' ||
-	  (substring_okay && string[i] == '?'))
+      if ((!substring_okay && (whitespace(c) || (c == ':') ||
+	  (history_search_delimiter_chars && member(c, history_search_delimiter_chars)) ||
+	  (string[i] == delimiting_quote))) ||
+	  (string[i] == '\n') ||
+	  (substring_okay && (string[i] == '?')))
 	break;
 
-  which = i - local_index;
-  temp = (char *)xmalloc (1 + which);
+  which = (i - local_index);
+  temp = (char *)xmalloc(1 + which);
   if (which)
-    strncpy (temp, string + local_index, which);
+    strncpy(temp, (string + local_index), which);
   temp[which] = '\0';
 
   if (substring_okay && string[i] == '?')
@@ -268,7 +268,7 @@ get_history_event (string, caller_index, delimiting_quote)
 	{
 	  entry = current_history ();
 	  history_offset = history_length;
-	
+
 	  /* If this was a substring search, then remember the
 	     string that we matched for word substitution. */
 	  if (substring_okay)
@@ -566,13 +566,13 @@ history_expand_internal (string, start, end_index_ptr, ret_string, current_line)
 	    quoted_search_delimiter = c;
 	}
       else
-#endif /* HANDLE_MULTIBYTE */	  
+#endif /* HANDLE_MULTIBYTE */
 	if (i && (string[i - 1] == '\'' || string[i - 1] == '"'))
 	  quoted_search_delimiter = string[i - 1];
 
       event = get_history_event (string, &i, quoted_search_delimiter);
     }
-	  
+
   if (event == 0)
     {
       *ret_string = hist_error (string, start, i, EVENT_NOT_FOUND);
@@ -904,7 +904,7 @@ history_expand (hstring, output)
       *output = savestring (hstring);
       return (0);
     }
-    
+
   /* Prepare the buffer for printing error messages. */
   result = (char *)xmalloc (result_len = 256);
   result[0] = '\0';
@@ -1000,7 +1000,7 @@ history_expand (hstring, output)
 		i++;
 	    }
 	}
-	  
+
       if (string[i] != history_expansion_char)
 	{
 	  free (result);
@@ -1371,7 +1371,7 @@ history_tokenize_internal (string, wind, indp)
 	return (result);
 
       start = i;
-      
+
       if (member (string[i], "()\n"))
 	{
 	  i++;

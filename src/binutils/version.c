@@ -37,11 +37,8 @@
 #include "bucomm.h"
 
 /* Print the version number and copyright information, and exit.  This
- * implements the --version option for the various programs.
- * FIXME: I want to mark this as NORETURN, but I am not sure where
- * in binutils to put the NORETURN compatibility macros that ../gdb/defs.h
- * defines... */
-void
+ * implements the --version option for the various programs.  */
+void ATTRIBUTE_NORETURN
 print_version(const char *name)
 {
   /* This output is intended to follow the GNU standards document.  */

@@ -1,5 +1,5 @@
 static char _[] = "@(#)messages.c	5.20 93/08/02 13:23:58, Srini, AMD.";
-/******************************************************************************
+/**************************************************************************
  * Copyright 1991 Advanced Micro Devices, Inc.
  *
  * This software is the property of Advanced Micro Devices, Inc  (AMD)  which
@@ -23,19 +23,19 @@ static char _[] = "@(#)messages.c	5.20 93/08/02 13:23:58, Srini, AMD.";
  * 5900 E. Ben White Blvd.
  * Austin, TX 78741
  * 800-292-9263
- *****************************************************************************
+ **************************************************************************
  *      Engineer: Srini Subramanian.
- *****************************************************************************
+ **************************************************************************
  * This module contains the functions to build and unpack MiniMON29K messages.
  * It also defines the functions to send and receive messages from the
  * 29K target. An array defining the appropriate functions to use for
  * different targets is initialized.
- *****************************************************************************
+ **************************************************************************
  */
 
-/* 
- * Definitions of functions that 
- * -initialize the Message System 
+/*
+ * Definitions of functions that
+ * -initialize the Message System
  * -send messages to the target
  * -receive messages from the target
  */
@@ -43,7 +43,9 @@ static char _[] = "@(#)messages.c	5.20 93/08/02 13:23:58, Srini, AMD.";
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning messages.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning messages.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 #include <stdio.h>
 #include <ctype.h>
@@ -60,7 +62,9 @@ static char _[] = "@(#)messages.c	5.20 93/08/02 13:23:58, Srini, AMD.";
 #   ifdef HAVE_MALLOC_MALLOC_H
 #    include <malloc/malloc.h>
 #   else
-#    warning messages.c expects a header that provides malloc() to be included.
+#    if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#     warning "messages.c expects a header that provides malloc() to be included."
+#    endif /* __GNUC__ && !__STRICT_ANSI__ */
 #   endif /* HAVE_MALLOC_MALLOC_H */
 #  endif /* HAVE_MALLOC_H */
 # endif /* HAVE_STDLIB_H */
@@ -76,8 +80,8 @@ static	int	DebugCoreVersion;
 
 static 	INT32	target_index = 0;	/* Default EB29K */
 
-int	lpt_initialize=0;	/* global */
-int	use_parport=0;	/* global */
+int	lpt_initialize = 0;	/* global */
+int	use_parport = 0;	/* global */
 
 static	union msg_t	*send_msg_buffer;
 static	union msg_t	*recv_msg_buffer;
@@ -96,47 +100,55 @@ struct	target_dep_funcs {
  INT32	PC_mem_seg;
  void	(*go)PARAMS((INT32, INT32));
 } TDF[] = {
-"pceb", msg_send_pceb, msg_recv_pceb, init_comm_pceb,
-reset_comm_pceb, exit_comm_pceb, read_memory_pceb, write_memory_pceb, 
-fill_memory_pceb, (INT32) 0x240, (INT32) 0xd000, go_pceb,
+  { "pceb", msg_send_pceb, msg_recv_pceb, init_comm_pceb,
+    reset_comm_pceb, exit_comm_pceb, read_memory_pceb, write_memory_pceb,
+    fill_memory_pceb, (INT32)0x240, (INT32)0xd000, go_pceb },
 
 #ifndef	MSDOS
-"pcserver", msg_send_serial, msg_recv_serial, init_comm_serial,
-reset_comm_pcserver, exit_comm_serial, read_memory_serial, write_memory_serial,
-fill_memory_serial, (INT32) -1 , (INT32) -1, go_serial,
+  { "pcserver", msg_send_serial, msg_recv_serial, init_comm_serial,
+    reset_comm_pcserver, exit_comm_serial, read_memory_serial,
+    write_memory_serial, fill_memory_serial, (INT32)-1L, (INT32) -1L,
+    go_serial },
 #endif /* !MSDOS */
 
 #ifdef	MSDOS
-"paral_1", msg_send_parport, msg_recv_serial, init_comm_serial,
-reset_comm_serial, exit_comm_serial, read_memory_serial, write_memory_serial,
-fill_memory_serial, (INT32) -1 , (INT32) -1, go_serial,
+  { "paral_1", msg_send_parport, msg_recv_serial, init_comm_serial,
+    reset_comm_serial, exit_comm_serial, read_memory_serial,
+    write_memory_serial, fill_memory_serial, (INT32)-1L, (INT32)-1L,
+    go_serial },
 #endif /* MSDOS */
 
-"serial", msg_send_serial, msg_recv_serial, init_comm_serial,
-reset_comm_serial, exit_comm_serial, read_memory_serial, write_memory_serial,
-fill_memory_serial, (INT32) -1 , (INT32) -1, go_serial,
+  { "serial", msg_send_serial, msg_recv_serial, init_comm_serial,
+    reset_comm_serial, exit_comm_serial, read_memory_serial,
+    write_memory_serial, fill_memory_serial, (INT32)-1L, (INT32)-1L,
+    go_serial },
 
-"eb29030", msg_send_eb030, msg_recv_eb030, init_comm_eb030,
-reset_comm_eb030, exit_comm_eb030, read_memory_eb030, write_memory_eb030,
-fill_memory_eb030, (INT32) 0x208, (INT32) 0xd000, go_eb030,
+  { "eb29030", msg_send_eb030, msg_recv_eb030, init_comm_eb030,
+    reset_comm_eb030, exit_comm_eb030, read_memory_eb030,
+    write_memory_eb030, fill_memory_eb030, (INT32)0x208, (INT32)0xd000,
+    go_eb030 },
 
-"eb030", msg_send_eb030, msg_recv_eb030, init_comm_eb030,
-reset_comm_eb030, exit_comm_eb030, read_memory_eb030, write_memory_eb030,
-fill_memory_eb030, (INT32) 0x208, (INT32) 0xd000, go_eb030,
+  { "eb030", msg_send_eb030, msg_recv_eb030, init_comm_eb030,
+    reset_comm_eb030, exit_comm_eb030, read_memory_eb030,
+    write_memory_eb030, fill_memory_eb030, (INT32)0x208, (INT32)0xd000,
+    go_eb030 },
 
-"eb29k", msg_send_eb29k, msg_recv_eb29k, init_comm_eb29k,
-reset_comm_eb29k, exit_comm_eb29k, read_memory_eb29k, write_memory_eb29k, 
-fill_memory_eb29k, (INT32) 0x208, (INT32) 0xd000, go_eb29k,
+  { "eb29k", msg_send_eb29k, msg_recv_eb29k, init_comm_eb29k,
+    reset_comm_eb29k, exit_comm_eb29k, read_memory_eb29k,
+    write_memory_eb29k, fill_memory_eb29k, (INT32)0x208, (INT32)0xd000,
+    go_eb29k },
 
-"yarcrev8", msg_send_eb29k, msg_recv_eb29k, init_comm_eb29k,
-reset_comm_eb29k, exit_comm_eb29k, read_memory_eb29k, write_memory_eb29k, 
-fill_memory_eb29k, (INT32) 0x208, (INT32) 0xd000, go_eb29k,
+  { "yarcrev8", msg_send_eb29k, msg_recv_eb29k, init_comm_eb29k,
+    reset_comm_eb29k, exit_comm_eb29k, read_memory_eb29k,
+    write_memory_eb29k, fill_memory_eb29k, (INT32)0x208, (INT32)0xd000,
+    go_eb29k },
 
-"lcb29k", msg_send_lcb29k, msg_recv_lcb29k, init_comm_lcb29k, 
-reset_comm_lcb29k, exit_comm_lcb29k, read_memory_lcb29k, write_memory_lcb29k,
-fill_memory_lcb29k, (INT32) 0x208, (INT32) 0xd000, go_lcb29k,
+  { "lcb29k", msg_send_lcb29k, msg_recv_lcb29k, init_comm_lcb29k,
+    reset_comm_lcb29k, exit_comm_lcb29k, read_memory_lcb29k,
+    write_memory_lcb29k, fill_memory_lcb29k, (INT32)0x208, (INT32)0xd000,
+    go_lcb29k },
 
-"\0"
+  { "\0" }
 };
 
 void	print_msg PARAMS((union msg_t *msgptr, FILE *file));
@@ -161,27 +173,27 @@ void	unset_lpt()
 
 #endif /* MSDOS */
 /*
-** Miscellaneous 
+** Miscellaneous
 */
 
 INT32 msg_length(code)
 INT32 code;
 {  /* for temporary compatibility between new and old r/w/copy msgs */
 INT32 rv;
-  if (code == WRITE_REQ) 
+  if (code == WRITE_REQ)
       rv = MSG_LENGTH(struct write_req_msg_t);
   else
-  if (code == READ_REQ) 
+  if (code == READ_REQ)
       rv = MSG_LENGTH(struct read_req_msg_t);
   else
-  if (code == COPY) 
+  if (code == COPY)
       rv = MSG_LENGTH(struct copy_msg_t);
   else return(-1);
 
   /* if msg version < 0x10 use old format */
   /* assumes config info this has been set up */
-  if (((tip_target_config.version >> 16) & 0xff) < 0x10) 
-	rv = rv - 4;		 
+  if (((tip_target_config.version >> 16) & 0xff) < 0x10)
+	rv = rv - 4;
   return(rv);
 }
 
@@ -294,7 +306,7 @@ INT32	RecvMode;	/* BLOCK or NONBLOCK */
      };
      if (retval == MSGRETRY)
 	return (FAILURE);
-     else 
+     else
 	return (retval);
   }
   else 	/* non-block mode */
@@ -353,7 +365,7 @@ ADDR32	address;
 INT32	byte_count;
 BYTE	*buffer;
 {
- return((*TDF[target_index].write_memory)(m_space, 
+ return((*TDF[target_index].write_memory)(m_space,
 					  address,
 					  buffer,
 					  byte_count,
@@ -382,7 +394,7 @@ Mini_fill_memory()
  return((*TDF[target_index].fill_memory)());
 }
 
-/* 
+/*
 ** Functions to build msgs
 */
 
@@ -534,7 +546,7 @@ BYTE	*pattern;
 {
 send_msg_buffer->fill_msg.code = FILL;
 send_msg_buffer->fill_msg.length = MSG_LENGTH (struct fill_msg_t) +
-					byte_count; 
+					byte_count;
 send_msg_buffer->fill_msg.memory_space = m_space;
 if ((DebugCoreVersion >= (int) 0x13) && (m_space == (INT32) SPECIAL_REG))
    send_msg_buffer->fill_msg.memory_space = (INT32) A_SPCL_REG;
@@ -545,8 +557,8 @@ send_msg_buffer->fill_msg.byte_count = byte_count;
 }
 
 void
-Mini_build_init_msg(t_start, t_end, d_start, d_end, 
-		    entry, m_stack, r_stack, 
+Mini_build_init_msg(t_start, t_end, d_start, d_end,
+		    entry, m_stack, r_stack,
 		    highmem, arg_start, os_ctrl)
 ADDR32	t_start, t_end, d_start, d_end;
 ADDR32	entry, highmem, arg_start;
@@ -621,7 +633,7 @@ send_msg_buffer->channel1_ack_msg.code = CHANNEL1_ACK;
 	/*
 	 * The HIF kernel from MiniMON29K release 2.1 expects MONTIP
 	 * to send a HIF_CALL_RTN response for a HIF_CALL message, and
-	 * a CHANNEL1_ACK response for a CHANNEL1 message, and 
+	 * a CHANNEL1_ACK response for a CHANNEL1 message, and
 	 * a CHANNEL2_ACK response for a CHANNEL2 message, and
 	 * a CHANNEL0 message for a asynchronous input.
 	 * The HIF kernel version numbers 0x05 and above support these
@@ -635,7 +647,7 @@ send_msg_buffer->channel1_ack_msg.code = CHANNEL1_ACK;
        send_msg_buffer->channel1_ack_msg.length = (INT32) 4; /* return gr96 */
        send_msg_buffer->channel1_ack_msg.gr96 = gr96;
      } else { /* old HIF kernel */
-       send_msg_buffer->channel1_ack_msg.length = (INT32) 0; 
+       send_msg_buffer->channel1_ack_msg.length = (INT32) 0;
      }
 }
 
@@ -647,7 +659,7 @@ send_msg_buffer->channel2_ack_msg.code = CHANNEL2_ACK;
 	/*
 	 * The HIF kernel from MiniMON29K release 2.1 expects MONTIP
 	 * to send a HIF_CALL_RTN response for a HIF_CALL message, and
-	 * a CHANNEL1_ACK response for a CHANNEL1 message, and 
+	 * a CHANNEL1_ACK response for a CHANNEL1 message, and
 	 * a CHANNEL2_ACK response for a CHANNEL2 message, and
 	 * a CHANNEL0 message for a asynchronous input.
 	 * The HIF kernel version numbers 0x05 and above support these
@@ -661,7 +673,7 @@ send_msg_buffer->channel2_ack_msg.code = CHANNEL2_ACK;
        send_msg_buffer->channel2_ack_msg.length = (INT32) 4; /* return gr96 */
        send_msg_buffer->channel2_ack_msg.gr96 = gr96;
      } else { /* old HIF kernel */
-       /* 
+       /*
 	* The old kernels did not support this feature. They invoked the
 	* debugger on target to get the information.
 	*/
@@ -901,13 +913,13 @@ INT32	*len;
      *data++ = *s++;
 }
 
-void	
+void
 Mini_unpack_hif_msg (gr121, lr2, lr3, lr4)
 INT32 *gr121;
 INT32 *lr2;
 INT32 *lr3;
 INT32 *lr4;
-{  
+{
   *gr121 = recv_msg_buffer->hif_call_msg.service_number;
   *lr2 = recv_msg_buffer->hif_call_msg.lr2;
   *lr3 = recv_msg_buffer->hif_call_msg.lr3;

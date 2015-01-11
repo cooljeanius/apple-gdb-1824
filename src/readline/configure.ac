@@ -63,11 +63,12 @@ AC_USE_SYSTEM_EXTENSIONS
 
 AC_PROG_MAKE_SET
 if test "x${CC}" = "x"; then
-	test -z "${CC}"
-	AC_PROG_CC
+  test -z "${CC}"
+  AC_PROG_CC
 else
-	test ! -z "${CC}" && export CC
-	AC_SUBST([CC])
+  test ! -z "${CC}" && export CC
+  AC_SUBST([CC])dnl
+  ## dummy
 fi
 XORG_PROG_RAWCPP
 XORG_LD_WRAP
@@ -85,7 +86,7 @@ if test "x${cross_compiling}" = "xyes"; then
     case "${host}" in
     *-cygwin*)
 	cross_cache=${srcdir}/cross-build/cygwin.cache
-	LOCAL_CFLAGS="$LOCAL_CFLAGS -I${srcdir}/../libtermcap"
+	LOCAL_CFLAGS="${LOCAL_CFLAGS} -I${srcdir}/../libtermcap"
 	;;
    *-mingw32*)	
 	cross_cache=${srcdir}/cross-build/mingw.cache
@@ -167,15 +168,43 @@ AC_PATH_PROG([TEX_BINARY],[tex])dnl
 # Checks for libraries.
 AC_MSG_CHECKING([libraries])
 AC_MSG_RESULT([ ])
-AC_CHECK_LIB([c],[printf])
+AC_MSG_CHECKING([for linker flag to verify linked libraries have the correct architecture])
+# Make sure this is done up here first:
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+pre_saved_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-arch_errors_fatal"
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+               [LD_ARCHFLAGS="${acl_cv_wl}-arch_errors_fatal"],[])
+LDFLAGS="${pre_saved_LDFLAGS}"
+if test "x${LD_ARCHFLAGS}" != "x"; then
+  test -n "${LD_ARCHFLAGS}"
+  AC_MSG_RESULT([${LD_ARCHFLAGS}])
+  AC_SUBST([LD_ARCHFLAGS])dnl
+  ## that should be all we need to do with them for now...
+else
+  test -z "${LD_ARCHFLAGS}"
+  AC_MSG_RESULT([none])
+fi
+AC_CHECK_LIB([c],[printf])dnl
+# check arch when "main()" is the only function for which we check:
+ARCHLESS_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
 # FIXME: Replace `main' with a function in `-lcurses':
-AC_CHECK_LIB([curses],[main])
+AC_CHECK_LIB([curses],[main])dnl
 # FIXME: Replace `main' with a function in `-lhistory':
-AC_CHECK_LIB([history],[main])
+AC_CHECK_LIB([history],[main])dnl
 # FIXME: Replace `main' with a function in `-lreadline':
-AC_CHECK_LIB([readline],[main])
+AC_CHECK_LIB([readline],[main])dnl
+  ## reset these:
+LDFLAGS="${ARCHLESS_LDFLAGS}"
 AC_CHECK_LIB([iberty],[xmalloc],[],[
+  PRE_LIBERTY_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   AC_CHECK_LIB([iberty],[main])dnl
+  ## reset:
+  LDFLAGS="${PRE_LIBERTY_LDFLAGS}"
 ])dnl
 
 MAKE_SHELL=/bin/sh
@@ -196,9 +225,12 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <signal.h>
 ]],[[
 return *(signal (0, 0)) (0) == 1;
-]])],[ac_cv_type_signal=int],[ac_cv_type_signal=void])
-])
-AC_DEFINE_UNQUOTED([RETSIGTYPE],[${ac_cv_type_signal}],[Define as the return type of signal handlers (`int' or `void').])
+]])],[ac_cv_type_signal=int],[ac_cv_type_signal=void])dnl
+])dnl
+  ## corresponding define:
+AC_DEFINE_UNQUOTED([RETSIGTYPE],[${ac_cv_type_signal}],
+                   [Define as the return type of signal handlers
+                    (`int' or `void').])dnl
 dnl# End what used to be AC\_TYPE\_SIGNAL
 AC_TYPE_UID_T
 AC_TYPE_PID_T
@@ -214,7 +246,7 @@ AC_FUNC_ALLOCA
 AC_FUNC_CHOWN
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FORK
-AC_FUNC_LSTAT dnl# Calls AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
+AC_FUNC_LSTAT dnl# also checks whether it "_FOLLOWS_SLASHED_SYMLINK"
 AC_FUNC_MALLOC
 AC_FUNC_MBRTOWC
 AC_FUNC_MMAP
@@ -327,8 +359,8 @@ fi
 AM_INIT_AUTOMAKE([dejagnu gnits -Wall])
 AM_MAINTAINER_MODE
 m4_ifdef([AC_REQUIRE_AUX_FILE],[
-AC_REQUIRE_AUX_FILE([compile])dnl
-AC_REQUIRE_AUX_FILE([missing])dnl
+  AC_REQUIRE_AUX_FILE([compile])dnl
+  AC_REQUIRE_AUX_FILE([missing])dnl
 ])dnl
 
 # shared library configuration section
@@ -351,7 +383,7 @@ if test -f ${srcdir}/support/shobj-conf; then
 	AC_SUBST([SHLIB_LIBSUFF])dnl
 	AC_SUBST([SHLIB_LIBVERSION])dnl
 	AC_SUBST([SHLIB_LIBS])dnl
-        AC_MSG_RESULT([${SHLIB_STATUS}])
+        AC_MSG_RESULT([${SHLIB_STATUS}])dnl
 
 	# SHLIB_STATUS is either `supported' or `unsupported'. If it is
 	# `unsupported', turn off any default shared library building
@@ -417,19 +449,20 @@ AC_SUBST([LIBVERSION])dnl
 
 AC_SUBST([TERMCAP_LIB])dnl
 
+# Output.
 AC_CONFIG_FILES([Makefile \
-                 Makefile.orig \
+                 Makefile_orig \
                  doc/Makefile \
-                 doc/Makefile.orig \
+                 doc/Makefile_orig \
                  examples/Makefile \
-                 examples/Makefile.orig \
+                 examples/Makefile_orig \
                  shlib/Makefile \
-                 shlib/Makefile.orig])
-AC_CONFIG_SUBDIRS([examples/rlfe.dir])
+                 shlib/Makefile_orig])dnl
+AC_CONFIG_SUBDIRS([examples/rlfe.dir])dnl
 AC_CONFIG_COMMANDS([default],[
 # Makefile uses this timestamp file to record whether config.h is up to
 # date.
-echo "" > stamp-h
+echo "timestamp" > stamp-h
 ],[])dnl
 
 AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[

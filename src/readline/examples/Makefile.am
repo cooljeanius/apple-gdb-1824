@@ -17,7 +17,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 
-AUTOMAKE_OPTIONS = dejagnu gnits
+AUTOMAKE_OPTIONS = dejagnu gnits no-dist
 
 RL_LIBRARY_VERSION = @LIBVERSION@
 

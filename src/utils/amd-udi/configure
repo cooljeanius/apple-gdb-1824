@@ -3159,7 +3159,6 @@ esac
 
 # Checks for programs.
 MY_CC=${CC-cc}
-
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -5130,7 +5129,6 @@ else
   LINKER_IS_COMPILER_FALSE=
 fi
 
-
 # Checks for header files.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether time.h and sys/time.h may both be included" >&5
 $as_echo_n "checking whether time.h and sys/time.h may both be included... " >&6; }
@@ -5404,7 +5402,6 @@ _ACEOF
 fi
 
 done
-
 
 # Checks for typedefs, structures, and compiler characteristics.
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
@@ -5880,20 +5877,23 @@ $as_echo "#define USE_SGTTY 1" >>confdefs.h
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${tcl_cv_api_serial}" >&5
 $as_echo "${tcl_cv_api_serial}" >&6; }
 
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking return type of signal handlers" >&5
 $as_echo_n "checking return type of signal handlers... " >&6; }
 if ${ac_cv_type_signal+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
 #include <sys/types.h>
 #include <signal.h>
 
 int
 main ()
 {
-return *(signal (0, 0)) (0) == 1;
+return *(signal(0, 0)) (0) == 1;
   ;
   return 0;
 }
@@ -5909,7 +5909,7 @@ fi
 $as_echo "$ac_cv_type_signal" >&6; }
 
 cat >>confdefs.h <<_ACEOF
-#define RETSIGTYPE $ac_cv_type_signal
+#define RETSIGTYPE ${ac_cv_type_signal}
 _ACEOF
 
 
@@ -6502,7 +6502,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_SYS_ERRLIST $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "sys_nerr" "ac_cv_have_decl_sys_nerr" "$ac_includes_default"
 if test "x$ac_cv_have_decl_sys_nerr" = xyes; then :
   ac_have_decl=1
@@ -6513,13 +6512,14 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_SYS_NERR $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "sys_siglist" "ac_cv_have_decl_sys_siglist" "#include <signal.h>
-/* NetBSD declares sys_siglist in unistd.h.  */
+/* NetBSD declares sys_siglist in <unistd.h>: */
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning this conftest for sys_siglist expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning \"the conftest for sys_siglist wants to include <unistd.h>\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
 "
@@ -6532,7 +6532,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_SYS_SIGLIST $ac_have_decl
 _ACEOF
-
 
 # Checks for library functions.
 # The Ultrix 4.2 mips builtin alloca declared by alloca.h only works
@@ -7028,10 +7027,8 @@ _ACEOF
 fi
 done
 
-
-# Output
-ac_config_files="$ac_config_files Makefile Makefile.orig mondfe/Makefile mondfe/Makefile.orig montip/Makefile montip/Makefile.orig udi/Makefile udi/Makefile.orig"
-
+# Output.
+ac_config_files="$ac_config_files Makefile Makefile_orig mondfe/Makefile mondfe/Makefile_orig montip/Makefile montip/Makefile_orig udi/Makefile udi/Makefile_orig"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -7777,13 +7774,13 @@ do
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "Makefile.orig") CONFIG_FILES="$CONFIG_FILES Makefile.orig" ;;
+    "Makefile_orig") CONFIG_FILES="$CONFIG_FILES Makefile_orig" ;;
     "mondfe/Makefile") CONFIG_FILES="$CONFIG_FILES mondfe/Makefile" ;;
-    "mondfe/Makefile.orig") CONFIG_FILES="$CONFIG_FILES mondfe/Makefile.orig" ;;
+    "mondfe/Makefile_orig") CONFIG_FILES="$CONFIG_FILES mondfe/Makefile_orig" ;;
     "montip/Makefile") CONFIG_FILES="$CONFIG_FILES montip/Makefile" ;;
-    "montip/Makefile.orig") CONFIG_FILES="$CONFIG_FILES montip/Makefile.orig" ;;
+    "montip/Makefile_orig") CONFIG_FILES="$CONFIG_FILES montip/Makefile_orig" ;;
     "udi/Makefile") CONFIG_FILES="$CONFIG_FILES udi/Makefile" ;;
-    "udi/Makefile.orig") CONFIG_FILES="$CONFIG_FILES udi/Makefile.orig" ;;
+    "udi/Makefile_orig") CONFIG_FILES="$CONFIG_FILES udi/Makefile_orig" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

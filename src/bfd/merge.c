@@ -284,13 +284,13 @@ sec_merge_add (struct sec_merge_hash *tab, const char *str,
 }
 
 static bfd_boolean
-sec_merge_emit (bfd *abfd, struct sec_merge_hash_entry *entry)
+sec_merge_emit(bfd *abfd, struct sec_merge_hash_entry *entry)
 {
   struct sec_merge_sec_info *secinfo = entry->secinfo;
   asection *sec = secinfo->sec;
   char *pad = NULL;
-  bfd_size_type off = 0;
-  int alignment_power = sec->output_section->alignment_power;
+  bfd_size_type off = 0UL;
+  int alignment_power = (int)sec->output_section->alignment_power;
 
   if (alignment_power)
     {
@@ -435,10 +435,10 @@ _bfd_add_merge_section (bfd *abfd, void **psinfo, asection *sec,
   return FALSE;
 }
 
-/* Record one section into the hash table.  */
+/* Record one section into the hash table: */
 static bfd_boolean
-record_section (struct sec_merge_info *sinfo,
-		struct sec_merge_sec_info *secinfo)
+record_section(struct sec_merge_info *sinfo,
+               struct sec_merge_sec_info *secinfo)
 {
   asection *sec = secinfo->sec;
   struct sec_merge_hash_entry *entry;
@@ -448,19 +448,19 @@ record_section (struct sec_merge_info *sinfo,
   unsigned int align, i;
 
   align = sec->alignment_power;
-  end = secinfo->contents + sec->size;
+  end = (secinfo->contents + sec->size);
   nul = FALSE;
-  mask = ((bfd_vma) 1 << align) - 1;
+  mask = (((bfd_vma)1UL << align) - 1UL);
   if (sec->flags & SEC_STRINGS)
     {
       for (p = secinfo->contents; p < end; )
 	{
-	  eltalign = p - secinfo->contents;
-	  eltalign = ((eltalign ^ (eltalign - 1)) + 1) >> 1;
-	  if (!eltalign || eltalign > mask)
-	    eltalign = mask + 1;
-	  entry = sec_merge_add (sinfo->htab, (char *) p, (unsigned) eltalign,
-				 secinfo);
+	  eltalign = (bfd_vma)(p - secinfo->contents);
+	  eltalign = (((eltalign ^ (eltalign - 1UL)) + 1UL) >> 1);
+	  if (!eltalign || (eltalign > mask))
+	    eltalign = (mask + 1UL);
+	  entry = sec_merge_add(sinfo->htab, (char *)p, (unsigned)eltalign,
+                                secinfo);
 	  if (! entry)
 	    goto error_return;
 	  p += entry->len;
@@ -553,7 +553,7 @@ strrevcmp_align(const void *a, const void *b)
   const unsigned char *s = ((const unsigned char *)A->root.string + lenA - 1U);
   const unsigned char *t = ((const unsigned char *)B->root.string + lenB - 1U);
   int l = (int)((lenA < lenB) ? lenA : lenB);
-  int tail_align = (lenA & (A->alignment - 1)) - (lenB & (A->alignment - 1));
+  int tail_align = (int)(lenA & (A->alignment - 1)) - (lenB & (A->alignment - 1));
 
   if (tail_align != 0)
     return tail_align;

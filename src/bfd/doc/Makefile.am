@@ -20,6 +20,7 @@
 
 ## no-dependencies is because of how we override the rule for chew.o:
 AUTOMAKE_OPTIONS = 1.9 gnits -Wno-override no-dependencies subdir-objects
+## "cygnus" == "foreign no-dist" (no room for all that though)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 ## hacks to extend the verbosity control:

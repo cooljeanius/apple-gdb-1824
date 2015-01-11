@@ -23,7 +23,7 @@
 
 ## Automake-specific things:
 
-AUTOMAKE_OPTIONS = foreign dejagnu
+AUTOMAKE_OPTIONS = foreign dejagnu no-dist
 
 #### Start of system configuration section. ####
 
@@ -86,7 +86,7 @@ OBJS_WITH_DUPE_SYMS = eb29k.o eb030.o lcb29k.o pceb.o serial.o
 
 CLEANFILES = $(OBJS) $(OTHER_OBJS) $(OBJS_WITH_DUPE_SYMS) montip
 
-DISTCLEANFILES = Makefile Makefile.orig *.status
+DISTCLEANFILES = Makefile Makefile*orig *.status
 
 LIBTIP = ../udi/libtip.a
 

@@ -1,6 +1,9 @@
+## automake Makefile for gdbtk plugins
 ## Process this file with automake to produce Makefile.in
 
 ACLOCAL_AMFLAGS = -I../../m4 --install
+AUTOMAKE_OPTIONS = foreign no-dist dejagnu
+## "cygnus" == "foreign no-dist"
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 SUBDIRS = @make_subdirs@
 

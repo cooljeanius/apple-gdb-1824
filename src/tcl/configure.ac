@@ -12,6 +12,29 @@ AC_INIT([Tcl],[8.4.1],[tromey@cygnus.com])
 AC_CONFIG_SRCDIR([generic/tcl.h])
 AC_CONFIG_HEADERS([config.h])dnl
 
+# and some automake bits:
+m4_ifdef([AM_SANITY_CHECK],[
+AM_SANITY_CHECK
+])dnl
+m4_ifdef([AM_MAINTAINER_MODE],[
+AM_MAINTAINER_MODE
+])dnl
+m4_ifdef([AM_MISSING_HAS_RUN],[
+AM_MISSING_HAS_RUN
+])dnl
+m4_ifdef([AM_PROG_INSTALL_SH],[
+AM_PROG_INSTALL_SH
+])dnl
+m4_ifdef([AM_SET_LEADING_DOT],[
+AM_SET_LEADING_DOT
+])dnl
+m4_ifdef([AM_SILENT_RULES],[
+AM_SILENT_RULES
+])dnl
+m4_ifdef([AM_MAKE_INCLUDE],[
+AM_MAKE_INCLUDE
+])dnl
+
 # architecture stuff:
 AC_CANONICAL_TARGET
 if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then

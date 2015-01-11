@@ -74,18 +74,24 @@ enum bfd_link_common_skip_ar_aymbols
   bfd_link_common_skip_all
 };
 
+/* used in the struct after this; see comment in there for more info: */
+struct bfd_link_hash_common_entry
+{
+  unsigned int alignment_power;	/* Alignment.  */
+  asection *section;		/* Symbol section.  */
+};
+
 /* The linking routines use a hash table which uses this structure for
    its elements.  */
-
 struct bfd_link_hash_entry
 {
-  /* Base hash table entry structure.  */
+  /* Base hash table entry structure: */
   struct bfd_hash_entry root;
 
-  /* Type of this entry.  */
+  /* Type of this entry: */
   enum bfd_link_hash_type type;
 
-  /* A union of information depending upon the type.  */
+  /* A union of information depending upon the type: */
   union {
       /* Nothing is kept for bfd_hash_new.  */
       /* bfd_link_hash_undefined, bfd_link_hash_undefweak.  */
@@ -137,10 +143,7 @@ struct bfd_link_hash_entry
 	     directly because we don't want to increase the size of
 	     the union; this structure is a major space user in the
 	     linker.  */
-	  struct bfd_link_hash_common_entry {
-	      unsigned int alignment_power;	/* Alignment.  */
-	      asection *section;		/* Symbol section.  */
-	  } *p;
+	  struct bfd_link_hash_common_entry *p;
 	  bfd_size_type size;	/* Common symbol size.  */
       } c;
   } u;

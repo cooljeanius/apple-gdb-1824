@@ -1,6 +1,8 @@
+## automake Makefile for binutils documentation
 ## Process this file with automake to generate Makefile.in
 
-AUTOMAKE_OPTIONS = 1.9.6 gnits
+AUTOMAKE_OPTIONS = 1.9.6 gnits no-dist
+## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 # What version of the manual you want; "all" includes everything

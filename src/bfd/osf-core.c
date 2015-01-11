@@ -1,7 +1,7 @@
-/* BFD back-end for OSF/1 core files.
-   Copyright 1993, 1994, 1995, 1998, 1999, 2001, 2002, 2003, 2004
-   Free Software Foundation, Inc.
-
+/* osf-core.c: BFD back-end for OSF/1 core files.
+ * Copyright 1993, 1994, 1995, 1998, 1999, 2001, 2002, 2003, 2004
+ * Free Software Foundation, Inc.  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* This file can only be compiled on systems which use OSF/1 style
    core files.  */
@@ -28,25 +28,27 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #include <sys/user.h>
 #if defined(__OSF__) || defined(HAVE_SYS_CORE_H)
 # include <sys/core.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "osf-core.c expects <sys/core.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* __OSF__ || HAVE_SYS_CORE_H */
 
-/* forward declarations */
-
+/* forward declarations: */
 static asection *make_bfd_asection
-  PARAMS ((bfd *, const char *, flagword, bfd_size_type, bfd_vma, file_ptr));
+ PARAMS((bfd *, const char *, flagword, bfd_size_type, bfd_vma, file_ptr));
 static const bfd_target *osf_core_core_file_p
-  PARAMS ((bfd *));
+ PARAMS((bfd *));
 static char *osf_core_core_file_failing_command
-  PARAMS ((bfd *));
+ PARAMS((bfd *));
 static int osf_core_core_file_failing_signal
-  PARAMS ((bfd *));
+ PARAMS((bfd *));
 static bfd_boolean osf_core_core_file_matches_executable_p
-  PARAMS ((bfd *, bfd *));
+ PARAMS((bfd *, bfd *));
 static void swap_abort
-  PARAMS ((void));
+ PARAMS((void));
 
-/* These are stored in the bfd's tdata */
-
+/* These are stored in the bfd's tdata: */
 struct osf_core_struct
 {
   int sig;

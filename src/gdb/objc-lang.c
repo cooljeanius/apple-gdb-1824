@@ -592,25 +592,39 @@ objc_printchar (int c, struct ui_file *stream)
    FORCE_ELLIPSES.  */
 
 static void
-objc_printstr (struct ui_file *stream, const gdb_byte *string,
-	       unsigned int length, int width, int force_ellipses)
+objc_printstr(struct ui_file *stream, const gdb_byte *string,
+              unsigned int length, int width, int force_ellipses)
 {
   unsigned int i;
-  unsigned int things_printed = 0;
+  unsigned int things_printed = 0U;
   int in_quotes = 0;
   int need_comma = 0;
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic warning "-Wtraditional"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
   /* If the string was not truncated due to `set print elements', and
-     the last byte of it is a null, we don't print that, in
-     traditional C style.  */
-  if ((!force_ellipses) && length > 0 && string[length-1] == '\0')
+   * the last byte of it is a null, then we do NOT print that, in
+   * traditional C style: */
+  if ((!force_ellipses) && (length > 0) && (string[length - 1] == '\0'))
     length--;
 
   if (length == 0)
     {
-      fputs_filtered ("\"\"", stream);
+      fputs_filtered("\"\"", stream);
       return;
     }
+
+  /* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
   for (i = 0; i < length && things_printed < print_max; ++i)
     {

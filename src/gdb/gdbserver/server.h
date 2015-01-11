@@ -40,7 +40,7 @@
 # include <errno.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "server.h expects <errno.h> to be included."
+ #  warning "server.h expects <errno.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_ERRNO_H */
 #include <setjmp.h>
@@ -49,7 +49,7 @@
 # include <string.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "server.h expects <string.h> to be included."
+ #  warning "server.h expects <string.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STRING_H */
 
@@ -65,7 +65,7 @@
 #  include <malloc/malloc.h>
 # else
 #  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#   warning "server.h expects a malloc-related header to be included."
+ #   warning "server.h expects a malloc-related header to be included."
 #  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_MALLOC_MALLOC_H */
 #endif /* HAVE_MALLOC_H */
@@ -291,7 +291,7 @@ void init_registers(void);
 #  include <libintl.h>
 # else
 #  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#   warning "server.h expects <libintl.h> to be included."
+ #   warning "server.h expects <libintl.h> to be included."
 #  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_LIBINTL_H */
 # if !defined(_)

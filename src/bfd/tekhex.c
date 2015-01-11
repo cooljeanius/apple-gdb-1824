@@ -709,10 +709,10 @@ writevalue (char **dst, bfd_vma value)
 }
 
 static void
-writesym (char **dst, const char *sym)
+writesym(char **dst, const char *sym)
 {
   char *p = *dst;
-  int len = (sym ? strlen (sym) : 0);
+  int len = (sym ? (int)strlen(sym) : 0);
 
   if (len >= 16)
     {

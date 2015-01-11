@@ -30,11 +30,11 @@
 
 # The list of gnulib modules we are importing in GDB.
 IMPORTED_GNULIB_MODULES="\
-    absolute-header alignof alloca alloca-opt autobuild \
+    absolute-header alignof alloca alloca-opt assure autobuild \
     configmake \
     dirent dirfd dosname double-slash-root \
     errno error exitfail extensions extern-inline \
-    fileblocks float fnmatch fnmatch-gnu fpieee fpucw frexp frexpl \
+    fileblocks float fnmatch fnmatch-gnu fpieee fpucw frexp frexpl fts \
     gettext-h gettimeofday git-version-gen gitlog-to-changelog gnu-make \
     havelib host-cpu-c-abi host-os \
     include_next inline intprops inttypes inttypes-incomplete \
@@ -42,25 +42,26 @@ IMPORTED_GNULIB_MODULES="\
     largefile ldd localcharset lstat \
     malloc-gnu malloc-posix manywarnings math mbrtowc mbsinit mbsrtowcs \
     memchr memcmp memmem memmem-simple \
-    mempcpy multiarch \
+    mempcpy mkdtemp multiarch \
     nextafter no-c++ nocrash \
     obstack openmp \
     pathmax \
-    realloc-gnu realloc-posix \
+    readlink realloc-gnu realloc-posix rmdir \
     snippet/_Noreturn snippet/arg-nonnull snippet/c++defs snippet/link-warning \
     snippet/warn-on-use \
     ssize_t stat stat-macros stat-size stat-time stdbool stddef stdint stdlib \
     streq strerror strerror_r-posix strerror-override string strnlen strnlen1 \
     strstr strstr-simple sys_stat sys_time sys_types \
-    time \
-    unistd update-copyright \
+    tempname time \
+    unistd unlink unlink-busy update-copyright \
     vc-list-files verify \
-    warnings wchar wcsncasecmp wctype-h"
+    warnings wchar wcsncasecmp wctype-h \
+    xalloc-oversized"
 # (might want to check to see if any of the libiberty/gettext duplicates cause
 # any conflicts...)
 
 # The gnulib commit ID to use for the update.
-GNULIB_COMMIT_SHA1="e9dd4906da30642172e6bb1ff2703e8e2c912fcb"
+GNULIB_COMMIT_SHA1="d5e367c52d465a36650d0f4e2d370d1719750ab1"
 # (feel free to update if you know that your version works and is newer)
 
 # The expected version number for the various auto tools we will

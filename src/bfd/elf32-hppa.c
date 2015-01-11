@@ -893,9 +893,9 @@ hppa_size_one_stub (struct bfd_hash_entry *bh, void *in_arg)
   struct elf32_hppa_link_hash_table *htab;
   int size;
 
-  /* Massage our args to the form they really have.  */
-  hsh = hppa_stub_hash_entry (bh);
-  htab = in_arg;
+  /* Massage our args to the form they really have: */
+  hsh = hppa_stub_hash_entry(bh);
+  htab = (struct elf32_hppa_link_hash_table *)in_arg;
 
   if (hsh->stub_type == hppa_stub_long_branch)
     size = 8;

@@ -172,6 +172,9 @@ aix386_core_file_p(bfd *abfd)
 {
   int i, n;
   unsigned char longbuf[4]; /* Raw bytes of various header fields */
+  /* try to work around -Wstack-protector warnings for building Release: */
+  char longerbuf[8L] ATTRIBUTE_UNUSED;
+  long *buf_of_longs[8L] ATTRIBUTE_UNUSED;
 #if defined(_AIX) || defined(HAVE_SYS_I386_COREDUMP_H)
   bfd_size_type core_size = sizeof(struct corehdr);
 #else
@@ -232,13 +235,13 @@ aix386_core_file_p(bfd *abfd)
   core_regsec(abfd)->size = sizeof(core->cd_regs);
   core_regsec(abfd)->vma = (bfd_vma)-1;
 
-  /* We shall access the regs afresh in the core file, like any section. */
+  /* We shall access the regs afresh in the core file, like any section: */
   core_regsec (abfd)->filepos =
     (file_ptr)offsetof(struct corehdr, cd_regs[0]);
 
   core_reg2sec(abfd) = bfd_make_section_anyway(abfd, ".reg2");
   if (core_reg2sec(abfd) == NULL) {
-      /* bfd_release frees everything allocated after its arg. */
+      /* bfd_release frees everything allocated after its arg: */
       goto loser;
   }
 
@@ -319,7 +322,7 @@ aix386_core_file_matches_executable_p(bfd *core_bfd ATTRIBUTE_UNUSED,
 }
 
 /* If somebody calls any byte-swapping routines, shoot them: */
-static void
+static void ATTRIBUTE_NORETURN
 swap_abort(void)
 {
   /* This way does NOT require any declaration for ANSI to mess up (?). */

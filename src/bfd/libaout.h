@@ -56,6 +56,13 @@
 # endif /* __LP64__ */
 #endif /* !ARCH_SIZE */
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic warning "-Wtraditional"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 /* Parameterize the a.out code based on whether it is being built
  * for a 32-bit architecture or a 64-bit architecture.  */
 /* Do not "beautify" the CONCAT* macro args. Traditional C will not
@@ -99,6 +106,18 @@
 #  define BYTES_IN_WORD 4
 # endif /* (ARCH_SIZE==16) || (ARCH_SIZE==32) */
 #endif /* ARCH_SIZE && (ARCH_SIZE==64) */
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
+/* in case the popping failed: */
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ && !__clang__ */
 
 /* Declare at file level, since used in parameter lists, which have
  * weird scope.  */

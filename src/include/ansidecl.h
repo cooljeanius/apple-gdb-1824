@@ -1,8 +1,8 @@
 /* ansidecl.h: ANSI and traditional C compatability macros
-   Copyright 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001
-   Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-
+ * Copyright 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001
+ * Free Software Foundation, Inc.
+ * This file is part of the GNU C Library.  */
+/*
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
@@ -15,7 +15,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* ANSI and traditional C compatibility macros
 
@@ -105,21 +105,28 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
    portable to other compilers, we provide the GCC_VERSION macro that
    simplifies testing __GNUC__ and __GNUC_MINOR__ together, and various
    wrappers around __attribute__.  Also, __extension__ will be #defined
-   to nothing if it doesn't work.  See below.
+   to nothing if it does NOT work.  See below.
 
    This header also defines a lot of obsolete macros:
    CONST, VOLATILE, SIGNED, PROTO, EXFUN, DEFUN, DEFUN_VOID,
-   AND, DOTS, NOARGS.  Don't use them.  */
+   AND, DOTS, NOARGS.  Do NOT use them.  */
 
 #ifndef	_ANSIDECL_H
-#define _ANSIDECL_H	1
+#define _ANSIDECL_H 1
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic warning "-Wtraditional"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 /* Every source file includes this file,
    so they will all get the switch for lint.  */
 /* LINTLIBRARY */
 
 /* Using MACRO(x,y) in cpp #if conditionals does not work with some
-   older preprocessors.  Thus we can't define something like this:
+   older preprocessors.  Thus we cannot define something like this:
 
 #define HAVE_GCC_VERSION(MAJOR, MINOR) \
   (__GNUC__ > (MAJOR) || (__GNUC__ == (MAJOR) && __GNUC_MINOR__ >= (MINOR)))
@@ -136,8 +143,8 @@ So instead we use the macro below and test it against specific values.  */
 # define GCC_VERSION (__GNUC__ * 1000 + __GNUC_MINOR__)
 #endif /* GCC_VERSION */
 
-#if defined (__STDC__) || defined (_AIX) || (defined (__mips) && defined (_SYSTYPE_SVR4)) || defined(_WIN32) || (defined(__alpha) && defined(__cplusplus))
-/* All known AIX compilers implement these things (but don't always
+#if defined(__STDC__) || defined(_AIX) || (defined(__mips) && defined(_SYSTYPE_SVR4)) || defined(_WIN32) || (defined(__alpha) && defined(__cplusplus))
+/* All known AIX compilers implement these things (but do NOT always
    define __STDC__).  The RISC/OS MIPS compiler defines these things
    in SVR4 mode, but does not define __STDC__.  */
 /* eraxxon@alumni.rice.edu: The Compaq C++ compiler, unlike many other
@@ -153,7 +160,7 @@ So instead we use the macro below and test it against specific values.  */
    a #ifndef.  */
 #ifndef PARAMS
 # define PARAMS(ARGS)		ARGS
-#endif
+#endif /* !PARAMS */
 
 #define VPARAMS(ARGS)		ARGS
 #define VA_START(VA_LIST, VAR)	va_start(VA_LIST, VAR)
@@ -183,22 +190,22 @@ So instead we use the macro below and test it against specific values.  */
 # endif /* gcc 2.7+ */
 #endif /* C99 || GCC */
 
-/* These are obsolete.  Do not use.  */
+/* These are obsolete.  Do not use them: */
 #ifndef IN_GCC
-#define CONST		const
-#define VOLATILE	volatile
-#define SIGNED		signed
+#  define CONST		const
+# define VOLATILE	volatile
+# define SIGNED		signed
 
-#define PROTO(type, name, arglist)	type name arglist
-#define EXFUN(name, proto)		name proto
-#define DEFUN(name, arglist, args)	name(args)
-#define DEFUN_VOID(name)		name(void)
-#define AND		,
-#define DOTS		, ...
-#define NOARGS		void
+# define PROTO(type, name, arglist)	type name arglist
+# define EXFUN(name, proto)		name proto
+# define DEFUN(name, arglist, args)	name(args)
+# define DEFUN_VOID(name)		name(void)
+# define AND		,
+# define DOTS		, ...
+# define NOARGS		void
 #endif /* ! IN_GCC */
 
-#else	/* Not ANSI C.  */
+#else	/* Not ANSI C: */
 
 #undef  ANSI_PROTOTYPES
 #define PTR		char *
@@ -224,17 +231,17 @@ So instead we use the macro below and test it against specific values.  */
 #define inline
 
 #ifndef IN_GCC
-#define CONST
-#define VOLATILE
-#define SIGNED
+# define CONST
+# define VOLATILE
+# define SIGNED
 
-#define PROTO(type, name, arglist)	type name ()
-#define EXFUN(name, proto)		name()
-#define DEFUN(name, arglist, args)	name arglist args;
-#define DEFUN_VOID(name)		name()
-#define AND		;
-#define DOTS
-#define NOARGS
+# define PROTO(type, name, arglist)	type name ()
+# define EXFUN(name, proto)		name()
+# define DEFUN(name, arglist, args)	name arglist args;
+# define DEFUN_VOID(name)		name()
+# define AND		;
+# define DOTS
+# define NOARGS
 #endif /* ! IN_GCC */
 
 #endif	/* ANSI C.  */
@@ -245,7 +252,7 @@ So instead we use the macro below and test it against specific values.  */
 
 #if (GCC_VERSION < 2007)
 # define __attribute__(x)
-#endif
+#endif /* gcc pre-2.7 */
 
 /* Attribute __malloc__ on functions was valid as of gcc 2.96. */
 #ifndef ATTRIBUTE_MALLOC
@@ -266,11 +273,11 @@ So instead we use the macro below and test it against specific values.  */
 #endif /* ATTRIBUTE_UNUSED_LABEL */
 
 #ifndef ATTRIBUTE_UNUSED
-#define ATTRIBUTE_UNUSED __attribute__ ((__unused__))
+# define ATTRIBUTE_UNUSED __attribute__ ((__unused__))
 #endif /* ATTRIBUTE_UNUSED */
 
-/* Before GCC 3.4, the C++ frontend couldn't parse attributes placed after the
-   identifier name.  */
+/* Before GCC 3.4, the C++ frontend could NOT parse attributes placed after
+ * the identifier name: */
 #if ! defined(__cplusplus) || (GCC_VERSION >= 3004)
 # define ARG_UNUSED(NAME) NAME ATTRIBUTE_UNUSED
 #else /* !__cplusplus || GNUC >= 3.4 */
@@ -278,7 +285,7 @@ So instead we use the macro below and test it against specific values.  */
 #endif /* !__cplusplus || GNUC >= 3.4 */
 
 #ifndef ATTRIBUTE_NORETURN
-#define ATTRIBUTE_NORETURN __attribute__ ((__noreturn__))
+# define ATTRIBUTE_NORETURN __attribute__ ((__noreturn__))
 #endif /* ATTRIBUTE_NORETURN */
 
 /* Attribute `nonnull' was valid as of gcc 3.3.  */
@@ -365,7 +372,19 @@ So instead we use the macro below and test it against specific values.  */
  * GCC extensions. This feature did NOT work properly before gcc 2.8. */
 #if GCC_VERSION < 2008
 # define __extension__
-#endif
+#endif /* gcc pre-2.8 */
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
+/* in case the popping failed: */
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ && !__clang__ */
 
 #endif	/* ansidecl.h	*/
 

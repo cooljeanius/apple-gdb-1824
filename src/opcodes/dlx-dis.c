@@ -1,4 +1,4 @@
-/* Instruction printing code for the DLX Microprocessor
+/* dlx-dis.c: Instruction printing code for the DLX Microprocessor
    Copyright 2002, 2005 Free Software Foundation, Inc.
    Contributed by Kuang Hwa Lin.  Written by Kuang Hwa Lin, 03/2002.
 
@@ -293,7 +293,7 @@ dlx_aluI_type (struct disassemble_info* info)
     { OPC(SGTUIOP),  "sgtui" },  /* Store word.      */
     { OPC(SLEUIOP),  "sleui" },  /* Store word.      */
     { OPC(SGEUIOP),  "sgeui" },  /* Store word.      */
-#if 0						       
+#if 0
     { OPC(MVTSOP),   "mvts"  },  /* Store word.      */
     { OPC(MVFSOP),   "mvfs"  },  /* Store word.      */
 #endif
@@ -397,7 +397,7 @@ dlx_jmp_type (struct disassemble_info* info)
 /* Process the jump register instruction.  */
 
 static unsigned char
-dlx_jr_type (struct disassemble_info* info)
+dlx_jr_type(struct disassemble_info* info)
 {
   struct _jr_opcode
   {
@@ -410,27 +410,26 @@ dlx_jr_type (struct disassemble_info* info)
     { OPC(JALROP), "jalr"  }   /* Store halfword.  */
   };
   int dlx_jr_opcode_num =
-    (sizeof dlx_jr_opcode) / (sizeof dlx_jr_opcode[0]);
+    (sizeof(dlx_jr_opcode)) / (sizeof(dlx_jr_opcode[0]));
   int idx;
 
   for (idx = 0 ; idx < dlx_jr_opcode_num; idx++)
     if (dlx_jr_opcode[idx].opcode == opc)
       {
-	(*info->fprintf_func) (info->stream, "%s", dlx_jr_opcode[idx].name);
-	operand_deliminator (info, dlx_jr_opcode[idx].name);
-	(*info->fprintf_func) (info->stream, "r%d", (int)rs1);
-	return (unsigned char) IJR_TYPE;
+	(*info->fprintf_func)(info->stream, "%s", dlx_jr_opcode[idx].name);
+	operand_deliminator(info, dlx_jr_opcode[idx].name);
+	(*info->fprintf_func)(info->stream, "r%d", (int)rs1);
+	return (unsigned char)IJR_TYPE;
       }
 
   return (unsigned char) NIL;
 }
 
-typedef unsigned char (* dlx_insn) (struct disassemble_info *);
+typedef unsigned char (* dlx_insn)(struct disassemble_info *);
 
-/* This is the main DLX insn handling routine.  */
-
+/* This is the main DLX insn handling routine: */
 int
-print_insn_dlx (bfd_vma memaddr, struct disassemble_info* info)
+print_insn_dlx(bfd_vma memaddr, struct disassemble_info* info)
 {
   bfd_byte buffer[4];
   int insn_idx;
@@ -438,54 +437,54 @@ print_insn_dlx (bfd_vma memaddr, struct disassemble_info* info)
   unsigned char rtn_code;
   unsigned long dlx_insn_type[] =
   {
-    (unsigned long) dlx_r_type,
-    (unsigned long) dlx_load_type,
-    (unsigned long) dlx_store_type,
-    (unsigned long) dlx_aluI_type,
-    (unsigned long) dlx_br_type,
-    (unsigned long) dlx_jmp_type,
-    (unsigned long) dlx_jr_type,
-    (unsigned long) NULL
+    (unsigned long)dlx_r_type,
+    (unsigned long)dlx_load_type,
+    (unsigned long)dlx_store_type,
+    (unsigned long)dlx_aluI_type,
+    (unsigned long)dlx_br_type,
+    (unsigned long)dlx_jmp_type,
+    (unsigned long)dlx_jr_type,
+    (unsigned long)NULL
   };
-  int dlx_insn_type_num = ((sizeof dlx_insn_type) / (sizeof (unsigned long))) - 1;
+  int dlx_insn_type_num = (((sizeof(dlx_insn_type)) / (sizeof(unsigned long))) - 1);
   int status =
-    (*info->read_memory_func) (memaddr, (bfd_byte *) &buffer[0], 4, info);
+    (*info->read_memory_func)(memaddr, (bfd_byte *)&buffer[0], 4, info);
 
   if (status != 0)
     {
-      (*info->memory_error_func) (status, memaddr, info);
+      (*info->memory_error_func)(status, memaddr, info);
       return -1;
     }
 
-  /* Now decode the insn    */
-  insn_word = bfd_getb32 (buffer);
-  opc  = dlx_get_opcode (insn_word);
-  rs1  = dlx_get_rs1 (insn_word);
-  rs2  = dlx_get_rs2 (insn_word);
-  rd   = dlx_get_rdR (insn_word);
-  func = dlx_get_func (insn_word);
-  imm16= dlx_get_imm16 (insn_word);
-  imm26= dlx_get_imm26 (insn_word);
+  /* Now decode the insn: */
+  insn_word = bfd_getb32(buffer);
+  opc = dlx_get_opcode(insn_word);
+  rs1 = dlx_get_rs1(insn_word);
+  rs2 = dlx_get_rs2(insn_word);
+  rd = dlx_get_rdR(insn_word);
+  func = dlx_get_func(insn_word);
+  imm16 = dlx_get_imm16(insn_word);
+  imm26 = dlx_get_imm26(insn_word);
 
-#if 0
-  printf ("print_insn_big_dlx: opc = 0x%02x\n"
-	  "                    rs1 = 0x%02x\n"
-	  "                    rs2 = 0x%02x\n"
-	  "                    rd  = 0x%02x\n"
-	  "                  func  = 0x%08x\n"
-	  "                 imm16  = 0x%08x\n"
-	  "                 imm26  = 0x%08x\n",
-	  opc, rs1, rs2, rd, func, imm16, imm26);
-#endif
+#ifdef DEBUG
+  printf("print_insn_big_dlx: opc = 0x%02x\n"
+	 "                    rs1 = 0x%02x\n"
+	 "                    rs2 = 0x%02x\n"
+	 "                    rd  = 0x%02x\n"
+	 "                  func  = 0x%08x\n"
+	 "                 imm16  = 0x%08x\n"
+	 "                 imm26  = 0x%08x\n",
+	 opc, rs1, rs2, rd, func, imm16, imm26);
+#endif /* DEBUG */
 
-  /* Scan through all the insn type and print the insn out.  */
+  /* Scan through all the insn type and print the insn out: */
   rtn_code = 0;
-  current_insn_addr = (unsigned long) memaddr;
+  current_insn_addr = (unsigned long)memaddr;
 
   for (insn_idx = 0; dlx_insn_type[insn_idx] != 0x0; insn_idx++)
-    switch (((dlx_insn) (dlx_insn_type[insn_idx])) (info))
+    switch (((dlx_insn)(dlx_insn_type[insn_idx]))(info))
       {
-	/* Found the correct opcode   */
+	/* Found the correct opcode: */
       case R_TYPE:
       case ILD_TYPE:
       case IST_TYPE:
@@ -495,7 +494,7 @@ print_insn_dlx (bfd_vma memaddr, struct disassemble_info* info)
       case IJR_TYPE:
 	return 4;
 
-	/* Wrong insn type check next one. */
+	/* Wrong insn type, check next one: */
       default:
       case NIL:
 	continue;
@@ -506,9 +505,16 @@ print_insn_dlx (bfd_vma memaddr, struct disassemble_info* info)
 	return -1;
       }
 
-  if (insn_idx ==  dlx_insn_type_num)
-    /* Well, does not recoganize this opcode.  */
-    (*info->fprintf_func) (info->stream, "<%s>", "Unrecognized Opcode");
+  if (insn_idx == dlx_insn_type_num) {
+    /* Well, does not recoganize this opcode: */
+    (*info->fprintf_func)(info->stream, "<%s>", "Unrecognized Opcode");
+  }
 
-  return 4;
+  if (rtn_code == 4) {
+    return rtn_code;
+  } else {
+    return 4;
+  }
 }
+
+/* EOF */

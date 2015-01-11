@@ -1,4 +1,4 @@
-/* BFD back-end for IBM RS/6000 "XCOFF" files.
+/* coff-rs6000.c: BFD back-end for IBM RS/6000 "XCOFF" files.
    Copyright 1990-1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
    FIXME: Can someone provide a transliteration of this name into ASCII?
@@ -24,7 +24,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -4367,6 +4367,7 @@ const bfd_target pmac_xcoff_vec =
     coff_new_section_hook,
     _bfd_generic_get_section_contents,
     _bfd_generic_get_section_contents_in_window,
+    _bfd_generic_get_section_contents_in_window_with_mode, /* (???) */
 
     /* Copy: */
     _bfd_xcoff_copy_private_bfd_data,

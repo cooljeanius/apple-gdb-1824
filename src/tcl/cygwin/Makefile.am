@@ -1,6 +1,8 @@
+## automake Makefile for the cygwin version of Tcl
 ## Process this file with automake to produce Makefile.in.
 
-AUTOMAKE_OPTIONS = 1.4
+AUTOMAKE_OPTIONS = 1.4 foreign no-dist
+## "cygnus" == "foreign no-dist"
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 updir=$(srcdir)/..
@@ -86,7 +88,7 @@ libtcl_cygwin_a_SOURCES = \
 	tclUnixTime.c \
 	tclUnixInit.c
 
-TCL_LIBRARY =	@datadir@/tcl$(VERSION)
+TCL_LIBRARY = @datadir@/tcl$(VERSION)
 TCL_PACKAGE_PATH = @TCL_PACKAGE_PATH@
 
 AM_CPPFLAGS = -I$(updir)/generic

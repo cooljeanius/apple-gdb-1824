@@ -293,9 +293,8 @@ pe_mkobject_hook (bfd * abfd,
 
   pe->coff.timestamp = internal_f->f_timdat;
 
-  obj_raw_syment_count(abfd) =
-    obj_conv_table_size(abfd) =
-      internal_f->f_nsyms;
+  obj_conv_table_size(abfd) = (int)internal_f->f_nsyms;
+  obj_raw_syment_count(abfd) = (unsigned long)obj_conv_table_size(abfd);
 
   pe->real_flags = internal_f->f_flags;
 
@@ -561,47 +560,44 @@ pe_ILF_make_a_symbol (pe_ILF_vars *  vars,
   * vars->table_ptr = vars->sym_index;
   * vars->sym_ptr_ptr = sym;
 
-  /* Adjust pointers for the next symbol.  */
-  vars->sym_index ++;
-  vars->sym_ptr ++;
-  vars->sym_ptr_ptr ++;
-  vars->table_ptr ++;
-  vars->native_ptr ++;
-  vars->esym_ptr ++;
-  vars->string_ptr += strlen (symbol_name) + strlen (prefix) + 1;
+  /* Adjust pointers for the next symbol: */
+  vars->sym_index++;
+  vars->sym_ptr++;
+  vars->sym_ptr_ptr++;
+  vars->table_ptr++;
+  vars->native_ptr++;
+  vars->esym_ptr++;
+  vars->string_ptr += (strlen(symbol_name) + strlen(prefix) + 1UL);
 
-  BFD_ASSERT (vars->string_ptr < vars->end_string_ptr);
+  BFD_ASSERT(vars->string_ptr < vars->end_string_ptr);
 }
 
-/* Create a section.  */
-
+/* Create a section: */
 static asection_ptr
-pe_ILF_make_a_section (pe_ILF_vars * vars,
-		       const char *  name,
-		       unsigned int  size,
-		       flagword      extra_flags)
+pe_ILF_make_a_section(pe_ILF_vars *vars, const char *name,
+                      unsigned int size, flagword extra_flags)
 {
   asection_ptr sec;
-  flagword     flags;
+  flagword flags;
 
-  sec = bfd_make_section_old_way (vars->abfd, name);
+  sec = bfd_make_section_old_way(vars->abfd, name);
   if (sec == NULL)
     return NULL;
 
-  flags = SEC_HAS_CONTENTS | SEC_ALLOC | SEC_LOAD | SEC_KEEP | SEC_IN_MEMORY;
+  flags = (SEC_HAS_CONTENTS | SEC_ALLOC | SEC_LOAD | SEC_KEEP | SEC_IN_MEMORY);
 
-  bfd_set_section_flags (vars->abfd, sec, flags | extra_flags);
+  bfd_set_section_flags(vars->abfd, sec, flags | extra_flags);
 
-  bfd_set_section_alignment (vars->abfd, sec, 2);
+  bfd_set_section_alignment(vars->abfd, sec, 2);
 
-  /* Check that we will not run out of space.  */
-  BFD_ASSERT (vars->data + size < vars->bim->buffer + vars->bim->size);
+  /* Check that we will not run out of space: */
+  BFD_ASSERT((vars->data + size) < (vars->bim->buffer + vars->bim->size));
 
   /* Set the section size and contents.  The actual
      contents are filled in by our parent.  */
-  bfd_set_section_size (vars->abfd, sec, (bfd_size_type) size);
+  bfd_set_section_size(vars->abfd, sec, (bfd_size_type)size);
   sec->contents = vars->data;
-  sec->target_index = vars->sec_index ++;
+  sec->target_index = vars->sec_index++;
 
   /* Advance data pointer in the vars structure.  */
   vars->data += size;
@@ -697,20 +693,20 @@ static jump_table jtab[] =
 #define NUM_ENTRIES(a) (sizeof (a) / sizeof (a)[0])
 #endif
 
-/* Build a full BFD from the information supplied in a ILF object.  */
-
+/* Build a full BFD from the information supplied in a ILF object: */
 static bfd_boolean
 pe_ILF_build_a_bfd(bfd *abfd, unsigned int magic, char *symbol_name,
-		   char *source_dll, unsigned int ordinal, unsigned int types)
+		   char *source_dll, unsigned int ordinal,
+                   unsigned int types)
 {
-  bfd_byte *               ptr;
-  pe_ILF_vars              vars;
-  struct internal_filehdr  internal_f;
-  unsigned int             import_type;
-  unsigned int             import_name_type;
-  asection_ptr             id4, id5, id6 = NULL, text = NULL;
-  coff_symbol_type **      imp_sym;
-  unsigned int             imp_index;
+  bfd_byte *ptr;
+  pe_ILF_vars vars;
+  struct internal_filehdr internal_f;
+  unsigned int import_type;
+  unsigned int import_name_type;
+  asection_ptr id4, id5, id6 = NULL, text = NULL;
+  coff_symbol_type **imp_sym;
+  unsigned int imp_index;
 
   /* Decode and verify the types field of the ILF structure: */
   import_type = (types & 0x3);
@@ -723,14 +719,14 @@ pe_ILF_build_a_bfd(bfd *abfd, unsigned int magic, char *symbol_name,
       break;
 
     case IMPORT_CONST:
-      /* XXX code yet to be written.  */
-      _bfd_error_handler (_("%B: Unhandled import type; %x"),
-			  abfd, import_type);
+      /* XXX code yet to be written: */
+      _bfd_error_handler(_("%B: Unhandled import type; %x"),
+                         abfd, import_type);
       return FALSE;
 
     default:
-      _bfd_error_handler (_("%B: Unrecognised import type; %x"),
-			  abfd, import_type);
+      _bfd_error_handler(_("%B: Unrecognised import type; %x"),
+                         abfd, import_type);
       return FALSE;
     }
 
@@ -743,8 +739,8 @@ pe_ILF_build_a_bfd(bfd *abfd, unsigned int magic, char *symbol_name,
       break;
 
     default:
-      _bfd_error_handler (_("%B: Unrecognised import name type; %x"),
-			  abfd, import_name_type);
+      _bfd_error_handler(_("%B: Unrecognised import name type; %x"),
+                         abfd, import_name_type);
       return FALSE;
     }
 
@@ -815,32 +811,34 @@ pe_ILF_build_a_bfd(bfd *abfd, unsigned int magic, char *symbol_name,
 
      Note we do not create a .idata$3 section as this is
      created for us by the linker script.  */
-  id4 = pe_ILF_make_a_section (& vars, ".idata$4", SIZEOF_IDATA4, 0);
-  id5 = pe_ILF_make_a_section (& vars, ".idata$5", SIZEOF_IDATA5, 0);
-  if (id4 == NULL || id5 == NULL)
+  id4 = pe_ILF_make_a_section(& vars, ".idata$4", SIZEOF_IDATA4, 0U);
+  id5 = pe_ILF_make_a_section(& vars, ".idata$5", SIZEOF_IDATA5, 0U);
+  if ((id4 == NULL) || (id5 == NULL))
     return FALSE;
 
-  /* Fill in the contents of these sections.  */
+  /* Fill in the contents of these sections: */
   if (import_name_type == IMPORT_ORDINAL)
     {
       if (ordinal == 0)
 	/* XXX - treat as IMPORT_NAME ??? */
-	abort ();
+	abort();
 
-      * (unsigned int *) id4->contents = ordinal | 0x80000000;
-      * (unsigned int *) id5->contents = ordinal | 0x80000000;
+      *(unsigned int *)id4->contents = (ordinal | 0x80000000);
+      *(unsigned int *)id5->contents = (ordinal | 0x80000000);
     }
   else
     {
-      char * symbol;
-      unsigned int len;
+      char *symbol;
+      size_t len;
 
-      /* Create .idata$6 - the Hint Name Table.  */
-      id6 = pe_ILF_make_a_section (& vars, ".idata$6", SIZEOF_IDATA6, 0);
+      /* Create .idata$6 - the Hint Name Table: */
+      id6 = pe_ILF_make_a_section(&vars, ".idata$6",
+                                  (unsigned int)SIZEOF_IDATA6,
+                                  (flagword)0U);
       if (id6 == NULL)
 	return FALSE;
 
-      /* If necessary, trim the import symbol name.  */
+      /* If necessary, trim the import symbol name: */
       symbol = symbol_name;
 
       /* As used by MS compiler, '_', '@', and '?' are alternative
@@ -870,17 +868,17 @@ pe_ILF_build_a_bfd(bfd *abfd, unsigned int magic, char *symbol_name,
       id6->contents[0] = (ordinal & 0xff);
       id6->contents[1] = (ordinal >> 8);
 
-      memcpy ((char *) id6->contents + 2, symbol, len);
+      memcpy(((char *)id6->contents + 2), symbol, len);
       id6->contents[len + 2] = '\0';
     }
 
   if (import_name_type != IMPORT_ORDINAL)
     {
-      pe_ILF_make_a_reloc (&vars, (bfd_vma) 0, BFD_RELOC_RVA, id6);
-      pe_ILF_save_relocs (&vars, id4);
+      pe_ILF_make_a_reloc(&vars, (bfd_vma)0UL, BFD_RELOC_RVA, id6);
+      pe_ILF_save_relocs(&vars, id4);
 
-      pe_ILF_make_a_reloc (&vars, (bfd_vma) 0, BFD_RELOC_RVA, id6);
-      pe_ILF_save_relocs (&vars, id5);
+      pe_ILF_make_a_reloc(&vars, (bfd_vma)0UL, BFD_RELOC_RVA, id6);
+      pe_ILF_save_relocs(&vars, id5);
     }
 
   /* Create extra sections depending upon the type of import we are dealing with.  */
@@ -891,29 +889,29 @@ pe_ILF_build_a_bfd(bfd *abfd, unsigned int magic, char *symbol_name,
     case IMPORT_CODE:
       /* Create a .text section.
 	 First we need to look up its contents in the jump table.  */
-      for (i = NUM_ENTRIES (jtab); i--;)
+      for (i = NUM_ENTRIES(jtab); i--;)
 	{
 	  if (jtab[i].size == 0)
 	    continue;
 	  if (jtab[i].magic == magic)
 	    break;
 	}
-      /* If we did not find a matching entry something is wrong.  */
+      /* If we did NOT find a matching entry, then something is wrong: */
       if (i < 0)
-	abort ();
+	abort();
 
-      /* Create the .text section.  */
-      text = pe_ILF_make_a_section (& vars, ".text", jtab[i].size, SEC_CODE);
+      /* Create the .text section: */
+      text = pe_ILF_make_a_section(& vars, ".text", jtab[i].size, SEC_CODE);
       if (text == NULL)
 	return FALSE;
 
-      /* Copy in the jump code.  */
-      memcpy (text->contents, jtab[i].data, jtab[i].size);
+      /* Copy in the jump code: */
+      memcpy(text->contents, jtab[i].data, jtab[i].size);
 
-      /* Create an import symbol.  */
-      pe_ILF_make_a_symbol (& vars, "__imp_", symbol_name, id5, 0);
-      imp_sym   = vars.sym_ptr_ptr - 1;
-      imp_index = vars.sym_index - 1;
+      /* Create an import symbol: */
+      pe_ILF_make_a_symbol(& vars, "__imp_", symbol_name, id5, 0);
+      imp_sym = (vars.sym_ptr_ptr - 1);
+      imp_index = (vars.sym_index - 1);
 
       /* Create a reloc for the data in the text section.  */
 #ifdef MIPS_ARCH_MAGIC_WINCE
@@ -1056,7 +1054,7 @@ pe_ILF_object_p(bfd * abfd)
 #endif /* BOTHER_TO_CHECK_THE_VERSION_NUMBER */
   ptr += 2;
 
-  machine = H_GET_16(abfd, ptr);
+  machine = (unsigned int)H_GET_16(abfd, ptr);
   ptr += 2;
 
   /* Check that the machine type is recognized: */
@@ -1159,10 +1157,10 @@ pe_ILF_object_p(bfd * abfd)
       return NULL;
     }
 
-  ordinal = H_GET_16(abfd, ptr);
+  ordinal = (unsigned int)H_GET_16(abfd, ptr);
   ptr += 2;
 
-  types = H_GET_16(abfd, ptr);
+  types = (unsigned int)H_GET_16(abfd, ptr);
 #if 0
   ptr += 2;
 #endif /* 0 */
@@ -1267,14 +1265,14 @@ pe_bfd_object_p (bfd * abfd)
   /* Here is the hack.  coff_object_p wants to read filhsz bytes to
      pick up the COFF header for PE, see "struct external_PEI_filehdr"
      in include/coff/pe.h.  We adjust so that that will work. */
-  if (bfd_seek (abfd, (file_ptr) (offset - sizeof (dos_hdr)), SEEK_SET) != 0)
+  if (bfd_seek(abfd, (file_ptr)(offset - sizeof(dos_hdr)), SEEK_SET) != 0)
     {
-      if (bfd_get_error () != bfd_error_system_call)
-	bfd_set_error (bfd_error_wrong_format);
+      if (bfd_get_error() != bfd_error_system_call)
+	bfd_set_error(bfd_error_wrong_format);
       return NULL;
     }
 
-  return coff_object_p (abfd);
+  return coff_object_p(abfd);
 }
 
 #define coff_object_p pe_bfd_object_p

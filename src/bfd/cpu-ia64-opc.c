@@ -159,17 +159,17 @@ ins_imms_scaled (const struct ia64_operand *self, ia64_insn value,
 }
 
 static const char*
-ext_imms_scaled (const struct ia64_operand *self, ia64_insn code,
-		 ia64_insn *valuep, int scale)
+ext_imms_scaled(const struct ia64_operand *self, ia64_insn code,
+                ia64_insn *valuep, int scale)
 {
   int i, bits = 0, total = 0;
-  BFD_HOST_64_BIT val = 0, sign;
+  BFD_HOST_64_BIT val = 0L, sign;
 
-  for (i = 0; i < NELEMS (self->field) && self->field[i].bits; ++i)
+  for (i = 0; i < NELEMS(self->field) && self->field[i].bits; ++i)
     {
       bits = self->field[i].bits;
-      val |= ((code >> self->field[i].shift)
-	      & ((((BFD_HOST_U_64_BIT) 1) << bits) - 1)) << total;
+      val |= (((code >> self->field[i].shift)
+               & ((((BFD_HOST_U_64_BIT)1) << bits) - 1)) << total);
       total += bits;
     }
   /* sign extend: */
@@ -181,9 +181,9 @@ ext_imms_scaled (const struct ia64_operand *self, ia64_insn code,
 }
 
 static const char*
-ins_imms (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
+ins_imms(const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 {
-  return ins_imms_scaled (self, value, code, 0);
+  return ins_imms_scaled(self, value, code, 0);
 }
 
 static const char*

@@ -457,12 +457,11 @@ enum hppa_opcode_type
 };
 
 
-/* Given a machine instruction, return its format.  */
-
+/* Given a machine instruction, return its format: */
 static inline int
-bfd_hppa_insn2fmt (bfd *abfd, int insn)
+bfd_hppa_insn2fmt(bfd *abfd, int insn)
 {
-  enum hppa_opcode_type op = get_opcode (insn);
+  enum hppa_opcode_type op = (enum hppa_opcode_type)get_opcode(insn);
 
   switch (op)
     {

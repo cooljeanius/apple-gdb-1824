@@ -411,6 +411,7 @@ ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
+ac_ct_RANLIB = @ac_ct_RANLIB@
 ac_cv_func_mmap_fixed_mapped = @ac_cv_func_mmap_fixed_mapped@
 acl_cv_wl = @acl_cv_wl@
 all_backends = @all_backends@

@@ -20,12 +20,20 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ACLOCAL_AMFLAGS = -I../m4 --install
+AUTOMAKE_OPTIONS = foreign no-dist
+## "cygnus" == "foreign no-dist"
+AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 upsrcdir = ${srcdir}/..
 upupsrcdir = ${upsrcdir}/..
-AM_CPPFLAGS = -I. -I.. -I${upsrcdir} -I${upupsrcdir} -I${upsrcdir}/common -I${upsrcdir}/config -I${upsrcdir}/macosx -I${upsrcdir}/signals -I${upupsrcdir}/config -I${upupsrcdir}/include -I${upupsrcdir}/bfd -I${upupsrcdir}/intl
+AM_CPPFLAGS = -I. -I.. -I${upsrcdir} -I${upupsrcdir} -I${upsrcdir}/common \
+-I${upsrcdir}/config -I${upsrcdir}/macosx -I${upsrcdir}/signals \
+-I${upupsrcdir}/config -I${upupsrcdir}/include -I${upupsrcdir}/bfd \
+-I${upupsrcdir}/intl
 DEFS = @DEFS@ @EXTRA_DEFS@
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
-AM_CFLAGS = $(C_ARCHFLAGS) -ggdb -fno-strict-aliasing -std=gnu99 -Wall -Wextra -Wold-style-definition -Wtrampolines -Wwrite-strings -Wformat=2 -Wmissing-include-dirs @MAINT@ -Wstrict-prototypes -Wnested-externs
+AM_CFLAGS = $(C_ARCHFLAGS) -ggdb -fno-strict-aliasing -std=gnu99 -Wall \
+-Wextra -Wold-style-definition -Wtrampolines -Wwrite-strings -Wformat=2 \
+-Wmissing-include-dirs @MAINT@ -Wstrict-prototypes -Wnested-externs
 REMOTE_CFLAGS_COMBINED = ${AM_CPPFLAGS} ${DEFS} ${AM_CFLAGS}
 AM_LDFLAGS = -L. -L.. $(C_ARCHFLAGS)
 CC = @CC@

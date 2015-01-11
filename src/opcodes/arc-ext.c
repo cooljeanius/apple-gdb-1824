@@ -16,7 +16,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "sysdep.h"
 #include <stdlib.h>
@@ -25,11 +25,10 @@
 #include "arc-ext.h"
 #include "libiberty.h"
 
-/* Extension structure  */
+/* Extension structure: */
 static struct arcExtMap arc_extension_map;
 
-/* Get the name of an extension instruction.  */
-
+/* Get the name of an extension instruction: */
 const char *
 arcExtMap_instName(int opcode, int minor, int *flags)
 {
@@ -147,13 +146,13 @@ cleanup_ext_map(void)
 int
 arcExtMap_add(void *base, unsigned long length)
 {
-  unsigned char *block = base;
+  unsigned char *block = (unsigned char *)base;
   unsigned char *p = block;
 
-  /* Clean up and reset everything if needed.  */
+  /* Clean up and reset everything if needed: */
   cleanup_ext_map();
 
-  while (p && p < (block + length))
+  while (p && (p < (block + length)))
     {
       /* p[0] == length of record
 	 p[1] == type of record
@@ -236,26 +235,24 @@ arcExtMap_add(void *base, unsigned long length)
   return 0;
 }
 
-/* Load hw extension descibed in .extArcMap ELF section.  */
-
+/* Load hw extension descibed in .extArcMap ELF section: */
 void
-build_ARC_extmap (text_bfd)
-  bfd *text_bfd;
+build_ARC_extmap(bfd *text_bfd)
 {
   char *arcExtMap;
   bfd_size_type count;
   asection *p;
 
   for (p = text_bfd->sections; p != NULL; p = p->next)
-    if (!strcmp (p->name, ".arcextmap"))
+    if (!strcmp(p->name, ".arcextmap"))
       {
-        count = bfd_get_section_size (p);
-        arcExtMap = (char *) xmalloc (count);
-        if (bfd_get_section_contents (text_bfd, p, (PTR) arcExtMap, 0, count))
+        count = bfd_get_section_size(p);
+        arcExtMap = (char *)xmalloc(count);
+        if (bfd_get_section_contents(text_bfd, p, (PTR)arcExtMap, 0, count))
           {
-            arcExtMap_add ((PTR) arcExtMap, count);
+            arcExtMap_add((PTR)arcExtMap, count);
             break;
           }
-        free ((PTR) arcExtMap);
+        free((PTR)arcExtMap);
       }
 }

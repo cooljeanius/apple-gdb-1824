@@ -2,7 +2,8 @@
 ## Process this file with automake to generate Makefile.in
 
 ACLOCAL_AMFLAGS = -I../m4 --install
-AUTOMAKE_OPTIONS = gnits dejagnu
+AUTOMAKE_OPTIONS = gnits dejagnu no-dist
+## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 noinst_LIBRARIES = libangsd.a

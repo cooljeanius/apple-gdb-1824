@@ -17,7 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 ACLOCAL_AMFLAGS = -I m4 --install
 
-AUTOMAKE_OPTIONS = dejagnu gnits
+AUTOMAKE_OPTIONS = dejagnu gnits no-dist
 
 SUBDIRS = . doc shlib examples
 
@@ -67,7 +67,8 @@ my_CTAGS = ctags -tw
 CFLAGS = @CFLAGS@
 SHOBJ_CFLAGS = @SHOBJ_CFLAGS@
 
-LOCAL_CFLAGS = @LOCAL_CFLAGS@ -DRL_LIBRARY_VERSION='"$(RL_LIBRARY_VERSION)"'
+VERS_FLAG = -DRL_LIBRARY_VERSION='"$(RL_LIBRARY_VERSION)"'
+LOCAL_CFLAGS = @LOCAL_CFLAGS@ $(VERS_FLAG)
 CPPFLAGS = @CPPFLAGS@
 
 DEFS = @DEFS@
@@ -196,7 +197,7 @@ am_Makefile am_makefile: config.status $(srcdir)/Makefile.in
 
 Makefiles makefiles: config.status $(srcdir)/Makefile.in
 	@for mf in $(CREATED_MAKEFILES); do \
-		CONFIG_FILES=$$mf CONFIG_HEADERS= $(SHELL) ./config.status ; \
+	  CONFIG_FILES=$${mf} CONFIG_HEADERS="" $(SHELL) ./config.status; \
 	done
 
 am_config.status: configure
@@ -207,12 +208,12 @@ am_config.h: config.status stamp-h
 .PHONY: am_config.h
 
 stamp-h: config.status $(srcdir)/config.h.in
-	CONFIG_FILES= CONFIG_HEADERS=config.h ./config.status
-	echo > $@
+	CONFIG_FILES="" CONFIG_HEADERS=config.h ./config.status
+	echo "" > $@
 
 shared:	force
 	-test -d shlib || mkdir shlib
-	-( cd shlib ; ${MAKE} ${MFLAGS} all )
+	-( cd shlib; ${MAKE} ${MFLAGS} all )
 
 documentation: force
 	-test -d doc || mkdir doc
@@ -226,12 +227,12 @@ force:
 
 install-headers: installdirs ${INSTALLED_HEADERS}
 	for f in ${INSTALLED_HEADERS}; do \
-		$(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(includedir)/readline ; \
+	$(INSTALL_DATA) $(srcdir)/$${f} $(DESTDIR)$(includedir)/readline; \
 	done
 
 uninstall-headers:
-	-test -n "$(includedir)" && cd $(DESTDIR)$(includedir)/readline && \
-		${RM} ${INSTALLED_HEADERS}
+	-test -n "$(includedir)" && cd $(DESTDIR)$(includedir)/readline \
+	  && ${RM} ${INSTALLED_HEADERS}
 
 maybe-uninstall-headers: uninstall-headers
 
@@ -268,8 +269,8 @@ uninstall-local: uninstall-headers
 	-test -n "$(DESTDIR)$(libdir)" && cd $(DESTDIR)$(libdir) && \
 		${RM} libreadline.a libreadline.old libhistory.a libhistory.old $(SHARED_LIBS)
 	-( if test -d doc ; then \
-		cd doc && \
-		${MAKE} ${MFLAGS} infodir=$(infodir) DESTDIR=${DESTDIR} $@; \
+	     cd doc && \
+	     ${MAKE} ${MFLAGS} infodir=$(infodir) DESTDIR=${DESTDIR} $@; \
 	  fi )
 	-( cd shlib; ${MAKE} ${MFLAGS} DESTDIR=${DESTDIR} uninstall )
 
@@ -319,11 +320,11 @@ check:
 installcheck-local:
 
 dist-local: force
-	@echo Readline distributions are created using $(srcdir)/support/mkdist.
-	@echo Here is a sample of the necessary commands:
-	@echo bash $(srcdir)/support/mkdist -m $(srcdir)/MANIFEST -s $(srcdir) -r $(RL_LIBRARY_NAME) $(RL_LIBRARY_VERSION)
-	@echo tar cf $(RL_LIBRARY_NAME)-${RL_LIBRARY_VERSION}.tar ${RL_LIBRARY_NAME}-$(RL_LIBRARY_VERSION)
-	@echo gzip $(RL_LIBRARY_NAME)-$(RL_LIBRARY_VERSION).tar
+	@echo "Readline distributions are created using $(srcdir)/support/mkdist."
+	@echo "Here is a sample of the necessary commands:"
+	@echo "bash $(srcdir)/support/mkdist -m $(srcdir)/MANIFEST -s $(srcdir) -r $(RL_LIBRARY_NAME) $(RL_LIBRARY_VERSION)"
+	@echo "tar cf $(RL_LIBRARY_NAME)-${RL_LIBRARY_VERSION}.tar ${RL_LIBRARY_NAME}-$(RL_LIBRARY_VERSION)"
+	@echo "gzip $(RL_LIBRARY_NAME)-$(RL_LIBRARY_VERSION).tar"
 
 NSLIBTOOL = cc -dynamiclib
 SYSTEM_FRAMEWORK = -framework System -lcurses

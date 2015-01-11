@@ -86,28 +86,42 @@ c_printchar (int c, struct ui_file *stream)
    printing LENGTH characters, or if FORCE_ELLIPSES.  */
 
 void
-c_printstr (struct ui_file *stream, const gdb_byte *string,
-	    unsigned int length, int width, int force_ellipses)
+c_printstr(struct ui_file *stream, const gdb_byte *string,
+           unsigned int length, int width, int force_ellipses)
 {
   unsigned int i;
-  unsigned int things_printed = 0;
+  unsigned int things_printed = 0U;
   int in_quotes = 0;
   int need_comma = 0;
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic warning "-Wtraditional"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
   /* If the string was not truncated due to `set print elements', and
-     the last byte of it is a null, we don't print that, in traditional C
-     style.  */
+   * the last byte of it is a null, we do NOT print that, in traditional C
+   * style: */
   if (!force_ellipses
-      && length > 0
-      && (extract_unsigned_integer (string + (length - 1) * width, width)
+      && (length > 0)
+      && (extract_unsigned_integer(string + (length - 1) * width, width)
           == '\0'))
     length--;
 
   if (length == 0)
     {
-      fputs_filtered ("\"\"", stream);
+      fputs_filtered("\"\"", stream);
       return;
     }
+
+  /* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
   for (i = 0; i < length && things_printed < print_max; ++i)
     {
@@ -403,7 +417,7 @@ scanning_macro_expansion (void)
 }
 
 
-void 
+void
 finished_macro_expansion (void)
 {
   /* There'd better be something to pop back to, and we better have
@@ -462,7 +476,7 @@ c_preprocess_and_parse (void)
   else
     {
       expression_macro_lookup_func = null_macro_lookup;
-      expression_macro_lookup_baton = 0;      
+      expression_macro_lookup_baton = 0;
     }
 
   gdb_assert (! macro_original_text);

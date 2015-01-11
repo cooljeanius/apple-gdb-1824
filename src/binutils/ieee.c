@@ -53,25 +53,24 @@ struct ieee_block
 
 struct ieee_blockstack
 {
-  /* The stack pointer.  */
+  /* The stack pointer: */
   struct ieee_block *bsp;
-  /* The stack.  */
+  /* The stack: */
   struct ieee_block stack[BLOCKSTACK_SIZE];
 };
 
-/* This structure holds information for a variable.  */
-
+/* This structure holds information for a variable: */
 struct ieee_var
 {
-  /* Start of name.  */
+  /* Start of name: */
   const char *name;
-  /* Length of name.  */
+  /* Length of name: */
   unsigned long namlen;
-  /* Type.  */
+  /* Type: */
   debug_type type;
-  /* Slot if we make an indirect type.  */
+  /* Slot if we make an indirect type: */
   debug_type *pslot;
-  /* Kind of variable or function.  */
+  /* Kind of variable or function: */
   enum
     {
       IEEE_UNKNOWN,
@@ -81,6 +80,7 @@ struct ieee_var
       IEEE_LOCAL,
       IEEE_FUNCTION
     } kind;
+  /* FIXME: '-Wc++-compat' */
 };
 
 /* This structure holds all the variables.  */

@@ -893,21 +893,21 @@ space consuming.  For each target:
 
     case 1:
       {
-	short x = bfd_get_16(abfd, (bfd_byte *)data + octets);
+	short x = (short)bfd_get_16(abfd, (bfd_byte *)data + octets);
 	DOIT(x);
 	bfd_put_16(abfd, (bfd_vma)x, (unsigned char *)data + octets);
       }
       break;
     case 2:
       {
-	long x = bfd_get_32(abfd, (bfd_byte *)data + octets);
+	long x = (long)bfd_get_32(abfd, (bfd_byte *)data + octets);
 	DOIT(x);
 	bfd_put_32(abfd, (bfd_vma)x, (bfd_byte *)data + octets);
       }
       break;
     case -2:
       {
-	long x = bfd_get_32(abfd, (bfd_byte *)data + octets);
+	long x = (long)bfd_get_32(abfd, (bfd_byte *)data + octets);
 	relocation = -relocation;
 	DOIT(x);
 	bfd_put_32(abfd, (bfd_vma)x, (bfd_byte *)data + octets);
@@ -916,10 +916,10 @@ space consuming.  For each target:
 
     case -1:
       {
-	long x = bfd_get_16 (abfd, (bfd_byte *) data + octets);
+	long x = (long)bfd_get_16(abfd, (bfd_byte *)data + octets);
 	relocation = -relocation;
-	DOIT (x);
-	bfd_put_16 (abfd, (bfd_vma) x, (bfd_byte *) data + octets);
+	DOIT(x);
+	bfd_put_16(abfd, (bfd_vma)x, (bfd_byte *)data + octets);
       }
       break;
 
@@ -1257,38 +1257,38 @@ space consuming.  For each target:
 #define DOIT(x) \
   x = ((x & ~howto->dst_mask) | (((x & howto->src_mask) +  relocation) & howto->dst_mask))
 
-  data = (bfd_byte *) data_start + (octets - data_start_offset);
+  data = (bfd_byte *)data_start + (octets - data_start_offset);
 
   switch (howto->size)
     {
     case 0:
       {
-	char x = bfd_get_8 (abfd, data);
-	DOIT (x);
-	bfd_put_8 (abfd, x, data);
+	char x = (char)bfd_get_8(abfd, data);
+	DOIT(x);
+	bfd_put_8(abfd, x, data);
       }
       break;
 
     case 1:
       {
-	short x = bfd_get_16 (abfd, data);
-	DOIT (x);
-	bfd_put_16 (abfd, (bfd_vma) x, data);
+	short x = (short)bfd_get_16(abfd, data);
+	DOIT(x);
+	bfd_put_16(abfd, (bfd_vma)x, data);
       }
       break;
     case 2:
       {
-	long x = bfd_get_32 (abfd, data);
+	long x = (long)bfd_get_32(abfd, data);
 	DOIT (x);
-	bfd_put_32 (abfd, (bfd_vma) x, data);
+	bfd_put_32(abfd, (bfd_vma)x, data);
       }
       break;
     case -2:
       {
-	long x = bfd_get_32 (abfd, data);
+	long x = (long)bfd_get_32(abfd, data);
 	relocation = -relocation;
-	DOIT (x);
-	bfd_put_32 (abfd, (bfd_vma) x, data);
+	DOIT(x);
+	bfd_put_32(abfd, (bfd_vma)x, data);
       }
       break;
 

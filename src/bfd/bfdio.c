@@ -46,7 +46,7 @@ real_ftell(FILE *file)
 #if defined(HAVE_FTELLO64)
   return ftello64(file);
 #elif defined(HAVE_FTELLO)
-  return ftello(file);
+  return (file_ptr)ftello(file);
 #else
   return ftell(file);
 #endif /* HAVE_FTELLO64 || HAVE_FTELLO || HAVE_FTELL */
@@ -100,10 +100,9 @@ DESCRIPTION
 */
 
 
-/* Return value is amount read.  */
-
+/* Return value is amount read: */
 bfd_size_type
-bfd_bread (void *ptr, bfd_size_type size, bfd *abfd)
+bfd_bread(void *ptr, bfd_size_type size, bfd *abfd)
 {
   size_t nread;
 
@@ -120,7 +119,7 @@ bfd_bread (void *ptr, bfd_size_type size, bfd *abfd)
       if ((abfd->where + get) > bim->size)
         {
           if (bim->size < (bfd_size_type)abfd->where)
-            get = 0;
+            get = 0UL;
           else
             get = (bim->size - abfd->where);
           bfd_set_error(bfd_error_file_truncated);
@@ -131,10 +130,10 @@ bfd_bread (void *ptr, bfd_size_type size, bfd *abfd)
     }
 
   if (abfd->iovec)
-    nread = abfd->iovec->bread(abfd, ptr, (file_ptr)size);
+    nread = (size_t)abfd->iovec->bread(abfd, ptr, (file_ptr)size);
   else
-    nread = 0;
-  if (nread != (size_t)-1)
+    nread = 0UL;
+  if (nread != (size_t)-1L)
     abfd->where += nread;
 
   return nread;
@@ -157,10 +156,10 @@ bfd_bwrite(const void *ptr, bfd_size_type size, bfd *abfd)
 	{
 	  bfd_size_type newsize, oldsize;
 
-	  oldsize = ((bim->size + 127) & ~(bfd_size_type)127);
+	  oldsize = ((bim->size + 127UL) & ~(bfd_size_type)127L);
 	  bim->size = (abfd->where + size);
 	  /* Round up to cut down on memory fragmentation: */
-	  newsize = ((bim->size + 127) & ~127);
+	  newsize = ((bim->size + 127UL) & ~(bfd_size_type)127L);
 	  if (newsize > oldsize)
 	    {
 	      bim->buffer = (bfd_byte *)bfd_realloc(bim->buffer, newsize);
@@ -177,11 +176,11 @@ bfd_bwrite(const void *ptr, bfd_size_type size, bfd *abfd)
     }
 
   if (abfd->iovec)
-    nwrote = abfd->iovec->bwrite(abfd, ptr, (file_ptr)size);
+    nwrote = (size_t)abfd->iovec->bwrite(abfd, ptr, (file_ptr)size);
   else
-    nwrote = 0;
+    nwrote = 0UL;
 
-  if (nwrote != (size_t)-1)
+  if (nwrote != (size_t)-1L)
     abfd->where += nwrote;
   if (nwrote != size)
     {
@@ -210,7 +209,7 @@ bfd_tell (bfd *abfd)
     }
   else if (cur->iovec)
     {
-      cur->where = abfd->iovec->btell (abfd);
+      cur->where = (ufile_ptr)abfd->iovec->btell(abfd);
       ptr += cur->where;
     }
   else
@@ -266,16 +265,16 @@ bfd_stat (bfd *abfd, struct stat *statbuf)
    can retrieve the error code).  */
 
 int
-bfd_seek (bfd *abfd, file_ptr position, int direction)
+bfd_seek(bfd *abfd, file_ptr position, int direction)
 {
   int result;
-  /* For the time being, a BFD may not seek to it's end.  The problem
-     is that we don't easily have a way to recognize the end of an
+  /* For the time being, a BFD may not seek to its end.  The problem
+     is that we do NOT easily have a way to recognize the end of an
      element in an archive.  */
 
-  BFD_ASSERT (direction == SEEK_SET || direction == SEEK_CUR);
+  BFD_ASSERT((direction == SEEK_SET) || (direction == SEEK_CUR));
 
-  if (direction == SEEK_CUR && position == 0)
+  if ((direction == SEEK_CUR) && (position == 0))
     return 0;
 
   while (abfd->my_archive != NULL)
@@ -292,9 +291,9 @@ bfd_seek (bfd *abfd, file_ptr position, int direction)
       bim = (struct bfd_in_memory *)abfd->iostream;
 
       if (direction == SEEK_SET)
-	abfd->where = position;
+	abfd->where = (ufile_ptr)position;
       else
-	abfd->where += position;
+	abfd->where += (ufile_ptr)position;
 
       if (abfd->where > bim->size)
 	{
@@ -303,7 +302,7 @@ bfd_seek (bfd *abfd, file_ptr position, int direction)
 	    {
 	      bfd_size_type newsize, oldsize;
 
-	      oldsize = (bim->size + 127) & ~(bfd_size_type) 127;
+	      oldsize = ((bim->size + 127) & ~(bfd_size_type)127);
 	      bim->size = abfd->where;
 	      /* Round up to cut down on memory fragmentation: */
 	      newsize = ((bim->size + 127) & ~(bfd_size_type)127);
@@ -328,28 +327,29 @@ bfd_seek (bfd *abfd, file_ptr position, int direction)
       return 0;
     }
 
-  if (abfd->format != bfd_archive && abfd->my_archive == 0)
+  if ((abfd->format != bfd_archive) && (abfd->my_archive == 0))
     {
-      if (direction == SEEK_SET && (bfd_vma) position == abfd->where)
+      if ((direction == SEEK_SET) && ((bfd_vma)position == abfd->where))
 	return 0;
     }
   else
     {
       /* We need something smarter to optimize access to archives.
-	 Currently, anything inside an archive is read via the file
-	 handle for the archive.  Which means that a bfd_seek on one
-	 component affects the `current position' in the archive, as
-	 well as in any other component.
-
-	 It might be sufficient to put a spike through the cache
-	 abstraction, and look to the archive for the file position,
-	 but I think we should try for something cleaner.
-
-	 In the meantime, no optimization for archives.  */
+       * Currently, anything inside an archive is read via the file handle
+       * for the archive.  Which means that a bfd_seek on one component
+       * affects the `current position' in the archive, as well as in any
+       * other component.
+       *
+       * It might be sufficient to put a spike through the cache
+       * abstraction, and look to the archive for the file position, but I
+       * think we should try for something cleaner.
+       *
+       * In the meantime, no optimization for archives, so do nothing: */
+      ;
     }
 
   if (abfd->iovec)
-    result = abfd->iovec->bseek (abfd, position, direction);
+    result = abfd->iovec->bseek(abfd, position, direction);
   else
     result = -1;
 
@@ -357,26 +357,26 @@ bfd_seek (bfd *abfd, file_ptr position, int direction)
     {
       int hold_errno = errno;
 
-      /* Force redetermination of `where' field.  */
-      bfd_tell (abfd);
+      /* Force redetermination of `where' field: */
+      bfd_tell(abfd);
 
       /* An EINVAL error probably means that the file offset was
          absurd.  */
       if (hold_errno == EINVAL)
-	bfd_set_error (bfd_error_file_truncated);
+	bfd_set_error(bfd_error_file_truncated);
       else
 	{
-	  bfd_set_error (bfd_error_system_call);
+	  bfd_set_error(bfd_error_system_call);
 	  errno = hold_errno;
 	}
     }
   else
     {
-      /* Adjust `where' field.  */
+      /* Adjust `where' field: */
       if (direction == SEEK_SET)
-	abfd->where = position;
+	abfd->where = (ufile_ptr)position;
       else
-	abfd->where += position;
+	abfd->where += (ufile_ptr)position;
     }
   return result;
 }
@@ -395,7 +395,7 @@ DESCRIPTION
 */
 
 long
-bfd_get_mtime (bfd *abfd)
+bfd_get_mtime(bfd *abfd)
 {
   struct stat buf;
 
@@ -403,12 +403,12 @@ bfd_get_mtime (bfd *abfd)
     return abfd->mtime;
 
   if (abfd->iovec == NULL)
-    return 0;
+    return 0L;
 
-  if (abfd->iovec->bstat (abfd, &buf) != 0)
-    return 0;
+  if (abfd->iovec->bstat(abfd, &buf) != 0)
+    return 0L;
 
-  abfd->mtime = buf.st_mtime;		/* Save value in case anyone wants it */
+  abfd->mtime = buf.st_mtime;	 /* Save value in case anyone wants it */
   return buf.st_mtime;
 }
 
@@ -430,7 +430,7 @@ DESCRIPTION
 	it so that such results were guaranteed.
 
 	Instead, we want to ask questions like "is this NNN byte sized
-	object I'm about to try read from file offset YYY reasonable?"
+	object I am about to try read from file offset YYY reasonable?"
 	As as example of where we might do this, some object formats
 	use string tables for which the first <<sizeof (long)>> bytes of the
 	table contain the size of the table itself, including the size bytes.
@@ -446,31 +446,31 @@ DESCRIPTION
 */
 
 long
-bfd_get_size (bfd *abfd)
+bfd_get_size(bfd *abfd)
 {
   struct stat buf;
 
   if ((abfd->flags & BFD_IN_MEMORY) != 0)
-    return ((struct bfd_in_memory *) abfd->iostream)->size;
+    return (long)((struct bfd_in_memory *)abfd->iostream)->size;
 
   if (abfd->iovec == NULL)
-    return 0;
+    return 0L;
 
-  if (abfd->iovec->bstat (abfd, &buf) != 0)
-    return 0;
+  if (abfd->iovec->bstat(abfd, &buf) != 0)
+    return 0L;
 
-  return buf.st_size;
+  return (long)buf.st_size;
 }
 
 bfd_boolean
-_bfd_io_close (bfd *abfd)
+_bfd_io_close(bfd *abfd)
 {
   if (abfd->flags & BFD_IN_MEMORY)
     {
       int ret = 0;
 
-      struct bfd_in_memory *b = (struct bfd_in_memory *) abfd->iostream;
-      BFD_ASSERT (b != NULL);
+      struct bfd_in_memory *b = (struct bfd_in_memory *)abfd->iostream;
+      BFD_ASSERT(b != NULL);
 
 #if 0
       ret = munmap(b->buffer, b->size);

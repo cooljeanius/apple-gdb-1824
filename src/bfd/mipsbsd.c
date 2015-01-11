@@ -1,8 +1,8 @@
 /* mipsbsd.c: BFD backend for MIPS BSD (a.out) binaries.
-   Copyright 1993, 1994, 1995, 1997, 1998, 1999, 2000, 2001, 2002, 2003
-   Free Software Foundation, Inc.
-   Written by Ralph Campbell.
-
+ * Copyright 1993, 1994, 1995, 1997, 1998, 1999, 2000, 2001, 2002, 2003
+ * Free Software Foundation, Inc.
+ * Written by Ralph Campbell.  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -17,20 +17,22 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* #define ENTRY_CAN_BE_ZERO */
 #define N_HEADER_IN_TEXT(x) 1
 #define N_SHARED_LIB(x) 0
 #define N_TXTADDR(x) \
-    (N_MAGIC(x) != ZMAGIC ? (x).a_entry :	/* object file or NMAGIC */\
+    (N_MAGIC(x) != ZMAGIC ? (x).a_entry :      /* object file or NMAGIC */\
 	    TEXT_START_ADDR + EXEC_BYTES_SIZE	/* no padding */\
     )
 #define N_DATADDR(x) (N_TXTADDR(x)+N_TXTSIZE(x))
 #define TEXT_START_ADDR 4096
 #define TARGET_PAGE_SIZE 4096
 #define SEGMENT_SIZE TARGET_PAGE_SIZE
-#define DEFAULT_ARCH bfd_arch_mips
+#ifndef DEFAULT_ARCH
+# define DEFAULT_ARCH bfd_arch_mips
+#endif /* !DEFAULT_ARCH */
 #define MACHTYPE_OK(mtype) ((mtype) == M_UNKNOWN \
 			    || (mtype) == M_MIPS1 || (mtype) == M_MIPS2)
 #define MY_symbol_leading_char '\0'
@@ -43,9 +45,9 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 /* this needs to go after the usage of the CONCAT* macro mentioned above,
  * but before any other headers are included, or prototypes for functions
  * are declared: */
-#if defined(__GNUC__) && (__GNUC__ >= 4)
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
  # pragma GCC diagnostic ignored "-Wtraditional"
-#endif /* gcc 4+ */
+#endif /* gcc 4+ && !__clang__ */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -491,3 +493,9 @@ const bfd_target aout_mips_big_vec =
 
     (PTR) MY_backend_data
   };
+
+#ifdef DEFAULT_ARCH
+# undef DEFAULT_ARCH
+#endif /* DEFAULT_ARCH */
+
+/* EOF */

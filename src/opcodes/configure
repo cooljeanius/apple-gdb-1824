@@ -649,6 +649,7 @@ CGEN_MAINT_FALSE
 CGEN_MAINT_TRUE
 LIBOBJS
 SYSTEM_FRAMEWORK_LIBS
+LD_ARCHFLAGS
 HDEFINES
 EXEEXT_FOR_BUILD
 CC_FOR_BUILD
@@ -695,7 +696,10 @@ MAINT
 MAINTAINER_MODE_FALSE
 MAINTAINER_MODE_TRUE
 NO_WERROR
+WARN_LDFLAGS
+WARN_DEFS
 WARN_CFLAGS
+acl_cv_wl
 libtooldir
 objdir
 lt_cv_objdir
@@ -731,6 +735,7 @@ am__fastdepCCAS_TRUE
 CCASDEPMODE
 CCASFLAGS
 CCAS
+ac_ct_RANLIB
 RANLIB
 ac_ct_AR
 AR
@@ -3803,6 +3808,10 @@ if test "$ac_res" != no; then :
 fi
 
 # Automake hack:
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking automake things" >&5
+$as_echo_n "checking automake things... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 if test -f ${srcdir}/config.status; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: config.status is already present, removing it." >&5
 $as_echo "$as_me: config.status is already present, removing it." >&6;}
@@ -4575,6 +4584,10 @@ END
   fi
 fi  ## whitespace...
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking programs" >&5
+$as_echo_n "checking programs... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 if test -n "$ac_tool_prefix"; then
   for ac_prog in ar lib "link -lib"
   do
@@ -4749,8 +4762,10 @@ esac
 if test "x${AR}" = "x"; then
   test -z "${AR}"
   if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}ar", so it can be a program name with args.
-set dummy ${ac_tool_prefix}ar; ac_word=$2
+  for ac_prog in ar gar
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_AR+:} false; then :
@@ -4766,7 +4781,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_AR="${ac_tool_prefix}ar"
+    ac_cv_prog_AR="$ac_tool_prefix$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -4786,11 +4801,15 @@ $as_echo "no" >&6; }
 fi
 
 
+    test -n "$AR" && break
+  done
 fi
-if test -z "$ac_cv_prog_AR"; then
+if test -z "$AR"; then
   ac_ct_AR=$AR
-  # Extract the first word of "ar", so it can be a program name with args.
-set dummy ar; ac_word=$2
+  for ac_prog in ar gar
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_ac_ct_AR+:} false; then :
@@ -4806,7 +4825,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_AR="ar"
+    ac_cv_prog_ac_ct_AR="$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -4825,6 +4844,10 @@ else
 $as_echo "no" >&6; }
 fi
 
+
+  test -n "$ac_ct_AR" && break
+done
+
   if test "x$ac_ct_AR" = x; then
     AR=""
   else
@@ -4836,17 +4859,17 @@ ac_tool_warned=yes ;;
 esac
     AR=$ac_ct_AR
   fi
-else
-  AR="$ac_cv_prog_AR"
 fi
-
+  ## ok (might want to switch it around though)
 else
   test ! -z "${AR}" && export AR
-
+    ## dummy
 fi
 if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
-set dummy ${ac_tool_prefix}ranlib; ac_word=$2
+  for ac_prog in ranlib granlib
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_RANLIB+:} false; then :
@@ -4862,7 +4885,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_RANLIB="${ac_tool_prefix}ranlib"
+    ac_cv_prog_RANLIB="$ac_tool_prefix$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -4882,11 +4905,15 @@ $as_echo "no" >&6; }
 fi
 
 
+    test -n "$RANLIB" && break
+  done
 fi
-if test -z "$ac_cv_prog_RANLIB"; then
+if test -z "$RANLIB"; then
   ac_ct_RANLIB=$RANLIB
-  # Extract the first word of "ranlib", so it can be a program name with args.
-set dummy ranlib; ac_word=$2
+  for ac_prog in ranlib granlib
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_ac_ct_RANLIB+:} false; then :
@@ -4902,7 +4929,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_RANLIB="ranlib"
+    ac_cv_prog_ac_ct_RANLIB="$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -4921,6 +4948,10 @@ else
 $as_echo "no" >&6; }
 fi
 
+
+  test -n "$ac_ct_RANLIB" && break
+done
+
   if test "x$ac_ct_RANLIB" = x; then
     RANLIB=":"
   else
@@ -4932,10 +4963,8 @@ ac_tool_warned=yes ;;
 esac
     RANLIB=$ac_ct_RANLIB
   fi
-else
-  RANLIB="$ac_cv_prog_RANLIB"
 fi
-
+  ## keep autoscan happy:
 if test "x${RANLIB}" = "x"; then
   test -z "${RANLIB}"
   if test -n "$ac_tool_prefix"; then
@@ -5032,7 +5061,7 @@ fi
 
 else
   test ! -z "${RANLIB}" && export RANLIB
-
+    ## dummy
 fi
 # By default we simply use the C compiler to build assembly code.
 
@@ -5857,6 +5886,10 @@ else
 fi
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking libtool things" >&5
+$as_echo_n "checking libtool things... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 case `pwd` in
   *\ * | *\	*)
     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Libtool does not cope well with whitespace in \`pwd\`" >&5
@@ -8986,22 +9019,22 @@ _LT_EOF
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_ld_force_load" >&5
 $as_echo "$lt_cv_ld_force_load" >&6; }
-    case ${host_os} in
+    case $host_os in
     rhapsody* | darwin1.[012])
-      _lt_dar_allow_undefined='${wl}-undefined ${wl}suppress' ;;
+      _lt_dar_allow_undefined='$wl-undefined ${wl}suppress' ;;
     darwin1.*)
-      _lt_dar_allow_undefined='${wl}-flat_namespace ${wl}-undefined ${wl}suppress' ;;
+      _lt_dar_allow_undefined='$wl-flat_namespace $wl-undefined ${wl}suppress' ;;
     darwin*) # darwin 5.x on
       # if running on 10.5 or later, the deployment target defaults
       # to the OS version, if on x86, and 10.4, the deployment
-      # target defaults to 10.4. Do you not love it?
+      # target defaults to 10.4. Don't you love it?
       case ${MACOSX_DEPLOYMENT_TARGET-10.0},$host in
 	10.0,*86*-darwin8*|10.0,*-darwin[91]*)
-	  _lt_dar_allow_undefined='${wl}-undefined ${wl}dynamic_lookup' ;;
+	  _lt_dar_allow_undefined='$wl-undefined ${wl}dynamic_lookup' ;;
 	10.[012][,.]*)
-	  _lt_dar_allow_undefined='${wl}-flat_namespace ${wl}-undefined ${wl}suppress' ;;
+	  _lt_dar_allow_undefined='$wl-flat_namespace $wl-undefined ${wl}suppress' ;;
 	10.*)
-	  _lt_dar_allow_undefined='${wl}-undefined ${wl}dynamic_lookup' ;;
+	  _lt_dar_allow_undefined='$wl-undefined ${wl}dynamic_lookup' ;;
       esac
     ;;
   esac
@@ -17225,7 +17258,7 @@ if test -z "${lt_cv_objdir}"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: lt_cv_objdir somehow was left unset, setting to default" >&5
 $as_echo "$as_me: WARNING: lt_cv_objdir somehow was left unset, setting to default" >&2;}
   export lt_cv_objdir=.libs
-
+    ## other possible names for it:
   if test -z "${objdir}"; then
     export objdir=.libs
 
@@ -17306,26 +17339,46 @@ fi
 
 
 # "-W" and "-Wextra" are redundant.
-WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wimplicit -Wparentheses -Wextra -Wc++-compat -Wundef -Wold-style-definition -Wnested-externs -Wshadow"
+WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
+-Wmissing-declarations -Wimplicit -Wparentheses -Wextra -Wc++-compat \
+-Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
+-Wmissing-parameter-type -Wshadow -Wabi -Wmissing-include-dirs"
+WARN_DEFS="-D_FORTIFY_SOURCE=2"
+WARN_LDFLAGS=""
 
+
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
 
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
-    # -Wmost is APPLE_LOCAL
-    WARN_CFLAGS="${WARN_CFLAGS} -Wmost"
+    # -Wmost is APPLE_LOCAL, as are -Wextra-tokens and -Wnewline-eof:
+    WARN_CFLAGS="${WARN_CFLAGS} -Wmost -Wextra-tokens -Wnewline-eof"
+    WARN_LDFLAGS="${WARN_LDFLAGS} ${acl_cv_wl}-warn_compact_unwind"
+    WARN_LDFLAGS="${WARN_LDFLAGS} ${acl_cv_wl}-warn_weak_exports"
+    WARN_LDFLAGS="${WARN_LDFLAGS} ${acl_cv_wl}-warn_stabs"
+    WARN_LDFLAGS="${WARN_LDFLAGS} ${acl_cv_wl}-warn_commons"
   ;;
 esac
 
 # GCC supports -Wuninitialized only with -O or -On, n != 0.
+# and also -Winit-self only with -Wuninitialized
+# others in this section are technically supported at other optimization
+# levels, but really only make sense with it on.
+opt_warnings="-Wuninitialized -Winit-self -Wvolatile-register-var \
+-Wdisabled-optimization -Waggressive-loop-optimizations \
+-Wvector-operation-performance -Wmaybe-uninitialized \
+-Wunsafe-loop-optimizations"
 if test x${CFLAGS+set} = xset; then
   case "${CFLAGS}" in
     *"-O0"* ) ;;
     *"-O"* )
-      WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Winit-self"
+      WARN_CFLAGS="${WARN_CFLAGS} ${opt_warnings}"
     ;;
   esac
 else
-  WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Winit-self"
+  WARN_CFLAGS="${WARN_CFLAGS} ${opt_warnings}"
 fi
 
 # Check whether --enable-werror was given.
@@ -17374,10 +17427,11 @@ if test "${enable_build_warnings+set}" = set; then :
 esac
 fi
 
+BAD_WARN_CFLAGS=""
 if test "x${WARN_CFLAGS}" != "x" -a "x${GCC}" = "xyes"
 then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking compiler warning flags" >&5
-$as_echo_n "checking compiler warning flags... " >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking compiler warning flags to use" >&5
+$as_echo_n "checking compiler warning flags to use... " >&6; }
     for w in ${WARN_CFLAGS}; do
 	case ${w} in
 	*) # Check that GCC accepts it:
@@ -17396,6 +17450,8 @@ main ()
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
   MY_WARN_CFLAGS="${MY_WARN_CFLAGS} ${w}"
+else
+  BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 	    CFLAGS="${saved_CFLAGS}"
@@ -17403,12 +17459,54 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
     done
     # Have to use second variable to avoid overwriting and/or duplicates:
     WARN_CFLAGS="${MY_WARN_CFLAGS}"
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${WARN_CFLAGS}" >&5
-$as_echo "${WARN_CFLAGS}" >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: using: ${WARN_CFLAGS}" >&5
+$as_echo "using: ${WARN_CFLAGS}" >&6; }
+    if test "x${BAD_WARN_CFLAGS}" != "x"; then
+      test -n "${BAD_WARN_CFLAGS}"
+      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: compiler failed to accept: ${BAD_WARN_CFLAGS}" >&5
+$as_echo "$as_me: WARNING: compiler failed to accept: ${BAD_WARN_CFLAGS}" >&2;}
+    fi
+fi
+
+if test "x${WARN_LDFLAGS}" != "x" -a "x${GCC}" = "xyes"
+then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking linker warning flags to use" >&5
+$as_echo_n "checking linker warning flags to use... " >&6; }
+    for w in ${WARN_LDFLAGS}; do
+	case ${w} in
+	*) # Check that the compiler successfully passes it to the linker.
+	    saved_LDFLAGS="${LDFLAGS}"
+	    LDFLAGS="${LDFLAGS} ${w}"
+	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  MY_WARN_LDFLAGS="${MY_WARN_LDFLAGS} ${w}"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+	    LDFLAGS="${saved_LDFLAGS}"
+	esac
+    done
+    # Have to use second variable to avoid overwriting and/or duplicates:
+    WARN_LDFLAGS="${MY_WARN_LDFLAGS}"
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${WARN_LDFLAGS}" >&5
+$as_echo "${WARN_LDFLAGS}" >&6; }
 fi
 
 if test x"${silent}" != x"yes" && test x"${WARN_CFLAGS}" != x""; then
-  echo "Setting warning flags = ${WARN_CFLAGS}" 6>&1
+  echo "Setting C compiler warning flags = ${WARN_CFLAGS}" 6>&1
+fi
+if test x"${silent}" != x"yes" && test x"${WARN_LDFLAGS}" != x""; then
+  echo "Setting linker warning flags = ${WARN_LDFLAGS}" 6>&1
 fi
 
 
@@ -18155,13 +18253,13 @@ esac
 $as_echo "$as_me: doing gettext checks" >&6;}
 if test -d ../intl; then
   if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../intl"
+    export LDFLAGS="-L. -L../intl"
   else
     export LDFLAGS="${LDFLAGS} -L../intl"
   fi
 elif test -d ../libintl; then
   if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../libintl"
+    export LDFLAGS="-L. -L../libintl"
   else
     export LDFLAGS="${LDFLAGS} -L../libintl"
   fi
@@ -19471,8 +19569,6 @@ $as_echo "$LINGUAS" >&6; }
   CATOBJEXT=.gmo
 
 fi
-if test "x${GETTEXT_MACRO_VERSION}" = "x"; then
-  test -z "${GETTEXT_MACRO_VERSION}"
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether NLS is requested" >&5
 $as_echo_n "checking whether NLS is requested... " >&6; }
@@ -19770,7 +19866,12 @@ fi
   ac_config_commands="$ac_config_commands po-directories"
 
 
-fi
+
+      if test "x${GETTEXT_MACRO_VERSION}" = "x"; then
+   test -z "${GETTEXT_MACRO_VERSION}"
+      ## maybe handle differently?
+ fi
+
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ../bfd/configure.host" >&5
 $as_echo "$as_me: sourcing ../bfd/configure.host" >&6;}
@@ -19929,9 +20030,59 @@ fi
 
 
 # Checks for libraries.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking libraries" >&5
+$as_echo_n "checking libraries... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for linker flag to verify linked libraries have the correct architecture" >&5
+$as_echo_n "checking for linker flag to verify linked libraries have the correct architecture... " >&6; }
+# this is also done in warning.m4, but make sure it is done up here first:
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+pre_saved_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-arch_errors_fatal"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  LD_ARCHFLAGS="${acl_cv_wl}-arch_errors_fatal"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LDFLAGS="${pre_saved_LDFLAGS}"
+if test "x${LD_ARCHFLAGS}" != "x"; then
+  test -n "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${LD_ARCHFLAGS}" >&5
+$as_echo "${LD_ARCHFLAGS}" >&6; }
+  if test "x${ERROR_ON_WARNING}" = "xyes"; then
+    if test "x${WARN_LDFLAGS}" != "x"; then
+      test -n "${WARN_LDFLAGS}" && WARN_LDFLAGS="${WARN_LDFLAGS} ${LD_ARCHFLAGS}"
+    else
+      test -z "${WARN_LDFLAGS}" && WARN_LDFLAGS="${LD_ARCHFLAGS}"
+    fi
+  fi
+    ## that should be all we need to do with them for now...
+else
+  test -z "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: none" >&5
+$as_echo "none" >&6; }
+fi
+# might need to check here:
 if test -d /usr/lib/gcc/darwin/2.95.2; then
   export LDFLAGS="${LDFLAGS} -L/usr/lib/gcc/darwin/2.95.2"
 fi
+# check arch when "main()" is the only function for which we check:
+ARCHLESS_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
 # FIXME: Replace `main' with a function in `-lcc_dynamic':
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lcc_dynamic" >&5
 $as_echo_n "checking for main in -lcc_dynamic... " >&6; }
@@ -20001,7 +20152,6 @@ $as_echo "$ac_cv_lib_gcc_main" >&6; }
 if test "x$ac_cv_lib_gcc_main" = xyes; then :
   SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lgcc"
 fi
-
 # FIXME: Replace `main' with a function in `-lSystem':
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lSystem" >&5
 $as_echo_n "checking for main in -lSystem... " >&6; }
@@ -20036,7 +20186,9 @@ $as_echo "$ac_cv_lib_System_main" >&6; }
 if test "x$ac_cv_lib_System_main" = xyes; then :
   SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lSystem"
 fi
-
+  ## reset these:
+LDFLAGS="${ARCHLESS_LDFLAGS}"
+  ## TODO: might only want to make this an error depending on platform:
 if test -z "${SYSTEM_FRAMEWORK_LIBS}"; then
   as_fn_error $? "Missing some required system libraries." "$LINENO" 5
 fi
@@ -20084,8 +20236,7 @@ _ACEOF
   LIBS="-lc $LIBS"
 
 fi
-
-# ../intl is added to LDFLAGS above
+# ../intl is already added to LDFLAGS above, so this should be fine:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing dcgettext" >&5
 $as_echo_n "checking for library containing dcgettext... " >&6; }
 if ${ac_cv_search_dcgettext+:} false; then :
@@ -20141,7 +20292,6 @@ if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 fi
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gettext in -lintl" >&5
 $as_echo_n "checking for gettext in -lintl... " >&6; }
 if ${ac_cv_lib_intl_gettext+:} false; then :
@@ -20187,6 +20337,8 @@ _ACEOF
 
 else
 
+  PRE_INTL_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lintl" >&5
 $as_echo_n "checking for main in -lintl... " >&6; }
 if ${ac_cv_lib_intl_main+:} false; then :
@@ -20225,7 +20377,8 @@ _ACEOF
   LIBS="-lintl $LIBS"
 
 fi
-
+  ## reset:
+  LDFLAGS="${PRE_INTL_LDFLAGS}"
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for iconv in -liconv" >&5
@@ -20274,6 +20427,10 @@ _ACEOF
 fi
 
 # Checks for header files.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking headers" >&5
+$as_echo_n "checking headers... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for stdbool.h that conforms to C99" >&5
 $as_echo_n "checking for stdbool.h that conforms to C99... " >&6; }
 if ${ac_cv_header_stdbool_h+:} false; then :
@@ -20366,15 +20523,17 @@ if test $ac_cv_header_stdbool_h = yes; then
 $as_echo "#define HAVE_STDBOOL_H 1" >>confdefs.h
 
 fi
- if test -d ../intl; then
+
+
+if test -d ../intl; then
   if test -z "${CPPFLAGS}"; then
-    export CPPFLAGS="-I../intl"
+    export CPPFLAGS="-I. -I../intl"
   else
     export CPPFLAGS="${CPPFLAGS} -I../intl"
   fi
 elif test -d ../libintl; then
   if test -z "${CPPFLAGS}"; then
-    export CPPFLAGS="-I../libintl"
+    export CPPFLAGS="-I. -I../libintl"
   else
     export CPPFLAGS="${CPPFLAGS} -I../libintl"
   fi
@@ -20382,8 +20541,9 @@ fi
 unset ac_cv_header_libintl_h
 unset ac_cv_header_malloc_h
 unset ac_cv_header_stdlib_h
-for ac_header in errno.h gettext.h libintl.h malloc.h malloc/malloc.h \
-                  setjmp.h stddef.h stdio.h stdio_ext.h
+for ac_header in err.h errno.h gettext.h libgen.h libintl.h \
+                  malloc.h malloc/malloc.h setjmp.h stddef.h \
+                  stdio.h stdio_ext.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -20397,6 +20557,10 @@ fi
 done
 
 # Checks for typedefs, structures, and compiler characteristics.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking C language characteristics that your C compiler supports" >&5
+$as_echo_n "checking C language characteristics that your C compiler supports... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
 $as_echo_n "checking whether byte ordering is bigendian... " >&6; }
 if ${ac_cv_c_bigendian+:} false; then :
@@ -20721,6 +20885,10 @@ else
 $as_echo "no" >&6; }
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking types" >&5
+$as_echo_n "checking types... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 ac_fn_c_find_intX_t "$LINENO" "8" "ac_cv_c_int8_t"
 case $ac_cv_c_int8_t in #(
   no|yes) ;; #(
@@ -20922,6 +21090,10 @@ $as_echo "#define HAVE_TZNAME 1" >>confdefs.h
 fi
 
 # Checks for library functions.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking functions" >&5
+$as_echo_n "checking functions... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 ac_fn_c_check_type "$LINENO" "pid_t" "ac_cv_type_pid_t" "$ac_includes_default"
 if test "x$ac_cv_type_pid_t" = xyes; then :
 
@@ -21361,8 +21533,8 @@ fi
 done
 
 
-for ac_func in memmove memset regcomp strdup strerror strncasecmp strstr \
-                strtol strtoul strtoull
+for ac_func in chdir err memmove memset regcomp strdup strerror \
+                strncasecmp strstr strtol strtoul strtoull
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -21374,7 +21546,18 @@ _ACEOF
 fi
 done
 
-ac_fn_c_check_decl "$LINENO" "basename" "ac_cv_have_decl_basename" "$ac_includes_default"
+# Checks for declarations.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking declarations" >&5
+$as_echo_n "checking declarations... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
+ac_fn_c_check_decl "$LINENO" "basename" "ac_cv_have_decl_basename" "
+/* declared in this header on darwin at least: */
+#ifdef HAVE_LIBGEN_H
+# include <libgen.h>
+#endif /* HAVE_LIBGEN_H */
+
+"
 if test "x$ac_cv_have_decl_basename" = xyes; then :
   ac_have_decl=1
 else
@@ -21383,6 +21566,26 @@ fi
 
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_BASENAME $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "chdir" "ac_cv_have_decl_chdir" "$ac_includes_default"
+if test "x$ac_cv_have_decl_chdir" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_CHDIR $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "getopt" "ac_cv_have_decl_getopt" "$ac_includes_default"
+if test "x$ac_cv_have_decl_getopt" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_GETOPT $ac_have_decl
 _ACEOF
 
 ac_fn_c_check_decl "$LINENO" "stpcpy" "ac_cv_have_decl_stpcpy" "$ac_includes_default"
@@ -21413,7 +21616,7 @@ if test "${enable_cgen_maint+set}" = set; then :
 	;;
 esac
 fi
- if test x${cgen_maint} = xyes; then
+ if test "x${cgen_maint}" = "xyes"; then
   CGEN_MAINT_TRUE=
   CGEN_MAINT_FALSE='#'
 else
@@ -21781,10 +21984,9 @@ else
 $as_echo "no" >&6; }
 fi
 
-
     # Weed out duplicate .o files. (what about .lo files?)
     f=""
-    for i in ${ta} ; do
+    for i in ${ta}; do
 	case " ${f} " in
 	*" ${i} "*) ;;
 	*) f="${f} ${i}" ;;
@@ -21794,7 +21996,7 @@ fi
 
     # And duplicate -D flags.
     f=""
-    for i in ${archdefs} ; do
+    for i in ${archdefs}; do
 	case " ${f} " in
 	*" ${i} "*) ;;
 	*) f="${f} ${i}" ;;
@@ -21810,6 +22012,7 @@ else
 fi
 
 
+## Output.
 ac_config_files="$ac_config_files Makefile po/Makefile.in:po/Make-in"
 
 ac_config_commands="$ac_config_commands default"
@@ -21822,6 +22025,7 @@ ac_config_commands="$ac_config_commands libtool_lengthening_hack_fix2"
 
 ac_config_commands="$ac_config_commands broken_libtool_hack_fix3"
 
+# Output happens for real now.
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -24572,3 +24776,5 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
+
+echo "Done configuring opcodes."

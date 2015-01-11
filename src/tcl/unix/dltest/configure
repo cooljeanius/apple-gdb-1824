@@ -3194,13 +3194,13 @@ if test -z "${CFLAGS_DEBUG}"; then
 fi
 
 if test -z "${CFLAGS_OPTIMIZE}"; then
-  export CFLAGS_OPTIMIZE="-O"
+  export CFLAGS_OPTIMIZE="-O1"
 fi
 
-# Tcl8.1 requires writable strings for gcc
-
-if test "${GCC}" = "yes"; then
+# Tcl8.1 requires writable strings for gcc:
+if test "x${GCC}" = "xyes"; then
    TCL_EXTRA_CFLAGS="-fwritable-strings"
+   ##FIXME: it is bad to require this.
 else
    TCL_EXTRA_CFLAGS=""
 fi
@@ -12159,7 +12159,7 @@ esac
 
 
 # Output.
-ac_config_files="$ac_config_files Makefile Makefile.orig"
+ac_config_files="$ac_config_files Makefile Makefile_orig"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -13189,7 +13189,7 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "Makefile.orig") CONFIG_FILES="$CONFIG_FILES Makefile.orig" ;;
+    "Makefile_orig") CONFIG_FILES="$CONFIG_FILES Makefile_orig" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

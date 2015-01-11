@@ -21,6 +21,7 @@
 ## "-Wportability" warns about rules that we just stole from automake
 ## itself, so disable those warnings for being hypocritical:
 AUTOMAKE_OPTIONS = 1.9.6 no-dist gnits dejagnu -Wall -Wno-portability
+## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 ACLOCAL_AMFLAGS = -I m4 --install

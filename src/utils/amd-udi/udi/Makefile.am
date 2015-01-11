@@ -22,8 +22,7 @@
 #
 
 ## Automake-specific things:
-
-AUTOMAKE_OPTIONS = foreign dejagnu
+AUTOMAKE_OPTIONS = foreign dejagnu no-dist
 
 
 #### Start of system configuration section. ####
@@ -87,7 +86,7 @@ SHARED_OBJS = udr.o
 
 CLEANFILES = *.o lib*.a
 
-DISTCLEANFILES = Makefile Makefile.orig *.status
+DISTCLEANFILES = Makefile Makefile*orig *.status
 
 all:	libtip.a libdfe.a
 
@@ -97,7 +96,7 @@ libdfe.a: $(SHARED_OBJS) $(LIBDFE_OBJS)
 
 libtip.a: $(SHARED_OBJS) $(LIBTIP_OBJS)
 	@$(RM) -f $@
-	@$(AR) $(AR_FLAGS) $@ $(SHARED_OBJS) $(LIBTIP_OBJS)
+	$(AR) $(AR_FLAGS) $@ $(SHARED_OBJS) $(LIBTIP_OBJS)
 	$(RANLIB) $@
 
 .c.o:

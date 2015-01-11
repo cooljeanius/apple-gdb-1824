@@ -248,18 +248,21 @@ bfd_fopen(const char *filename, const char *target, const char *mode, int fd)
   else
     nbfd->direction = write_direction;
 
-  if (! bfd_cache_init (nbfd))
+  if (! bfd_cache_init(nbfd))
     {
-      _bfd_delete_bfd (nbfd);
+      _bfd_delete_bfd(nbfd);
       return NULL;
     }
   nbfd->opened_once = TRUE;
-  /* If we opened the file by name, mark it cacheable; we can close it
-     and reopen it later. However, if a file descriptor was provided,
-     then it may have been opened with special flags that make it
-     unsafe to close and reopen the file.  */
-  if (fd == -1)
-    bfd_set_cacheable (nbfd, TRUE);
+  /* If we opened the file by name, then mark it cacheable; we can close it
+   * and reopen it later.  However, if a file descriptor was provided,
+   * then it may have been opened with special flags that make it unsafe
+   * to close and reopen the file: */
+  if (fd == -1) {
+    if (bfd_set_cacheable(nbfd, TRUE)) {
+      ; /* (do nothing; conditional is only to silence '-Wunused-value') */
+    }
+  }
 
   return nbfd;
 }
@@ -989,18 +992,18 @@ RETURNS
 	<<TRUE>> is returned if all is ok, otherwise <<FALSE>>.  */
 
 bfd_boolean
-bfd_make_readable (bfd *abfd)
+bfd_make_readable(bfd *abfd)
 {
-  if (abfd->direction != write_direction || !(abfd->flags & BFD_IN_MEMORY))
+  if ((abfd->direction != write_direction) || !(abfd->flags & BFD_IN_MEMORY))
     {
-      bfd_set_error (bfd_error_invalid_operation);
+      bfd_set_error(bfd_error_invalid_operation);
       return FALSE;
     }
 
-  if (! BFD_SEND_FMT (abfd, _bfd_write_contents, (abfd)))
+  if (! BFD_SEND_FMT(abfd, _bfd_write_contents, (abfd)))
     return FALSE;
 
-  if (! BFD_SEND (abfd, _close_and_cleanup, (abfd)))
+  if (! BFD_SEND(abfd, _close_and_cleanup, (abfd)))
     return FALSE;
 
 
@@ -1025,8 +1028,8 @@ bfd_make_readable (bfd *abfd)
   abfd->outsymbols = 0;
   abfd->tdata.any = 0;
 
-  bfd_section_list_clear (abfd);
-  bfd_check_format (abfd, bfd_object);
+  bfd_section_list_clear(abfd);
+  bfd_check_format(abfd, bfd_object);
 
   return TRUE;
 }

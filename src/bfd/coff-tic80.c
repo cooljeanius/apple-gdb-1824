@@ -371,9 +371,9 @@ static reloc_howto_type tic80_howto_table[] =
 /* This special function is used for the base address type
    relocations.  */
 
-static bfd_reloc_status_type
-ppbase_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
-	      error_message)
+static bfd_reloc_status_type ATTRIBUTE_NORETURN
+ppbase_reloc(abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
+             error_message)
      bfd *abfd ATTRIBUTE_UNUSED;
      arelent *reloc_entry ATTRIBUTE_UNUSED;
      asymbol *symbol_in ATTRIBUTE_UNUSED;
@@ -382,15 +382,14 @@ ppbase_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
      bfd *output_bfd ATTRIBUTE_UNUSED;
      char **error_message ATTRIBUTE_UNUSED;
 {
-  /* FIXME.  */
-  abort ();
+  /* FIXME: */
+  abort();
 }
 
-/* This special function is used for the global 15 bit relocations.  */
-
-static bfd_reloc_status_type
-glob15_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
-	      error_message)
+/* This special function is used for the global 15 bit relocations: */
+static bfd_reloc_status_type ATTRIBUTE_NORETURN
+glob15_reloc(abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
+             error_message)
      bfd *abfd ATTRIBUTE_UNUSED;
      arelent *reloc_entry ATTRIBUTE_UNUSED;
      asymbol *symbol_in ATTRIBUTE_UNUSED;
@@ -399,15 +398,14 @@ glob15_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
      bfd *output_bfd ATTRIBUTE_UNUSED;
      char **error_message ATTRIBUTE_UNUSED;
 {
-  /* FIXME.  */
-  abort ();
+  /* FIXME: */
+  abort();
 }
 
-/* This special function is used for the global 16 bit relocations.  */
-
-static bfd_reloc_status_type
-glob16_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
-	      error_message)
+/* This special function is used for the global 16 bit relocations: */
+static bfd_reloc_status_type ATTRIBUTE_NORETURN
+glob16_reloc(abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
+             error_message)
      bfd *abfd ATTRIBUTE_UNUSED;
      arelent *reloc_entry ATTRIBUTE_UNUSED;
      asymbol *symbol_in ATTRIBUTE_UNUSED;
@@ -416,14 +414,13 @@ glob16_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
      bfd *output_bfd ATTRIBUTE_UNUSED;
      char **error_message ATTRIBUTE_UNUSED;
 {
-  /* FIXME.  */
-  abort ();
+  /* FIXME: */
+  abort();
 }
 
-/* This special function is used for the local 16 bit relocations.  */
-
-static bfd_reloc_status_type
-local16_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
+/* This special function is used for the local 16 bit relocations: */
+static bfd_reloc_status_type ATTRIBUTE_NORETURN
+local16_reloc(abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
 	      error_message)
      bfd *abfd ATTRIBUTE_UNUSED;
      arelent *reloc_entry ATTRIBUTE_UNUSED;
@@ -433,8 +430,8 @@ local16_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
      bfd *output_bfd ATTRIBUTE_UNUSED;
      char **error_message ATTRIBUTE_UNUSED;
 {
-  /* FIXME.  */
-  abort ();
+  /* FIXME: */
+  abort();
 }
 
 /* Code to turn an external r_type into a pointer to an entry in the howto_table.

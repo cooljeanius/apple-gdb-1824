@@ -1,4 +1,4 @@
-/* SuperH SH64-specific support for 64-bit ELF
+/* elf64-sh64.c: SuperH SH64-specific support for 64-bit ELF
    Copyright 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -16,9 +16,11 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
-#define SH64_ELF64
+#ifndef SH64_ELF64
+# define SH64_ELF64
+#endif /* !SH64_ELF64 */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -4147,15 +4149,21 @@ static const struct bfd_elf_special_section sh64_elf64_special_sections[]=
 
 #include "elf64-target.h"
 
-/* Linux support.  */
-#undef	TARGET_BIG_SYM
+/* Linux support: */
+#undef TARGET_BIG_SYM
 #define	TARGET_BIG_SYM			bfd_elf64_sh64blin_vec
-#undef	TARGET_BIG_NAME
+#undef TARGET_BIG_NAME
 #define	TARGET_BIG_NAME			"elf64-sh64big-linux"
-#undef	TARGET_LITTLE_SYM
+#undef TARGET_LITTLE_SYM
 #define	TARGET_LITTLE_SYM		bfd_elf64_sh64lin_vec
-#undef	TARGET_LITTLE_NAME
+#undef TARGET_LITTLE_NAME
 #define	TARGET_LITTLE_NAME		"elf64-sh64-linux"
 
 #define	INCLUDED_TARGET_FILE
 #include "elf64-target.h"
+
+#ifdef SH64_ELF64
+# undef SH64_ELF64
+#endif /* SH64_ELF64 */
+
+/* EOF */

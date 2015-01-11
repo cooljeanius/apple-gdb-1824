@@ -33,6 +33,8 @@ fi
 AC_SEARCH_LIBS([strerror],[cposix])dnl# what used to be AC\_ISC\_POSIX
 
 # Automake hack:
+AC_MSG_CHECKING([automake things])
+AC_MSG_RESULT([ ])
 if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
@@ -43,21 +45,27 @@ dnl# (maintainer mode macro is called farther below)
 
 dnl# These must be called before AM_PROG_LIBTOOL, because it may want
 dnl# to call AC_CHECK_PROG or similar:
+AC_MSG_CHECKING([programs])
+AC_MSG_RESULT([ ])
 AM_PROG_AR
 if test "x${AR}" = "x"; then
   test -z "${AR}"
-  AC_CHECK_TOOL([AR],[ar])
+  AC_CHECK_TOOLS([AR],[ar gar])dnl
+  ## ok (might want to switch it around though)
 else
   test ! -z "${AR}" && export AR
-  AC_SUBST([AR])
+  AC_SUBST([AR])dnl
+  ## dummy
 fi
-AC_CHECK_TOOL([RANLIB],[ranlib],[:])
+AC_CHECK_TOOLS([RANLIB],[ranlib granlib],[:])dnl
+  ## keep autoscan happy:
 if test "x${RANLIB}" = "x"; then
   test -z "${RANLIB}"
   AC_PROG_RANLIB
 else
   test ! -z "${RANLIB}" && export RANLIB
-  AC_SUBST([RANLIB])
+  AC_SUBST([RANLIB])dnl
+  ## dummy
 fi
 AM_PROG_AS
 
@@ -78,15 +86,18 @@ AC_DISABLE_SHARED
 
 # Libtool checks:
 AC_PROG_CXX
+AC_MSG_CHECKING([libtool things])
+AC_MSG_RESULT([ ])
 LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])dnl
 LT_LANG([C])dnl
-dnl# temporarily set this while I update everything libtool-related:
+dnl# (temporarily) set this while I update everything libtool-related:
 LT_PREREQ([2.4.4])dnl
 
 if test -z "${lt_cv_objdir}"; then
   AC_MSG_WARN([lt_cv_objdir somehow was left unset, setting to default])
   export lt_cv_objdir=.libs
-  AC_SUBST([lt_cv_objdir])
+  AC_SUBST([lt_cv_objdir])dnl
+  ## other possible names for it:
   if test -z "${objdir}"; then
     export objdir=.libs
     AC_SUBST([objdir])
@@ -194,24 +205,31 @@ esac
 AC_MSG_NOTICE([doing gettext checks])
 if test -d ../intl; then
   if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../intl"
+    export LDFLAGS="-L. -L../intl"
   else
     export LDFLAGS="${LDFLAGS} -L../intl"
   fi
 elif test -d ../libintl; then
   if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../libintl"
+    export LDFLAGS="-L. -L../libintl"
   else
     export LDFLAGS="${LDFLAGS} -L../libintl"
   fi
 fi
 ALL_LINGUAS="fr sv tr es da de id it pt_BR ro nl fi uk vi ga zh_CN"
 CY_GNU_GETTEXT
-ZW_GNU_GETTEXT_SISTER_DIR
-if test "x${GETTEXT_MACRO_VERSION}" = "x"; then
-  test -z "${GETTEXT_MACRO_VERSION}"
-  AM_PO_SUBDIRS
-fi
+AC_DEFUN([AC_GETTEXT_EXTRA_THINGS],
+[m4_ifdef([ZW_GNU_GETTEXT_SISTER_DIR],[
+   AC_REQUIRE([ZW_GNU_GETTEXT_SISTER_DIR])dnl
+ ])dnl
+ dnl#FIXME: require does NOT work with conditionals like this:
+ if test "x${GETTEXT_MACRO_VERSION}" = "x"; then
+   test -z "${GETTEXT_MACRO_VERSION}"
+   AC_REQUIRE([AM_PO_SUBDIRS])dnl
+   ## maybe handle differently?
+ fi
+])dnl
+AC_GETTEXT_EXTRA_THINGS
 
 AC_MSG_NOTICE([sourcing ../bfd/configure.host])
 . ${srcdir}/../bfd/configure.host
@@ -224,41 +242,86 @@ AM_PROG_INSTALL_STRIP
 AC_PROG_LN_S
 
 # Checks for libraries.
+AC_MSG_CHECKING([libraries])
+AC_MSG_RESULT([ ])
+AC_MSG_CHECKING([for linker flag to verify linked libraries have the correct architecture])
+# this is also done in warning.m4, but make sure it is done up here first:
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+pre_saved_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-arch_errors_fatal"
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+               [LD_ARCHFLAGS="${acl_cv_wl}-arch_errors_fatal"],[])
+LDFLAGS="${pre_saved_LDFLAGS}"
+if test "x${LD_ARCHFLAGS}" != "x"; then
+  test -n "${LD_ARCHFLAGS}"
+  AC_MSG_RESULT([${LD_ARCHFLAGS}])
+  if test "x${ERROR_ON_WARNING}" = "xyes"; then
+    if test "x${WARN_LDFLAGS}" != "x"; then
+      test -n "${WARN_LDFLAGS}" && WARN_LDFLAGS="${WARN_LDFLAGS} ${LD_ARCHFLAGS}"
+    else
+      test -z "${WARN_LDFLAGS}" && WARN_LDFLAGS="${LD_ARCHFLAGS}"
+    fi
+  fi
+  AC_SUBST([LD_ARCHFLAGS])dnl
+  ## that should be all we need to do with them for now...
+else
+  test -z "${LD_ARCHFLAGS}"
+  AC_MSG_RESULT([none])
+fi
+# might need to check here:
 if test -d /usr/lib/gcc/darwin/2.95.2; then
   export LDFLAGS="${LDFLAGS} -L/usr/lib/gcc/darwin/2.95.2"
 fi
+# check arch when "main()" is the only function for which we check:
+ARCHLESS_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
 # FIXME: Replace `main' with a function in `-lcc_dynamic':
 AC_CHECK_LIB([cc_dynamic],[main],
            [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lcc_dynamic"])
 # FIXME: Replace `main' with a function in `-lgcc':
 AC_CHECK_LIB([gcc],[main],
-             [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lgcc"])
+             [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lgcc"])dnl
 # FIXME: Replace `main' with a function in `-lSystem':
 AC_CHECK_LIB([System],[main],
-             [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lSystem"])
+            [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lSystem"])dnl
+  ## reset these:
+LDFLAGS="${ARCHLESS_LDFLAGS}"
+  ## TODO: might only want to make this an error depending on platform:
 if test -z "${SYSTEM_FRAMEWORK_LIBS}"; then
   AC_MSG_ERROR([Missing some required system libraries.])
 fi
 AC_SUBST([SYSTEM_FRAMEWORK_LIBS])dnl
-AC_CHECK_LIB([c],[printf])
-# ../intl is added to LDFLAGS above
-AC_SEARCH_LIBS([dcgettext],[intl])
+AC_CHECK_LIB([c],[printf])dnl
+# ../intl is already added to LDFLAGS above, so this should be fine:
+AC_SEARCH_LIBS([dcgettext],[intl])dnl
 AC_CHECK_LIB([intl],[gettext],[],[
-  AC_CHECK_LIB([intl],[main])
+  PRE_INTL_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+  AC_CHECK_LIB([intl],[main])dnl
+  ## reset:
+  LDFLAGS="${PRE_INTL_LDFLAGS}"
 ])dnl
 AC_CHECK_LIB([iconv],[iconv])dnl
 
 # Checks for header files.
-AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
+AC_MSG_CHECKING([headers])
+AC_MSG_RESULT([ ])
+AC_HEADER_STDBOOL dnl# also "_CHECK"s it
+AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
+  AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
+AC_REQUIRE_HEADER_STDC
 if test -d ../intl; then
   if test -z "${CPPFLAGS}"; then
-    export CPPFLAGS="-I../intl"
+    export CPPFLAGS="-I. -I../intl"
   else
     export CPPFLAGS="${CPPFLAGS} -I../intl"
   fi
 elif test -d ../libintl; then
   if test -z "${CPPFLAGS}"; then
-    export CPPFLAGS="-I../libintl"
+    export CPPFLAGS="-I. -I../libintl"
   else
     export CPPFLAGS="${CPPFLAGS} -I../libintl"
   fi
@@ -266,16 +329,21 @@ fi
 unset ac_cv_header_libintl_h
 unset ac_cv_header_malloc_h
 unset ac_cv_header_stdlib_h
-AC_CHECK_HEADERS([errno.h gettext.h libintl.h malloc.h malloc/malloc.h \
-                  setjmp.h stddef.h stdio.h stdio_ext.h])dnl
+AC_CHECK_HEADERS([err.h errno.h gettext.h libgen.h libintl.h \
+                  malloc.h malloc/malloc.h setjmp.h stddef.h \
+                  stdio.h stdio_ext.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
+AC_MSG_CHECKING([C language characteristics that your C compiler supports])
+AC_MSG_RESULT([ ])
 AC_C_BIGENDIAN
 if test "x${ac_cv_c_const}" = "x"; then
   test -z "${ac_cv_c_const}"
   AC_C_CONST
 fi
 AC_C_PROTOTYPES
+AC_MSG_CHECKING([types])
+AC_MSG_RESULT([ ])
 AC_TYPE_INT8_T
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
@@ -287,14 +355,27 @@ AC_TYPE_UINT64_T
 AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
 
 # Checks for library functions.
+AC_MSG_CHECKING([functions])
+AC_MSG_RESULT([ ])
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_MEMCMP
 AC_FUNC_REALLOC
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([memmove memset regcomp strdup strerror strncasecmp strstr \
-                strtol strtoul strtoull])
-AC_CHECK_DECLS([basename])
+AC_CHECK_FUNCS([chdir err memmove memset regcomp strdup strerror \
+                strncasecmp strstr strtol strtoul strtoull])dnl
+
+# Checks for declarations.
+AC_MSG_CHECKING([declarations])
+AC_MSG_RESULT([ ])
+AC_CHECK_DECLS([basename],[],[],[
+/* declared in this header on darwin at least: */
+#ifdef HAVE_LIBGEN_H
+# include <libgen.h>
+#endif /* HAVE_LIBGEN_H */
+])dnl
+AC_CHECK_DECLS([chdir])dnl
+AC_CHECK_DECLS_ONCE([getopt])dnl
 AC_CHECK_DECLS([stpcpy])dnl
 
 cgen_maint=no
@@ -313,7 +394,7 @@ AC_ARG_ENABLE([cgen-maint],
 	cgendir=${cgen_maint}/lib/cgen
 	;;
 esac])dnl
-AM_CONDITIONAL([CGEN_MAINT],[test x${cgen_maint} = xyes])
+AM_CONDITIONAL([CGEN_MAINT],[test "x${cgen_maint}" = "xyes"])
 AC_SUBST([cgendir])dnl
 
 using_cgen=no
@@ -326,6 +407,7 @@ AC_CACHE_CHECK([linker --as-needed support],[bfd_cv_ld_as_needed],
 	fi
 	])dnl
 
+dnl# check for libm:
 LT_LIB_M
 
 # Libs for generator progs
@@ -502,10 +584,10 @@ if test "x${all_targets}" = "xfalse"; then
 	ta="${ta} ${cgen_files}"
     fi
 
-    AC_PATH_PROG([UNIQ_BIN],[uniq guniq],[])
+    AC_PATH_PROG([UNIQ_BIN],[uniq guniq],[])dnl
     # Weed out duplicate .o files. (what about .lo files?)
     f=""
-    for i in ${ta} ; do
+    for i in ${ta}; do
 	case " ${f} " in
 	*" ${i} "*) ;;
 	*) f="${f} ${i}" ;;
@@ -515,7 +597,7 @@ if test "x${all_targets}" = "xfalse"; then
 
     # And duplicate -D flags.
     f=""
-    for i in ${archdefs} ; do
+    for i in ${archdefs}; do
 	case " ${f} " in
 	*" ${i} "*) ;;
 	*) f="${f} ${i}" ;;
@@ -533,6 +615,7 @@ fi
 AC_SUBST([archdefs])dnl
 AC_SUBST([BFD_MACHINES])dnl
 
+## Output.
 AC_CONFIG_FILES([Makefile \
                  po/Makefile.in:po/Make-in])dnl
 
@@ -658,4 +741,7 @@ AC_CONFIG_COMMANDS([broken_libtool_hack_fix3],[
   fi
 ],[])dnl
 
+# Output happens for real now.
 AC_OUTPUT
+
+echo "Done configuring opcodes."

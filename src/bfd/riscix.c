@@ -95,6 +95,13 @@
 #define SEGMENT_SIZE      TARGET_PAGE_SIZE
 #define DEFAULT_ARCH      bfd_arch_arm
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic warning "-Wtraditional"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 /* Do not "beautify" the CONCAT* macro args.  Traditional C will not
    remove whitespace added here, and thus will fail to concatenate
    the tokens.  */
@@ -105,73 +112,80 @@
                   && ((x).a_info != NMAGIC))
 #define N_MAGIC(x) ((x).a_info & ~07200)
 
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 #include "bfd.h"
 #include "sysdep.h"
 #include "libbfd.h"
 
-#define WRITE_HEADERS(abfd, execp)					    \
-  {									    \
-    bfd_size_type text_size; /* Dummy vars.  */				    \
-    file_ptr text_end;							    \
-    									    \
-    if (adata (abfd).magic == undecided_magic)				    \
-      NAME (aout, adjust_sizes_and_vmas) (abfd, & text_size, & text_end);   \
-    									    \
-    execp->a_syms = bfd_get_symcount (abfd) * EXTERNAL_NLIST_SIZE;	    \
-    execp->a_entry = bfd_get_start_address (abfd);			    \
-    									    \
-    execp->a_trsize = ((obj_textsec (abfd)->reloc_count) *		    \
-		       obj_reloc_entry_size (abfd));			    \
-    execp->a_drsize = ((obj_datasec (abfd)->reloc_count) *		    \
-		       obj_reloc_entry_size (abfd));			    \
-    NAME (aout, swap_exec_header_out) (abfd, execp, & exec_bytes);	    \
-    									    \
-    if (bfd_seek (abfd, (file_ptr) 0, SEEK_SET) != 0			    \
-	|| bfd_bwrite ((void *) & exec_bytes, (bfd_size_type) EXEC_BYTES_SIZE,  \
-		      abfd) != EXEC_BYTES_SIZE)				    \
-      return FALSE;							    \
-    /* Now write out reloc info, followed by syms and strings.  */	    \
-									    \
-    if (bfd_get_outsymbols (abfd) != NULL			    	    \
-	&& bfd_get_symcount (abfd) != 0)				    \
-      {									    \
-	if (bfd_seek (abfd, (file_ptr) (N_SYMOFF (* execp)), SEEK_SET) != 0)\
-	  return FALSE;							    \
-									    \
-	if (! NAME (aout, write_syms) (abfd))				    \
-          return FALSE;							    \
-									    \
-	if (bfd_seek (abfd, (file_ptr) (N_TRELOFF (* execp)), SEEK_SET) != 0)\
-	  return FALSE;							    \
-									    \
-	if (! riscix_squirt_out_relocs (abfd, obj_textsec (abfd)))	    \
-	  return FALSE;							    \
-	if (bfd_seek (abfd, (file_ptr) (N_DRELOFF (* execp)), SEEK_SET) != 0)\
-	  return FALSE;							    \
-									    \
-	if (!NAME (aout, squirt_out_relocs) (abfd, obj_datasec (abfd)))	    \
-	  return FALSE;							    \
-      }									    \
+#define WRITE_HEADERS(abfd, execp)					  \
+  {									  \
+    bfd_size_type text_size; /* Dummy vars.  */				  \
+    file_ptr text_end;							  \
+                                                                          \
+    if (adata(abfd).magic == undecided_magic)				  \
+      NAME(aout, adjust_sizes_and_vmas)(abfd, & text_size, & text_end);   \
+                                                                          \
+    execp->a_syms = bfd_get_symcount(abfd) * EXTERNAL_NLIST_SIZE;	  \
+    execp->a_entry = bfd_get_start_address(abfd);			  \
+                                                                          \
+    execp->a_trsize = ((obj_textsec(abfd)->reloc_count) *		  \
+		       obj_reloc_entry_size(abfd));			  \
+    execp->a_drsize = ((obj_datasec(abfd)->reloc_count) *		  \
+		       obj_reloc_entry_size(abfd));			  \
+    NAME(aout, swap_exec_header_out)(abfd, execp, & exec_bytes);	  \
+                                                                          \
+    if ((bfd_seek(abfd, (file_ptr)0L, SEEK_SET) != 0)			  \
+	|| (bfd_bwrite((void *)&exec_bytes, (bfd_size_type)EXEC_BYTES_SIZE, \
+		       abfd) != EXEC_BYTES_SIZE))			  \
+      return FALSE;							  \
+    /* Now write out reloc info, followed by syms and strings: */	  \
+                                                                          \
+    if ((bfd_get_outsymbols(abfd) != NULL)			    	  \
+	&& (bfd_get_symcount(abfd) != 0))				  \
+      {									  \
+	if (bfd_seek(abfd, (file_ptr)(N_SYMOFF(* execp)), SEEK_SET) != 0) \
+	  return FALSE;							  \
+                                                                          \
+	if (! NAME(aout, write_syms)(abfd))				  \
+          return FALSE;							  \
+                                                                          \
+	if (bfd_seek(abfd, (file_ptr)(N_TRELOFF(* execp)), SEEK_SET) != 0) \
+	  return FALSE;							  \
+                                                                          \
+	if (! riscix_squirt_out_relocs(abfd, obj_textsec(abfd)))	  \
+	  return FALSE;							  \
+	if (bfd_seek(abfd, (file_ptr)(N_DRELOFF(* execp)), SEEK_SET) != 0) \
+	  return FALSE;							  \
+                                                                          \
+	if (!NAME(aout, squirt_out_relocs)(abfd, obj_datasec(abfd)))	  \
+	  return FALSE;							  \
+      }									  \
   }
 
 #include "libaout.h"
 #include "aout/aout64.h"
 
 static bfd_reloc_status_type
-riscix_fix_pcrel_26_done (bfd *abfd ATTRIBUTE_UNUSED,
-			  arelent *reloc_entry ATTRIBUTE_UNUSED,
-			  asymbol *symbol ATTRIBUTE_UNUSED,
-			  void * data ATTRIBUTE_UNUSED,
-			  asection *input_section ATTRIBUTE_UNUSED,
-			  bfd *output_bfd ATTRIBUTE_UNUSED,
-			  char **error_message ATTRIBUTE_UNUSED)
+riscix_fix_pcrel_26_done(bfd *abfd ATTRIBUTE_UNUSED,
+			 arelent *reloc_entry ATTRIBUTE_UNUSED,
+			 asymbol *symbol ATTRIBUTE_UNUSED,
+			 void *data ATTRIBUTE_UNUSED,
+			 asection *input_section ATTRIBUTE_UNUSED,
+			 bfd *output_bfd ATTRIBUTE_UNUSED,
+			 char **error_message ATTRIBUTE_UNUSED)
 {
-  /* This is dead simple at present.  */
+  /* This is dead simple at present: */
   return bfd_reloc_ok;
 }
 
-static bfd_reloc_status_type riscix_fix_pcrel_26 (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
-static const bfd_target *riscix_callback (bfd *);
+static bfd_reloc_status_type riscix_fix_pcrel_26(bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+static const bfd_target *riscix_callback(bfd *);
 
 static reloc_howto_type riscix_std_reloc_howto[] =
 {
@@ -190,31 +204,27 @@ static reloc_howto_type riscix_std_reloc_howto[] =
 };
 
 #define RISCIX_TABLE_SIZE \
-  (sizeof (riscix_std_reloc_howto) / sizeof (reloc_howto_type))
+  (sizeof(riscix_std_reloc_howto) / sizeof(reloc_howto_type))
 
 static bfd_reloc_status_type
-riscix_fix_pcrel_26 (bfd *abfd,
-		     arelent *reloc_entry,
-		     asymbol *symbol,
-		     void * data,
-		     asection *input_section,
-		     bfd *output_bfd,
-		     char **error_message ATTRIBUTE_UNUSED)
+riscix_fix_pcrel_26(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+                    void *data, asection *input_section, bfd *output_bfd,
+                    char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
   bfd_size_type addr = reloc_entry->address;
-  long target = bfd_get_32 (abfd, (bfd_byte *) data + addr);
+  long target = bfd_get_32(abfd, ((bfd_byte *)data + addr));
   bfd_reloc_status_type flag = bfd_reloc_ok;
 
-  /* If this is an undefined symbol, return error.  */
-  if (symbol->section == &bfd_und_section
-      && (symbol->flags & BSF_WEAK) == 0)
-    return output_bfd ? bfd_reloc_continue : bfd_reloc_undefined;
+  /* If this is an undefined symbol, return error: */
+  if ((symbol->section == &bfd_und_section)
+      && ((symbol->flags & BSF_WEAK) == 0))
+    return (output_bfd ? bfd_reloc_continue : bfd_reloc_undefined);
 
   /* If the sections are different, and we are doing a partial relocation,
-     just ignore it for now.  */
-  if (symbol->section->name != input_section->name
-      && output_bfd != NULL)
+   * then just ignore it for now: */
+  if ((symbol->section->name != input_section->name)
+      && (output_bfd != NULL))
     return bfd_reloc_continue;
 
   relocation = (target & 0x00ffffff) << 2;

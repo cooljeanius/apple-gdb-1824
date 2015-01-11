@@ -391,42 +391,42 @@ static const reloc_map maxq_reloc_map[] =
 };
 
 static reloc_howto_type *
-maxq_reloc_type_lookup (bfd * abfd ATTRIBUTE_UNUSED,
-			bfd_reloc_code_real_type code)
+maxq_reloc_type_lookup(bfd * abfd ATTRIBUTE_UNUSED,
+                       bfd_reloc_code_real_type code)
 {
   unsigned int i;
 
-  for (i = 0; i < ARRAY_SIZE (maxq_reloc_map); i++)
+  for (i = 0U; i < ARRAY_SIZE(maxq_reloc_map); i++)
     {
       const reloc_map *entry;
 
-      entry = maxq_reloc_map + i;
+      entry = (maxq_reloc_map + i);
 
       switch (code)
 	{
 	  /* SHORT JUMP */
 	case BFD_RELOC_16_PCREL_S2:
-	  return howto_table + 3;
+	  return (howto_table + 3);
 
 	  /* INTERSEGMENT JUMP */
 	case BFD_RELOC_24:
-	  return howto_table + 4;
+	  return (howto_table + 4);
 
 	  /* BYTE RELOC */
 	case BFD_RELOC_8:
-	  return howto_table + 7;
+	  return (howto_table + 7);
 
 	  /* WORD RELOC */
 	case BFD_RELOC_16:
-	  return howto_table + 5;
+	  return (howto_table + 5);
 
 	  /* LONG RELOC */
 	case BFD_RELOC_32:
-	  return howto_table + 2;
+	  return (howto_table + 2);
 
 	  /* LONG JUMP */
 	case BFD_RELOC_14:
-	  return howto_table + 6;
+	  return (howto_table + 6);
 
 	default:
 	  return NULL;

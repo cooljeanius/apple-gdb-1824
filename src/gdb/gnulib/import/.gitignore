@@ -12,6 +12,8 @@ dirent.h
 dirent.h-t
 errno.h
 errno.h-t
+fcntl.h
+fcntl.h-t
 float.h
 float.h-t
 fnmatch.h

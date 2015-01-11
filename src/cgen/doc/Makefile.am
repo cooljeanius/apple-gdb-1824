@@ -1,6 +1,8 @@
+## automake Makefile for cgen documentation
 ## Process this file with automake to generate Makefile.in
 
-AUTOMAKE_OPTIONS = 1.9 gnits
+AUTOMAKE_OPTIONS = 1.9 gnits no-dist
+## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 # List of files that go into cgen.info.
@@ -16,12 +18,10 @@ cgen_TEXINFOS = $(DOCFILES)
 # versionint.texi is handled by autoconf/automake
 cgenint_TEXINFOS = cgenint.texi glossary.texi
 
-# These are NOT ready for prime time yet. Not even a little bit.
-
+# These are NOT ready for prime time yet. Not even a little bit:
 noinst_TEXINFOS = cgen.texi cgenint.texi
 
-# Maintenance
-
+# Maintenance:
 MAINTAINERCLEANFILES = cgen.info cgenint.info
 
 # Automake 1.9 will only build info files in the objdir if they are

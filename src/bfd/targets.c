@@ -1126,17 +1126,14 @@ extern const bfd_target core_sco5_vec;
 extern const bfd_target core_trad_vec;
 
 extern const bfd_target bfd_elf32_am33lin_vec;
+
 static const bfd_target * const _bfd_target_vector[] = {
-
 #ifdef SELECT_VECS
-
 	SELECT_VECS,
-
 #else /* not SELECT_VECS */
-
-#ifdef DEFAULT_VECTOR
+# ifdef DEFAULT_VECTOR
 	&DEFAULT_VECTOR,
-#endif /* DEFAULT_VECTOR */
+# endif /* DEFAULT_VECTOR */
 	/* This list is alphabetized to make it easy to compare
 	   with other vector lists -- the decls above and
 	   the case statement in configure.in.
@@ -1145,21 +1142,21 @@ static const bfd_target * const _bfd_target_vector[] = {
 	   it was NOT omitted by mistake.  */
 	&a29kcoff_big_vec,
 	&a_out_adobe_vec,
-#ifdef BFD64
+# ifdef BFD64
 	&aix5coff64_vec,
-#endif /* BFD64 */
+# endif /* BFD64 */
 	&aout0_big_vec,
-#if 0
-	/* We have no way of distinguishing these from other a.out variants.  */
+# if 0
+	/* We have no way of distinguishing these from other a.out variants: */
 	&aout_arm_big_vec,
 	&aout_arm_little_vec,
-	/* No one seems to use this.  */
+	/* No one seems to use this: */
 	&aout_mips_big_vec,
-#endif /* 0 */
+# endif /* 0 */
 	&aout_mips_little_vec,
-#if 0
+# if 0
 	&apollocoff_vec,
-#endif /* 0 */
+# endif /* 0 */
 	&arm_epoc_pe_big_vec,
 	&arm_epoc_pe_little_vec,
 	&arm_epoc_pei_big_vec,
@@ -1174,9 +1171,9 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&b_out_vec_big_host,
 	&b_out_vec_little_host,
 	&bfd_efi_app_ia32_vec,
-#ifdef BFD64
+# ifdef BFD64
 	&bfd_efi_app_ia64_vec,
-#endif /* BFD64 */
+# endif /* BFD64 */
 	&bfd_elf32_avr_vec,
 
 	/* This, and other vectors, may not be used in any *.mt configuration.
@@ -1209,12 +1206,12 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&bfd_elf32_i860_little_vec,
 	&bfd_elf32_i860_vec,
 	&bfd_elf32_i960_vec,
-#if 0
+# if 0
 	&bfd_elf32_ia64_big_vec,
-#endif /* 0 */
-#ifdef BFD64
+# endif /* 0 */
+# ifdef BFD64
 	&bfd_elf32_ia64_hpux_big_vec,
-#endif /* BFD64 */
+# endif /* BFD64 */
 	&bfd_elf32_ip2k_vec,
 	&bfd_elf32_iq2000_vec,
 	&bfd_elf32_little_generic_vec,
@@ -1238,12 +1235,12 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&bfd_elf32_mn10300_vec,
 	&bfd_elf32_ms1_vec,
 	&bfd_elf32_msp430_vec,
-#ifdef BFD64
+# ifdef BFD64
 	&bfd_elf32_nbigmips_vec,
 	&bfd_elf32_nlittlemips_vec,
 	&bfd_elf32_ntradbigmips_vec,
 	&bfd_elf32_ntradlittlemips_vec,
-#endif /* BFD64 */
+# endif /* BFD64 */
 	&bfd_elf32_openrisc_vec,
 	&bfd_elf32_or32_big_vec,
 	&bfd_elf32_pj_vec,
@@ -1259,14 +1256,14 @@ static const bfd_target * const _bfd_target_vector[] = {
         &bfd_elf32_shlin_vec,
 	&bfd_elf32_shlnbsd_vec,
 	&bfd_elf32_shnbsd_vec,
-#ifdef BFD64
+# ifdef BFD64
 	&bfd_elf32_sh64_vec,
 	&bfd_elf32_sh64l_vec,
 	&bfd_elf32_sh64lnbsd_vec,
 	&bfd_elf32_sh64nbsd_vec,
 	&bfd_elf32_sh64lin_vec,
 	&bfd_elf32_sh64blin_vec,
-#endif /* BFD64 */
+# endif /* BFD64 */
 	&bfd_elf32_sparc_vec,
 	&bfd_elf32_tradbigmips_vec,
 	&bfd_elf32_tradlittlemips_vec,
@@ -1276,7 +1273,7 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&bfd_elf32_xstormy16_vec,
 	&bfd_elf32_xtensa_be_vec,
 	&bfd_elf32_xtensa_le_vec,
-#ifdef BFD64
+# ifdef BFD64
 	&bfd_elf64_alpha_freebsd_vec,
 	&bfd_elf64_alpha_vec,
 	&bfd_elf64_big_generic_vec,
@@ -1303,51 +1300,51 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&bfd_elf64_tradlittlemips_vec,
 	&bfd_elf64_x86_64_vec,
 	&bfd_mmo_vec,
-#endif /* BFD64 */
+# endif /* BFD64 */
 	&bfd_powerpc_pe_vec,
 	&bfd_powerpc_pei_vec,
 	&bfd_powerpcle_pe_vec,
 	&bfd_powerpcle_pei_vec,
 	&cris_aout_vec,
-#ifdef BFD64
+# ifdef BFD64
 	&demo_64_vec,	/* Only compiled if host has long-long support.  */
-#endif /* BFD64 */
+# endif /* BFD64 */
 	&ecoff_big_vec,
 	&ecoff_biglittle_vec,
 	&ecoff_little_vec,
-#ifdef BFD64
+# ifdef BFD64
 	&ecoffalpha_little_vec,
-#endif /* BFD64 */
+# endif /* BFD64 */
 	&go32coff_vec,
 	&go32stubbedcoff_vec,
 	&h8300coff_vec,
 	&h8500coff_vec,
-#if 0
+# if 0
 	/* Since a.out files lack decent magic numbers, no way to recognize
 	   which kind of a.out file it is.  */
 	&host_aout_vec,
 	/* Clashes with sunos_big_vec magic no.  */
 	&hp300bsd_vec,
-#endif /* 0 */
+# endif /* 0 */
 	&hp300hpux_vec,
 	&i386aout_vec,
 	&i386bsd_vec,
 	&i386coff_vec,
-#if 0
+# if 0
 	&i386dynix_vec,
-#endif /* 0 */
+# endif /* 0 */
 	&i386freebsd_vec,
-#if 0
+# if 0
 	/* Since a.out files lack decent magic numbers, no way to recognize
 	   which kind of a.out file it is.  */
 	&i386linux_vec,
-#endif /* 0 */
+# endif /* 0 */
 	&i386lynx_aout_vec,
 	&i386lynx_coff_vec,
-#if 0
-	/* No distinguishing features for Mach 3 executables.  */
+# if 0
+	/* No distinguishing features for Mach 3 executables: */
 	&i386mach3_vec,
-#endif /* 0 */
+# endif /* 0 */
 	&i386msdos_vec,
 	&i386netbsd_vec,
 	&i386os9k_vec,
@@ -1357,17 +1354,17 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&icoff_big_vec,
 	&icoff_little_vec,
 	&ieee_vec,
-#if 0
+# if 0
 	&m68k4knetbsd_vec,
 	&m68kaux_coff_vec,
-#endif /* 0 */
+# endif /* 0 */
 	&m68kcoff_vec,
 	&m68kcoffun_vec,
-#if 0
+# if 0
 	/* Since a.out files lack decent magic numbers, no way to recognize
 	   which kind of a.out file it is.  */
 	&m68klinux_vec,
-#endif /* 0 */
+# endif /* 0 */
 	&m68knetbsd_vec,
 	&m68ksysvcoff_vec,
 	&m88kbcs_vec,
@@ -1384,21 +1381,21 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&mipslpe_vec,
 	&mipslpei_vec,
 	&newsos3_vec,
-#ifdef BFD64
+# ifdef BFD64
 	&nlm32_alpha_vec,
-#endif /* BFD64 */
+# endif /* BFD64 */
 	&nlm32_i386_vec,
 	&nlm32_powerpc_vec,
 	&nlm32_sparc_vec,
-#if 0
+# if 0
 	/* We have no oasys tools anymore, so we cannot test any of this
-	   anymore. If you want to test the stuff yourself, go ahead...
-	   steve@cygnus.com
-	   Worse, since there is no magic number for archives, there
-	   can be annoying target mis-matches.  */
+	 * anymore. If you want to test the stuff yourself, go ahead...
+	 * <steve@cygnus.com>
+	 * Worse, since there is no magic number for archives, there
+	 * can be annoying target mis-matches.  */
 	&oasys_vec,
-#endif /* 0 */
-	/* Entry for the OpenRISC family.  */
+# endif /* 0 */
+	/* Entry for the OpenRISC family: */
 	&or32coff_big_vec,
 
 	&pc532machaout_vec,
@@ -1406,18 +1403,18 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&pdp11_aout_vec,
 	&pef_vec,
 	&pef_xlib_vec,
-#if 0
-	/* This has the same magic number as RS/6000.  */
+# if 0
+	/* This has the same magic number as RS/6000: */
 	&pmac_xcoff_vec,
-#endif /* 0 */
+# endif /* 0 */
 	&ppcboot_vec,
-#if 0
-	/* We have no way of distinguishing these from other a.out variants.  */
+# if 0
+	/* We have no way of distinguishing these from other a.out variants: */
 	&riscix_vec,
-#endif /* 0 */
-#ifdef BFD64
+# endif /* 0 */
+# ifdef BFD64
 	&rs6000coff64_vec,
-#endif /* BFD64 */
+# endif /* BFD64 */
 	&rs6000coff_vec,
 	&shcoff_small_vec,
 	&shcoff_vec,
@@ -1425,9 +1422,9 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&shlcoff_vec,
 	&shlpe_vec,
 	&shlpei_vec,
-#if defined(HOST_HPPAHPUX) || defined(HOST_HPPABSD) || defined(HOST_HPPAOSF)
+# if defined(HOST_HPPAHPUX) || defined(HOST_HPPABSD) || defined(HOST_HPPAOSF)
 	&som_vec,
-#endif /* HOST_HPPAHPUX || HOST_HPPABSD || HOST_HPPAOSF */
+# endif /* HOST_HPPAHPUX || HOST_HPPABSD || HOST_HPPAOSF */
 	&sparccoff_vec,
 	&sparcle_aout_vec,
 	&sparclinux_vec,
@@ -1449,9 +1446,9 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&vaxnetbsd_vec,
 	&vax1knetbsd_vec,
 	&versados_vec,
-#ifdef BFD64
+# ifdef BFD64
 	&vms_alpha_vec,
-#endif /* BFD64 */
+# endif /* BFD64 */
 	&vms_vax_vec,
 	&w65_vec,
 	&we32kcoff_vec,
@@ -1459,20 +1456,21 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&bfd_elf32_am33lin_vec,
 #endif /* not SELECT_VECS */
 
-/* Always support S-records, for convenience.  */
+/* Always support S-records, for convenience: */
 	&srec_vec,
 	&symbolsrec_vec,
-/* And verilog.  */
+#if 0
+/* And verilog: */
         &verilog_vec,
-/* And tekhex */
+#endif /* 0 */
+/* And tekhex: */
 	&tekhex_vec,
-/* Likewise for binary output.  */
+/* Likewise for binary output: */
 	&binary_vec,
-/* Likewise for ihex.  */
+/* Likewise for ihex: */
 	&ihex_vec,
 
-/* Add any required traditional-core-file-handler.  */
-
+/* Add any required traditional-core-file-handler: */
 #ifdef AIX386_CORE
 	&aix386_core_vec,
 #endif /* AIX386_CORE */

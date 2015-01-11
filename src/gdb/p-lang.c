@@ -32,7 +32,7 @@
 #include "valprint.h"
 #include "value.h"
 #include <ctype.h>
- 
+
 extern void _initialize_pascal_language (void);
 
 
@@ -55,8 +55,8 @@ is_pascal_string_type (struct type *type,int *length_pos,
     {
       /* Old Borland type pascal strings from Free Pascal Compiler.  */
       /* Two fields: length and st.  */
-      if (TYPE_NFIELDS (type) == 2 
-          && strcmp (TYPE_FIELDS (type)[0].name, "length") == 0 
+      if (TYPE_NFIELDS (type) == 2
+          && strcmp (TYPE_FIELDS (type)[0].name, "length") == 0
           && strcmp (TYPE_FIELDS (type)[1].name, "st") == 0)
         {
           if (length_pos)
@@ -157,27 +157,41 @@ pascal_printchar (int c, struct ui_file *stream)
    had to stop before printing LENGTH characters, or if FORCE_ELLIPSES.  */
 
 void
-pascal_printstr (struct ui_file *stream, const gdb_byte *string,
-		 unsigned int length, int width, int force_ellipses)
+pascal_printstr(struct ui_file *stream, const gdb_byte *string,
+                unsigned int length, int width, int force_ellipses)
 {
   unsigned int i;
   unsigned int things_printed = 0;
   int in_quotes = 0;
   int need_comma = 0;
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic warning "-Wtraditional"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
   /* If the string was not truncated due to `set print elements', and
-     the last byte of it is a null, we don't print that, in traditional C
-     style.  */
-  if ((!force_ellipses) && length > 0 && string[length - 1] == '\0')
+   * the last byte of it is a null, we do NOT print that, in traditional C
+   * style: */
+  if ((!force_ellipses) && (length > 0) && (string[length - 1] == '\0'))
     length--;
 
   if (length == 0)
     {
-      fputs_filtered ("''", stream);
+      fputs_filtered("''", stream);
       return;
     }
 
-  for (i = 0; i < length && things_printed < print_max; ++i)
+  /* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
+  for (i = 0; (i < length) && (things_printed < print_max); ++i)
     {
       /* Position of the character we are examining
          to see whether it is repeated.  */

@@ -158,7 +158,7 @@ static int x86_64_regmap[] = {
 	DS * 8, ES * 8, FS * 8, GS * 8
 };
 #  ifndef X86_64_NUM_GREGS
-#   define X86_64_NUM_GREGS (sizeof(x86_64_regmap)/sizeof(int))
+#   define X86_64_NUM_GREGS (sizeof(x86_64_regmap) / sizeof(int))
 #  endif /* !X86_64_NUM_GREGS */
 
 /* These next two functions need to stay inside the same ifdef that the
@@ -182,14 +182,14 @@ static void x86_64_store_gregset(const void *buf)
 }
 # endif /* HAVE_LINUX_USRREGS && HAVE_LINUX_REGSETS */
 
-#if defined (TARGET_X86_64) || defined (HOST_X86_64) || defined (__x86_64__)
+#if defined(TARGET_X86_64) || defined(HOST_X86_64) || defined(__x86_64__)
 static void x86_64_fill_fpregset(void *buf)
 {
   i387_cache_to_fxsave(buf);
 } /* unused */
 #endif /* x86_64 */
 
-#if defined (TARGET_X86_64) || defined (HOST_X86_64) || defined (__x86_64__)
+#if defined(TARGET_X86_64) || defined(HOST_X86_64) || defined(__x86_64__)
 static void x86_64_store_fpregset(const void *buf)
 {
   i387_fxsave_to_cache(buf);
@@ -197,7 +197,7 @@ static void x86_64_store_fpregset(const void *buf)
 #endif /* x86_64 */
 
 struct macosx_target_ops the_low_target = {
-  -1,
+  (void (*)(int))-1,
   NULL,
   NULL,
   NULL,

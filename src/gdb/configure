@@ -981,6 +981,8 @@ CCASFLAGS
 CCAS
 ac_ct_AR
 AR
+MAKE_SHOULD_RECURSE_INTO_GNULIB_FALSE
+MAKE_SHOULD_RECURSE_INTO_GNULIB_TRUE
 subdirs
 MAKEINFO_EXTRA_FLAGS
 MAKEINFOFLAGS
@@ -5049,6 +5051,8 @@ $as_echo "$ac_cv_safe_to_define___extensions__" >&6; }
 
   $as_echo "#define _GNU_SOURCE 1" >>confdefs.h
 
+  $as_echo "#define __USE_MINGW_ANSI_STDIO 1" >>confdefs.h
+
   $as_echo "#define _POSIX_PTHREAD_SEMANTICS 1" >>confdefs.h
 
   $as_echo "#define _TANDEM_SOURCE 1" >>confdefs.h
@@ -6715,13 +6719,13 @@ $as_echo_n "checking gettext-related things (Cygnus-style)... " >&6; }
 $as_echo " " >&6; }
 if test -d ../intl; then
   if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../intl"
+    export LDFLAGS="-L. -L../intl"
   else
     export LDFLAGS="${LDFLAGS} -L../intl"
   fi
 elif test -d ../libintl; then
   if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../libintl"
+    export LDFLAGS="-L. -L../libintl"
   else
     export LDFLAGS="${LDFLAGS} -L../libintl"
   fi
@@ -8492,6 +8496,13 @@ $as_echo "$as_me: gnulib subdir present, but we are not using it." >&6;}
     export unused_subdirs="${unused_subdirs} gnulib"
   fi
 fi
+ if test -d ${srcdir}/gnulib && test "x${recurse_into_gnulib}" = "xyes"; then
+  MAKE_SHOULD_RECURSE_INTO_GNULIB_TRUE=
+  MAKE_SHOULD_RECURSE_INTO_GNULIB_FALSE='#'
+else
+  MAKE_SHOULD_RECURSE_INTO_GNULIB_TRUE='#'
+  MAKE_SHOULD_RECURSE_INTO_GNULIB_FALSE=
+fi
 
 if test "x${target}" = "x${host}"; then
   gdb_native=yes
@@ -8822,7 +8833,7 @@ if test "${enable_gdbcli+set}" = set; then :
 else
   enable_gdbcli=yes
 fi
-
+  ## set corresponding variables:
 if test x"${enable_gdbcli}" = x"yes"; then
   if test -d ${srcdir}/cli; then
     CONFIG_OBS="${CONFIG_OBS} \$(SUBDIR_CLI_OBS)"
@@ -8845,7 +8856,7 @@ if test "${enable_gdbmi+set}" = set; then :
 else
   enable_gdbmi=yes
 fi
-
+  ## set corresponding variables:
 if test x"${enable_gdbmi}" = x"yes"; then
   if test -d ${srcdir}/mi; then
     CONFIG_OBS="${CONFIG_OBS} \$(SUBDIR_MI_OBS)"
@@ -35573,7 +35584,6 @@ fi
     fi
   fi
 
-
 # On HP/UX we may need libxpdl for dlgetmodinfo (used by solib-pa64.c).
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing dlgetmodinfo" >&5
 $as_echo_n "checking for library containing dlgetmodinfo... " >&6; }
@@ -37607,7 +37617,7 @@ _ACEOF
 fi
 
 done
-
+  ## special variable that depends on result of <sys/types.h> check:
 EXTRA_DEFS=""
 if test "x${ac_cv_header_sys_types_h}" = "xyes"; then
   # this has to go separate from the configure header, because we check
@@ -37629,7 +37639,6 @@ _ACEOF
 fi
 
 done
-
 # even more header checks:
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable assertions" >&5
@@ -37674,11 +37683,11 @@ _ACEOF
 fi
 
 done
-
+  ## be careful in case we find the in-tree one:
 for ac_header in gettext.h
 do :
   ac_fn_c_check_header_compile "$LINENO" "gettext.h" "ac_cv_header_gettext_h" "
-#ifndef HAVE_CONDEFS_H
+#ifndef HAVE_CONFDEFS_H
 # define HAVE_CONFDEFS_H 1
 #endif /* !HAVE_CONFDEFS_H */
 
@@ -38515,7 +38524,7 @@ $as_echo "$gl_cv_next_string_h" >&6; }
 # Just in case:
 if test "x${NEXT_STRING_H}" = "x"; then
   test -z "${NEXT_STRING_H}" && export NEXT_STRING_H="<string.h>"
-
+    ## (gnulib should be happy now)
 fi
 
 # ------------------------- #
@@ -41381,7 +41390,7 @@ _ACEOF
 
 fi
 done
-
+  ## might have already been checked:
 if test "x${ac_cv_func_setlocale}" = "x"; then
   test -z "${ac_cv_func_setlocale}"
   for ac_func in setlocale
@@ -41394,7 +41403,7 @@ _ACEOF
 
 fi
 done
-
+  ## ok
 fi
 for ac_func in iconvlist libiconvlist btowc
 do :
@@ -41889,7 +41898,7 @@ if test "${with_included_regex+set}" = set; then :
 else
   gdb_with_regex=${gdb_use_included_regex}
 fi
-
+  ## corresponding define:
 if test "x${gdb_with_regex}" = "xyes"; then
 
 $as_echo "#define USE_INCLUDED_REGEX 1" >>confdefs.h
@@ -42184,10 +42193,9 @@ $as_echo "#define HAVE_PT_GETXMMREGS 1" >>confdefs.h
 fi
 
 # If we are configured native on GNU/Linux, work around problems with
-# sys/procfs.h
+# <sys/procfs.h>
 # Also detect which type of /proc is in use, such as for Unixware
-# or for Solaris.
-
+# or for Solaris:
 if test "${target}" = "${host}"; then
   case "${host}" in
   i[3456]86-*-linux*)
@@ -43792,7 +43800,7 @@ fi
 rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
-
+  ## corresponding define:
 if ${have_personality}
 then
 
@@ -43864,12 +43872,12 @@ build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Wold-style-declaration -Wold-style-definition -Wstrict-prototypes \
 -Wabi -Wmissing-noreturn -Waddress -Warray-bounds -Wattributes \
 -Wswitch -Wclobbered -Wcoverage-mismatch -Wdiv-by-zero \
--Wdouble-promotion -Wfree-nonheap-object \
+-Wdouble-promotion -Wfree-nonheap-object -Wsign-compare \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
 -Wmissing-include-dirs -Woverflow -Woverlength-strings -Woverride-init \
 -Wpragmas -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
--Wtrampolines -Wunknown-pragmas -Wnormalized=nfc \
--Wunsuffixed-float-constants -Wstrict-overflow -Wjump-misses-init"
+-Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc \
+-Wunsuffixed-float-constants -Wfloat-conversion -Wjump-misses-init"
 link_warnings=""
 
 # If compiler does NOT support the long long data type, see if it can
@@ -43886,6 +43894,11 @@ case "${host}" in
     # -Wnonportable-cfstrings is actually a flag for newer versions of the
     # FSF gcc, but it only makes sense on Apple platforms.
     build_warnings="${build_warnings} -Wmost -Wformat-nonliteral -Wextra-tokens -Wnewline-eof -std=gnu99 -Wnonportable-cfstrings -Wendif-labels"
+    case "${host}" in
+      *64*-apple-darwin9* | *64*-apple-darwin-1[0123456789].*)
+        build_warnings="${build_warnings} -Wshorten-64-to-32"
+      ;;
+    esac
     link_warnings="${link_warnings} ${acl_cv_wl}-warn_compact_unwind ${acl_cv_wl}-warn_weak_exports ${acl_cv_wl}-warn_stabs ${acl_cv_wl}-warn_commons"
     # also consider: "${acl_cv_wl}-why_load"
   ;;
@@ -43911,10 +43924,12 @@ esac
 opt_warnings="-Wuninitialized -Winit-self -Wvolatile-register-var \
 -Wdisabled-optimization -Waggressive-loop-optimizations \
 -Wvector-operation-performance -Wmaybe-uninitialized \
--Wunsafe-loop-optimizations"
+-Wstrict-overflow=1 -Wunsafe-loop-optimizations"
 if test x${CFLAGS+set} = xset; then
   case "${CFLAGS}" in
-    *"-O0"* ) ;;
+    *"-O0"* )
+      build_warnings="${build_warnings} -ftrapv"
+    ;;
     *"-O"* )
       build_warnings="${build_warnings} ${opt_warnings}"
     ;;
@@ -43932,6 +43947,7 @@ fi
 #  * -Wcast-align (same as with -Wcast-qual, and also makes clang noisy)
 #  * -Wwrite-strings (would require a lot of const-ifying)
 #  * -Wconversion (would require a lot of casting)
+#  * -Wsign-conversion (likewise)
 #  * -Wmissing-prototypes (I like this one, but redundant with other flag)
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
 #  * -Woverloaded-virtual (If we ever switch to c++)
@@ -43962,6 +43978,10 @@ fi
 #  * -Wmissing-noreturn (might want to use the newer version instead)
 #  * -Wvolatile-register-var (kinda pointless)
 #  * -Wswitch (I like this one, but others might not)
+# Up for debate in some other way:
+#  * -Wstrict-overflow (i.e., could change the value assigned to it. We use
+#    "1" now because that is the default for "-Wall", but "2" is the
+#    default when no value is used with it with an "=", and the max is "5")
 # NOT actually up for debate:
 #  * -Werror (never add this)
 #  * -pedantic-errors (likewise, never add this)
@@ -44208,7 +44228,7 @@ if test "${with_lzma+set}" = set; then :
 else
   with_lzma=auto
 fi
-
+  ## see what we were passed:
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to use lzma" >&5
 $as_echo_n "checking whether to use lzma... " >&6; }
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${with_lzma}" >&5
@@ -46456,7 +46476,7 @@ else
       GDB_SIM="${gdb_sim}"
     fi
     DEFAULT_SIM_OB="remote-sim.o"
-
+        ## clear:
     IGNORE_SIM=""
     IGNORE_SIM_OBS=""
 
@@ -46606,7 +46626,7 @@ if test "${with_babeltrace+set}" = set; then :
 else
   with_babeltrace=auto
 fi
-
+  ## see what we were passed:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to use babeltrace" >&5
 $as_echo_n "checking whether to use babeltrace... " >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${with_babeltrace}" >&5
@@ -47243,9 +47263,8 @@ $as_echo "$as_me: nlm subdir present, but we are not using it" >&6;}
 fi
 
 # If hostfile (XM_FILE) and/or targetfile (DEPRECATED_TM_FILE) and/or
-# nativefile (NAT_FILE) is not set in config/*/*.m[ht] files, we link
-# to an empty version.
-
+# nativefile (NAT_FILE) is not set in config/*/*.m[ht] files, then we link
+# to an empty version:
 files=""
 links=""
 
@@ -47645,6 +47664,10 @@ $as_echo_n "checking that generated files are newer than configure... " >&6; }
    fi
    { $as_echo "$as_me:${as_lineno-$LINENO}: result: done" >&5
 $as_echo "done" >&6; }
+if test -z "${MAKE_SHOULD_RECURSE_INTO_GNULIB_TRUE}" && test -z "${MAKE_SHOULD_RECURSE_INTO_GNULIB_FALSE}"; then
+  as_fn_error $? "conditional \"MAKE_SHOULD_RECURSE_INTO_GNULIB\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 if test -z "${am__fastdepCCAS_TRUE}" && test -z "${am__fastdepCCAS_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCCAS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5

@@ -194,7 +194,7 @@ static int prompt_last_screen_line;
 	\002 (^B) end non-visible characters
    all characters except \001 and \002 (following a \001) are copied to
    the returned string; all characters except those between \001 and
-   \002 are assumed to be `visible'. */	
+   \002 are assumed to be `visible'. */
 
 static char *
 expand_prompt (pmt, lp, lip, niflp)
@@ -377,7 +377,7 @@ init_line_structures (minsize)
       inv_lbreaks[0] = vis_lbreaks[0] = 0;
     }
 }
-  
+
 /* Basic redisplay algorithm. */
 void
 rl_redisplay ()
@@ -495,7 +495,7 @@ rl_redisplay ()
 	  } \
       } while (0)
 
-#if defined (HANDLE_MULTIBYTE)	  
+#if defined (HANDLE_MULTIBYTE)
 #define CHECK_LPOS() \
       do { \
 	lpos++; \
@@ -1125,7 +1125,7 @@ update_line (old, new, current_line, omax, nmax, inv_botlin)
 	}
     }
 
-      
+
   /* Find first difference. */
 #if defined (HANDLE_MULTIBYTE)
   if (MB_CUR_MAX > 1 && rl_byte_oriented == 0)
@@ -1403,7 +1403,7 @@ update_line (old, new, current_line, omax, nmax, inv_botlin)
 	    col_lendiff = lendiff;
 
 	  if (col_lendiff)
-	    {	  
+	    {
 	      if (_rl_term_autowrap && current_line < inv_botlin)
 		space_to_eol (col_lendiff);
 	      else
@@ -1876,42 +1876,39 @@ _rl_clear_to_eol (count)
 /* Clear to the end of the line using spaces.  COUNT is the minimum
    number of character spaces to clear, */
 static void
-space_to_eol (count)
-     int count;
+space_to_eol(int count)
 {
   register int i;
 
   for (i = 0; i < count; i++)
-   putc (' ', rl_outstream);
+   putc(' ', rl_outstream);
 
   _rl_last_c_pos += count;
 }
 
 void
-_rl_clear_screen ()
+_rl_clear_screen(void)
 {
-#if defined (__GO32__)
-  ScreenClear ();	/* FIXME: only works in text modes */
-  ScreenSetCursor (0, 0);  /* term_clrpag is "cl" which homes the cursor */
+#if defined(__GO32__)
+  ScreenClear();	/* FIXME: only works in text modes */
+  ScreenSetCursor(0, 0);  /* term_clrpag is "cl" which homes the cursor */
 #else
   if (_rl_term_clrpag)
-    tputs (_rl_term_clrpag, 1, _rl_output_character_function);
+    tputs(_rl_term_clrpag, 1, _rl_output_character_function);
   else
-    rl_crlf ();
-#endif
+    rl_crlf();
+#endif /* __GO32__ */
 }
 
-/* Insert COUNT characters from STRING to the output stream at column COL. */
+/* Insert COUNT characters from STRING to the output stream at column COL: */
 static void
-insert_some_chars (string, count, col)
-     char *string;
-     int count, col;
+insert_some_chars(char *string, int count, int col)
 {
 #if defined(__MSDOS__) || defined(__MINGW32__)
-  _rl_output_some_chars (string, count);
+  _rl_output_some_chars(string, count);
 #else  /* !__MSDOS__ && !__MINGW32__ */
   /* DEBUGGING */
-  if (MB_CUR_MAX == 1 || rl_byte_oriented)
+  if ((MB_CUR_MAX == 1) || rl_byte_oriented)
     if (count != col)
       fprintf(stderr, "readline: debug: insert_some_chars: count (%d) != col (%d)\n", count, col);
 
@@ -1959,7 +1956,7 @@ delete_chars (count)
   if (count > _rl_screenwidth)	/* XXX */
     return;
 
-#if !defined(__MSDOS__) && !defined(__MINGW32__)  
+#if !defined(__MSDOS__) && !defined(__MINGW32__)
   if (_rl_term_DC && *_rl_term_DC)
     {
       char *buffer;
@@ -2055,7 +2052,7 @@ redraw_prompt (t)
   prompt_last_invisible = oldlast;
   prompt_invis_chars_first_line = oldninvis;
 }
-      
+
 /* Redisplay the current line after a SIGWINCH is received. */
 void
 _rl_redisplay_after_sigwinch ()
@@ -2214,12 +2211,14 @@ _rl_col_width (str, start, end)
 	  point += tmp;
 	  max -= tmp;
 	  tmp = wcwidth(wc);
-	  width += (tmp >= 0) ? tmp : 1;
+	  width += ((tmp >= 0) ? tmp : 1);
 	}
     }
 
-  width += point - end;
+  width += (point - end);
 
   return width;
 }
 #endif /* HANDLE_MULTIBYTE */
+
+/* EOF */

@@ -87,7 +87,7 @@ extern "C" {
 
 struct bfd_pef_imported_symbol
 {
-  unsigned char class;
+  unsigned char symclass;
   unsigned long name;
 };
 typedef struct bfd_pef_imported_symbol bfd_pef_imported_symbol;

@@ -1594,39 +1594,44 @@ pe_print_pdata (bfd * abfd, void * vfile)
       bfd_vma eh_data;
       bfd_vma prolog_end_addr;
       int em_data;
+      int tmp_i = i;  /* (loop counter may overflow otherwise) */
 
-      if (i + PDATA_ROW_SIZE > stop)
+      if ((tmp_i + PDATA_ROW_SIZE) > stop) {
+	break;
+      } else {
+        ; /* (check if using 'tmp_i' over 'i' affected anything here) */
+      }
+
+
+      begin_addr = GET_PDATA_ENTRY(abfd, data + i);
+      end_addr = GET_PDATA_ENTRY(abfd, data + i +  4);
+      eh_handler = GET_PDATA_ENTRY(abfd, data + i +  8);
+      eh_data = GET_PDATA_ENTRY(abfd, data + i + 12);
+      prolog_end_addr = GET_PDATA_ENTRY(abfd, data + i + 16);
+
+      if ((begin_addr == 0) && (end_addr == 0) && (eh_handler == 0)
+	  && (eh_data == 0) && (prolog_end_addr == 0))
+	/* We are probably into the padding of the section now: */
 	break;
 
-      begin_addr      = GET_PDATA_ENTRY (abfd, data + i     );
-      end_addr        = GET_PDATA_ENTRY (abfd, data + i +  4);
-      eh_handler      = GET_PDATA_ENTRY (abfd, data + i +  8);
-      eh_data         = GET_PDATA_ENTRY (abfd, data + i + 12);
-      prolog_end_addr = GET_PDATA_ENTRY (abfd, data + i + 16);
+      em_data = (((eh_handler & 0x1) << 2) | (prolog_end_addr & 0x3));
+      eh_handler &= ~(bfd_vma)0x3;
+      prolog_end_addr &= ~(bfd_vma)0x3;
 
-      if (begin_addr == 0 && end_addr == 0 && eh_handler == 0
-	  && eh_data == 0 && prolog_end_addr == 0)
-	/* We are probably into the padding of the section now.  */
-	break;
-
-      em_data = ((eh_handler & 0x1) << 2) | (prolog_end_addr & 0x3);
-      eh_handler &= ~(bfd_vma) 0x3;
-      prolog_end_addr &= ~(bfd_vma) 0x3;
-
-      fputc (' ', file);
-      fprintf_vma (file, i + section->vma); fputc ('\t', file);
-      fprintf_vma (file, begin_addr); fputc (' ', file);
-      fprintf_vma (file, end_addr); fputc (' ', file);
-      fprintf_vma (file, eh_handler);
+      fputc(' ', file);
+      fprintf_vma(file, i + section->vma); fputc('\t', file);
+      fprintf_vma(file, begin_addr); fputc(' ', file);
+      fprintf_vma(file, end_addr); fputc(' ', file);
+      fprintf_vma(file, eh_handler);
 #ifndef COFF_WITH_pep
-      fputc (' ', file);
-      fprintf_vma (file, eh_data); fputc (' ', file);
-      fprintf_vma (file, prolog_end_addr);
-      fprintf (file, "   %x", em_data);
-#endif
+      fputc(' ', file);
+      fprintf_vma(file, eh_data); fputc(' ', file);
+      fprintf_vma(file, prolog_end_addr);
+      fprintf(file, "   %x", em_data);
+#endif /* COFF_WITH_pep */
 
 #ifdef POWERPC_LE_PE
-      if (eh_handler == 0 && eh_data != 0)
+      if ((eh_handler == 0) && (eh_data != 0))
 	{
 	  /* Special bits here, although the meaning may be a little
 	     mysterious. The only one I know for sure is 0x03
@@ -1638,23 +1643,23 @@ pe_print_pdata (bfd * abfd, void * vfile)
 	  switch (eh_data)
 	    {
 	    case 0x01:
-	      fprintf (file, _(" Register save millicode"));
+	      fprintf(file, _(" Register save millicode"));
 	      break;
 	    case 0x02:
-	      fprintf (file, _(" Register restore millicode"));
+	      fprintf(file, _(" Register restore millicode"));
 	      break;
 	    case 0x03:
-	      fprintf (file, _(" Glue code sequence"));
+	      fprintf(file, _(" Glue code sequence"));
 	      break;
 	    default:
 	      break;
 	    }
 	}
-#endif
-      fprintf (file, "\n");
+#endif /* POWERPC_LE_PE */
+      fprintf(file, "\n");
     }
 
-  free (data);
+  free(data);
 
   return TRUE;
 }

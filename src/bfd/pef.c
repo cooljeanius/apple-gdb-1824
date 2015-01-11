@@ -405,10 +405,10 @@ bfd_pef_parse_imported_symbol(bfd *abfd ATTRIBUTE_UNUSED,
 {
   unsigned long value;
 
-  BFD_ASSERT(len == 4);
+  BFD_ASSERT(len == 4UL);
 
   value = bfd_getb32(buf);
-  symbol->class = (value >> 24);
+  symbol->symclass = (value >> 24);
   symbol->name = (value & 0x00ffffff);
 
   return 0;
@@ -690,33 +690,33 @@ bfd_pef_parse_traceback_tables(bfd *abfd, asection *sec,
   const char *const tbprefix = "__traceback_";
   size_t tbnamelen;
 
-  size_t pos = 0;
-  unsigned long count = 0;
+  size_t pos = 0UL;
+  unsigned long count = 0UL;
   int ret;
 
   for (;;)
     {
-      /* We are reading symbols two at a time.  */
+      /* We are reading symbols two at a time: */
       if (csym && ((csym[count] == NULL) || (csym[count + 1] == NULL))) {
         break;
       }
 
-      pos += 3;
-      pos -= (pos % 4);
+      pos += 3UL;
+      pos -= (pos % 4UL);
 
       while ((pos + 4) <= len)
 	{
           if (bfd_getb32(buf + pos) == 0) {
             break;
           }
-	  pos += 4;
+	  pos += 4UL;
 	}
 
-      if ((pos + 4) > len) {
+      if ((pos + 4UL) > len) {
         break;
       }
 
-      ret = bfd_pef_parse_traceback_table(abfd, sec, buf, len, (pos + 4),
+      ret = bfd_pef_parse_traceback_table(abfd, sec, buf, len, (pos + 4UL),
                                           &function, 0);
       if (ret < 0)
 	{
@@ -849,7 +849,7 @@ bfd_pef_parse_function_stubs(bfd *abfd, asection *codesec,
       }
     }
 
-  codepos = 0;
+  codepos = 0UL;
 
   for (;;)
     {
@@ -865,18 +865,18 @@ bfd_pef_parse_function_stubs(bfd *abfd, asection *codesec,
         break;
       }
 
-      codepos += 3;
-      codepos -= (codepos % 4);
+      codepos += 3UL;
+      codepos -= (codepos % 4UL);
 
-      while ((codepos + 4) <= codelen)
+      while ((codepos + 4UL) <= codelen)
 	{
           if ((bfd_getb32(codebuf + codepos) & 0xffff0000) == 0x81820000) {
             break;
           }
-	  codepos += 4;
+	  codepos += 4UL;
 	}
 
-      if ((codepos + 4) > codelen) {
+      if ((codepos + 4UL) > codelen) {
         break;
       }
 
@@ -884,13 +884,13 @@ bfd_pef_parse_function_stubs(bfd *abfd, asection *codesec,
                                         (size_t)24UL, &ulindex);
       if (ret < 0)
 	{
-	  codepos += 24;
+	  codepos += 24UL;
 	  continue;
 	}
 
       if (ulindex >= header.total_imported_symbol_count)
 	{
-	  codepos += 24;
+	  codepos += 24UL;
 	  continue;
 	}
 
@@ -905,7 +905,7 @@ bfd_pef_parse_function_stubs(bfd *abfd, asection *codesec,
 	max = (loaderlen - (header.loader_strings_offset + imports[ulindex].name));
 	symname = (char *)loaderbuf;
 	symname += (header.loader_strings_offset + imports[ulindex].name);
-	namelen = 0;
+	namelen = 0UL;
 	for (s = symname; s < (symname + max); s++)
 	  {
             if (*s == '\0') {
@@ -920,12 +920,12 @@ bfd_pef_parse_function_stubs(bfd *abfd, asection *codesec,
           goto error;
 	}
 
-	name = (char *)bfd_alloc(abfd, (strlen(sprefix) + namelen + 1));
+	name = (char *)bfd_alloc(abfd, (strlen(sprefix) + namelen + 1UL));
 	if (name == NULL) {
           break;
 	}
 
-	snprintf(name, (strlen(sprefix) + namelen + 1), "%s%s",
+	snprintf(name, (strlen(sprefix) + namelen + 1UL), "%s%s",
                  sprefix, symname);
 	sym.name = name;
       }
@@ -936,7 +936,7 @@ bfd_pef_parse_function_stubs(bfd *abfd, asection *codesec,
       sym.flags = 0;
       sym.udata.i = 0;
 
-      codepos += 24;
+      codepos += 24UL;
 
       if (csym != NULL) {
         *(csym[count]) = sym;

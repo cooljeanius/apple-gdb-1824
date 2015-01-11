@@ -1,8 +1,27 @@
 ## automake Makefile for libopcodes source
 ## Process this file with automake to generate Makefile.in
+#
+#   Copyright (C) 2012-2014 Free Software Foundation, Inc.
+#
+# This file is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; see the file COPYING3.  If not see
+# <http://www.gnu.org/licenses/>.
+#
 
-# APPLE MERGE ??
-AUTOMAKE_OPTIONS = 1.10 gnits
+## "-Wportability" warns about rules that we just stole from automake
+## itself, so disable those warnings for being hypocritical:
+AUTOMAKE_OPTIONS = 1.10 gnits no-dist dejagnu -Wall -Wno-portability
+## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 ACLOCAL_AMFLAGS = -I m4 --install
@@ -340,10 +359,28 @@ OFILES = @BFD_MACHINES@
 # that is where the version number in Makefile comes from.
 CONFIG_STATUS_DEPENDENCIES = $(BFDDIR)/configure.ac
 
-AM_CPPFLAGS = -D_GNU_SOURCE -I. -I$(srcdir) -I../bfd -I$(INCDIR) -I$(BFDDIR) @HDEFINES@ -I$(INTLDIR) -I../intl
+AM_CPPFLAGS = -D_GNU_SOURCE -I. -I$(srcdir) -I../bfd -I$(INCDIR) \
+-I$(BFDDIR) @HDEFINES@ -I$(INTLDIR) -I../intl
+
+## hacks to extend the verbosity control:
+AM_V_redir = $(am__v_redir_$(V))
+am__v_redir_ = $(am__v_redir_$(AM_DEFAULT_VERBOSITY))
+am__v_redir_0 = >
+am__v_redir_1 = | tee
+
+AM_V_redir_a = $(am__v_redir_a_$(V))
+am__v_redir_a_ = $(am__v_redir_a_$(AM_DEFAULT_VERBOSITY))
+am__v_redir_a_0 = >>
+am__v_redir_a_1 = | tee -a
+
+AM_V_v = $(am__v_v_$(V))
+am__v_v_ = $(am__v_v_$(AM_DEFAULT_VERBOSITY))
+am__v_v_0 =
+am__v_v_1 = -v
 
 disassemble.lo: disassemble.c $(INCDIR)/dis-asm.h
-	$(LIBTOOL) --mode=compile $(COMPILE) -c @archdefs@ $(srcdir)/disassemble.c
+	$(AM_V_CC)$(LIBTOOL) --mode=compile $(COMPILE) -c @archdefs@ \
+	  $(srcdir)/disassemble.c
 disassemle.o: disassemble.lo
 
 libopcodes_la_SOURCES =  dis-buf.c disassemble.c dis-init.c i386-opc.c
@@ -371,11 +408,11 @@ stamp-lib: libopcodes.la @MAINT@ config.status $(PATH_TO_MOVEIFCHANGE)
 	  echo "libtooldir is $${libtooldir}"; \
 	fi; \
 	if [ -f $${libtooldir}/libopcodes.a ]; then \
-	  cp -v $${libtooldir}/libopcodes.a libopcodes.tmp; \
+	  cp $(AM_V_v) $${libtooldir}/libopcodes.a libopcodes.tmp; \
 	  $(RANLIB) libopcodes.tmp; \
 	  $(RUN_MOVEIFCHANGE) libopcodes.tmp libopcodes.a; \
 	else echo "no need to check in $${libtooldir} for libopcodes.a"; fi
-	touch stamp-lib
+	$(AM_V_at)touch stamp-lib
 
 libopcodes.a: stamp-lib
 
@@ -400,57 +437,60 @@ FRAMEWORK_OFILES = `echo $(libopcodes_la_OBJECTS) $(libopcodes_la_LIBADD) | $(SE
 FRAMEWORK_LIB = -F../bfd -L../bfd -framework bfd -F../libiberty -L../libiberty -framework liberty -F../mmalloc -L../mmalloc -framework mmalloc -L../intl -lintl $(SYSTEM_FRAMEWORK) $(LDFLAGS)
 
 stamp-framework-headers:
-	$(RM) -f stamp-framework stamp-framework-headers
-	$(RM) -rfv $(FRAMEWORK).framework
-	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
-	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
-	$(LN_S) -v Versions/Current/Headers $(FRAMEWORK).framework/Headers
-	$(LN_S) -v Versions/Current/PrivateHeaders $(FRAMEWORK).framework/PrivateHeaders
-	$(LN_S) -v A $(FRAMEWORK).framework/Versions/Current
-	cp -pv $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
-	cp -pv *.h $(FRAMEWORK).framework/Versions/Current/Headers/
-	touch stamp-framework-headers
+	rm -f stamp-framework stamp-framework-headers
+	rm -rf $(AM_V_v) $(FRAMEWORK).framework
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
+	$(LN_S) $(AM_V_v) Versions/Current/Headers $(FRAMEWORK).framework/Headers
+	$(LN_S) $(AM_V_v) Versions/Current/PrivateHeaders $(FRAMEWORK).framework/PrivateHeaders
+	$(LN_S) $(AM_V_v) A $(FRAMEWORK).framework/Versions/Current
+	cp -p $(AM_V_v) $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
+	cp -p $(AM_V_v) *.h $(FRAMEWORK).framework/Versions/Current/Headers/
+	$(AM_V_at)touch stamp-framework-headers
 
 stamp-framework: $(libopcodes_la_OBJECTS) $(libopcodes_la_DEPENDENCIES)
 	$(MAKE) $(FRAMEWORK_OFILES)
-	$(RM) -f stamp-framework-headers
+	rm -f stamp-framework-headers
 	$(MAKE) stamp-framework-headers
-	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
-	$(LN_S) -v Versions/Current/Resources $(FRAMEWORK).framework/Resources
-	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
+	$(LN_S) $(AM_V_v) Versions/Current/Resources $(FRAMEWORK).framework/Resources
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
 
 	set -ex; \
 	if [ "x$(FRAMEWORK_SUFFIX)" != "x" ]; then \
 	    test -n "$(FRAMEWORK_SUFFIX)" && echo "$(FRAMEWORK_SUFFIX)"; \
 	   $(NSLIBTOOL) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
-	    $(LN_S) -v $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
-	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX); \
-	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
-	    $(LN_S) -v $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK); \
+	    $(LN_S) $(AM_V_v) $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
+	    $(LN_S) $(AM_V_v) $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK); \
 	else \
 	    echo "making un-suffixed framework"; \
 	    $(NSLIBTOOL) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
-	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
 	fi
-	touch stamp-framework
+	$(AM_V_at)touch stamp-framework
 # APPLE LOCAL: end framework building
 
 POTFILES = $(HFILES) $(CFILES)
 po/POTFILES.in: @MAINT@ Makefile
-	for f in $(POTFILES); do echo $${f}; done | LC_COLLATE="" sort > tmp \
-	  && mv tmp $(srcdir)/po/POTFILES.in
+	$(AM_V_GEN)for f in $(POTFILES); do echo $${f}; done \
+	  | LC_ALL=C LC_COLLATE="" sort $(AM_V_redir) tmp \
+	  && mv $(AM_V_v) tmp $(srcdir)/po/POTFILES.in
 
+## NORMAL_INSTALL is a special automake variable:
 install-bfdlibLTLIBRARIES: @INSTALL_LIBBFD_TRUE@install_libopcodes
-	@$(NORMAL_INSTALL)
+	$(AM_V_at)$(NORMAL_INSTALL)
 
+## NORMAL_UNINSTALL is a special automake variable:
 uninstall-bfdlibLTLIBRARIES: @INSTALL_LIBBFD_TRUE@uninstall_libopcodes
-	@$(NORMAL_UNINSTALL)
+	$(AM_V_at)$(NORMAL_UNINSTALL)
 
 .PHONY: install_libopcodes uninstall_libopcodes
 install_libopcodes: $(bfdlib_LTLIBRARIES)
 	$(mkinstalldirs) $(DESTDIR)$(bfdlibdir)
 	$(mkinstalldirs) $(DESTDIR)$(bfdincludedir)
-	@list='$(bfdlib_LTLIBRARIES)'; for p in $${list}; do \
+	$(AM_V_at)list='$(bfdlib_LTLIBRARIES)'; for p in $${list}; do \
 	  if test -f $${p}; then \
 	    echo "$(LIBTOOL) --mode=install $(INSTALL) $${p} $(DESTDIR)$(bfdlibdir)/$${p}"; \
 	    $(LIBTOOL) --mode=install $(INSTALL) $${p} $(DESTDIR)$(bfdlibdir)/$${p}; \
@@ -462,7 +502,7 @@ uninstall_libopcodes:
 	list='$(bfdlib_LTLIBRARIES)'; for p in $${list}; do \
 	  $(LIBTOOL) --mode=uninstall rm -f $(DESTDIR)$(bfdlibdir)/$${p}; \
 	done
-	rm -f $(DESTDIR)$(bfdincludedir)/dis-asm.h
+	rm -f $(AM_V_v) $(DESTDIR)$(bfdincludedir)/dis-asm.h
 
 CLEANFILES = \
 	stamp-ip2k stamp-m32c stamp-m32r stamp-fr30 stamp-frv \
@@ -610,39 +650,44 @@ stamp-xstormy16: $(CGENDEPS) $(CPUDIR)/xstormy16.cpu $(CPUDIR)/xstormy16.opc
 		archfile=$(CPUDIR)/xstormy16.cpu opcfile=$(CPUDIR)/xstormy16.opc extrafiles=""
 
 i386-gen: i386-gen.o @MAINT@ $(LIBIBERTY)
-	$(LINK) i386-gen.o $(LIBIBERTY)
+	$(AM_V_CCLD)$(LINK) i386-gen.o $(LIBIBERTY)
 
-i386-gen.o: i386-gen.c i386-opc.c i386-opc.h sysdep.h $(INCDIR)/getopt.h \
-  $(INCDIR)/libiberty.h $(INCDIR)/hashtab.h $(INCDIR)/safe-ctype.h 
+I386_COMMON_SRCS = i386-opc.c i386-opc.h sysdep.h $(INCDIR)/libiberty.h
+i386-gen.o: i386-gen.c $(I386_COMMON_SRCS) \
+  $(INCDIR)/getopt.h @MAINT@ $(INCDIR)/hashtab.h $(INCDIR)/safe-ctype.h 
 
 i386-asmtab.c: @MAINT@ i386-gen i386-opc.tbl i386-reg.tbl
-	./i386-gen --srcdir $(srcdir) > $(srcdir)/i386-asmtab.c
+	$(AM_V_GEN)./i386-gen --srcdir $(srcdir) > $(srcdir)/i386-asmtab.c
 
-i386-opc.o: i386-opc.c i386-opc.h sysdep.h config.h $(INCDIR)/ansidecl.h \
-  $(INCDIR)/libiberty.h $(INCDIR)/opcode/i386.h
-i386-opc.lo: i386-opc.c i386-opc.h sysdep.h config.h $(INCDIR)/ansidecl.h \
-  $(INCDIR)/libiberty.h $(INCDIR)/opcode/i386.h
+I386_OPC_O_DEPS = $(I386_COMMON_SRCS) config.h \
+  $(INCDIR)/ansidecl.h @MAINT@ $(INCDIR)/opcode/i386.h
+i386-opc.o: $(I386_OPC_O_DEPS)
+i386-opc.lo: $(I386_OPC_O_DEPS)
   
 ia64-gen: ia64-gen.o @MAINT@ $(LIBIBERTY) @MAINT@ ia64-gen.lo
-	$(LINK) ia64-gen.o $(LIBIBERTY)
+	$(AM_V_CCLD)$(LINK) ia64-gen.o $(LIBIBERTY)
 
-ia64-gen.o: ia64-gen.c $(INCDIR)/ansidecl.h $(INCDIR)/libiberty.h \
+IA64_GEN_O_DEPS = $(INCDIR)/ansidecl.h $(INCDIR)/libiberty.h \
   $(INCDIR)/safe-ctype.h sysdep.h config.h $(INCDIR)/getopt.h \
-  $(INCDIR)/opcode/ia64.h $(BFD_H) $(INCDIR)/symcat.h \
-  ia64-opc.c ia64-opc-a.c ia64-opc-b.c ia64-opc-f.c \
-  ia64-opc-i.c ia64-opc-m.c ia64-opc-d.c ia64-opc.h $(INTLDIR)/libintl.h
+  $(INCDIR)/opcode/ia64.h $(BFD_H) $(INCDIR)/symcat.h ia64-opc.c \
+  ia64-opc-a.c ia64-opc-b.c ia64-opc-f.c ia64-opc-i.c ia64-opc-m.c \
+  ia64-opc-d.c ia64-opc.h @MAINT@ $(INTLDIR)/libintl.h
 
-ia64-asmtab.c: @MAINT@ ia64-gen ia64-ic.tbl ia64-raw.tbl ia64-waw.tbl ia64-war.tbl
-	./ia64-gen --srcdir $(srcdir) > $(srcdir)/ia64-asmtab.c
+ia64-gen.o: ia64-gen.c @MAINT@# $(IA64_GEN_O_DEPS)
+
+##FIXME: building ia64-gen.o is currently broken, so always disable
+## rebuilding this file:
+ia64-asmtab.c: @MAINT@# ia64-gen ia64-ic.tbl ia64-raw.tbl ia64-waw.tbl ia64-war.tbl
+	$(AM_V_GEN)./ia64-gen --srcdir $(srcdir) > $(srcdir)/ia64-asmtab.c
 
 s390-mkopc: s390-mkopc.c
-	$(CC_FOR_BUILD) -o s390-mkopc $(srcdir)/s390-mkopc.c
+	$(AM_V_CCLD)$(CC_FOR_BUILD) -o s390-mkopc $(srcdir)/s390-mkopc.c
 
 s390-opc.tab: s390-mkopc s390-opc.txt
-	./s390-mkopc < $(srcdir)/s390-opc.txt > s390-opc.tab
+	$(AM_V_GEN)./s390-mkopc < $(srcdir)/s390-opc.txt > s390-opc.tab
 
 sh-dis.lo: sh-dis.c sh-opc.h sysdep.h config.h
-	$(LIBTOOL) --mode=compile $(COMPILE) -c @archdefs@ $<
+	$(AM_V_CC)$(LIBTOOL) --mode=compile $(COMPILE) -c @archdefs@ $<
 sh-dis.o: sh-dis.lo
 
 # This dependency stuff is copied from BFD.
@@ -650,15 +695,16 @@ sh-dis.o: sh-dis.lo
 # Have to get rid of any pre-existing DEP1 here, so that "$?" later
 # includes all of $(CFILES).
 DEP: dep.sed $(CFILES) $(HFILES) config.h
-	rm -f DEP1
+	rm -f $(AM_V_v) DEP1
 	$(MAKE) MKDEP="$(MKDEP)" DEP1
-	$(SED) -f dep.sed < DEP1 > DEPA
+	$(SED) -f dep.sed < DEP1 $(AM_V_redir) DEPA
 	echo '# IF YOU PUT ANYTHING HERE IT WILL GO AWAY' >> DEPA
 	if $(GREP) ' /' DEPA > /dev/null 2> /dev/null; then \
-	  echo 'make DEP failed!'; exit 1; \
+	  echo 'make DEP failed; it produced bad directories!'>&2; \
+	  exit 1; \
 	else \
-	  mv -fv DEPA $@; \
-	fi
+	  mv -f $(AM_V_v) DEPA $@; \
+	$(AM_V_at)fi
 
 # Not sure if AM_CPPFLAGS works perfectly as a 1-for-1 replacement
 # for INCLUDES here in this next one:
@@ -666,8 +712,8 @@ DEP1: $(CFILES)
 	echo '# DO NOT DELETE THIS LINE -- mkdep uses it.' > DEP2
 	echo '# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.' >> DEP2
 	$(MKDEP) $(AM_CPPFLAGS) $(CFLAGS) $? | tee -a DEP2
-	mv -fv DEP2 $@
-	touch $@
+	mv -f $(AM_V_v) DEP2 $@
+	$(AM_V_at)touch $@
 
 #FIXME: this sed script is broken and hack-ish:
 dep.sed: dep-in.sed @MAINT@ config.status
@@ -683,23 +729,24 @@ dep: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < Makefile > tmp-Makefile
 	cat DEP >> tmp-Makefile
 	$(RUN_MOVEIFCHANGE) tmp-Makefile Makefile
-	touch Makefile
+	$(AM_V_at)touch Makefile
 
 #FIXME: this target relies on dep.sed, which is broken (see above)
 dep-in: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.in > tmp-Makefile.in
 	cat DEP >> tmp-Makefile.in
 	$(RUN_MOVEIFCHANGE) tmp-Makefile.in $(srcdir)/Makefile.in
-	touch $(srcdir)/Makefile.in
+	$(AM_V_at)touch $(srcdir)/Makefile.in
 
 #FIXME: this target relies on dep.sed, which is broken (see above)
 dep-am: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	@echo "this target is broken/dangerous; not letting you use it" >&2
+	@echo "edit Makefile.am if you have fixed things"
 	exit 1
 	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.am > tmp-Makefile.am
 	cat DEP >> tmp-Makefile.am
 	$(RUN_MOVEIFCHANGE) tmp-Makefile.am $(srcdir)/Makefile.am
-	touch $(srcdir)/Makefile.am
+	$(AM_V_at)touch $(srcdir)/Makefile.am
 
 .PHONY: dep dep-in dep-am
 

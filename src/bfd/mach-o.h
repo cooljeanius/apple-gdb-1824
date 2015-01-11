@@ -33,7 +33,7 @@
 #  include "mach-o/loader.h"
 # endif /* __APPLE__ && __MACH__ */
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "mach-o.h expects a proper <mach-o/loader.h> to be included."
+ #  warning "mach-o.h expects a proper <mach-o/loader.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_O_LOADER_H */
 
@@ -1106,7 +1106,7 @@ bfd_mach_o_backend_data;
 
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "mach-o.h already included once"
+ #  warning "mach-o.h already included once"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* _BFD_MACH_O_H_ */
 

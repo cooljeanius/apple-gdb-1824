@@ -65,17 +65,17 @@ if test -z "${CFLAGS_DEBUG}"; then
 fi
 AC_SUBST([CFLAGS_DEBUG])
 if test -z "${CFLAGS_OPTIMIZE}"; then
-  export CFLAGS_OPTIMIZE="-O"
+  export CFLAGS_OPTIMIZE="-O1"
 fi
 AC_SUBST([CFLAGS_OPTIMIZE])dnl
 AC_SUBST([DL_LIBS])dnl
 AC_SUBST([MATH_LIBS])dnl
 AC_SUBST([TCL_DBGX])dnl
 
-# Tcl8.1 requires writable strings for gcc
-
-if test "${GCC}" = "yes"; then
+# Tcl8.1 requires writable strings for gcc:
+if test "x${GCC}" = "xyes"; then
    TCL_EXTRA_CFLAGS="-fwritable-strings"
+   ##FIXME: it is bad to require this.
 else
    TCL_EXTRA_CFLAGS=""
 fi
@@ -91,6 +91,6 @@ LT_INIT([dlopen])dnl
 LT_LIB_M
 
 # Output.
-AC_CONFIG_FILES([Makefile Makefile.orig])dnl
+AC_CONFIG_FILES([Makefile Makefile_orig])dnl
 AC_OUTPUT
 

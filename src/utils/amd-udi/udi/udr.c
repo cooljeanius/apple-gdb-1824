@@ -1,4 +1,4 @@
-/******************************************************************************
+/**************************************************************************
 * Copyright 1991 Advanced Micro Devices, Inc.
 *
 * This software is the property of Advanced Micro Devices, Inc  (AMD)  which
@@ -22,7 +22,7 @@
 * 5900 E. Ben White Blvd.
 * Austin, TX 78741
 * 800-292-9263
-*****************************************************************************
+***************************************************************************
 */
 static char udr_c[] = "@(#)udr.c	2.8  Daniel Mann";
 static char udr_c_AMD[] = "@(#)udr.c	2.3, AMD";
@@ -31,12 +31,14 @@ static char udr_c_AMD[] = "@(#)udr.c	2.3, AMD";
 *	data objects over a socket conection.
 *	All data is serialised into a character stream,
 *	and de-serialised back into the approproiate objects.
-********************************************************************** HISTORY
+******************************************************************* HISTORY
 */
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning udr.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning udr.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,25 +57,25 @@ static char udr_c_AMD[] = "@(#)udr.c	2.3, AMD";
 extern int errno;
 #ifndef malloc
 # ifndef HAVE_MALLOC
-extern char *malloc ();
+extern char *malloc();
 # endif /* !HAVE_MALLOC */
 #endif /* !malloc */
 
-/* local type decs. and macro defs. not in a .h  file ************* MACRO/TYPE
+/* local type decs. and macro defs. not in a .h  file ********** MACRO/TYPE
 */
 
-/* global dec/defs. which are not in a .h   file ************* EXPORT DEC/DEFS
+/* global dec/defs. which are not in a .h   file ********** EXPORT DEC/DEFS
 */
 int udr_errno;			/* error occurs during UDR service */
 
-/* local dec/defs. which are not in a .h   file *************** LOCAL DEC/DEFS
+/* local dec/defs. which are not in a .h   file ************ LOCAL DEC/DEFS
 */
 
 #ifdef _UDISOC_H
-/****************************************************************** UDR_CREATE
+/*************************************************************** UDR_CREATE
 * Build UDR structure for character stream processing.
 */
-int 
+int
 udr_create (udrs, sd, size)
      UDR *udrs;
      int sd;
@@ -97,7 +99,7 @@ udr_create (udrs, sd, size)
 /******************************************************************** UDR_FREE
 * Free USR structure and close socket.
 */
-int 
+int
 udr_free (udrs)
      UDR *udrs;
 {
@@ -112,7 +114,7 @@ udr_free (udrs)
 * Send a signal to the process at the other end of the socket,
 * indicating that it should expect to recieve a new message shortly.
 */
-int 
+int
 udr_signal (udrs)
      UDR *udrs;
 {
@@ -130,7 +132,7 @@ udr_signal (udrs)
 /***************************************************************** UDR_SENDNOW
 * used to flush the current character stream buffer to
 * the associated socket.  */
-int 
+int
 udr_sendnow (udrs)
      UDR *udrs;
 {
@@ -153,12 +155,12 @@ udr_sendnow (udrs)
 #endif /* _UDIPROC_H */
 
 #ifdef _UDIPROC_H
-/******************************************************************** UDR_WORK
+/***************************************************************** UDR_WORK
 * Function to send or recieve data from the buffers supporting
 * socket communication. The buffer contains serialised objects
 * sent/recieved over a socket connection.
 */
-int 
+int
 udr_work (udrs, object_p, size)
      UDR *udrs;
      void *object_p;
@@ -226,9 +228,9 @@ udr_work (udrs, object_p, size)
 #endif /* _UDIPROC_H */
 
 #ifdef _UDIPROC_H
-/************************************************************* UDR_UDIResource
+/********************************************************** UDR_UDIResource
 */
-int 
+int
 udr_UDIResource (udrs, object_p)
      UDR *udrs;
      UDIResource *object_p;
@@ -242,9 +244,9 @@ udr_UDIResource (udrs, object_p)
 #endif /* _UDIPROC_H */
 
 #ifdef _UDIPROC_H
-/**************************************************************** UDR_UDIRange
+/************************************************************* UDR_UDIRange
 */
-int 
+int
 udr_UDIRange (udrs, object_p)
      UDR *udrs;
      UDIRange *object_p;
@@ -258,9 +260,9 @@ udr_UDIRange (udrs, object_p)
 #endif /* _UDIPROC_H */
 
 #ifdef _UDIPROC_H
-/********************************************************** UDR_UDIMemoryRange
+/******************************************************* UDR_UDIMemoryRange
 */
-int 
+int
 udr_UDIMemoryRange (udrs, object_p)
      UDR *udrs;
      UDIMemoryRange *object_p;
@@ -275,9 +277,9 @@ udr_UDIMemoryRange (udrs, object_p)
 #endif /* _UDIPROC_H */
 
 #ifdef _UDIPROC_H
-/****************************************************************** UDR_string
+/*************************************************************** UDR_string
 */
-int 
+int
 udr_string (udrs, sp)
      UDR *udrs;
      char *sp;
@@ -317,9 +319,9 @@ udr_string (udrs, sp)
 #endif /* _UDIPROC_H */
 
 #ifdef _UDISOC_H
-/******************************************************************* UDR_BYTES
+/**************************************************************** UDR_BYTES
 */
-int 
+int
 udr_bytes (udrs, ptr, len)
      UDR *udrs;
      char *ptr;
@@ -330,9 +332,9 @@ udr_bytes (udrs, ptr, len)
 #endif /* _UDISOC_H */
 
 #ifdef _UDIPROC_H
-/********************************************************************* UDR_INT
+/****************************************************************** UDR_INT
 */
-int 
+int
 udr_int (udrs, int_p)
      UDR *udrs;
      int *int_p;
@@ -360,7 +362,7 @@ udr_int (udrs, int_p)
 #endif /* _UDIPROC_H */
 
 #ifdef _UDIPROC_H
-/****************************************************************** UDR_INLINE
+/*************************************************************** UDR_INLINE
 */
 char *
 udr_inline (udrs, size)
@@ -401,7 +403,7 @@ udr_inline (udrs, size)
 #endif /* _UDIPROC_H */
 
 #ifdef _UDIPROC_H
-/****************************************************************** UDR_GETPOS
+/*************************************************************** UDR_GETPOS
 */
 char *
 udr_getpos (udrs)
@@ -424,9 +426,9 @@ udr_getpos (udrs)
 #endif /* _UDIPROC_H */
 
 #ifdef _UDIPROC_H
-/****************************************************************** UDR_SETPOS
+/*************************************************************** UDR_SETPOS
 */
-int 
+int
 udr_setpos (udrs, pos)
      UDR *udrs;
      char *pos;
@@ -456,11 +458,11 @@ udr_setpos (udrs, pos)
 #endif /* _UDIPROC_H */
 
 #ifdef _UDIPROC_H
-/***************************************************************** UDR_READNOW
+/************************************************************** UDR_READNOW
 * Try and ensure "size" bytes are available in the
 * receive buffer character stream.
 */
-int 
+int
 udr_readnow (udrs, size)
      UDR *udrs;
      int size;
@@ -500,9 +502,9 @@ udr_readnow (udrs, size)
 #endif /* _UDIPROC_H */
 
 #ifdef _UDISOC_H
-/******************************************************************* UDR_ALIGN
+/**************************************************************** UDR_ALIGN
 */
-int 
+int
 udr_align (udrs, size)
      UDR *udrs;
      int size;
@@ -517,5 +519,19 @@ udr_align (udrs, size)
     udr_setpos (udrs, align + offset);
 }
 #endif /* _UDISOC_H */
+
+#ifndef _UDISOC_H
+/* prevent file from being empty: */
+typedef int udr_c_dummy_t;
+extern udr_c_dummy_t udr_c_dummy_var;
+/* in case the previous failed to count as an exported symbol: */
+extern udr_c_dummy_t udr_c_dummy_func(void);
+udr_c_dummy_t
+udr_c_dummy_func(void)
+{
+    udr_c_dummy_var = 0;
+    return udr_c_dummy_var;
+}
+#endif /* !_UDISOC_H */
 
 /* EOF */

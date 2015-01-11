@@ -146,13 +146,13 @@ v850_elf_check_relocs (bfd *abfd,
 	small_data_common:
 	  if (h)
 	    {
-	      /* Flag which type of relocation was used.  */
+	      /* Flag which type of relocation was used: */
 	      h->other |= other;
 	      if ((h->other & V850_OTHER_MASK) != (other & V850_OTHER_MASK)
 		  && (h->other & V850_OTHER_ERROR) == 0)
 		{
-		  const char * msg;
-		  static char  buff[200]; /* XXX */
+		  const char *msg;
+		  static char buff[200]; /* XXX */
 
 		  switch (h->other & V850_OTHER_MASK)
 		    {
@@ -173,10 +173,10 @@ v850_elf_check_relocs (bfd *abfd,
 		      break;
 		    }
 
-		  sprintf (buff, msg, h->root.root.string);
-		  info->callbacks->warning (info, buff, h->root.root.string,
-					    abfd, h->root.u.def.section,
-					    (bfd_vma) 0);
+		  sprintf(buff, msg, h->root.root.string);
+		  info->callbacks->warning(info, buff, h->root.root.string,
+					   abfd, h->root.u.def.section,
+					   (bfd_vma)0UL);
 
 		  bfd_set_error (bfd_error_bad_value);
 		  h->other |= V850_OTHER_ERROR;

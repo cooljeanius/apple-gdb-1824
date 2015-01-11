@@ -61,7 +61,7 @@ if test "x${AR}" = "x"; then
 else
   test ! -z "${AR}"
 fi
-AC_CHECK_TOOL([RANLIB],[ranlib],[:])dnl
+AC_CHECK_TOOLS([RANLIB],[ranlib granlib],[:])dnl
   ## keep autoscan happy:
 if test "x${RANLIB}" = "x"; then
   test -z "${RANLIB}"
@@ -378,13 +378,13 @@ AC_MSG_CHECKING([gettext stuff])
 AC_MSG_RESULT([ ])
 if test -d ../intl; then
   if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../intl"
+    export LDFLAGS="-L. -L../intl"
   else
     export LDFLAGS="${LDFLAGS} -L../intl"
   fi
 elif test -d ../libintl; then
   if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../libintl"
+    export LDFLAGS="-L. -L../libintl"
   else
     export LDFLAGS="${LDFLAGS} -L../libintl"
   fi
@@ -571,12 +571,13 @@ unset ac_cv_header_libintl_h
 unset ac_cv_header_limits_h
 unset ac_cv_header_stdlib_h
 unset ac_cv_header_sys_param_h
-AC_CHECK_HEADERS([ctype.h errno.h fcntl.h gettext.h iconv.h libgettext.h \
-                  libintl.h limits.h mach/mach.h mach-o/loader.h \
-                  malloca.h malloc/malloc.h realloc.h stdarg.h stddef.h \
-                  stdio.h sys/acl.h sys/errno.h sys/file.h sys/paccess.h \
-                  sys/param.h sys/region.h sys/resource.h sys/socket.h \
-                  sys/time.h sys/user.h time.h wchar.h wctype.h \
+AC_CHECK_HEADERS([ctype.h errno.h fcntl.h gettext.h iconv.h libgen.h \
+                  libgettext.h libintl.h limits.h mach/mach.h \
+                  mach-o/loader.h malloca.h malloc/malloc.h realloc.h \
+                  stdarg.h stddef.h stdio.h sys/acl.h sys/core.h \
+                  sys/errno.h sys/file.h sys/paccess.h sys/param.h \
+                  sys/region.h sys/resource.h sys/socket.h sys/time.h \
+                  sys/user.h sys/utsname.h time.h wchar.h wctype.h \
                   windef.h windows.h])dnl
 GCC_HEADER_STDINT([bfd_stdint.h],[stdint.h])dnl
 AC_HEADER_TIME
@@ -698,7 +699,12 @@ AC_POSSIBLE_DUPLICATE_CHECKS
 
 AC_MSG_CHECKING([declarations])
 AC_MSG_RESULT([ ])
-AC_CHECK_DECLS([basename])dnl
+AC_CHECK_DECLS([basename],[],[],[
+/* declared in this header on darwin at least: */
+#ifdef HAVE_LIBGEN_H
+# include <libgen.h>
+#endif /* HAVE_LIBGEN_H */
+])dnl
 AC_CHECK_DECLS([close])dnl
 AC_CHECK_DECLS([ftello])dnl
 AC_CHECK_DECLS([ftello64])dnl
@@ -710,6 +716,7 @@ BFD_BINARY_FOPEN
 AC_CHECK_DECLS([ffs])dnl
 AC_CHECK_DECLS([free])dnl
 AC_CHECK_DECLS([getenv])dnl
+AC_CHECK_DECLS_ONCE([getopt])dnl
 AC_CHECK_DECLS([malloc])dnl
 AC_CHECK_DECLS([open])dnl
 AC_CHECK_DECLS([pread])dnl

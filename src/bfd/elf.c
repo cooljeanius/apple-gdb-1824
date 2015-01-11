@@ -6601,11 +6601,11 @@ _bfd_elf_make_empty_symbol (bfd *abfd)
 }
 
 void
-_bfd_elf_get_symbol_info (bfd *abfd ATTRIBUTE_UNUSED,
-			  asymbol *symbol,
-			  symbol_info *ret)
+_bfd_elf_get_symbol_info(bfd *abfd ATTRIBUTE_UNUSED,
+			 asymbol *symbol,
+			 symbol_info *ret)
 {
-  bfd_symbol_info (symbol, ret);
+  bfd_symbol_info(symbol, ret);
 }
 
 /* Return whether a symbol name implies a local symbol.  Most targets
@@ -6613,19 +6613,19 @@ _bfd_elf_get_symbol_info (bfd *abfd ATTRIBUTE_UNUSED,
    override it.  */
 
 bfd_boolean
-_bfd_elf_is_local_label_name (bfd *abfd ATTRIBUTE_UNUSED,
-			      const char *name)
+_bfd_elf_is_local_label_name(bfd *abfd ATTRIBUTE_UNUSED,
+                             const char *name)
 {
   /* Normal local symbols start with ``.L''.  */
-	if (name[0] == '.' && name[1] == 'L') {
-		return TRUE;
-	}
+  if (name[0] == '.' && name[1] == 'L') {
+    return TRUE;
+  }
 
   /* At least some SVR4 compilers (e.g., UnixWare 2.1 cc) generate
      DWARF debugging symbols starting with ``..''.  */
-	if (name[0] == '.' && name[1] == '.') {
-		return TRUE;
-	}
+  if ((name[0] == '.') && (name[1] == '.')) {
+    return TRUE;
+  }
 
   /* gcc will sometimes generate symbols beginning with ``_.L_'' when
      emitting DWARF debugging output.  I suspect this is actually a
@@ -6633,35 +6633,37 @@ _bfd_elf_is_local_label_name (bfd *abfd ATTRIBUTE_UNUSED,
      ASM_GENERATE_INTERNAL_LABEL, and this causes the leading
      underscore to be emitted on some ELF targets).  For ease of use,
      we treat such symbols as local.  */
-	if (name[0] == '_' && name[1] == '.' && name[2] == 'L' && name[3] == '_') {
-		return TRUE;
-	}
+  if ((name[0] == '_') && (name[1] == '.') && (name[2] == 'L') && (name[3] == '_')) {
+    return TRUE;
+  }
 
   return FALSE;
 }
 
-alent *
-_bfd_elf_get_lineno (bfd *abfd ATTRIBUTE_UNUSED,
-		     asymbol *symbol ATTRIBUTE_UNUSED)
+alent * ATTRIBUTE_NORETURN
+_bfd_elf_get_lineno(bfd *abfd ATTRIBUTE_UNUSED,
+                    asymbol *symbol ATTRIBUTE_UNUSED)
 {
-  abort ();
-  return NULL;
+#ifdef ATTRIBUTE_NORETURN
+  abort();
+#else
+  return (alent *)NULL;
+#endif /* ATTRIBUTE_NORETURN */
 }
 
 bfd_boolean
-_bfd_elf_set_arch_mach (bfd *abfd,
-			enum bfd_architecture arch,
-			unsigned long machine)
+_bfd_elf_set_arch_mach(bfd *abfd, enum bfd_architecture arch,
+                       unsigned long machine)
 {
   /* If this is NOT the right architecture for this backend, and this
      is NOT the generic backend, fail.  */
-  if (arch != get_elf_backend_data (abfd)->arch
-      && arch != bfd_arch_unknown
-      && get_elf_backend_data (abfd)->arch != bfd_arch_unknown) {
-	  return FALSE;
+  if ((arch != get_elf_backend_data(abfd)->arch)
+      && (arch != bfd_arch_unknown)
+      && (get_elf_backend_data(abfd)->arch != bfd_arch_unknown)) {
+    return FALSE;
   }
 
-  return bfd_default_set_arch_mach (abfd, arch, machine);
+  return bfd_default_set_arch_mach(abfd, arch, machine);
 }
 
 /* Find the function to a particular section and offset,
@@ -6867,18 +6869,17 @@ _bfd_elf_set_section_contents (bfd *abfd,
   return TRUE;
 }
 
-void
-_bfd_elf_no_info_to_howto (bfd *abfd ATTRIBUTE_UNUSED,
-			   arelent *cache_ptr ATTRIBUTE_UNUSED,
-			   Elf_Internal_Rela *dst ATTRIBUTE_UNUSED)
+void ATTRIBUTE_NORETURN
+_bfd_elf_no_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED,
+			  arelent *cache_ptr ATTRIBUTE_UNUSED,
+			  Elf_Internal_Rela *dst ATTRIBUTE_UNUSED)
 {
-  abort ();
+  abort();
 }
 
-/* Try to convert a non-ELF reloc into an ELF one.  */
-
+/* Try to convert a non-ELF reloc into an ELF one: */
 bfd_boolean
-_bfd_elf_validate_reloc (bfd *abfd, arelent *areloc)
+_bfd_elf_validate_reloc(bfd *abfd, arelent *areloc)
 {
   /* Check whether we really have an ELF howto.  */
 

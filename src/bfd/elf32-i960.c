@@ -114,12 +114,12 @@ elf32_i960_bfd_to_reloc_type (bfd_reloc_code_real_type code)
     }
 }
 
-static void
-elf32_i960_info_to_howto (bfd *               abfd ATTRIBUTE_UNUSED,
-			  arelent *           cache_ptr ATTRIBUTE_UNUSED,
-			  Elf_Internal_Rela * dst ATTRIBUTE_UNUSED)
+static void ATTRIBUTE_NORETURN
+elf32_i960_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED,
+			 arelent *cache_ptr ATTRIBUTE_UNUSED,
+			 Elf_Internal_Rela *dst ATTRIBUTE_UNUSED)
 {
-  abort ();
+  abort();
 }
 
 static void

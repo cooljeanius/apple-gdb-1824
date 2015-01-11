@@ -888,7 +888,7 @@ srec_write_record(bfd *abfd, unsigned int type, bfd_vma address,
   bfd_size_type wrlen;
 
   *dst++ = 'S';
-  *dst++ = '0' + type;
+  *dst++ = (char)('0' + type);
 
   length = dst;
   dst += 2;			/* Leave room for dst.  */
@@ -916,22 +916,22 @@ srec_write_record(bfd *abfd, unsigned int type, bfd_vma address,
     }
   for (src = data; src < end; src++)
     {
-      TOHEX (dst, *src, check_sum);
+      TOHEX(dst, *src, check_sum);
       dst += 2;
     }
 
-  /* Fill in the length.  */
-  TOHEX (length, (dst - length) / 2, check_sum);
+  /* Fill in the length: */
+  TOHEX(length, ((dst - length) / 2), check_sum);
   check_sum &= 0xff;
-  check_sum = 255 - check_sum;
-  TOHEX (dst, check_sum, check_sum);
+  check_sum = (255 - check_sum);
+  TOHEX(dst, check_sum, check_sum);
   dst += 2;
 
   *dst++ = '\r';
   *dst++ = '\n';
-  wrlen = dst - buffer;
+  wrlen = (dst - buffer);
 
-  return bfd_bwrite ((void *) buffer, wrlen, abfd) == wrlen;
+  return (bfd_bwrite((void *)buffer, wrlen, abfd) == wrlen);
 }
 
 static bfd_boolean
@@ -1099,20 +1099,18 @@ srec_sizeof_headers (bfd *abfd ATTRIBUTE_UNUSED,
   return 0;
 }
 
-/* Return the amount of memory needed to read the symbol table.  */
-
+/* Return the amount of memory needed to read the symbol table: */
 static long
-srec_get_symtab_upper_bound (bfd *abfd)
+srec_get_symtab_upper_bound(bfd *abfd)
 {
-  return (bfd_get_symcount (abfd) + 1) * sizeof (asymbol *);
+  return (long)((bfd_get_symcount(abfd) + 1L) * sizeof(asymbol *));
 }
 
-/* Return the symbol table.  */
-
+/* Return the symbol table: */
 static long
-srec_canonicalize_symtab (bfd *abfd, asymbol **alocation)
+srec_canonicalize_symtab(bfd *abfd, asymbol **alocation)
 {
-  bfd_size_type symcount = bfd_get_symcount (abfd);
+  bfd_size_type symcount = bfd_get_symcount(abfd);
   asymbol *csymbols;
   unsigned int i;
 
@@ -1122,8 +1120,8 @@ srec_canonicalize_symtab (bfd *abfd, asymbol **alocation)
       asymbol *c;
       struct srec_symbol *s;
 
-      csymbols = (asymbol *)bfd_alloc(abfd, symcount * sizeof (asymbol));
-      if (csymbols == NULL && symcount != 0)
+      csymbols = (asymbol *)bfd_alloc(abfd, symcount * sizeof(asymbol));
+      if ((csymbols == NULL) && (symcount != 0))
 	return 0;
       abfd->tdata.srec_data->csymbols = csymbols;
 
@@ -1144,15 +1142,14 @@ srec_canonicalize_symtab (bfd *abfd, asymbol **alocation)
     *alocation++ = csymbols++;
   *alocation = NULL;
 
-  return symcount;
+  return (long)symcount;
 }
 
 static void
-srec_get_symbol_info (bfd *ignore_abfd ATTRIBUTE_UNUSED,
-		      asymbol *symbol,
-		      symbol_info *ret)
+srec_get_symbol_info(bfd *ignore_abfd ATTRIBUTE_UNUSED,
+		     asymbol *symbol, symbol_info *ret)
 {
-  bfd_symbol_info (symbol, ret);
+  bfd_symbol_info(symbol, ret);
 }
 
 static void

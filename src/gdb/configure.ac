@@ -43,7 +43,7 @@ AH_VERBATIM([00_CONFIG_H_CHECK],[
  * (this works only for glibc, but that should be enough). */
 #if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "config.h should be #included before system headers"
+ #  warning "config.h should be #included before system headers"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
 #ifndef __CONFIG_H__
@@ -339,13 +339,13 @@ AC_MSG_CHECKING([gettext-related things (Cygnus-style)])
 AC_MSG_RESULT([ ])
 if test -d ../intl; then
   if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../intl"
+    export LDFLAGS="-L. -L../intl"
   else
     export LDFLAGS="${LDFLAGS} -L../intl"
   fi
 elif test -d ../libintl; then
   if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../libintl"
+    export LDFLAGS="-L. -L../libintl"
   else
     export LDFLAGS="${LDFLAGS} -L../libintl"
   fi
@@ -524,6 +524,8 @@ else
     export unused_subdirs="${unused_subdirs} gnulib"
   fi
 fi
+AM_CONDITIONAL([MAKE_SHOULD_RECURSE_INTO_GNULIB],
+  [test -d ${srcdir}/gnulib && test "x${recurse_into_gnulib}" = "xyes"])dnl
 
 if test "x${target}" = "x${host}"; then
   gdb_native=yes
@@ -591,7 +593,8 @@ AC_ARG_ENABLE([gdbcli],
      *)
        AC_MSG_ERROR([bad value '${enableval}' for --enable-gdbcli]) ;;
    esac],
-  [enable_gdbcli=yes])
+  [enable_gdbcli=yes])dnl
+  ## set corresponding variables:
 if test x"${enable_gdbcli}" = x"yes"; then
   if test -d ${srcdir}/cli; then
     CONFIG_OBS="${CONFIG_OBS} \$(SUBDIR_CLI_OBS)"
@@ -612,7 +615,8 @@ AC_ARG_ENABLE([gdbmi],
      *)
        AC_MSG_ERROR([bad value ${enableval} for --enable-gdbmi]) ;;
    esac],
-  [enable_gdbmi=yes])
+  [enable_gdbmi=yes])dnl
+  ## set corresponding variables:
 if test x"${enable_gdbmi}" = x"yes"; then
   if test -d ${srcdir}/mi; then
     CONFIG_OBS="${CONFIG_OBS} \$(SUBDIR_MI_OBS)"
@@ -1034,12 +1038,13 @@ AC_SEARCH_LIBS([socketpair],[socket])dnl
 
 # Link in zlib if we can. This allows us to read compressed debug sections:
 m4_ifdef([AM_ZLIB],[
-  AM_ZLIB
+  AM_ZLIB dnl# from ../config/zlib.m4
 ],[
 AC_MSG_CHECKING([if there is a zlib sister directory in this source tree])
 if test -d ../zlib -o -d ${srcdir}/../zlib; then
   export HAVE_ZLIB_SOURCE=1
-  AC_SUBST([HAVE_ZLIB_SOURCE])
+  AC_SUBST([HAVE_ZLIB_SOURCE])dnl
+  ## print:
   AC_MSG_RESULT([yes])
 else
   AC_MSG_RESULT([no])
@@ -1315,7 +1320,8 @@ AC_CHECK_HEADERS([arpa/inet.h fcntl.h langinfo.h libintl.h limits.h \
 unset ac_cv_header_dlfcn_h
 unset ac_cv_header_memory_h
 unset ac_cv_header_sys_types_h
-AC_CHECK_HEADERS([a.out.h dlfcn.h errno.h regex.h sys/types.h])
+AC_CHECK_HEADERS([a.out.h dlfcn.h errno.h regex.h sys/types.h])dnl
+  ## special variable that depends on result of <sys/types.h> check:
 EXTRA_DEFS=""
 if test "x${ac_cv_header_sys_types_h}" = "xyes"; then
   # this has to go separate from the configure header, because we check
@@ -1326,7 +1332,7 @@ fi
 AC_SUBST([EXTRA_DEFS])dnl
 
 # check these two headers together:
-AC_CHECK_HEADERS([stdarg.h varargs.h])
+AC_CHECK_HEADERS([stdarg.h varargs.h])dnl
 # even more header checks:
 AC_HEADER_ASSERT
 AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h assert.h \
@@ -1338,9 +1344,10 @@ AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h assert.h \
                   mach/thread_info.h mach/thread_status.h \
                   mach-o/loader.h mach-o/nlist.h memory.h pc.h pthread.h \
                   rpc/rpc.h servers/netname.h servers/netname_defs.h \
-                  setjmp.h sys/uio.h sys/utsname.h])
+                  setjmp.h sys/uio.h sys/utsname.h])dnl
+  ## be careful in case we find the in-tree one:
 AC_CHECK_HEADERS([gettext.h],[],[],[
-#ifndef HAVE_CONDEFS_H
+#ifndef HAVE_CONFDEFS_H
 # define HAVE_CONFDEFS_H 1
 #endif /* !HAVE_CONFDEFS_H */
 ])dnl
@@ -1351,7 +1358,8 @@ gl_HEADER_STRING_H
 # Just in case:
 if test "x${NEXT_STRING_H}" = "x"; then
   test -z "${NEXT_STRING_H}" && export NEXT_STRING_H="<string.h>"
-  AC_SUBST([NEXT_STRING_H])
+  AC_SUBST([NEXT_STRING_H])dnl
+  ## (gnulib should be happy now)
 fi
 
 # ------------------------- #
@@ -1688,10 +1696,12 @@ AC_CHECK_FUNCS([sigaction sigprocmask sigsetmask])dnl
 AC_CHECK_FUNCS([socketpair])dnl
 AC_CHECK_FUNCS([syscall])dnl
 AC_CHECK_FUNCS([ttrace])dnl
-AC_CHECK_FUNCS([wborder wresize])
+AC_CHECK_FUNCS([wborder wresize])dnl
+  ## might have already been checked:
 if test "x${ac_cv_func_setlocale}" = "x"; then
   test -z "${ac_cv_func_setlocale}"
-  AC_CHECK_FUNCS([setlocale])
+  AC_CHECK_FUNCS([setlocale])dnl
+  ## ok
 fi
 AC_CHECK_FUNCS([iconvlist libiconvlist btowc])dnl
 AC_CHECK_FUNCS([setrlimit getrlimit])dnl
@@ -1750,7 +1760,7 @@ fi
 # Assume we shall default to using the included libiberty regex:
 gdb_use_included_regex=yes
 
-dnl# for next conftest:
+dnl# for the next conftest:
 AC_CHECK_HEADERS([gnu-versions.h])dnl
 
 # However, if the system regex is GNU regex, then default to *not*
@@ -1775,7 +1785,8 @@ AC_ARG_WITH([included-regex],
                    on systems with version 2 of the GNU C library
                    (use with caution on other systems)])],
   [gdb_with_regex=${withval}],
-  [gdb_with_regex=${gdb_use_included_regex}])
+  [gdb_with_regex=${gdb_use_included_regex}])dnl
+  ## corresponding define:
 if test "x${gdb_with_regex}" = "xyes"; then
   AC_DEFINE([USE_INCLUDED_REGEX],[1],
     [Define to 1 if the regex included in libiberty should be used.])
@@ -1891,10 +1902,9 @@ if test "x${gdb_cv_have_pt_getxmmregs}" = "xyes"; then
 fi
 
 # If we are configured native on GNU/Linux, work around problems with
-# sys/procfs.h
+# <sys/procfs.h>
 # Also detect which type of /proc is in use, such as for Unixware
-# or for Solaris.
-
+# or for Solaris:
 if test "${target}" = "${host}"; then
   case "${host}" in
   i[[3456]]86-*-linux*)
@@ -2569,7 +2579,8 @@ AC_RUN_IFELSE([PERSONALITY_TEST],
 	      [have_personality=false],
 	      [AC_LINK_IFELSE([PERSONALITY_TEST],
 			      [have_personality=true],
-			      [have_personality=false])])
+			      [have_personality=false])])dnl
+  ## corresponding define:
 if ${have_personality}
 then
     AC_DEFINE([HAVE_PERSONALITY],[1],
@@ -2637,12 +2648,12 @@ build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Wold-style-declaration -Wold-style-definition -Wstrict-prototypes \
 -Wabi -Wmissing-noreturn -Waddress -Warray-bounds -Wattributes \
 -Wswitch -Wclobbered -Wcoverage-mismatch -Wdiv-by-zero \
--Wdouble-promotion -Wfree-nonheap-object \
+-Wdouble-promotion -Wfree-nonheap-object -Wsign-compare \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
 -Wmissing-include-dirs -Woverflow -Woverlength-strings -Woverride-init \
 -Wpragmas -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
--Wtrampolines -Wunknown-pragmas -Wnormalized=nfc \
--Wunsuffixed-float-constants -Wstrict-overflow -Wjump-misses-init"
+-Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc \
+-Wunsuffixed-float-constants -Wfloat-conversion -Wjump-misses-init"
 link_warnings=""
 
 # If compiler does NOT support the long long data type, see if it can
@@ -2660,6 +2671,11 @@ case "${host}" in
     # -Wnonportable-cfstrings is actually a flag for newer versions of the
     # FSF gcc, but it only makes sense on Apple platforms.
     build_warnings="${build_warnings} -Wmost -Wformat-nonliteral -Wextra-tokens -Wnewline-eof -std=gnu99 -Wnonportable-cfstrings -Wendif-labels"
+    case "${host}" in
+      *64*-apple-darwin9* | *64*-apple-darwin-1[[0123456789]].*)
+        build_warnings="${build_warnings} -Wshorten-64-to-32"
+      ;;
+    esac
     link_warnings="${link_warnings} ${acl_cv_wl}-warn_compact_unwind ${acl_cv_wl}-warn_weak_exports ${acl_cv_wl}-warn_stabs ${acl_cv_wl}-warn_commons"
     # also consider: "${acl_cv_wl}-why_load"
   ;;
@@ -2685,10 +2701,12 @@ esac
 opt_warnings="-Wuninitialized -Winit-self -Wvolatile-register-var \
 -Wdisabled-optimization -Waggressive-loop-optimizations \
 -Wvector-operation-performance -Wmaybe-uninitialized \
--Wunsafe-loop-optimizations"
+-Wstrict-overflow=1 -Wunsafe-loop-optimizations"
 if test x${CFLAGS+set} = xset; then
   case "${CFLAGS}" in
-    *"-O0"* ) ;;
+    *"-O0"* )
+      build_warnings="${build_warnings} -ftrapv"
+    ;;
     *"-O"* )
       build_warnings="${build_warnings} ${opt_warnings}"
     ;;
@@ -2706,6 +2724,7 @@ fi
 #  * -Wcast-align (same as with -Wcast-qual, and also makes clang noisy)
 #  * -Wwrite-strings (would require a lot of const-ifying)
 #  * -Wconversion (would require a lot of casting)
+#  * -Wsign-conversion (likewise)
 #  * -Wmissing-prototypes (I like this one, but redundant with other flag)
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
 #  * -Woverloaded-virtual (If we ever switch to c++)
@@ -2736,6 +2755,10 @@ fi
 #  * -Wmissing-noreturn (might want to use the newer version instead)
 #  * -Wvolatile-register-var (kinda pointless)
 #  * -Wswitch (I like this one, but others might not)
+# Up for debate in some other way:
+#  * -Wstrict-overflow (i.e., could change the value assigned to it. We use
+#    "1" now because that is the default for "-Wall", but "2" is the
+#    default when no value is used with it with an "=", and the max is "5")
 # NOT actually up for debate:
 #  * -Werror (never add this)
 #  * -pedantic-errors (likewise, never add this)
@@ -2953,7 +2976,8 @@ if test "x${gdb_cv_var_elf}" = "xyes"; then
   AC_ARG_WITH([lzma],
     [AS_HELP_STRING([--with-lzma],
                     [support lzma compression (auto/yes/no)])],
-    [],[with_lzma=auto])
+    [],[with_lzma=auto])dnl
+  ## see what we were passed:
   AC_MSG_CHECKING([whether to use lzma])
   AC_MSG_RESULT([${with_lzma}])dnl
 
@@ -3141,7 +3165,8 @@ else
       GDB_SIM="${gdb_sim}"
     fi
     DEFAULT_SIM_OB="remote-sim.o"
-    AC_SUBST([DEFAULT_SIM_OB])
+    AC_SUBST([DEFAULT_SIM_OB])dnl
+    ## clear:
     IGNORE_SIM=""
     IGNORE_SIM_OBS=""
     AC_DEFINE([WITH_SIM],[1],[Define if the simulator is being linked in.])
@@ -3285,7 +3310,8 @@ fi
 AC_ARG_WITH([babeltrace],
   [AS_HELP_STRING([--with-babeltrace],
                   [include babeltrace support (auto/yes/no)])],
-  [],[with_babeltrace=auto])
+  [],[with_babeltrace=auto])dnl
+  ## see what we were passed:
 AC_MSG_CHECKING([whether to use babeltrace])
 AC_MSG_RESULT([${with_babeltrace}])dnl
 
@@ -3371,9 +3397,8 @@ fi
 AC_SUBST([unused_subdirs])dnl
 
 # If hostfile (XM_FILE) and/or targetfile (DEPRECATED_TM_FILE) and/or
-# nativefile (NAT_FILE) is not set in config/*/*.m[ht] files, we link
-# to an empty version.
-
+# nativefile (NAT_FILE) is not set in config/*/*.m[ht] files, then we link
+# to an empty version:
 files=""
 links=""
 

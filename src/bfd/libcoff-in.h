@@ -246,22 +246,22 @@ struct coff_link_hash_entry
      there is a reloc against this symbol.  */
   long indx;
 
-  /* Symbol type.  */
+  /* Symbol type: */
   unsigned short type;
 
-  /* Symbol class.  */
-  unsigned char class;
+  /* Symbol class: */
+  unsigned char class;  /* FIXME: rename for '-Wc++-compat' */
 
-  /* Number of auxiliary entries.  */
+  /* Number of auxiliary entries: */
   char numaux;
 
-  /* BFD to take auxiliary entries from.  */
+  /* BFD to take auxiliary entries from: */
   bfd *auxbfd;
 
-  /* Pointer to array of auxiliary entries, if any.  */
+  /* Pointer to array of auxiliary entries, if any: */
   union internal_auxent *aux;
 
-  /* Flag word; legal values follow.  */
+  /* Flag word; legal values follow: */
   unsigned short coff_link_hash_flags;
   /* Symbol is a PE section symbol.  */
 #define COFF_LINK_HASH_PE_SECTION_SYMBOL (01)
@@ -378,16 +378,16 @@ struct coff_debug_merge_element
 /* A linked list of debug merge entries for a given name: */
 struct coff_debug_merge_type
 {
-  /* Next type with the same name.  */
+  /* Next type with the same name: */
   struct coff_debug_merge_type *next;
 
-  /* Class of type.  */
-  int class;
+  /* Class of type: */
+  int class;  /* FIXME: rename for '-Wc++-compat' */
 
-  /* Symbol index where this type is defined.  */
+  /* Symbol index where this type is defined: */
   long indx;
 
-  /* List of elements.  */
+  /* List of elements: */
   struct coff_debug_merge_element *elements;
 };
 

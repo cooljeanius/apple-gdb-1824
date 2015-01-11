@@ -1,5 +1,5 @@
 static char _[] = "@(#)monitor.c	5.28 93/11/02 11:46:54, Srini, AMD.";
-/******************************************************************************
+/**************************************************************************
  * Copyright 1991 Advanced Micro Devices, Inc.
  *
  * This software is the property of Advanced Micro Devices, Inc  (AMD)  which
@@ -23,17 +23,19 @@ static char _[] = "@(#)monitor.c	5.28 93/11/02 11:46:54, Srini, AMD.";
  * 5900 E. Ben White Blvd.
  * Austin, TX 78741
  * 800-292-9263
- *****************************************************************************
+ **************************************************************************
  *      Engineer: Srini Subramanian.
- *****************************************************************************
+ **************************************************************************
  * This module implements the monitor command interpreter.
- *****************************************************************************
+ **************************************************************************
  */
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning monitor.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning monitor.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 #include <stdio.h>
 #include <string.h>
@@ -42,7 +44,7 @@ static char _[] = "@(#)monitor.c	5.28 93/11/02 11:46:54, Srini, AMD.";
 #include <unistd.h>
 #include <sys/types.h>
 #include <errno.h>
-#ifdef	MSDOS
+#ifdef MSDOS
 # include <stdlib.h>
 # include <conio.h>
 # include <io.h>
@@ -60,7 +62,9 @@ static char _[] = "@(#)monitor.c	5.28 93/11/02 11:46:54, Srini, AMD.";
 #    ifdef HAVE_TERM_H
 #     include <term.h>
 #    else
-#     warning monitor.c expects a header that provides termios-related functions to be included.
+#     if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#      warning "monitor.c expects a header that provides termios-related functions to be included."
+#     endif /* __GNUC__ && !__STRICT_ANSI__ */
 #    endif /* HAVE_TERM_H */
 #   endif /* HAVE_SGTTY_H */
 #  endif /* HAVE_TERMIOS_H */
@@ -68,7 +72,9 @@ static char _[] = "@(#)monitor.c	5.28 93/11/02 11:46:54, Srini, AMD.";
 # ifdef HAVE_SYS_IOCTL_H
 #  include <sys/ioctl.h>
 # else
-#  warning monitor.c might want to include <sys/ioctl.h>, but it is not present.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "monitor.c might want to include <sys/ioctl.h>, but it is not present."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_SYS_IOCTL_H */
 #endif /* MSDOS */
 #ifndef malloc
@@ -81,7 +87,9 @@ static char _[] = "@(#)monitor.c	5.28 93/11/02 11:46:54, Srini, AMD.";
 #   ifdef HAVE_MALLOC_MALLOC_H
 #    include <malloc/malloc.h>
 #   else
-#    warning monitor.c expects a header that provides malloc() to be included.
+#    if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#     warning "monitor.c expects a header that provides malloc() to be included."
+#    endif /* __GNUC__ && !__STRICT_ANSI__ */
 #   endif /* HAVE_MALLOC_MALLOC_H */
 #  endif /* HAVE_MALLOC_H */
 # endif /* HAVE_STDLIB_H */
@@ -124,7 +132,7 @@ GLOBAL	int		GoCmdFlag=0;
 
 /* Following three vars to be used in stdin/stdout/stderr funcs */
 #define	IO_BUFSIZE	1024
-static	char		io_buffer[IO_BUFSIZE]; 
+static	char		io_buffer[IO_BUFSIZE];
 static	INT32	 	io_bufsize;
 static	INT32		io_count_done;
 
@@ -152,74 +160,74 @@ struct	MonitorCommands_t {
 };
 
 static	struct MonitorCommands_t MonitorCommands[] = {
-"a", asm_cmd,
-"attach", set_sessionid_cmd,
-"b", bkpt_cmd,
-"bc", bkpt_cmd,
-"b050", bkpt_cmd,
-"b050v", bkpt_cmd,
-"b050p", bkpt_cmd,
-"c", config_cmd,
-"caps", capab_cmd,
-"cp", create_proc_cmd,
-"con", connect_cmd,
-"ch0", channel0_cmd,
-"d", dump_cmd,
-"ex", exit_conn_cmd,
-"dw", dump_cmd,
-"dh", dump_cmd,
-"db", dump_cmd,
-"df", dump_cmd,
-"dd", dump_cmd,
-"dp", destroy_proc_cmd,
-"disc", disconnect_cmd,
-"detach", disconnect_cmd,
-"esc", escape_cmd,
-"eon", echomode_on,
-"eoff", echomode_off,
-"f", fill_cmd,
-"fw", fill_cmd,
-"fh", fill_cmd,
-"fb", fill_cmd,
-"ff", fill_cmd,
-"fd", fill_cmd,
-"fs", fill_cmd,
-"g", go_cmd,
-"h", help_cmd,
-"ix", ix_cmd,
-"il", il_cmd,
-"init", init_proc_cmd,
-"k", kill_cmd,
-"l", dasm_cmd,
-"logon", logon_cmd,
-"logoff", logoff_cmd,
-"m", move_cmd,
-"pid", set_pid_cmd,
-"q", quit_cmd,
-"qoff", quietmode_off,
-"qon", quietmode_on,
-"r", reset_cmd,
-"s", set_cmd,
-"sw", set_cmd,
-"sh", set_cmd,
-"sb", set_cmd,
-"sf", set_cmd,
-"sd", set_cmd,
-"sid", set_sessionid_cmd,
-"t", trace_cmd,
-"target", connect_cmd,
-"tip", tip_cmd,
-"ver", version_cmd,
-"xp", xp_cmd,
-"xc", xc_cmd,
-"y", yank_cmd,
-"zc", cmdfile_cmd,
-"ze", echofile_cmd,
-"zl", set_logfile,
-"?", help_cmd,
-"|", dummy_cmd,
-"", dummy_cmd,
-NULL
+    { "a", asm_cmd },
+    { "attach", set_sessionid_cmd },
+    { "b", bkpt_cmd },
+    { "bc", bkpt_cmd },
+    { "b050", bkpt_cmd },
+    { "b050v", bkpt_cmd },
+    { "b050p", bkpt_cmd },
+    { "c", config_cmd },
+    { "caps", capab_cmd },
+    { "cp", create_proc_cmd },
+    { "con", connect_cmd },
+    { "ch0", channel0_cmd },
+    { "d", dump_cmd },
+    { "ex", exit_conn_cmd },
+    { "dw", dump_cmd },
+    { "dh", dump_cmd },
+    { "db", dump_cmd },
+    { "df", dump_cmd },
+    { "dd", dump_cmd },
+    { "dp", destroy_proc_cmd },
+    { "disc", disconnect_cmd },
+    { "detach", disconnect_cmd },
+    { "esc", escape_cmd },
+    { "eon", echomode_on },
+    { "eoff", echomode_off },
+    { "f", fill_cmd },
+    { "fw", fill_cmd },
+    { "fh", fill_cmd },
+    { "fb", fill_cmd },
+    { "ff", fill_cmd },
+    { "fd", fill_cmd },
+    { "fs", fill_cmd },
+    { "g", go_cmd },
+    { "h", help_cmd },
+    { "ix", ix_cmd },
+    { "il", il_cmd },
+    { "init", init_proc_cmd },
+    { "k", kill_cmd },
+    { "l", dasm_cmd },
+    { "logon", logon_cmd },
+    { "logoff", logoff_cmd },
+    { "m", move_cmd },
+    { "pid", set_pid_cmd },
+    { "q", quit_cmd },
+    { "qoff", quietmode_off },
+    { "qon", quietmode_on },
+    { "r", reset_cmd },
+    { "s", set_cmd },
+    { "sw", set_cmd },
+    { "sh", set_cmd },
+    { "sb", set_cmd },
+    { "sf", set_cmd },
+    { "sd", set_cmd },
+    { "sid", set_sessionid_cmd },
+    { "t", trace_cmd },
+    { "target", connect_cmd },
+    { "tip", tip_cmd },
+    { "ver", version_cmd },
+    { "xp", xp_cmd },
+    { "xc", xc_cmd },
+    { "y", yank_cmd },
+    { "zc", cmdfile_cmd },
+    { "ze", echofile_cmd },
+    { "zl", set_logfile },
+    { "?", help_cmd },
+    { "|", dummy_cmd },
+    { "", dummy_cmd },
+    { NULL }
 };
 
 /* Trap Messages */
@@ -252,7 +260,6 @@ static char	*TrapMsg[] = {
 void
 Mini_monitor()
 {
-
   /* Initialize breakpoint table */
 
   bkpt_table = NULL;
@@ -265,7 +272,7 @@ Mini_monitor()
     io_config.target_running = FALSE;
 
 #if !defined MSDOS && !defined __APPLE__
-   ioctl (fileno(stdin), TCGETA, &OldTermbuf);	/* Initial settings */
+   ioctl(fileno(stdin), TCGETA, &OldTermbuf);	/* Initial settings */
 #endif /* !MSDOS */
 
    /*
@@ -325,7 +332,7 @@ Mini_loop()
    int    	token_count;
    char  	*token[MAX_TOKENS];
    int		Indx;
- 
+
    exit_loop = FALSE;
    CtrlCHit = 0;
    /*
@@ -368,10 +375,10 @@ Mini_loop()
 				ioctl (fileno(stdin), TCSETA, &OldTermbuf); /*reset settings */
 #endif /* !MSDOS && !__APPLE__ */
 		 if (!QuietMode) {
-		    fprintf (stderr, "Process exited with 0x%lx\n", 
+		    fprintf (stderr, "Process exited with 0x%lx\n",
 					(ProcessorState >> 8));
      		    if (io_config.echo_mode == (INT32) TRUE)
-		       fprintf (io_config.echo_file, "Process exited with 0x%lx\n", 
+		       fprintf (io_config.echo_file, "Process exited with 0x%lx\n",
 					(ProcessorState >> 8));
 		 }
 		 fprintf (stderr, "%s>", ProgramName);
@@ -520,7 +527,7 @@ Mini_loop()
 	case	STDINMODEX:
 		/* call TIP to get StdinMode */
 		Mini_stdin_mode_x((INT32 *)&TipStdinMode);
-		if (TipStdinMode & TIP_NBLOCK) 
+		if (TipStdinMode & TIP_NBLOCK)
 		  io_config.io_control = TERM_29K;
 		else if (TipStdinMode & TIP_ASYNC)
 		  io_config.io_control = TERM_29K;
@@ -550,7 +557,7 @@ Mini_loop()
 	  if (io_config.cmd_ready == FALSE) { /* Get a new user command */
              if (io_config.cmd_file_io == TRUE) { /* try command file first*/
 	        if (Mini_cmdfile_input(cmd_buffer, BUFFER_SIZE) == SUCCESS) {
-                   fprintf(stderr, "%s", cmd_buffer); 
+                   fprintf(stderr, "%s", cmd_buffer);
 		   io_config.cmd_ready = TRUE;
 		} else {
                    Mini_poll_kbd(cmd_buffer, BUFFER_SIZE, BlockMode);
@@ -692,11 +699,11 @@ void
 lcase_tokens(token, token_count)
    char *token[MAX_TOKENS];
    int   token_count;
-   {
+{
    int   i;
    char *temp_str;
 
-   for (i=0; i<token_count; i=i+1) {
+   for (i = 0; i < token_count; i = (i + 1)) {
       temp_str = token[i];
       while (*temp_str != '\0') {
          if (isupper(*temp_str))
@@ -704,20 +711,20 @@ lcase_tokens(token, token_count)
          temp_str++;
          }
       }  /* end for() */
-   }  /* end lcase_string() */
+}  /* end lcase_string() */
 
 
 INT32
 Mini_go_forever()
 {
-  static  int	complete=0;
+  static int complete = 0;
 
    /* Terminal control initialization. */
    io_config.io_control = TERM_USER;	/* 3.1-7 */
    io_config.target_running = TRUE;
 
 #if !defined MSDOS && !defined __APPLE__
-   ioctl (fileno(stdin), TCGETA, &OldTermbuf);	/* Initial settings */
+   ioctl(fileno(stdin), TCGETA, &OldTermbuf);	/* Initial settings */
 #endif /* !MSDOS && !__APPLE__ */
 
    /* Install ctrl-C handler */
@@ -1191,7 +1198,7 @@ int	tokencnt;
   else { /* find some other session */
      NumberOfConnections=NumberOfConnections - 1;
      for (i = 0; i < NumberOfConnections; i++) {
-        if ((retval = Mini_TIP_SetCurrSession(Session_ids[i])) == SUCCESS) 
+        if ((retval = Mini_TIP_SetCurrSession(Session_ids[i])) == SUCCESS)
 	    return (retval);
      }
      if (i >= NumberOfConnections)  { /* exit DFE */
@@ -1239,7 +1246,7 @@ int	tokencnt;
   } else { /* find some other session */
      NumberOfConnections=NumberOfConnections - 1;
      for (i = 0; i < NumberOfConnections; i++) {
-        if ((retval = Mini_TIP_SetCurrSession(Session_ids[i])) == SUCCESS) 
+        if ((retval = Mini_TIP_SetCurrSession(Session_ids[i])) == SUCCESS)
 	    return (retval);
      }
      if (i >= NumberOfConnections)  { /* exit DFE */
@@ -1327,7 +1334,7 @@ go_cmd(token, token_count)
    } else {
      GoCmdFlag = 1;
      BlockMode = NONBLOCK;
-     if (TipStdinMode & TIP_NBLOCK) 
+     if (TipStdinMode & TIP_NBLOCK)
 	  io_config.io_control = TERM_29K;
      else if (TipStdinMode & TIP_ASYNC)
 	  io_config.io_control = TERM_29K;
@@ -1355,14 +1362,14 @@ INT32
 trace_cmd(token, token_count)
    char   *token[];
    int     token_count;
-   {
-   int    result;
-   INT32  count;
-   INT32	retval;
+{
+   int result;
+   INT32 count = 0L;
+   INT32 retval;
 
    if (token_count == 1) {
-      count = 1; 
-      }
+      count = 1;
+   }
    else
    if (token_count >= 2) {
       result = get_word(token[1], &count);
@@ -1375,7 +1382,7 @@ trace_cmd(token, token_count)
    } else {
      GoCmdFlag = 1;
      BlockMode = NONBLOCK;
-     if (TipStdinMode & TIP_NBLOCK) 
+     if (TipStdinMode & TIP_NBLOCK)
 	  io_config.io_control = TERM_29K;
      else if (TipStdinMode & TIP_ASYNC)
 	  io_config.io_control = TERM_29K;
@@ -1389,7 +1396,7 @@ trace_cmd(token, token_count)
      return(SUCCESS);
    }
 
-   }  /* end trace_cmd() */
+}  /* end trace_cmd() */
 
 /*
  * The "ch0" command is used to send characters (input) to the application
@@ -1415,7 +1422,7 @@ channel0_cmd(token, token_count)
 }
 
 /*
- * Only for stdin, not for command file input 
+ * Only for stdin, not for command file input
  */
 INT32
 Mini_poll_channel0()
@@ -1455,7 +1462,7 @@ Mini_poll_channel0()
        return(0);
 #else	/* Unix */
 # ifndef __APPLE__
-     /* 
+     /*
       * Set STDIN to CBREAK mode. For each character read() send it
       * to TIP using Mini_put_stdin(). This is done only if the
       * terminal is controlled by the 29K Target System, i.e. when
@@ -1463,7 +1470,7 @@ Mini_poll_channel0()
       * not be called as it would affect the command-line processing.
       */
       /* while ((io_bufsize = read (fileno(stdin), &ch, 1)) == 1) { */
-      if ((io_bufsize = read (fileno(stdin), &ch, 1)) == 1) { 
+      if ((io_bufsize = read (fileno(stdin), &ch, 1)) == 1) {
 	if (io_config.echo_mode == (INT32) TRUE) {
 	  putc (ch, io_config.echo_file);
 	  fflush (io_config.echo_file);
@@ -1551,7 +1558,7 @@ logoff_cmd(token, token_count)
    char   *token[];
    int     token_count;
 {
-   if (io_config.log_mode == (INT32) TRUE) { 
+   if (io_config.log_mode == (INT32) TRUE) {
      io_config.log_mode = (INT32) FALSE;
      (void) fclose(io_config.log_file);
    }
@@ -1563,7 +1570,7 @@ logon_cmd(token, token_count)
    char   *token[];
    int     token_count;
 {
-   if (io_config.log_mode == (INT32) FALSE) { 
+   if (io_config.log_mode == (INT32) FALSE) {
      if (strcmp(io_config.log_filename, "\0") != 0) {/* valid file */
        io_config.log_mode = (INT32) TRUE;
        if ((io_config.log_file = fopen(io_config.log_filename, "a")) == NULL)
@@ -1589,18 +1596,18 @@ set_logfile(token, token_count)
   (void) strcpy ((char *)(&(io_config.log_filename[0])),token[1]);
 
   if (io_config.log_mode == (INT32) TRUE) { /* replace log file used */
-	 if ((io_config.log_file = 
+	 if ((io_config.log_file =
 		      fopen (io_config.log_filename, "w")) == NULL) {
 	    warning (EMLOGOPEN);
 	    io_config.log_mode = (INT32) FALSE;
 	 }
   } else {
 	 io_config.log_mode = (INT32) TRUE;
-	 if ((io_config.log_file = 
+	 if ((io_config.log_file =
 		      fopen (io_config.log_filename, "w")) == NULL) {
 	    warning (EMLOGOPEN);
 	    io_config.log_mode = (INT32) FALSE;
-	 } 
+	 }
   }
   return (0);
 
@@ -1648,18 +1655,18 @@ echofile_cmd(token, token_count)
   (void) strcpy ((char *)(&(io_config.echo_filename[0])),token[1]);
 
   if (io_config.echo_mode == (INT32) TRUE) { /* replace echo file used */
-	 if ((io_config.echo_file = 
+	 if ((io_config.echo_file =
 		      fopen (io_config.echo_filename, "w")) == NULL) {
 	    warning (EMECHOPEN);
 	    io_config.echo_mode = (INT32) FALSE;
 	 }
   } else {
 	 io_config.echo_mode = (INT32) TRUE;
-	 if ((io_config.echo_file = 
+	 if ((io_config.echo_file =
 		      fopen (io_config.echo_filename, "w")) == NULL) {
 	    warning (EMECHOPEN);
 	    io_config.echo_mode = (INT32) FALSE;
-	 } 
+	 }
   }
   return (0);
 }

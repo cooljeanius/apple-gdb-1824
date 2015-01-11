@@ -656,15 +656,14 @@ DESCRIPTION
 */
 
 const bfd_arch_info_type *
-bfd_arch_get_compatible (const bfd *abfd,
-			 const bfd *bbfd,
-			 bfd_boolean accept_unknowns)
+bfd_arch_get_compatible(const bfd *abfd, const bfd *bbfd,
+                        bfd_boolean accept_unknowns)
 {
-  const bfd * ubfd = NULL;
+  const bfd *ubfd = NULL;
 
-  /* Look for an unknown architecture.  */
-  if (((ubfd = abfd) && ubfd->arch_info->arch == bfd_arch_unknown)
-      || ((ubfd = bbfd) && ubfd->arch_info->arch == bfd_arch_unknown))
+  /* Look for an unknown architecture: */
+  if (((ubfd = abfd) && (ubfd->arch_info->arch == bfd_arch_unknown))
+      || ((ubfd = bbfd) && (ubfd->arch_info->arch == bfd_arch_unknown)))
     {
       /* We can allow an unknown architecture if accept_unknowns
 	 is true, or if the target is the "binary" format, which
@@ -672,13 +671,13 @@ bfd_arch_get_compatible (const bfd *abfd,
 	 only be set by explicit request from the user, it is safe
 	 to assume that they know what they are doing.  */
       if (accept_unknowns
-	  || strcmp (bfd_get_target (ubfd), "binary") == 0)
+	  || (strcmp(bfd_get_target(ubfd), "binary") == 0))
 	return ubfd->arch_info;
       return NULL;
     }
 
-  /* Otherwise architecture-specific code has to decide.  */
-  return abfd->arch_info->compatible (abfd->arch_info, bbfd->arch_info);
+  /* Otherwise architecture-specific code has to decide: */
+  return abfd->arch_info->compatible(abfd->arch_info, bbfd->arch_info);
 }
 
 /*

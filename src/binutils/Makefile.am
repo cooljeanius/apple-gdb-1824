@@ -1,7 +1,8 @@
 ## automake Makefile for binutils source
 ## Process this file with automake to generate Makefile.in
 
-AUTOMAKE_OPTIONS = 1.9.6 gnits dejagnu
+AUTOMAKE_OPTIONS = 1.9.6 gnits dejagnu no-dist
+## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 ACLOCAL_AMFLAGS = -I m4 --install

@@ -2,7 +2,7 @@
 
 libtool
 Makefile
-Makefile.orig
+Makefile*orig
 *.o
 *.dylib
 config.cache

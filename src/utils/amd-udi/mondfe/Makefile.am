@@ -23,7 +23,7 @@
 
 ## Automake-specific things:
 
-AUTOMAKE_OPTIONS = foreign dejagnu
+AUTOMAKE_OPTIONS = foreign dejagnu no-dist
 
 #### Start of system configuration section. ####
 
@@ -84,7 +84,7 @@ OBJS = main.o monitor.o error.o help.o commands.o asm.o \
 
 CLEANFILES = $(OBJS) mondfe
 
-DISTCLEANFILES = Makefile Makefile.orig *.status
+DISTCLEANFILES = Makefile Makefile*orig *.status
 
 LIBDFE = ../udi/libdfe.a
 

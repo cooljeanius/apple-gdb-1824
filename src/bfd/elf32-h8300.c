@@ -251,36 +251,36 @@ elf32_h8_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
   for (i = 0; i < sizeof (h8_reloc_map) / sizeof (struct elf_reloc_map); i++)
     {
       if (h8_reloc_map[i].bfd_reloc_val == code)
-	return &h8_elf_howto_table[(int) h8_reloc_map[i].howto_index];
+	return &h8_elf_howto_table[(int)h8_reloc_map[i].howto_index];
     }
   return NULL;
 }
 
 static void
-elf32_h8_info_to_howto (bfd *abfd ATTRIBUTE_UNUSED, arelent *bfd_reloc,
-			Elf_Internal_Rela *elf_reloc)
+elf32_h8_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *bfd_reloc,
+                       Elf_Internal_Rela *elf_reloc)
 {
   unsigned int r;
   unsigned int i;
 
-  r = ELF32_R_TYPE (elf_reloc->r_info);
-  for (i = 0; i < sizeof (h8_elf_howto_table) / sizeof (reloc_howto_type); i++)
+  r = ELF32_R_TYPE(elf_reloc->r_info);
+  for (i = 0; i < (sizeof(h8_elf_howto_table) / sizeof(reloc_howto_type)); i++)
     if (h8_elf_howto_table[i].type == r)
       {
 	bfd_reloc->howto = &h8_elf_howto_table[i];
 	return;
       }
-  abort ();
+  abort();
 }
 
-static void
-elf32_h8_info_to_howto_rel (bfd *abfd ATTRIBUTE_UNUSED, arelent *bfd_reloc,
-			    Elf_Internal_Rela *elf_reloc ATTRIBUTE_UNUSED)
+static void ATTRIBUTE_NORETURN
+elf32_h8_info_to_howto_rel(bfd *abfd ATTRIBUTE_UNUSED, arelent *bfd_reloc,
+                           Elf_Internal_Rela *elf_reloc ATTRIBUTE_UNUSED)
 {
   unsigned int r;
 
-  abort ();
-  r = ELF32_R_TYPE (elf_reloc->r_info);
+  abort();
+  r = ELF32_R_TYPE(elf_reloc->r_info);
   bfd_reloc->howto = &h8_elf_howto_table[r];
 }
 

@@ -75,6 +75,14 @@ static int remote_desc;
 extern int using_threads;
 extern int debug_threads;
 
+/* in case gnulib redefined these on us: */
+#ifdef fcntl
+# undef fcntl
+#endif /* fcntl */
+#ifdef open
+# undef open
+#endif /* open */
+
 /* Open a connection to a remote debugger.
    NAME is the filename used for communication.  */
 
@@ -204,10 +212,10 @@ remote_open (char *name)
     }
 
 #if defined(F_SETFL) && defined (FASYNC)
-  save_fcntl_flags = fcntl (remote_desc, F_GETFL, 0);
-  fcntl (remote_desc, F_SETFL, save_fcntl_flags | FASYNC);
+  save_fcntl_flags = fcntl(remote_desc, F_GETFL, 0);
+  fcntl(remote_desc, F_SETFL, save_fcntl_flags | FASYNC);
 # if defined (F_SETOWN)
-  fcntl (remote_desc, F_SETOWN, getpid ());
+  fcntl(remote_desc, F_SETOWN, getpid());
 # endif /* F_SETOWN */
 #endif /* F_SETFL && FASYNC */
   disable_async_io ();

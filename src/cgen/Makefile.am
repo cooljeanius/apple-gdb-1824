@@ -1,7 +1,8 @@
 ## automake Makefile for cgen
 ## Process this file with automake to generate Makefile.in
 
-AUTOMAKE_OPTIONS = 1.9 gnits
+AUTOMAKE_OPTIONS = 1.9 gnits no-dist
+## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 SUBDIRS = doc

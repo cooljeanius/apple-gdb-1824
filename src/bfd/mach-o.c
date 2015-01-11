@@ -188,15 +188,26 @@ extern const bfd_target mach_o_fat_vec;
 # define SECTION_ATTRIBUTES       0xffffff00  /* 24 section attributes.  */
 #endif /* !SECTION_ATTRIBUTES */
 
-/* Constants for the section attributes part of the flags field of a section
-   structure.  */
-
-#define SECTION_ATTRIBUTES_USR 0xff000000 /* User-settable attributes.  */
-#define S_ATTR_PURE_INSTRUCTIONS 0x80000000 /* Section contains only true machine instructions.  */
-#define SECTION_ATTRIBUTES_SYS 0x00ffff00 /* System setable attributes.  */
-#define S_ATTR_SOME_INSTRUCTIONS 0x00000400 /* Section contains some machine instructions.  */
-#define S_ATTR_EXT_RELOC 0x00000200 /* Section has external relocation entries.  */
-#define S_ATTR_LOC_RELOC 0x00000100 /* Section has local relocation entries.  */
+/* Constants for the section attributes part of the flags field of a
+ * section structure.  */
+#ifndef SECTION_ATTRIBUTES_USR
+# define SECTION_ATTRIBUTES_USR 0xff000000 /* User-settable attributes.  */
+#endif /* !SECTION_ATTRIBUTES_USR */
+#ifndef S_ATTR_PURE_INSTRUCTIONS
+# define S_ATTR_PURE_INSTRUCTIONS 0x80000000 /* Section contains only true machine instructions.  */
+#endif /* !S_ATTR_PURE_INSTRUCTIONS */
+#ifndef SECTION_ATTRIBUTES_SYS
+# define SECTION_ATTRIBUTES_SYS 0x00ffff00 /* System setable attributes. */
+#endif /* !SECTION_ATTRIBUTES_SYS */
+#ifndef S_ATTR_SOME_INSTRUCTIONS
+# define S_ATTR_SOME_INSTRUCTIONS 0x00000400 /* Section contains some machine instructions.  */
+#endif /* !S_ATTR_SOME_INSTRUCTIONS */
+#ifndef S_ATTR_EXT_RELOC
+# define S_ATTR_EXT_RELOC 0x00000200 /* Section has external relocation entries.  */
+#endif /* !S_ATTR_EXT_RELOC */
+#ifndef S_ATTR_LOC_RELOC
+# define S_ATTR_LOC_RELOC 0x00000100 /* Section has local relocation entries.  */
+#endif /* !S_ATTR_LOC_RELOC */
 
 #ifndef N_STAB
 # define N_STAB 0xe0
@@ -1608,14 +1619,14 @@ bfd_mach_o_scan_read_dysymtab_symbol(bfd *abfd,
   unsigned long symbolindex;
   unsigned char buf[4];
 
-  BFD_ASSERT (i < dysym->nindirectsyms);
+  BFD_ASSERT(i < dysym->nindirectsyms);
 
   bfd_seek(abfd, (file_ptr)isymoff, SEEK_SET);
   if (bfd_bread((PTR)buf, (bfd_size_type)4UL, abfd) != 4)
     {
       fprintf(stderr,
               "bfd_mach_o_scan_read_dysymtab_symbol: unable to read %lu bytes at %lu\n",
-              (unsigned long)4, isymoff);
+              (unsigned long)4UL, isymoff);
       return -1;
     }
   symbolindex = bfd_h_get_32(abfd, buf);
@@ -2451,18 +2462,18 @@ bfd_mach_o_scan_read_command(bfd *abfd, bfd_mach_o_load_command *command)
 }
 
 static void
-bfd_mach_o_flatten_sections (bfd *abfd)
+bfd_mach_o_flatten_sections(bfd *abfd)
 {
   bfd_mach_o_data_struct *mdata = abfd->tdata.mach_o_data;
-  long csect = 0;
+  long csect = 0L;
   unsigned long i, j;
 
   mdata->nsects = 0;
 
-  for (i = 0; i < mdata->header.ncmds; i++)
+  for (i = 0UL; i < mdata->header.ncmds; i++)
     {
-      if (mdata->commands[i].type == BFD_MACH_O_LC_SEGMENT
-	  || mdata->commands[i].type == BFD_MACH_O_LC_SEGMENT_64)
+      if ((mdata->commands[i].type == BFD_MACH_O_LC_SEGMENT)
+	  || (mdata->commands[i].type == BFD_MACH_O_LC_SEGMENT_64))
 	{
 	  bfd_mach_o_segment_command *seg;
 
@@ -2471,21 +2482,22 @@ bfd_mach_o_flatten_sections (bfd *abfd)
 	}
     }
 
-  mdata->sections = (struct bfd_mach_o_section **)bfd_alloc(abfd,
-                                                            (mdata->nsects * sizeof(bfd_mach_o_section *)));
-  csect = 0;
+  mdata->sections =
+    (struct bfd_mach_o_section **)bfd_alloc(abfd,
+                                            (mdata->nsects * sizeof(bfd_mach_o_section *)));
+  csect = 0L;
 
-  for (i = 0; i < mdata->header.ncmds; i++)
+  for (i = 0UL; i < mdata->header.ncmds; i++)
     {
-      if (mdata->commands[i].type == BFD_MACH_O_LC_SEGMENT
-	  || mdata->commands[i].type == BFD_MACH_O_LC_SEGMENT_64)
+      if ((mdata->commands[i].type == BFD_MACH_O_LC_SEGMENT)
+	  || (mdata->commands[i].type == BFD_MACH_O_LC_SEGMENT_64))
 	{
 	  bfd_mach_o_segment_command *seg;
 
 	  seg = &mdata->commands[i].command.segment;
-	  BFD_ASSERT (csect + seg->nsects <= mdata->nsects);
+	  BFD_ASSERT((csect + seg->nsects) <= mdata->nsects);
 
-	  for (j = 0; j < seg->nsects; j++)
+	  for (j = 0UL; j < seg->nsects; j++)
 	    mdata->sections[csect++] = &seg->sections[j];
 	}
     }
@@ -3001,10 +3013,9 @@ bfd_mach_o_openr_next_archived_file(bfd *archive, bfd *prev)
 }
 
 int
-bfd_mach_o_lookup_section (bfd *abfd,
-			   asection *section,
-			   bfd_mach_o_load_command **mcommand,
-			   bfd_mach_o_section **msection)
+bfd_mach_o_lookup_section(bfd *abfd, asection *section,
+                          bfd_mach_o_load_command **mcommand,
+                          bfd_mach_o_section **msection)
 {
   struct mach_o_data_struct *md = abfd->tdata.mach_o_data;
   unsigned int i, j, num;
@@ -3048,13 +3059,12 @@ bfd_mach_o_lookup_section (bfd *abfd,
 
   *mcommand = ncmd;
   *msection = nsect;
-  return num;
+  return (int)num;
 }
 
 int
-bfd_mach_o_lookup_command (bfd *abfd,
-			   bfd_mach_o_load_command_type type,
-			   bfd_mach_o_load_command **mcommand)
+bfd_mach_o_lookup_command(bfd *abfd,  bfd_mach_o_load_command_type type,
+                          bfd_mach_o_load_command **mcommand)
 {
   struct mach_o_data_struct *md = NULL;
   bfd_mach_o_load_command *ncmd = NULL;
@@ -3062,8 +3072,8 @@ bfd_mach_o_lookup_command (bfd *abfd,
 
   md = abfd->tdata.mach_o_data;
 
-  BFD_ASSERT (md != NULL);
-  BFD_ASSERT (mcommand != NULL);
+  BFD_ASSERT(md != NULL);
+  BFD_ASSERT(mcommand != NULL);
 
   num = 0;
   for (i = 0; i < md->header.ncmds; i++)
@@ -3079,7 +3089,7 @@ bfd_mach_o_lookup_command (bfd *abfd,
     }
 
   *mcommand = ncmd;
-  return num;
+  return (int)num;
 }
 
 unsigned long
@@ -3126,16 +3136,16 @@ bfd_mach_o_stack_addr(enum bfd_mach_o_cpu_type type)
    RLEN. */
 
 static int
-bfd_mach_o_core_parse_environment (bfd *abfd ATTRIBUTE_UNUSED,
-				   unsigned char *buf,
-				   bfd_size_type len,
-				   unsigned char **rbuf,
-				   bfd_size_type *rlen)
+bfd_mach_o_core_parse_environment(bfd *abfd ATTRIBUTE_UNUSED,
+				  unsigned char *buf,
+                                  bfd_size_type len,
+				  unsigned char **rbuf,
+                                  bfd_size_type *rlen)
 {
   unsigned char *end, *start;
 
-  /* Find the first non-NULL character in the string. */
-  end = buf + len - 1;
+  /* Find the first non-NULL character in the string: */
+  end = (buf + len - 1U);
   while ((end > buf) && (*end == '\0'))
     end--;
   if ((end <= buf) && (*end == '\0'))
@@ -3157,7 +3167,7 @@ bfd_mach_o_core_parse_environment (bfd *abfd ATTRIBUTE_UNUSED,
   if (start < (buf + 4))
     return -2;
 
-  *rlen = (end - start);
+  *rlen = (bfd_size_type)(end - start);
   *rbuf = start;
 
   return 0;
@@ -3464,6 +3474,24 @@ mach_o_bfd_fat_free_cached_info(bfd *input)
 #ifdef SECTION_ATTRIBUTES
 # undef SECTION_ATTRIBUTES
 #endif /* SECTION_ATTRIBUTES */
+#ifdef SECTION_ATTRIBUTES_USR
+# undef SECTION_ATTRIBUTES_USR
+#endif /* SECTION_ATTRIBUTES_USR */
+#ifdef S_ATTR_PURE_INSTRUCTIONS
+# undef S_ATTR_PURE_INSTRUCTIONS
+#endif /* S_ATTR_PURE_INSTRUCTIONS */
+#ifdef SECTION_ATTRIBUTES_SYS
+# undef SECTION_ATTRIBUTES_SYS
+#endif /* SECTION_ATTRIBUTES_SYS */
+#ifdef S_ATTR_SOME_INSTRUCTIONS
+# undef S_ATTR_SOME_INSTRUCTIONS
+#endif /* S_ATTR_SOME_INSTRUCTIONS */
+#ifdef S_ATTR_EXT_RELOC
+# undef S_ATTR_EXT_RELOC
+#endif /* S_ATTR_EXT_RELOC */
+#ifdef S_ATTR_LOC_RELOC
+# undef S_ATTR_LOC_RELOC
+#endif /* S_ATTR_LOC_RELOC */
 #ifdef N_STAB
 # undef N_STAB
 #endif /* N_STAB */

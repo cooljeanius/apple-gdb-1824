@@ -90,7 +90,7 @@ static struct bfd_hash_entry * elf32_arm_link_hash_newfunc
 #if USE_REL
 static void arm_add_to_rel
   PARAMS ((bfd *, bfd_byte *, reloc_howto_type *, bfd_signed_vma));
-#endif
+#endif /* USE_REL */
 static bfd_boolean allocate_dynrelocs
   PARAMS ((struct elf_link_hash_entry *h, PTR inf));
 static bfd_boolean create_got_section
@@ -113,7 +113,7 @@ bfd_boolean bfd_elf32_arm_get_bfd_for_interworking
   PARAMS ((bfd *, struct bfd_link_info *));
 bfd_boolean bfd_elf32_arm_process_before_allocation
   PARAMS ((bfd *, struct bfd_link_info *, int));
-#endif
+#endif /* !ELFARM_NABI_C_INCLUDED */
 
 
 #define INTERWORK_FLAG(abfd)   (elf_elfheader (abfd)->e_flags & EF_ARM_INTERWORK)
@@ -133,13 +133,12 @@ bfd_boolean bfd_elf32_arm_process_before_allocation
 #define ELF_DYNAMIC_INTERPRETER     "/usr/lib/ld.so.1"
 
 #ifdef FOUR_WORD_PLT
-
 /* The size in bytes of the special first entry in the procedure
-   linkage table.  */
-#define PLT_HEADER_SIZE 16
+ * linkage table: */
+# define PLT_HEADER_SIZE 16
 
-/* The size in bytes of an entry in the procedure linkage table.  */
-#define PLT_ENTRY_SIZE 16
+/* The size in bytes of an entry in the procedure linkage table: */
+# define PLT_ENTRY_SIZE 16
 
 /* The first entry in a procedure linkage table looks like
    this.  It is set up so that any shared library function that is
@@ -162,21 +161,19 @@ static const bfd_vma elf32_arm_plt_entry [PLT_ENTRY_SIZE / 4] =
     0xe5bcf000,		/* ldr	 pc, [ip, #NN]! */
     0x00000000,		/* unused		*/
   };
-
 #else
-
 /* The size in bytes of the special first entry in the procedure
-   linkage table.  */
-#define PLT_HEADER_SIZE 20
+ * linkage table: */
+# define PLT_HEADER_SIZE 20
 
-/* The size in bytes of an entry in the procedure linkage table.  */
-#define PLT_ENTRY_SIZE 12
+/* The size in bytes of an entry in the procedure linkage table: */
+# define PLT_ENTRY_SIZE 12
 
 /* The first entry in a procedure linkage table looks like
    this.  It is set up so that any shared library function that is
    called before the relocation has been set up calls the dynamic
    linker first.  */
-static const bfd_vma elf32_arm_plt0_entry [PLT_HEADER_SIZE / 4] =
+static const bfd_vma elf32_arm_plt0_entry[PLT_HEADER_SIZE / 4] =
   {
     0xe52de004,		/* str   lr, [sp, #-4]! */
     0xe59fe004,		/* ldr   lr, [pc, #4]   */
@@ -193,8 +190,7 @@ static const bfd_vma elf32_arm_plt_entry [PLT_ENTRY_SIZE / 4] =
     0xe28cca00,		/* add	 ip, ip, #0xNN000   */
     0xe5bcf000,		/* ldr	 pc, [ip, #0xNNN]!  */
   };
-
-#endif
+#endif /* FOUR_WORD_PLT */
 
 /* The ARM linker needs to keep track of the number of relocs that it
    decides to copy in check_relocs for each symbol.  This is so that
@@ -227,7 +223,7 @@ struct elf32_arm_link_hash_entry
 #define elf32_arm_link_hash_traverse(table, func, info)			\
   (elf_link_hash_traverse						\
    (&(table)->root,							\
-    (bfd_boolean (*) PARAMS ((struct elf_link_hash_entry *, PTR))) (func), \
+    (bfd_boolean (*) PARAMS((struct elf_link_hash_entry *, PTR))) (func), \
     (info)))
 
 /* Get the ARM elf linker hash table from a link_info structure.  */
@@ -240,10 +236,10 @@ struct elf32_arm_link_hash_table
     /* The main hash table.  */
     struct elf_link_hash_table root;
 
-    /* The size in bytes of the section containing the Thumb-to-ARM glue.  */
+    /* The size in bytes of the section containing the Thumb-to-ARM glue: */
     bfd_size_type thumb_glue_size;
 
-    /* The size in bytes of the section containing the ARM-to-Thumb glue.  */
+    /* The size in bytes of the section containing the ARM-to-Thumb glue: */
     bfd_size_type arm_glue_size;
 
     /* An arbitrary input BFD chosen to hold the glue sections.  */
@@ -268,10 +264,9 @@ struct elf32_arm_link_hash_table
 
 /* Create an entry in an ARM ELF linker hash table: */
 static struct bfd_hash_entry *
-elf32_arm_link_hash_newfunc (entry, table, string)
-     struct bfd_hash_entry * entry;
-     struct bfd_hash_table * table;
-     const char * string;
+elf32_arm_link_hash_newfunc(struct bfd_hash_entry *entry,
+                            struct bfd_hash_table *table,
+                            const char *string)
 {
   struct elf32_arm_link_hash_entry * ret =
     (struct elf32_arm_link_hash_entry *) entry;
@@ -546,29 +541,29 @@ static const insn16 t2a2_noop_insn = 0x46c0;
 static const insn32 t2a3_b_insn = 0xea000000;
 
 #ifndef ELFARM_NABI_C_INCLUDED
+
 bfd_boolean
-bfd_elf32_arm_allocate_interworking_sections (info)
-     struct bfd_link_info * info;
+bfd_elf32_arm_allocate_interworking_sections(struct bfd_link_info *info)
 {
-  asection * s;
-  bfd_byte * foo;
-  struct elf32_arm_link_hash_table * globals;
+  asection *s;
+  bfd_byte *foo;
+  struct elf32_arm_link_hash_table *globals;
 
-  globals = elf32_arm_hash_table (info);
+  globals = elf32_arm_hash_table(info);
 
-  BFD_ASSERT (globals != NULL);
+  BFD_ASSERT(globals != NULL);
 
   if (globals->arm_glue_size != 0)
     {
-      BFD_ASSERT (globals->bfd_of_glue_owner != NULL);
+      BFD_ASSERT(globals->bfd_of_glue_owner != NULL);
 
-      s = bfd_get_section_by_name (globals->bfd_of_glue_owner,
-				   ARM2THUMB_GLUE_SECTION_NAME);
+      s = bfd_get_section_by_name(globals->bfd_of_glue_owner,
+				  ARM2THUMB_GLUE_SECTION_NAME);
 
-      BFD_ASSERT (s != NULL);
+      BFD_ASSERT(s != NULL);
 
-      foo = (bfd_byte *) bfd_alloc (globals->bfd_of_glue_owner,
-				    globals->arm_glue_size);
+      foo = (bfd_byte *)bfd_alloc(globals->bfd_of_glue_owner,
+                                  globals->arm_glue_size);
 
       s->_raw_size = s->_cooked_size = globals->arm_glue_size;
       s->contents = foo;
@@ -3852,41 +3847,39 @@ elf32_arm_finish_dynamic_symbol (output_bfd, info, h, sym)
   return TRUE;
 }
 
-/* Finish up the dynamic sections.  */
-
+/* Finish up the dynamic sections: */
 static bfd_boolean
-elf32_arm_finish_dynamic_sections (output_bfd, info)
-     bfd * output_bfd;
-     struct bfd_link_info * info;
+elf32_arm_finish_dynamic_sections(bfd *output_bfd,
+                                  struct bfd_link_info *info)
 {
-  bfd * dynobj;
-  asection * sgot;
-  asection * sdyn;
+  bfd *dynobj;
+  asection *sgot;
+  asection *sdyn;
 
-  dynobj = elf_hash_table (info)->dynobj;
+  dynobj = elf_hash_table(info)->dynobj;
 
-  sgot = bfd_get_section_by_name (dynobj, ".got.plt");
-  BFD_ASSERT (sgot != NULL);
-  sdyn = bfd_get_section_by_name (dynobj, ".dynamic");
+  sgot = bfd_get_section_by_name(dynobj, ".got.plt");
+  BFD_ASSERT(sgot != NULL);
+  sdyn = bfd_get_section_by_name(dynobj, ".dynamic");
 
-  if (elf_hash_table (info)->dynamic_sections_created)
+  if (elf_hash_table(info)->dynamic_sections_created)
     {
       asection *splt;
       Elf32_External_Dyn *dyncon, *dynconend;
 
-      splt = bfd_get_section_by_name (dynobj, ".plt");
-      BFD_ASSERT (splt != NULL && sdyn != NULL);
+      splt = bfd_get_section_by_name(dynobj, ".plt");
+      BFD_ASSERT((splt != NULL) && (sdyn != NULL));
 
-      dyncon = (Elf32_External_Dyn *) sdyn->contents;
-      dynconend = (Elf32_External_Dyn *) (sdyn->contents + sdyn->_raw_size);
+      dyncon = (Elf32_External_Dyn *)sdyn->contents;
+      dynconend = (Elf32_External_Dyn *)(sdyn->contents + sdyn->_raw_size);
 
       for (; dyncon < dynconend; dyncon++)
 	{
 	  Elf_Internal_Dyn dyn;
-	  const char * name;
-	  asection * s;
+	  const char *name;
+	  asection *s;
 
-	  bfd_elf32_swap_dyn_in (dynobj, dyncon, &dyn);
+	  bfd_elf32_swap_dyn_in(dynobj, dyncon, &dyn);
 
 	  switch (dyn.d_tag)
 	    {
@@ -3899,20 +3892,20 @@ elf32_arm_finish_dynamic_sections (output_bfd, info)
 	    case DT_JMPREL:
 	      name = ".rel.plt";
 	    get_vma:
-	      s = bfd_get_section_by_name (output_bfd, name);
-	      BFD_ASSERT (s != NULL);
+	      s = bfd_get_section_by_name(output_bfd, name);
+	      BFD_ASSERT(s != NULL);
 	      dyn.d_un.d_ptr = s->vma;
-	      bfd_elf32_swap_dyn_out (output_bfd, &dyn, dyncon);
+	      bfd_elf32_swap_dyn_out(output_bfd, &dyn, dyncon);
 	      break;
 
 	    case DT_PLTRELSZ:
-	      s = bfd_get_section_by_name (output_bfd, ".rel.plt");
-	      BFD_ASSERT (s != NULL);
+	      s = bfd_get_section_by_name(output_bfd, ".rel.plt");
+	      BFD_ASSERT(s != NULL);
 	      if (s->_cooked_size != 0)
 		dyn.d_un.d_val = s->_cooked_size;
 	      else
 		dyn.d_un.d_val = s->_raw_size;
-	      bfd_elf32_swap_dyn_out (output_bfd, &dyn, dyncon);
+	      bfd_elf32_swap_dyn_out(output_bfd, &dyn, dyncon);
 	      break;
 
 	    case DT_RELSZ:

@@ -803,7 +803,7 @@ gdb_curses_h = gdb_curses.h
 gdb_dirent_h = gdb_dirent.h
 gdb_events_h = gdb-events.h
 gdb_h = gdb.h
-gdb_locale_h = gdb_locale.h
+gdb_locale_h = gdb_locale.h $(config_h)
 gdb_obstack_h = gdb_obstack.h $(obstack_h)
 gdb_proc_service_h = gdb_proc_service.h $(gregset_h)
 gdb_ptrace_h = gdb_ptrace.h
@@ -1070,8 +1070,9 @@ BASE_OBS = \
 
 TSOBS = inflow.o
 
-# The configure script does not add gnulib to subdirs by default yet
-SUBDIRS = @subdirs@ gnulib
+# The configure script does not add gnulib to subdirs by default yet:
+@MAKE_SHOULD_RECURSE_INTO_GNULIB_TRUE@SUBDIRS = @subdirs@ @MAINT@ gnulib
+@MAKE_SHOULD_RECURSE_INTO_GNULIB_FALSE@SUBDIRS = @subdirs@
 
 # For now, shortcut the "configure GDB for fewer languages" stuff.
 YYFILES = c-exp.c \
@@ -1694,16 +1695,17 @@ ALLDEPFILES = \
 # to sub-directory fun 'n' games.
 
 # Provide explicit rule/dependency - works for more makes.
-copying.o: $(srcdir)/copying.c
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/copying.c
+copying.o: $(srcdir)/copying.c @MAINT@ $(defs_h) $(command_h) $(gdbcmd_h)
+	$(CC) -c $(INTERNAL_CFLAGS) -Wno-overlength-strings \
+	  $(srcdir)/copying.c
 
-hpux-thread.o: $(srcdir)/hpux-thread.c
+hpux-thread.o: $(srcdir)/hpux-thread.c @MAINT@ $(defs_h)
 	$(CC) -c $(INTERNAL_CFLAGS) -I$(srcdir)/osf-share \
 		-I$(srcdir)/osf-share/HP800 -I/usr/include/dce \
 		$(srcdir)/hpux-thread.c
 
 # main.o needs an explicit build rule to get TARGET_SYSTEM_ROOT and BINDIR.
-main.o: main.c
+main.o: main.c @MAINT@ $(defs_h)
 	$(CC) -c $(INTERNAL_CFLAGS) $(TARGET_SYSTEM_ROOT_DEFINE) \
 		-DBINDIR=\"$(bindir)\" $(srcdir)/main.c
 
@@ -1711,7 +1713,7 @@ main.o: main.c
 # gets a "assignment from incompatible pointer type" warning. The
 # return types - "enum gnu_v3_dtor_kinds" vs "enum ctor_kinds" -
 # conflict.
-gnu-v3-abi.o: $(srcdir)/gnu-v3-abi.c
+gnu-v3-abi.o: $(srcdir)/gnu-v3-abi.c @MAINT@ $(defs_h)
 	$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
 		$(srcdir)/gnu-v3-abi.c
 
@@ -1721,7 +1723,7 @@ gnu-v3-abi.o: $(srcdir)/gnu-v3-abi.c
 # va_arg(long) to extract CORE_ADDR parameters - something that
 # definitly will not work. "monitor.c" needs to be rewritten so that
 # it does NOT use format strings and instead uses callbacks.
-monitor.o: $(srcdir)/monitor.c
+monitor.o: $(srcdir)/monitor.c @MAINT@ $(defs_h)
 	$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
 	  $(srcdir)/monitor.c
 
@@ -1729,23 +1731,23 @@ monitor.o: $(srcdir)/monitor.c
 # -Wformat-nonliteral. It needs to be overhauled so that it does NOT
 # pass user input strings as the format parameter to host printf
 # function calls.
-printcmd.o: $(srcdir)/printcmd.c
+printcmd.o: $(srcdir)/printcmd.c @MAINT@ $(defs_h)
 	$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
 	  $(srcdir)/printcmd.c
 
 # FIXME: Procfs.o gets -Wformat errors because things like pid_t do not
 # match output format strings.
-procfs.o: $(srcdir)/procfs.c
+procfs.o: $(srcdir)/procfs.c @MAINT@ $(defs_h)
 	$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
 	  $(srcdir)/procfs.c
 
 # FIXME: Thread-db.o gets warnings because the definitions of the register
 # sets are different from kernel to kernel.
-linux-thread-db.o: $(srcdir)/linux-thread-db.c
+linux-thread-db.o: $(srcdir)/linux-thread-db.c @MAINT@ $(defs_h)
 	$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
 		$(srcdir)/linux-thread-db.c
 
-v850ice.o: $(srcdir)/v850ice.c
+v850ice.o: $(srcdir)/v850ice.c @MAINT@ $(defs_h)
 	$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) $(ITCL_CFLAGS) \
 		$(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 		$(GDBTK_CFLAGS) \
@@ -1975,7 +1977,8 @@ annotate.o: annotate.c $(defs_h) $(annotate_h) $(value_h) $(target_h) \
   $(gdbtypes_h) $(breakpoint_h)
 arch-utils.o: arch-utils.c $(defs_h) $(arch_utils_h) $(buildsym_h) \
   $(gdbcmd_h) $(inferior_h) $(gdb_string_h) $(regcache_h) $(gdb_assert_h) \
-  $(sim_regno_h) $(gdbcore_h) $(osabi_h) $(version_h) $(floatformat_h)
+  $(sim_regno_h) $(gdbcore_h) $(osabi_h) $(version_h) $(floatformat_h) \
+  $(config_h)
 arm-linux-nat.o: arm-linux-nat.c $(defs_h) $(inferior_h) $(gdbcore_h) \
   $(gdb_string_h) $(regcache_h) $(arm_tdep_h) $(gregset_h)
 arm-linux-tdep.o: arm-linux-tdep.c $(defs_h) $(target_h) $(value_h) \
@@ -2420,7 +2423,7 @@ language.o: language.c $(defs_h) $(gdb_string_h) $(symtab_h) \
 libunwind-frame.o: libunwind-frame.c $(defs_h) $(inferior_h) $(frame_h) \
   $(frame_base_h) $(frame_unwind_h) $(gdbcore_h) $(gdbtypes_h) \
   $(symtab_h) $(objfiles_h) $(regcache_h) $(gdb_assert_h) $(gdb_string_h) \
-  $(libunwind_frame_h) $(complaints_h)
+  $(libunwind_frame_h) $(complaints_h) $(config_h)
 linespec.o: linespec.c $(defs_h) $(symtab_h) $(frame_h) $(command_h) \
   $(symfile_h) $(objfiles_h) $(source_h) $(demangle_h) $(value_h) \
   $(completer_h) $(cp_abi_h) $(parser_defs_h) $(block_h) $(objc_lang_h) \
@@ -3499,5 +3502,6 @@ mac-gdb.rsrc: CodeFragmentTypes.r mac-gdb.r SysTypes.r Types.r
 
 codesign-gdb: gdb$(EXEEXT) $(CONFIG_ALL)
 	codesign --keychain ~/Library/Keychains/login.keychain -s gdb_codesign gdb$(EXEEXT)
+.PHONY: codesign-gdb
 
 # DO NOT DELETE

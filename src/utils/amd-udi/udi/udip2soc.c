@@ -1,6 +1,6 @@
-/*
+/* udip2soc.c
 * Copyright 1991 Advanced Micro Devices, Inc.
-* 
+*
 * This software is the property of Advanced Micro Devices, Inc  (AMD)  which
 * specifically  grants the user the right to modify, use and distribute this
 * software provided this notice is not removed or altered.  All other rights
@@ -22,20 +22,22 @@
 * 5900 E. Ben White Blvd.
 * Austin, TX 78741
 * 800-292-9263
-*****************************************************************************
+***************************************************************************
 */
 static 	char udip2soc_c[]="@(#)udip2soc.c	2.13  Daniel Mann";
 static  char udip2soc_c_AMD[]="@(#)udip2soc.c	2.11, AMD";
-/* 
+/*
 *       This module converts UDI Procedural calls into
-*	UDI socket messages for UNIX. 
+*	UDI socket messages for UNIX.
 *	It is used by DFE client processes
-********************************************************************** HISTORY
+******************************************************************* HISTORY
 */
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning udip2soc.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning udip2soc.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 #include <stdio.h>
 #include <stdlib.h>
@@ -68,7 +70,7 @@ extern	char*		sys_errlist[];
 extern	int		udr_errno;
 extern	char*		getenv();
 
-/* local type decs. and macro defs. not in a .h  file ************* MACRO/TYPE
+/* local type decs. and macro defs. not in a .h  file ********** MACRO/TYPE
 */
 #define		version_c 0x121		/* DFE-IPC version id */
 #define		TRUE -1
@@ -104,14 +106,14 @@ typedef struct session_str
 } session_t;
 #endif /* _UDIPROC_H */
 
-/* global dec/defs. which are not in a .h   file ************* EXPORT DEC/DEFS
+/* global dec/defs. which are not in a .h   file ********** EXPORT DEC/DEFS
 */
 #ifdef _UDIPROC_H
 UDIError	dfe_errno;
 #endif /* _UDIPROC_H */
 char	dfe_errmsg[ERRMSG_SIZE];/* error string */
 
-/* local dec/defs. which are not in a .h   file *************** LOCAL DEC/DEFS
+/* local dec/defs. which are not in a .h   file ************ LOCAL DEC/DEFS
 */
 #ifdef _UDISOC_H
 LOCAL connection_t	soc_con[MAX_SESSIONS];
@@ -127,7 +129,7 @@ LOCAL char	sbuf[SBUF_SIZE];	/* String handler buffer */
 LOCAL char	config_file[80];	/* path/name for config file */
 #endif /* _UDISOC_H */
 
-/***************************************************************** UDI_CONNECT
+/************************************************************** UDI_CONNECT
 * Establish a new FDE to TIP conection. The file "./udi_soc" or
 * "/etc/udi_soc" may be examined to obtain the conection information
 * if the "Config" parameter is not a completd "line entry".
@@ -170,7 +172,7 @@ UDISessionId *Session;		/* out -- session ID */
         return UDIErrorIPCLimitation;
     }
     /* One connection can be multiplexed between several sessions. */
-    for (cnt=0; cnt < MAX_SESSIONS; cnt++)	
+    for (cnt=0; cnt < MAX_SESSIONS; cnt++)
         if(!soc_con[cnt].in_use) break;
     if(cnt >= MAX_SESSIONS)
     {
@@ -241,7 +243,7 @@ UDISessionId *Session;		/* out -- session ID */
 	}
 	close(fd);
     }
-/*-------------------------------------------------------------- '*' SOC_ID */
+/*----------------------------------------------------------- '*' SOC_ID */
     if( *soc_con[cnt].tip_string == '*'
      && *soc_con[cnt+1].tip_string == 0)
     {
@@ -259,7 +261,7 @@ UDISessionId *Session;		/* out -- session ID */
 	close(fd);
 	unlink(soc_con[cnt].tip_string);
     }
-/*----------------------------------------------------------- SELECT DOMAIN */
+/*-------------------------------------------------------- SELECT DOMAIN */
     if(!strcmp(soc_con[cnt].domain_string, "AF_UNIX"))
 	domain = AF_UNIX;
     else if(!strcmp(soc_con[cnt].domain_string, "AF_INET"))
@@ -270,7 +272,7 @@ UDISessionId *Session;		/* out -- session ID */
 	return UDIErrorBadConfigFileEntry;
     }
 
-/*---------------------------------------------------- MULTIPLEXED SOCKET ? */
+/*------------------------------------------------- MULTIPLEXED SOCKET ? */
 /* If the requested session requires communication with
    a TIP which already has a socket connection established,
    then we do not create a new socket but multiplex the
@@ -280,15 +282,15 @@ UDISessionId *Session;		/* out -- session ID */
     for (rcnt=0; rcnt < MAX_SESSIONS; rcnt++)
     {   if( soc_con[rcnt].in_use
 	&& !strcmp(soc_con[cnt].domain_string, soc_con[rcnt].domain_string)
-	&& !strcmp(soc_con[cnt].tip_string, soc_con[rcnt].tip_string) 
+	&& !strcmp(soc_con[cnt].tip_string, soc_con[rcnt].tip_string)
 	&& rcnt != cnt	)
 	{
 	    session[*Session].soc_con_p = &soc_con[rcnt];
 	    soc_con[cnt].in_use = FALSE;	/* do NOT need new connect */
-	    goto tip_connect; 
+	    goto tip_connect;
 	}
     }
-/*------------------------------------------------------------------ SOCKET */
+/*--------------------------------------------------------------- SOCKET */
     soc_con[cnt].dfe_sd = socket(domain, SOCK_STREAM, 0);
     if (soc_con[cnt].dfe_sd == -1 )
     {   errmsg_m;
@@ -297,7 +299,7 @@ UDISessionId *Session;		/* out -- session ID */
     	UDIKill(cnt);
     }
 
-/*--------------------------------------------------------- AF_UNIX CONNECT */
+/*------------------------------------------------------ AF_UNIX CONNECT */
     if(domain == AF_UNIX)
     {
         memset( (char*)&soc_con[cnt].tip_sockaddr, 0,
@@ -306,11 +308,11 @@ UDISessionId *Session;		/* out -- session ID */
         bcopy(soc_con[cnt].tip_string,
 		soc_con[cnt].tip_sockaddr.sa_data,
 		sizeof(soc_con[cnt].tip_sockaddr.sa_data) );
-    	if(connect(soc_con[cnt].dfe_sd, 
+    	if(connect(soc_con[cnt].dfe_sd,
 		&soc_con[cnt].tip_sockaddr,
 		sizeof(soc_con[cnt].tip_sockaddr)) == -1)
   	{	/* if connect() fails assume TIP not yet started */
-/*------------------------------------------------------------ AF_UNIX EXEC */
+/*--------------------------------------------------------- AF_UNIX EXEC */
 	    int	pid;
 #ifdef __hpux
 	    int	statusp;
@@ -321,7 +323,7 @@ UDISessionId *Session;		/* out -- session ID */
 
 	    if(!arg0) arg0 = soc_con[cnt].tip_exe;
 	    else	arg0++;
-    
+
 	    if((pid = fork()) == 0)
             {   execlp(
 		    soc_con[cnt].tip_exe,
@@ -342,7 +344,7 @@ UDISessionId *Session;		/* out -- session ID */
 	    }
 	    sleep(2);
 			/* not TIP is running, try conect() again */
-    	    if(connect(soc_con[cnt].dfe_sd, 
+    	    if(connect(soc_con[cnt].dfe_sd,
 		&soc_con[cnt].tip_sockaddr,
 		sizeof(soc_con[cnt].tip_sockaddr)) == -1)
 	    {   sprintf(dfe_errmsg, "DFE-ipc ERROR, connect() call failed: %s",
@@ -351,7 +353,7 @@ UDISessionId *Session;		/* out -- session ID */
 	    }
 	  }
     }
-/*--------------------------------------------------------- AF_INET CONNECT */
+/*------------------------------------------------------ AF_INET CONNECT */
     if(domain == AF_INET)
     {
 	fprintf(stderr,"DFE-ipc WARNING, need to have first started remote TIP\n");
@@ -383,7 +385,7 @@ UDISessionId *Session;		/* out -- session ID */
 	    return UDIErrorCantConnect;
     	}
     }
-/*------------------------------------------------------------- TIP CONNECT */
+/*---------------------------------------------------------- TIP CONNECT */
     if(cnt ==0) udr_create(udrs, soc_con[cnt].dfe_sd, SOC_BUF_SIZE);
 tip_connect:
     current = cnt;
@@ -411,7 +413,7 @@ tip_connect:
 }
 #endif /* _UDIPROC_H */
 
-/************************************************************** UDI_Disconnect
+/*********************************************************** UDI_Disconnect
 * UDIDisconnect() should be called before exiting the
 * DFE to ensure proper shut down of the TIP.
 */
@@ -452,7 +454,7 @@ UDIBool		Terminate;
 }
 #endif /* _UDIPROC_H */
 
-/******************************************************************** UDI_KILL
+/***************************************************************** UDI_KILL
 * UDIKill() is used to send a signal to the TIP.
 * This is a private IPC call.
 */
@@ -493,7 +495,7 @@ UDIInt32	Signal;
 }
 #endif /* _UDIPROC_H */
 
-/************************************************** UDI_Set_Current_Connection
+/*********************************************** UDI_Set_Current_Connection
 * If you are connected to multiple TIPs, you can change
 * TIPs using UDISetCurrentConnection().
 */
@@ -525,7 +527,7 @@ UDISessionId	Session;
 }
 #endif /* _UDIPROC_H */
 
-/************************************************************ UDI_Capabilities
+/********************************************************* UDI_Capabilities
 * The DFE uses UDICapabilities() to both inform the TIP
 * of what services the DFE offers and to inquire of the
 * TIP what services the TIP offers.
@@ -569,7 +571,7 @@ char		*TIPString;	/* out */
 }
 #endif /* _UDIPROC_H */
 
-/********************************************************** UDI_Enumerate_TIPs
+/******************************************************* UDI_Enumerate_TIPs
 * Used by the DFE to enquire about available TIP
 * connections.
 */
@@ -590,7 +592,7 @@ UDIError UDIEnumerateTIPs(UDIETCallback)
 }
 #endif /* _UDIPROC_H */
 
-/*********************************************************** UDI_GET_ERROR_MSG
+/******************************************************** UDI_GET_ERROR_MSG
 * Some errors are target specific. They are indicated
 * by a negative error return value. The DFE uses
 * UDIGetErrorMsg() to get the descriptive text for
@@ -626,7 +628,7 @@ UDISizeT	*CountDone;		/* Out -- number of characters */
 }
 #endif /* _UDIPROC_H */
 
-/******************************************************* UDI_GET_TARGET_CONFIG
+/**************************************************** UDI_GET_TARGET_CONFIG
 * UDIGetTargetConfig() gets information about the target.
 */
 #ifdef _UDIPROC_H
@@ -661,7 +663,7 @@ UDIInt		*NumberOfChips;		/* In and Out */
 }
 #endif /* _UDIPROC_H */
 
-/********************************************************** UDI_CREATE_PRCOESS
+/******************************************************* UDI_CREATE_PROCESS
 * UDICreateProcess() tells the  target  OS  that  a
 * process is to be created and gets a PID back unless
 * there is some error.
@@ -685,7 +687,7 @@ UDIPId	*pid;	/* out */
 }
 #endif /* _UDIPROC_H */
 
-/***************************************************** UDI_Set_Current_Process
+/************************************************** UDI_Set_Current_Process
 * UDISetCurrentProcess  uses   a   pid   supplied   by
 * UDICreateProcess  and  sets it as the default for all
 * udi calls until a new one is set.  A user of  a
@@ -709,7 +711,7 @@ UDIPId	pid;			/* In */
 }
 #endif /* _UDIPROC_H */
 
-/****************************************************** UDI_INITIALISE_PROCESS
+/*************************************************** UDI_INITIALISE_PROCESS
 * UDIInitializeProcess() prepare process for
 * execution. (Reset processor if process os processor).
 */
@@ -746,7 +748,7 @@ char		*ArgString;		/* In */
 }
 #endif /* _UDIPROC_H */
 
-/********************************************************* UDI_DESTROY_PROCESS
+/****************************************************** UDI_DESTROY_PROCESS
 * UDIDestroyProcess() frees a process resource
 * previously created by UDICreateProcess().
 */
@@ -769,7 +771,7 @@ UDIPId   pid;	/* in */
 }
 #endif /* _UDIPROC_H */
 
-/****************************************************************** UDI_READ
+/***************************************************************** UDI_READ
 * UDIRead() reads a block of objects from  a  target
 * address space  to host space.
 */
@@ -806,7 +808,7 @@ UDIBool		host_endian;	/* in -- flag for endian information */
 }
 #endif /* _UDIPROC_H */
 
-/****************************************************************** UDI_WRITE
+/**************************************************************** UDI_WRITE
 * UDIWrite() writes a block  of  objects  from  host
 * space  to  a  target  address+space.
 */
@@ -840,7 +842,7 @@ UDIBool		host_endian;	/* in -- flag for endian information */
 }
 #endif /* _UDIPROC_H */
 
-/******************************************************************** UDI_COPY
+/***************************************************************** UDI_COPY
 * UDICopy() copies a block of objects from one  target
 * get  address/space to another target address/space.
 */
@@ -873,7 +875,7 @@ UDIBool		direction;	/* in -- high-to-low or reverse */
 }
 #endif /* _UDIPROC_H */
 
-/***************************************************************** UDI_EXECUTE
+/************************************************************** UDI_EXECUTE
 * UDIExecute() continues execution  of  the  default
 * process from the current PC.
 */
@@ -894,7 +896,7 @@ UDIError UDIExecute()
 }
 #endif /* _UDIPROC_H */
 
-/******************************************************************** UDI_STEP
+/***************************************************************** UDI_STEP
 * UDIStep()  specifies  a  number  of  "instruction"
 * steps  to  make.
 */
@@ -921,7 +923,7 @@ UDIRange	range;          /* in -- range if StepInRange is TRUE */
 }
 #endif /* _UDIPROC_H */
 
-/******************************************************************** UDI_STOP
+/***************************************************************** UDI_STOP
 * UDIStop() stops the default process
 */
 #ifdef _UDIPROC_H
@@ -935,7 +937,7 @@ UDIVoid UDIStop()
 }
 #endif /* _UDIPROC_H */
 
-/******************************************************************** UDI_WAIT
+/***************************************************************** UDI_WAIT
 * UDIWait() returns the state of the target  procesor.
 */
 #ifdef _UDIPROC_H
@@ -961,7 +963,7 @@ UDIUInt32  *stop_reason;   /* out -- PC where process stopped */
 }
 #endif /* _UDIPROC_H */
 
-/********************************************************** UDI_SET_BREAKPOINT
+/******************************************************* UDI_SET_BREAKPOINT
 * UDISetBreakpoint() sets a breakpoint  at  an  adress
 * and  uses  the  passcount  to state how many
 * times that instruction should  be  hit  before  the
@@ -992,7 +994,7 @@ UDIBreakId	*break_id;	/* out - assigned break id */
 }
 #endif /* _UDIPROC_H */
 
-/******************************************************** UDI_QUERY_BREAKPOINT
+/***************************************************** UDI_QUERY_BREAKPOINT
 */
 #ifdef _UDIPROC_H
 UDIError UDIQueryBreakpoint (break_id, addr, passcount, type, current_count)
@@ -1021,7 +1023,7 @@ UDIInt32	*current_count;	/* out - current count for breakpoint  */
 }
 #endif /* _UDIPROC_H */
 
-/******************************************************** UDI_CLEAR_BREAKPOINT
+/***************************************************** UDI_CLEAR_BREAKPOINT
 * UDIClearBreakpoint() is used to  clear  a  breakpoint.
 */
 #ifdef _UDIPROC_H
@@ -1043,9 +1045,9 @@ UDIBreakId	break_id;	/* in -- assigned break id */
 }
 #endif /* _UDIPROC_H */
 
-/************************************************************** UDI_GET_STDOUT
+/*********************************************************** UDI_GET_STDOUT
 * UDIGetStdout()  is  called   when   a   call   to
-* UDIWait() indicates there is STD output data ready. 
+* UDIWait() indicates there is STD output data ready.
 */
 #ifdef _UDIPROC_H
 UDIError UDIGetStdout(buf, bufsize, count_done)
@@ -1070,7 +1072,7 @@ UDISizeT	*count_done;	/* out -- number of bytes written to buf */
 }
 #endif /* _UDIPROC_H */
 
-/************************************************************** UDI_GET_STDERR
+/*********************************************************** UDI_GET_STDERR
 * UDIGetStderr()  is  called   when   a   call   to
 * UDIWait() indicates there is STDERR output data ready
 */
@@ -1097,7 +1099,7 @@ UDISizeT	*count_done;	/* out -- number of bytes written to buf */
 }
 #endif /* _UDIPROC_H */
 
-/*************************************************************** UDI_PUT_STDIN
+/************************************************************ UDI_PUT_STDIN
 * UDIPutStdin() is called whenever the DFE wants to
 * deliver an input character to the TIP.
 */
@@ -1124,7 +1126,7 @@ UDISizeT	*count_done;	/* out - number of bytes written to buf */
 }
 #endif /* _UDIPROC_H */
 
-/************************************************************** UDI_STDIN_MODE
+/*********************************************************** UDI_STDIN_MODE
 * UDIStdinMode() is used to change the mode that chazcters
 * are fetched from the user.
 */
@@ -1147,7 +1149,7 @@ UDIMode		*mode;		/* out - */
 }
 #endif /* _UDIPROC_H */
 
-/*************************************************************** UDI_PUT_TRANS
+/************************************************************ UDI_PUT_TRANS
 * UDIPutTrans() is used to feed input to  the  passthru  mode.
 */
 #ifdef _UDIPROC_H
@@ -1173,7 +1175,7 @@ UDISizeT	*count_done;	/* out-- number of bytes transfered */
 }
 #endif /* _UDIPROC_H */
 
-/*************************************************************** UDI_GET_TRANS
+/************************************************************ UDI_GET_TRANS
 * UDIGetTrans() is used to get output lines from the
 * passthru mode.
 */
@@ -1200,7 +1202,7 @@ UDISizeT	*count_done;	/* out -- number of bytes in buf */
 }
 #endif /* _UDIPROC_H */
 
-/************************************************************** UDI_Trans_Mode
+/*********************************************************** UDI_Trans_Mode
 * UDITransMode() is used to change the mode that the
 * transparent routines operate in.
 */
@@ -1223,7 +1225,7 @@ UDIMode		*mode;		/* out  -- selected mode */
 }
 #endif /* _UDIPROC_H */
 
-/******************************************************************** UDI_TEST
+/***************************************************************** UDI_TEST
 */
 #ifdef _UDIPROC_H
 UDIError UDITest( cnt, str_p, array)
@@ -1277,5 +1279,11 @@ UDIUInt32 UDIGetDFEIPCId()
     return ((company_c << 16) + (product_c << 12) + version_c);
 }
 #endif /* _UDIPROC_H */
+
+#ifndef _UDIPROC_H
+typedef int udip2soc_c_dummy_t;
+/* make sure file exports at least one symbol: */
+extern udip2soc_c_dummy_t udip2soc_c_dummy_var;
+#endif /* !_UDIPROC_H */
 
 /* EOF */

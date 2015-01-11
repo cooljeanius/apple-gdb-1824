@@ -128,10 +128,9 @@ extern "C" {
 
 /* We need the type of the resulting object.  If __PTRDIFF_TYPE__ is
  * defined, as with GNU C, use that; that way we do NOT pollute the
- * namespace with symbols from the <stddef.h> header.  Otherwise, if <stddef.h>
- * is available, include it and use ptrdiff_t.  In traditional C, long is
- * the best that we can do.  */
-
+ * namespace with symbols from the <stddef.h> header.  Otherwise, if
+ * <stddef.h> is available, then include it and use ptrdiff_t.
+ * In traditional C, long is the best that we can do: */
 #ifdef __PTRDIFF_TYPE__
 # define PTR_INT_TYPE __PTRDIFF_TYPE__
 #else

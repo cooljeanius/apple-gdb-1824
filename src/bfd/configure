@@ -759,6 +759,7 @@ CAN_BUILD_IN_SANDBOX
 sb_build_profile
 MAKE_BIN
 SANDBOX_EXEC
+ac_ct_RANLIB
 RANLIB
 ac_ct_AR
 AR
@@ -6546,8 +6547,10 @@ else
   test ! -z "${AR}"
 fi
 if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
-set dummy ${ac_tool_prefix}ranlib; ac_word=$2
+  for ac_prog in ranlib granlib
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_RANLIB+:} false; then :
@@ -6563,7 +6566,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_RANLIB="${ac_tool_prefix}ranlib"
+    ac_cv_prog_RANLIB="$ac_tool_prefix$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -6583,11 +6586,15 @@ $as_echo "no" >&6; }
 fi
 
 
+    test -n "$RANLIB" && break
+  done
 fi
-if test -z "$ac_cv_prog_RANLIB"; then
+if test -z "$RANLIB"; then
   ac_ct_RANLIB=$RANLIB
-  # Extract the first word of "ranlib", so it can be a program name with args.
-set dummy ranlib; ac_word=$2
+  for ac_prog in ranlib granlib
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_ac_ct_RANLIB+:} false; then :
@@ -6603,7 +6610,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_RANLIB="ranlib"
+    ac_cv_prog_ac_ct_RANLIB="$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -6622,6 +6629,10 @@ else
 $as_echo "no" >&6; }
 fi
 
+
+  test -n "$ac_ct_RANLIB" && break
+done
+
   if test "x$ac_ct_RANLIB" = x; then
     RANLIB=":"
   else
@@ -6633,8 +6644,6 @@ ac_tool_warned=yes ;;
 esac
     RANLIB=$ac_ct_RANLIB
   fi
-else
-  RANLIB="$ac_cv_prog_RANLIB"
 fi
   ## keep autoscan happy:
 if test "x${RANLIB}" = "x"; then
@@ -18992,13 +19001,13 @@ $as_echo_n "checking gettext stuff... " >&6; }
 $as_echo " " >&6; }
 if test -d ../intl; then
   if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../intl"
+    export LDFLAGS="-L. -L../intl"
   else
     export LDFLAGS="${LDFLAGS} -L../intl"
   fi
 elif test -d ../libintl; then
   if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../libintl"
+    export LDFLAGS="-L. -L../libintl"
   else
     export LDFLAGS="${LDFLAGS} -L../libintl"
   fi
@@ -21340,12 +21349,13 @@ unset ac_cv_header_libintl_h
 unset ac_cv_header_limits_h
 unset ac_cv_header_stdlib_h
 unset ac_cv_header_sys_param_h
-for ac_header in ctype.h errno.h fcntl.h gettext.h iconv.h libgettext.h \
-                  libintl.h limits.h mach/mach.h mach-o/loader.h \
-                  malloca.h malloc/malloc.h realloc.h stdarg.h stddef.h \
-                  stdio.h sys/acl.h sys/errno.h sys/file.h sys/paccess.h \
-                  sys/param.h sys/region.h sys/resource.h sys/socket.h \
-                  sys/time.h sys/user.h time.h wchar.h wctype.h \
+for ac_header in ctype.h errno.h fcntl.h gettext.h iconv.h libgen.h \
+                  libgettext.h libintl.h limits.h mach/mach.h \
+                  mach-o/loader.h malloca.h malloc/malloc.h realloc.h \
+                  stdarg.h stddef.h stdio.h sys/acl.h sys/core.h \
+                  sys/errno.h sys/file.h sys/paccess.h sys/param.h \
+                  sys/region.h sys/resource.h sys/socket.h sys/time.h \
+                  sys/user.h sys/utsname.h time.h wchar.h wctype.h \
                   windef.h windows.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -24517,7 +24527,13 @@ fi
 $as_echo_n "checking declarations... " >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
 $as_echo " " >&6; }
-ac_fn_c_check_decl "$LINENO" "basename" "ac_cv_have_decl_basename" "$ac_includes_default"
+ac_fn_c_check_decl "$LINENO" "basename" "ac_cv_have_decl_basename" "
+/* declared in this header on darwin at least: */
+#ifdef HAVE_LIBGEN_H
+# include <libgen.h>
+#endif /* HAVE_LIBGEN_H */
+
+"
 if test "x$ac_cv_have_decl_basename" = xyes; then :
   ac_have_decl=1
 else
@@ -24616,6 +24632,17 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_GETENV $ac_have_decl
 _ACEOF
+ac_fn_c_check_decl "$LINENO" "getopt" "ac_cv_have_decl_getopt" "$ac_includes_default"
+if test "x$ac_cv_have_decl_getopt" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_GETOPT $ac_have_decl
+_ACEOF
+
 ac_fn_c_check_decl "$LINENO" "malloc" "ac_cv_have_decl_malloc" "$ac_includes_default"
 if test "x$ac_cv_have_decl_malloc" = xyes; then :
   ac_have_decl=1

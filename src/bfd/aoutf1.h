@@ -398,21 +398,22 @@ swapcore_sun3(bfd *abfd, char *ext, struct internal_sunos_core *intcore)
   intcore->c_regs_pos = (long)(((struct external_sun3_core *)0)->c_regs);
   intcore->c_regs_size = sizeof(extcore->c_regs);
 #if ARCH_SIZE == 64
-  aout_64_swap_exec_header_in
+  aout_64_swap_exec_header_in(abfd, &extcore->c_aouthdr,
+                              &intcore->c_aouthdr);
 #else
-  aout_32_swap_exec_header_in
-#endif
-    (abfd, &extcore->c_aouthdr, &intcore->c_aouthdr);
+  aout_32_swap_exec_header_in(abfd, &extcore->c_aouthdr,
+                              &intcore->c_aouthdr);
+#endif /* 64 vs. 32 */
   intcore->c_signo = (int)H_GET_32(abfd, &extcore->c_signo);
   intcore->c_tsize = (int)H_GET_32(abfd, &extcore->c_tsize);
   intcore->c_dsize = (int)H_GET_32(abfd, &extcore->c_dsize);
   intcore->c_data_addr = N_DATADDR(intcore->c_aouthdr);
-  intcore->c_ssize = (int)H_GET_32 (abfd, &extcore->c_ssize);
+  intcore->c_ssize = (int)H_GET_32(abfd, &extcore->c_ssize);
   memcpy(intcore->c_cmdname, extcore->c_cmdname, sizeof(intcore->c_cmdname));
   intcore->fp_stuff_pos = (long)(((struct external_sun3_core *)0)->fp_stuff);
   /* FP stuff takes up whole rest of struct, except c_ucode: */
-  intcore->fp_stuff_size = (intcore->c_len - (sizeof extcore->c_ucode) -
-    (file_ptr)(((struct external_sun3_core *)0)->fp_stuff));
+  intcore->fp_stuff_size = (int)(intcore->c_len - sizeof(extcore->c_ucode)
+    - (file_ptr)(((struct external_sun3_core *)0L)->fp_stuff));
   /* Ucode is the last thing in the struct -- just before the end: */
   intcore->c_ucode = (int)H_GET_32(abfd, (intcore->c_len
                                           - sizeof(extcore->c_ucode)
@@ -431,26 +432,27 @@ swapcore_sparc(bfd *abfd, char *ext, struct internal_sunos_core *intcore)
   intcore->c_regs_pos = (long)(((struct external_sparc_core *) 0)->c_regs);
   intcore->c_regs_size = sizeof(extcore->c_regs);
 #if ARCH_SIZE == 64
-  aout_64_swap_exec_header_in
+  aout_64_swap_exec_header_in(abfd, &extcore->c_aouthdr,
+                              &intcore->c_aouthdr);
 #else
-  aout_32_swap_exec_header_in
-#endif
-    (abfd, &extcore->c_aouthdr, &intcore->c_aouthdr);
-  intcore->c_signo = H_GET_32 (abfd, &extcore->c_signo);
-  intcore->c_tsize = H_GET_32 (abfd, &extcore->c_tsize);
-  intcore->c_dsize = H_GET_32 (abfd, &extcore->c_dsize);
+  aout_32_swap_exec_header_in(abfd, &extcore->c_aouthdr,
+                              &intcore->c_aouthdr);
+#endif /* 64 vs. 32 */
+  intcore->c_signo = (int)H_GET_32(abfd, &extcore->c_signo);
+  intcore->c_tsize = (int)H_GET_32(abfd, &extcore->c_tsize);
+  intcore->c_dsize = (int)H_GET_32(abfd, &extcore->c_dsize);
   intcore->c_data_addr = N_DATADDR (intcore->c_aouthdr);
-  intcore->c_ssize = H_GET_32 (abfd, &extcore->c_ssize);
-  memcpy (intcore->c_cmdname, extcore->c_cmdname, sizeof (intcore->c_cmdname));
-  intcore->fp_stuff_pos = (long) (((struct external_sparc_core *) 0)->fp_stuff);
-  /* FP stuff takes up whole rest of struct, except c_ucode.  */
-  intcore->fp_stuff_size = intcore->c_len - (sizeof extcore->c_ucode) -
-    (file_ptr) (((struct external_sparc_core *) 0)->fp_stuff);
+  intcore->c_ssize = (int)H_GET_32(abfd, &extcore->c_ssize);
+  memcpy(intcore->c_cmdname, extcore->c_cmdname, sizeof(intcore->c_cmdname));
+  intcore->fp_stuff_pos = (long)(((struct external_sparc_core *)0L)->fp_stuff);
+  /* FP stuff takes up whole rest of struct, except c_ucode: */
+  intcore->fp_stuff_size = (int)(intcore->c_len - sizeof(extcore->c_ucode)
+    - (file_ptr)(((struct external_sparc_core *)0L)->fp_stuff));
   /* Ucode is the last thing in the struct -- just before the end.  */
-  intcore->c_ucode = H_GET_32 (abfd,
-			       (intcore->c_len
-				- sizeof (extcore->c_ucode)
-				+ (unsigned char *) extcore));
+  intcore->c_ucode = (int)H_GET_32(abfd,
+                                   (intcore->c_len
+                                    - sizeof(extcore->c_ucode)
+                                    + (unsigned char *)extcore));
 
   /* Supposedly the user stack grows downward from the bottom of kernel memory.
      Presuming that this remains true, this definition will work.  */
@@ -476,18 +478,17 @@ swapcore_sparc(bfd *abfd, char *ext, struct internal_sunos_core *intcore)
   }
 }
 
-/* Byte-swap in the Solaris BCP core structure.  */
-
+/* Byte-swap in the Solaris BCP core structure: */
 static void
-swapcore_solaris_bcp (bfd *abfd, char *ext, struct internal_sunos_core *intcore)
+swapcore_solaris_bcp(bfd *abfd, char *ext, struct internal_sunos_core *intcore)
 {
   struct external_solaris_bcp_core *extcore =
-    (struct external_solaris_bcp_core *) ext;
+    (struct external_solaris_bcp_core *)ext;
 
-  intcore->c_magic = H_GET_32 (abfd, &extcore->c_magic);
-  intcore->c_len = H_GET_32 (abfd, &extcore->c_len);
-  intcore->c_regs_pos = (long) (((struct external_solaris_bcp_core *) 0)->c_regs);
-  intcore->c_regs_size = sizeof (extcore->c_regs);
+  intcore->c_magic = (int)H_GET_32(abfd, &extcore->c_magic);
+  intcore->c_len = (int)H_GET_32(abfd, &extcore->c_len);
+  intcore->c_regs_pos = (long)(((struct external_solaris_bcp_core *)0L)->c_regs);
+  intcore->c_regs_size = sizeof(extcore->c_regs);
 
   /* The Solaris BCP exdata structure does not contain an a_syms field,
      so we are unable to synthesize an internal exec header.
@@ -499,23 +500,23 @@ swapcore_solaris_bcp (bfd *abfd, char *ext, struct internal_sunos_core *intcore)
      are buggy. The exdata structure is not properly filled in, and
      the data section is written from address zero instead of the data
      start address.  */
-  memset ((void *) &intcore->c_aouthdr, 0, sizeof (struct internal_exec));
+  memset((void *)&intcore->c_aouthdr, 0, sizeof(struct internal_exec));
   intcore->c_data_addr = H_GET_32 (abfd, &extcore->c_exdata_datorg);
-  intcore->c_signo = H_GET_32 (abfd, &extcore->c_signo);
-  intcore->c_tsize = H_GET_32 (abfd, &extcore->c_tsize);
-  intcore->c_dsize = H_GET_32 (abfd, &extcore->c_dsize);
-  intcore->c_ssize = H_GET_32 (abfd, &extcore->c_ssize);
-  memcpy (intcore->c_cmdname, extcore->c_cmdname, sizeof (intcore->c_cmdname));
+  intcore->c_signo = (int)H_GET_32(abfd, &extcore->c_signo);
+  intcore->c_tsize = (int)H_GET_32(abfd, &extcore->c_tsize);
+  intcore->c_dsize = (int)H_GET_32(abfd, &extcore->c_dsize);
+  intcore->c_ssize = (int)H_GET_32(abfd, &extcore->c_ssize);
+  memcpy(intcore->c_cmdname, extcore->c_cmdname, sizeof(intcore->c_cmdname));
   intcore->fp_stuff_pos =
-    (long) (((struct external_solaris_bcp_core *) 0)->fp_stuff);
-  /* FP stuff takes up whole rest of struct, except c_ucode.  */
-  intcore->fp_stuff_size = intcore->c_len - (sizeof extcore->c_ucode) -
-    (file_ptr) (((struct external_solaris_bcp_core *) 0)->fp_stuff);
+    (long)(((struct external_solaris_bcp_core *)0L)->fp_stuff);
+  /* FP stuff takes up whole rest of struct, except c_ucode: */
+  intcore->fp_stuff_size = (int)(intcore->c_len - sizeof(extcore->c_ucode)
+    - (file_ptr)(((struct external_solaris_bcp_core *) 0)->fp_stuff));
   /* Ucode is the last thing in the struct -- just before the end */
-  intcore->c_ucode = H_GET_32 (abfd,
-			       (intcore->c_len
-				- sizeof (extcore->c_ucode)
-				+ (unsigned char *) extcore));
+  intcore->c_ucode = (int)H_GET_32(abfd,
+                                   (intcore->c_len
+                                    - sizeof(extcore->c_ucode)
+                                    + (unsigned char *)extcore));
 
   /* Supposedly the user stack grows downward from the bottom of kernel memory.
      Presuming that this remains true, this definition will work.  */
@@ -559,7 +560,7 @@ struct sun_core_struct
 };
 
 static const bfd_target *
-sunos4_core_file_p (bfd *abfd)
+sunos4_core_file_p(bfd *abfd)
 {
   unsigned char longbuf[4];	/* Raw bytes of various header fields.  */
   bfd_size_type core_size, amt;

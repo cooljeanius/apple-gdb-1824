@@ -509,47 +509,45 @@ elf32_dlx_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
 }
 
 static reloc_howto_type *
-dlx_rtype_to_howto (unsigned int r_type)
+dlx_rtype_to_howto(unsigned int r_type)
 {
   switch (r_type)
     {
     case R_DLX_RELOC_16_PCREL:
-      return & elf_dlx_gnu_rel16_s2;
+      return &elf_dlx_gnu_rel16_s2;
       break;
     case R_DLX_RELOC_26_PCREL:
-      return & elf_dlx_gnu_rel26_s2;
+      return &elf_dlx_gnu_rel26_s2;
       break;
     case R_DLX_RELOC_16_HI:
-      return & elf_dlx_reloc_16_hi;
+      return &elf_dlx_reloc_16_hi;
       break;
     case R_DLX_RELOC_16_LO:
-      return & elf_dlx_reloc_16_lo;
+      return &elf_dlx_reloc_16_lo;
       break;
-
     default:
-      BFD_ASSERT (r_type < (unsigned int) R_DLX_max);
-      return & dlx_elf_howto_table[r_type];
+      BFD_ASSERT(r_type < (unsigned int) R_DLX_max);
+      return &dlx_elf_howto_table[r_type];
       break;
     }
 }
 
-static void
-elf32_dlx_info_to_howto (bfd * abfd ATTRIBUTE_UNUSED,
-			 arelent * cache_ptr ATTRIBUTE_UNUSED,
-			 Elf_Internal_Rela * dst ATTRIBUTE_UNUSED)
+static void ATTRIBUTE_NORETURN
+elf32_dlx_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED,
+                        arelent *cache_ptr ATTRIBUTE_UNUSED,
+                        Elf_Internal_Rela *dst ATTRIBUTE_UNUSED)
 {
-  abort ();
+  abort();
 }
 
 static void
-elf32_dlx_info_to_howto_rel (bfd *abfd ATTRIBUTE_UNUSED,
-			     arelent *cache_ptr,
-			     Elf_Internal_Rela *dst)
+elf32_dlx_info_to_howto_rel(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+                            Elf_Internal_Rela *dst)
 {
   unsigned int r_type;
 
-  r_type = ELF32_R_TYPE (dst->r_info);
-  cache_ptr->howto = dlx_rtype_to_howto (r_type);
+  r_type = ELF32_R_TYPE(dst->r_info);
+  cache_ptr->howto = dlx_rtype_to_howto(r_type);
   return;
 }
 

@@ -571,9 +571,9 @@ short __header_offset_temp;
 /* this needs to go after the usage of the CONCAT* macro mentioned above,
  * but before any other headers are included, or prototypes for functions
  * are declared: */
-#if defined(__GNUC__) && (__GNUC__ >= 4)
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
  # pragma GCC diagnostic ignored "-Wtraditional"
-#endif /* gcc 4+ */
+#endif /* gcc 4+ && !__clang__ */
 
 /* prototypes from this file: */
 #if defined(__STDC__) && __STDC__
@@ -635,12 +635,15 @@ const bfd_target *encap_real_callback(bfd *abfd)
 {
   long text_start;
   long exec_data_start;
-  struct internal_exec exec_aouthdr;
+  /* dummy initialization values: */
+  struct internal_exec exec_aouthdr = {
+    0L, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0U, 0U, 0U, 0
+  };
   struct internal_exec *execp = exec_hdr(abfd);
 
 #ifdef __BFD_AOUT_TARGET_H__
   MY(callback)(abfd);
-  /* there is no argument for execp to go into in this preprocessor condition,
+  /* there is no arg for execp to go into in this preprocessor condition,
    * so contrive a dummy code condition to make sure that it is used: */
   if (execp != NULL) {
     ;
@@ -656,8 +659,8 @@ const bfd_target *encap_real_callback(bfd *abfd)
     {
       struct coffheader ch;
       int val;
-      int execchan;
-      char *filename;
+      int execchan = 0;
+      char *filename = NULL;
       val = lseek(execchan, -(sizeof(AOUTHDR) + sizeof(ch)), 1);
       if (val == -1) {
 	perror_with_name(filename);

@@ -11,7 +11,7 @@
  * (this works only for glibc, but that should be enough). */
 #if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "config.h should be #included before system headers"
+ #  warning "config.h should be #included before system headers"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
 #ifndef __CONFIG_H__
@@ -1400,6 +1400,10 @@
 #ifndef _GNU_SOURCE
 # undef _GNU_SOURCE
 #endif /* !_GNU_SOURCE */
+/* Use GNU style printf and scanf.  */
+#ifndef __USE_MINGW_ANSI_STDIO
+# undef __USE_MINGW_ANSI_STDIO
+#endif /* !__USE_MINGW_ANSI_STDIO */
 /* Enable threading extensions on Solaris.  */
 #ifndef _POSIX_PTHREAD_SEMANTICS
 # undef _POSIX_PTHREAD_SEMANTICS

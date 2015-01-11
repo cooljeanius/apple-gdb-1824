@@ -4,6 +4,7 @@ config.h
 *~
 *.log
 Makefile
+Makefile*orig
 *.status
 *.cache
 stamp-*

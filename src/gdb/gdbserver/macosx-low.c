@@ -1292,6 +1292,11 @@ CORE_ADDR macosx_stopped_data_address(void)
   return 0;
 }
 
+/* in case gnulib redefined this on us: */
+#ifdef fcntl
+# undef fcntl
+#endif /* fcntl */
+
 /* Does GDBSERVER have a terminal (on stdin)?  */
 static int gdbserver_has_a_terminal(void)
 {

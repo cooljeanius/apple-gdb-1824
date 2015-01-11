@@ -29,7 +29,7 @@ DISTCLEANFILES = Makefile config.status stamp-h1 config.h *.log
 
 SUBDIRS = udi mondfe montip
 
-AUTOMAKE_OPTIONS = gnits dejagnu
+AUTOMAKE_OPTIONS = gnits dejagnu no-dist
 
 #### Start of system configuration section. ####
 
@@ -110,19 +110,19 @@ FLAGS_TO_PASS = \
 
 all_old:
 	@for dir in ${SUBDIRS}; do \
-	if [ -d $$dir ]; then \
+	if [ -d $${dir} ]; then \
 	    (rootme=`pwd`/ ; export rootme ; \
 	    rootsrc=`cd $(srcdir); pwd`/ ; export rootsrc ; \
-	    cd $$dir; $(MAKE) $(FLAGS_TO_PASS)); \
+	    cd $${dir}; $(MAKE) $(FLAGS_TO_PASS)); \
 	    fi; \
 	done
 .PHONY: all_old
 
 install_amd-udi:
 	@for dir in ${SUBDIRS}; do \
-	    echo "$$dir:"; \
-	    if [ -d $$dir ]; then \
-		(cd $$dir; $(MAKE) install); \
+	    echo "$${dir}:"; \
+	    if [ -d $${dir} ]; then \
+		(cd $${dir}; $(MAKE) install); \
 		fi; \
 	    done
 .PHONY: install_amd-udi
@@ -130,17 +130,17 @@ install_amd-udi:
 clean-local mostlyclean-local:
 	-rm -f *~ core *.o a.out .DS_Store
 	@for dir in ${SUBDIRS}; do \
-	    echo "$$dir:"; \
-	    if [ -d $$dir ]; then \
-		(cd $$dir; $(MAKE) $@); \
+	    echo "$${dir}:"; \
+	    if [ -d $${dir} ]; then \
+		(cd $${dir}; $(MAKE) $@); \
 		fi; \
 	    done
 .PHONY: clean-local mostlyclean-local
 
 distclean-local maintainer-clean-local realclean-local: clean-local
 	@for dir in ${SUBDIRS}; do \
-	    echo "$$dir:"; \
-	    (cd $$dir; $(MAKE) $@); \
+	    echo "$${dir}:"; \
+	    (cd $${dir}; $(MAKE) $@); \
 	done
 	-rm -f *~ core
 	-rm -fr autom4te.cache || rmdir autom4te.cache
@@ -161,7 +161,7 @@ rebuild_Makefile: Makefile.in configure.ac
 .PHONY: rebuild_Makefile
 
 rebuild_configure: configure.ac
-	autoconf
+	autoconf --force --warnings=all
 .PHONY: rebuild_configure
 
 TAGS_e: $(SRCS)

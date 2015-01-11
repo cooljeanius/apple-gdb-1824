@@ -92,7 +92,7 @@ static int tcap_initialized;
 
 #if !defined (__linux__) && !defined (__APPLE__)
 #  if defined (__EMX__) || defined (NEED_EXTERN_PC)
-extern 
+extern
 #  endif /* __EMX__ || NEED_EXTERN_PC */
 char PC, *BC, *UP;
 #endif /* __linux__ */
@@ -296,7 +296,7 @@ rl_get_screen_size (rows, cols)
   if (cols)
     *cols = _rl_screenwidth;
 }
-     
+
 void
 rl_resize_terminal ()
 {
@@ -341,9 +341,9 @@ static struct _tc_string tc_strings[] =
   { "le", &_rl_term_backspace },
   { "mm", &_rl_term_mm },
   { "mo", &_rl_term_mo },
-#if defined (HACK_TERMCAP_MOTION)
+#if defined(HACK_TERMCAP_MOTION)
   { "nd", &_rl_term_forward_char },
-#endif
+#endif /* HACK_TERMCAP_MOTION */
   { "pc", &_rl_term_pc },
   { "up", &_rl_term_up },
   { "vb", &_rl_visible_bell },
@@ -351,24 +351,23 @@ static struct _tc_string tc_strings[] =
   { "ve", &_rl_term_ve },
 };
 
-#define NUM_TC_STRINGS (sizeof (tc_strings) / sizeof (struct _tc_string))
+#define NUM_TC_STRINGS (sizeof(tc_strings) / sizeof(struct _tc_string))
 
 /* Read the desired terminal capability strings into BP.  The capabilities
    are described in the TC_STRINGS table. */
 static void
-get_term_capabilities (bp)
-     char **bp;
+get_term_capabilities(char **bp)
 {
-#if !defined (__DJGPP__)	/* XXX - doesn't DJGPP have a termcap library? */
+#if !defined (__DJGPP__) /* XXX - does DJGPP not have a termcap library? */
   register int i;
 
   for (i = 0; i < NUM_TC_STRINGS; i++)
-#  ifdef __LCC__
-    *(tc_strings[i].tc_value) = tgetstr ((char *)tc_strings[i].tc_var, bp);
+#  if defined(__LCC__) || (defined(NCURSES_EXPORT) && !defined(NCURSES_CONST))
+    *(tc_strings[i].tc_value) = tgetstr((char *)tc_strings[i].tc_var, bp);
 #  else
-    *(tc_strings[i].tc_value) = tgetstr (tc_strings[i].tc_var, bp);
-#  endif
-#endif
+    *(tc_strings[i].tc_value) = tgetstr(tc_strings[i].tc_var, bp);
+#  endif /* __LCC__ || (NCURSES_EXPORT && !NCURSES_CONST) */
+#endif /* !__DJGPP__ */
   tcap_initialized = 1;
 }
 

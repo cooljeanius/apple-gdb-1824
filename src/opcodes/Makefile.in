@@ -14,6 +14,24 @@
 
 @SET_MAKE@
 
+#
+#   Copyright (C) 2012-2014 Free Software Foundation, Inc.
+#
+# This file is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; see the file COPYING3.  If not see
+# <http://www.gnu.org/licenses/>.
+#
+
 
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
@@ -85,11 +103,7 @@ DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog THANKS \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
 	$(srcdir)/config.h.in $(top_srcdir)/../mkinstalldirs \
-	$(top_srcdir)/po/Make-in $(top_srcdir)/../depcomp COPYING TODO \
-	ltmain.sh $(top_srcdir)/../ar-lib $(top_srcdir)/../compile \
-	$(top_srcdir)/../config.guess $(top_srcdir)/../config.sub \
-	$(top_srcdir)/../install-sh $(top_srcdir)/../ltmain.sh \
-	$(top_srcdir)/../missing
+	$(top_srcdir)/po/Make-in $(top_srcdir)/../depcomp
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/gettext-sister.m4 \
 	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/ltoptions.m4 \
@@ -194,7 +208,6 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = libopcodes.c $(libopcodes_la_SOURCES)
-DIST_SOURCES = libopcodes.c $(libopcodes_la_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -215,7 +228,7 @@ am__recursive_targets = \
   $(RECURSIVE_CLEAN_TARGETS) \
   $(am__extra_recursive_targets)
 AM_RECURSIVE_TARGETS = $(am__recursive_targets:-recursive=) TAGS CTAGS \
-	cscope distdir dist dist-all distcheck
+	cscope
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) \
 	$(LISP)config.h.in
 # Read a list of newline-separated strings from the standard input,
@@ -242,48 +255,6 @@ RUNTESTDEFAULTFLAGS = --tool $$tool --srcdir $$srcdir
 EXPECT = expect
 RUNTEST = runtest
 DIST_SUBDIRS = $(SUBDIRS)
-DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-distdir = $(PACKAGE)-$(VERSION)
-top_distdir = $(distdir)
-am__remove_distdir = \
-  if test -d "$(distdir)"; then \
-    find "$(distdir)" -type d ! -perm -200 -exec chmod u+w {} ';' \
-      && rm -rf "$(distdir)" \
-      || { sleep 5 && rm -rf "$(distdir)"; }; \
-  else :; fi
-am__post_remove_distdir = $(am__remove_distdir)
-am__relativize = \
-  dir0=`pwd`; \
-  sed_first='s,^\([^/]*\)/.*$$,\1,'; \
-  sed_rest='s,^[^/]*/*,,'; \
-  sed_last='s,^.*/\([^/]*\)$$,\1,'; \
-  sed_butlast='s,/*[^/]*$$,,'; \
-  while test -n "$$dir1"; do \
-    first=`echo "$$dir1" | sed -e "$$sed_first"`; \
-    if test "$$first" != "."; then \
-      if test "$$first" = ".."; then \
-        dir2=`echo "$$dir0" | sed -e "$$sed_last"`/"$$dir2"; \
-        dir0=`echo "$$dir0" | sed -e "$$sed_butlast"`; \
-      else \
-        first2=`echo "$$dir2" | sed -e "$$sed_first"`; \
-        if test "$$first2" = "$$first"; then \
-          dir2=`echo "$$dir2" | sed -e "$$sed_rest"`; \
-        else \
-          dir2="../$$dir2"; \
-        fi; \
-        dir0="$$dir0"/"$$first"; \
-      fi; \
-    fi; \
-    dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
-  done; \
-  reldir="$$dir2"
-DIST_ARCHIVES = $(distdir).tar.gz
-GZIP_ENV = --best
-DIST_TARGETS = dist-gzip
-distuninstallcheck_listfiles = find . -type f -print
-am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
-  | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
-distcleancheck_listfiles = find . -type f -print
 ACLOCAL = @ACLOCAL@
 ALLOCA = @ALLOCA@
 AMTAR = @AMTAR@
@@ -349,6 +320,7 @@ INTLLIBS = @INTLLIBS@
 INTLOBJS = @INTLOBJS@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
+LD_ARCHFLAGS = @LD_ARCHFLAGS@
 LIBINTL = @LIBINTL@
 LIBINTL_DEP = @LIBINTL_DEP@
 LIBM = @LIBM@
@@ -395,6 +367,8 @@ USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 WARN_CFLAGS = @WARN_CFLAGS@
+WARN_DEFS = @WARN_DEFS@
+WARN_LDFLAGS = @WARN_LDFLAGS@
 WIN32LDFLAGS = @WIN32LDFLAGS@
 WIN32LIBADD = @WIN32LIBADD@
 XGETTEXT = @XGETTEXT@
@@ -408,6 +382,8 @@ ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
+ac_ct_RANLIB = @ac_ct_RANLIB@
+acl_cv_wl = @acl_cv_wl@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
@@ -469,9 +445,7 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-
-# APPLE MERGE ??
-AUTOMAKE_OPTIONS = 1.10 gnits
+AUTOMAKE_OPTIONS = 1.10 gnits no-dist dejagnu -Wall -Wno-portability
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 ACLOCAL_AMFLAGS = -I m4 --install
 
@@ -789,7 +763,21 @@ OFILES = @BFD_MACHINES@
 # We should reconfigure whenever bfd/configure.ac changes, because
 # that is where the version number in Makefile comes from.
 CONFIG_STATUS_DEPENDENCIES = $(BFDDIR)/configure.ac
-AM_CPPFLAGS = -D_GNU_SOURCE -I. -I$(srcdir) -I../bfd -I$(INCDIR) -I$(BFDDIR) @HDEFINES@ -I$(INTLDIR) -I../intl
+AM_CPPFLAGS = -D_GNU_SOURCE -I. -I$(srcdir) -I../bfd -I$(INCDIR) \
+-I$(BFDDIR) @HDEFINES@ -I$(INTLDIR) -I../intl
+
+AM_V_redir = $(am__v_redir_$(V))
+am__v_redir_ = $(am__v_redir_$(AM_DEFAULT_VERBOSITY))
+am__v_redir_0 = >
+am__v_redir_1 = | tee
+AM_V_redir_a = $(am__v_redir_a_$(V))
+am__v_redir_a_ = $(am__v_redir_a_$(AM_DEFAULT_VERBOSITY))
+am__v_redir_a_0 = >>
+am__v_redir_a_1 = | tee -a
+AM_V_v = $(am__v_v_$(V))
+am__v_v_ = $(am__v_v_$(AM_DEFAULT_VERBOSITY))
+am__v_v_0 = 
+am__v_v_1 = -v
 libopcodes_la_SOURCES = dis-buf.c disassemble.c dis-init.c i386-opc.c
 # It is desirable to list ../bfd/libbfd.la in DEPENDENCIES and LIBADD.
 # Unfortunately this causes libtool to add -L$(libdir), referring to the
@@ -855,6 +843,16 @@ CGEN_CPUS = fr30 frv ip2k m32c m32r ms1 openrisc xstormy16
 @CGEN_MAINT_FALSE@XSTORMY16_DEPS = 
 @CGEN_MAINT_TRUE@XSTORMY16_DEPS = stamp-xstormy16
 m32c_opc_h = m32c-opc.h cgen-types.h cgen-ops.h
+I386_COMMON_SRCS = i386-opc.c i386-opc.h sysdep.h $(INCDIR)/libiberty.h
+I386_OPC_O_DEPS = $(I386_COMMON_SRCS) config.h \
+  $(INCDIR)/ansidecl.h @MAINT@ $(INCDIR)/opcode/i386.h
+
+IA64_GEN_O_DEPS = $(INCDIR)/ansidecl.h $(INCDIR)/libiberty.h \
+  $(INCDIR)/safe-ctype.h sysdep.h config.h $(INCDIR)/getopt.h \
+  $(INCDIR)/opcode/ia64.h $(BFD_H) $(INCDIR)/symcat.h ia64-opc.c \
+  ia64-opc-a.c ia64-opc-b.c ia64-opc-f.c ia64-opc-i.c ia64-opc-m.c \
+  ia64-opc-d.c ia64-opc.h @MAINT@ $(INTLDIR)/libintl.h
+
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -1120,201 +1118,6 @@ distclean-DEJAGNU:
 	-l='$(DEJATOOL)'; for tool in $$l; do \
 	  rm -f $$tool.sum $$tool.log; \
 	done
-
-distdir: $(DISTFILES)
-	@case `sed 15q $(srcdir)/NEWS` in \
-	*"$(VERSION)"*) : ;; \
-	*) \
-	  echo "NEWS not updated; not releasing" 1>&2; \
-	  exit 1;; \
-	esac
-	$(am__remove_distdir)
-	test -d "$(distdir)" || mkdir "$(distdir)"
-	@srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
-	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
-	list='$(DISTFILES)'; \
-	  dist_files=`for file in $$list; do echo $$file; done | \
-	  sed -e "s|^$$srcdirstrip/||;t" \
-	      -e "s|^$$topsrcdirstrip/|$(top_builddir)/|;t"`; \
-	case $$dist_files in \
-	  */*) $(MKDIR_P) `echo "$$dist_files" | \
-			   sed '/\//!d;s|^|$(distdir)/|;s,/[^/]*$$,,' | \
-			   sort -u` ;; \
-	esac; \
-	for file in $$dist_files; do \
-	  if test -f $$file || test -d $$file; then d=.; else d=$(srcdir); fi; \
-	  if test -d $$d/$$file; then \
-	    dir=`echo "/$$file" | sed -e 's,/[^/]*$$,,'`; \
-	    if test -d "$(distdir)/$$file"; then \
-	      find "$(distdir)/$$file" -type d ! -perm -700 -exec chmod u+rwx {} \;; \
-	    fi; \
-	    if test -d $(srcdir)/$$file && test $$d != $(srcdir); then \
-	      cp -fpR $(srcdir)/$$file "$(distdir)$$dir" || exit 1; \
-	      find "$(distdir)/$$file" -type d ! -perm -700 -exec chmod u+rwx {} \;; \
-	    fi; \
-	    cp -fpR $$d/$$file "$(distdir)$$dir" || exit 1; \
-	  else \
-	    test -f "$(distdir)/$$file" \
-	    || cp -p $$d/$$file "$(distdir)/$$file" \
-	    || exit 1; \
-	  fi; \
-	done
-	@list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    $(am__make_dryrun) \
-	      || test -d "$(distdir)/$$subdir" \
-	      || $(MKDIR_P) "$(distdir)/$$subdir" \
-	      || exit 1; \
-	    dir1=$$subdir; dir2="$(distdir)/$$subdir"; \
-	    $(am__relativize); \
-	    new_distdir=$$reldir; \
-	    dir1=$$subdir; dir2="$(top_distdir)"; \
-	    $(am__relativize); \
-	    new_top_distdir=$$reldir; \
-	    echo " (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) top_distdir="$$new_top_distdir" distdir="$$new_distdir" \\"; \
-	    echo "     am__remove_distdir=: am__skip_length_check=: am__skip_mode_fix=: distdir)"; \
-	    ($(am__cd) $$subdir && \
-	      $(MAKE) $(AM_MAKEFLAGS) \
-	        top_distdir="$$new_top_distdir" \
-	        distdir="$$new_distdir" \
-		am__remove_distdir=: \
-		am__skip_length_check=: \
-		am__skip_mode_fix=: \
-	        distdir) \
-	      || exit 1; \
-	  fi; \
-	done
-	-test -n "$(am__skip_mode_fix)" \
-	|| find "$(distdir)" -type d ! -perm -755 \
-		-exec chmod u+rwx,go+rx {} \; -o \
-	  ! -type d ! -perm -444 -links 1 -exec chmod a+r {} \; -o \
-	  ! -type d ! -perm -400 -exec chmod a+r {} \; -o \
-	  ! -type d ! -perm -444 -exec $(install_sh) -c -m a+r {} {} \; \
-	|| chmod -R a+r "$(distdir)"
-dist-gzip: distdir
-	tardir=$(distdir) && $(am__tar) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).tar.gz
-	$(am__post_remove_distdir)
-
-dist-bzip2: distdir
-	tardir=$(distdir) && $(am__tar) | BZIP2=$${BZIP2--9} bzip2 -c >$(distdir).tar.bz2
-	$(am__post_remove_distdir)
-
-dist-lzip: distdir
-	tardir=$(distdir) && $(am__tar) | lzip -c $${LZIP_OPT--9} >$(distdir).tar.lz
-	$(am__post_remove_distdir)
-
-dist-xz: distdir
-	tardir=$(distdir) && $(am__tar) | XZ_OPT=$${XZ_OPT--e} xz -c >$(distdir).tar.xz
-	$(am__post_remove_distdir)
-
-dist-tarZ: distdir
-	@echo WARNING: "Support for shar distribution archives is" \
-	               "deprecated." >&2
-	@echo WARNING: "It will be removed altogether in Automake 2.0" >&2
-	tardir=$(distdir) && $(am__tar) | compress -c >$(distdir).tar.Z
-	$(am__post_remove_distdir)
-
-dist-shar: distdir
-	@echo WARNING: "Support for distribution archives compressed with" \
-		       "legacy program 'compress' is deprecated." >&2
-	@echo WARNING: "It will be removed altogether in Automake 2.0" >&2
-	shar $(distdir) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).shar.gz
-	$(am__post_remove_distdir)
-
-dist-zip: distdir
-	-rm -f $(distdir).zip
-	zip -rq $(distdir).zip $(distdir)
-	$(am__post_remove_distdir)
-
-dist dist-all:
-	$(MAKE) $(AM_MAKEFLAGS) $(DIST_TARGETS) am__post_remove_distdir='@:'
-	$(am__post_remove_distdir)
-
-# This target untars the dist file and tries a VPATH configuration.  Then
-# it guarantees that the distribution is self-contained by making another
-# tarfile.
-distcheck: dist
-	case '$(DIST_ARCHIVES)' in \
-	*.tar.gz*) \
-	  GZIP=$(GZIP_ENV) gzip -dc $(distdir).tar.gz | $(am__untar) ;;\
-	*.tar.bz2*) \
-	  bzip2 -dc $(distdir).tar.bz2 | $(am__untar) ;;\
-	*.tar.lz*) \
-	  lzip -dc $(distdir).tar.lz | $(am__untar) ;;\
-	*.tar.xz*) \
-	  xz -dc $(distdir).tar.xz | $(am__untar) ;;\
-	*.tar.Z*) \
-	  uncompress -c $(distdir).tar.Z | $(am__untar) ;;\
-	*.shar.gz*) \
-	  GZIP=$(GZIP_ENV) gzip -dc $(distdir).shar.gz | unshar ;;\
-	*.zip*) \
-	  unzip $(distdir).zip ;;\
-	esac
-	chmod -R a-w $(distdir)
-	chmod u+w $(distdir)
-	mkdir $(distdir)/_build $(distdir)/_inst
-	chmod a-w $(distdir)
-	test -d $(distdir)/_build || exit 0; \
-	dc_install_base=`$(am__cd) $(distdir)/_inst && pwd | sed -e 's,^[^:\\/]:[\\/],/,'` \
-	  && dc_destdir="$${TMPDIR-/tmp}/am-dc-$$$$/" \
-	  && am__cwd=`pwd` \
-	  && $(am__cd) $(distdir)/_build \
-	  && ../configure \
-	    $(AM_DISTCHECK_CONFIGURE_FLAGS) \
-	    $(DISTCHECK_CONFIGURE_FLAGS) \
-	    --srcdir=.. --prefix="$$dc_install_base" \
-	  && $(MAKE) $(AM_MAKEFLAGS) \
-	  && $(MAKE) $(AM_MAKEFLAGS) dvi \
-	  && $(MAKE) $(AM_MAKEFLAGS) check \
-	  && $(MAKE) $(AM_MAKEFLAGS) install \
-	  && $(MAKE) $(AM_MAKEFLAGS) installcheck \
-	  && $(MAKE) $(AM_MAKEFLAGS) uninstall \
-	  && $(MAKE) $(AM_MAKEFLAGS) distuninstallcheck_dir="$$dc_install_base" \
-	        distuninstallcheck \
-	  && chmod -R a-w "$$dc_install_base" \
-	  && ({ \
-	       (cd ../.. && umask 077 && mkdir "$$dc_destdir") \
-	       && $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$dc_destdir" install \
-	       && $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$dc_destdir" uninstall \
-	       && $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$dc_destdir" \
-	            distuninstallcheck_dir="$$dc_destdir" distuninstallcheck; \
-	      } || { rm -rf "$$dc_destdir"; exit 1; }) \
-	  && rm -rf "$$dc_destdir" \
-	  && $(MAKE) $(AM_MAKEFLAGS) dist \
-	  && rm -rf $(DIST_ARCHIVES) \
-	  && $(MAKE) $(AM_MAKEFLAGS) distcleancheck \
-	  && cd "$$am__cwd" \
-	  || exit 1
-	$(am__post_remove_distdir)
-	@(echo "$(distdir) archives ready for distribution: "; \
-	  list='$(DIST_ARCHIVES)'; for i in $$list; do echo $$i; done) | \
-	  sed -e 1h -e 1s/./=/g -e 1p -e 1x -e '$$p' -e '$$x'
-distuninstallcheck:
-	@test -n '$(distuninstallcheck_dir)' || { \
-	  echo 'ERROR: trying to run $@ with an empty' \
-	       '$$(distuninstallcheck_dir)' >&2; \
-	  exit 1; \
-	}; \
-	$(am__cd) '$(distuninstallcheck_dir)' || { \
-	  echo 'ERROR: cannot chdir into $(distuninstallcheck_dir)' >&2; \
-	  exit 1; \
-	}; \
-	test `$(am__distuninstallcheck_listfiles) | wc -l` -eq 0 \
-	   || { echo "ERROR: files left after uninstall:" ; \
-	        if test -n "$(DESTDIR)"; then \
-	          echo "  (check DESTDIR support)"; \
-	        fi ; \
-	        $(distuninstallcheck_listfiles) ; \
-	        exit 1; } >&2
-distcleancheck: distclean
-	@if test '$(srcdir)' = . ; then \
-	  echo "ERROR: distcleancheck can only run from a VPATH build" ; \
-	  exit 1 ; \
-	fi
-	@test `$(distcleancheck_listfiles) | wc -l` -eq 0 \
-	  || { echo "ERROR: files left in build directory after distclean:" ; \
-	       $(distcleancheck_listfiles) ; \
-	       exit 1; } >&2
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU
 check: check-recursive
@@ -1437,26 +1240,24 @@ uninstall-am: uninstall-bfdlibLTLIBRARIES
 	am--refresh check check-DEJAGNU check-am clean \
 	clean-bfdlibLTLIBRARIES clean-cscope clean-generic \
 	clean-libtool clean-noinstLIBRARIES cscope cscopelist-am ctags \
-	ctags-am dist dist-all dist-bzip2 dist-gzip dist-lzip \
-	dist-shar dist-tarZ dist-xz dist-zip distcheck distclean \
-	distclean-DEJAGNU distclean-compile distclean-generic \
-	distclean-hdr distclean-libtool distclean-local distclean-tags \
-	distcleancheck distdir distuninstallcheck dvi dvi-am html \
-	html-am info info-am install install-am \
-	install-bfdlibLTLIBRARIES install-data install-data-am \
-	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs installdirs-am maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am \
+	ctags-am distclean distclean-DEJAGNU distclean-compile \
+	distclean-generic distclean-hdr distclean-libtool \
+	distclean-local distclean-tags dvi dvi-am html html-am info \
+	info-am install install-am install-bfdlibLTLIBRARIES \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs installdirs-am \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags tags-am uninstall uninstall-am \
 	uninstall-bfdlibLTLIBRARIES
 
 
 disassemble.lo: disassemble.c $(INCDIR)/dis-asm.h
-	$(LIBTOOL) --mode=compile $(COMPILE) -c @archdefs@ $(srcdir)/disassemble.c
+	$(AM_V_CC)$(LIBTOOL) --mode=compile $(COMPILE) -c @archdefs@ \
+	  $(srcdir)/disassemble.c
 disassemle.o: disassemble.lo
 
 stamp-lib: libopcodes.la @MAINT@ config.status $(PATH_TO_MOVEIFCHANGE)
@@ -1467,11 +1268,11 @@ stamp-lib: libopcodes.la @MAINT@ config.status $(PATH_TO_MOVEIFCHANGE)
 	  echo "libtooldir is $${libtooldir}"; \
 	fi; \
 	if [ -f $${libtooldir}/libopcodes.a ]; then \
-	  cp -v $${libtooldir}/libopcodes.a libopcodes.tmp; \
+	  cp $(AM_V_v) $${libtooldir}/libopcodes.a libopcodes.tmp; \
 	  $(RANLIB) libopcodes.tmp; \
 	  $(RUN_MOVEIFCHANGE) libopcodes.tmp libopcodes.a; \
 	else echo "no need to check in $${libtooldir} for libopcodes.a"; fi
-	touch stamp-lib
+	$(AM_V_at)touch stamp-lib
 
 libopcodes.a: stamp-lib
 
@@ -1484,54 +1285,55 @@ $(BFD_H): ../bfd/Makefile
 	test -e $(BFD_H)
 
 stamp-framework-headers:
-	$(RM) -f stamp-framework stamp-framework-headers
-	$(RM) -rfv $(FRAMEWORK).framework
-	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
-	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
-	$(LN_S) -v Versions/Current/Headers $(FRAMEWORK).framework/Headers
-	$(LN_S) -v Versions/Current/PrivateHeaders $(FRAMEWORK).framework/PrivateHeaders
-	$(LN_S) -v A $(FRAMEWORK).framework/Versions/Current
-	cp -pv $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
-	cp -pv *.h $(FRAMEWORK).framework/Versions/Current/Headers/
-	touch stamp-framework-headers
+	rm -f stamp-framework stamp-framework-headers
+	rm -rf $(AM_V_v) $(FRAMEWORK).framework
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
+	$(LN_S) $(AM_V_v) Versions/Current/Headers $(FRAMEWORK).framework/Headers
+	$(LN_S) $(AM_V_v) Versions/Current/PrivateHeaders $(FRAMEWORK).framework/PrivateHeaders
+	$(LN_S) $(AM_V_v) A $(FRAMEWORK).framework/Versions/Current
+	cp -p $(AM_V_v) $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
+	cp -p $(AM_V_v) *.h $(FRAMEWORK).framework/Versions/Current/Headers/
+	$(AM_V_at)touch stamp-framework-headers
 
 stamp-framework: $(libopcodes_la_OBJECTS) $(libopcodes_la_DEPENDENCIES)
 	$(MAKE) $(FRAMEWORK_OFILES)
-	$(RM) -f stamp-framework-headers
+	rm -f stamp-framework-headers
 	$(MAKE) stamp-framework-headers
-	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
-	$(LN_S) -v Versions/Current/Resources $(FRAMEWORK).framework/Resources
-	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
+	$(LN_S) $(AM_V_v) Versions/Current/Resources $(FRAMEWORK).framework/Resources
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
 
 	set -ex; \
 	if [ "x$(FRAMEWORK_SUFFIX)" != "x" ]; then \
 	    test -n "$(FRAMEWORK_SUFFIX)" && echo "$(FRAMEWORK_SUFFIX)"; \
 	   $(NSLIBTOOL) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
-	    $(LN_S) -v $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
-	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX); \
-	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
-	    $(LN_S) -v $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK); \
+	    $(LN_S) $(AM_V_v) $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
+	    $(LN_S) $(AM_V_v) $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK); \
 	else \
 	    echo "making un-suffixed framework"; \
 	    $(NSLIBTOOL) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
-	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
 	fi
-	touch stamp-framework
+	$(AM_V_at)touch stamp-framework
 po/POTFILES.in: @MAINT@ Makefile
-	for f in $(POTFILES); do echo $${f}; done | LC_COLLATE="" sort > tmp \
-	  && mv tmp $(srcdir)/po/POTFILES.in
+	$(AM_V_GEN)for f in $(POTFILES); do echo $${f}; done \
+	  | LC_ALL=C LC_COLLATE="" sort $(AM_V_redir) tmp \
+	  && mv $(AM_V_v) tmp $(srcdir)/po/POTFILES.in
 
 install-bfdlibLTLIBRARIES: @INSTALL_LIBBFD_TRUE@install_libopcodes
-	@$(NORMAL_INSTALL)
+	$(AM_V_at)$(NORMAL_INSTALL)
 
 uninstall-bfdlibLTLIBRARIES: @INSTALL_LIBBFD_TRUE@uninstall_libopcodes
-	@$(NORMAL_UNINSTALL)
+	$(AM_V_at)$(NORMAL_UNINSTALL)
 
 .PHONY: install_libopcodes uninstall_libopcodes
 install_libopcodes: $(bfdlib_LTLIBRARIES)
 	$(mkinstalldirs) $(DESTDIR)$(bfdlibdir)
 	$(mkinstalldirs) $(DESTDIR)$(bfdincludedir)
-	@list='$(bfdlib_LTLIBRARIES)'; for p in $${list}; do \
+	$(AM_V_at)list='$(bfdlib_LTLIBRARIES)'; for p in $${list}; do \
 	  if test -f $${p}; then \
 	    echo "$(LIBTOOL) --mode=install $(INSTALL) $${p} $(DESTDIR)$(bfdlibdir)/$${p}"; \
 	    $(LIBTOOL) --mode=install $(INSTALL) $${p} $(DESTDIR)$(bfdlibdir)/$${p}; \
@@ -1543,7 +1345,7 @@ uninstall_libopcodes:
 	list='$(bfdlib_LTLIBRARIES)'; for p in $${list}; do \
 	  $(LIBTOOL) --mode=uninstall rm -f $(DESTDIR)$(bfdlibdir)/$${p}; \
 	done
-	rm -f $(DESTDIR)$(bfdincludedir)/dis-asm.h
+	rm -f $(AM_V_v) $(DESTDIR)$(bfdincludedir)/dis-asm.h
 
 distclean-local:
 	rm -rf autom4te.cache || rmdir autom4te.cache
@@ -1647,39 +1449,31 @@ stamp-xstormy16: $(CGENDEPS) $(CPUDIR)/xstormy16.cpu $(CPUDIR)/xstormy16.opc
 		archfile=$(CPUDIR)/xstormy16.cpu opcfile=$(CPUDIR)/xstormy16.opc extrafiles=""
 
 i386-gen: i386-gen.o @MAINT@ $(LIBIBERTY)
-	$(LINK) i386-gen.o $(LIBIBERTY)
-
-i386-gen.o: i386-gen.c i386-opc.c i386-opc.h sysdep.h $(INCDIR)/getopt.h \
-  $(INCDIR)/libiberty.h $(INCDIR)/hashtab.h $(INCDIR)/safe-ctype.h 
+	$(AM_V_CCLD)$(LINK) i386-gen.o $(LIBIBERTY)
+i386-gen.o: i386-gen.c $(I386_COMMON_SRCS) \
+  $(INCDIR)/getopt.h @MAINT@ $(INCDIR)/hashtab.h $(INCDIR)/safe-ctype.h 
 
 i386-asmtab.c: @MAINT@ i386-gen i386-opc.tbl i386-reg.tbl
-	./i386-gen --srcdir $(srcdir) > $(srcdir)/i386-asmtab.c
-
-i386-opc.o: i386-opc.c i386-opc.h sysdep.h config.h $(INCDIR)/ansidecl.h \
-  $(INCDIR)/libiberty.h $(INCDIR)/opcode/i386.h
-i386-opc.lo: i386-opc.c i386-opc.h sysdep.h config.h $(INCDIR)/ansidecl.h \
-  $(INCDIR)/libiberty.h $(INCDIR)/opcode/i386.h
+	$(AM_V_GEN)./i386-gen --srcdir $(srcdir) > $(srcdir)/i386-asmtab.c
+i386-opc.o: $(I386_OPC_O_DEPS)
+i386-opc.lo: $(I386_OPC_O_DEPS)
 
 ia64-gen: ia64-gen.o @MAINT@ $(LIBIBERTY) @MAINT@ ia64-gen.lo
-	$(LINK) ia64-gen.o $(LIBIBERTY)
+	$(AM_V_CCLD)$(LINK) ia64-gen.o $(LIBIBERTY)
 
-ia64-gen.o: ia64-gen.c $(INCDIR)/ansidecl.h $(INCDIR)/libiberty.h \
-  $(INCDIR)/safe-ctype.h sysdep.h config.h $(INCDIR)/getopt.h \
-  $(INCDIR)/opcode/ia64.h $(BFD_H) $(INCDIR)/symcat.h \
-  ia64-opc.c ia64-opc-a.c ia64-opc-b.c ia64-opc-f.c \
-  ia64-opc-i.c ia64-opc-m.c ia64-opc-d.c ia64-opc.h $(INTLDIR)/libintl.h
+ia64-gen.o: ia64-gen.c @MAINT@# $(IA64_GEN_O_DEPS)
 
-ia64-asmtab.c: @MAINT@ ia64-gen ia64-ic.tbl ia64-raw.tbl ia64-waw.tbl ia64-war.tbl
-	./ia64-gen --srcdir $(srcdir) > $(srcdir)/ia64-asmtab.c
+ia64-asmtab.c: @MAINT@# ia64-gen ia64-ic.tbl ia64-raw.tbl ia64-waw.tbl ia64-war.tbl
+	$(AM_V_GEN)./ia64-gen --srcdir $(srcdir) > $(srcdir)/ia64-asmtab.c
 
 s390-mkopc: s390-mkopc.c
-	$(CC_FOR_BUILD) -o s390-mkopc $(srcdir)/s390-mkopc.c
+	$(AM_V_CCLD)$(CC_FOR_BUILD) -o s390-mkopc $(srcdir)/s390-mkopc.c
 
 s390-opc.tab: s390-mkopc s390-opc.txt
-	./s390-mkopc < $(srcdir)/s390-opc.txt > s390-opc.tab
+	$(AM_V_GEN)./s390-mkopc < $(srcdir)/s390-opc.txt > s390-opc.tab
 
 sh-dis.lo: sh-dis.c sh-opc.h sysdep.h config.h
-	$(LIBTOOL) --mode=compile $(COMPILE) -c @archdefs@ $<
+	$(AM_V_CC)$(LIBTOOL) --mode=compile $(COMPILE) -c @archdefs@ $<
 sh-dis.o: sh-dis.lo
 
 # This dependency stuff is copied from BFD.
@@ -1687,15 +1481,16 @@ sh-dis.o: sh-dis.lo
 # Have to get rid of any pre-existing DEP1 here, so that "$?" later
 # includes all of $(CFILES).
 DEP: dep.sed $(CFILES) $(HFILES) config.h
-	rm -f DEP1
+	rm -f $(AM_V_v) DEP1
 	$(MAKE) MKDEP="$(MKDEP)" DEP1
-	$(SED) -f dep.sed < DEP1 > DEPA
+	$(SED) -f dep.sed < DEP1 $(AM_V_redir) DEPA
 	echo '# IF YOU PUT ANYTHING HERE IT WILL GO AWAY' >> DEPA
 	if $(GREP) ' /' DEPA > /dev/null 2> /dev/null; then \
-	  echo 'make DEP failed!'; exit 1; \
+	  echo 'make DEP failed; it produced bad directories!'>&2; \
+	  exit 1; \
 	else \
-	  mv -fv DEPA $@; \
-	fi
+	  mv -f $(AM_V_v) DEPA $@; \
+	$(AM_V_at)fi
 
 # Not sure if AM_CPPFLAGS works perfectly as a 1-for-1 replacement
 # for INCLUDES here in this next one:
@@ -1703,8 +1498,8 @@ DEP1: $(CFILES)
 	echo '# DO NOT DELETE THIS LINE -- mkdep uses it.' > DEP2
 	echo '# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.' >> DEP2
 	$(MKDEP) $(AM_CPPFLAGS) $(CFLAGS) $? | tee -a DEP2
-	mv -fv DEP2 $@
-	touch $@
+	mv -f $(AM_V_v) DEP2 $@
+	$(AM_V_at)touch $@
 
 #FIXME: this sed script is broken and hack-ish:
 dep.sed: dep-in.sed @MAINT@ config.status
@@ -1720,23 +1515,24 @@ dep: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < Makefile > tmp-Makefile
 	cat DEP >> tmp-Makefile
 	$(RUN_MOVEIFCHANGE) tmp-Makefile Makefile
-	touch Makefile
+	$(AM_V_at)touch Makefile
 
 #FIXME: this target relies on dep.sed, which is broken (see above)
 dep-in: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.in > tmp-Makefile.in
 	cat DEP >> tmp-Makefile.in
 	$(RUN_MOVEIFCHANGE) tmp-Makefile.in $(srcdir)/Makefile.in
-	touch $(srcdir)/Makefile.in
+	$(AM_V_at)touch $(srcdir)/Makefile.in
 
 #FIXME: this target relies on dep.sed, which is broken (see above)
 dep-am: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	@echo "this target is broken/dangerous; not letting you use it" >&2
+	@echo "edit Makefile.am if you have fixed things"
 	exit 1
 	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.am > tmp-Makefile.am
 	cat DEP >> tmp-Makefile.am
 	$(RUN_MOVEIFCHANGE) tmp-Makefile.am $(srcdir)/Makefile.am
-	touch $(srcdir)/Makefile.am
+	$(AM_V_at)touch $(srcdir)/Makefile.am
 
 .PHONY: dep dep-in dep-am
 

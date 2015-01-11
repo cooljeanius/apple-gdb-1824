@@ -366,18 +366,18 @@ parse_int (common_header_type *ieee, bfd_vma *value_ptr)
 }
 
 static int
-parse_i (common_header_type *ieee, bfd_boolean *ok)
+parse_i(common_header_type *ieee, bfd_boolean *ok)
 {
-  bfd_vma x;
-  *ok = parse_int (ieee, &x);
+  bfd_vma x = 0UL;
+  *ok = parse_int(ieee, &x);
   return x;
 }
 
 static bfd_vma
-must_parse_int (common_header_type *ieee)
+must_parse_int(common_header_type *ieee)
 {
-  bfd_vma result;
-  BFD_ASSERT (parse_int (ieee, &result));
+  bfd_vma result = 0UL;
+  BFD_ASSERT(parse_int(ieee, &result));
   return result;
 }
 
@@ -765,7 +765,7 @@ ieee_slurp_external_symbols (bfd *abfd)
 	    unsigned int symbol_name_index;
 	    unsigned int symbol_type_index;
 	    unsigned int symbol_attribute_def;
-	    bfd_vma value;
+	    bfd_vma value = 0UL;
 
 	    switch (read_2bytes(&ieee->h))
 	      {

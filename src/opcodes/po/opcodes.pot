@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-10 14:52-0500\n"
+"POT-Creation-Date: 2015-01-10 18:53-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr ""
 msgid "jump hint unaligned"
 msgstr ""
 
-#: arc-dis.c:75
+#: arc-dis.c:82
 msgid "Illegal limm reference in last instruction!\n"
 msgstr ""
 
@@ -262,7 +262,7 @@ msgstr ""
 
 #. Default text to print if an instruction isn't recognized.
 #: fr30-dis.c:41 frv-dis.c:41 ip2k-dis.c:41 iq2000-dis.c:41 m32c-dis.c:41
-#: m32r-dis.c:41 mmix-dis.c:278 ms1-dis.c:41 openrisc-dis.c:41
+#: m32r-dis.c:41 mmix-dis.c:282 ms1-dis.c:41 openrisc-dis.c:41
 #: xstormy16-dis.c:41
 msgid "*unknown*"
 msgstr ""
@@ -441,108 +441,108 @@ msgstr ""
 msgid "  suffix      Always display instruction suffix in AT&T syntax\n"
 msgstr ""
 
-#: ia64-gen.c:297
+#: ia64-gen.c:307
 #, c-format
 msgid "%s: Error: "
 msgstr ""
 
-#: ia64-gen.c:310
+#: ia64-gen.c:320
 #, c-format
 msgid "%s: Warning: "
 msgstr ""
 
-#: ia64-gen.c:496 ia64-gen.c:730
+#: ia64-gen.c:506 ia64-gen.c:737
 #, c-format
 msgid "multiple note %s not handled\n"
 msgstr ""
 
-#: ia64-gen.c:607
+#: ia64-gen.c:617
 msgid "can't find ia64-ic.tbl for reading\n"
 msgstr ""
 
-#: ia64-gen.c:812
+#: ia64-gen.c:819
 #, c-format
 msgid "can't find %s for reading\n"
 msgstr ""
 
-#: ia64-gen.c:1036
+#: ia64-gen.c:1043
 #, c-format
 msgid ""
 "most recent format '%s'\n"
 "appears more restrictive than '%s'\n"
 msgstr ""
 
-#: ia64-gen.c:1047
+#: ia64-gen.c:1054
 #, c-format
 msgid "overlapping field %s->%s\n"
 msgstr ""
 
-#: ia64-gen.c:1244
+#: ia64-gen.c:1251
 #, c-format
 msgid "overwriting note %d with note %d (IC:%s)\n"
 msgstr ""
 
-#: ia64-gen.c:1443
+#: ia64-gen.c:1450
 #, c-format
 msgid "don't know how to specify %% dependency %s\n"
 msgstr ""
 
-#: ia64-gen.c:1465
+#: ia64-gen.c:1472
 #, c-format
 msgid "Don't know how to specify # dependency %s\n"
 msgstr ""
 
-#: ia64-gen.c:1504
+#: ia64-gen.c:1511
 #, c-format
 msgid "IC:%s [%s] has no terminals or sub-classes\n"
 msgstr ""
 
-#: ia64-gen.c:1507
+#: ia64-gen.c:1514
 #, c-format
 msgid "IC:%s has no terminals or sub-classes\n"
 msgstr ""
 
-#: ia64-gen.c:1516
+#: ia64-gen.c:1523
 #, c-format
 msgid "no insns mapped directly to terminal IC %s [%s]"
 msgstr ""
 
-#: ia64-gen.c:1519
+#: ia64-gen.c:1526
 #, c-format
 msgid "no insns mapped directly to terminal IC %s\n"
 msgstr ""
 
-#: ia64-gen.c:1530
+#: ia64-gen.c:1537
 #, c-format
 msgid "class %s is defined but not used\n"
 msgstr ""
 
-#: ia64-gen.c:1541
+#: ia64-gen.c:1548
 #, c-format
 msgid "Warning: rsrc %s (%s) has no chks%s\n"
 msgstr ""
 
-#: ia64-gen.c:1545
+#: ia64-gen.c:1552
 #, c-format
 msgid "rsrc %s (%s) has no regs\n"
 msgstr ""
 
-#: ia64-gen.c:2444
+#: ia64-gen.c:2431
 #, c-format
 msgid "IC note %d in opcode %s (IC:%s) conflicts with resource %s note %d\n"
 msgstr ""
 
-#: ia64-gen.c:2472
+#: ia64-gen.c:2459
 #, c-format
 msgid "IC note %d for opcode %s (IC:%s) conflicts with resource %s note %d\n"
 msgstr ""
 
-#: ia64-gen.c:2486
+#: ia64-gen.c:2473
 #, c-format
 msgid "opcode %s has no class (ops %d %d %d)\n"
 msgstr ""
 
-#: ia64-gen.c:2816
+#: ia64-gen.c:2800
 #, c-format
 msgid "unable to change directory to \"%s\", errno = %s\n"
 msgstr ""
@@ -796,21 +796,21 @@ msgid ""
 "   "
 msgstr ""
 
-#: mmix-dis.c:35
+#: mmix-dis.c:39
 #, c-format
 msgid "Bad case %d (%s) in %s:%d\n"
 msgstr ""
 
-#: mmix-dis.c:45
+#: mmix-dis.c:49
 #, c-format
 msgid "Internal: Non-debugged code (test-case missing): %s:%d"
 msgstr ""
 
-#: mmix-dis.c:54
+#: mmix-dis.c:58
 msgid "(unknown)"
 msgstr ""
 
-#: mmix-dis.c:513
+#: mmix-dis.c:517
 #, c-format
 msgid "*unknown operands type: %d*"
 msgstr ""

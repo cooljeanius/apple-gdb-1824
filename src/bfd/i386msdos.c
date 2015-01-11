@@ -1,26 +1,25 @@
 /* i386msdos.c: BFD back-end for MS-DOS executables.
-   Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2001, 2002,
-   2003, 2004, 2005 Free Software Foundation, Inc.
-   Written by Bryan Ford of the University of Utah.
+ * Copyright 1990-1996, 1998-2005 Free Software Foundation, Inc.
+ * Written by Bryan Ford of the University of Utah.
+ *
+ * Contributed by the Center for Software Science at the
+ * University of Utah <pa-gdb-bugs@cs.utah.edu>.  */
+/*
+This file is part of BFD, the Binary File Descriptor library.
 
-   Contributed by the Center for Software Science at the
-   University of Utah (pa-gdb-bugs@cs.utah.edu).
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
-   This file is part of BFD, the Binary File Descriptor library.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 
 #include "bfd.h"
@@ -29,7 +28,9 @@
 #include "libaout.h"
 
 #define EXE_MAGIC	0x5a4d
-#define EXE_LOAD_HIGH	0x0000
+#ifndef EXE_LOAD_HIGH
+# define EXE_LOAD_HIGH	0x0000
+#endif /* !EXE_LOAD_HIGH */
 #define EXE_LOAD_LOW	0xffff
 #define EXE_PAGE_SIZE	512
 
@@ -175,7 +176,9 @@ msdos_set_section_contents(bfd *abfd, sec_ptr section, const PTR location,
 
 #define msdos_canonicalize_reloc _bfd_norelocs_canonicalize_reloc
 #define msdos_get_reloc_upper_bound _bfd_norelocs_get_reloc_upper_bound
-#define msdos_32_bfd_link_split_section  _bfd_generic_link_split_section
+#ifndef msdos_32_bfd_link_split_section
+# define msdos_32_bfd_link_split_section _bfd_generic_link_split_section
+#endif /* !msdos_32_bfd_link_split_section */
 
 const bfd_target i386msdos_vec =
   {
@@ -229,5 +232,12 @@ const bfd_target i386msdos_vec =
 
     (PTR)0
   };
+
+#ifdef EXE_LOAD_HIGH
+# undef EXE_LOAD_HIGH
+#endif /* EXE_LOAD_HIGH */
+#ifdef msdos_32_bfd_link_split_section
+# undef msdos_32_bfd_link_split_section
+#endif /* msdos_32_bfd_link_split_section */
 
 /* EOF */

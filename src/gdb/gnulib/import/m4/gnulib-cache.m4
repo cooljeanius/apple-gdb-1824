@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2014 Free Software Foundation, Inc.
+# Copyright (C) 2002-2015 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --lib=libgnu --source-base=import --m4-base=import/m4 --doc-base=doc --tests-base=tests --aux-dir=import/extra --with-obsolete --avoid=lock --avoid=msvc-nothrow --avoid=threadlib --no-conditional-dependencies --no-libtool --macro-prefix=gl --no-vc-files absolute-header alignof alloca alloca-opt autobuild configmake dirent dirfd dosname double-slash-root errno error exitfail extensions extern-inline fileblocks float fnmatch fnmatch-gnu fpieee fpucw frexp frexpl gettext-h gettimeofday git-version-gen gitlog-to-changelog gnu-make havelib host-cpu-c-abi host-os include_next inline intprops inttypes inttypes-incomplete isnand-nolibm isnanl-nolibm iswctype largefile ldd localcharset lstat malloc-gnu malloc-posix manywarnings math mbrtowc mbsinit mbsrtowcs memchr memcmp memmem memmem-simple mempcpy multiarch nextafter no-c++ nocrash obstack openmp pathmax realloc-gnu realloc-posix snippet/_Noreturn snippet/arg-nonnull snippet/c++defs snippet/link-warning snippet/warn-on-use ssize_t stat stat-macros stat-size stat-time stdbool stddef stdint stdlib streq strerror strerror-override strerror_r-posix string strnlen strnlen1 strstr strstr-simple sys_stat sys_time sys_types time unistd update-copyright vc-list-files verify warnings wchar wcsncasecmp wctype-h
+#   gnulib-tool --import --dir=. --lib=libgnu --source-base=import --m4-base=import/m4 --doc-base=doc --tests-base=tests --aux-dir=import/extra --with-obsolete --avoid=lock --avoid=msvc-nothrow --avoid=threadlib --no-conditional-dependencies --no-libtool --macro-prefix=gl --no-vc-files absolute-header alignof alloca alloca-opt assure autobuild configmake dirent dirfd dosname double-slash-root errno error exitfail extensions extern-inline fileblocks float fnmatch fnmatch-gnu fpieee fpucw frexp frexpl fts gettext-h gettimeofday git-version-gen gitlog-to-changelog gnu-make havelib host-cpu-c-abi host-os include_next inline intprops inttypes inttypes-incomplete isnand-nolibm isnanl-nolibm iswctype largefile ldd localcharset lstat malloc-gnu malloc-posix manywarnings math mbrtowc mbsinit mbsrtowcs memchr memcmp memmem memmem-simple mempcpy mkdtemp multiarch nextafter no-c++ nocrash obstack openmp pathmax readlink realloc-gnu realloc-posix rmdir snippet/_Noreturn snippet/arg-nonnull snippet/c++defs snippet/link-warning snippet/warn-on-use ssize_t stat stat-macros stat-size stat-time stdbool stddef stdint stdlib streq strerror strerror-override strerror_r-posix string strnlen strnlen1 strstr strstr-simple sys_stat sys_time sys_types tempname time unistd unlink unlink-busy update-copyright vc-list-files verify warnings wchar wcsncasecmp wctype-h xalloc-oversized
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([])
@@ -36,6 +36,7 @@ gl_MODULES([
   alignof
   alloca
   alloca-opt
+  assure
   autobuild
   configmake
   dirent
@@ -55,6 +56,7 @@ gl_MODULES([
   fpucw
   frexp
   frexpl
+  fts
   gettext-h
   gettimeofday
   git-version-gen
@@ -87,6 +89,7 @@ gl_MODULES([
   memmem
   memmem-simple
   mempcpy
+  mkdtemp
   multiarch
   nextafter
   no-c++
@@ -94,8 +97,10 @@ gl_MODULES([
   obstack
   openmp
   pathmax
+  readlink
   realloc-gnu
   realloc-posix
+  rmdir
   snippet/_Noreturn
   snippet/arg-nonnull
   snippet/c++defs
@@ -122,8 +127,11 @@ gl_MODULES([
   sys_stat
   sys_time
   sys_types
+  tempname
   time
   unistd
+  unlink
+  unlink-busy
   update-copyright
   vc-list-files
   verify
@@ -131,6 +139,7 @@ gl_MODULES([
   wchar
   wcsncasecmp
   wctype-h
+  xalloc-oversized
 ])
 gl_WITH_OBSOLETE
 gl_AVOID([ lock msvc-nothrow threadlib])

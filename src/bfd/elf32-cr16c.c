@@ -129,11 +129,10 @@ static reloc_howto_type elf_howto_table[] =
 };
 
 
-/* Code to turn a code_type into a howto ptr, uses the above howto table.  */
-
+/* Code to turn a code_type into a howto ptr, uses the above howto table: */
 static reloc_howto_type *
-elf_cr16c_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
-			     bfd_reloc_code_real_type code)
+elf_cr16c_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                            bfd_reloc_code_real_type code)
 {
   unsigned int i;
 
@@ -141,21 +140,25 @@ elf_cr16c_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
     {
       if (code == reloc_map_index[i].bfd_reloc_enum)
 	{
-	  /* printf ("CR16C Relocation Type is - %x\n", code); */
-	  return & elf_howto_table[i];
+#ifdef DEBUG
+	  printf("CR16C Relocation Type is - %x\n", code);
+#endif /* DEBUG */
+	  return &elf_howto_table[i];
 	}
     }
 
-  /* printf ("This relocation Type is not supported - %x\n", code); */
+#ifdef DEBUG
+  printf("This relocation Type is not supported - %x\n", code);
+#endif /* DEBUG */
   return 0;
 }
 
-static void
-elf_cr16c_info_to_howto (bfd *abfd ATTRIBUTE_UNUSED,
-			 arelent *cache_ptr ATTRIBUTE_UNUSED,
-			 Elf_Internal_Rela *dst ATTRIBUTE_UNUSED)
+static void ATTRIBUTE_NORETURN
+elf_cr16c_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED,
+                        arelent *cache_ptr ATTRIBUTE_UNUSED,
+                        Elf_Internal_Rela *dst ATTRIBUTE_UNUSED)
 {
-  abort ();
+  abort();
 }
 
 static void

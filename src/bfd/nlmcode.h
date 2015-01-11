@@ -460,9 +460,9 @@ nlm_object_p (bfd *abfd)
   if (x_fxdhdr == NULL)
     goto got_no_match;
 
-  if (bfd_bread ((void *) x_fxdhdr, amt, abfd) != amt)
+  if (bfd_bread((void *)x_fxdhdr, amt, abfd) != amt)
     {
-      if (bfd_get_error () != bfd_error_system_call)
+      if (bfd_get_error() != bfd_error_system_call)
 	goto got_wrong_format_error;
       else
 	goto got_no_match;
@@ -470,25 +470,25 @@ nlm_object_p (bfd *abfd)
 
   /* Allocate an instance of the nlm_obj_tdata structure and hook it up to
      the tdata pointer in the bfd.  */
-  amt = sizeof (struct nlm_obj_tdata);
-  new_tdata = bfd_zalloc (abfd, amt);
+  amt = sizeof(struct nlm_obj_tdata);
+  new_tdata = (struct nlm_obj_tdata *)bfd_zalloc(abfd, amt);
   if (new_tdata == NULL)
     goto got_no_match;
 
-  nlm_tdata (abfd) = new_tdata;
+  nlm_tdata(abfd) = new_tdata;
 
-  i_fxdhdrp = nlm_fixed_header (abfd);
-  nlm_swap_fixed_header_in (abfd, x_fxdhdr, i_fxdhdrp);
-  free (x_fxdhdr);
+  i_fxdhdrp = nlm_fixed_header(abfd);
+  nlm_swap_fixed_header_in(abfd, x_fxdhdr, i_fxdhdrp);
+  free(x_fxdhdr);
   x_fxdhdr = NULL;
 
   /* Check to see if we have an NLM file for this backend by matching
      the NLM signature.  */
-  signature = nlm_signature (abfd);
-  if (signature != NULL
-      && *signature != '\0'
-      && strncmp ((char *) i_fxdhdrp->signature, signature,
-		  NLM_SIGNATURE_SIZE) != 0)
+  signature = nlm_signature(abfd);
+  if ((signature != NULL)
+      && (*signature != '\0')
+      && (strncmp((char *)i_fxdhdrp->signature, signature,
+		  NLM_SIGNATURE_SIZE) != 0))
     goto got_wrong_format_error;
 
   /* There's no supported way to discover the endianess of an NLM, so test for
@@ -917,21 +917,21 @@ nlm_slurp_symbol_table (bfd *abfd)
      When we have all the symbols, we build the caller's pointer vector.  */
 
   abfd->symcount = 0;
-  i_fxdhdrp = nlm_fixed_header (abfd);
+  i_fxdhdrp = nlm_fixed_header(abfd);
   totsymcount = (i_fxdhdrp->numberOfPublics
 		 + i_fxdhdrp->numberOfDebugRecords
 		 + i_fxdhdrp->numberOfExternalReferences);
   if (totsymcount == 0)
     return TRUE;
 
-  if (bfd_seek (abfd, i_fxdhdrp->publicsOffset, SEEK_SET) != 0)
+  if (bfd_seek(abfd, i_fxdhdrp->publicsOffset, SEEK_SET) != 0)
     return FALSE;
 
-  amt = totsymcount * sizeof (nlm_symbol_type);
-  sym = bfd_zalloc (abfd, amt);
+  amt = (totsymcount * sizeof(nlm_symbol_type));
+  sym = (nlm_symbol_type *)bfd_zalloc(abfd, amt);
   if (!sym)
     return FALSE;
-  nlm_set_symbols (abfd, sym);
+  nlm_set_symbols(abfd, sym);
 
   /* We use the bfd's symcount directly as the control count, so that early
      termination of the loop leaves the symcount correct for the symbols that
@@ -1075,18 +1075,17 @@ nlm_canonicalize_symtab (bfd *abfd, asymbol **alocation)
   return bfd_get_symcount (abfd);
 }
 
-/* Make an NLM symbol.  There is nothing special to do here.  */
-
+/* Make an NLM symbol.  There is nothing special to do here: */
 asymbol *
-nlm_make_empty_symbol (bfd *abfd)
+nlm_make_empty_symbol(bfd *abfd)
 {
-  bfd_size_type amt = sizeof (nlm_symbol_type);
-  nlm_symbol_type *new = bfd_zalloc (abfd, amt);
+  bfd_size_type amt = sizeof(nlm_symbol_type);
+  nlm_symbol_type *newsym = (nlm_symbol_type *)bfd_zalloc(abfd, amt);
 
-  if (new == NULL)
+  if (newsym == NULL)
     return NULL;
-  new->symbol.the_bfd = abfd;
-  return & new->symbol;
+  newsym->symbol.the_bfd = abfd;
+  return &newsym->symbol;
 }
 
 /* Get symbol information: */

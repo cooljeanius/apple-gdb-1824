@@ -173,13 +173,11 @@ tic4x_lookup_howto(arelent *internal, struct internal_reloc *dst)
 }
 
 static reloc_howto_type *
-coff_tic4x_rtype_to_howto(abfd, sec, rel, h, sym, addendp)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     asection *sec;
-     struct internal_reloc *rel;
-     struct coff_link_hash_entry *h ATTRIBUTE_UNUSED;
-     struct internal_syment *sym ATTRIBUTE_UNUSED;
-     bfd_vma *addendp;
+coff_tic4x_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
+                          struct internal_reloc *rel,
+                          struct coff_link_hash_entry *h ATTRIBUTE_UNUSED,
+                          struct internal_syment *sym ATTRIBUTE_UNUSED,
+                          bfd_vma *addendp)
 {
   arelent genrel;
 

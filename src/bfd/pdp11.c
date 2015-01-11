@@ -30,44 +30,64 @@
 
    Search for TODO to find other areas needing more work.  */
 
-#define	BYTES_IN_WORD	2
+#ifndef BYTES_IN_WORD
+# define BYTES_IN_WORD 2
+#endif /* !BYTES_IN_WORD */
 #define	BYTES_IN_LONG	4
 #define ARCH_SIZE	16
 #undef TARGET_IS_BIG_ENDIAN_P
 
 #define	TARGET_PAGE_SIZE	1024
-#define	SEGMENT__SIZE	TARGET_PAGE_SIZE
+#ifndef SEGMENT__SIZE
+# define SEGMENT__SIZE TARGET_PAGE_SIZE
+#endif /* !SEGMENT__SIZE */
 
 #define	DEFAULT_ARCH	bfd_arch_pdp11
-#define	DEFAULT_MID 	M_PDP11
+#ifndef DEFAULT_MID
+# define DEFAULT_MID M_PDP11
+#endif /* !DEFAULT_MID */
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic warning "-Wtraditional"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 /* Do not "beautify" the CONCAT* macro args.  Traditional C will not
    remove whitespace added here, and thus will fail to concatenate
    the tokens.  */
 #define MY(OP) CONCAT2 (pdp11_aout_,OP)
 
-/* This needs to start with a.out so GDB knows it is an a.out variant.  */
+/* This needs to start with a.out so GDB knows it is an a.out variant: */
 #define TARGETNAME "a.out-pdp11"
 
-/* This is the normal load address for executables.  */
+/* This is the normal load address for executables: */
 #define TEXT_START_ADDR		0
 
-/* The header is not included in the text segment.  */
+/* The header is not included in the text segment: */
 #define N_HEADER_IN_TEXT(x)	0
 
-/* There are no shared libraries.  */
+/* There are no shared libraries: */
 #define N_SHARED_LIB(x) 	0
 
-/* There is no flags field.  */
+/* There is no flags field: */
 #define N_FLAGS(exec)		0
 
 #define N_SET_FLAGS(exec, flags) do { } while (0)
 #define N_BADMAG(x) (((x).a_info != OMAGIC)   \
-		  && ((x).a_info != NMAGIC)   \
+                  && ((x).a_info != NMAGIC)   \
 		  && ((x).a_info != A_MAGIC3) \
 		  && ((x).a_info != A_MAGIC4) \
 		  && ((x).a_info != A_MAGIC5) \
 		  && ((x).a_info != A_MAGIC6))
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 #include "bfd.h"
 
@@ -4524,3 +4544,15 @@ const bfd_target MY(vec) =
 
   (void *) MY_backend_data
 };
+
+#ifdef BYTES_IN_WORD
+# undef BYTES_IN_WORD
+#endif /* BYTES_IN_WORD */
+#ifdef SEGMENT__SIZE
+# undef SEGMENT__SIZE
+#endif /* SEGMENT__SIZE */
+#ifdef DEFAULT_MID
+# undef DEFAULT_MID
+#endif /* DEFAULT_MID */
+
+/* EOF */

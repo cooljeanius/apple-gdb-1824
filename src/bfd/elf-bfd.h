@@ -90,8 +90,16 @@ struct elf_strtab_hash;
 struct got_entry;
 struct plt_entry;
 
-/* ELF linker hash table entries.  */
+/* used in the struct after this: */
+union gotplt_union
+{
+  bfd_signed_vma refcount;
+  bfd_vma offset;
+  struct got_entry *glist;
+  struct plt_entry *plist;
+};
 
+/* ELF linker hash table entries: */
 struct elf_link_hash_entry
 {
   struct bfd_link_hash_entry root;
@@ -123,13 +131,7 @@ struct elf_link_hash_entry
      require a global offset table entry.  The second scheme allows
      multiple GOT entries per symbol, managed via a linked list
      pointed to by GLIST.  */
-  union gotplt_union
-    {
-      bfd_signed_vma refcount;
-      bfd_vma offset;
-      struct got_entry *glist;
-      struct plt_entry *plist;
-    } got;
+  union gotplt_union got;
 
   /* Same, but tracks a procedure linkage table entry.  */
   union gotplt_union plt;
@@ -196,7 +198,7 @@ struct elf_link_hash_entry
     unsigned long elf_hash_value;
   } u;
 
-  /* Version information.  */
+  /* Version information: */
   union
   {
     /* This field is used for a symbol which is not defined in a

@@ -429,13 +429,13 @@ AUTOMAKE_OPTIONS = 1.4 gnits dejagnu -Wno-portability subdir-objects
 EXTRA_DIST = MAINTAINERS runtest site.tmpl
 SUBDIRS = doc testsuite example .
 
-# Install the bourne shell script driver in the bindir
+# Install the bourne shell script driver in the bindir:
 bin_SCRIPTS = runtest
 
-# Install the header
+# Install the header:
 include_HEADERS = dejagnu.h
 
-# Install the main DejaGnu expect file in the datadir
+# Install the main DejaGnu expect file in the datadir:
 pkgdata_SCRIPTS = runtest.exp \
   lib/debugger.exp lib/dejagnu.exp lib/dg.exp lib/framework.exp \
   lib/ftp.exp lib/kermit.exp lib/libgloss.exp lib/remote.exp \

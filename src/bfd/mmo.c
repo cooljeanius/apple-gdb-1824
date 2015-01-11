@@ -242,14 +242,18 @@ EXAMPLE
 #define MMO3_DATA 8
 #define MMO3_SYMBITS 0x2f
 
-/* Put these everywhere in new code.  */
-#define FATAL_DEBUG						\
- _bfd_abort (__FILE__, __LINE__,				\
-	     "Internal: Non-debugged code (test-case missing)")
+/* Put these everywhere in new code: */
+#ifndef FATAL_DEBUG
+# define FATAL_DEBUG						\
+  _bfd_abort(__FILE__, __LINE__,				\
+             "Internal: Non-debugged code (test-case missing)")
+#endif /* !FATAL_DEBUG */
 
-#define BAD_CASE(x)				\
- _bfd_abort (__FILE__, __LINE__,		\
-	     "bad case for " #x)
+#ifndef BAD_CASE
+# define BAD_CASE(x)				\
+  _bfd_abort(__FILE__, __LINE__,		\
+             "bad case for " #x)
+#endif /* !BAD_CASE */
 
 enum mmo_sym_type { mmo_reg_sym, mmo_undef_sym, mmo_data_sym, mmo_abs_sym};
 
@@ -784,14 +788,14 @@ mmo_write_octa_raw (bfd *abfd, bfd_vma value)
    sequence, followed by a call to mmo_flush_chunk.  */
 
 static INLINE bfd_boolean
-mmo_write_chunk (bfd *abfd, const bfd_byte *loc, unsigned int len)
+mmo_write_chunk(bfd *abfd, const bfd_byte *loc, unsigned int len)
 {
   bfd_boolean retval = TRUE;
 
-  /* Fill up a tetra from bytes remaining from a previous chunk.  */
+  /* Fill up a tetra from bytes remaining from a previous chunk: */
   if (abfd->tdata.mmo_data->byte_no != 0)
     {
-      while (abfd->tdata.mmo_data->byte_no < 4 && len != 0)
+      while ((abfd->tdata.mmo_data->byte_no < 4) && (len != 0))
 	{
 	  abfd->tdata.mmo_data->buf[abfd->tdata.mmo_data->byte_no++] = *loc++;
 	  len--;
@@ -799,8 +803,8 @@ mmo_write_chunk (bfd *abfd, const bfd_byte *loc, unsigned int len)
 
       if (abfd->tdata.mmo_data->byte_no == 4)
 	{
-	  mmo_write_tetra (abfd,
-			   bfd_get_32 (abfd, abfd->tdata.mmo_data->buf));
+	  mmo_write_tetra(abfd,
+                          bfd_get_32(abfd, abfd->tdata.mmo_data->buf));
 	  abfd->tdata.mmo_data->byte_no = 0;
 	}
     }
@@ -808,11 +812,11 @@ mmo_write_chunk (bfd *abfd, const bfd_byte *loc, unsigned int len)
   while (len >= 4)
     {
       if (loc[0] == LOP)
-	mmo_write_tetra_raw (abfd, LOP_QUOTE_NEXT);
+	mmo_write_tetra_raw(abfd, LOP_QUOTE_NEXT);
 
       retval = (retval
 		&& ! abfd->tdata.mmo_data->have_error
-		&& 4 == bfd_bwrite (loc, 4, abfd));
+		&& (4 == bfd_bwrite(loc, 4, abfd)));
 
       loc += 4;
       len -= 4;
@@ -820,7 +824,7 @@ mmo_write_chunk (bfd *abfd, const bfd_byte *loc, unsigned int len)
 
   if (len)
     {
-      memcpy (abfd->tdata.mmo_data->buf, loc, len);
+      memcpy(abfd->tdata.mmo_data->buf, loc, len);
       abfd->tdata.mmo_data->byte_no = len;
     }
 
@@ -3315,5 +3319,12 @@ const bfd_target bfd_mmo_vec =
 
   NULL
 };
+
+#ifdef FATAL_DEBUG
+# undef FATAL_DEBUG
+#endif /* FATAL_DEBUG */
+#ifdef BAD_CASE
+# undef BAD_CASE
+#endif /* BAD_CASE */
 
 /* EOF */

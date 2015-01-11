@@ -22,12 +22,11 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 
 #include "bfd.h"
 
-#define ARCH_SIZE 32		/* Value doesn't matter.  */
+#define ARCH_SIZE 32		/* Value does NOT matter.  */
 #include "libaout.h"
 #include "aout/aout64.h"
 
-/* Ignore duplicate stab codes; just return the string for the first
-   one.  */
+/* Ignore duplicate stab codes; just return the string for the first 1: */
 #define __define_stab(NAME, CODE, STRING) __define_name(CODE, STRING)
 #define __define_stab_duplicate(NAME, CODE, STRING)
 
@@ -43,6 +42,10 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
   __define_name (N_SETV, "SETV")/* Pointer to set vector in data area.  */ \
   __define_name (N_INDR, "INDR") \
   __define_name (N_WARNING, "WARNING")
+
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ && !__clang__ */
 
 const char *bfd_get_stab_name(int code)
 {

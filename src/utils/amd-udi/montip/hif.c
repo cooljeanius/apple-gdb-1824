@@ -1,5 +1,5 @@
 static char _[] = "@(#)hif.c	5.19 93/10/26 11:33:19, Srini, AMD.";
-/******************************************************************************
+/**************************************************************************
  * Copyright 1991 Advanced Micro Devices, Inc.
  *
  * This software is the property of Advanced Micro Devices, Inc  (AMD)  which
@@ -23,9 +23,9 @@ static char _[] = "@(#)hif.c	5.19 93/10/26 11:33:19, Srini, AMD.";
  * 5900 E. Ben White Blvd.
  * Austin, TX 78741
  * 800-292-9263
- *****************************************************************************
+ **************************************************************************
  *      Engineers: Srini Subramanian.
- *****************************************************************************
+ **************************************************************************
  * This module implements the part of the HIF kernel implemented using the
  * host computer's operating system. This is invoked when a HIF_CALL message
  * is received by MONTIP. This module uses the Debugger/Monitor on the 29K
@@ -33,14 +33,16 @@ static char _[] = "@(#)hif.c	5.19 93/10/26 11:33:19, Srini, AMD.";
  * The results are sent back to the 29K Target using a HIF_CALL_RTN message.
  * If the Debugger is invoked, a GO message is sent first to switch the
  * context from the Debugger to the HIF kernel, and then the HIF_CALL_RTN
- * message is sent. 
- *****************************************************************************
+ * message is sent.
+ **************************************************************************
  */
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning hif.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning hif.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 #include <stdio.h>
 #include <fcntl.h>
@@ -50,6 +52,10 @@ static char _[] = "@(#)hif.c	5.19 93/10/26 11:33:19, Srini, AMD.";
 #include "types.h"
 #if 0
 # include "udiproc.h"
+#else
+/* just take what we need from it: */
+typedef int UDIInt;
+typedef UDIInt UDIError;
 #endif /* 0 */
 
 #include "hif.h"
@@ -57,7 +63,9 @@ static char _[] = "@(#)hif.c	5.19 93/10/26 11:33:19, Srini, AMD.";
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning hif.c expects <stdlib.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "hif.c expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H */
 #ifdef HAVE_STRING_H
 # include <string.h>
@@ -67,7 +75,9 @@ static char _[] = "@(#)hif.c	5.19 93/10/26 11:33:19, Srini, AMD.";
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning hif.c expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "hif.c expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
 #ifdef MSDOS
@@ -81,7 +91,9 @@ static char _[] = "@(#)hif.c	5.19 93/10/26 11:33:19, Srini, AMD.";
 # ifdef HAVE_SYS_IOCTL_H
 #  include <sys/ioctl.h>
 # else
-#  warning hif.c expects <sys/ioctl.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "hif.c expects <sys/ioctl.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_SYS_IOCTL_H */
 #endif /* MSDOS */
 
@@ -131,7 +143,7 @@ static	int	com_error;
 ** This function is the HIF service handler on the host. It receives
 ** the HIF system call message as its only parameter.  When
 ** complete, GR96, GR97 and GR121 should be set to appropriate
-** values.  
+** values.
 **
 */
 
@@ -185,7 +197,7 @@ UINT32		*gr96, *gr97, *gr121;
    if (result != (INT32) 0)
       *gr121 = (UINT32) result;
 
-   if (com_error) 
+   if (com_error)
      return ((INT32) -1);	/* FAILURE */
    return(SUCCESS);
 
@@ -285,7 +297,7 @@ UINT32	*gr96;
          host_mode = host_mode | O_BINARY;
 
 #ifdef _UDIPROC_H
-   result = UDI_read_string((INT32) UDI29KDRAMSpace, 
+   result = UDI_read_string((INT32) UDI29KDRAMSpace,
                         pathptr,
                         (INT32) MAX_FILENAME,
                         tmp_buffer);
@@ -346,7 +358,7 @@ UINT32	*gr96;
 
    *gr96 = (UINT32) retval;
 
-   if (retval < 0) 
+   if (retval < 0)
       return((INT32) errno);
 
    return (0);
@@ -546,27 +558,27 @@ INT32
 hif_lseek(lr2, lr3, lr4, gr96)
 UINT32	lr2, lr3, lr4;
 UINT32	*gr96;
-   {
-   int    file_no;
-   off_t  offset;
-   int    orig;
-   long   new_offset;
+{
+   int file_no;
+   off_t offset;
+   int orig = 0;
+   long new_offset;
 
-   file_no = (int) lr2;
-   offset = (off_t) lr3;
+   file_no = (int)lr2;
+   offset = (off_t)lr3;
 #ifdef HAVE_UNISTD_H
-   if (lr4 == (UINT32) 0)
+   if (lr4 == (UINT32)0UL)
      orig = SEEK_SET;
-   else if (lr4 == (UINT32) 1)
+   else if (lr4 == (UINT32)1UL)
      orig = SEEK_CUR;
-   else if (lr4 == (UINT32) 2)
+   else if (lr4 == (UINT32)2UL)
      orig = SEEK_END;
 #else
-   if (lr4 == (UINT32) 0)
+   if (lr4 == (UINT32)0UL)
      orig = L_SET;
-   else if (lr4 == (UINT32) 1)
+   else if (lr4 == (UINT32)1UL)
      orig = L_INCR;
-   else if (lr4 == (UINT32) 2)
+   else if (lr4 == (UINT32)2UL)
      orig = L_XTND;
 #endif /* HAVE_UNISTD_H */
 
@@ -578,7 +590,7 @@ UINT32	*gr96;
       return(errno);
 
    return (0);
-   }  /* end hif_lseek() */
+}  /* end hif_lseek() */
 
 
 
@@ -773,12 +785,13 @@ UINT32	lr2, lr3;
 INT32
 hif_iowait(lr2, lr3)
 UINT32	lr2, lr3;
-   {
+{
    return (HIF_EHIFNOTAVAIL);
-   }  /* end hif_iowait() */
+}  /* end hif_iowait() */
 
 
-#if 0 /* (this function) */
+#ifdef ISATTY
+/* (this function) */
 /*
 ** Service 26 - iostat
 **
@@ -804,24 +817,22 @@ INT32
 hif_iostat(lr2, gr96)
 UINT32	lr2;
 UINT32	*gr96;
-   {
+{
    UDIError  result;
    UINT32  file_no;
 
-
-   *gr96 = (UINT32) RDREADY;
+   *gr96 = (UINT32)RDREADY;
 
    file_no = lr2;
 
-   result = (UDIError) isatty((int) file_no);
+   result = (UDIError)isatty((int)file_no);
 
-   if (result == (UDIError) 0)
-      *gr96 = (UINT32) (*gr96 | ISATTY);
+   if (result == (UDIError)0)
+      *gr96 = (UINT32)(*gr96 | ISATTY);
 
    return (0);
-
-   }  /* end hif_iostat() */
-#endif /* 0 */
+}  /* end hif_iostat() */
+#endif /* ISATTY */
 
 /*
 ** Service 33 - tmpnam
@@ -1090,7 +1101,7 @@ UDI_read_string(memory_space, address, byte_count, data)
       return (UDIretval);
    };
    if ((tip_target_config.os_version & 0xf) > 4) { /* new HIF kernel */
-     /* 
+     /*
       * Examine UDIretval and send a GO to switch the Debugger context
       * back to HIF kernel.
       */
@@ -1140,7 +1151,7 @@ UDI_write_string(memory_space, address, byte_count, data)
       return (UDIretval);
    }
    if ((tip_target_config.os_version & 0xf) > 4) { /* new HIF kernel */
-     /* 
+     /*
       * Examine UDIretval and send a GO to switch the Debugger context
       * back to HIF kernel.
       */

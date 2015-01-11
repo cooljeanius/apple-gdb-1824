@@ -1,5 +1,5 @@
 static char _[] = "@(#)endian.c	5.18 93/07/30 16:40:17, Srini, AMD.";
-/******************************************************************************
+/**************************************************************************
  * Copyright 1991 Advanced Micro Devices, Inc.
  *
  * This software is the property of Advanced Micro Devices, Inc  (AMD)  which
@@ -23,19 +23,21 @@ static char _[] = "@(#)endian.c	5.18 93/07/30 16:40:17, Srini, AMD.";
  * 5900 E. Ben White Blvd.
  * Austin, TX 78741
  * 800-292-9263
- *****************************************************************************
+ **************************************************************************
  *      Engineer: Srini Subramanian.
- *****************************************************************************
- ** 
- **       This module implements the endian conversion routines used by MONTIP.
+ **************************************************************************
  **
- *****************************************************************************
+ **   This module implements the endian conversion routines used by MONTIP.
+ **
+ **************************************************************************
  */
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning endian.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning endian.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 #include <stdio.h>
 #include <ctype.h>
@@ -73,11 +75,11 @@ void
 endian_cvt(msg_buf, direction)
    union  msg_t  *msg_buf;
    int    direction;
-   {
+{
    INT32  i;
    BYTE  *byte;
-   INT32  code;
-   INT32  length;
+   INT32  code = 0L;
+   INT32  length = 0L;
 
 
    /*
@@ -116,7 +118,7 @@ endian_cvt(msg_buf, direction)
    ** message lengths statically.
    */
 
-   if (code == WRITE_REQ) 
+   if (code == WRITE_REQ)
       length = msg_length(WRITE_REQ);
    else
    if (code == FILL)
@@ -140,12 +142,12 @@ endian_cvt(msg_buf, direction)
    /* Convert message parameters */
 
    byte = (BYTE *) &(msg_buf->generic_msg).byte;
-   for (i=0; i<(length/sizeof(INT32)); i=i+1) {
+   for (i = 0; i < (length / sizeof(INT32)); i = (i + 1)) {
       tip_convert32(byte);
-      byte = byte + sizeof(INT32);
+      byte = (byte + sizeof(INT32));
       }
 
-   }   /* end endian_cvt */
+}   /* end endian_cvt */
 
 
 /*
@@ -158,7 +160,7 @@ endian_cvt(msg_buf, direction)
 void
 tip_convert32(byte)
    BYTE *byte;
-   {
+{
    BYTE temp;
 
    temp = byte[0];  /* Swap bytes 0 and 3 */
@@ -167,7 +169,7 @@ tip_convert32(byte)
    temp = byte[1];  /* Swap bytes 1 and 2 */
    byte[1] = byte[2];
    byte[2] = temp;
-   }   /* end tip_convert32() */
+}   /* end tip_convert32() */
 
 
 /*
@@ -179,13 +181,13 @@ tip_convert32(byte)
 void
 tip_convert16(byte)
    BYTE *byte;
-   {
+{
    BYTE temp;
 
    temp = byte[0];  /* Swap bytes 0 and 1 */
    byte[0] = byte[1];
    byte[1] = temp;
 
-   }   /* end tip_convert16() */
+}   /* end tip_convert16() */
 
 /* EOF */

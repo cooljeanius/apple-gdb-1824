@@ -1,4 +1,4 @@
-/* GDB-friendly replacement for <locale.h>.
+/* gdb-locale.h: GDB-friendly replacement for <locale.h>.
    Copyright 2002 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -24,20 +24,26 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning gdb_locale.h expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning gdb_locale.h expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_LOCALE_H
 # include <locale.h>
 #else
-# warning gdb_locale.h expects <locale.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "gdb_locale.h expects <locale.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LOCALE_H */
 
 #ifdef ENABLE_NLS
 # ifdef HAVE_LIBINTL_H
 #  include <libintl.h>
 # else
-#  warning gdb_locale.h expects <libintl.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #   warning "gdb_locale.h expects <libintl.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_LIBINTL_H */
 # define _(String) gettext (String)
 # ifdef gettext_noop
@@ -57,3 +63,5 @@
 #endif /* ENABLE_NLS */
 
 #endif /* GDB_LOCALE_H */
+
+/* EOF */

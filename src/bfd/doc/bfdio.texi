@@ -56,7 +56,7 @@ It would be ideal if someone could eventually modify
 it so that such results were guaranteed.
 
 Instead, we want to ask questions like "is this NNN byte sized
-object I'm about to try read from file offset YYY reasonable?"
+object I am about to try read from file offset YYY reasonable?"
 As as example of where we might do this, some object formats
 use string tables for which the first @code{sizeof (long)} bytes of the
 table contain the size of the table itself, including the size bytes.

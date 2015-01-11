@@ -3087,25 +3087,24 @@ _bfd_ecoff_write_armap (bfd *abfd,
   last_elt = current;
   for (i = 0; i < orl_count; i++)
     {
-      unsigned int hash, rehash;
+      unsigned int hash;
+      unsigned int rehash = 0U;
 
       /* Advance firstreal to the file position of this archive
 	 element.  */
       if (map[i].u.abfd != last_elt)
 	{
-	  do
-	    {
-	      firstreal += arelt_size (current) + sizeof (struct ar_hdr);
-	      firstreal += firstreal % 2;
-	      current = current->next;
-	    }
-	  while (current != map[i].u.abfd);
+          do {
+            firstreal += (arelt_size(current) + sizeof(struct ar_hdr));
+            firstreal += (firstreal % 2);
+            current = current->next;
+          } while (current != map[i].u.abfd);
 	}
 
       last_elt = current;
 
-      hash = ecoff_armap_hash (*map[i].name, &rehash, hashsize, hashlog);
-      if (H_GET_32 (abfd, (hashtable + (hash * 8) + 4)) != 0)
+      hash = ecoff_armap_hash(*map[i].name, &rehash, hashsize, hashlog);
+      if (H_GET_32(abfd, (hashtable + (hash * 8) + 4)) != 0)
 	{
 	  unsigned int srch;
 
@@ -3756,7 +3755,8 @@ ecoff_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
   while (*pundef != NULL)
     {
       struct bfd_link_hash_entry *h;
-      unsigned int hash, rehash;
+      unsigned int hash;
+      unsigned int rehash = 0U;
       unsigned int file_offset;
       const char *name;
       bfd *element;

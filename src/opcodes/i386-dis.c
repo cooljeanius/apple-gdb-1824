@@ -1,4 +1,4 @@
-/* Print i386 instructions for GDB, the GNU debugger.
+/* i386-dis.c: Print i386 instructions for GDB, the GNU debugger.
    Copyright 1988, 1989, 1991, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
 
@@ -16,7 +16,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* 80386 instruction printer by Pace Willisson (pace@prep.ai.mit.edu)
    July 1988
@@ -103,7 +103,7 @@ static void XMM_Fixup (int, int);
 static void CRC32_Fixup (int, int);
 
 struct dis_private {
-  /* Points to first byte not fetched.  */
+  /* Points to first byte not fetched: */
   bfd_byte *max_fetched;
   bfd_byte the_buffer[MAX_MNEM_SIZE];
   bfd_vma insn_start;
@@ -2494,7 +2494,7 @@ static const struct dis386 prefix_user_table[][4] = {
     { "(bad)",	{ XX } },
     { "(bad)",	{ XX } },
     { "(bad)",	{ XX } },
-    { "crc32",	{ Gdq, { CRC32_Fixup, b_mode } } },	
+    { "crc32",	{ Gdq, { CRC32_Fixup, b_mode } } },
   },
 
   /* PREGRP88 */
@@ -2502,7 +2502,7 @@ static const struct dis386 prefix_user_table[][4] = {
     { "(bad)",	{ XX } },
     { "(bad)",	{ XX } },
     { "(bad)",	{ XX } },
-    { "crc32",	{ Gdq, { CRC32_Fixup, v_mode } } },	
+    { "crc32",	{ Gdq, { CRC32_Fixup, v_mode } } },
   },
 
   /* PREGRP89 */
@@ -3813,7 +3813,7 @@ print_insn (bfd_vma pc, disassemble_info *info)
       {
         /* APPLE LOCAL fix improper sign extension */
 	(*info->fprintf_func) (info->stream, "        # ");
-	(*info->print_address_func) ((bfd_vma) (start_pc + 
+	(*info->print_address_func) ((bfd_vma) (start_pc +
                                (codep - start_codep + op_address[op_index[i]])),
                                info);
 	break;
@@ -4197,14 +4197,14 @@ OP_STi (int bytemode ATTRIBUTE_UNUSED, int sizeflag ATTRIBUTE_UNUSED)
   oappend (scratchbuf + intel_syntax);
 }
 
-/* Capital letters in template are macros.  */
+/* Capital letters in template are macros: */
 static int
-putop (const char *template, int sizeflag)
+putop(const char *template_str, int sizeflag)
 {
   const char *p;
   int alt = 0;
 
-  for (p = template; *p; p++)
+  for (p = template_str; *p; p++)
     {
       switch (*p)
 	{
@@ -5093,14 +5093,14 @@ OP_G (int bytemode, int sizeflag)
 }
 
 static bfd_vma
-get64 (void)
+get64(void)
 {
   bfd_vma x;
 #ifdef BFD64
   unsigned int a;
   unsigned int b;
 
-  FETCH_DATA (the_info, codep + 8);
+  FETCH_DATA(the_info, codep + 8);
   a = *codep++ & 0xff;
   a |= (*codep++ & 0xff) << 8;
   a |= (*codep++ & 0xff) << 16;
@@ -5109,11 +5109,11 @@ get64 (void)
   b |= (*codep++ & 0xff) << 8;
   b |= (*codep++ & 0xff) << 16;
   b |= (*codep++ & 0xff) << 24;
-  x = a + ((bfd_vma) b << 32);
+  x = (a + ((bfd_vma)b << 32));
 #else
-  abort ();
+  abort();
   x = 0;
-#endif
+#endif /* BFD64 */
   return x;
 }
 
@@ -5391,52 +5391,57 @@ OP_I64 (int bytemode, int sizeflag)
 }
 
 static void
-OP_sI (int bytemode, int sizeflag)
+OP_sI(int bytemode, int sizeflag)
 {
   bfd_signed_vma op;
-  bfd_signed_vma mask = -1;
+  bfd_signed_vma mask = -1L;
 
   switch (bytemode)
     {
     case b_mode:
-      FETCH_DATA (the_info, codep + 1);
+      FETCH_DATA(the_info, (codep + 1));
       op = *codep++;
       if ((op & 0x80) != 0)
 	op -= 0x100;
       mask = 0xffffffff;
       break;
     case v_mode:
-      USED_REX (REX_W);
+      USED_REX(REX_W);
       if (rex & REX_W)
-	op = get32s ();
+	op = get32s();
       else if (sizeflag & DFLAG)
 	{
-	  op = get32s ();
+	  op = get32s();
 	  mask = 0xffffffff;
 	}
       else
 	{
 	  mask = 0xffffffff;
-	  op = get16 ();
+	  op = get16();
 	  if ((op & 0x8000) != 0)
 	    op -= 0x10000;
 	}
       used_prefixes |= (prefixes & PREFIX_DATA);
       break;
     case w_mode:
-      op = get16 ();
+      op = get16();
       mask = 0xffffffff;
       if ((op & 0x8000) != 0)
 	op -= 0x10000;
       break;
     default:
-      oappend (INTERNAL_DISASSEMBLER_ERROR);
+      oappend(INTERNAL_DISASSEMBLER_ERROR);
       return;
     }
 
   scratchbuf[0] = '$';
-  print_operand_value (scratchbuf + 1, 1, op);
-  oappend (scratchbuf + intel_syntax);
+  print_operand_value(scratchbuf + 1, 1, op);
+  oappend(scratchbuf + intel_syntax);
+
+  if (mask == -1L) {
+    return;
+    /* (we return anyways; this is just to make sure 'mask' gets used) */
+  }
 }
 
 static void

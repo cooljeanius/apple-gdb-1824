@@ -34,14 +34,28 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #include "aout/ar.h"
 #include "libaout.h"           /* BFD a.out internal data structures */
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic warning "-Wtraditional"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 #define TARGET_IS_BIG_ENDIAN_P
 #define DEFAULT_ARCH bfd_arch_m68k
 
 /* Do not "beautify" the CONCAT* macro args.  Traditional C will not
-   remove whitespace added here, and thus will fail to concatenate
-   the tokens.  */
+ * remove whitespace added here, and thus will fail to concatenate
+ * the tokens: */
 #define MY(OP) CONCAT2 (m68klinux_,OP)
 #define TARGETNAME "a.out-m68k-linux"
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 extern const bfd_target MY(vec);
 
@@ -50,18 +64,16 @@ extern const bfd_target MY(vec);
    becomes important.  */
 
 static void MY_final_link_callback
-  PARAMS ((bfd *, file_ptr *, file_ptr *, file_ptr *));
+  PARAMS((bfd *, file_ptr *, file_ptr *, file_ptr *));
 static bfd_boolean m68klinux_bfd_final_link
-  PARAMS ((bfd *, struct bfd_link_info *));
-static bfd_boolean m68klinux_write_object_contents PARAMS ((bfd *));
+  PARAMS((bfd *, struct bfd_link_info *));
+static bfd_boolean m68klinux_write_object_contents PARAMS((bfd *));
 
 static bfd_boolean
-m68klinux_bfd_final_link (abfd, info)
-     bfd *abfd;
-     struct bfd_link_info *info;
+m68klinux_bfd_final_link(bfd *abfd, struct bfd_link_info *info)
 {
-  obj_aout_subformat (abfd) = q_magic_format;
-  return NAME(aout,final_link) (abfd, info, MY_final_link_callback);
+  obj_aout_subformat(abfd) = q_magic_format;
+  return NAME(aout,final_link)(abfd, info, MY_final_link_callback);
 }
 
 #define MY_bfd_final_link m68klinux_bfd_final_link

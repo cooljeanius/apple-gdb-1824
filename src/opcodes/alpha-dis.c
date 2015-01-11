@@ -1,9 +1,9 @@
 /* alpha-dis.c -- Disassemble Alpha AXP instructions
-   Copyright 1996, 1998, 1999, 2000, 2001, 2002
-   Free Software Foundation, Inc.
-   Contributed by Richard Henderson <rth@tamu.edu>,
-   patterned after the PPC opcode handling written by Ian Lance Taylor.
-
+ * Copyright 1996, 1998, 1999, 2000, 2001, 2002
+ * Free Software Foundation, Inc.
+ * Contributed by Richard Henderson <rth@tamu.edu>,
+ * patterned after the PPC opcode handling written by Ian Lance Taylor.  */
+/*
 This file is part of GDB, GAS, and the GNU binutils.
 
 GDB, GAS, and the GNU binutils are free software; you can redistribute
@@ -52,12 +52,9 @@ static const char * const vms_regnames[64] = {
   "F24", "F25", "F26", "F27", "F28", "F29", "F30", "FZ"
 };
 
-/* Disassemble Alpha instructions.  */
-
+/* Disassemble Alpha instructions: */
 int
-print_insn_alpha (memaddr, info)
-     bfd_vma memaddr;
-     struct disassemble_info *info;
+print_insn_alpha(bfd_vma memaddr, struct disassemble_info *info)
 {
   static const struct alpha_opcode *opcode_index[AXP_NOPS+1];
   const char * const * regnames;

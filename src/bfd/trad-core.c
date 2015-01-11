@@ -283,7 +283,7 @@ trad_unix_core_file_matches_executable_p(bfd *core_bfd ATTRIBUTE_UNUSED,
 }
 
 /* If somebody calls any byte-swapping routines, then shoot them: */
-static void
+static void ATTRIBUTE_NORETURN
 swap_abort(void)
 {
   /* This way does NOT require any declaration for ANSI to mess up (?) */

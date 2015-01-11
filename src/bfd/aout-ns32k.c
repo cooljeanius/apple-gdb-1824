@@ -40,9 +40,9 @@ void bfd_ns32k_arch PARAMS((void));
 /* this needs to go after the usage of the CONCAT* macro mentioned above,
  * but before any other headers are included, or prototypes for functions
  * are declared: */
-#if defined(__GNUC__) && (__GNUC__ >= 4)
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
  # pragma GCC diagnostic ignored "-Wtraditional"
-#endif /* gcc 4+ */
+#endif /* gcc 4+ && !__clang__ */
 
 #include "libaout.h"
 

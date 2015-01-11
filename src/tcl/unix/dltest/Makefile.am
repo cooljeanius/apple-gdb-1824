@@ -5,7 +5,7 @@
 
 ACLOCAL_AMFLAGS =	-I../m4 --install
 
-AUTOMAKE_OPTIONS =      1.14 foreign dejagnu
+AUTOMAKE_OPTIONS =      1.14 foreign dejagnu no-dist
 
 TCL_DBGX =		@TCL_DBGX@
 CC = 			@CC@
@@ -53,4 +53,4 @@ clean-local:
 	rm -f lib.exp ../dltest.marker
 
 distclean-local: clean-local
-	rm -f Makefile Makefile.orig
+	rm -f Makefile Makefile*orig

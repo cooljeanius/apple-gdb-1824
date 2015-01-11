@@ -18,7 +18,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -31,51 +31,46 @@
 extern const bfd_target a_out_adobe_vec;
 
 /* Swaps the information in an executable header taken from a raw byte
-   stream memory image, into the internal exec_header structure.  */
-
+ * stream memory image, into the internal exec_header structure.  */
 static void
-aout_adobe_swap_exec_header_in (bfd *abfd,
-				struct external_exec *bytes,
-				struct internal_exec *execp)
+aout_adobe_swap_exec_header_in(bfd *abfd, struct external_exec *bytes,
+                               struct internal_exec *execp)
 {
-  /* Now fill in fields in the execp, from the bytes in the raw data.  */
-  execp->a_info   = H_GET_32 (abfd, bytes->e_info);
-  execp->a_text   = GET_WORD (abfd, bytes->e_text);
-  execp->a_data   = GET_WORD (abfd, bytes->e_data);
-  execp->a_bss    = GET_WORD (abfd, bytes->e_bss);
-  execp->a_syms   = GET_WORD (abfd, bytes->e_syms);
-  execp->a_entry  = GET_WORD (abfd, bytes->e_entry);
-  execp->a_trsize = GET_WORD (abfd, bytes->e_trsize);
-  execp->a_drsize = GET_WORD (abfd, bytes->e_drsize);
+  /* Now fill in fields in the execp, from the bytes in the raw data: */
+  execp->a_info = H_GET_32(abfd, bytes->e_info);
+  execp->a_text = GET_WORD(abfd, bytes->e_text);
+  execp->a_data = GET_WORD(abfd, bytes->e_data);
+  execp->a_bss = GET_WORD(abfd, bytes->e_bss);
+  execp->a_syms = GET_WORD(abfd, bytes->e_syms);
+  execp->a_entry = GET_WORD(abfd, bytes->e_entry);
+  execp->a_trsize = GET_WORD(abfd, bytes->e_trsize);
+  execp->a_drsize = GET_WORD(abfd, bytes->e_drsize);
 }
 
 /* Swaps the information in an internal exec header structure into the
-   supplied buffer ready for writing to disk.  */
-
+ * supplied buffer ready for writing to disk: */
 static void
-aout_adobe_swap_exec_header_out (bfd *abfd,
-				 struct internal_exec *execp,
-				 struct external_exec *bytes)
+aout_adobe_swap_exec_header_out(bfd *abfd, struct internal_exec *execp,
+                                struct external_exec *bytes)
 {
   /* Now fill in fields in the raw data, from the fields in the exec
      struct.  */
-  H_PUT_32 (abfd, execp->a_info  , bytes->e_info);
-  PUT_WORD (abfd, execp->a_text  , bytes->e_text);
-  PUT_WORD (abfd, execp->a_data  , bytes->e_data);
-  PUT_WORD (abfd, execp->a_bss   , bytes->e_bss);
-  PUT_WORD (abfd, execp->a_syms  , bytes->e_syms);
-  PUT_WORD (abfd, execp->a_entry , bytes->e_entry);
-  PUT_WORD (abfd, execp->a_trsize, bytes->e_trsize);
-  PUT_WORD (abfd, execp->a_drsize, bytes->e_drsize);
+  H_PUT_32(abfd, execp->a_info, bytes->e_info);
+  PUT_WORD(abfd, execp->a_text, bytes->e_text);
+  PUT_WORD(abfd, execp->a_data, bytes->e_data);
+  PUT_WORD(abfd, execp->a_bss, bytes->e_bss);
+  PUT_WORD(abfd, execp->a_syms, bytes->e_syms);
+  PUT_WORD(abfd, execp->a_entry, bytes->e_entry);
+  PUT_WORD(abfd, execp->a_trsize, bytes->e_trsize);
+  PUT_WORD(abfd, execp->a_drsize, bytes->e_drsize);
 }
 
 /* Finish up the opening of a b.out file for reading.  Fill in all the
-   fields that are not handled by common code.  */
-
+ * fields that are not handled by common code.  */
 static const bfd_target *
-aout_adobe_callback (bfd *abfd)
+aout_adobe_callback(bfd *abfd)
 {
-  struct internal_exec *execp = exec_hdr (abfd);
+  struct internal_exec *execp = exec_hdr(abfd);
   asection *sect;
   struct external_segdesc ext[1];
   char *section_name;
@@ -93,7 +88,7 @@ aout_adobe_callback (bfd *abfd)
 
   /* Suck up the section information from the file, one section at a time: */
   for (;;) {
-      bfd_size_type amt = sizeof (*ext);
+      bfd_size_type amt = sizeof(*ext);
       if (bfd_bread(ext, amt, abfd) != amt) {
 	  if (bfd_get_error() != bfd_error_system_call) {
 	      bfd_set_error(bfd_error_wrong_format);
@@ -137,11 +132,11 @@ aout_adobe_callback (bfd *abfd)
 	      /* Some other error -- slide into the sunset.  */
 	      return NULL;
 	  }
-	  sprintf (try_again, "%s%d", section_name, ++trynum);
-	  sect = bfd_make_section (abfd, try_again);
+	  sprintf(try_again, "%s%d", section_name, ++trynum);
+	  sect = bfd_make_section(abfd, try_again);
       }
 
-      /* Fix the name, if it is a sprintf'd name.  */
+      /* Fix the name, if it is a sprintf'd name: */
       if (sect->name == try_again) {
 	  amt = strlen(sect->name);
 	  newname = (char *)bfd_zalloc(abfd, amt);
@@ -152,27 +147,27 @@ aout_adobe_callback (bfd *abfd)
 	  sect->name = newname;
       }
 
-      /* Now set the section's attributes.  */
-      bfd_set_section_flags (abfd, sect, flags);
-      /* Assumed big-endian.  */
+      /* Now set the section's attributes: */
+      bfd_set_section_flags(abfd, sect, flags);
+      /* Assumed big-endian: */
       sect->size = ((ext->e_size[0] << 8)
-		    | ext->e_size[1] << 8
+		    | (ext->e_size[1] << 8)
 		    | ext->e_size[2]);
-      sect->vma = H_GET_32 (abfd, ext->e_virtbase);
-      sect->filepos = H_GET_32 (abfd, ext->e_filebase);
+      sect->vma = H_GET_32(abfd, ext->e_virtbase);
+      sect->filepos = H_GET_32(abfd, ext->e_filebase);
       /* FIXME XXX alignment?  */
 
-      /* Set relocation information for first section of each type.  */
+      /* Set relocation information for first section of each type: */
       if (trynum == 0)
 	switch (ext->e_type[0])
 	  {
 	  case N_TEXT:
-	    sect->rel_filepos = N_TRELOFF (*execp);
+	    sect->rel_filepos = N_TRELOFF(*execp);
 	    sect->reloc_count = execp->a_trsize;
 	    break;
 
 	  case N_DATA:
-	    sect->rel_filepos = N_DRELOFF (*execp);
+	    sect->rel_filepos = N_DRELOFF(*execp);
 	    sect->reloc_count = execp->a_drsize;
 	    break;
 
@@ -182,8 +177,8 @@ aout_adobe_callback (bfd *abfd)
     }
  no_more_sections:
 
-  adata(abfd).reloc_entry_size = sizeof (struct reloc_std_external);
-  adata(abfd).symbol_entry_size = sizeof (struct external_nlist);
+  adata(abfd).reloc_entry_size = sizeof(struct reloc_std_external);
+  adata(abfd).symbol_entry_size = sizeof(struct external_nlist);
   adata(abfd).page_size = 1; /* Not applicable.  */
   adata(abfd).segment_size = 1; /* Not applicable.  */
   adata(abfd).exec_bytes_size = EXEC_BYTES_SIZE;
@@ -369,28 +364,26 @@ aout_adobe_write_object_contents(bfd *abfd)
 }
 
 static bfd_boolean
-aout_adobe_set_section_contents (bfd *abfd,
-				 asection *section,
-				 const void * location,
-				 file_ptr offset,
-				 bfd_size_type count)
+aout_adobe_set_section_contents(bfd *abfd, asection *section,
+                                const void *location, file_ptr offset,
+                                bfd_size_type count)
 {
   file_ptr section_start;
   sec_ptr sect;
 
-  /* Set by bfd.c handler.  */
+  /* Set by bfd.c handler: */
   if (! abfd->output_has_begun)
     {
-      /* Assign file offsets to sections.  Text sections are first, and
-	 are contiguous.  Then data sections.  Everything else at the end.  */
-      section_start = N_TXTOFF (ignore<-->me);
+      /* Assign file offsets to sections.  Text sections are 1st, and are
+       * contiguous.  Then data sections.  Everything else at the end: */
+      section_start = N_TXTOFF(ignore<-->me);
 
       for (sect = abfd->sections; sect; sect = sect->next)
 	{
 	  if (sect->flags & SEC_CODE)
 	    {
 	      sect->filepos = section_start;
-	      /* FIXME:  Round to alignment.  */
+	      /* FIXME: Round to alignment: */
 	      section_start += sect->size;
 	    }
 	}
@@ -400,7 +393,7 @@ aout_adobe_set_section_contents (bfd *abfd,
 	  if (sect->flags & SEC_DATA)
 	    {
 	      sect->filepos = section_start;
-	      /* FIXME:  Round to alignment.  */
+	      /* FIXME: Round to alignment: */
 	      section_start += sect->size;
 	    }
 	}
@@ -411,43 +404,41 @@ aout_adobe_set_section_contents (bfd *abfd,
 	      !(sect->flags & (SEC_CODE | SEC_DATA)))
 	    {
 	      sect->filepos = section_start;
-	      /* FIXME:  Round to alignment.  */
+	      /* FIXME: Round to alignment: */
 	      section_start += sect->size;
 	    }
 	}
     }
 
-  /* Regardless, once we know what we're doing, we might as well get
-     going.  */
-  if (bfd_seek (abfd, section->filepos + offset, SEEK_SET) != 0)
+  /* Regardless, once we know what we are doing, we might as well get
+   * going: */
+  if (bfd_seek(abfd, (section->filepos + offset), SEEK_SET) != 0)
     return FALSE;
 
   if (count == 0)
     return TRUE;
 
-  return bfd_bwrite (location, count, abfd) == count;
+  return (bfd_bwrite(location, count, abfd) == count);
 }
 
 static bfd_boolean
-aout_adobe_set_arch_mach (bfd *abfd,
-			  enum bfd_architecture arch,
-			  unsigned long machine)
+aout_adobe_set_arch_mach(bfd *abfd, enum bfd_architecture arch,
+			 unsigned long machine)
 {
   if (! bfd_default_set_arch_mach (abfd, arch, machine))
     return FALSE;
 
-  if (arch == bfd_arch_unknown
-      || arch == bfd_arch_m68k)
+  if ((arch == bfd_arch_unknown) || (arch == bfd_arch_m68k))
     return TRUE;
 
   return FALSE;
 }
 
 static int
-aout_adobe_sizeof_headers (bfd *ignore_abfd ATTRIBUTE_UNUSED,
-			   bfd_boolean ignore ATTRIBUTE_UNUSED)
+aout_adobe_sizeof_headers(bfd *ignore_abfd ATTRIBUTE_UNUSED,
+			  bfd_boolean ignore ATTRIBUTE_UNUSED)
 {
-  return sizeof (struct internal_exec);
+  return sizeof(struct internal_exec);
 }
 
 /* Build the transfer vector for Adobe A.Out files.  */

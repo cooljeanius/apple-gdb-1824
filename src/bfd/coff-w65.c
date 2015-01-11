@@ -217,15 +217,10 @@ w65_reloc16_estimate(bfd *abfd, asection *input_section, arelent *reloc,
    R_MOV24B1		R_MOV24B2	24 or 8 bit reloc for mov.b  */
 
 static void
-w65_reloc16_extra_cases(abfd, link_info, link_order, reloc, data, src_ptr,
-                        dst_ptr)
-     bfd *abfd;
-     struct bfd_link_info *link_info;
-     struct bfd_link_order *link_order;
-     arelent *reloc;
-     bfd_byte *data;
-     unsigned int *src_ptr;
-     unsigned int *dst_ptr;
+w65_reloc16_extra_cases(bfd *abfd, struct bfd_link_info *link_info,
+                        struct bfd_link_order *link_order, arelent *reloc,
+                        bfd_byte *data, unsigned int *src_ptr,
+                        unsigned int *dst_ptr)
 {
   unsigned int src_address = *src_ptr;
   unsigned int dst_address = *dst_ptr;

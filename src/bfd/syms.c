@@ -428,16 +428,16 @@ DESCRIPTION
 */
 
 bfd_boolean
-bfd_set_symtab (bfd *abfd, asymbol **location, unsigned int symcount)
+bfd_set_symtab(bfd *abfd, asymbol **location, unsigned int symcount)
 {
-  if (abfd->format != bfd_object || bfd_read_p (abfd))
+  if ((abfd->format != bfd_object) || bfd_read_p(abfd))
     {
-      bfd_set_error (bfd_error_invalid_operation);
+      bfd_set_error(bfd_error_invalid_operation);
       return FALSE;
     }
 
-  bfd_get_outsymbols (abfd) = location;
-  bfd_get_symcount (abfd) = symcount;
+  bfd_get_outsymbols(abfd) = location;
+  bfd_get_symcount(abfd) = symcount;
   return TRUE;
 }
 

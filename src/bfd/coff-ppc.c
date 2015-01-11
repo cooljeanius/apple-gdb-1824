@@ -68,7 +68,9 @@ extern void dump_toc PARAMS ((PTR));
    the low order bit with a "1" upon writing.  */
 
 #define SET_UNALLOCATED(x)  ((x) = 1)
-#define IS_UNALLOCATED(x)   ((x) == 1)
+#ifndef IS_UNALLOCATED
+# define IS_UNALLOCATED(x)   ((x) == 1)
+#endif /* !IS_UNALLOCATED */
 
 #define IS_WRITTEN(x)       ((x) & 1)
 #define MARK_AS_WRITTEN(x)  ((x) |= 1)
@@ -2572,12 +2574,12 @@ const bfd_target TARGET_BIG_SYM =
    HAS_LINENO | HAS_DEBUG |
    HAS_SYMS | HAS_LOCALS | WP_TEXT | D_PAGED),
 
-#ifndef COFF_WITH_PE
+# ifndef COFF_WITH_PE
   (SEC_HAS_CONTENTS | SEC_ALLOC | SEC_LOAD | SEC_RELOC), /* section flags */
-#else
+# else
   (SEC_HAS_CONTENTS | SEC_ALLOC | SEC_LOAD | SEC_RELOC /* section flags */
    | SEC_LINK_ONCE | SEC_LINK_DUPLICATES),
-#endif
+# endif /* !COFF_WITH_PE */
 
   0,				/* leading char */
   '/',				/* ar_pad_char */
@@ -2608,14 +2610,19 @@ const bfd_target TARGET_BIG_SYM =
   BFD_JUMP_TABLE_LINK (coff),
   BFD_JUMP_TABLE_DYNAMIC (_bfd_nodynamic),
 
-  /* Alternative_target.  */
-#ifdef TARGET_LITTLE_SYM
+  /* Alternative_target: */
+# ifdef TARGET_LITTLE_SYM
   & TARGET_LITTLE_SYM,
-#else
+# else
   NULL,
-#endif
+# endif /* TARGET_LITTLE_SYM */
 
   COFF_SWAP_TABLE
 };
+#endif /* TARGET_BIG_SYM */
 
-#endif
+#ifdef IS_UNALLOCATED
+# undef IS_UNALLOCATED
+#endif /* IS_UNALLOCATED */
+
+/* EOF */

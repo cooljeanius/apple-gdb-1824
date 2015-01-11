@@ -108,6 +108,11 @@ remote_close (void)
   close (remote_desc);
 }
 
+/* in case gnulib redefined this on us: */
+#ifdef fcntl
+# undef fcntl
+#endif /* fcntl */
+
 /* Open a connection to a remote debugger.
    NAME is the filename used for communication.  */
 

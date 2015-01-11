@@ -582,17 +582,15 @@ static reloc_howto_type elf32_arm_thm_pc9_howto =
 	 TRUE);			/* pcrel_offset */
 
 static void elf32_arm_info_to_howto
-  PARAMS ((bfd *, arelent *, Elf_Internal_Rela *));
+  PARAMS((bfd *, arelent *, Elf_Internal_Rela *));
 
 static void
-elf32_arm_info_to_howto (abfd, bfd_reloc, elf_reloc)
-     bfd * abfd ATTRIBUTE_UNUSED;
-     arelent * bfd_reloc;
-     Elf_Internal_Rela * elf_reloc;
+elf32_arm_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *bfd_reloc,
+                        Elf_Internal_Rela *elf_reloc)
 {
   unsigned int r_type;
 
-  r_type = ELF32_R_TYPE (elf_reloc->r_info);
+  r_type = ELF32_R_TYPE(elf_reloc->r_info);
 
   switch (r_type)
     {
@@ -656,9 +654,9 @@ static const struct elf32_arm_reloc_map elf32_arm_reloc_map[] =
     {BFD_RELOC_ARM_PLT32,            R_ARM_PLT32}
   };
 
-static reloc_howto_type *elf32_arm_reloc_type_lookup(abfd, code)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+static reloc_howto_type *
+elf32_arm_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                            bfd_reloc_code_real_type code)
 {
   unsigned int i;
 
@@ -687,9 +685,7 @@ static reloc_howto_type *elf32_arm_reloc_type_lookup(abfd, code)
 
 /* Support for core dump NOTE sections */
 static bfd_boolean
-elf32_arm_nabi_grok_prstatus (abfd, note)
-     bfd *abfd;
-     Elf_Internal_Note *note;
+elf32_arm_nabi_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 {
   int offset;
   size_t raw_size;

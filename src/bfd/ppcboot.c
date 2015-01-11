@@ -490,7 +490,9 @@ ppcboot_bfd_print_private_bfd_data (abfd, farg)
 #define ppcboot_bfd_copy_private_symbol_data _bfd_generic_bfd_copy_private_symbol_data
 #define ppcboot_bfd_copy_private_header_data _bfd_generic_bfd_copy_private_header_data
 #define ppcboot_bfd_set_private_flags _bfd_generic_bfd_set_private_flags
-#define ppcboot_bfd_print_private_bfd_dat ppcboot_bfd_print_private_bfd_data
+#ifndef ppcboot_bfd_print_private_bfd_dat
+# define ppcboot_bfd_print_private_bfd_dat ppcboot_bfd_print_private_bfd_data
+#endif /* !ppcboot_bfd_print_private_bfd_dat */
 
 const bfd_target ppcboot_vec =
 {
@@ -543,3 +545,9 @@ const bfd_target ppcboot_vec =
 
   NULL
 };
+
+#ifdef ppcboot_bfd_print_private_bfd_dat
+# undef ppcboot_bfd_print_private_bfd_dat
+#endif /* ppcboot_bfd_print_private_bfd_dat */
+
+/* EOF */

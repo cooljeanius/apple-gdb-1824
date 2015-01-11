@@ -1,4 +1,4 @@
-/* Select disassembly routine for specified architecture.
+/* disassemble.c: Select disassembly routine for specified architecture.
    Copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
    2004, 2005 Free Software Foundation, Inc.
 
@@ -14,80 +14,79 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "sysdep.h"
 #include "dis-asm.h"
 
 #ifdef ARCH_all
-#define ARCH_a29k
-#define ARCH_alpha
-#define ARCH_arc
-#define ARCH_arm
-#define ARCH_avr
-#define ARCH_cris
-#define ARCH_crx
-#define ARCH_d10v
-#define ARCH_d30v
-#define ARCH_dlx
-#define ARCH_fr30
-#define ARCH_frv
-#define ARCH_h8300
-#define ARCH_h8500
-#define ARCH_hppa
-#define ARCH_i370
-#define ARCH_i386
-#define ARCH_i860
-#define ARCH_i960
-#define ARCH_ia64
-#define ARCH_ip2k
-#define ARCH_iq2000
-#define ARCH_m32c
-#define ARCH_m32r
-#define ARCH_m68hc11
-#define ARCH_m68hc12
-#define ARCH_m68k
-#define ARCH_m88k
-#define ARCH_maxq
-#define ARCH_mcore
-#define ARCH_mips
-#define ARCH_mmix
-#define ARCH_mn10200
-#define ARCH_mn10300
-#define ARCH_ms1
-#define ARCH_msp430
-#define ARCH_ns32k
-#define ARCH_openrisc
-#define ARCH_or32
-#define ARCH_pdp11
-#define ARCH_pj
-#define ARCH_powerpc
-#define ARCH_rs6000
-#define ARCH_s390
-#define ARCH_sh
-#define ARCH_sparc
-#define ARCH_tic30
-#define ARCH_tic4x
-#define ARCH_tic54x
-#define ARCH_tic80
-#define ARCH_v850
-#define ARCH_vax
-#define ARCH_w65
-#define ARCH_xstormy16
-#define ARCH_xtensa
-#define ARCH_z8k
-#define INCLUDE_SHMEDIA
-#endif
+# define ARCH_a29k
+# define ARCH_alpha
+# define ARCH_arc
+# define ARCH_arm
+# define ARCH_avr
+# define ARCH_cris
+# define ARCH_crx
+# define ARCH_d10v
+# define ARCH_d30v
+# define ARCH_dlx
+# define ARCH_fr30
+# define ARCH_frv
+# define ARCH_h8300
+# define ARCH_h8500
+# define ARCH_hppa
+# define ARCH_i370
+# define ARCH_i386
+# define ARCH_i860
+# define ARCH_i960
+# define ARCH_ia64
+# define ARCH_ip2k
+# define ARCH_iq2000
+# define ARCH_m32c
+# define ARCH_m32r
+# define ARCH_m68hc11
+# define ARCH_m68hc12
+# define ARCH_m68k
+# define ARCH_m88k
+# define ARCH_maxq
+# define ARCH_mcore
+# define ARCH_mips
+# define ARCH_mmix
+# define ARCH_mn10200
+# define ARCH_mn10300
+# define ARCH_ms1
+# define ARCH_msp430
+# define ARCH_ns32k
+# define ARCH_openrisc
+# define ARCH_or32
+# define ARCH_pdp11
+# define ARCH_pj
+# define ARCH_powerpc
+# define ARCH_rs6000
+# define ARCH_s390
+# define ARCH_sh
+# define ARCH_sparc
+# define ARCH_tic30
+# define ARCH_tic4x
+# define ARCH_tic54x
+# define ARCH_tic80
+# define ARCH_v850
+# define ARCH_vax
+# define ARCH_w65
+# define ARCH_xstormy16
+# define ARCH_xtensa
+# define ARCH_z8k
+# define INCLUDE_SHMEDIA
+#endif /* ARCH_all */
 
 #ifdef ARCH_m32c
-#include "m32c-desc.h"
-#endif
+# include "m32c-desc.h"
+#endif /* ARCH_m32c */
 
 disassembler_ftype
-disassembler (abfd)
-     bfd *abfd;
+disassembler(bfd *abfd)
 {
-  enum bfd_architecture a = bfd_get_arch (abfd);
+  enum bfd_architecture a = bfd_get_arch(abfd);
   disassembler_ftype disassemble;
 
   switch (a)
@@ -410,18 +409,17 @@ disassembler (abfd)
 }
 
 void
-disassembler_usage (stream)
-     FILE * stream ATTRIBUTE_UNUSED;
+disassembler_usage(FILE *stream ATTRIBUTE_UNUSED)
 {
 #ifdef ARCH_arm
-  print_arm_disassembler_options (stream);
-#endif
+  print_arm_disassembler_options(stream);
+#endif /* ARCH_arm */
 #ifdef ARCH_mips
-  print_mips_disassembler_options (stream);
-#endif
+  print_mips_disassembler_options(stream);
+#endif /* ARCH_mips */
 #ifdef ARCH_powerpc
-  print_ppc_disassembler_options (stream);
-#endif
+  print_ppc_disassembler_options(stream);
+#endif /* ARCH_powerpc */
 
   return;
 }

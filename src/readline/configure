@@ -801,6 +801,7 @@ POW_LIB
 LIBOBJS
 ALLOCA
 MAKE_SHELL
+LD_ARCHFLAGS
 TEX_BINARY
 SED
 RANLIB
@@ -4184,8 +4185,8 @@ $as_echo "no" >&6; }
 fi
 
 if test "x${CC}" = "x"; then
-	test -z "${CC}"
-	ac_ext=c
+  test -z "${CC}"
+  ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -4784,8 +4785,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 else
-	test ! -z "${CC}" && export CC
-
+  test ! -z "${CC}" && export CC
+    ## dummy
 fi
 
 
@@ -4953,7 +4954,7 @@ if test "x${cross_compiling}" = "xyes"; then
     case "${host}" in
     *-cygwin*)
 	cross_cache=${srcdir}/cross-build/cygwin.cache
-	LOCAL_CFLAGS="$LOCAL_CFLAGS -I${srcdir}/../libtermcap"
+	LOCAL_CFLAGS="${LOCAL_CFLAGS} -I${srcdir}/../libtermcap"
 	;;
    *-mingw32*)
 	cross_cache=${srcdir}/cross-build/mingw.cache
@@ -5829,6 +5830,41 @@ fi
 $as_echo_n "checking libraries... " >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
 $as_echo " " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for linker flag to verify linked libraries have the correct architecture" >&5
+$as_echo_n "checking for linker flag to verify linked libraries have the correct architecture... " >&6; }
+# Make sure this is done up here first:
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+pre_saved_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-arch_errors_fatal"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  LD_ARCHFLAGS="${acl_cv_wl}-arch_errors_fatal"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LDFLAGS="${pre_saved_LDFLAGS}"
+if test "x${LD_ARCHFLAGS}" != "x"; then
+  test -n "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${LD_ARCHFLAGS}" >&5
+$as_echo "${LD_ARCHFLAGS}" >&6; }
+    ## that should be all we need to do with them for now...
+else
+  test -z "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: none" >&5
+$as_echo "none" >&6; }
+fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for printf in -lc" >&5
 $as_echo_n "checking for printf in -lc... " >&6; }
 if ${ac_cv_lib_c_printf+:} false; then :
@@ -5873,7 +5909,9 @@ _ACEOF
   LIBS="-lc $LIBS"
 
 fi
-
+# check arch when "main()" is the only function for which we check:
+ARCHLESS_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
 # FIXME: Replace `main' with a function in `-lcurses':
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lcurses" >&5
 $as_echo_n "checking for main in -lcurses... " >&6; }
@@ -5913,7 +5951,6 @@ _ACEOF
   LIBS="-lcurses $LIBS"
 
 fi
-
 # FIXME: Replace `main' with a function in `-lhistory':
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lhistory" >&5
 $as_echo_n "checking for main in -lhistory... " >&6; }
@@ -5953,7 +5990,6 @@ _ACEOF
   LIBS="-lhistory $LIBS"
 
 fi
-
 # FIXME: Replace `main' with a function in `-lreadline':
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lreadline" >&5
 $as_echo_n "checking for main in -lreadline... " >&6; }
@@ -5993,7 +6029,8 @@ _ACEOF
   LIBS="-lreadline $LIBS"
 
 fi
-
+  ## reset these:
+LDFLAGS="${ARCHLESS_LDFLAGS}"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for xmalloc in -liberty" >&5
 $as_echo_n "checking for xmalloc in -liberty... " >&6; }
 if ${ac_cv_lib_iberty_xmalloc+:} false; then :
@@ -6039,6 +6076,8 @@ _ACEOF
 
 else
 
+  PRE_LIBERTY_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -liberty" >&5
 $as_echo_n "checking for main in -liberty... " >&6; }
 if ${ac_cv_lib_iberty_main+:} false; then :
@@ -6077,6 +6116,8 @@ _ACEOF
   LIBS="-liberty $LIBS"
 
 fi
+  ## reset:
+  LDFLAGS="${PRE_LIBERTY_LDFLAGS}"
 
 fi
 
@@ -6495,15 +6536,13 @@ else
   ac_cv_type_signal=void
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_type_signal" >&5
-$as_echo "$ac_cv_type_signal" >&6; }
+$as_echo "$ac_cv_type_signal" >&6; }  ## corresponding define:
 
 cat >>confdefs.h <<_ACEOF
 #define RETSIGTYPE ${ac_cv_type_signal}
 _ACEOF
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for uid_t in sys/types.h" >&5
 $as_echo_n "checking for uid_t in sys/types.h... " >&6; }
 if ${ac_cv_type_uid_t+:} false; then :
@@ -11331,7 +11370,6 @@ $as_echo_n "checking configuration for building shared libraries... " >&6; }
         eval `${CONFIG_SHELL-/bin/sh} ${srcdir}/support/shobj-conf -C "${CC}" -c ${host_cpu} -o ${host_os} -v ${host_vendor}`
                                 	                					        { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${SHLIB_STATUS}" >&5
 $as_echo "${SHLIB_STATUS}" >&6; }
-
 	# SHLIB_STATUS is either `supported' or `unsupported'. If it is
 	# `unsupported', turn off any default shared library building
 	if test "${SHLIB_STATUS}" = 'unsupported'; then
@@ -22314,12 +22352,11 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile Makefile.orig doc/Makefile doc/Makefile.orig examples/Makefile examples/Makefile.orig shlib/Makefile shlib/Makefile.orig"
-
+# Output.
+ac_config_files="$ac_config_files Makefile Makefile_orig doc/Makefile doc/Makefile_orig examples/Makefile examples/Makefile_orig shlib/Makefile shlib/Makefile_orig"
 
 
 subdirs="$subdirs examples/rlfe.dir"
-
 ac_config_commands="$ac_config_commands default"
 
 ac_config_commands="$ac_config_commands config_status_vpath_build_fix"
@@ -23445,13 +23482,13 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "Makefile.orig") CONFIG_FILES="$CONFIG_FILES Makefile.orig" ;;
+    "Makefile_orig") CONFIG_FILES="$CONFIG_FILES Makefile_orig" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
-    "doc/Makefile.orig") CONFIG_FILES="$CONFIG_FILES doc/Makefile.orig" ;;
+    "doc/Makefile_orig") CONFIG_FILES="$CONFIG_FILES doc/Makefile_orig" ;;
     "examples/Makefile") CONFIG_FILES="$CONFIG_FILES examples/Makefile" ;;
-    "examples/Makefile.orig") CONFIG_FILES="$CONFIG_FILES examples/Makefile.orig" ;;
+    "examples/Makefile_orig") CONFIG_FILES="$CONFIG_FILES examples/Makefile_orig" ;;
     "shlib/Makefile") CONFIG_FILES="$CONFIG_FILES shlib/Makefile" ;;
-    "shlib/Makefile.orig") CONFIG_FILES="$CONFIG_FILES shlib/Makefile.orig" ;;
+    "shlib/Makefile_orig") CONFIG_FILES="$CONFIG_FILES shlib/Makefile_orig" ;;
     "default") CONFIG_COMMANDS="$CONFIG_COMMANDS default" ;;
     "config_status_vpath_build_fix") CONFIG_COMMANDS="$CONFIG_COMMANDS config_status_vpath_build_fix" ;;
 
@@ -24790,7 +24827,7 @@ _LT_EOF
     "default":C)
 # Makefile uses this timestamp file to record whether config.h is up to
 # date.
-echo "" > stamp-h
+echo "timestamp" > stamp-h
  ;;
     "config_status_vpath_build_fix":C)
 if test "${srcdir}" != "."; then
