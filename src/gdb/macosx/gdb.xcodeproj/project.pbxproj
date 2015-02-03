@@ -4784,6 +4784,7 @@
 		A5AFD2041A58B6B1006C21FE /* copyright.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = copyright.sh; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/copyright.sh"; sourceTree = "<absolute>"; };
 		A5AFD2051A58B6DD006C21FE /* CodeFragmentTypes.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; name = CodeFragmentTypes.r; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/CodeFragmentTypes.r"; sourceTree = "<absolute>"; };
 		A5AFD2061A58B6F1006C21FE /* c-exp.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; name = "c-exp.y"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/c-exp.y"; sourceTree = "<absolute>"; };
+		A5C4A6571A7A950900DBC833 /* cli-logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "cli-logging.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/cli/cli-logging.h"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -6230,6 +6231,7 @@
 				2609D3130E82C40A008125DE /* cli-dump.h */,
 				2609D3140E82C40A008125DE /* cli-interp.c */,
 				2609D3150E82C40A008125DE /* cli-logging.c */,
+				A5C4A6571A7A950900DBC833 /* cli-logging.h */,
 				2609D3160E82C40A008125DE /* cli-script.c */,
 				2609D3170E82C40A008125DE /* cli-script.h */,
 				2609D3180E82C40A008125DE /* cli-setshow.c */,

@@ -128,6 +128,13 @@ READLINE_DEP = $$(READLINE_DIR)
 # Where are the regformat files? Typically in $(srcdir)/../regformats:
 regformat_dir = $(srcdir)/../regformats
 
+## automake-style verbosity control:
+V = @V@
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
+am__v_v_0 =
+am__v_v_1 = -v
+
 # All the includes used for CFLAGS and for lint.
 # -I. for config files.
 # -I${srcdir} for our headers.
@@ -345,7 +352,7 @@ uninstall: force
 	else \
 	  echo "n is set to $${n}"; \
 	fi; \
-	rm -fv $(bindir)/$${n}$(EXEEXT) $(DESTDIR)$(man1dir)/$${n}.1
+	rm -f $(AM_V_v) $(bindir)/$${n}$(EXEEXT) $(DESTDIR)$(man1dir)/$${n}.1
 
 installcheck:
 check:
@@ -357,7 +364,7 @@ install-html:
 clean-info: force
 
 gdbserver$(EXEEXT): $(OBS) ${ADD_DEPS} ${CDEPS}
-	rm -fv gdbserver$(EXEEXT)
+	rm -f $(AM_V_v) gdbserver$(EXEEXT)
 	${CC-LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) \
 	  -o gdbserver$(EXEEXT) $(OBS) $(GDBSERVER_LIBS) $(XM_CLIBS)
 
@@ -371,7 +378,7 @@ all-lib: $(GNULIB_BUILDDIR)/Makefile
 # dependency can be satisfied without it actually existing to be available
 # for linking against
 gdbreplay$(EXEEXT): $(GDBREPLAY_OBS) $(LIBGNU)
-	rm -fv gdbreplay$(EXEEXT)
+	rm -f $(AM_V_v) gdbreplay$(EXEEXT)
 	${CC-LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) \
 	  -o gdbreplay$(EXEEXT) $(GDBREPLAY_OBS) $(XM_CLIBS)
 
@@ -384,7 +391,7 @@ IPA_OBJS=ax-ipa.o tracepoint-ipa.o format-ipa.o utils-ipa.o \
 IPA_LIB=libinproctrace.so
 
 $(IPA_LIB): $(IPA_OBJS) ${ADD_DEPS} ${CDEPS}
-	rm -fv $(IPA_LIB)
+	rm -f $(AM_V_v) $(IPA_LIB)
 	${CC-LD} -shared -fPIC -Wl,--no-undefined $(INTERNAL_CFLAGS) \
 	$(INTERNAL_LDFLAGS) -o $(IPA_LIB) ${IPA_OBJS} -ldl -pthread
 
@@ -405,12 +412,12 @@ tags: TAGS
 
 # 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 mostlyclean:
-	rm -fv $(ORIG_OBS) $(GDBREPLAY_OBS)
+	rm -f $(AM_V_v) $(ORIG_OBS) $(GDBREPLAY_OBS)
 clean: mostlyclean
-	rm -fv *.o ${ADD_FILES} *~
+	rm -f $(AM_V_v) *.o ${ADD_FILES} *~
 	rm -f version.c
-	rm -fv gdbserver$(EXEEXT) gdbreplay$(EXEEXT) core make.log
-	rm -fv $(IPA_LIB)
+	rm -f $(AM_V_v) gdbserver$(EXEEXT) gdbreplay$(EXEEXT) core make.log
+	rm -f $(AM_V_v) $(IPA_LIB)
 	rm -f aarch64.c
 	rm -f reg-arm.c reg-bfin.c i386.c reg-i386.c reg-ia64.c reg-m32r.c
 	rm -f reg-m68k.c reg-mips.c
@@ -445,7 +452,7 @@ clean: mostlyclean
 	rm -f x32.c x32-linux.c
 	rm -f x32-avx.c x32-avx-linux.c
 	rm -f x32-avx512.c x32-avx512-linux.c
-	rm -frv autom4te.cache || rmdir autom4te.cache
+	rm -fr $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 # (once init_all_my_registers.c builds properly from this Makefile, it can
 # be cleaned here, too)
 
@@ -486,8 +493,8 @@ version.c: Makefile $(srcdir)/../version.in $(srcdir)/../../bfd/version.h \
   $(srcdir)/../common/create-version.sh
 	if [ -f $(srcdir)/../common/create-version.sh ]; then \
 	  echo "using new rules to make $@"; \
-	  $(SHELL) $(srcdir)/../common/create-version.sh $(srcdir)/.. \
-	    $(host_alias) $(target_alias) version.c; \
+	  SH_V=$(V) $(SHELL) $(srcdir)/../common/create-version.sh \
+	    $(srcdir)/.. $(host_alias) $(target_alias) version.c; \
 	else \
 	  echo "using old rules to make $@"; \
 	  echo 'char *version = "$(VERSION)";' | tee version.c; \
@@ -496,7 +503,7 @@ version.c: Makefile $(srcdir)/../version.in $(srcdir)/../../bfd/version.h \
 xml-builtin.c: stamp-xml
 	@echo "this target '$@' just makes its dep '$<'"
 stamp-xml: $(XML_DIR)/feature_to_c.sh Makefile $(XML_FILES)
-	rm -fv xml-builtin.tmp
+	rm -f $(AM_V_v) xml-builtin.tmp
 	$(SHELL) $(XML_DIR)/feature_to_c.sh xml-builtin.tmp $(XML_FILES)
 	$(SHELL) $(srcdir)/../../move-if-change xml-builtin.tmp xml-builtin.c
 	echo "timestamp: `date`" | tee stamp-xml
@@ -516,7 +523,7 @@ MAKEOVERRIDES=
 
 gdb_proc_service_h = $(srcdir)/../gdb_proc_service.h $(srcdir)/../gregset.h
 regdat_sh = $(regformat_dir)/regdat.sh
-run_regdat_sh = $(SHELL) $(regdat_sh)
+run_regdat_sh = SH_V=$(V) $(SHELL) $(regdat_sh)
 regdef_h = $(regformat_dir)/regdef.h
 regcache_h = $(srcdir)/regcache.h
 server_h = $(srcdir)/server.h $(regcache_h) config.h $(srcdir)/target.h \

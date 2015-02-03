@@ -1271,7 +1271,7 @@ quit_target(void *arg)
 }
 
 /* Quit without asking for confirmation: */
-NORETURN void
+NORETURN void ATTR_NORETURN
 quit_force(char *args, int from_tty)
 {
   int exit_code = 0;

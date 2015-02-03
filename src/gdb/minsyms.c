@@ -1,4 +1,4 @@
-/* GDB routines for manipulating the minimal symbol tables.
+/* minisyms.c: GDB routines for manipulating the minimal symbol tables.
    Copyright 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
    2002, 2003, 2004
    Free Software Foundation, Inc.
@@ -174,8 +174,8 @@ lookup_minimal_symbol_all (const char *name, const char *sfile,
 	     and the second over the demangled hash table.  */
 	  int pass;
 
-	  for (pass = 1; 
-	       pass <= 2 && found_symbol == NULL && found_file_symbol == NULL; 
+	  for (pass = 1;
+	       pass <= 2 && found_symbol == NULL && found_file_symbol == NULL;
 	       pass++)
 	    {
 	      /* Select hash list according to pass.  */
@@ -184,7 +184,7 @@ lookup_minimal_symbol_all (const char *name, const char *sfile,
 	      else
 		msymbol = objfile->msymbol_demangled_hash[dem_hash];
 
-	      while (msymbol != NULL 
+	      while (msymbol != NULL
 		     && found_symbol == NULL
 		     && found_file_symbol == NULL)
 		{
@@ -257,7 +257,7 @@ lookup_minimal_symbol_all (const char *name, const char *sfile,
 		      && (!MSYMBOL_OBSOLETED (msym)))
 		    {
 
-		      node = (struct symbol_search *) xmalloc 
+		      node = (struct symbol_search *) xmalloc
 			                                 (sizeof (struct symbol_search));
 		      node->block = 0;
 		      node->symtab = NULL;
@@ -625,7 +625,7 @@ lookup_minimal_symbol_by_pc_section_from_objfile
 	  /* The minimal symbol indexed by hi now is the best one in this
 	     objfile's minimal symbol table.  See if it is the best one
 	     overall. */
-	  
+
 	  /* Skip any absolute symbols.  This is apparently what adb
 	     and dbx do, and is needed for the CM-5.  There are two
 	     known possible problems: (1) on ELF, apparently end, edata,
@@ -643,7 +643,7 @@ lookup_minimal_symbol_by_pc_section_from_objfile
 	  /* This is the new code that distinguishes it from the old function */
 	  if (section)
 	    {
-	      while (hi >= 0 
+	      while (hi >= 0
 		     /* Some types of debug info, such as COFF,
 			don't fill the bfd_section member, so don't
 			throw away symbols on those platforms.  */
@@ -656,7 +656,7 @@ lookup_minimal_symbol_by_pc_section_from_objfile
 	      /* If there are NO section matches at all, return NULL
 		 rather than accidentally returning the lowest msymbol
 		 in the objfile. */
-	      if (hi == 0 
+	      if (hi == 0
 		  && SYMBOL_BFD_SECTION (&msymbol[hi]) != section)
 		return NULL;
 	    }
@@ -675,9 +675,7 @@ lookup_minimal_symbol_by_pc_section_from_objfile
    symbol that comes closest to the specified PC. */
 
 struct minimal_symbol *
-lookup_minimal_symbol_by_pc_section (pc, section)
-     CORE_ADDR pc;
-     asection *section;
+lookup_minimal_symbol_by_pc_section(CORE_ADDR pc, asection *section)
 {
   struct objfile *objfile;
   struct minimal_symbol *best_symbol = NULL;
@@ -686,7 +684,7 @@ lookup_minimal_symbol_by_pc_section (pc, section)
   struct obj_section *pc_section;
 
   /* APPLE LOCAL: Although the objfiles can have discontiguous address
-     ranges, two objfiles can't have overlapping sections (or if they 
+     ranges, two objfiles can't have overlapping sections (or if they
      do, either the section will sort out which is the right one, or
      the pc->symbol translation will be ambiguous anyway so we are
      going to fail here.)  So find the obj_section that contains the
@@ -697,7 +695,7 @@ lookup_minimal_symbol_by_pc_section (pc, section)
   if (s)
     best_symbol = lookup_minimal_symbol_by_pc_section_from_objfile
       (pc, section, s->objfile);
-  
+
   if (best_symbol != NULL)
     return best_symbol;
 
@@ -726,7 +724,7 @@ lookup_minimal_symbol_by_pc_section (pc, section)
   return (best_symbol);
 }
 
-/* Backward compatibility: search through the minimal symbol table 
+/* Backward compatibility: search through the minimal symbol table
    for a matching PC (no section or objfile given) */
 
 struct minimal_symbol *
@@ -835,7 +833,7 @@ prim_record_minimal_symbol_and_info (const char *name, CORE_ADDR address,
           return (NULL);
       }
     }
- 
+
   /* END APPLE LOCAL */
 
   if (msym_bunch_index == BUNCH_SIZE)
@@ -878,7 +876,7 @@ prim_record_minimal_symbol_and_info (const char *name, CORE_ADDR address,
 }
 
 /* Compare two minimal symbols by address and return a signed result based
-   on unsigned comparisons, so that we sort into unsigned numeric order.  
+   on unsigned comparisons, so that we sort into unsigned numeric order.
    Within groups with the same address, sort by name.  */
 
 static int
@@ -1016,7 +1014,7 @@ compact_minimal_symbols (struct minimal_symbol *msymbol, int mcount,
 /* Build (or rebuild) the minimal symbol hash tables.  This is necessary
    after compacting or sorting the table since the entries move around
    thus causing the internal minimal_symbol pointers to become jumbled. */
-  
+
 static void
 build_minimal_symbol_hash_tables (struct objfile *objfile)
 {
@@ -1152,7 +1150,7 @@ install_minimal_symbols (struct objfile *objfile)
       objfile->minimal_symbol_count = mcount;
       objfile->msymbols = msymbols;
 
-      /* Try to guess the appropriate C++ ABI by looking at the names 
+      /* Try to guess the appropriate C++ ABI by looking at the names
 	 of the minimal symbols in the table.  */
       {
 	int i;
@@ -1165,7 +1163,7 @@ install_minimal_symbols (struct objfile *objfile)
 	       mixing ABIs then the user will need to "set cp-abi"
 	       manually.  */
 	    const char *name = SYMBOL_LINKAGE_NAME (&objfile->msymbols[i]);
-	    if (name[0] == '_' && name[1] == 'Z' 
+	    if (name[0] == '_' && name[1] == 'Z'
 		&& SYMBOL_DEMANGLED_NAME (&objfile->msymbols[i]) != NULL
 		&& cp_abi_is_auto_p())
 	      {
@@ -1174,7 +1172,7 @@ install_minimal_symbols (struct objfile *objfile)
 	      }
 	  }
       }
-      
+
       /* Now build the hash tables; we can't do this incrementally
          at an earlier point since we weren't finished with the obstack
 	 yet.  (And if the msymbol obstack gets moved, all the internal

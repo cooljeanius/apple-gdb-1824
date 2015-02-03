@@ -216,16 +216,20 @@ dump_bfd_file (const char *filename, const char *mode,
   bfd *obfd;
   asection *osection;
 
-  obfd = bfd_openw_with_cleanup (filename, target, mode);
-  osection = bfd_make_section_anyway (obfd, ".newsec");
-  bfd_set_section_size (obfd, osection, len);
-  bfd_set_section_vma (obfd, osection, vaddr);
-  bfd_set_section_alignment (obfd, osection, 0);
-  bfd_set_section_flags (obfd, osection, (SEC_HAS_CONTENTS
+  obfd = bfd_openw_with_cleanup(filename, target, mode);
+  osection = bfd_make_section_anyway(obfd, ".newsec");
+  bfd_set_section_size(obfd, osection, len);
+  if (bfd_set_section_vma(obfd, osection, vaddr)) {
+    ;
+  }
+  if (bfd_set_section_alignment(obfd, osection, 0)) {
+    ;
+  }
+  bfd_set_section_flags(obfd, osection, (SEC_HAS_CONTENTS
 					  | SEC_ALLOC
 					  | SEC_LOAD));
   osection->entsize = 0;
-  bfd_set_section_contents (obfd, osection, buf, 0, len);
+  bfd_set_section_contents(obfd, osection, buf, 0, len);
 }
 
 static void
@@ -540,7 +544,7 @@ restore_binary_file (char *filename, struct callback_data *data)
   else
     perror_with_name(filename);
 
-  if (total_file_bytes <= data->load_start)
+  if (total_file_bytes <= (int)data->load_start)
     error(_("Start address is greater than length of binary file %s."),
           filename);
 
@@ -583,7 +587,7 @@ restore_binary_file (char *filename, struct callback_data *data)
       if (len > bytes_to_read_from_file)
         len = bytes_to_read_from_file;
 
-      if (fread(buf, 1, len, file) != len)
+      if (fread(buf, 1, len, file) != (size_t)len)
 	perror_with_name(filename);
 
       max_errors = 2;

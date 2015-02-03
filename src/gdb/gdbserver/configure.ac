@@ -60,6 +60,34 @@ fi
 # automake-lite sub-checks:
 AM_SANITY_CHECK
 AM_MAINTAINER_MODE
+m4_ifdef([AM_SILENT_RULES],[
+AM_SILENT_RULES
+])dnl
+dnl########################################################################
+dnl# Port to Automake 1.11.
+dnl# This section can be removed once we assume Automake 1.14 or later.
+#### check arg val for silent rules:
+if test "x${enable_silent_rules}" = "xno"; then
+  : ${V=1}
+  : ${AM_DEFAULT_VERBOSITY=1}
+elif test "x${enable_silent_rules}" = "xyes"; then
+  : ${V=0}
+  : ${AM_DEFAULT_VERBOSITY=0}
+else
+  : ${V=0}
+  : ${AM_DEFAULT_VERBOSITY=1}
+fi
+: ${AM_DEFAULT_VERBOSITY=1}
+: ${AM_V=${AM_DEFAULT_VERBOSITY}}
+: ${AM_DEFAULT_V=${AM_DEFAULT_VERBOSITY}}
+dnl# now subst:
+AC_SUBST([V])dnl
+AM_SUBST_NOTMAKE([V])dnl
+AC_SUBST([AM_V])dnl
+AM_SUBST_NOTMAKE([AM_V])dnl
+AC_SUBST([AM_DEFAULT_V])dnl
+AM_SUBST_NOTMAKE([AM_DEFAULT_V])dnl
+AC_SUBST([AM_DEFAULT_VERBOSITY])dnl
 
 # Checks for programs.
 AC_MSG_CHECKING([programs])

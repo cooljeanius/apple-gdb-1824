@@ -649,6 +649,7 @@ POW_LIB
 LIBOBJS
 ALLOCA
 NOASANFLAG
+NOPICFLAG
 PICFLAG
 INSTALL_DATA
 INSTALL_SCRIPT
@@ -3167,7 +3168,7 @@ else
 $as_echo "no" >&6; }
 fi
 
-
+  ## have it enable/disable certain parts of the Makefile:
 if test x"${PERL}" = x""; then
   HAVE_PERL='#'
 else
@@ -17793,6 +17794,14 @@ fi
 if test "x${PICFLAG}" = "x"; then
   test -z "${PICFLAG}" && PICFLAG=""
 fi
+if test "x${NOPICFLAG}" = "x"; then
+  test -z "${NOPICFLAG}" && NOPICFLAG=""
+fi
+case "${host}" in
+  i[34567]86-*-darwin* | powerpc-*-darwin*)
+    NOPICFLAG=-mdynamic-no-pic ;;
+  *) ;;
+esac
 
 # If they did NOT specify --enable-shared, do NOT generate shared libs.
 case "${enable_shared}" in
@@ -17831,6 +17840,7 @@ elif [ "x${shared}" != "xyes" ]; then
 $as_echo "$as_me: WARNING: libraries are unshared; overriding user-supplied PICFLAG" >&2;}
   fi
   PICFLAG=""
+  NOPICFLAG=""
 fi
 
 NOASANFLAG=""
@@ -18271,7 +18281,7 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-# Check for presense of long long
+# Check for presense of the 'long long' type:
 ac_fn_c_check_type "$LINENO" "long long" "ac_cv_type_long_long" "$ac_includes_default"
 if test "x$ac_cv_type_long_long" = xyes; then :
 
@@ -18413,8 +18423,8 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $liberty_cv_uint64" >&5
-$as_echo "$liberty_cv_uint64" >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${liberty_cv_uint64}" >&5
+$as_echo "${liberty_cv_uint64}" >&6; }
 if test "x${liberty_cv_uint64}" != "xnone"; then
 
 cat >>confdefs.h <<_ACEOF
@@ -20207,7 +20217,7 @@ _ACEOF
       esac
     done
 
-    # newlib doesnt provide any of the variables in ${vars}, so we
+    # newlib does NOT provide any of the variables in ${vars}, so we
     # do not have to check them here.
 
     # Of the functions in ${checkfuncs}, newlib only has strerror.
@@ -20513,7 +20523,7 @@ _ACEOF
         esac
       done
 
-      # VxWorks does NOT provide any of the variables in $vars, so we
+      # VxWorks does NOT provide any of the variables in ${vars}, so we
       # do NOT have to check them here.
 
       # Of the functions in ${checkfuncs}, VxWorks only has strerror.
@@ -21535,6 +21545,7 @@ LIBOBJS="${L}"
 
 
 
+# Section for mmalloc support:
 MMALLOC_CFLAGS=""
 MMALLOC=""
 
@@ -21562,6 +21573,7 @@ else
    MMALLOC_OK='#'
 fi
 
+# Output.
 # We need multilib support, but only if configuring for the target.
 ac_config_files="$ac_config_files Makefile testsuite/Makefile"
 

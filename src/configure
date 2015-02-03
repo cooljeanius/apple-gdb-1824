@@ -735,7 +735,6 @@ BUILD_PREFIX_1
 BUILD_PREFIX
 GCC_SHLIB_SUBDIR
 RPATH_ENVVAR
-multi_basedir
 target_configargs
 host_configargs
 build_configargs
@@ -852,6 +851,7 @@ build_os
 build_vendor
 build_cpu
 build
+multi_basedir
 target_alias
 host_alias
 build_alias
@@ -897,6 +897,7 @@ alphaieee_frag
 ospace_frag'
 ac_user_opts='
 enable_option_checking
+enable_multilib
 with_opts_prefix
 with_opts_exec_prefix
 enable_opts_test
@@ -940,7 +941,6 @@ with_build_sysroot
 with_debug_prefix_map
 enable_bootstrap
 enable_serial_configure
-enable_multilib
 enable_dependency_tracking
 with_build_time_tools
 enable_maintainer_mode
@@ -1601,6 +1601,7 @@ Optional Features:
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --enable-multilib       build many library versions (default off)
   --disable-opts-test     Do not try to run a test AutoOpts program
 
   --enable-silent-rules   less verbose build output (undo: "make V=1")
@@ -1639,7 +1640,6 @@ Optional Features:
                           Force sequential configuration of sub-packages for
                           the host, target or build machine, or all
                           sub-packages
-  --enable-multilib       build many library versions (default off)
   --enable-dependency-tracking
                           do not reject slow dependency extractors
   --disable-dependency-tracking
@@ -2843,6 +2843,12 @@ fi
 
 as_fn_append ac_header_list " gmp.h"
 as_fn_append ac_header_list " mpfr.h"
+as_fn_append ac_func_list " btowc"
+as_fn_append ac_func_list " mbsrtowcs"
+as_fn_append ac_func_list " mempcpy"
+as_fn_append ac_func_list " wmempcpy"
+as_fn_append ac_header_list " wchar.h"
+as_fn_append ac_header_list " wctype.h"
 as_fn_append ac_header_list " sys/time.h"
 as_fn_append ac_header_list " unistd.h"
 as_fn_append ac_func_list " alarm"
@@ -2956,6 +2962,44 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 ac_config_headers="$ac_config_headers config.h"
+
+
+
+
+# Default to --enable-multilib usually:
+# Check whether --enable-multilib was given.
+if test "${enable_multilib+set}" = set; then :
+  enableval=$enable_multilib; case "${enableval}" in
+  yes) multilib=yes ;;
+  no)  multilib=no ;;
+  *)   as_fn_error $? "bad value ${enableval} for multilib option" "$LINENO" 5 ;;
+ esac
+else
+  multilib=no
+fi
+
+# We may get other options which we leave undocumented:
+# --with-target-subdir, --with-multisrctop, --with-multisubdir
+# See config-ml.in if you want the gory details.
+
+if test "${srcdir}" = "."; then
+  if test -n "${with_target_subdir}" && test "${with_target_subdir}" != "."; then
+    multi_basedir="${srcdir}/${with_multisrctop}../."
+  else
+    multi_basedir="${srcdir}/${with_multisrctop}."
+  fi
+else
+  multi_basedir="${srcdir}/."
+fi
+
+# Even if the default multilib is not a cross compilation,
+# it may be that some of the other multilibs are.
+if test "x${cross_compiling}" = "xno" && test "x${multilib}" = "xyes" \
+   && test "x${with_multisubdir}" != "x"; then
+   cross_compiling=maybe
+fi
+
+ac_config_commands="$ac_config_commands multilib-default-1"
 
 # System-detecting stuff:
 # Make sure we can run config.sub.
@@ -6689,16 +6733,20 @@ case "${target}" in
 # so far dejagnu works fine when configured on its own, but sometimes it
 # fails as a subdirectory for the top-level Makefile...
     mynoconfigdirs="${noconfigdirs} dejagnu"
-# likewise with expect:
+# likewise with tcl, expect, and target-libbacktrace:
     if test ! -z "${build_alias}" -o ! -z "${host_alias}" -o ! -z "${target_alias}"; then
-      noconfigdirs="${noconfigdirs} expect"
+      noconfigdirs="${noconfigdirs} tcl expect target-libbacktrace"
+    elif test -n "${with_target_subdir}" || test -n "${multi_basedir}"; then
+      noconfigdirs="${noconfigdirs} target-libbacktrace"
     fi
 # I do not know why Apple had these put under noconfigdirs:
     applespecifiednoconfigdirs="${noconfigdirs} mmalloc sim"
     if test "x${APPLE_INTERNAL_DIR}" = "x/AppleInternal"; then
       test -d "${APPLE_INTERNAL_DIR}"
-      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: You appear to be at Apple, in that case disabling subdirectories that Apple says to disable (unset the APPLE_INTERNAL_DIR environment variable to avoid this)" >&5
-$as_echo "$as_me: WARNING: You appear to be at Apple, in that case disabling subdirectories that Apple says to disable (unset the APPLE_INTERNAL_DIR environment variable to avoid this)" >&2;}
+      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: You appear to be at Apple, in that case disabling subdirectories that Apple says to disable." >&5
+$as_echo "$as_me: WARNING: You appear to be at Apple, in that case disabling subdirectories that Apple says to disable." >&2;}
+      { $as_echo "$as_me:${as_lineno-$LINENO}: Unset the APPLE_INTERNAL_DIR environment variable to avoid this warning." >&5
+$as_echo "$as_me: Unset the APPLE_INTERNAL_DIR environment variable to avoid this warning." >&6;}
       noconfigdirs="${applespecifiednoconfigdirs}"
     fi
 # building zlib from this level can mess it up; build it manually instead:
@@ -9443,7 +9491,6 @@ done
 
 
 
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for correct version of gmp.h" >&5
 $as_echo_n "checking for correct version of gmp.h... " >&6; }
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -9471,7 +9518,6 @@ $as_echo "no" >&6; };
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 if test x"${have_gmp}" = x"yes"; then
-
 
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for MPFR" >&5
@@ -10951,6 +10997,44 @@ $as_echo "#define HAVE_MBSTATE_T 1" >>confdefs.h
 $as_echo "#define mbstate_t int" >>confdefs.h
 
    fi
+ac_fn_c_check_decl "$LINENO" "getenv" "ac_cv_have_decl_getenv" "$ac_includes_default"
+if test "x$ac_cv_have_decl_getenv" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_GETENV $ac_have_decl
+_ACEOF
+
+
+
+
+  for ac_func in $ac_func_list
+do :
+  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
+ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
+if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+done
+
+
+
+
+
+
+
+
+
+
+
+
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for working POSIX fnmatch" >&5
 $as_echo_n "checking for working POSIX fnmatch... " >&6; }
 if ${ac_cv_func_fnmatch_works+:} false; then :
@@ -10999,58 +11083,22 @@ $as_echo "$ac_cv_func_fnmatch_works" >&6; }
 if test $ac_cv_func_fnmatch_works = yes; then :
   rm -f "$ac_config_libobj_dir/fnmatch.h"
 else
-  ac_fn_c_check_decl "$LINENO" "getenv" "ac_cv_have_decl_getenv" "$ac_includes_default"
-if test "x$ac_cv_have_decl_getenv" = xyes; then :
-  ac_have_decl=1
-else
-  ac_have_decl=0
-fi
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_DECL_GETENV $ac_have_decl
-_ACEOF
-
-for ac_func in btowc mbsrtowcs mempcpy wmempcpy
-do :
-  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
-ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
-if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
-_ACEOF
-
-fi
-done
-
-for ac_header in wchar.h wctype.h
-do :
-  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
-ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
-if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
-_ACEOF
-
-fi
-
-done
-
-case " $LIBOBJS " in
+  case " $LIBOBJS " in
   *" fnmatch.$ac_objext "* ) ;;
   *) LIBOBJS="$LIBOBJS fnmatch.$ac_objext"
  ;;
 esac
-
-ac_config_links="$ac_config_links $ac_config_libobj_dir/fnmatch.h:$ac_config_libobj_dir/fnmatch_.h"
-
+  ## Warning: this define might require the mangled header that I removed,
+  ## so ensure it never gets used:
+if test "x" = "Y0"; then
 
 $as_echo "#define fnmatch rpl_fnmatch" >>confdefs.h
 
+fi
 
 fi
 
-
-for ac_header in stdlib.h
+ for ac_header in stdlib.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "stdlib.h" "ac_cv_header_stdlib_h" "$ac_includes_default"
 if test "x$ac_cv_header_stdlib_h" = xyes; then :
@@ -11182,21 +11230,6 @@ esac
 
 
 
-
-
-
-
-  for ac_func in $ac_func_list
-do :
-  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
-ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
-if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
-_ACEOF
-
-fi
-done
 
 
 
@@ -11612,7 +11645,7 @@ _ACEOF
 rm -f conftest*
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether setvbuf arguments are reversed" >&5
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether setvbuf arguments are reversed" >&5
 $as_echo_n "checking whether setvbuf arguments are reversed... " >&6; }
 if ${ac_cv_func_setvbuf_reversed+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -11695,8 +11728,7 @@ if test "x${ac_cv_func_setvbuf_reversed}" = "xyes"; then
 $as_echo "#define SETVBUF_REVERSED 1" >>confdefs.h
 
 fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether lstat correctly handles trailing slash" >&5
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether lstat correctly handles trailing slash" >&5
 $as_echo_n "checking whether lstat correctly handles trailing slash... " >&6; }
 if ${ac_cv_func_lstat_dereferences_slashed_symlink+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -14628,42 +14660,6 @@ tbaseargs="${tbaseargs} --disable-option-checking"
 
 # Record and document user additions to sub configure arguments.
 
-
-  # Default to --enable-multilib
-# Check whether --enable-multilib was given.
-if test "${enable_multilib+set}" = set; then :
-  enableval=$enable_multilib; case "${enableval}" in
-  yes) multilib=yes ;;
-  no)  multilib=no ;;
-  *)   as_fn_error $? "bad value ${enableval} for multilib option" "$LINENO" 5 ;;
- esac
-else
-  multilib=no
-fi
-
-# We may get other options which we leave undocumented:
-# --with-target-subdir, --with-multisrctop, --with-multisubdir
-# See config-ml.in if you want the gory details.
-
-if test "${srcdir}" = "."; then
-  if test -n "${with_target_subdir}" && test "${with_target_subdir}" != "."; then
-    multi_basedir="${srcdir}/${with_multisrctop}../."
-  else
-    multi_basedir="${srcdir}/${with_multisrctop}."
-  fi
-else
-  multi_basedir="${srcdir}/."
-fi
-
-# Even if the default multilib is not a cross compilation,
-# it may be that some of the other multilibs are.
-if test "x${cross_compiling}" = "xno" && test "x${multilib}" = "xyes" \
-   && test "x${with_multisubdir}" != "x"; then
-   cross_compiling=maybe
-fi
-
-ac_config_commands="$ac_config_commands multilib-default-1"
-
 # For the build-side libraries, we just need to pretend we are native,
 # and not use the same cache file.  Multilibs are neither needed nor
 # desired.
@@ -16979,12 +16975,11 @@ if test -x ${srcdir}/libtool -a ! -d ${srcdir}/libtool; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: LIBTOOLFLAGS are set to \"${LIBTOOLFLAGS}\"" >&5
 $as_echo "$as_me: LIBTOOLFLAGS are set to \"${LIBTOOLFLAGS}\"" >&6;}
   fi
-
-  else
+      else
   test -e libtool
 
 
-
+  ## (libtool should be okay now)
 fi
 
 
@@ -19768,7 +19763,6 @@ cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
 # Files that config.status was made for.
 config_files="$ac_config_files"
 config_headers="$ac_config_headers"
-config_links="$ac_config_links"
 config_commands="$ac_config_commands"
 
 _ACEOF
@@ -19798,9 +19792,6 @@ $config_files
 
 Configuration headers:
 $config_headers
-
-Configuration links:
-$config_links
 
 Configuration commands:
 $config_commands
@@ -19955,7 +19946,6 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
-    "$ac_config_libobj_dir/fnmatch.h") CONFIG_LINKS="$CONFIG_LINKS $ac_config_libobj_dir/fnmatch.h:$ac_config_libobj_dir/fnmatch_.h" ;;
     "multilib-default-1") CONFIG_COMMANDS="$CONFIG_COMMANDS multilib-default-1" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
@@ -19973,7 +19963,6 @@ done
 if $ac_need_defaults; then
   test "${CONFIG_FILES+set}" = set || CONFIG_FILES=$config_files
   test "${CONFIG_HEADERS+set}" = set || CONFIG_HEADERS=$config_headers
-  test "${CONFIG_LINKS+set}" = set || CONFIG_LINKS=$config_links
   test "${CONFIG_COMMANDS+set}" = set || CONFIG_COMMANDS=$config_commands
 fi
 
@@ -20305,7 +20294,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 fi # test -n "$CONFIG_HEADERS"
 
 
-eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS  :L $CONFIG_LINKS  :C $CONFIG_COMMANDS"
+eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS    :C $CONFIG_COMMANDS"
 shift
 for ac_tag
 do
@@ -20553,38 +20542,7 @@ $as_echo "$as_me: $ac_file is unchanged" >&6;}
       || as_fn_error $? "could not create -" "$LINENO" 5
   fi
  ;;
-  :L)
-  #
-  # CONFIG_LINK
-  #
 
-  if test "$ac_source" = "$ac_file" && test "$srcdir" = '.'; then
-    :
-  else
-    # Prefer the file from the source tree if names are identical.
-    if test "$ac_source" = "$ac_file" || test ! -r "$ac_source"; then
-      ac_source=$srcdir/$ac_source
-    fi
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: linking $ac_source to $ac_file" >&5
-$as_echo "$as_me: linking $ac_source to $ac_file" >&6;}
-
-    if test ! -r "$ac_source"; then
-      as_fn_error $? "$ac_source: file not found" "$LINENO" 5
-    fi
-    rm -f "$ac_file"
-
-    # Try a relative symlink, then a hard link, then a copy.
-    case $ac_source in
-    [\\/$]* | ?:[\\/]* ) ac_rel_source=$ac_source ;;
-	*) ac_rel_source=$ac_top_build_prefix$ac_source ;;
-    esac
-    ln -s "$ac_rel_source" "$ac_file" 2>/dev/null ||
-      ln "$ac_source" "$ac_file" 2>/dev/null ||
-      cp -p "$ac_source" "$ac_file" ||
-      as_fn_error $? "cannot link or copy $ac_source to $ac_file" "$LINENO" 5
-  fi
- ;;
   :C)  { $as_echo "$as_me:${as_lineno-$LINENO}: executing $ac_file commands" >&5
 $as_echo "$as_me: executing $ac_file commands" >&6;}
  ;;

@@ -73,89 +73,92 @@ mi_cmd_var_create(char *command, char **argv, int argc)
   struct block *block = NULL;
   struct cleanup *old_cleanups;
   struct cleanup *mi_out_cleanup;
-  /* APPLE LOCAL Disable breakpoints while updating data formatters.  */
+  /* APPLE LOCAL Disable breakpoints while updating data formatters: */
   struct cleanup *bp_cleanup;
   volatile enum varobj_type var_type = USE_SELECTED_FRAME;
 
   if (argc != 3)
     {
-      /* mi_error_message = xstrprintf ("mi_cmd_var_create: Usage:
-         ...."); return MI_CMD_ERROR; */
-      error (_("mi_cmd_var_create: Usage: NAME FRAME EXPRESSION."));
+#if 0
+      mi_error_message = xstrprintf("mi_cmd_var_create: Usage: "
+                                    "NAME FRAME EXPRESSION.");
+      return MI_CMD_ERROR;
+#endif /* 0 */
+      error(_("mi_cmd_var_create: Usage: NAME FRAME EXPRESSION."));
     }
 
-  name = xstrdup (argv[0]);
+  name = xstrdup(argv[0]);
   /* Add cleanup for name. Must be free_current_contents as
      name can be reallocated */
-  old_cleanups = make_cleanup (free_current_contents, &name);
+  old_cleanups = make_cleanup(free_current_contents, &name);
 
   frame = xstrdup (argv[1]);
-  old_cleanups = make_cleanup (xfree, frame);
+  old_cleanups = make_cleanup(xfree, frame);
 
-  expr = xstrdup (argv[2]);
+  expr = xstrdup(argv[2]);
 
-  if (strcmp (name, "-") == 0)
+  if (strcmp(name, "-") == 0)
     {
-      xfree (name);
-      name = varobj_gen_name ();
+      xfree(name);
+      name = varobj_gen_name();
     }
-  else if (!isalpha (*name))
-    error (_("mi_cmd_var_create: name of object must begin with a letter"));
+  else if (!isalpha(*name))
+    error(_("mi_cmd_var_create: name of object must begin with a letter"));
 
-  /* APPLE LOCAL Disable breakpoints while updating data formatters.  */
-  bp_cleanup = make_cleanup_enable_disable_bpts_during_operation ();
+  /* APPLE LOCAL Disable breakpoints while updating data formatters: */
+  bp_cleanup = make_cleanup_enable_disable_bpts_during_operation();
 
-  if (strcmp (frame, "*") == 0)
+  if (strcmp(frame, "*") == 0)
     var_type = USE_CURRENT_FRAME;
-  else if (strcmp (frame, "@") == 0)
+  else if (strcmp(frame, "@") == 0)
     var_type = USE_SELECTED_FRAME;
   else if (frame[0] == '+')
     {
-      /* The '+' indicates the variable is to be created by associating it with
-         a block which can be done by address (+0x11223300) or by file:line
-         (+foo.c:12).  */
-      char *block_addr = frame + 1;
+      /* The '+' indicates the variable is to be created by associating it
+       * with a block which can be done by address (+0x11223300) or by
+       * file:line (+foo.c:12): */
+      char *block_addr = (frame + 1);
       volatile struct gdb_exception except;
 
-      /* Check for hex digits only in the block address string.  */
-      if (strspn (block_addr, "0x123456789abcdefABCDEF") == strlen (block_addr))
+      /* Check for hex digits only in the block address string: */
+      if (strspn(block_addr, "0x123456789abcdefABCDEF") == strlen(block_addr))
 	{
 	  /* Only hex digits made up the block address string so we should
 	     only try and convert the string to a core address.  */
-	  TRY_CATCH (except, RETURN_MASK_ALL)
+	  TRY_CATCH(except, RETURN_MASK_ALL)
 	    {
 	      var_type = USE_BLOCK_IN_FRAME;
-	      frameaddr = string_to_core_addr (block_addr);
-	      block = block_for_pc (frameaddr);
+	      frameaddr = string_to_core_addr(block_addr);
+	      block = block_for_pc(frameaddr);
 	    }
 	  if (except.reason < 0)
 	    {
-	      error ("mi_cmd_var_create: invalid address in block expression: "
-		     "\"%s\"", frame);
+	      error("mi_cmd_var_create: invalid address in block expression: "
+		    "\"%s\"", frame);
 	    }
 	}
       else
 	{
 	  /* We have characters other than hex digits in the block address
 	     description so it must be a "file.ext:line" format.  */
-	  char *colon = strrchr (block_addr, ':');
+	  char *colon = strrchr(block_addr, ':');
 
 	  if (colon)
 	    {
 	      struct symtabs_and_lines sals = { NULL, 0 };
 	      struct cleanup *old_chain = NULL;
 
-	      TRY_CATCH (except, RETURN_MASK_ALL)
+	      TRY_CATCH(except, RETURN_MASK_ALL)
 		{
-		  /* The variable 's' will be advanced by decode_line_1.  */
+		  /* The variable 's' will be advanced by decode_line_1: */
 		  char *s = block_addr;
 		  /* APPLE LOCAL begin return multiple symbols  */
-		  sals = decode_line_1 (&s, 1, (struct symtab *) NULL, 0, NULL,
-					NULL, 0);
+		  sals = decode_line_1(&s, 1, (struct symtab *)NULL, 0,
+                                       NULL, NULL, 0);
 		  /* APPLE LOCAL end return multiple symbols  */
 		}
 
-	      if (except.reason >= 0 && sals.nelts >= 1)
+	      if ((except.reason >= 0) && (sals.nelts >= 1))
 		{
                   unsigned long line;
                   char *line_number_str;
@@ -179,33 +182,33 @@ mi_cmd_var_create(char *command, char **argv, int argc)
 		      unsigned i;
 		      struct symbol *func_sym;
 		      /* APPLE LOCAL begin radar 6545149  */
-		      if (get_frame_type (selected_frame) == INLINED_FRAME)
-			func_sym = get_frame_function_inlined (selected_frame);
+		      if (get_frame_type(selected_frame) == INLINED_FRAME)
+			func_sym = get_frame_function_inlined(selected_frame);
 		      else
-			func_sym = get_frame_function (selected_frame);
+			func_sym = get_frame_function(selected_frame);
 		      /* APPLE LOCAL end radar 6545149  */
 		      if (func_sym)
 			/* Iterate through all symtab_and_line structures
 			   returned and find the one that has the same
 			   function symbol as our frame.  */
-			for (i = 0; i < sals.nelts; i++)
+			for (i = 0U; (int)i < sals.nelts; i++)
 			  {
 			    struct symbol *sal_sym =
-			      find_pc_sect_function (sals.sals[i].pc,
-						     sals.sals[i].section);
+			      find_pc_sect_function(sals.sals[i].pc,
+						    sals.sals[i].section);
 
 			    if (func_sym == sal_sym)
 			      {
 				/* APPLE LOCAL begin radar 6534195  */
-				if (get_frame_type (selected_frame) ==
-				                                INLINED_FRAME
-				    && sals.sals[i].line == line
-				    && func_sym_has_inlining (func_sym,
-							      selected_frame))
+				if ((get_frame_type(selected_frame) ==
+				                                INLINED_FRAME)
+				    && (sals.sals[i].line == line)
+				    && func_sym_has_inlining(func_sym,
+                                                             selected_frame))
 				  {
-				    /* We got a valid block match.  */
+				    /* We got a valid block match: */
 				    var_type = USE_BLOCK_IN_FRAME;
-				    block = block_for_pc (sals.sals[i].pc);
+				    block = block_for_pc(sals.sals[i].pc);
 				    break;
 				  }
 				/* If the requested line is less than the line

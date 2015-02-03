@@ -124,17 +124,17 @@ check_thread (bfd *abfd, asection *asect, unsigned int num)
     }
 
   /* Make sure we found a matching thread state name.  */
-	if (expected == NULL) {
-		return; /* We did NOT find a match.  */
-	}
+  if (expected == NULL) {
+    return; /* We did NOT find a match.  */
+  }
 
   /* Extract the thread index.  */
-  i = strtol (sname + strlen (expected), NULL, 0);
+  i = strtol(sname + strlen(expected), NULL, 0);
 
-  add_thread (ptid_build (1, i, num));
-  if (ptid_equal (inferior_ptid, null_ptid))
+  add_thread(ptid_build(1, i, num));
+  if (ptid_equal(inferior_ptid, null_ptid))
     {
-      inferior_ptid = ptid_build (1, i, num);
+      inferior_ptid = ptid_build(1, i, num);
     }
 }
 
@@ -478,12 +478,12 @@ typedef struct core_cached_registers_raw core_cached_registers_raw_t;
    in the thread register cache (regcache.c).  */
 
 static int
-core_fetch_cached_thread_registers ()
+core_fetch_cached_thread_registers(void)
 {
   core_cached_registers_raw_t *cached_regs_raw;
   struct thread_info *thrd_info = find_thread_pid (inferior_ptid);
 
-  if (thrd_info == NULL || thrd_info->private == NULL)
+  if ((thrd_info == NULL) || (thrd_info->private == NULL))
     return 0;
 
   cached_regs_raw = (core_cached_registers_raw_t *)

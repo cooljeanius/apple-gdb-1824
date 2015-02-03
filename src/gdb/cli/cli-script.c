@@ -650,10 +650,10 @@ insert_args (char *line)
   char *p, *save_line, *new_line;
   unsigned len, i;
 
-  /* First we need to know how much memory to allocate for the new line.  */
+  /* First we need to know how much memory to allocate for the new line: */
   save_line = line;
   len = 0;
-  while ((p = locate_arg (line)))
+  while ((p = locate_arg(line)))
     {
       len += p - line;
 
@@ -667,17 +667,17 @@ insert_args (char *line)
       else
 	{
 	  /* APPLE LOCAL huh? */
-	  len += p - line;
-	  i = p[4] - '0';
+	  len += (p - line);
+	  i = (p[4] - '0');
 
-	  if (i >= user_args->count)
+	  if (i >= (unsigned)user_args->count)
 	    {
-	      error (_("Missing argument %d in user function.\n"), i);
+	      error(_("Missing argument %d in user function.\n"), i);
 	      return NULL;
 	    }
 	  len += user_args->a[i].len;
 	}
-      line = p + 5;
+      line = (p + 5);
     }
 
   /* Don't forget the tail.  */
@@ -1355,50 +1355,53 @@ wrapped_read_command_file (struct ui_out *uiout, void *data)
   read_command_file (args->stream);
 }
 
-/* Used to implement source_command */
-
+/* Used to implement source_command: */
 void
-script_from_file (FILE *stream, char *file)
+script_from_file(FILE *stream, char *file)
 {
   struct cleanup *old_cleanups;
   struct source_cleanup_lines_args old_lines;
 
-  if (stream == NULL)
-    internal_error (__FILE__, __LINE__, _("called with NULL file pointer!"));
+  /* keep this condition the same as below: */
+#if defined(__APPLE__) && defined(__APPLE_CC__) && defined(APPLE_MERGE)
+  int needed_length;
+#endif /* APPLE MERGE */
 
-  old_cleanups = make_cleanup (do_fclose_cleanup, stream);
+  if (stream == NULL)
+    internal_error(__FILE__, __LINE__, _("called with NULL file pointer!"));
+
+  old_cleanups = make_cleanup(do_fclose_cleanup, stream);
 
   old_lines.old_line = source_line_number;
   old_lines.old_file = source_file_name;
-  make_cleanup (source_cleanup_lines, &old_lines);
+  make_cleanup(source_cleanup_lines, &old_lines);
   source_line_number = 0;
   source_file_name = file;
-  /* This will get set every time we read a line.  So it won't stay "" for
-     long.  */
+  /* This will get set every time we read a line.  So it will NOT stay ""
+   * for long: */
   error_pre_print = "";
 
-#if 0 /* APPLE MERGE */
-  int needed_length;
-  needed_length = strlen (source_file_name) + strlen (source_pre_error) + 80;
+#if defined(__APPLE__) && defined(__APPLE_CC__) && defined(APPLE_MERGE)
+  needed_length = (strlen(source_file_name) + strlen(source_pre_error) + 80);
   if (source_error_allocated < needed_length)
     {
       source_error_allocated *= 2;
       if (source_error_allocated < needed_length)
 	source_error_allocated = needed_length;
       if (source_error == NULL)
-	source_error = xmalloc (source_error_allocated);
+	source_error = xmalloc(source_error_allocated);
       else
-	source_error = xrealloc (source_error, source_error_allocated);
+	source_error = xrealloc(source_error, source_error_allocated);
     }
 
-  read_command_file (stream);
+  read_command_file(stream);
 #else /* to */
   {
     struct gdb_exception e;
     struct wrapped_read_command_file_args args;
     args.stream = stream;
-    e = catch_exception (uiout, wrapped_read_command_file, &args,
-			 RETURN_MASK_ERROR);
+    e = catch_exception(uiout, wrapped_read_command_file, &args,
+                        RETURN_MASK_ERROR);
     switch (e.reason)
       {
       case 0:
@@ -1406,31 +1409,32 @@ script_from_file (FILE *stream, char *file)
       case RETURN_ERROR:
 	/* Re-throw the error, but with the file name information
 	   prepended.  */
-	throw_error (e.error,
-		     _("%s:%d: Error in sourced command file:\n%s"),
-		     source_file_name, source_line_number, e.message);
+	throw_error(e.error,
+		    _("%s:%d: Error in sourced command file:\n%s"),
+		    source_file_name, source_line_number, e.message);
       default:
-	internal_error (__FILE__, __LINE__, _("bad reason"));
+	internal_error(__FILE__, __LINE__, _("bad reason"));
       }
   }
 #endif /* APPLE MERGE */
 
-  do_cleanups (old_cleanups);
+  do_cleanups(old_cleanups);
 }
 
 void
-show_user_1 (struct cmd_list_element *c, struct ui_file *stream)
+show_user_1(struct cmd_list_element *c, struct ui_file *stream)
 {
   struct command_line *cmdlines;
 
   cmdlines = c->user_commands;
   if (!cmdlines)
     return;
-  fputs_filtered ("User command ", stream);
-  fputs_filtered (c->name, stream);
-  fputs_filtered (":\n", stream);
+  fputs_filtered("User command ", stream);
+  fputs_filtered(c->name, stream);
+  fputs_filtered(":\n", stream);
 
-  print_command_lines (uiout, cmdlines, 1);
-  fputs_filtered ("\n", stream);
+  print_command_lines(uiout, cmdlines, 1);
+  fputs_filtered("\n", stream);
 }
 
+/* EOF */

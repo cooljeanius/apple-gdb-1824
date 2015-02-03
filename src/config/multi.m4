@@ -6,13 +6,16 @@
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
 
-# serial 7
+# serial 8
 
 # AM_ENABLE_MULTILIB([MAKEFILE],[REL-TO-TOP-SRCDIR])
 # ---------------------------------------------------
 # Add --enable-multilib to configure.
-AC_DEFUN([AM_ENABLE_MULTILIB],
-[# Default to --enable-multilib
+AC_DEFUN([AM_ENABLE_MULTILIB],[
+dnl# warn if _AC_COMPILER_EXEEXT was called before (using cross_compiling):
+AC_BEFORE([$0],[_AC_COMPILER_EXEEXT])dnl
+
+# Default to --enable-multilib usually:
 AC_ARG_ENABLE([multilib],
 [AS_HELP_STRING([--enable-multilib],
                 [build many library versions (default off)])],

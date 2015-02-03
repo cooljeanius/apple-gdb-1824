@@ -3237,14 +3237,14 @@ find_executable_name_in_xml_tree(xmlNode * a_node)
     {
       if ((cur_node->type == XML_ELEMENT_NODE) && cur_node->name)
 	{
-	  xmlChar *contents = xmlNodeGetContent (cur_node);
-	  if ((strcmp(cur_node->name, "key") == 0)
-	      && (strcmp(contents, "CFBundleExecutable") == 0))
+	  xmlChar *contents = xmlNodeGetContent(cur_node);
+	  if ((strcmp((const char *)cur_node->name, "key") == 0)
+	      && (strcmp((const char *)contents, "CFBundleExecutable") == 0))
 	    {
 	      just_saw_CFBundleExecutable = 1;
 	      continue;
 	    }
-	  if ((strcmp(cur_node->name, "string") == 0)
+	  if ((strcmp((const char *)cur_node->name, "string") == 0)
 	      && (just_saw_CFBundleExecutable == 1))
 	    {
 	      return (const char *)contents;

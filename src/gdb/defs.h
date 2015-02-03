@@ -448,7 +448,7 @@ struct cleanup
    works everywhere we use it. */
 
 #ifndef ATTR_NORETURN
-# if defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 7))
+# if defined(__GNUC__) && ((__GNUC__ > 2) || ((__GNUC__ == 2) && (__GNUC_MINOR__ >= 7)))
 #  define ATTR_NORETURN __attribute__ ((noreturn))
 # else
 #  define ATTR_NORETURN		/* nothing */
@@ -1292,7 +1292,7 @@ extern void *alloca(void);
 # endif /* Not GNU C */
 #endif /* alloca not defined */
 
-/* Dynamic target-system-dependent parameters for GDB. */
+/* Dynamic target-system-dependent parameters for GDB: */
 #include "gdbarch.h"
 
 /* Maximum size of a register.  Something small, but large enough for
@@ -1329,37 +1329,36 @@ enum { MAX_REGISTER_SIZE = 16 };
 
 /* In findvar.c.  */
 
-extern LONGEST extract_signed_integer (const gdb_byte *, int);
+extern LONGEST extract_signed_integer(const gdb_byte *, int);
 
 /* APPLE LOCAL explicit byte order */
-extern LONGEST extract_signed_integer_with_byte_order (const gdb_byte *, int, int);
+extern LONGEST extract_signed_integer_with_byte_order(const gdb_byte *, int, int);
 
-extern ULONGEST extract_unsigned_integer (const gdb_byte *, int);
-
-/* APPLE LOCAL explicit byte order */
-extern ULONGEST extract_unsigned_integer_with_byte_order (const gdb_byte *, int, int);
-
-extern int extract_long_unsigned_integer (const gdb_byte *, int, LONGEST *);
+extern ULONGEST extract_unsigned_integer(const gdb_byte *, int);
 
 /* APPLE LOCAL explicit byte order */
-extern int extract_long_unsigned_integer_with_byte_order (const gdb_byte *, int, LONGEST *, int);
+extern ULONGEST extract_unsigned_integer_with_byte_order(const gdb_byte *, int, int);
 
-extern CORE_ADDR extract_typed_address (const gdb_byte *buf,
-					struct type *type);
-
-extern void store_signed_integer (gdb_byte *, int, LONGEST);
+extern int extract_long_unsigned_integer(const gdb_byte *, int, LONGEST *);
 
 /* APPLE LOCAL explicit byte order */
-extern void store_signed_integer_with_byte_order (gdb_byte *, int, LONGEST, int);
+extern int extract_long_unsigned_integer_with_byte_order(const gdb_byte *, int, LONGEST *, int);
 
-extern void store_unsigned_integer (gdb_byte *, int, ULONGEST);
+extern CORE_ADDR extract_typed_address(const gdb_byte *buf,
+                                       struct type *type);
+
+extern void store_signed_integer(gdb_byte *, int, LONGEST);
 
 /* APPLE LOCAL explicit byte order */
-extern void store_unsigned_integer_with_byte_order (gdb_byte *, int, ULONGEST, int);
+extern void store_signed_integer_with_byte_order(gdb_byte *, int, LONGEST, int);
 
-extern void store_typed_address (gdb_byte *buf, struct type *type,
-				 CORE_ADDR addr);
+extern void store_unsigned_integer(gdb_byte *, int, ULONGEST);
 
+/* APPLE LOCAL explicit byte order */
+extern void store_unsigned_integer_with_byte_order(gdb_byte *, int, ULONGEST, int);
+
+extern void store_typed_address(gdb_byte *buf, struct type *type,
+                                CORE_ADDR addr);
 
 /* From valops.c */
 
@@ -1367,7 +1366,7 @@ extern int watchdog;
 
 /* Hooks for alternate command interfaces.  */
 
-/* The name of the interpreter if specified on the command line. */
+/* The name of the interpreter if specified on the command line: */
 extern char *interpreter_p;
 
 /* If a given interpreter matches INTERPRETER_P then it should update
@@ -1380,7 +1379,7 @@ struct target_waitstatus;
 struct cmd_list_element;
 
 /* APPLE LOCAL gdb_client_data */
-/* Typedef for anonymous data type for event data */
+/* Typedef for anonymous data type for event data: */
 typedef void * gdb_client_data;
 
 /* APPLE LOCAL Debugger_state */
@@ -1394,27 +1393,27 @@ typedef enum {
 } Debugger_state;
 
 /* APPLE LOCAL begin hooks */
-extern void (*init_ui_hook) (char *argv0);
-extern void (*command_loop_hook) (void);
+extern void (*init_ui_hook)(char *argv0);
+extern void (*command_loop_hook)(void);
 /* APPLE LOCAL end hooks */
-extern void (*deprecated_pre_add_symbol_hook) (const char *);
-extern void (*deprecated_post_add_symbol_hook) (void);
-extern void (*selected_frame_level_changed_hook) (int);
-extern int (*deprecated_ui_loop_hook) (int signo);
-extern void (*deprecated_init_ui_hook) (char *argv0);
-extern void (*deprecated_command_loop_hook) (void);
-extern void (*deprecated_show_load_progress) (const char *section,
-					      unsigned long section_sent,
-					      unsigned long section_size,
-					      unsigned long total_sent,
-					      unsigned long total_size);
-extern void (*deprecated_print_frame_info_listing_hook) (struct symtab * s,
-							 int line, int stopline,
-							 int noerror);
+extern void (*deprecated_pre_add_symbol_hook)(const char *);
+extern void (*deprecated_post_add_symbol_hook)(void);
+extern void (*selected_frame_level_changed_hook)(int);
+extern int (*deprecated_ui_loop_hook)(int signo);
+extern void (*deprecated_init_ui_hook)(char *argv0);
+extern void (*deprecated_command_loop_hook)(void);
+extern void (*deprecated_show_load_progress)(const char *section,
+					     unsigned long section_sent,
+					     unsigned long section_size,
+					     unsigned long total_sent,
+					     unsigned long total_size);
+extern void (*deprecated_print_frame_info_listing_hook)(struct symtab * s,
+                                                        int line, int stopline,
+                                                        int noerror);
 /* APPLE LOCAL begin hooks */
-extern void (*print_frame_more_info_hook) (struct ui_out *uiout,
-					    struct symtab_and_line *sal,
-					    struct frame_info *fi);
+extern void (*print_frame_more_info_hook)(struct ui_out *uiout,
+                                          struct symtab_and_line *sal,
+                                          struct frame_info *fi);
 /* APPLE LOCAL end hooks */
 
 /* APPLE LOCAL begin hooks */
@@ -1423,74 +1422,73 @@ extern void (*print_source_lines_hook)
      (struct symtab *s, int line, int stopline);
 
 /* called when the state of the debugger (i.e. gdb) changes */
-extern void (*state_change_hook) (Debugger_state new_state);
+extern void (*state_change_hook)(Debugger_state new_state);
 
 /* called when the frame changes (e.g. as the result of "up") */
-extern void (*frame_changed_hook) (int new_frame_number);
+extern void (*frame_changed_hook)(int new_frame_number);
 
 /* called when the stack changes (i.e. a new frame is added) */
-extern void (*stack_changed_hook) (void);
+extern void (*stack_changed_hook)(void);
 
-/* called when command line input is needed */
-extern char * (*command_line_input_hook) (char *, int, char *);
+/* called when command line input is needed: */
+extern char *(*command_line_input_hook)(char *, int, char *);
 
 /* these <command>_hooks are called after the command has processed its arguments
    and just before it calls out to do the work of the command */
 /* called when a stepping command (step, next, stepi, nexti) is issued */
-extern void (*stepping_command_hook) (void);
+extern void (*stepping_command_hook)(void);
 /* APPLE LOCAL end hooks */
 
-extern int (*deprecated_query_hook) (const char *, va_list)
+extern int (*deprecated_query_hook)(const char *, va_list)
      ATTRIBUTE_FPTR_PRINTF(1,0);
-extern void (*deprecated_warning_hook) (const char *, va_list)
+extern void (*deprecated_warning_hook)(const char *, va_list)
      ATTRIBUTE_FPTR_PRINTF(1,0);
 
-extern void (*deprecated_flush_hook) (struct ui_file * stream);
-extern void (*deprecated_create_breakpoint_hook) (struct breakpoint * b);
-extern void (*deprecated_delete_breakpoint_hook) (struct breakpoint * bpt);
-extern void (*deprecated_modify_breakpoint_hook) (struct breakpoint * bpt);
-extern void (*deprecated_interactive_hook) (void);
-extern void (*deprecated_registers_changed_hook) (void);
-extern void (*deprecated_readline_begin_hook) (char *, ...)
+extern void (*deprecated_flush_hook)(struct ui_file * stream);
+extern void (*deprecated_create_breakpoint_hook)(struct breakpoint * b);
+extern void (*deprecated_delete_breakpoint_hook)(struct breakpoint * bpt);
+extern void (*deprecated_modify_breakpoint_hook)(struct breakpoint * bpt);
+extern void (*deprecated_interactive_hook)(void);
+extern void (*deprecated_registers_changed_hook)(void);
+extern void (*deprecated_readline_begin_hook)(char *, ...)
      ATTRIBUTE_FPTR_PRINTF_1;
-extern char *(*deprecated_readline_hook) (char *);
-extern void (*deprecated_readline_end_hook) (void);
-extern void (*deprecated_register_changed_hook) (int regno);
-extern void (*deprecated_memory_changed_hook) (CORE_ADDR addr, int len);
-extern void (*deprecated_context_hook) (int);
-extern ptid_t (*deprecated_target_wait_hook) (ptid_t ptid,
-					      /* APPLE LOCAL target wait hook */
-					      struct target_waitstatus * status,
-					      gdb_client_data client_data);
+extern char *(*deprecated_readline_hook)(char *);
+extern void (*deprecated_readline_end_hook)(void);
+extern void (*deprecated_register_changed_hook)(int regno);
+extern void (*deprecated_memory_changed_hook)(CORE_ADDR addr, int len);
+extern void (*deprecated_context_hook)(int);
+extern ptid_t (*deprecated_target_wait_hook)(ptid_t ptid,
+					     /* APPLE LOCAL target wait hook */
+					     struct target_waitstatus * status,
+					     gdb_client_data client_data);
 
-extern void (*deprecated_attach_hook) (void);
-extern void (*deprecated_detach_hook) (void);
-extern void (*deprecated_call_command_hook) (struct cmd_list_element * c,
-					     char *cmd, int from_tty);
+extern void (*deprecated_attach_hook)(void);
+extern void (*deprecated_detach_hook)(void);
+extern void (*deprecated_call_command_hook)(struct cmd_list_element * c,
+					    char *cmd, int from_tty);
 
-extern void (*deprecated_set_hook) (struct cmd_list_element * c);
+extern void (*deprecated_set_hook)(struct cmd_list_element * c);
 
-extern void (*deprecated_error_hook) (void);
+extern void (*deprecated_error_hook)(void);
 
 /* APPLE LOCAL begin hooks */
-/* called when the continue command is issued */
-extern void (*continue_command_hook) (void);
+/* called when the continue command is issued: */
+extern void (*continue_command_hook)(void);
 /* APPLE LOCAL end hooks */
 
-extern void (*deprecated_error_begin_hook) (void);
+extern void (*deprecated_error_begin_hook)(void);
 
 /* APPLE LOCAL begin hooks */
 /* called when the run command is issued; return 1 means do the run; 0 means do not */
-extern int (*run_command_hook) (void);
-extern void (*hand_call_function_hook) (void);
+extern int (*run_command_hook)(void);
+extern void (*hand_call_function_hook)(void);
 /* APPLE LOCAL end hooks */
 
-extern int (*deprecated_ui_load_progress_hook) (const char *section,
-						unsigned long num);
+extern int (*deprecated_ui_load_progress_hook)(const char *section,
+                                               unsigned long num);
 
 
-/* Inhibit window interface if non-zero. */
-
+/* Inhibit window interface if non-zero: */
 extern int use_windows;
 
 /* Symbolic definitions of filename-related things.  */
@@ -1523,7 +1521,7 @@ extern int use_windows;
 # define MERGEPID(PID, TID) ptid_build (PID, TID, 0)
 #endif /* !PIDGET */
 
-/* Define well known filenos if the system does not define them.  */
+/* Define well known filenos if the system does not define them: */
 #ifndef STDIN_FILENO
 # define STDIN_FILENO   0
 #endif /* !STDIN_FILENO */
@@ -1569,20 +1567,20 @@ extern int use_windows;
    "align_..." instead of "round_..." as the latter reads better with
    this incorrect coding style.  */
 
-extern ULONGEST align_up (ULONGEST v, int n);
-extern ULONGEST align_down (ULONGEST v, int n);
+extern ULONGEST align_up(ULONGEST v, int n);
+extern ULONGEST align_down(ULONGEST v, int n);
 
 /* APPLE LOCAL: Make this public since fork-child.c and remote.c now use it: */
-void breakup_args (char *scratch, int *argc, char **argv);
+void breakup_args(char *scratch, int *argc, char **argv);
 
 /* APPLE LOCAL begin CHECK macro: */
 #define __CHECK_FUNCTION __PRETTY_FUNCTION__
 
 #define CHECK(expression) \
-  ((void) ((expression) ? 0 : gdb_check (#expression, __FILE__, __LINE__, __CHECK_FUNCTION)))
+  ((void)((expression) ? 0 : gdb_check(#expression, __FILE__, __LINE__, __CHECK_FUNCTION)))
 
 #define CHECK_FATAL(expression) \
-  ((void) ((expression) ? 0 : gdb_check_fatal (#expression, __FILE__, __LINE__, __CHECK_FUNCTION)))
+  ((void)((expression) ? 0 : gdb_check_fatal(#expression, __FILE__, __LINE__, __CHECK_FUNCTION)))
 
 void gdb_check(const char *str, const char *file, unsigned int line, const char *func);
 void gdb_check_fatal(const char *str, const char *file, unsigned int line, const char *func);

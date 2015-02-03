@@ -76,6 +76,8 @@ struct target_ops darwin_kernel_ops;
 
 static void darwin_kernel_mourn_inferior(void);
 
+extern void _initialize_remote_darwin_kernel(void);
+
 typedef enum
 {
   DARWIN_KERNEL_LOG_ERROR = 1,

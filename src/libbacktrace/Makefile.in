@@ -171,7 +171,6 @@ am__v_at_0 = @
 am__v_at_1 = 
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp =
-am__depfiles_maybe =
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -654,6 +653,9 @@ MAINTAINERCLEANFILES = configure*.scan
 # even though that is part of GCC, because where to find it depends on
 # whether we are being built as a host library or a target library.
 INCDIR = $(top_srcdir)/../include
+
+# <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=43171>:
+am__depfiles_maybe = multilib-default-1
 all: $(BUILT_SOURCES) config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 

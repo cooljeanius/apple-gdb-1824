@@ -124,7 +124,7 @@ struct bfd_memory_footprint_group {
 static void mark_buckets_as_used (struct pre_run_memory_map *map, int i, struct bfd_memory_footprint *fp);
 
 static int
-dyld_print_status ()
+dyld_print_status(void)
 {
   /* do not print status dots when executing MI */
   return !ui_out_is_mi_like_p (uiout);

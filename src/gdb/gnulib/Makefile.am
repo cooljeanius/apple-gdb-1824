@@ -374,6 +374,11 @@ alignof.h: import/alignof.h
 
 BUILT_SOURCES += alignof.h
 
+chdir-long.c: import/chdir-long.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += chdir-long.c
+
 dosname.h: import/dosname.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
@@ -388,6 +393,14 @@ exitfail.h: import/exitfail.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += exitfail.h
+
+fcntl.c: import/fcntl.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+fdopendir.c: import/fdopendir.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += fcntl.c fdopendir.c
 
 float+.h: import/float+.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
@@ -407,6 +420,11 @@ import/fnmatch.h: import/fnmatch.in.h
 	$(MAKE) -C import fnmatch.h
 
 BUILT_SOURCES += fnmatch_loop.c fnmatch.c fnmatch.h
+
+fts.c: import/fts.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += fts.c
 
 gettext.h: import/gettext.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
@@ -449,7 +467,10 @@ BUILT_SOURCES += mbrtowc.c mbsinit.c mbsrtowcs.c mbsrtowcs-state.c
 mempcpy.c: import/mempcpy.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-BUILT_SOURCES += mempcpy.c
+memrchr.c: import/memrchr.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += mempcpy.c memrchr.c
 
 obstack.c: import/obstack.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
@@ -458,6 +479,27 @@ obstack.h: import/obstack.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += obstack.c obstack.h
+
+open.c: import/open.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+openat.c: import/openat.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+openat-proc.c: import/openat-proc.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += open.c openat.c openat-proc.c
+
+readlink.c: import/readlink.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += readlink.c
+
+secure_getenv.c: import/secure_getenv.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += secure_getenv.c
 
 stat.c: import/stat.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
@@ -480,6 +522,11 @@ strstr.c: import/strstr.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += strnlen.c strstr.c
+
+unlink.c: import/unlink.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += unlink.c
 
 wcsncasecmp.c: import/wcsncasecmp.c
 	if test ! -e $@; then $(LN_S) $< $@; fi

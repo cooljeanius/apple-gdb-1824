@@ -2409,14 +2409,14 @@ static int hitlist_max_elem;
 #define HITLIST_INITIAL_MAX_ELEM 1
 
 static void
-objfile_init_hitlist ()
+objfile_init_hitlist(void)
 {
   if (cur_objfile_hitlist != NULL)
-    internal_error (__FILE__, __LINE__,
-		    "Tried to initialize hit list without "
-		    "closing previous hitlist.");
-  cur_objfile_hitlist = xmalloc (sizeof (struct objfile_hitlist)
-				 + HITLIST_INITIAL_MAX_ELEM * sizeof (struct objfile *));
+    internal_error(__FILE__, __LINE__,
+		   "Tried to initialize hit list without "
+		   "closing previous hitlist.");
+  cur_objfile_hitlist = xmalloc(sizeof(struct objfile_hitlist)
+                                + HITLIST_INITIAL_MAX_ELEM * sizeof(struct objfile *));
   hitlist_max_elem = HITLIST_INITIAL_MAX_ELEM;
   cur_objfile_hitlist->num_elem = 0;
 }
@@ -2453,7 +2453,7 @@ objfile_add_to_hitlist (struct objfile *ofile)
    When you are done with it you can just free it.  */
 
 struct objfile_hitlist *
-objfile_detach_hitlist ()
+objfile_detach_hitlist(void)
 {
   struct objfile_hitlist *thislist;
 

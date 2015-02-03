@@ -298,7 +298,7 @@ macosx_clear_start_breakpoint (void)
    do simple mach vm mapping calls on the inferior process.  */
 
 int
-target_is_remote ()
+target_is_remote(void)
 {
   if (strstr (current_target.to_shortname, "remote") == NULL
       && strstr (current_target.to_shortname, "async") == NULL)
@@ -320,9 +320,9 @@ target_is_remote ()
 }
 
 int
-target_is_kdp_remote ()
+target_is_kdp_remote(void)
 {
-  if (strcmp (current_target.to_shortname, "remote-kdp") == 0)
+  if (strcmp(current_target.to_shortname, "remote-kdp") == 0)
     return 1;
   return 0;
 }

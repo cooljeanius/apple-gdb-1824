@@ -556,7 +556,7 @@
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
 
-/* Define to rpl_fnmatch if the replacement function should be used. */
+/* Define to rpl_fnmatch if the replacement func should be used */
 #undef fnmatch
 
 /* Define to `int' if <sys/types.h> doesn't define. */

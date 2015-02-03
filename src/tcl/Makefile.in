@@ -21,7 +21,7 @@ CFLAGS = @CFLAGS@ $(C_ARCHFLAGS)
 @SET_MAKE@
 
 all:
-	@cd $(CONFIGDIR) && $(MAKE) $@
+	@cd $(CONFIGDIR) && $(MAKE) $@ CFLAGS="@CFLAGS@ $(C_ARCHFLAGS)"
 	@test x"$(CONFIGDIR2)" = x"" || (cd "$(CONFIGDIR2)" && $(MAKE) $@)
 
 # FIXME: install-binaries

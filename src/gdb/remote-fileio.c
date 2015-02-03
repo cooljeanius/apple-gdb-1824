@@ -685,7 +685,7 @@ remote_fileio_func_close (char *buf)
 }
 
 static void
-remote_fileio_func_read (char *buf)
+remote_fileio_func_read(char *buf)
 {
   long target_fd, num;
   LONGEST lnum;
@@ -696,58 +696,58 @@ remote_fileio_func_read (char *buf)
   off_t old_offset, new_offset;
 
   /* 1. Parameter: file descriptor */
-  if (remote_fileio_extract_int (&buf, &target_fd))
+  if (remote_fileio_extract_int(&buf, &target_fd))
     {
-      remote_fileio_ioerror ();
+      remote_fileio_ioerror();
       return;
     }
-  fd = remote_fileio_map_fd ((int) target_fd);
+  fd = remote_fileio_map_fd((int)target_fd);
   if (fd == FIO_FD_INVALID)
     {
-      remote_fileio_badfd ();
+      remote_fileio_badfd();
       return;
     }
   /* 2. Parameter: buffer pointer */
-  if (remote_fileio_extract_long (&buf, &lnum))
+  if (remote_fileio_extract_long(&buf, &lnum))
     {
-      remote_fileio_ioerror ();
+      remote_fileio_ioerror();
       return;
     }
-  ptrval = (CORE_ADDR) lnum;
+  ptrval = (CORE_ADDR)lnum;
   /* 3. Parameter: buffer length */
-  if (remote_fileio_extract_int (&buf, &num))
+  if (remote_fileio_extract_int(&buf, &num))
     {
-      remote_fileio_ioerror ();
+      remote_fileio_ioerror();
       return;
     }
-  length = (size_t) num;
+  length = (size_t)num;
 
   switch (fd)
     {
       case FIO_FD_CONSOLE_OUT:
-	remote_fileio_badfd ();
+	remote_fileio_badfd();
 	return;
       case FIO_FD_CONSOLE_IN:
 	{
 	  static char *remaining_buf = NULL;
-	  static int remaining_length = 0;
+	  static size_t remaining_length = 0;
 
-	  buffer = (char *) xmalloc (32768);
+	  buffer = (char *)xmalloc(32768);
 	  if (remaining_buf)
 	    {
 	      remote_fio_no_longjmp = 1;
 	      if (remaining_length > length)
 		{
-		  memcpy (buffer, remaining_buf, length);
-		  memmove (remaining_buf, remaining_buf + length,
-			   remaining_length - length);
+		  memcpy(buffer, remaining_buf, length);
+		  memmove(remaining_buf, (remaining_buf + length),
+                          (remaining_length - length));
 		  remaining_length -= length;
 		  ret = length;
 		}
 	      else
 		{
-		  memcpy (buffer, remaining_buf, remaining_length);
-		  xfree (remaining_buf);
+		  memcpy(buffer, remaining_buf, remaining_length);
+		  xfree(remaining_buf);
 		  remaining_buf = NULL;
 		  ret = remaining_length;
 		}
@@ -803,7 +803,7 @@ remote_fileio_func_read (char *buf)
 }
 
 static void
-remote_fileio_func_write (char *buf)
+remote_fileio_func_write(char *buf)
 {
   long target_fd, num;
   LONGEST lnum;
@@ -813,38 +813,38 @@ remote_fileio_func_write (char *buf)
   size_t length;
 
   /* 1. Parameter: file descriptor */
-  if (remote_fileio_extract_int (&buf, &target_fd))
+  if (remote_fileio_extract_int(&buf, &target_fd))
     {
-      remote_fileio_ioerror ();
+      remote_fileio_ioerror();
       return;
     }
-  fd = remote_fileio_map_fd ((int) target_fd);
+  fd = remote_fileio_map_fd((int)target_fd);
   if (fd == FIO_FD_INVALID)
     {
-      remote_fileio_badfd ();
+      remote_fileio_badfd();
       return;
     }
   /* 2. Parameter: buffer pointer */
-  if (remote_fileio_extract_long (&buf, &lnum))
+  if (remote_fileio_extract_long(&buf, &lnum))
     {
-      remote_fileio_ioerror ();
+      remote_fileio_ioerror();
       return;
     }
-  ptrval = (CORE_ADDR) lnum;
+  ptrval = (CORE_ADDR)lnum;
   /* 3. Parameter: buffer length */
-  if (remote_fileio_extract_int (&buf, &num))
+  if (remote_fileio_extract_int(&buf, &num))
     {
-      remote_fileio_ioerror ();
+      remote_fileio_ioerror();
       return;
     }
-  length = (size_t) num;
+  length = (size_t)num;
 
-  buffer = (char *) xmalloc (length);
-  retlength = remote_read_bytes (ptrval, buffer, length);
-  if (retlength != length)
+  buffer = (char *)xmalloc(length);
+  retlength = remote_read_bytes(ptrval, buffer, length);
+  if ((size_t)retlength != length)
     {
-      xfree (buffer);
-      remote_fileio_ioerror ();
+      xfree(buffer);
+      remote_fileio_ioerror();
       return;
     }
 
@@ -852,27 +852,27 @@ remote_fileio_func_write (char *buf)
   switch (fd)
     {
       case FIO_FD_CONSOLE_IN:
-	remote_fileio_badfd ();
+	remote_fileio_badfd();
 	return;
       case FIO_FD_CONSOLE_OUT:
-	ui_file_write (target_fd == 1 ? gdb_stdtarg : gdb_stdtargerr, buffer,
-		       length);
-	gdb_flush (target_fd == 1 ? gdb_stdtarg : gdb_stdtargerr);
+	ui_file_write((target_fd == 1) ? gdb_stdtarg : gdb_stdtargerr,
+                      buffer, length);
+	gdb_flush((target_fd == 1) ? gdb_stdtarg : gdb_stdtargerr);
 	ret = length;
 	break;
       default:
-	ret = write (fd, buffer, length);
-	if (ret < 0 && errno == EACCES)
+	ret = write(fd, buffer, length);
+	if ((ret < 0) && (errno == EACCES))
 	  errno = EBADF; /* Cygwin returns EACCESS when writing to a R/O file.*/
 	break;
     }
 
   if (ret < 0)
-    remote_fileio_return_errno (-1);
+    remote_fileio_return_errno(-1);
   else
-    remote_fileio_return_success (ret);
+    remote_fileio_return_success(ret);
 
-  xfree (buffer);
+  xfree(buffer);
 }
 
 static void

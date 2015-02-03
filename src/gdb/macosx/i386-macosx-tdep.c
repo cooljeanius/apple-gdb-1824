@@ -603,7 +603,7 @@ x86_macosx_init_abi_64 (struct gdbarch_info info, struct gdbarch *gdbarch)
 }
 
 static int
-i386_mach_o_query_64bit ()
+i386_mach_o_query_64bit(void)
 {
   int result;
   int supports64bit;

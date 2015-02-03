@@ -284,6 +284,15 @@ dnl# from gnulib module stddef:
 AC_REQUIRE([gl_STDDEF_H])dnl
 dnl# from gnulib module stdint:
 AC_REQUIRE([gl_STDINT_H])dnl
+dnl# ...and additionally:
+GNULIB_IMPORT_DIR=import
+# For Makefile dependencies:
+GNULIB_STDINT_H=""
+if test x"${STDINT_H}" != x""; then
+  test -n "${STDINT_H}" && test -n "${GNULIB_IMPORT_DIR}"
+  export GNULIB_STDINT_H=${GNULIB_IMPORT_DIR}/${STDINT_H}
+fi
+AC_SUBST([GNULIB_STDINT_H])dnl
 dnl# from gnulib module strerror:
 AC_REQUIRE([gl_FUNC_STRERROR])dnl
   ## set up libobj if needed:

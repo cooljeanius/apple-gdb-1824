@@ -49,7 +49,7 @@ extern void _initialize_core (void);
 static void call_extra_exec_file_hooks (char *filename);
 
 /* You can have any number of hooks for `exec_file_command' command to
-   call.  If there's only one hook, it is set in exec_file_display
+   call.  If there is only one hook, then it is set in exec_file_display
    hook.  If there are two or more hooks, they are set in
    exec_file_extra_hooks[], and deprecated_exec_file_display_hook is
    set to a function that calls all of them.  This extra complexity is
@@ -60,7 +60,7 @@ static void call_extra_exec_file_hooks (char *filename);
 typedef void (*hook_type) (char *);
 
 hook_type deprecated_exec_file_display_hook;	/* the original hook */
-static hook_type *exec_file_extra_hooks;	/* array of additional hooks */
+static hook_type *exec_file_extra_hooks;   /* array of additional hooks */
 static int exec_file_hook_count = 0;	/* size of array */
 
 /* Binary file diddling handle for the core file.  */
@@ -81,12 +81,12 @@ core_file_command (char *args, int from_tty)
 
   dont_repeat ();
 
-  if (args == NULL) 
+  if (args == NULL)
     {
       cleanups = NULL;
       filename = NULL;
     }
-  else 
+  else
     {
       argv = buildargv (args);
       if (argv == NULL)
@@ -107,7 +107,7 @@ core_file_command (char *args, int from_tty)
     do_cleanups (cleanups);
 }
 
-void 
+void
 core_file_attach (char *filename, int from_tty)
 {
   /* APPLE LOCAL end refactor corefile */
@@ -182,7 +182,7 @@ close_exec_file (void)
 #if 0				/* FIXME */
   if (exec_bfd)
     bfd_tempclose (exec_bfd);
-#endif
+#endif /* 0 */
 }
 
 void
@@ -198,18 +198,18 @@ reopen_exec_file (void)
   long mtime;
 
   /* APPLE LOCAL begin gdb_quitting */
-  /* Don't do any of this if we are quitting.  */
+  /* Do NOT do any of this if we are quitting.  */
   if (gdb_quitting)
     return;
   /* APPLE LOCAL end gdb_quitting */
 
-  /* Don't do anything if the current target isn't exec. */
+  /* Do NOT do anything if the current target is NOT exec. */
   if (exec_bfd == NULL || strcmp (target_shortname, "exec") != 0)
     return;
 
   /* If the timestamp of the exec file has changed, reopen it. */
   /* APPLE LOCAL comment */
-  /* The whole world may have changed, so just unset all breakpoints.*/
+  /* The whole world may have changed, so just unset all breakpoints: */
   filename = xstrdup (bfd_get_filename (exec_bfd));
   make_cleanup (xfree, filename);
   mtime = bfd_get_mtime (exec_bfd);
@@ -225,7 +225,7 @@ reopen_exec_file (void)
       tell_objc_msgsend_cacher_objfile_changed (NULL);
       /* APPLE LOCAL end hooks */
     }
-#endif
+#endif /* 0 */
 }
 
 /* If we have both a core file and an exec file,
@@ -261,13 +261,12 @@ Use the \"file\" or \"exec-file\" command."));
 }
 
 
-/* Report a memory error with error().  */
-
-void
+/* Report a memory error with error(): */
+void ATTR_NORETURN
 memory_error (int status, CORE_ADDR memaddr)
 {
-  struct ui_file *tmp_stream = mem_fileopen ();
-  make_cleanup_ui_file_delete (tmp_stream);
+  struct ui_file *tmp_stream = mem_fileopen();
+  make_cleanup_ui_file_delete(tmp_stream);
 
   if (status == EIO)
     {
@@ -316,7 +315,7 @@ struct captured_read_memory_integer_arguments
 };
 
 /* Helper function for gdb_read_memory_integer().  DATA must be a
-   pointer to a captured_read_memory_integer_arguments struct. 
+   pointer to a captured_read_memory_integer_arguments struct.
    Return 1 if successful.  Note that the catch_errors() interface
    will return 0 if an error occurred while reading memory.  This
    choice of return code is so that we can distinguish between
@@ -438,7 +437,7 @@ write_memory (CORE_ADDR memaddr, const bfd_byte *myaddr, int len)
 {
   int status;
   bfd_byte *bytes = alloca (len);
-  
+
   memcpy (bytes, myaddr, len);
   status = target_write_memory (memaddr, bytes, len);
   if (status != 0)
@@ -542,7 +541,7 @@ No arg means have no core file.  This command has been superseded by the\n\
   set_cmd_completer (c, filename_completer);
   /* c->completer_word_break_characters = gdb_completer_filename_word_break_characters; */ /* FIXME */
 
-  
+
   add_setshow_string_noescape_cmd ("gnutarget", class_files,
 				   &gnutarget_string, _("(\
 Set the current BFD target."), _("\

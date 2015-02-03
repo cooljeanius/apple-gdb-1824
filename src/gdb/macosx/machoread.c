@@ -1044,9 +1044,9 @@ static struct sym_fns macho_sym_fns = {
 };
 
 void
-_initialize_machoread ()
+_initialize_machoread(void)
 {
-  add_symtab_fns (&macho_sym_fns);
+  add_symtab_fns(&macho_sym_fns);
 
 #if HAVE_MMAP
   add_setshow_boolean_cmd ("mmap-string-tables", class_obscure,

@@ -21,6 +21,12 @@
 
 set -e
 
+if test "x${V}" = "x1" || test "x${SH_V}" = "x1"; then
+    AM_V_v="-v"
+else
+    AM_V_v=""
+fi
+
 move_if_change()
 {
     file=$1
@@ -28,7 +34,7 @@ move_if_change()
     then
 	echo "${file} unchanged." 1>&2
     else
-	mv -v new-"${file}" "${file}"
+	mv ${AM_V_v} new-"${file}" "${file}"
 	echo "${file} updated." 1>&2
     fi
 }

@@ -369,6 +369,10 @@
    */
 #undef HAVE_DECL_STRDUP
 
+/* Define to 1 if you have the declaration of `strerror', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRERROR
+
 /* Define to 1 if you have the declaration of `strerror_r', and to 0 if you
    don't. */
 #undef HAVE_DECL_STRERROR_R
@@ -474,6 +478,9 @@
 
 /* Define to 1 if you have the `c' library (-lc). */
 #undef HAVE_LIBC
+
+/* Define to 1 if you have the `intl' library (-lintl). */
+#undef HAVE_LIBINTL
 
 /* Define to 1 if you have the <libintl.h> header file. */
 #undef HAVE_LIBINTL_H

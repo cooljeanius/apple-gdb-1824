@@ -1,4 +1,4 @@
-/* Memory-access and commands for "inferior" process, for GDB.
+/* infcmd.c: Memory-access and commands for "inferior" process, for GDB.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
@@ -138,9 +138,9 @@ static void step_1_no_inlining (int, int, char *);
 static void step_1_continuation (struct continuation_arg *arg);
 
 /* APPLE LOCAL begin checkpoints */
-void re_exec_1 ();
-void re_exec_1_continuation (struct continuation_arg *arg);
-void re_exec_once (int count);
+void re_exec_1(void);
+void re_exec_1_continuation(struct continuation_arg *arg);
+void re_exec_once(int count);
 /* APPLE LOCAL end checkpoints */
 
 static void next_command (char *, int);
@@ -1708,26 +1708,26 @@ struct checkpoint *active_checkpoint;
 int magic_flag = 0;
 
 void
-re_execute_command (char *args, int from_tty)
+re_execute_command(char *args, int from_tty)
 {
-  int cpn = (args ? parse_and_eval_long (args) : 1);
+  int cpn = (args ? parse_and_eval_long(args) : 1);
 
-  rx_cp = find_checkpoint (cpn);
+  rx_cp = find_checkpoint(cpn);
 
   if (rx_cp == NULL)
     {
-      printf ("Checkpoint not found\n");
+      printf("Checkpoint not found\n");
       return;
     }
 
-  printf ("Re-executing to ");
-  print_checkpoint_info (rx_cp);
+  printf("Re-executing to ");
+  print_checkpoint_info(rx_cp);
 
-  re_exec_1 ();
+  re_exec_1();
 }
 
 void
-re_exec_1 ()
+re_exec_1(void)
 {
   int count = 1;
   struct frame_info *frame;

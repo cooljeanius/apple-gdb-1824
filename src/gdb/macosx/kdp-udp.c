@@ -42,10 +42,13 @@
 #include "defs.h"
 #include "event-loop.h"
 
-#define assert CHECK_FATAL
+#ifndef assert
+# define assert CHECK_FATAL
+#endif /* !assert */
 
 void
-kdp_log_packetbuf (kdp_log_function * f, kdp_log_level l, char *prefix, const char *buf, size_t len)
+kdp_log_packetbuf(kdp_log_function *f, kdp_log_level l, char *prefix,
+                  const char *buf, size_t len)
 {
   char strbuf[KDP_MAX_PACKET_SIZE * 6];
   size_t i;

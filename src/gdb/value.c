@@ -1116,13 +1116,13 @@ unpack_long (struct type *type, const gdb_byte *valaddr)
 	return extract_signed_integer_with_byte_order (valaddr, len, TYPE_BYTE_ORDER (type));
 
     case TYPE_CODE_FLT:
-      return extract_typed_floating (valaddr, type);
+      return (LONGEST)extract_typed_floating(valaddr, type);
 
     case TYPE_CODE_PTR:
     case TYPE_CODE_REF:
       /* Assume a CORE_ADDR can fit in a LONGEST (for now).  Not sure
          whether we want this to be true eventually.  */
-      return extract_typed_address (valaddr, type);
+      return extract_typed_address(valaddr, type);
 
     case TYPE_CODE_MEMBER:
       error (_("not implemented: member types in unpack_long"));

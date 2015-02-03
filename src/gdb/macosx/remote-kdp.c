@@ -142,18 +142,18 @@ static int remote_kdp_feature = 0;
 
 struct target_ops kdp_ops;
 
-static void kdp_mourn_inferior ();
+static void kdp_mourn_inferior(void);
 
 static void
-set_timeouts (char *args, int from_tty, struct cmd_list_element *cmd)
+set_timeouts(char *args, int from_tty, struct cmd_list_element *cmd)
 {
-  kdp_set_timeouts (&c, kdp_timeout, kdp_retries);
+  kdp_set_timeouts(&c, kdp_timeout, kdp_retries);
 }
 
 static int
-parse_host_type (const char *host)
+parse_host_type(const char *host)
 {
-  if ((strcasecmp (host, "powerpc") == 0) || (strcasecmp (host, "ppc") == 0))
+  if ((strcasecmp(host, "powerpc") == 0) || (strcasecmp(host, "ppc") == 0))
     {
 #if KDP_TARGET_POWERPC
       return CPU_TYPE_POWERPC;
@@ -161,11 +161,11 @@ parse_host_type (const char *host)
       return -2;
 #endif /* KDP_TARGET_POWERPC */
     }
-  else if ((strcasecmp (host, "ia32") == 0)
-           || (strcasecmp (host, "i386") == 0)
-           || (strcasecmp (host, "i486") == 0)
-           || (strcasecmp (host, "i586") == 0)
-           || (strcasecmp (host, "pentium") == 0))
+  else if ((strcasecmp(host, "ia32") == 0)
+           || (strcasecmp(host, "i386") == 0)
+           || (strcasecmp(host, "i486") == 0)
+           || (strcasecmp(host, "i586") == 0)
+           || (strcasecmp(host, "pentium") == 0))
     {
 #if KDP_TARGET_I386
       return CPU_TYPE_I386;
@@ -173,7 +173,7 @@ parse_host_type (const char *host)
       return -2;
 #endif /* KDP_TARGET_I386 */
     }
-  else if (strcasecmp (host, "arm") == 0)
+  else if (strcasecmp(host, "arm") == 0)
     {
 #if KDP_TARGET_ARM
       return CPU_TYPE_ARM;
@@ -188,7 +188,7 @@ parse_host_type (const char *host)
 }
 
 static void
-logger (kdp_log_level l, const char *format, ...)
+logger(kdp_log_level l, const char *format, ...)
 {
   va_list ap;
 
@@ -197,9 +197,9 @@ logger (kdp_log_level l, const char *format, ...)
       return;
     }
 
-  va_start (ap, format);
-  vfprintf (stderr, format, ap);
-  va_end (ap);
+  va_start(ap, format);
+  vfprintf(stderr, format, ap);
+  va_end(ap);
 }
 
 static void
@@ -2118,7 +2118,9 @@ initialize_sigint_signal_handler (void)
 static void
 kdp_terminal_inferior (void)
 {
-  /* terminal_inferior (); */
+#if 0
+  terminal_inferior();
+#endif /* 0 */
 
   if (!sync_execution)
     return;
@@ -2192,9 +2194,7 @@ kdp_async (void (*callback) (enum inferior_event_type event_type,
 
   if ((callback != NULL) && (c.saved_exception_pending))
     {
-
-      gdb_queue_event (kdp_file_handler_callback, (void *) 0, TAIL);
-
+      gdb_queue_event(kdp_file_handler_callback, (void *)0, TAIL);
     }
 }
 
@@ -2203,55 +2203,55 @@ kdp_async (void (*callback) (enum inferior_event_type event_type,
    macosx "exec" target.  */
 
 int
-kdp_can_use_hw_breakpoint (int unused1, int unused2, int unused3)
+kdp_can_use_hw_breakpoint(int unused1, int unused2, int unused3)
 {
   return 0;
 }
 
 int
-kdp_stopped_by_watchpoint (void)
+kdp_stopped_by_watchpoint(void)
 {
   return 0;
 }
 
 int
-kdp_stopped_data_address (struct target_ops *unused1, CORE_ADDR *unused2)
+kdp_stopped_data_address(struct target_ops *unused1, CORE_ADDR *unused2)
 {
   return 0;
 }
 
 int
-kdp_insert_watchpoint (CORE_ADDR unused1, int unused2, int unused3)
+kdp_insert_watchpoint(CORE_ADDR unused1, int unused2, int unused3)
 {
   return 0;
 }
 
 int
-kdp_remove_watchpoint (CORE_ADDR unused1, int unused2, int unused3)
+kdp_remove_watchpoint(CORE_ADDR unused1, int unused2, int unused3)
 {
   return 0;
 }
 
 int
-kdp_insert_hw_breakpoint (CORE_ADDR unused1, gdb_byte *unused2)
+kdp_insert_hw_breakpoint(CORE_ADDR unused1, gdb_byte *unused2)
 {
   return 0;
 }
 
 int
-kdp_remove_hw_breakpoint (CORE_ADDR unused1, gdb_byte *unused2)
+kdp_remove_hw_breakpoint(CORE_ADDR unused1, gdb_byte *unused2)
 {
   return 0;
 }
 
 static CORE_ADDR
-kdp_allocate_memory (int size)
+kdp_allocate_memory(int size)
 {
-  error ("KDP cannot allocate memory in the kernel being debugged.");
+  error("KDP cannot allocate memory in the kernel being debugged.");
 }
 
 static void
-init_kdp_ops (void)
+init_kdp_ops(void)
 {
   kdp_ops.to_shortname = "remote-kdp";
   kdp_ops.to_longname = "Remote Mac OS X system via KDP";
@@ -2294,8 +2294,8 @@ init_kdp_ops (void)
 }
 
 static void
-update_kdp_default_host_type (char *args,
-                              int from_tty, struct cmd_list_element *c)
+update_kdp_default_host_type(char *args, int from_tty,
+                             struct cmd_list_element *c)
 {
   int htype;
 

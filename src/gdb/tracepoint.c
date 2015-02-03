@@ -74,11 +74,11 @@ extern void x_command (char *, int);
 extern int addressprint;	/* Print machine addresses? */
 
 /* GDB commands implemented in other modules:
- */  
+ */
 
 extern void output_command (char *, int);
 
-/* 
+/*
    Tracepoint.c:
 
    This module defines the following debugger commands:
@@ -240,7 +240,7 @@ set_tracepoint_num (int num)
 {
   tracepoint_number = num;
   set_internalvar (lookup_internalvar ("tracepoint"),
-		   value_from_longest (builtin_type_int, 
+		   value_from_longest (builtin_type_int,
 				       (LONGEST) num));
 }
 
@@ -248,7 +248,7 @@ set_tracepoint_num (int num)
    the traceframe context (line, function, file) */
 
 static void
-set_traceframe_context (CORE_ADDR trace_pc)
+set_traceframe_context(CORE_ADDR trace_pc)
 {
   static struct type *func_string, *file_string;
   static struct type *func_range, *file_range;
@@ -257,10 +257,10 @@ set_traceframe_context (CORE_ADDR trace_pc)
   static struct type *charstar;
   int len;
 
-  if (charstar == (struct type *) NULL)
-    charstar = lookup_pointer_type (builtin_type_char);
+  if (charstar == (struct type *)NULL)
+    charstar = lookup_pointer_type(builtin_type_char);
 
-  if (trace_pc == -1)		/* Cease debugging any trace buffers.  */
+  if (trace_pc == (CORE_ADDR)-1)  /* Cease debugging any trace buffers: */
     {
       traceframe_fun = 0;
       traceframe_sal.pc = traceframe_sal.line = 0;
@@ -270,7 +270,7 @@ set_traceframe_context (CORE_ADDR trace_pc)
       set_internalvar (lookup_internalvar ("trace_file"),
 		       value_from_pointer (charstar, (LONGEST) 0));
       set_internalvar (lookup_internalvar ("trace_line"),
-		       value_from_longest (builtin_type_int, 
+		       value_from_longest (builtin_type_int,
 					   (LONGEST) - 1));
       return;
     }
@@ -401,7 +401,7 @@ trace_command (char *arg, int from_tty)
 
   addr_start = arg;
   /* APPLE LOCAL begin return multiple symbols  */
-  sals = decode_line_1 (&arg, 1, (struct symtab *) NULL, 
+  sals = decode_line_1 (&arg, 1, (struct symtab *) NULL,
 			0, &canonical, NULL, 0);
   /* APPLE LOCAL end return multiple symbols  */
   addr_end = arg;
@@ -506,7 +506,7 @@ tracepoints_info (char *tpnum_exp, int from_tty)
 	  char *tmp;
 
 	  if (TARGET_ADDR_BIT <= 32)
-	    tmp = hex_string_custom (t->address & (CORE_ADDR) 0xffffffff, 
+	    tmp = hex_string_custom (t->address & (CORE_ADDR) 0xffffffff,
 				     8);
 	  else
 	    tmp = hex_string_custom (t->address, 16);
@@ -629,7 +629,7 @@ get_tracepoint_by_number (char **arg, int multi_p, int optional_p)
   if (tpnum <= 0)
     {
       if (instring && *instring)
-	printf_filtered ("bad tracepoint number at or near '%s'\n", 
+	printf_filtered ("bad tracepoint number at or near '%s'\n",
 			 instring);
       else
 	printf_filtered ("Tracepoint argument missing and no previous tracepoint\n");
@@ -649,7 +649,7 @@ get_tracepoint_by_number (char **arg, int multi_p, int optional_p)
   return NULL;
 }
 
-/* Utility: 
+/* Utility:
    parse a list of tracepoint numbers, and call a func for each.  */
 static void
 map_args_over_tracepoints (char *args, int from_tty,
@@ -671,7 +671,7 @@ map_args_over_tracepoints (char *args, int from_tty,
       }
 }
 
-/* The 'enable trace' command enables tracepoints.  
+/* The 'enable trace' command enables tracepoints.
    Not supported by all targets.  */
 static void
 enable_trace_command (char *args, int from_tty)
@@ -680,7 +680,7 @@ enable_trace_command (char *args, int from_tty)
   map_args_over_tracepoints (args, from_tty, enable_op);
 }
 
-/* The 'disable trace' command disables tracepoints.  
+/* The 'disable trace' command disables tracepoints.
    Not supported by all targets.  */
 static void
 disable_trace_command (char *args, int from_tty)
@@ -761,8 +761,8 @@ trace_pass_command (char *args, int from_tty)
 static void read_actions (struct tracepoint *);
 
 /* The three functions:
-   collect_pseudocommand, 
-   while_stepping_pseudocommand, and 
+   collect_pseudocommand,
+   while_stepping_pseudocommand, and
    end_actions_pseudocommand
    are placeholders for "commands" that are actually ONLY to be used
    within a tracepoint action list.  If the actual function is ever called,
@@ -867,7 +867,7 @@ read_actions (struct tracepoint *t)
 
       if (!line)
 	line = "end";
-      
+
       linetype = validate_actionline (&line, t);
       if (linetype == BADLINE)
 	continue;		/* already warned -- collect another line */
@@ -947,7 +947,7 @@ validate_actionline (char **line, struct tracepoint *t)
   c = lookup_cmd (&p, cmdlist, "", -1, 1);
   if (c == 0)
     {
-      warning (_("'%s' is not an action that I know, or is ambiguous."), 
+      warning (_("'%s' is not an action that I know, or is ambiguous."),
 	       p);
       return BADLINE;
     }
@@ -1168,7 +1168,7 @@ add_register (struct collection_list *collection, unsigned int regno)
 
 /* Add a memrange to a collection list */
 static void
-add_memrange (struct collection_list *memranges, 
+add_memrange (struct collection_list *memranges,
 	      int type, bfd_signed_vma base,
 	      unsigned long len)
 {
@@ -1197,62 +1197,61 @@ add_memrange (struct collection_list *memranges,
     add_register (memranges, type);
 }
 
-/* Add a symbol to a collection list.  */
+/* Add a symbol to a collection list: */
 static void
-collect_symbol (struct collection_list *collect, 
-		struct symbol *sym,
-		long frame_regno, long frame_offset)
+collect_symbol(struct collection_list *collect,
+               struct symbol *sym,
+               long frame_regno, long frame_offset)
 {
-  unsigned long len;
+  size_t len; /* 'size_t' should be the same as 'unsigned long' */
   unsigned int reg;
   bfd_signed_vma offset;
 
-  len = TYPE_LENGTH (check_typedef (SYMBOL_TYPE (sym)));
-  switch (SYMBOL_CLASS (sym))
+  len = TYPE_LENGTH(check_typedef(SYMBOL_TYPE(sym)));
+  switch (SYMBOL_CLASS(sym))
     {
     default:
-      printf_filtered ("%s: don't know symbol class %d\n",
-		       DEPRECATED_SYMBOL_NAME (sym), 
-		       SYMBOL_CLASS (sym));
+      printf_filtered("%s: do NOT know symbol class %d\n",
+		      DEPRECATED_SYMBOL_NAME(sym), SYMBOL_CLASS(sym));
       break;
     case LOC_CONST:
-      printf_filtered ("constant %s (value %ld) will not be collected.\n",
-		       DEPRECATED_SYMBOL_NAME (sym), SYMBOL_VALUE (sym));
+      printf_filtered("constant %s (value %ld) will not be collected.\n",
+		      DEPRECATED_SYMBOL_NAME(sym), SYMBOL_VALUE(sym));
       break;
     case LOC_STATIC:
-      offset = SYMBOL_VALUE_ADDRESS (sym);
+      offset = SYMBOL_VALUE_ADDRESS(sym);
       if (info_verbose)
 	{
 	  char tmp[40];
 
-	  sprintf_vma (tmp, offset);
-	  printf_filtered ("LOC_STATIC %s: collect %ld bytes at %s.\n",
-			   DEPRECATED_SYMBOL_NAME (sym), len, 
-			   tmp /* address */);
+	  sprintf_vma(tmp, offset);
+	  printf_filtered("LOC_STATIC %s: collect %ld bytes at %s.\n",
+			  DEPRECATED_SYMBOL_NAME(sym), len,
+			  tmp /* address */);
 	}
-      add_memrange (collect, -1, offset, len);	/* 0 == memory */
+      add_memrange(collect, -1, offset, len);	/* 0 == memory */
       break;
     case LOC_REGISTER:
     case LOC_REGPARM:
-      reg = SYMBOL_VALUE (sym);
+      reg = SYMBOL_VALUE(sym);
       if (info_verbose)
-	printf_filtered ("LOC_REG[parm] %s: ", 
-			 DEPRECATED_SYMBOL_NAME (sym));
-      add_register (collect, reg);
+	printf_filtered("LOC_REG[parm] %s: ",
+                        DEPRECATED_SYMBOL_NAME(sym));
+      add_register(collect, reg);
       /* Check for doubles stored in two registers.  */
       /* FIXME: how about larger types stored in 3 or more regs?  */
-      if (TYPE_CODE (SYMBOL_TYPE (sym)) == TYPE_CODE_FLT &&
-	  len > register_size (current_gdbarch, reg))
-	add_register (collect, reg + 1);
+      if ((TYPE_CODE(SYMBOL_TYPE(sym)) == TYPE_CODE_FLT) &&
+	  (len > (size_t)register_size(current_gdbarch, reg)))
+	add_register(collect, (reg + 1));
       break;
     case LOC_REF_ARG:
-      printf_filtered ("Sorry, don't know how to do LOC_REF_ARG yet.\n");
-      printf_filtered ("       (will not collect %s)\n",
-		       DEPRECATED_SYMBOL_NAME (sym));
+      printf_filtered("Sorry, do NOT know how to do LOC_REF_ARG yet.\n");
+      printf_filtered("       (will not collect %s)\n",
+		      DEPRECATED_SYMBOL_NAME(sym));
       break;
     case LOC_ARG:
       reg = frame_regno;
-      offset = frame_offset + SYMBOL_VALUE (sym);
+      offset = (frame_offset + SYMBOL_VALUE(sym));
       if (info_verbose)
 	{
 	  printf_filtered ("LOC_LOCAL %s: Collect %ld bytes at offset ",
@@ -1301,7 +1300,7 @@ collect_symbol (struct collection_list *collect,
       add_memrange (collect, reg, offset, len);
       break;
     case LOC_UNRESOLVED:
-      printf_filtered ("Don't know LOC_UNRESOLVED %s\n", 
+      printf_filtered ("Don't know LOC_UNRESOLVED %s\n",
 		       DEPRECATED_SYMBOL_NAME (sym));
       break;
     case LOC_OPTIMIZED_OUT:
@@ -1330,7 +1329,7 @@ add_local_symbols (struct collection_list *collect, CORE_ADDR pc,
 	  switch (SYMBOL_CLASS (sym))
 	    {
 	    default:
-	      warning (_("don't know how to trace local symbol %s"), 
+	      warning (_("don't know how to trace local symbol %s"),
 		       DEPRECATED_SYMBOL_NAME (sym));
 	    case LOC_LOCAL:
 	    case LOC_STATIC:
@@ -1339,7 +1338,7 @@ add_local_symbols (struct collection_list *collect, CORE_ADDR pc,
 	      if (type == 'L')	/* collecting Locals */
 		{
 		  count++;
-		  collect_symbol (collect, sym, frame_regno, 
+		  collect_symbol (collect, sym, frame_regno,
 				  frame_offset);
 		}
 	      break;
@@ -1352,7 +1351,7 @@ add_local_symbols (struct collection_list *collect, CORE_ADDR pc,
 	      if (type == 'A')	/* collecting Arguments */
 		{
 		  count++;
-		  collect_symbol (collect, sym, frame_regno, 
+		  collect_symbol (collect, sym, frame_regno,
 				  frame_offset);
 		}
 	    }
@@ -1363,7 +1362,7 @@ add_local_symbols (struct collection_list *collect, CORE_ADDR pc,
 	block = BLOCK_SUPERBLOCK (block);
     }
   if (count == 0)
-    warning (_("No %s found in scope."), 
+    warning (_("No %s found in scope."),
 	     type == 'L' ? "locals" : "args");
 }
 
@@ -1428,9 +1427,9 @@ stringify_collection_list (struct collection_list *list, char *string)
       sprintf_vma (tmp2, list->list[i].start);
       if (info_verbose)
 	{
-	  printf_filtered ("(%d, %s, %ld)\n", 
-			   list->list[i].type, 
-			   tmp2, 
+	  printf_filtered ("(%d, %s, %ld)\n",
+			   list->list[i].type,
+			   tmp2,
 			   (long) (list->list[i].end - list->list[i].start));
 	}
       if (count + 27 > MAX_AGENT_EXPR_LEN)
@@ -1441,7 +1440,7 @@ stringify_collection_list (struct collection_list *list, char *string)
 	  end = temp_buf;
 	}
 
-      sprintf (end, "M%X,%s,%lX", 
+      sprintf (end, "M%X,%s,%lX",
 	       list->list[i].type,
 	       tmp2,
 	       (long) (list->list[i].end - list->list[i].start));
@@ -1464,7 +1463,7 @@ stringify_collection_list (struct collection_list *list, char *string)
       end += 10;		/* 'X' + 8 hex digits + ',' */
       count += 10;
 
-      end = mem2hex (list->aexpr_list[i]->buf, 
+      end = mem2hex (list->aexpr_list[i]->buf,
 		     end, list->aexpr_list[i]->len);
       count += 2 * list->aexpr_list[i]->len;
     }
@@ -1584,7 +1583,7 @@ encode_actions (struct tracepoint *t, char ***tdp_actions,
 		  struct cleanup *old_chain1 = NULL;
 		  struct agent_reqs areqs;
 
-		  exp = parse_exp_1 (&action_exp, 
+		  exp = parse_exp_1 (&action_exp,
 				     block_for_pc (t->address), 1);
 		  old_chain = make_cleanup (free_current_contents, &exp);
 
@@ -1644,7 +1643,7 @@ encode_actions (struct tracepoint *t, char ***tdp_actions,
 				  for (ndx2 = 0; ndx2 < 8; ndx2++)
 				    if (areqs.reg_mask[ndx1] & (1 << ndx2))
 				      /* it's used -- record it */
-				      add_register (collect, 
+				      add_register (collect,
 						    ndx1 * 8 + ndx2);
 				}
 			    }
@@ -1671,9 +1670,9 @@ encode_actions (struct tracepoint *t, char ***tdp_actions,
   memrange_sortmerge (&tracepoint_list);
   memrange_sortmerge (&stepping_list);
 
-  *tdp_actions = stringify_collection_list (&tracepoint_list, 
+  *tdp_actions = stringify_collection_list (&tracepoint_list,
 					    tdp_buff);
-  *stepping_actions = stringify_collection_list (&stepping_list, 
+  *stepping_actions = stringify_collection_list (&stepping_list,
 						 step_buff);
 }
 
@@ -1696,7 +1695,7 @@ static char target_buf[2048];
 /* Set "transparent" memory ranges
 
    Allow trace mechanism to treat text-like sections
-   (and perhaps all read-only sections) transparently, 
+   (and perhaps all read-only sections) transparently,
    i.e. don't reject memory requests from these address ranges
    just because they haven't been collected.  */
 
@@ -1727,7 +1726,7 @@ remote_set_transparent_ranges (void)
       size = bfd_get_section_size (s);
       sprintf_vma (tmp1, lma);
       sprintf_vma (tmp2, lma + size);
-      sprintf (target_buf + strlen (target_buf), 
+      sprintf (target_buf + strlen (target_buf),
 	       ":%s,%s", tmp1, tmp2);
     }
   if (anysecs)
@@ -1741,7 +1740,7 @@ remote_set_transparent_ranges (void)
 
    Tell target to clear any previous trace experiment.
    Walk the list of tracepoints, and send them (and their actions)
-   to the target.  If no errors, 
+   to the target.  If no errors,
    Tell target to start a new trace experiment.  */
 
 static void
@@ -1768,7 +1767,7 @@ trace_start_command (char *args, int from_tty)
 	char tmp[40];
 
 	sprintf_vma (tmp, t->address);
-	sprintf (buf, "QTDP:%x:%s:%c:%lx:%x", t->number, 
+	sprintf (buf, "QTDP:%x:%s:%c:%lx:%x", t->number,
 		 tmp, /* address */
 		 t->enabled_p ? 'E' : 'D',
 		 t->step_count, t->pass_count);
@@ -1800,7 +1799,7 @@ trace_start_command (char *args, int from_tty)
 			     ((tdp_actions[ndx + 1] || stepping_actions)
 			      ? '-' : 0));
 		    putpkt (buf);
-		    remote_get_noisy_reply (target_buf, 
+		    remote_get_noisy_reply (target_buf,
 					    sizeof (target_buf));
 		    if (strcmp (target_buf, "OK"))
 		      error (_("Error on target while setting tracepoints."));
@@ -1817,7 +1816,7 @@ trace_start_command (char *args, int from_tty)
 			     stepping_actions[ndx],
 			     (stepping_actions[ndx + 1] ? "-" : ""));
 		    putpkt (buf);
-		    remote_get_noisy_reply (target_buf, 
+		    remote_get_noisy_reply (target_buf,
 					    sizeof (target_buf));
 		    if (strcmp (target_buf, "OK"))
 		      error (_("Error on target while setting tracepoints."));
@@ -1912,12 +1911,12 @@ finish_tfind_command (char *msg,
 	    /* A request for a non-existant trace frame has failed.
 	       Our response will be different, depending on FROM_TTY:
 
-	       If FROM_TTY is true, meaning that this command was 
+	       If FROM_TTY is true, meaning that this command was
 	       typed interactively by the user, then give an error
 	       and DO NOT change the state of traceframe_number etc.
 
 	       However if FROM_TTY is false, meaning that we're either
-	       in a script, a loop, or a user-defined command, then 
+	       in a script, a loop, or a user-defined command, then
 	       DON'T give an error, but DO change the state of
 	       traceframe_number etc. to invalid.
 
@@ -1939,7 +1938,7 @@ finish_tfind_command (char *msg,
 		/* The following will not recurse, since it's
 		   special-cased.  */
 		trace_find_command ("-1", from_tty);
-		reply = NULL;	/* Break out of loop 
+		reply = NULL;	/* Break out of loop
 				   (avoid recursive nonsense).  */
 	      }
 	  }
@@ -2000,13 +1999,13 @@ finish_tfind_command (char *msg,
     }
 }
 
-/* trace_find_command takes a trace frame number n, 
-   sends "QTFrame:<n>" to the target, 
+/* trace_find_command takes a trace frame number n,
+   sends "QTFrame:<n>" to the target,
    and accepts a reply that may contain several optional pieces
    of information: a frame number, a tracepoint number, and an
    indication of whether this is a trap frame or a stepping frame.
 
-   The minimal response is just "OK" (which indicates that the 
+   The minimal response is just "OK" (which indicates that the
    target does not give us a frame number or a tracepoint number).
    Instead of that, the target may send us a string containing
    any combination of:
@@ -2127,7 +2126,7 @@ trace_find_tracepoint_command (char *args, int from_tty)
    This command will take a sourceline for argument, just like BREAK
    or TRACE (ie. anything that "decode_line_1" can handle).
 
-   With no argument, this command will find the next trace frame 
+   With no argument, this command will find the next trace frame
    corresponding to a source line OTHER THAN THE CURRENT ONE.  */
 
 static void
@@ -2208,13 +2207,13 @@ trace_find_line_command (char *args, int from_tty)
       sprintf_vma (endpc_str, end_pc - 1);
       /* Find within range of stated line.  */
       if (args && *args)
-	sprintf (target_buf, "QTFrame:range:%s:%s", 
+	sprintf (target_buf, "QTFrame:range:%s:%s",
 		 startpc_str, endpc_str);
       /* Find OUTSIDE OF range of CURRENT line.  */
       else
-	sprintf (target_buf, "QTFrame:outside:%s:%s", 
+	sprintf (target_buf, "QTFrame:outside:%s:%s",
 		 startpc_str, endpc_str);
-      finish_tfind_command (target_buf, sizeof (target_buf), 
+      finish_tfind_command (target_buf, sizeof (target_buf),
 			    from_tty);
       do_cleanups (old_chain);
     }
@@ -2325,7 +2324,7 @@ tracepoint_save_command (char *args, int from_tty)
     error (_("Unable to open file '%s' for saving tracepoints (%s)"),
 	   args, safe_strerror (errno));
   xfree (pathname);
-  
+
   ALL_TRACEPOINTS (tp)
   {
     if (tp->addr_string)
@@ -2433,7 +2432,7 @@ scope_info (char *args, int from_tty)
 	      break;
 	    case LOC_STATIC:
 	      printf_filtered ("in static storage at address ");
-	      deprecated_print_address_numeric (SYMBOL_VALUE_ADDRESS (sym), 
+	      deprecated_print_address_numeric (SYMBOL_VALUE_ADDRESS (sym),
 				     1, gdb_stdout);
 	      break;
 	    case LOC_REGISTER:
@@ -2466,7 +2465,7 @@ scope_info (char *args, int from_tty)
 	      continue;
 	    case LOC_LABEL:
 	      printf_filtered ("a label at address ");
-	      deprecated_print_address_numeric (SYMBOL_VALUE_ADDRESS (sym), 
+	      deprecated_print_address_numeric (SYMBOL_VALUE_ADDRESS (sym),
 				     1, gdb_stdout);
 	      break;
 	    case LOC_BLOCK:
@@ -2487,7 +2486,7 @@ scope_info (char *args, int from_tty)
 			       REGISTER_NAME (SYMBOL_BASEREG (sym)));
 	      break;
 	    case LOC_UNRESOLVED:
-	      msym = lookup_minimal_symbol (DEPRECATED_SYMBOL_NAME (sym), 
+	      msym = lookup_minimal_symbol (DEPRECATED_SYMBOL_NAME (sym),
 					    NULL, NULL);
 	      if (msym == NULL)
 		printf_filtered ("Unresolved Static");
@@ -2506,7 +2505,7 @@ scope_info (char *args, int from_tty)
 	      break;
 	    case LOC_INDIRECT:
 	      printf_filtered ("extern (local indirect) at address ");
-	      deprecated_print_address_numeric (SYMBOL_VALUE_ADDRESS (sym), 
+	      deprecated_print_address_numeric (SYMBOL_VALUE_ADDRESS (sym),
 				     1, gdb_stdout);
 	      break;
 	    case LOC_COMPUTED:

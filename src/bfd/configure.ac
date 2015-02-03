@@ -2123,7 +2123,7 @@ changequote([,])
 fi
 ],[])dnl
 
-AC_CONFIG_COMMANDS([broken_libtool_hack_fix3],[
+AC_CONFIG_COMMANDS([broken_libtool_hack_fix3],[[
   if test -z "${our_libtool_script}"; then
     if test -x ./libtool; then
       our_libtool_script="./libtool"
@@ -2171,7 +2171,7 @@ AC_CONFIG_COMMANDS([broken_libtool_hack_fix3],[
       echo "warning: need to define objdir in ${our_libtool_script}, but cannot figure out how to do so"
     fi
   fi
-],[])dnl
+]],[])dnl
 
 dnl# Required by html, pdf, install-pdf, and install-html:
 AC_SUBST([datarootdir])dnl

@@ -52,7 +52,7 @@ static void whatis_command (char *, int);
 
 static void whatis_exp (char *, int);
 
-/* Print a description of a type in the format of a 
+/* Print a description of a type in the format of a
    typedef for the current language.
    NEW is the new name for a type TYPE. */
 
@@ -112,7 +112,7 @@ type_print (struct type *type, char *varstring, struct ui_file *stream,
   LA_PRINT_TYPE (type, varstring, stream, show, 0);
 }
 
-/* APPLE LOCAL: Returns a xmalloc'ed string of the type name instead of 
+/* APPLE LOCAL: Returns a xmalloc'ed string of the type name instead of
    printing it to stdout.  The TYPE, VARSTRING, and SHOW arguments
    have the same meaning as type_print()'s -- see the comment there.  */
 
@@ -123,7 +123,7 @@ type_sprint (struct type *type, char *varstring, int show)
   struct cleanup *wipe;
   long length;
   char *type_name;
-  
+
   stb = mem_fileopen ();
   wipe = make_cleanup_ui_file_delete (stb);
 
@@ -136,8 +136,8 @@ type_sprint (struct type *type, char *varstring, int show)
 
 static int single_quote_typename = 1;
 
-int 
-set_single_quote_typename (int new_value)
+int
+set_single_quote_typename(int new_value)
 {
   int old_value = single_quote_typename;
   single_quote_typename = new_value;
@@ -145,7 +145,7 @@ set_single_quote_typename (int new_value)
 }
 
 int
-get_single_quote_typename ()
+get_single_quote_typename(void)
 {
   return single_quote_typename;
 }
@@ -160,7 +160,7 @@ type_sprint_quoted (struct type *type, char *varstring, int show)
     {
       ret_val = type_sprint (type, varstring, show);
     }
-  
+
   set_single_quote_typename (old_value);
   if (e.reason != NO_ERROR)
     throw_exception (e);
@@ -216,13 +216,13 @@ whatis_exp (char *exp, int show)
 	real_type = value_rtti_type (val, &full, &top, &using_enc);
     }
   /* APPLE LOCAL: If this is a closure pointer, get its real type.  */
-  if (!real_type) 
+  if (!real_type)
     {
       real_type = get_closure_dynamic_type (val);
       if (real_type)
 	full = 1;
     }
-    
+
 
   printf_filtered ("type = ");
 
@@ -232,7 +232,7 @@ whatis_exp (char *exp, int show)
       type_print (real_type, "", gdb_stdout, -1);
       if (! full)
         printf_filtered (" (incomplete object)");
-      printf_filtered (" */\n");    
+      printf_filtered (" */\n");
     }
 
   type_print (type, "", gdb_stdout, show);

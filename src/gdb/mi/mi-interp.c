@@ -616,18 +616,16 @@ mi_command_loop(int mi_version)
   start_event_loop ();
 }
 
-static char *
-mi_input (char *buf)
+static char * ATTRIBUTE_UNUSED
+mi_input(char *buf)
 {
-  return gdb_readline (NULL);
+  return gdb_readline(NULL);
 }
 
 static void
-mi_load_progress (const char *section_name,
-		  unsigned long sent_so_far,
-		  unsigned long total_section,
-		  unsigned long total_sent,
-		  unsigned long grand_total)
+mi_load_progress(const char *section_name, unsigned long sent_so_far,
+		 unsigned long total_section, unsigned long total_sent,
+		 unsigned long grand_total)
 {
   struct timeval time_now, delta, update_threshold;
   static struct timeval last_update;

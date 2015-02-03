@@ -48,6 +48,21 @@ AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])dnl
 
+dnl# Put multilib stuff up top:
+m4_ifdef([AM_ENABLE_MULTILIB],[
+  AM_ENABLE_MULTILIB([],[.])dnl
+],[
+AC_ARG_ENABLE([multilib],
+[AS_HELP_STRING([--enable-multilib],
+                [build many library versions (default off)])],
+[case "${enableval}" in
+  yes) multilib=yes ;;
+  no)  multilib=no ;;
+  *)   AC_MSG_ERROR([bad value ${enableval} for multilib option]) ;;
+ esac],
+	      [multilib=no])dnl
+])dnl
+
 # System-detecting stuff:
 AC_CANONICAL_TARGET
 ACX_NONCANONICAL_BUILD
@@ -195,11 +210,11 @@ AC_PROG_AWK
 ### or a host dependent tool. Then put it into the appropriate list
 ### (library or tools, host or target), doing a dependency sort.
 
-# Subdirs will be configured in the order listed in build_configdirs, 
+# Subdirs will be configured in the order listed in build_configdirs,
 # configdirs, or target_configdirs; see the serialization section below.
 
-# Dependency sorting is only needed when *configuration* must be done in 
-# a particular order. In all cases a dependency should be specified in 
+# Dependency sorting is only needed when *configuration* must be done in
+# a particular order. In all cases a dependency should be specified in
 # the Makefile, whether or not it is implicitly specified here.
 
 # Double entries in build_configdirs, configdirs, or target_configdirs may
@@ -309,7 +324,7 @@ if test x"${host}" = x"${target}"; then
   is_cross_compiler=no
 else
   is_cross_compiler=yes
-fi	
+fi
 
 # Find the build and target subdir names.
 GCC_TOPLEV_SUBDIRS
@@ -345,7 +360,7 @@ if test "x${with_system_zlib}" = "xyes"; then
   noconfigdirs="${noconfigdirs} zlib"
 fi
 
-# some tools are so dependent upon X11 that if we are not building with X, 
+# some tools are so dependent upon X11 that if we are not building with X,
 # it is not even worth trying to configure, much less build, that tool.
 
 case ${with_x} in
@@ -356,7 +371,7 @@ case ${with_x} in
   no)
     skipdirs="${skipdirs} tk itcl libgui"
     # We will not be able to build gdbtk without X.
-    enable_gdbtk=no 
+    enable_gdbtk=no
     ;;
   *)  echo "*** bad value \"${with_x}\" for -with-x flag; ignored" 1>&2 ;;
 esac
@@ -364,7 +379,7 @@ esac
 AC_MSG_CHECKING([subdirectories to skip])
 AC_MSG_RESULT([(will announce results later)])
 # Some tools are only suitable for building in a "native" situation.
-# Remove these if host!=target.  
+# Remove these if host!=target.
 native_only="autoconf autogen automake libtool_gnu fileutils find gawk gettext gzip hello indent m4 rcs recode sed shellutils tar textutils texinfo uudecode wdiff gprof target-groff guile perl time ash bash bzip2 prms gnuserv target-gperf"
 
 # Similarly, some are only suitable for cross toolchains.
@@ -492,7 +507,7 @@ esac
 # Only spaces may be used in this macro; not newlines or tabs.
 unsupported_languages=""
 
-# Remove more programs from consideration, based on the host or 
+# Remove more programs from consideration, based on the host or
 # target this usually means that a port of the program does NOT
 # exist yet.
 
@@ -818,15 +833,18 @@ case "${target}" in
 # so far dejagnu works fine when configured on its own, but sometimes it
 # fails as a subdirectory for the top-level Makefile...
     mynoconfigdirs="${noconfigdirs} dejagnu"
-# likewise with expect:
+# likewise with tcl, expect, and target-libbacktrace:
     if test ! -z "${build_alias}" -o ! -z "${host_alias}" -o ! -z "${target_alias}"; then
-      noconfigdirs="${noconfigdirs} expect"
+      noconfigdirs="${noconfigdirs} tcl expect target-libbacktrace"
+    elif test -n "${with_target_subdir}" || test -n "${multi_basedir}"; then
+      noconfigdirs="${noconfigdirs} target-libbacktrace"
     fi
 # I do not know why Apple had these put under noconfigdirs:
     applespecifiednoconfigdirs="${noconfigdirs} mmalloc sim"
     if test "x${APPLE_INTERNAL_DIR}" = "x/AppleInternal"; then
       test -d "${APPLE_INTERNAL_DIR}"
-      AC_MSG_WARN([You appear to be at Apple, in that case disabling subdirectories that Apple says to disable (unset the APPLE_INTERNAL_DIR environment variable to avoid this)])
+      AC_MSG_WARN([You appear to be at Apple, in that case disabling subdirectories that Apple says to disable.])
+      AC_MSG_NOTICE([Unset the APPLE_INTERNAL_DIR environment variable to avoid this warning.])
       noconfigdirs="${applespecifiednoconfigdirs}"
     fi
 # building zlib from this level can mess it up; build it manually instead:
@@ -850,7 +868,7 @@ case "${target}" in
     [case ${enableval} in
       yes)
         host_configargs=" ${host_configargs} --enable-carbon-framework" ;;
-      no) 
+      no)
         host_configargs=" ${host_configargs} --disable-carbon-framework" ;;
       *)
         AC_MSG_ERROR([bad value '${enableval}' for --enable-carbon-framework]) ;;
@@ -862,7 +880,7 @@ case "${target}" in
     [case ${enableval} in
       yes)
         host_configargs=" ${host_configargs} --enable-debug-symbols-framework" ;;
-      no) 
+      no)
         host_configargs=" ${host_configargs} --disable-debug-symbols-framework" ;;
       *)
         AC_MSG_ERROR([bad value '${enableval}' for --enable-debug-symbols-framework]) ;;
@@ -872,9 +890,9 @@ case "${target}" in
       [AS_HELP_STRING([--disable-arch-for-exec],
                       [disable use of arch for exec])],
       [case ${enableval} in
-        yes) 
+        yes)
           host_configargs=" ${host_configargs} --enable-arch-for-exec" ;;
-        no) 
+        no)
           host_configargs=" ${host_configargs} --disable-arch-for-exec" ;;
         *)
           AC_MSG_ERROR([bad value '${enableval}' for --enable-arch-for-exec]) ;;
@@ -993,7 +1011,7 @@ case "${target}" in
     ;;
   sh-*-linux*)
     noconfigdirs="${noconfigdirs} ${libgcj} target-newlib target-libgloss"
-    ;;    
+    ;;
   sh*-*-pe|mips*-*-pe|*arm-wince-pe)
     noconfigdirs="${noconfigdirs} ${libgcj}"
     noconfigdirs="${noconfigdirs} target-examples"
@@ -1151,7 +1169,7 @@ case "${target}" in
       *) noconfigdirs="${noconfigdirs} gdb tcl tk expect itcl gnuserv"
          ;;
     esac
-    ;;    
+    ;;
   *-*-cygwin*)
     target_configdirs="${target_configdirs} target-libtermcap target-winsup"
     noconfigdirs="${noconfigdirs} target-gperf target-libgloss ${libgcj}"
@@ -1168,7 +1186,7 @@ case "${target}" in
       *) noconfigdirs="${noconfigdirs} gdb tcl tk expect itcl libgui gnuserv"
          ;;
     esac
-    ;;    
+    ;;
   i[[3456789]]86-moss-msdos | i[[3456789]]86-*-moss* | \
   i[[3456789]]86-*-uwin* | i[[3456789]]86-*-interix* )
     noconfigdirs="${noconfigdirs}"
@@ -1359,7 +1377,7 @@ case "${target}" in
     ;;
   *-*-lynxos*)
     noconfigdirs="${noconfigdirs} target-newlib target-libgloss ${libgcj}"
-    ;; 
+    ;;
   *-*-*)
     noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
@@ -1519,7 +1537,7 @@ case "${host}" in
   hppa*-hp-hpux*)
     host_makefile_frag="config/mh-pa"
     ;;
-  hppa*-*)	
+  hppa*-*)
     host_makefile_frag="config/mh-pa"
     ;;
   *-hp-hpux*)
@@ -1806,7 +1824,7 @@ fi
 saved_CFLAGS="${CFLAGS}"
 CFLAGS="${CFLAGS} ${gmpinc}"
 # Check GMP actually works:
-AC_CHECK_HEADERS_ONCE([gmp.h])
+AC_CHECK_HEADERS_ONCE([gmp.h])dnl
 AC_MSG_CHECKING([for correct version of gmp.h])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include "gmp.h"]],[[
 #if __GNU_MP_VERSION < 3
@@ -1817,7 +1835,7 @@ choke me
       have_gmp=no])dnl
 
 if test x"${have_gmp}" = x"yes"; then
-  AC_CHECK_HEADERS_ONCE([mpfr.h])
+  AC_CHECK_HEADERS_ONCE([mpfr.h])dnl
   AC_MSG_CHECKING([for MPFR])
 
   saved_LIBS="${LIBS}"
@@ -1903,7 +1921,7 @@ AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
 AC_FUNC_ALLOCA
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_ERROR_AT_LINE
-AC_REPLACE_FNMATCH
+AC_REPLACE_FNMATCH dnl# (we override its nasty libobj, so it is okay)
 AC_FUNC_MALLOC
 AC_FUNC_MEMCMP
 AC_FUNC_MKTIME
@@ -1911,9 +1929,9 @@ AC_FUNC_OBSTACK
 AC_FUNC_REALLOC
 AC_FUNC_SELECT_ARGTYPES
 m4_ifdef([AC_FUNC_SETVBUF_REVERSED],[
-AC_FUNC_SETVBUF_REVERSED
+  AC_FUNC_SETVBUF_REVERSED dnl# (we provide a replacement version)
 ],[
-AC_CHECK_FUNCS([setvbuf])dnl
+  AC_CHECK_FUNCS([setvbuf])dnl
 ])dnl
 AC_FUNC_STAT
 AC_FUNC_STRCOLL
@@ -2232,7 +2250,7 @@ if test -d ${srcdir}/gcc; then
       # an apparent bug in bash 1.12 on linux.
       ${srcdir}/gcc/[[*]]/config-lang.in) ;;
       *)
-        # From the config-lang.in, get ${language}, ${target_libs}, 
+        # From the config-lang.in, get ${language}, ${target_libs},
         # ${lang_dirs}, ${boot_language}, and ${build_by_default}
         language=""
         target_libs=""
@@ -2441,7 +2459,7 @@ fi
 build_configdirs_all="${build_configdirs}"
 build_configdirs=""
 for i in ${build_configdirs_all}; do
-  j=`echo ${i} | sed -e s/build-//g` 
+  j=`echo ${i} | sed -e s/build-//g`
   if test -f ${srcdir}/${j}/configure; then
     build_configdirs="${build_configdirs} ${i}"
   fi
@@ -2458,7 +2476,7 @@ done
 target_configdirs_all="${target_configdirs}"
 target_configdirs=""
 for i in ${target_configdirs_all}; do
-  j=`echo ${i} | sed -e s/target-//g` 
+  j=`echo ${i} | sed -e s/target-//g`
   if test -f ${srcdir}/${j}/configure; then
     target_configdirs="${target_configdirs} ${i}"
   fi
@@ -2538,7 +2556,7 @@ ACX_TOOL_DIRS
 
 copy_dirs=""
 
-AC_ARG_WITH([build-sysroot], 
+AC_ARG_WITH([build-sysroot],
   [AS_HELP_STRING([--with-build-sysroot=sysroot],
                   [use sysroot as the system root during the build])],
   [if test x"${withval}" != "x"; then
@@ -2706,7 +2724,7 @@ case "${target}" in
     target_makefile_frag="config/mt-linux"
     ;;
   *-*-aix4.[[3456789]]* | *-*-aix[[56789]].*)
-    # nm and ar from AIX 4.3+ require -X32_64 flag to all ar and nm 
+    # nm and ar from AIX 4.3+ require -X32_64 flag to all ar and nm
     # commands to handle both 32-bit and 64-bit objects. These flags are
     # harmless if we are using GNU nm or ar.
     extra_arflags_for_target=" -X32_64"
@@ -2756,11 +2774,11 @@ esac
 # This is done by determining whether or not the appropriate directory
 # is available, and by checking whether or not specific configurations
 # have requested that this magic not happen.
-# 
-# The command line options always override the explicit settings in 
+#
+# The command line options always override the explicit settings in
 # configure.ac, and the settings in configure.ac override this magic.
 #
-# If the default for a toolchain is to use GNU as and ld, and you do NOT 
+# If the default for a toolchain is to use GNU as and ld, and you do NOT
 # want to do that, then you should use the --without-gnu-as and
 # --without-gnu-ld options for the configure script.
 
@@ -2799,7 +2817,7 @@ fi
 # hpux11 in 64bit mode has libraries in a weird place. Arrange to find
 # them automatically.
 case "${host}" in
-  hppa*64*-*-hpux11*)	
+  hppa*64*-*-hpux11*)
     extra_host_args="${extra_host_args} -x-libraries=/usr/lib/pa20_64 -x-includes=/usr/X11R6/include"
     ;;
 esac
@@ -2853,7 +2871,7 @@ if test $? = 0 ; then
   if test -s conftest || test -s conftest.exe ; then
     we_are_ok=yes
   fi
-fi 
+fi
 case ${we_are_ok} in
   no)
     echo 1>&2 "*** The command '${CC} -o conftest ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} conftest.c' failed."
@@ -3161,7 +3179,7 @@ s/^ *//;s/ *$//
 s,\$,$$,g
 EOF_SED
 sed -f conftestsed <<EOF_SED > conftestsed.out
- ${ac_configure_args} 
+ ${ac_configure_args}
 EOF_SED
 baseargs=`cat conftestsed.out`
 rm -rf conftestsed conftestsed.out
@@ -3194,20 +3212,6 @@ AC_ARG_VAR([host_configargs],
            [additional configure arguments for host directories])dnl
 AC_ARG_VAR([target_configargs],
            [additional configure arguments for target directories])dnl
-
-m4_ifdef([AM_ENABLE_MULTILIB],[
-  AM_ENABLE_MULTILIB([],[.])dnl
-],[
-AC_ARG_ENABLE([multilib],
-[AS_HELP_STRING([--enable-multilib],
-                [build many library versions (default off)])],
-[case "${enableval}" in
-  yes) multilib=yes ;;
-  no)  multilib=no ;;
-  *)   AC_MSG_ERROR([bad value ${enableval} for multilib option]) ;;
- esac],
-	      [multilib=no])dnl
-])dnl
 
 # For the build-side libraries, we just need to pretend we are native,
 # and not use the same cache file.  Multilibs are neither needed nor
@@ -3255,7 +3259,7 @@ case "${target}:${have_compiler}:${host}:${target}:${enable_multilib}" in
       if test -s conftest || test -s conftest.exe; then
         dev64=yes
       fi
-    fi 
+    fi
     rm -f conftest*
     if test "x${dev64}" != "xyes"; then
       AC_MSG_ERROR([I suspect your system does not have 32-bit developement libraries (libc and headers). If you have them, rerun configure with --enable-multilib. If you do not have them, and want to build a 64-bit-only compiler, rerun configure with --disable-multilib.])
@@ -3568,11 +3572,12 @@ if test -x ${srcdir}/libtool -a ! -d ${srcdir}/libtool; then
     AC_MSG_NOTICE([LIBTOOLFLAGS are set to "${LIBTOOLFLAGS}"])
   fi
   dnl# temporarily set this to 2.4.4 while I update everything:
-  LT_PREREQ([2.4.4])
-  dnl#TODO: finish updating the libtool_gnu subdir as well...
+  LT_PREREQ([2.4.4])dnl
+  dnl#TODO: finish updating the libtool_gnu subdir as well... (?)
 else
   test -e libtool
-  AC_CHECK_HEADERS_ONCE([dlfcn.h])
+  AC_CHECK_HEADERS_ONCE([dlfcn.h])dnl
+  ## (libtool should be okay now)
 fi
 
 AC_SUBST([CC])dnl
@@ -3582,7 +3587,7 @@ AC_SUBST([CFLAGS_FOR_BUILD])dnl
 AC_SUBST([CXXFLAGS])dnl
 
 # Target tools.
-AC_ARG_WITH([build-time-tools], 
+AC_ARG_WITH([build-time-tools],
   [AS_HELP_STRING([--with-build-time-tools=PATH],
 		  [use given path to find target tools during the build])],
   [case x"${withval}" in
@@ -3703,7 +3708,7 @@ else
   LD_FOR_TARGET="\$(CONFIGURED_LD_FOR_TARGET)"
   NM_FOR_TARGET="\$(CONFIGURED_NM_FOR_TARGET)"
   RANLIB_FOR_TARGET="\$(CONFIGURED_RANLIB_FOR_TARGET)"
-  WINDRES_FOR_TARGET="\$(CONFIGURED_WINDRES_FOR_TARGET)"  
+  WINDRES_FOR_TARGET="\$(CONFIGURED_WINDRES_FOR_TARGET)"
 fi
 
 AC_SUBST([RAW_CXX_FOR_TARGET])dnl
@@ -3748,7 +3753,7 @@ if test "x${USE_MAINTAINER_MODE}" = "xyes"; then
 else
   MAINTAINER_MODE_TRUE='#'
   MAINTAINER_MODE_FALSE=""
-fi	
+fi
 MAINT="${MAINTAINER_MODE_TRUE}"
 AC_SUBST([MAINT])dnl
 

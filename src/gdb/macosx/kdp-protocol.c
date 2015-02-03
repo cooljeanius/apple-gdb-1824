@@ -33,10 +33,12 @@
 #include "kdp-udp.h"
 
 #include "defs.h"
-#define assert CHECK_FATAL
+#ifndef assert
+# define assert CHECK_FATAL
+#endif /* !assert */
 
 static uint16_t
-read16u (const unsigned char *s, int bigendian)
+read16u(const unsigned char *s, int bigendian)
 {
   if (bigendian)
     {

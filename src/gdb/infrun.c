@@ -563,7 +563,7 @@ static const char *scheduler_mode = schedlock_off;
 
 static struct ptid scheduler_lock_ptid;
 
-struct ptid get_scheduler_lock_ptid ()
+struct ptid get_scheduler_lock_ptid(void)
 {
   return scheduler_lock_ptid;
 }
@@ -581,7 +581,7 @@ scheduler_run_this_ptid (struct ptid this_ptid)
    step.  */
 
 int
-scheduler_lock_on_p ()
+scheduler_lock_on_p(void)
 {
   return ((scheduler_mode == schedlock_on)
 	  || (scheduler_mode == schedlock_step));
@@ -3409,7 +3409,7 @@ insert_step_resume_breakpoint_at_frame (struct frame_info *return_frame)
 }
 
 struct breakpoint *
-hide_step_resume_breakpoint ()
+hide_step_resume_breakpoint(void)
 {
   struct breakpoint *old_step_resume_breakpoint = step_resume_breakpoint;
   step_resume_breakpoint = NULL;
@@ -3989,20 +3989,20 @@ done:
   /* APPLE LOCAL end Inform users about debugging optimzied code  */
 }
 
-/* APPLE LOCAL: Sometimes we don't want to
+/* APPLE LOCAL: Sometimes we do NOT want to
    call hook_stop - especially when running
    functions in the objc parser.  */
 
 static void *suppress_hook_stop_p;
 
 static void
-do_cleanup_suppress_hook_stop (void *arg)
+do_cleanup_suppress_hook_stop(void *arg)
 {
   suppress_hook_stop_p = arg;
 }
 
 struct cleanup *
-make_cleanup_suppress_hook_stop ()
+make_cleanup_suppress_hook_stop(void)
 {
   void *old_value = suppress_hook_stop_p;
   suppress_hook_stop_p = (void *) 1;

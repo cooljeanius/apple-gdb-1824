@@ -28,7 +28,9 @@
 #include <stdlib.h>
 
 #include "defs.h"
-#define assert CHECK_FATAL
+#ifndef assert
+# define assert CHECK_FATAL
+#endif /* !assert */
 
 static kdp_return_t
 kdp_exception_reply (kdp_connection *c, kdp_pkt_t * response)

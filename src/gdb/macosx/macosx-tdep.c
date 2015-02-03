@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-tdep.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -47,7 +47,7 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "language.h"
 #include "block.h"
 
-#include "libaout.h"            /* FIXME Secret internal BFD stuff for a.out */
+#include "libaout.h"        /* FIXME Secret internal BFD stuff for a.out */
 #include "aout/aout64.h"
 #include "complaints.h"
 
@@ -109,12 +109,12 @@ int disable_aslr_flag = 1;
 
 CORE_ADDR kernel_slide = INVALID_ADDRESS;
 
-static char *find_info_plist_filename_from_bundle_name (const char *bundle,
+static char *find_info_plist_filename_from_bundle_name(const char *bundle,
                                                      const char *bundle_suffix);
 
 #if USE_DEBUG_SYMBOLS_FRAMEWORK
-extern CFArrayRef DBGCopyMatchingUUIDsForURL (CFURLRef path,
-                                              int /* cpu_type_t */ cpuType,
+extern CFArrayRef DBGCopyMatchingUUIDsForURL(CFURLRef path,
+                                             int /* cpu_type_t */ cpuType,
                                            int /* cpu_subtype_t */ cpuSubtype);
 extern CFURLRef DBGCopyDSYMURLForUUID (CFUUIDRef uuid);
 extern CFDictionaryRef DBGCopyDSYMPropertyLists (CFURLRef dsym_url);
@@ -131,14 +131,14 @@ static int kaslr_memory_search_enabled = 1;
 #define APPLE_DSYM_EXT_AND_SUBDIRECTORY ".dSYM/Contents/Resources/DWARF/"
 
 int
-actually_do_stack_frame_prologue (unsigned int count_limit,
+actually_do_stack_frame_prologue(unsigned int count_limit,
 				unsigned int print_start,
 				unsigned int print_end,
 				unsigned int wordsize,
 				unsigned int *count,
 				struct frame_info **out_fi,
-				void (print_fun) (struct ui_out * uiout, int *frame_num,
-						  CORE_ADDR pc, CORE_ADDR fp));
+				void (print_fun)(struct ui_out * uiout, int *frame_num,
+						 CORE_ADDR pc, CORE_ADDR fp));
 
 /* When we are doing native debugging, and we attach to a process,
    we start out by finding the in-memory dyld -- the osabi of that
@@ -169,8 +169,7 @@ struct deprecated_complaint unsupported_indirect_symtype_complaint =
 unsigned char macosx_symbol_types[256];
 
 static unsigned char
-macosx_symbol_type_base (macho_type)
-     unsigned char macho_type;
+macosx_symbol_type_base(unsigned char macho_type)
 {
   unsigned char mtype = macho_type;
   unsigned char ntype = 0;
@@ -211,11 +210,16 @@ macosx_symbol_type_base (macho_type)
       break;
 
     case BFD_MACH_O_N_INDR:
-      /* complain (&unsupported_indirect_symtype_complaint, hex_string (macho_type)); */
+#if 0
+      complain(&unsupported_indirect_symtype_complaint,
+               hex_string(macho_type));
+#endif /* 0 */
       return macho_type;
 
     default:
-      /* complain (&unknown_macho_symtype_complaint, hex_string (macho_type)); */
+#if 0
+      complain(&unknown_macho_symtype_complaint, hex_string(macho_type));
+#endif /* 0 */
       return macho_type;
     }
   mtype &= ~BFD_MACH_O_N_TYPE;
@@ -236,23 +240,20 @@ macosx_symbol_types_init ()
 }
 
 static unsigned char
-macosx_symbol_type (macho_type, macho_sect, abfd)
-     unsigned char macho_type;
-     unsigned char macho_sect;
-     bfd *abfd;
+macosx_symbol_type(unsigned char macho_type, unsigned char macho_sect,
+                   bfd *abfd)
 {
   unsigned char ntype = macosx_symbol_types[macho_type];
 
-  /* If the symbol refers to a section, modify ntype based on the value of macho_sect. */
-
+  /* If the symbol refers to a section, then modify ntype based on the
+   * value of macho_sect: */
   if ((macho_type & BFD_MACH_O_N_TYPE) == BFD_MACH_O_N_SECT)
     {
       if (macho_sect == 1)
         {
-          /* Section 1 is always the text segment. */
+          /* Section 1 is always the text segment: */
           ntype |= N_TEXT;
         }
-
       else if ((macho_sect > 0)
                && (macho_sect <= abfd->tdata.mach_o_data->nsects))
         {
@@ -261,71 +262,75 @@ macosx_symbol_type (macho_type, macho_sect, abfd)
 
           if (sect == NULL)
             {
-              /* complain (&unknown_macho_section_complaint, hex_string (macho_sect)); */
+#if 0
+              complain(&unknown_macho_section_complaint,
+                       hex_string(macho_sect));
+#endif /* 0 */
             }
           else if ((sect->segname != NULL)
-                   && (strcmp (sect->segname, "__DATA") == 0))
+                   && (strcmp(sect->segname, "__DATA") == 0))
             {
               if ((sect->sectname != NULL)
-                  && (strcmp (sect->sectname, "__bss") == 0))
+                  && (strcmp(sect->sectname, "__bss") == 0))
                 ntype |= N_BSS;
               else
                 ntype |= N_DATA;
             }
           else if ((sect->segname != NULL)
-                   && (strcmp (sect->segname, "__TEXT") == 0))
+                   && (strcmp(sect->segname, "__TEXT") == 0))
             {
               ntype |= N_TEXT;
             }
           else
             {
-              /* complain (&unknown_macho_section_complaint, hex_string (macho_sect)); */
+#if 0
+              complain(&unknown_macho_section_complaint,
+                       hex_string(macho_sect));
+#endif /* 0 */
               ntype |= N_DATA;
             }
         }
-
       else
         {
-          /* complain (&unknown_macho_section_complaint, hex_string (macho_sect)); */
+#if 0
+          complain(&unknown_macho_section_complaint,
+                   hex_string(macho_sect));
+#endif /* 0 */
           ntype |= N_DATA;
         }
     }
 
-  /* All modifications are done; return the computed type code. */
-
+  /* All modifications are done; return the computed type code: */
   return ntype;
 }
 
 void
-macosx_internalize_symbol (in, sect_p, ext, abfd)
-     struct internal_nlist *in;
-     int *sect_p;
-     struct external_nlist *ext;
-     bfd *abfd;
+macosx_internalize_symbol(struct internal_nlist *in, int *sect_p,
+                          struct external_nlist *ext, bfd *abfd)
 {
-  int symwide = (bfd_mach_o_version (abfd) > 1);
+  int symwide = (bfd_mach_o_version(abfd) > 1);
 
-  if (bfd_header_big_endian (abfd))
+  if (bfd_header_big_endian(abfd))
     {
-      in->n_strx = BFD_GETB32 (ext->e_strx);
-      in->n_desc = BFD_GETB16 (ext->e_desc);
+      in->n_strx = BFD_GETB32(ext->e_strx);
+      in->n_desc = BFD_GETB16(ext->e_desc);
       if (symwide)
-        in->n_value = BFD_GETB64 (ext->e_value);
+        in->n_value = BFD_GETB64(ext->e_value);
       else
-        in->n_value = BFD_GETB32 (ext->e_value);
+        in->n_value = BFD_GETB32(ext->e_value);
     }
-  else if (bfd_header_little_endian (abfd))
+  else if (bfd_header_little_endian(abfd))
     {
-      in->n_strx = BFD_GETL32 (ext->e_strx);
-      in->n_desc = BFD_GETL16 (ext->e_desc);
+      in->n_strx = BFD_GETL32(ext->e_strx);
+      in->n_desc = BFD_GETL16(ext->e_desc);
       if (symwide)
-        in->n_value = BFD_GETL64 (ext->e_value);
+        in->n_value = BFD_GETL64(ext->e_value);
       else
-        in->n_value = BFD_GETL32 (ext->e_value);
+        in->n_value = BFD_GETL32(ext->e_value);
     }
   else
     {
-      error ("unable to internalize symbol (unknown endianness)");
+      error("unable to internalize symbol (unknown endianness)");
     }
 
   if ((ext->e_type[0] & BFD_MACH_O_N_TYPE) == BFD_MACH_O_N_SECT)
@@ -333,12 +338,12 @@ macosx_internalize_symbol (in, sect_p, ext, abfd)
   else
     *sect_p = 0;
 
-  in->n_type = macosx_symbol_type (ext->e_type[0], ext->e_other[0], abfd);
+  in->n_type = macosx_symbol_type(ext->e_type[0], ext->e_other[0], abfd);
   in->n_other = ext->e_other[0];
 }
 
 CORE_ADDR
-dyld_symbol_stub_function_address (CORE_ADDR pc, const char **name)
+dyld_symbol_stub_function_address(CORE_ADDR pc, const char **name)
 {
   struct symbol *sym = NULL;
   struct minimal_symbol *msym = NULL;
@@ -674,16 +679,16 @@ macosx_get_current_exception_event ()
 void
 update_command (char *args, int from_tty)
 {
-  registers_changed ();
-  reinit_frame_cache ();
+  registers_changed();
+  reinit_frame_cache();
 }
 
 void
-stack_flush_command (char *args, int from_tty)
+stack_flush_command(char *args, int from_tty)
 {
-  reinit_frame_cache ();
+  reinit_frame_cache();
   if (from_tty)
-    printf_filtered ("Stack cache flushed.\n");
+    printf_filtered("Stack cache flushed.\n");
 }
 
 /* Opens the file pointed to in ARGS with the default editor

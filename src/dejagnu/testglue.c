@@ -11,7 +11,9 @@
 # ifdef HAVE_UNISTD_H
 #  include <unistd.h>
 # else
-#  warning testglue.c expects a unistd-related header to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "testglue.c expects a unistd-related header to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_UNISTD_H */
 #endif /* !NO_UNISTD_H */
 

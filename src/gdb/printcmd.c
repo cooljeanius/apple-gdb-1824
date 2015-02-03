@@ -1,4 +1,4 @@
-/* Print values for GNU debugger GDB.
+/* printcmd.c: Print values for GNU debugger GDB.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
@@ -340,7 +340,7 @@ print_formatted (struct value *val, int format, int size,
          now do use _filtered, so I guess it's obsolete.
          --Yes, it does filter now, and so this is obsolete.  -JB  */
 
-      /* APPLE LOCAL: set a global to allow print_insn() functions to do 
+      /* APPLE LOCAL: set a global to allow print_insn() functions to do
          something different if a different size is specified. The default
          value is 'b' when no size is specified with the instruction format.  */
       g_examine_i_size = size;
@@ -493,10 +493,10 @@ print_scalar_formatted (const void *valaddr, struct type *type,
 
     case 'f':
     case 'A':
-      /* APPLE LOCAL: If the type of the value isn't already float, force it 
+      /* APPLE LOCAL: If the type of the value isn't already float, force it
          to the appropriately sized float for printing.
 
-         We need to do this when printing i386 vector (xmm) registers -- we 
+         We need to do this when printing i386 vector (xmm) registers -- we
          have a TYPE_CODE_FLT type but it's reverse endian (it's big-endian
          in gdb) so simply replacing it with builtin_type_float will print
          it backwards (it'll treat the bytes as a little-endian formatted
@@ -611,7 +611,7 @@ print_address_symbolic (CORE_ADDR addr, struct ui_file *stream, int do_demangle,
      here or we won't get the location (and thus the name) right when printing
      signed types as addresses if the address is high enough to have the top
      bit set.  */
-     
+
   int addr_bit = TARGET_ADDR_BIT;
 
   if (addr_bit < (sizeof (CORE_ADDR) * HOST_CHAR_BIT))
@@ -673,7 +673,7 @@ build_address_symbolic (CORE_ADDR addr,  /* IN */
   CORE_ADDR name_location = 0;
   asection *section = 0;
   char *name_temp = "";
-  
+
   /* Let's say it is unmapped. */
   *unmapped = 0;
 
@@ -745,7 +745,7 @@ build_address_symbolic (CORE_ADDR addr,  /* IN */
 
   if (msymbol)
     {
-      struct obj_section *verify_sect = 
+      struct obj_section *verify_sect =
         find_pc_sect_in_ordered_sections (SYMBOL_VALUE_ADDRESS (msymbol), NULL);
       if (verify_sect)
 	{
@@ -1205,7 +1205,7 @@ address_info (char *exp, int from_tty)
 	bl = BLOCK_SUPERBLOCK (bl);
     }
 
-  sym = lookup_symbol (exp, bl, VAR_DOMAIN, &is_a_field_of_this, 
+  sym = lookup_symbol (exp, bl, VAR_DOMAIN, &is_a_field_of_this,
                        (struct symtab **) NULL);
   if (sym == NULL)
     {
@@ -1460,7 +1460,7 @@ x_command (char *exp, int from_tty)
 	val = value_ind (val);
       /* In rvalue contexts, such as this, functions are coerced into
          pointers to functions.  This makes "x/i main" work.  */
-      if (/* last_format == 'i'  && */ 
+      if (/* last_format == 'i'  && */
 	  TYPE_CODE (value_type (val)) == TYPE_CODE_FUNC
 	  && VALUE_LVAL (val) == lval_memory)
 	next_address = VALUE_ADDRESS (val);
@@ -1663,7 +1663,7 @@ undisplay_command (char *args, int from_tty)
   dont_repeat ();
 }
 
-/* Display a single auto-display.  
+/* Display a single auto-display.
    Do nothing if the display cannot be printed in the current context,
    or if the display is disabled. */
 
@@ -2124,24 +2124,24 @@ printf_command (char *arg, int from_tty)
 		{
 		  char c;
 		  QUIT;
-		  read_memory (tem + j, &c, 1);
+		  read_memory(tem + j, &c, 1);
 		  if (c == 0)
 		    break;
 		}
 
-	      /* Copy the string contents into a string inside GDB.  */
-	      str = (char *) alloca (j + 1);
+	      /* Copy the string contents into a string inside GDB: */
+	      str = (char *)alloca(j + 1);
 	      if (j != 0)
-		read_memory (tem, str, j);
+		read_memory(tem, str, j);
 	      str[j] = 0;
 
-	      printf_filtered (current_substring, str);
+	      printf_filtered(current_substring, str);
 	    }
 	    break;
 	  case double_arg:
 	    {
-	      double val = value_as_double (val_args[i]);
-	      printf_filtered (current_substring, val);
+	      double val = (double)value_as_double(val_args[i]);
+	      printf_filtered(current_substring, val);
 	      break;
 	    }
 	  case long_long_arg:
@@ -2254,9 +2254,9 @@ invoke_block_command (char *args, int from_tty)
       arg_value = evaluate_expression (arg_expr);
       val_argv[i] = arg_value;
     }
-  
+
   ret_val = call_function_by_hand (implementation_fn, nargs, val_argv);
-  
+
   do_cleanups (argv_cleanup);
 
   /* Now output the value returned, and stick it in the value
@@ -2405,7 +2405,7 @@ with $), a register (a few standard names starting with $), or an actual\n\
 variable in the program being debugged.  EXP is any valid expression.\n\
 This may usually be abbreviated to simply \"set\"."),
 	   &setlist);
-  /* APPLE LOCAL: Our 'varobj-print-object' makes "set var" ambiguous, 
+  /* APPLE LOCAL: Our 'varobj-print-object' makes "set var" ambiguous,
      causing a failure in a poorly written testsuite case. */
   add_alias_cmd ("var", "variable", class_vars, 1, &setlist);
 
@@ -2463,13 +2463,13 @@ Show printing of source filename and line number with <symbol>."), NULL,
 			   show_print_symbol_filename,
 			   &setprintlist, &showprintlist);
 
-  add_setshow_zinteger_cmd ("disassembly-name-length", no_class, 
+  add_setshow_zinteger_cmd ("disassembly-name-length", no_class,
 			   &disassembly_name_length, "\
 Set the maximum length of characters to print in the symbol name in disassembly output.\n"
-"A value of -1 means unlimited", 
+"A value of -1 means unlimited",
 			   "\
-Show the maximum length of characters to print in the symbol name in disassembly output", 
-			   NULL, NULL, NULL, 
+Show the maximum length of characters to print in the symbol name in disassembly output",
+			   NULL, NULL, NULL,
 			   &setlist, &showlist);
 
   /* For examine/instruction a single byte quantity is specified as

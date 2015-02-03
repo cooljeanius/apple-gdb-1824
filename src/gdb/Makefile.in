@@ -114,8 +114,16 @@ CC=@CC@
 srcdir = @srcdir@
 VPATH = @srcdir@:@srcdir@/macosx
 
+## automake-style verbosity control:
+V = @V@
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
+am__v_v_0 =
+am__v_v_1 = -v
+
+# configure our bison/yacc usage:
 YACC=@YACC@
-YFLAGS = -d -t -v @MAINT@@EXTRA_YFLAGS_SEP@ -k -Wall -Wyacc
+YFLAGS = -d -t $(AM_V_v) @MAINT@@EXTRA_YFLAGS_SEP@ -k -Wall -Wyacc
 
 # This is used to rebuild ada-lex.c from ada-lex.l.  If the program is
 # not defined, but ada-lex.c is present, compilation will continue,
@@ -752,7 +760,7 @@ auxv_h = auxv.h
 ax_gdb_h = ax-gdb.h
 ax_h = ax.h $(doublest_h)
 bcache_h = bcache.h
-bfd_target_h = bfd-target.h
+bfd_target_h = bfd-target.h $(defs_h)
 block_h = block.h
 breakpoint_h = breakpoint.h $(frame_h) $(value_h) $(gdb_events_h)
 bsd_kvm_h = bsd-kvm.h
@@ -926,6 +934,7 @@ xcoffsolib_h = xcoffsolib.h
 cli_cmds_h = $(srcdir)/cli/cli-cmds.h
 cli_decode_h = $(srcdir)/cli/cli-decode.h $(command_h)
 cli_dump_h = $(srcdir)/cli/cli-dump.h
+cli_logging_h = $(srcdir)/cli/cli-logging.h
 cli_script_h = $(srcdir)/cli/cli-script.h
 cli_setshow_h = $(srcdir)/cli/cli-setshow.h
 cli_utils_h = $(srcdir)/cli/cli-utils.h
@@ -1153,7 +1162,7 @@ pdf: pdf-local
 gdb.z:gdb.1
 	nroff -man $(srcdir)/gdb.1 | col -b > gdb.t
 	pack gdb.t; rm -f gdb.t
-	mv -v gdb.t.z gdb.z
+	mv $(AM_V_v) gdb.t.z gdb.z
 
 # Traditionally "install" depends on "all". But it may be useful
 # not to; for example, if the user has made some trivial change to a
@@ -1197,36 +1206,36 @@ install-tui:
 
 uninstall: force $(CONFIG_UNINSTALL)
 	transformed_name=`t='$(program_transform_name)'; \
-			  echo "gdb" | $(SED) -e $${t}` ; \
-		if test "x$${transformed_name}" = "x"; then \
-		  transformed_name=gdb; \
-		else \
-		  echo "transformed_name is $${transformed_name}"; \
-		fi; \
-		rm -fv $(DESTDIR)$(bindir)/$${transformed_name}$(EXEEXT) \
-		      $(DESTDIR)$(man1dir)/$${transformed_name}.1
+			  echo "gdb" | $(SED) -e $${t}`; \
+	  if test "x$${transformed_name}" = "x"; then \
+	    transformed_name=gdb; \
+	  else \
+	    echo "transformed_name is $${transformed_name}"; \
+	  fi; \
+	rm -f $(AM_V_v) $(DESTDIR)$(bindir)/$${transformed_name}$(EXEEXT) \
+	      $(DESTDIR)$(man1dir)/$${transformed_name}.1
 	@$(MAKE) DO=uninstall "DODIRS=$(SUBDIRS)" $(FLAGS_TO_PASS) subdir_do
 .PHONY: uninstall-tui
 uninstall-tui:
 	transformed_name=`t='$(program_transform_name)'; \
 			  echo $(TUI) | $(SED) -e $${t}` ; \
-		if test "x$${transformed_name}" = "x"; then \
-		  transformed_name=$(TUI); \
-		else \
-		  echo "transformed_name is $${transformed_name}"; \
-		fi; \
-		rm -fv $(DESTDIR)$(bindir)/$${transformed_name}$(EXEEXT) \
-		      $(DESTDIR)$(man1dir)/$${transformed_name}.1
+	  if test "x$${transformed_name}" = "x"; then \
+	    transformed_name=$(TUI); \
+	  else \
+	    echo "transformed_name is $${transformed_name}"; \
+	  fi; \
+	rm -f $(AM_V_v) $(DESTDIR)$(bindir)/$${transformed_name}$(EXEEXT) \
+	      $(DESTDIR)$(man1dir)/$${transformed_name}.1
 
 # The C++ name parser can be built standalone for testing.
 test-cp-name-parser.o: cp-name-parser.c $(safe_ctype_h) $(libiberty_h) \
   $(demangle_h)
 	$(CC) -c $(INTERNAL_CFLAGS) -DTEST_CPNAMES \
-		-o test-cp-name-parser.o cp-name-parser.c
+	  -o test-cp-name-parser.o cp-name-parser.c
 
 test-cp-name-parser$(EXEEXT): test-cp-name-parser.o $(LIBIBERTY_DEP)
 	$(CC_LD) $(INTERNAL_LDFLAGS) -o test-cp-name-parser$(EXEEXT) \
-		test-cp-name-parser.o $(LIBIBERTY)
+	  test-cp-name-parser.o $(LIBIBERTY)
 
 # We do this by grepping through sources. If that turns out to be too slow,
 # we could just require every .o file to have an initialization routine
@@ -1326,7 +1335,7 @@ init.c: $(INIT_FILES)
 	@$(SED) -e 's/\(.*\)/  \1 ();/' <init.l-tmp >>init.c-tmp
 	@echo '}' >>init.c-tmp
 	@rm -f init.l-tmp
-	@mv -v init.c-tmp init.c
+	@mv $(AM_V_v) init.c-tmp init.c
 
 .PRECIOUS: init.c
 
@@ -1340,27 +1349,27 @@ TMPDIR = /tmp
 # Removing the old gdb 1st works better if running, at least on SunOS.
 gdb$(EXEEXT): gdb.o libgdb.a $(CONFIG_OBS) $(ADD_DEPS) $(CDEPS) $(TDEPLIBS)
 	$(MAKE) version.o
-	rm -fv gdb$(EXEEXT)
-	rm -f -r -v gdb$(EXEEXT).dSYM
+	rm -f $(AM_V_v) gdb$(EXEEXT)
+	rm -f -r $(AM_V_v) gdb$(EXEEXT).dSYM
 	$(LINK) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
 		$(ADD_INFO_PLIST) \
 		-o gdb$(EXEEXT) gdb.o $(CONFIG_OBS) libgdb.a \
 		$(TDEPLIBS) $(TUI_LIBRARY) $(CLIBS) $(LOADLIBES)
-	echo "stripping __objcInit";
+	@echo "stripping __objcInit";
 	echo "__objcInit" > $(TMPDIR)/macosx-syms-to-remove;
 	-if [ -f .libs/gdb$(EXEEXT) ]; then \
 	  $(STRIP) -R $(TMPDIR)/macosx-syms-to-remove -X .libs/gdb$(EXEEXT); \
 	else \
 	  $(STRIP) -R $(TMPDIR)/macosx-syms-to-remove -X gdb$(EXEEXT); \
 	fi
-	rm -fv $(TMPDIR)/macosx-syms-to-remove;
+	rm -f $(AM_V_v) $(TMPDIR)/macosx-syms-to-remove;
 
 
 $(TUI)$(EXEEXT): tui-main.o libgdb.a $(ADD_DEPS) $(CDEPS) $(TDEPLIBS)
-	rm -fv $(TUI)$(EXEEXT)
+	rm -f $(AM_V_v) $(TUI)$(EXEEXT)
 	$(LINK) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
-		-o $(TUI)$(EXEEXT) tui-main.o libgdb.a \
-		$(TDEPLIBS) $(TUI_LIBRARY) $(CLIBS) $(LOADLIBES)
+	  -o $(TUI)$(EXEEXT) tui-main.o libgdb.a \
+	  $(TDEPLIBS) $(TUI_LIBRARY) $(CLIBS) $(LOADLIBES)
 
 nlm:	force
 	rootme=`pwd`; export rootme; $(MAKE) $(TARGET_FLAGS_TO_PASS) \
@@ -1379,7 +1388,7 @@ libgdb.a: $(LIBGDB_OBS)
 # A Mach 3.0 program to force gdb back to command level:
 stop-gdb: stop-gdb.o
 	${CC_LD} $(GLOBAL_CFLAGS) $(LDFLAGS) -o stop-gdb \
-	stop-gdb.o $(CLIBS) $(LOADLIBES)
+	  stop-gdb.o $(CLIBS) $(LOADLIBES)
 
 # This is useful when debugging GDB, because some Unices do NOT let you
 # run GDB on itself without copying the executable. So "make gdb1" will
@@ -1387,8 +1396,8 @@ stop-gdb: stop-gdb.o
 # Removing gdb1 before the copy is the right thing if gdb1 is open
 # in another process.
 gdb1$(EXEEXT): gdb$(EXEEXT)
-	rm -fv gdb1$(EXEEXT)
-	cp -v gdb$(EXEEXT) gdb1$(EXEEXT)
+	rm -f $(AM_V_v) gdb1$(EXEEXT)
+	cp $(AM_V_v) gdb$(EXEEXT) gdb1$(EXEEXT)
 
 # Put the proper machine-specific files first, so M-. on a machine
 # specific routine gets the one for the correct machine.  (FIXME: those
@@ -1418,19 +1427,19 @@ tags: TAGS
 # 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:: $(CONFIG_CLEAN)
 	@$(MAKE) $(FLAGS_TO_PASS) DO=clean "DODIRS=$(SUBDIRS)" subdir_do
-	rm -fv *.o *.a $(ADD_FILES) *~ init.c-tmp init.l-tmp version.c-tmp
-	rm -f init.c version.c
-	rm -fv gdb$(EXEEXT) core make.log
-	rm -fv gdb[0-9]$(EXEEXT)
+	rm -f $(AM_V_v) *.o *.a $(ADD_FILES) *~
+	rm -f init.c-tmp init.l-tmp version.c-tmp init.c version.c
+	rm -f $(AM_V_v) gdb$(EXEEXT) core make.log
+	rm -f $(AM_V_v) gdb[0-9]$(EXEEXT)
 	rm -f stop-gdb
 	if test -e $(TUI)$(EXEEXT); then $(MAKE) clean-tui; fi
 	if test -e insight$(EXEEXT); then $(MAKE) clean-gdbtk; fi
-	rm -fv test-cp-name-parser$(EXEEXT)
-	rm -fv *.rsrc
+	rm -f $(AM_V_v) test-cp-name-parser$(EXEEXT)
+	rm -f $(AM_V_v) *.rsrc
 
 .PHONY: clean-tui
 clean-tui:
-	rm -fv $(TUI)$(EXEEXT) || echo "$(TUI)$(EXEEXT) not present"
+	rm -f $(AM_V_v) $(TUI)$(EXEEXT) || echo "$(TUI)$(EXEEXT) missing"
 
 # This used to depend on c-exp.c m2-exp.c TAGS
 # I believe this is wrong; the makefile standards for distclean just
@@ -1463,12 +1472,12 @@ local-maintainer-clean: mostlyclean @MAINT@ clean-tui clean-gdbtk
 	        objc-exp.c \
 		jv-exp.tab \
 		f-exp.c m2-exp.c p-exp.c
-	rm -fv TAGS $(INFOFILES)
-	rm -fv $(YYFILES)
+	rm -f $(AM_V_v) TAGS $(INFOFILES)
+	rm -f $(AM_V_v) $(YYFILES)
 	rm -f nm.h tm.h xm.h
-	-(test -w $(TMPDIR) && rm -fv $(TMPDIR)/cfg_stat.sh)
+	-(test -w $(TMPDIR) && rm -f $(AM_V_v) $(TMPDIR)/cfg_stat.sh)
 	-rm -f config.status || \
-	  (test -w $(TMPDIR) && mv -vf config.status $(TMPDIR)/cfg_stat.sh)
+	  (test -w $(TMPDIR) && mv -f $(AM_V_v) config.status $(TMPDIR)/cfg_stat.sh)
 
 do-maintainer-clean:
 	@$(MAKE) $(FLAGS_TO_PASS) DO=maintainer-clean "DODIRS=$(SUBDIRS)" \
@@ -1561,10 +1570,10 @@ doc/gdb.info:
 
 # Make copying.c from COPYING
 $(srcdir)/copying.c: @MAINTAINER_MODE_TRUE@ \
-		$(srcdir)/COPYING $(srcdir)/copying.awk
+  $(srcdir)/COPYING $(srcdir)/copying.awk
 	$(AWK) -f $(srcdir)/copying.awk \
 		< $(srcdir)/COPYING > $(srcdir)/copying.tmp
-	mv -v $(srcdir)/copying.tmp $(srcdir)/copying.c
+	mv $(AM_V_v) $(srcdir)/copying.tmp $(srcdir)/copying.c
 
 version.c: version.in @MAINT@ Makefile
 	rm -f version.c-tmp
@@ -1701,13 +1710,13 @@ copying.o: $(srcdir)/copying.c @MAINT@ $(defs_h) $(command_h) $(gdbcmd_h)
 
 hpux-thread.o: $(srcdir)/hpux-thread.c @MAINT@ $(defs_h)
 	$(CC) -c $(INTERNAL_CFLAGS) -I$(srcdir)/osf-share \
-		-I$(srcdir)/osf-share/HP800 -I/usr/include/dce \
-		$(srcdir)/hpux-thread.c
+	  -I$(srcdir)/osf-share/HP800 -I/usr/include/dce \
+	  $(srcdir)/hpux-thread.c
 
 # main.o needs an explicit build rule to get TARGET_SYSTEM_ROOT and BINDIR.
 main.o: main.c @MAINT@ $(defs_h)
 	$(CC) -c $(INTERNAL_CFLAGS) $(TARGET_SYSTEM_ROOT_DEFINE) \
-		-DBINDIR=\"$(bindir)\" $(srcdir)/main.c
+	  -DBINDIR=\"$(bindir)\" $(srcdir)/main.c
 
 # FIXME: cagney/2004-09-16: "gnu-v3-abi.c", with a GCC 3.4 compiler,
 # gets a "assignment from incompatible pointer type" warning. The
@@ -1715,7 +1724,7 @@ main.o: main.c @MAINT@ $(defs_h)
 # conflict.
 gnu-v3-abi.o: $(srcdir)/gnu-v3-abi.c @MAINT@ $(defs_h)
 	$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
-		$(srcdir)/gnu-v3-abi.c
+	  $(srcdir)/gnu-v3-abi.c
 
 # FIXME: cagney/2003-08-10: "monitor.c" gets -Wformat-nonliteral
 # errors. It turns out that that is the least of monitor.c's
@@ -1770,14 +1779,14 @@ update-po: $(CATALOGS:.gmo=.pox)
 # N.B. We do not attempt to copy these into $(srcdir).  The snapshot
 # script does that.
 .po.gmo:
-	-test -d po || mkdir -v po
+	-test -d po || mkdir $(AM_V_v) po
 	$(GMSGFMT) --statistics -o $@ $<
 
 # The new .po has to be gone over by hand, so we deposit it into
 # build/po with a different extension.  If build/po/$(PACKAGE).pot
 # exists, use it (it was just created), else use the one in srcdir.
 .po.pox:
-	-test -d po || mkdir -v po
+	-test -d po || mkdir $(AM_V_v) po
 	$(MSGMERGE) $< `if test -f po/$(PACKAGE).pot; \
 			then echo po/$(PACKAGE).pot; \
 			else echo $(srcdir)/po/$(PACKAGE).pot; fi` -o $@
@@ -1807,11 +1816,11 @@ uninstall-po:
 	  else continue; \
 	  fi; \
 	  dir=$(localedir)/$${lang}/LC_MESSAGES; \
-	  rm -fv $(DESTDIR)$${dir}/$(PACKAGE).mo; \
+	  rm -f $(AM_V_v) $(DESTDIR)$${dir}/$(PACKAGE).mo; \
 	done
 # Delete po/*.gmo only if we are not building in the source directory.
 clean-po:
-	-if [ ! -f Makefile.in ]; then rm -fv po/*.gmo; fi
+	-if [ ! -f Makefile.in ]; then rm -f $(AM_V_v) po/*.gmo; fi
 
 # Rule for regenerating the message template (gdb.pot).  Instead of
 # forcing everyone to edit POTFILES.in, which proved impractical, this
@@ -1822,7 +1831,7 @@ clean-po:
 # files) force this rule.
 $(PACKAGE).pot: po/$(PACKAGE).pot
 po/$(PACKAGE).pot: force
-	-test -d po || mkdir -v po
+	-test -d po || mkdir $(AM_V_v) po
 	$(SHELL) -e $(srcdir)/po/gdbtext $(XGETTEXT) $(PACKAGE) . $(srcdir)
 
 
@@ -1854,13 +1863,13 @@ po/$(PACKAGE).pot: force
 	     -e 's/\([^x]\)realloc/\1xrealloc/g' \
 	     -e '/^#line.*y.tab.c/d' \
 	  < $@.tmp > $@.new
-	-rm -fv $@.tmp
-	mv -v $@.new ./$*.c
+	-rm -f $(AM_V_v) $@.tmp
+	mv $(AM_V_v) $@.new ./$*.c
 .l.c:
 	if [ "$(FLEX)" ] && $(FLEX) --version >/dev/null 2>&1; then \
 	    touch $< && \
 	    $(FLEX) -o$@ $< && \
-	    rm -fv $@.new && \
+	    rm -f $(AM_V_v) $@.new && \
 	    $(SED) -e '/extern.*malloc/d' \
 	        -e '/extern.*realloc/d' \
 	        -e '/extern.*free/d' \
@@ -1869,8 +1878,8 @@ po/$(PACKAGE).pot: force
 	        -e 's/\([^x]\)realloc/\1xrealloc/g' \
 		-e 's/yy_flex_xrealloc/yyxrealloc/g' \
 	      < $@ > $@.new && \
-	    rm -fv $@ && \
-	    mv -v $@.new $@; \
+	    rm -f $(AM_V_v) $@ && \
+	    mv $(AM_V_v) $@.new $@; \
 	elif [ -f $@ ]; then \
 	    echo "Warning: $*.c older than $*.l and flex not available."; \
 	else \
@@ -3054,7 +3063,7 @@ cli-interp.o: $(srcdir)/cli/cli-interp.c $(defs_h) $(interps_h) \
   $(gdb_string_h) $(exceptions_h)
 	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-interp.c
 cli-logging.o: $(srcdir)/cli/cli-logging.c $(defs_h) $(gdbcmd_h) \
-  $(ui_out_h) $(gdb_string_h)
+  $(ui_out_h) $(gdb_string_h) $(cli_logging_h)
 	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-logging.c
 cli-script.o: $(srcdir)/cli/cli-script.c $(defs_h) $(value_h) \
   $(language_h) $(ui_out_h) $(gdb_string_h) $(exceptions_h) $(top_h) \
@@ -3116,25 +3125,25 @@ uninstall-gdbtk:
 	else \
 		echo "transformed_name is $${transformed_name}"; \
 	fi; \
-	rm -fv $(DESTDIR)$(bindir)/$${transformed_name}$(EXEEXT); \
-	rm -rfv $(DESTDIR)$(GDBTK_LIBRARY)
+	rm -f $(AM_V_v) $(DESTDIR)$(bindir)/$${transformed_name}$(EXEEXT)
+	rm -rf $(AM_V_v) $(DESTDIR)$(GDBTK_LIBRARY)
 
 .PHONY: clean-gdbtk
 clean-gdbtk:
-	rm -fv insight$(EXEEXT) || echo "insight$(EXEEXT) not present"
+	rm -f $(AM_V_v) insight$(EXEEXT) || echo "insight$(EXEEXT) missing"
 
 # Removing the old gdb first works better if it is running,
 # at least on SunOS:
 insight$(EXEEXT): gdbtk-main.o libgdb.a $(ADD_DEPS) \
   $(CDEPS) $(TDEPLIBS)
-	rm -fv insight$(EXEEXT)
+	rm -f $(AM_V_v) insight$(EXEEXT)
 	$(CC_LD) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
 		-o insight$(EXEEXT) gdbtk-main.o libgdb.a \
 		$(TDEPLIBS) $(TUI_LIBRARY) $(CLIBS) $(LOADLIBES)
-	echo "stripping __objcInit";
+	@echo "stripping __objcInit";
 	echo "__objcInit" > $(TMPDIR)/macosx-syms-to-remove;
 	-$(STRIP) -R $(TMPDIR)/macosx-syms-to-remove -X gdb$(EXEEXT)
-	rm -fv $(TMPDIR)/macosx-syms-to-remove;
+	rm -f $(AM_V_v) $(TMPDIR)/macosx-syms-to-remove;
 
 gdbres.o: $(srcdir)/gdbtk/gdb.rc $(srcdir)/gdbtk/gdbtool.ico
 	$(WINDRES) --include $(srcdir)/gdbtk $(srcdir)/gdbtk/gdb.rc \
@@ -3215,12 +3224,12 @@ gdbtk-varobj.o: $(srcdir)/gdbtk/generic/gdbtk-varobj.c \
   $(gdb_string_h)
 	$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) $(ITCL_CFLAGS) \
 	$(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) $(GDBTK_CFLAGS) \
-		$(srcdir)/gdbtk/generic/gdbtk-varobj.c
+	  $(srcdir)/gdbtk/generic/gdbtk-varobj.c
 
 gdbtk-wrapper.o: $(srcdir)/gdbtk/generic/gdbtk-wrapper.c \
   $(srcdir)/gdbtk/generic/gdbtk-wrapper.h $(defs_h) $(frame_h) $(value_h)
 	$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) $(GDBTK_CFLAGS)\
-		$(srcdir)/gdbtk/generic/gdbtk-wrapper.c
+	  $(srcdir)/gdbtk/generic/gdbtk-wrapper.c
 
 #
 # gdb/mi/ dependencies
@@ -3420,38 +3429,38 @@ FRAMEWORK_OFILES = $(LIBGDB_OBS)
 FRAMEWORK_LIB = -F../bfd -framework bfd -F../opcodes -framework opcodes -F../libiberty -framework liberty -F../mmalloc -framework mmalloc $(SYSTEM_FRAMEWORK)
 
 stamp-framework-headers:
-	$(RM) -fv stamp-framework stamp-framework-headers
-	$(RM) -rfv $(FRAMEWORK).framework
-	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
-	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
-	$(LN_S) -v Versions/Current/Headers $(FRAMEWORK).framework/Headers
-	$(LN_S) -v Versions/Current/PrivateHeaders $(FRAMEWORK).framework/PrivateHeaders
-	$(LN_S) -v A $(FRAMEWORK).framework/Versions/Current
-	cp -pv $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
-	cp -pv *.h $(FRAMEWORK).framework/Versions/Current/Headers/
-	mkdir -v $(FRAMEWORK).framework/Versions/Current/Headers/mi
-	cp -pv $(srcdir)/mi/*.h $(FRAMEWORK).framework/Versions/Current/Headers/mi/
-	mkdir -v $(FRAMEWORK).framework/Versions/Current/Headers/cli
-	cp -pv $(srcdir)/cli/*.h $(FRAMEWORK).framework/Versions/Current/Headers/cli/
+	$(RM) -f $(AM_V_v) stamp-framework stamp-framework-headers
+	$(RM) -rf $(AM_V_v) $(FRAMEWORK).framework
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
+	$(LN_S) $(AM_V_v) Versions/Current/Headers $(FRAMEWORK).framework/Headers
+	$(LN_S) $(AM_V_v) Versions/Current/PrivateHeaders $(FRAMEWORK).framework/PrivateHeaders
+	$(LN_S) $(AM_V_v) A $(FRAMEWORK).framework/Versions/Current
+	cp -p $(AM_V_v) $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
+	cp -p $(AM_V_v) *.h $(FRAMEWORK).framework/Versions/Current/Headers/
+	mkdir $(AM_V_v) $(FRAMEWORK).framework/Versions/Current/Headers/mi
+	cp -p $(AM_V_v) $(srcdir)/mi/*.h $(FRAMEWORK).framework/Versions/Current/Headers/mi/
+	mkdir $(AM_V_v) $(FRAMEWORK).framework/Versions/Current/Headers/cli
+	cp -p $(AM_V_v) $(srcdir)/cli/*.h $(FRAMEWORK).framework/Versions/Current/Headers/cli/
 
 stamp-framework:
 	$(MAKE) $(FRAMEWORK_OFILES)
-	$(RM) -fv stamp-framework-headers
+	$(RM) -f $(AM_V_v) stamp-framework-headers
 	$(MAKE) stamp-framework-headers
-	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
-	$(LN_S) -v Versions/Current/Resources $(FRAMEWORK).framework/Resources
-	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
+	$(LN_S) $(AM_V_v) Versions/Current/Resources $(FRAMEWORK).framework/Resources
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
 
 	set -ex; \
 	if [ "x$(FRAMEWORK_SUFFIX)" != "x" ]; then \
 	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
-	    $(LN_S) -v $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
-	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX); \
-	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
-	    $(LN_S) -v $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK); \
+	    $(LN_S) $(AM_V_v) $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
+	    $(LN_S) $(AM_V_v) $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK); \
 	else \
 	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE)  -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
-	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
 	fi
 	touch stamp-framework
 
@@ -3479,7 +3488,7 @@ MAC_WARNINGS = -Wno-deprecated-declarations -Wno-four-char-constants \
   -Wextra-tokens -Wold-style-definition -Wshorten-64-to-32 \
   -Wstrict-prototypes -Wmissing-declarations -Wmissing-prototypes \
   -Wreturn-type -Wswitch -Wunused-label -Wshadow @MAINT@ -ansi # -pedantic
-# ('-Wno-#warnings' has to stay separate because of the quoting required)
+### ('-Wno-#warnings' has to stay separate because of the quoting required)
 
 mac-nat.o: $(srcdir)/mac-nat.c $(defs_h) $(frame_h) $(inferior_h)
 	$(MAC_CC) -c $(MAC_CFLAGS) $(MAC_DEFS) $(MAC_INCLUDES) \

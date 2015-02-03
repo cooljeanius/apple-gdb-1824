@@ -33,6 +33,11 @@ AC_PROG_CC
 AC_MSG_CHECKING([system extensions])
 AC_MSG_RESULT([ ])
 gl_USE_SYSTEM_EXTENSIONS
+if test "x${ac_cv_search_strerror}" = "x"; then
+  test -z "${ac_cv_search_strerror}"
+  AC_SEARCH_LIBS([strerror],[cposix]) dnl# used to be AC\_ISC\_POSIX
+  ## (maybe move below?)
+fi
 AC_MSG_CHECKING([things to check early before really initializing gnulib])
 AC_MSG_RESULT([ ])
 gl_EARLY
@@ -66,7 +71,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.1 gnits no-define subdir-objects])dnl
+AM_INIT_AUTOMAKE([1.11.1 gnits dejagnu no-define subdir-objects])dnl
   ## do this part again, to set a default:
 if test "x${am_cv_make_support_nested_variables}" = "x"; then
   test -z "${am_cv_make_support_nested_variables}"
@@ -91,9 +96,15 @@ m4_ifdef([AM_PROG_AR],[
   AC_CHECK_TOOLS([AR],[ar gar])dnl
 ])dnl
 
+AM_PROG_AS
+AC_REQUIRE_GREPS dnl# (just in case)
+
 # Check for the 'make' the user wants to use:
 AC_CHECK_PROGS([MAKE],[make gmake gnumake remake])
-AC_SUBST([MAKE])
+AC_SUBST([MAKE])dnl
+dnl# first we need to make sure that sed has been checked though:
+AC_REQUIRE_PROG_SED dnl# (just in case)
+dnl# ok, back to checking 'make' stuff:
 MAKE_IS_GNU=""
 case "`${MAKE} --version 2>&1 | sed 1q`" in
   *GNU*)
@@ -107,7 +118,20 @@ AC_SUBST([MAKE_IS_GNU])dnl
 # ---------------------- #
 AC_CHECK_LIB([c],[printf])dnl
 
-# Checks for header files:
+# Solaris requires -lintl if you want strerror (which calls dgettext)
+# to return localized messages.
+if test "x${ac_cv_func_strerror}" = "xyes" || test "x${ac_cv_search_strerror}" != "x"; then
+  test -n "${ac_cv_func_strerror}" || test -n "${ac_cv_search_strerror}"
+  AC_CHECK_LIB([intl],[dgettext],[:],[
+    AC_CHECK_LIB([intl],[libintl_dgettext])dnl
+  ])dnl
+  ## should be enough here
+fi
+unset ac_cv_lib_intl_gettext
+
+# ------------------------- #
+# Checks for header files.  #
+# ------------------------- #
 gl_STDINT_H
 AC_SUBST([STDINT_H])dnl
 gl_HEADER_STRING_H
@@ -148,7 +172,9 @@ if test "x${ac_cv_header_wctype_h}" = "x"; then
   AC_CHECK_HEADERS([wctype.h])
 fi
 
-# Checks for typedefs, structures, and compiler characteristics:
+# --------------------------------------------------------------- #
+# Checks for typedefs, structures, and compiler characteristics.  #
+# --------------------------------------------------------------- #
 if test "x${ac_cv_c_bigendian}" = "x"; then
   test -z "${ac_cv_c_bigendian}"
   AC_C_BIGENDIAN
@@ -181,7 +207,9 @@ if test "x${ac_cv_member_struct_stat_st_blocks}" = "x"; then
 fi
 AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
 
-# Checks for library functions:
+# ------------------------------ #
+# Checks for library functions.  #
+# ------------------------------ #
 if test "x${ac_cv_lib_error_at_line}" = "x"; then
   test -z "${ac_cv_lib_error_at_line}"
   AC_FUNC_ERROR_AT_LINE dnl# (might create libobj)
@@ -221,8 +249,8 @@ fi
 AC_FUNC_STRNLEN dnl# (might create libobj)
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([getpagesize memset nl_langinfo setlocale stpcpy strchr \
-                strcmp strcspn strdup strerror strndup strpbrk strrchr \
-                strspn strstr tzset wcwidth])dnl
+                strcmp strcspn strerror strndup strpbrk strrchr strspn \
+                strstr tzset wcwidth])dnl
   ## dummies to keep autoscan happy:
 if test "x${ac_cv_func_gettimeofday}" = "x"; then
   test -z "${gettimeofday}"
@@ -236,13 +264,21 @@ if test "x${ac_cv_func_mempcpy}" = "x"; then
   test -z "${ac_cv_func_mempcpy}"
   AC_CHECK_FUNCS([mempcpy])
 fi
+if test "x${ac_cv_func_strdup}" = "x"; then
+  test -z "${ac_cv_func_strdup}"
+  AC_CHECK_FUNCS([strdup])
+fi
+AC_CHECK_DECLS_ONCE([strerror])dnl
 
+# One last header thing:
 if test "x${NEXT_STRING_H}" = "x"; then
   test -z "${NEXT_STRING_H}" && export NEXT_STRING_H="<string.h>"
   AC_SUBST([NEXT_STRING_H])
 fi
 
-# Output:
+# -------- #
+# Output.  #
+# -------- #
 AC_CONFIG_FILES([Makefile Makefile_orig import/Makefile])dnl
 AC_CONFIG_COMMANDS([default],[
 case x${CONFIG_HEADERS} in

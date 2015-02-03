@@ -3381,9 +3381,9 @@ add_implementation_to_cache (CORE_ADDR class, CORE_ADDR sel, CORE_ADDR implement
 }
 
 static CORE_ADDR
-find_implementation_from_class (CORE_ADDR class, CORE_ADDR sel)
+find_implementation_from_class(CORE_ADDR class, CORE_ADDR sel)
 {
-  CORE_ADDR subclass = class;
+  volatile CORE_ADDR subclass = class;
   char sel_str[2048];
   int npasses;
   int addrsize = TARGET_ADDRESS_BYTES;

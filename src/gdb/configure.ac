@@ -951,6 +951,41 @@ AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
   AC_REQUIRE([AM_OUTPUT_DEPENDENCY_COMMANDS])dnl
   AC_REQUIRE([AM_MAKE_INCLUDE])dnl
   AC_REQUIRE([AM_DEP_TRACK])dnl
+
+  dnl######################################################################
+  dnl# Port to Automake 1.11.
+  dnl# This section can be removed once we assume Automake 1.14 or later.
+  #### check arg val for silent rules:
+  if test "x${enable_silent_rules}" = "xno"; then
+    : ${V=1}
+    : ${AM_DEFAULT_VERBOSITY=1}
+  elif test "x${enable_silent_rules}" = "xyes"; then
+    : ${V=0}
+    : ${AM_DEFAULT_VERBOSITY=0}
+  else
+    : ${V=0}
+    : ${AM_DEFAULT_VERBOSITY=1}
+  fi
+  : ${AM_DEFAULT_VERBOSITY=1}
+  : ${AM_V=${AM_DEFAULT_VERBOSITY}}
+  : ${AM_DEFAULT_V=${AM_DEFAULT_VERBOSITY}}
+  dnl# now subst:
+  AC_SUBST([V])dnl
+  AM_SUBST_NOTMAKE([V])dnl
+  AC_SUBST([AM_V])dnl
+  AM_SUBST_NOTMAKE([AM_V])dnl
+  AC_SUBST([AM_DEFAULT_V])dnl
+  AM_SUBST_NOTMAKE([AM_DEFAULT_V])dnl
+  AC_SUBST([AM_DEFAULT_VERBOSITY])dnl
+
+  dnl## from configmake prep:
+  dnl# Added in autoconf 2.70:
+  if test "x${runstatedir}" = "x"; then
+    AC_SUBST([runstatedir],['${localstatedir}/run'])
+  fi
+  dnl# Automake 1.9.6 only lacks pkglibexecdir; and since 1.11 merely
+  dnl# provides it without AC_SUBST, this blind use of AC_SUBST is safe.
+  AC_SUBST([pkglibexecdir],['${libexecdir}/${PACKAGE}'])dnl
 ])dnl
 AM_INIT_MY_AUTOMAKE_LITE
 

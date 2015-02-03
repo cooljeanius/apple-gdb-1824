@@ -42,6 +42,10 @@ AC_CONFIG_AUX_DIR([..])dnl
 AC_CONFIG_MACRO_DIR([..])dnl
 AC_CONFIG_HEADER([config.h])dnl
 
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
+  AM_ENABLE_MULTILIB([],[..])
+fi
+
 AC_CANONICAL_TARGET
 
 target_alias=${target_alias-${host_alias}}
@@ -135,7 +139,6 @@ if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
   # We are compiling a GCC library.  We can assume that the unwind
   # library exists.
   AC_MSG_NOTICE([assuming unwind library exists])
-  AM_ENABLE_MULTILIB([],[..])
   BACKTRACE_FILE="backtrace.lo simple.lo"
 else
   AC_CHECK_HEADER([unwind.h],

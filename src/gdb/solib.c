@@ -1,4 +1,4 @@
-/* Handle shared libraries for GDB, the GNU Debugger.
+/* solib.c: Handle shared libraries for GDB, the GNU Debugger.
 
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
    1999, 2000, 2001, 2002, 2003, 2005
@@ -131,7 +131,7 @@ The search path for loading non-absolute shared library symbol files is %s.\n"),
    * If solib_absolute_prefix is NOT set, perform the following two searches:
    *   Look in inferior's $PATH.
    *   Look in inferior's $LD_LIBRARY_PATH.
-   *   
+   *
    * The last check avoids doing this search when targetting remote
    * machines since solib_absolute_prefix will almost always be set.
 
@@ -188,12 +188,12 @@ solib_open (char *in_pathname, char **found_pathname)
       while (IS_DIR_SEPARATOR (*in_pathname))
         in_pathname++;
     }
-  
+
   /* If not found, search the solib_search_path (if any).  */
   if (found_file < 0 && solib_search_path != NULL)
     found_file = openp (solib_search_path, OPF_TRY_CWD_FIRST,
 			in_pathname, O_RDONLY, 0, &temp_pathname);
-  
+
   /* If not found, next search the solib_search_path (if any) for the basename
      only (ignoring the path).  This is to allow reading solibs from a path
      that differs from the opened path.  */
@@ -213,14 +213,14 @@ solib_open (char *in_pathname, char **found_pathname)
 			OPF_TRY_CWD_FIRST, in_pathname, O_RDONLY, 0,
 			&temp_pathname);
 
-  /* If not found, next search the inferior's $LD_LIBRARY_PATH 
+  /* If not found, next search the inferior's $LD_LIBRARY_PATH
      environment variable. */
   if (found_file < 0 && solib_absolute_prefix == NULL)
     found_file = openp (get_in_environ (inferior_environ, "LD_LIBRARY_PATH"),
 			OPF_TRY_CWD_FIRST, in_pathname, O_RDONLY, 0,
 			&temp_pathname);
 
-  /* Done.  If not found, tough luck.  Return found_file and 
+  /* Done.  If not found, tough luck.  Return found_file and
      (optionally) found_pathname.  */
   if (found_pathname != NULL && temp_pathname != NULL)
     *found_pathname = xstrdup (temp_pathname);
@@ -273,21 +273,23 @@ solib_map_sections (void *arg)
 
   if (scratch_chan < 0)
     {
-      perror_with_name (filename);
+      perror_with_name(filename);
     }
 
   /* Leave scratch_pathname allocated.  abfd->name will point to it.  */
-  abfd = bfd_fopen (scratch_pathname, gnutarget, FOPEN_RB, scratch_chan);
+  abfd = bfd_fopen(scratch_pathname, gnutarget, FOPEN_RB, scratch_chan);
   if (!abfd)
     {
-      close (scratch_chan);
-      error (_("Could not open `%s' as an executable file: %s"),
-	     scratch_pathname, bfd_errmsg (bfd_get_error ()));
+      close(scratch_chan);
+      error(_("Could not open `%s' as an executable file: %s"),
+	    scratch_pathname, bfd_errmsg(bfd_get_error()));
     }
 
-  /* Leave bfd open, core_xfer_memory and "info files" need it.  */
+  /* Leave bfd open, core_xfer_memory and "info files" need it: */
   so->abfd = abfd;
-  bfd_set_cacheable (abfd, 1);
+  if (bfd_set_cacheable(abfd, 1)) {
+    ;
+  }
 
   /* copy full path name into so_name, so that later symbol_file_add
      can find it */
@@ -337,7 +339,7 @@ solib_map_sections (void *arg)
    DESCRIPTION
 
    Free the storage associated with the `struct so_list' object SO.
-   If we have opened a BFD for SO, close it.  
+   If we have opened a BFD for SO, close it.
 
    The caller is responsible for removing SO from whatever list it is
    a member of.  If we have placed SO's sections in some target's
@@ -355,7 +357,7 @@ free_so (struct so_list *so)
 
   if (so->sections)
     xfree (so->sections);
-      
+
   if (so->abfd)
     {
       bfd_filename = bfd_get_filename (so->abfd);
@@ -470,12 +472,12 @@ update_solib_list (int from_tty, struct target_ops *target)
   struct so_list *inferior = ops->current_sos();
   struct so_list *gdb, **gdb_link;
 
-  /* If we are attaching to a running process for which we 
-     have not opened a symbol file, we may be able to get its 
+  /* If we are attaching to a running process for which we
+     have not opened a symbol file, we may be able to get its
      symbols now!  */
   if (attach_flag &&
       symfile_objfile == NULL)
-    catch_errors (ops->open_symbol_file_object, &from_tty, 
+    catch_errors (ops->open_symbol_file_object, &from_tty,
 		  "Error reading attached process's symbol file.\n",
 		  RETURN_MASK_ALL);
 
@@ -728,13 +730,13 @@ info_sharedlibrary_command (char *ignore, int from_tty)
 	    }
 
 	  printf_unfiltered ("%-*s", addr_width,
-			     so->textsection != NULL 
+			     so->textsection != NULL
 			       ? hex_string_custom (
 			           (LONGEST) so->textsection->addr,
 	                           addr_width - 4)
 			       : "");
 	  printf_unfiltered ("%-*s", addr_width,
-			     so->textsection != NULL 
+			     so->textsection != NULL
 			       ? hex_string_custom (
 			           (LONGEST) so->textsection->endaddr,
 	                           addr_width - 4)

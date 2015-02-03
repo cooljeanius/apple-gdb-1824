@@ -159,16 +159,16 @@ modify_trace_bit(thread_t thread, int value)
 # include "arm-macosx-thread-status.h"
 # include "arm-tdep.h"
 
-/* BCR address match type */
+/* BCR address match type: */
 # define BCR_M_IMVA_MATCH        ((uint32_t)(0u << 21))
 # define BCR_M_CONTEXT_ID_MATCH  ((uint32_t)(1u << 21))
 # define BCR_M_IMVA_MISMATCH     ((uint32_t)(2u << 21))
 # define BCR_M_RESERVED          ((uint32_t)(3u << 21))
 
-/* Link a BVR/BCR or WVR/WCR pair to another */
+/* Link a BVR/BCR or WVR/WCR pair to another: */
 # define E_ENABLE_LINKING	((uint32_t)(1u << 20))
 
-/* Byte Address Select */
+/* Byte Address Select: */
 # define BAS_IMVA_PLUS_0	((uint32_t)(1u << 5))
 # define BAS_IMVA_PLUS_1	((uint32_t)(1u << 6))
 # define BAS_IMVA_PLUS_2	((uint32_t)(1u << 7))
@@ -177,7 +177,7 @@ modify_trace_bit(thread_t thread, int value)
 # define BAS_IMVA_2_3		((uint32_t)(3u << 7))
 # define BAS_IMVA_ALL		((uint32_t)(0xfu << 5))
 
-/* Break only in privileged or user mode */
+/* Break only in privileged or user mode: */
 # define S_RSVD			((uint32_t)(0u << 1))
 # define S_PRIV			((uint32_t)(1u << 1))
 # define S_USER			((uint32_t)(2u << 1))
@@ -186,7 +186,7 @@ modify_trace_bit(thread_t thread, int value)
 # define BCR_ENABLE		((uint32_t)(1u))
 # define WCR_ENABLE		((uint32_t)(1u))
 
-/* Watchpoint load/store */
+/* Watchpoint load/store: */
 # define WCR_LOAD		((uint32_t)(1u << 3))
 # define WCR_STORE		((uint32_t)(1u << 4))
 
@@ -202,11 +202,11 @@ modify_trace_bit(thread_t thread, int value)
   unsigned int state_count;
   const uint32_t hw_idx = 0;
   int update_dregs = 0;
-  /* Set the debug state to all zeros and only fill it in if we are enabling
-   * a hardware breakpoint.  */
+  /* Set the debug state to all zeros and only fill it in if we are
+   * enabling a hardware breakpoint: */
   state_count = GDB_ARM_THREAD_DEBUG_STATE_COUNT;
   kret = thread_get_state(thread, GDB_ARM_THREAD_DEBUG_STATE,
-			  (thread_state_t) &dbg, &state_count);
+			  (thread_state_t)&dbg, &state_count);
   inferior_debug(3, "modify_trace_bit(%4.4x, %i): "
 		 "thread_get_state(%4.4x, %i, ***, %i) => kret = %8.8x, "
 		 "BRP%u = 0x%8.8x 0x%8.8x, state_count = %i\n",
@@ -216,30 +216,30 @@ modify_trace_bit(thread_t thread, int value)
   MACH_PROPAGATE_ERROR(kret);
 
   if (value) {
-      /* Enable trace bit.  */
+      /* Enable trace bit: */
       arm_macosx_tdep_inf_status.macosx_half_step_pc = (CORE_ADDR)-1;
 
-      /* Read the general regs first so we can get the PC.  */
+      /* Read the general regs first so we can get the PC: */
       gdb_arm_thread_state_t gpr;
       state_count = GDB_ARM_THREAD_STATE_COUNT;
-      kret = thread_get_state (thread, GDB_ARM_THREAD_STATE,
-			       (thread_state_t) &gpr, &state_count);
-      MACH_PROPAGATE_ERROR (kret);
+      kret = thread_get_state(thread, GDB_ARM_THREAD_STATE,
+			      (thread_state_t)&gpr, &state_count);
+      MACH_PROPAGATE_ERROR(kret);
 
       inferior_debug(3, "modify_trace_bit(%4.4x, %i): pc = 0x%8.8x\n",
-					 gpr.r[15]);
+                     gpr.r[15]);
 
       /* Set a hardware breakpoint that will stop when the PC changes.  */
 
-      /* Set the current PC as the breakpoint address with bits 1:0 removed.  */
-      dbg.bvr[hw_idx] = gpr.r[15] & 0xFFFFFFFCu;
-      /* Stop on address mismatch (BCR_M_IMVA_MISMATCH), when any address bits
-       * change (BAS_IMVA_ALL), stop only in user mode only (S_USER), and
-       * enable this hardware breakpoint (BCR_ENABLE).  */
+      /* Set the current PC as the breakpoint addr w/bits 1:0 removed: */
+      dbg.bvr[hw_idx] = (gpr.r[15] & 0xFFFFFFFCu);
+      /* Stop on address mismatch (BCR_M_IMVA_MISMATCH), when any address
+       * bits change (BAS_IMVA_ALL), stop only in user mode only (S_USER),
+       * and enable this hardware breakpoint (BCR_ENABLE): */
       dbg.bcr[hw_idx] = (BCR_M_IMVA_MISMATCH | S_USER | BCR_ENABLE);
 
       if (gpr.cpsr & FLAG_T) {
-	  /* Thumb breakpoint */
+	  /* Thumb breakpoint: */
 	  if (gpr.r[15] & 2) {
 	      dbg.bcr[hw_idx] |= BAS_IMVA_2_3;
 	  } else {
@@ -250,33 +250,32 @@ modify_trace_bit(thread_t thread, int value)
 	  if (((insn & 0xE000) == 0xE000) && insn & 0x1800) {
 	      /* 32 bit thumb opcode... */
 	      if (gpr.r[15] & 2) {
-		  /* We cannot take care of a 32 bit thumb instruction that lies
-		   * on a 2 byte boundary with a single IVA mismatch. We will
-		   * need to chain an extra hardware single step in order to
-		   * complete this single step since some architectures
-		   * (pre ARMv6T2) treat 32 bit thumb instructions as two fixed
-		   * length opcodes, later cores treat 32 bit thumb instructions
-		   * as a single opcode (variable length). Store the address of
-		   * this 32 bit opcode along with the ptid, so we can complete
-		   * the single step without stopping half way through this
-		   * opcode.
-		   */
+		  /* We cannot take care of a 32 bit thumb instruction that
+                   * lies on a 2 byte boundary with a single IVA mismatch.
+                   * We will need to chain an extra hardware single step
+                   * in order to complete this single step since some
+                   * architectures (pre ARMv6T2) treat 32 bit thumb
+                   * instructions as 2 fixed length opcodes; later cores
+                   * treat 32 bit thumb instructions as a single opcode
+                   * (variable length).  Store the address of this 32 bit
+                   * opcode along with the ptid, so that we can complete
+                   * the single step without stopping half way through this
+		   * opcode: */
 		  arm_macosx_tdep_inf_status.macosx_half_step_pc = (gpr.r[15] + 2);
 	      } else {
 		  /* This 32 bit thumb instruction starts on a four byte
 		   * boundary so we can use single IVA mismtach to complete
-		   * the step.
-		   */
+		   * the step: */
 		  dbg.bcr[hw_idx] |= BAS_IMVA_ALL;
 	      }
 	  }
       } else {
-	  /* ARM breakpoint, stop when any address bits change */
+	  /* ARM breakpoint, stop when any address bits change: */
 	  dbg.bcr[hw_idx] |= BAS_IMVA_ALL;
       }
       update_dregs = 1;
   } else {
-      /* Disable trace bit.  */
+      /* Disable trace bit: */
       if (dbg.bcr[hw_idx] & BCR_ENABLE) {
 	  dbg.bvr[hw_idx] = 0;
 	  dbg.bcr[hw_idx] = 0;
@@ -287,7 +286,7 @@ modify_trace_bit(thread_t thread, int value)
   if (update_dregs) {
       state_count = GDB_ARM_THREAD_DEBUG_STATE_COUNT;
       kret = thread_set_state(thread, GDB_ARM_THREAD_DEBUG_STATE,
-			      (thread_state_t) &dbg,
+			      (thread_state_t)&dbg,
 			      GDB_ARM_THREAD_DEBUG_STATE_COUNT);
       inferior_debug(3, "modify_trace_bit(%4.4x, %i): thread_set_state(%4.4x, "
 		     "%i, ***, %i) => kret = %8.8x, BRP%u = %8.8x %8.8x\n",
@@ -595,8 +594,8 @@ const struct dispatch_queue_offsets_s {
 
 /* libdispatch has a structure (symbol name dispatch_queue_offsets) which
  * tells us where to find the name and flags for a work queue in the inferior.
- * v. libdispatch's (non-public) src/queue_private.h for the definition of this
- * structure. */
+ * v. libdispatch's (non-public) src/queue_private.h for the definition
+ * of this structure. */
 /* (copied it above...) */
 static struct dispatch_offsets_info *
 read_dispatch_offsets(void)
@@ -606,30 +605,28 @@ read_dispatch_offsets(void)
   if (dispatch_offsets != NULL)
     return dispatch_offsets;
 
-  dispatch_queue_offsets = lookup_minimal_symbol
-                           ("dispatch_queue_offsets", NULL, NULL);
-  if (dispatch_queue_offsets == NULL
-      || SYMBOL_VALUE_ADDRESS (dispatch_queue_offsets) == 0
-      || SYMBOL_VALUE_ADDRESS (dispatch_queue_offsets) == -1)
+  dispatch_queue_offsets = lookup_minimal_symbol("dispatch_queue_offsets",
+                                                 NULL, NULL);
+  if ((dispatch_queue_offsets == NULL)
+      || (SYMBOL_VALUE_ADDRESS(dispatch_queue_offsets) == 0)
+      || (SYMBOL_VALUE_ADDRESS(dispatch_queue_offsets) == -1))
     return NULL;
 
   dispatch_offsets = (struct dispatch_offsets_info *)
-                      xmalloc (sizeof (struct dispatch_offsets_info));
+                      xmalloc(sizeof(struct dispatch_offsets_info));
 
-  if (safe_read_memory_unsigned_integer
-       (SYMBOL_VALUE_ADDRESS (dispatch_queue_offsets), 2,
-        &dispatch_offsets->version) == 0)
+  if (safe_read_memory_unsigned_integer(SYMBOL_VALUE_ADDRESS(dispatch_queue_offsets),
+                                        2, &dispatch_offsets->version) == 0)
     {
-      xfree (dispatch_offsets);
+      xfree(dispatch_offsets);
       dispatch_offsets = NULL;
       return NULL;
     }
 
-  if (safe_read_memory_unsigned_integer
-       (SYMBOL_VALUE_ADDRESS (dispatch_queue_offsets) + 2, 2,
-        &dispatch_offsets->label_offset) == 0)
+  if (safe_read_memory_unsigned_integer((SYMBOL_VALUE_ADDRESS(dispatch_queue_offsets) + 2),
+                                        2, &dispatch_offsets->label_offset) == 0)
     {
-      xfree (dispatch_offsets);
+      xfree(dispatch_offsets);
       dispatch_offsets = NULL;
       return NULL;
     }
@@ -643,20 +640,18 @@ read_dispatch_offsets(void)
       return NULL;
     }
 
-  if (safe_read_memory_unsigned_integer
-       (SYMBOL_VALUE_ADDRESS (dispatch_queue_offsets) + 6, 2,
-        &dispatch_offsets->flags_offset) == 0)
+  if (safe_read_memory_unsigned_integer((SYMBOL_VALUE_ADDRESS(dispatch_queue_offsets) + 6),
+                                        2, &dispatch_offsets->flags_offset) == 0)
     {
-      xfree (dispatch_offsets);
+      xfree(dispatch_offsets);
       dispatch_offsets = NULL;
       return NULL;
     }
 
-  if (safe_read_memory_unsigned_integer
-       (SYMBOL_VALUE_ADDRESS (dispatch_queue_offsets) + 8, 2,
-        &dispatch_offsets->flags_size) == 0)
+  if (safe_read_memory_unsigned_integer((SYMBOL_VALUE_ADDRESS(dispatch_queue_offsets) + 8),
+                                        2, &dispatch_offsets->flags_size) == 0)
     {
-      xfree (dispatch_offsets);
+      xfree(dispatch_offsets);
       dispatch_offsets = NULL;
       return NULL;
     }
@@ -672,7 +667,7 @@ read_dispatch_offsets(void)
    Returns 0 to indicate failure.  */
 
 static CORE_ADDR
-get_dispatch_queue_addr (CORE_ADDR dispatch_qaddr)
+get_dispatch_queue_addr(CORE_ADDR dispatch_qaddr)
 {
   ULONGEST queue = 0UL;
   int wordsize;
@@ -691,11 +686,11 @@ get_dispatch_queue_addr (CORE_ADDR dispatch_qaddr)
    Returns a pointer to a static character buffer if it was found.  */
 
 char *
-get_dispatch_queue_name (CORE_ADDR dispatch_qaddr)
+get_dispatch_queue_name(CORE_ADDR dispatch_qaddr)
 {
   static char namebuf[96];
-  struct dispatch_offsets_info *dispatch_offsets = read_dispatch_offsets ();
-  int wordsize = TARGET_PTR_BIT / 8;
+  struct dispatch_offsets_info *dispatch_offsets = read_dispatch_offsets();
+  int wordsize = (TARGET_PTR_BIT / 8);
   ULONGEST queue;
 
   namebuf[0] = '\0';
@@ -703,23 +698,23 @@ get_dispatch_queue_name (CORE_ADDR dispatch_qaddr)
   if (dispatch_offsets->version > 3)
     return NULL;
 
-  if (dispatch_qaddr != 0
-      && dispatch_offsets != NULL
-      && safe_read_memory_unsigned_integer (dispatch_qaddr, wordsize,
-                                            &queue) != 0
-      && queue != 0)
+  if ((dispatch_qaddr != 0)
+      && (dispatch_offsets != NULL)
+      && (safe_read_memory_unsigned_integer(dispatch_qaddr, wordsize,
+                                            &queue) != 0)
+      && (queue != 0))
     {
       char *queue_buf = NULL;
       errno = 0;
-      if (target_read_string (queue + dispatch_offsets->label_offset,
-                              &queue_buf, sizeof (namebuf) - 1, &errno) > 1
-          && errno == 0)
+      if ((target_read_string(queue + dispatch_offsets->label_offset,
+                              &queue_buf, sizeof(namebuf) - 1, &errno) > 1)
+          && (errno == 0))
         {
-          if (queue_buf && queue_buf[0] != '\0')
-            strlcpy (namebuf, queue_buf, sizeof (namebuf));
+          if (queue_buf && (queue_buf[0] != '\0'))
+            strlcpy(namebuf, queue_buf, sizeof(namebuf));
         }
       if (queue_buf)
-        xfree (queue_buf);
+        xfree(queue_buf);
     }
   return namebuf;
 }
@@ -729,24 +724,23 @@ get_dispatch_queue_name (CORE_ADDR dispatch_qaddr)
    Returns 1 if it was able to retrieve the flags field.  */
 
 static int
-get_dispatch_queue_flags (CORE_ADDR dispatch_qaddr, uint32_t *flags)
+get_dispatch_queue_flags(CORE_ADDR dispatch_qaddr, uint32_t *flags)
 {
-  int wordsize = TARGET_PTR_BIT / 8;
-  struct dispatch_offsets_info *dispatch_offsets = read_dispatch_offsets ();
+  int wordsize = (TARGET_PTR_BIT / 8);
+  struct dispatch_offsets_info *dispatch_offsets = read_dispatch_offsets();
   ULONGEST queue;
   ULONGEST buf;
 
   if (flags == NULL)
     return 0;
 
-  if (dispatch_qaddr != 0
-      && dispatch_offsets != NULL
-      && safe_read_memory_unsigned_integer (dispatch_qaddr, wordsize,
-                                            &queue) != 0
-      && queue != 0
-      && safe_read_memory_unsigned_integer
-                            (queue + dispatch_offsets->flags_offset,
-                             dispatch_offsets->flags_size, &buf) != 0)
+  if ((dispatch_qaddr != 0)
+      && (dispatch_offsets != NULL)
+      && (safe_read_memory_unsigned_integer(dispatch_qaddr, wordsize,
+                                            &queue) != 0)
+      && (queue != 0)
+      && (safe_read_memory_unsigned_integer((queue + dispatch_offsets->flags_offset),
+                                            dispatch_offsets->flags_size, &buf) != 0))
     {
       *flags = buf;
       return 1;
@@ -756,14 +750,14 @@ get_dispatch_queue_flags (CORE_ADDR dispatch_qaddr, uint32_t *flags)
 }
 
 static void
-print_thread_info (thread_t tid, int *gdb_thread_id)
+print_thread_info(thread_t tid, int *gdb_thread_id)
 {
   struct thread_basic_info info;
   unsigned int info_count = THREAD_BASIC_INFO_COUNT;
   kern_return_t kret;
   thread_t app_thread_name;
-  ptid_t ptid = ptid_build (macosx_status->pid, 0, tid);
-  struct thread_info *tp = find_thread_pid (ptid);
+  ptid_t ptid = ptid_build(macosx_status->pid, 0, tid);
+  struct thread_info *tp = find_thread_pid(ptid);
   ptid_t current_ptid;
 
   thread_identifier_info_data_t tident;
@@ -898,45 +892,45 @@ info_task_command(char *args, int from_tty)
   unsigned int i;
 
   kret =
-    task_info (macosx_status->task, TASK_BASIC_INFO, (task_info_t) & info,
-               &info_count);
-  MACH_CHECK_ERROR (kret);
+    task_info(macosx_status->task, TASK_BASIC_INFO, (task_info_t)&info,
+              &info_count);
+  MACH_CHECK_ERROR(kret);
 
-  printf_filtered ("Inferior task 0x%lx has a suspend count of %d.\n",
-                   (unsigned long) macosx_status->task, info.suspend_count);
+  printf_filtered("Inferior task 0x%lx has a suspend count of %d.\n",
+                  (unsigned long)macosx_status->task, info.suspend_count);
 
-  kret = task_threads (macosx_status->task, &thread_list, &nthreads);
-  MACH_CHECK_ERROR (kret);
+  kret = task_threads(macosx_status->task, &thread_list, &nthreads);
+  MACH_CHECK_ERROR(kret);
 
-  printf_filtered ("The task has %lu threads:\n", (unsigned long) nthreads);
+  printf_filtered("The task has %lu threads:\n", (unsigned long)nthreads);
   for (i = 0; i < nthreads; i++)
     {
       print_thread_info (thread_list[i], NULL);
     }
 
   kret =
-    vm_deallocate (mach_task_self (), (vm_address_t) thread_list,
-                   (nthreads * sizeof (int)));
-  MACH_CHECK_ERROR (kret);
+    vm_deallocate(mach_task_self(), (vm_address_t)thread_list,
+                  (nthreads * sizeof(int)));
+  MACH_CHECK_ERROR(kret);
 }
 
 static thread_t
-parse_thread (char *tidstr, int *gdb_thread_id)
+parse_thread(char *tidstr, int *gdb_thread_id)
 {
   ptid_t ptid;
 
-  if (ptid_equal (inferior_ptid, null_ptid))
+  if (ptid_equal(inferior_ptid, null_ptid))
     {
-      error ("The program being debugged is not being run.");
+      error("The program being debugged is not being run.");
     }
 
   if (tidstr != NULL)
     {
 
-      int num = atoi (tidstr);
-      ptid = thread_id_to_pid (num);
+      int num = atoi(tidstr);
+      ptid = thread_id_to_pid(num);
 
-      if (ptid_equal (ptid, minus_one_ptid))
+      if (ptid_equal(ptid, minus_one_ptid))
         {
           error
             ("Thread ID %d not known.  Use the \"info threads\" command to\n"
@@ -948,43 +942,44 @@ parse_thread (char *tidstr, int *gdb_thread_id)
       ptid = inferior_ptid;
     }
 
-  if (!target_thread_alive (ptid))
+  if (!target_thread_alive(ptid))
     {
-      error ("Thread ID %s does not exist.\n", target_pid_to_str (ptid));
+      error("Thread ID %s does not exist.\n", target_pid_to_str(ptid));
     }
 
   if (gdb_thread_id)
-    *gdb_thread_id = pid_to_thread_id (ptid);
+    *gdb_thread_id = pid_to_thread_id(ptid);
 
-  return ptid_get_tid (ptid);
+  return ptid_get_tid(ptid);
 }
 
 void
-info_thread_command (char *tidstr, int from_tty)
+info_thread_command(char *tidstr, int from_tty)
 {
   int gdb_thread_id;
-  thread_t thread = parse_thread (tidstr, &gdb_thread_id);
-  print_thread_info (thread, &gdb_thread_id);
+  thread_t thread = parse_thread(tidstr, &gdb_thread_id);
+  print_thread_info(thread, &gdb_thread_id);
 }
 
 static void
-thread_suspend_command (char *tidstr, int from_tty)
+thread_suspend_command(char *tidstr, int from_tty)
 {
   kern_return_t kret;
   thread_t thread;
 
-  thread = parse_thread (tidstr, NULL);
-  kret = thread_suspend (thread);
+  thread = parse_thread(tidstr, NULL);
+  kret = thread_suspend(thread);
 
-  MACH_CHECK_ERROR (kret);
+  MACH_CHECK_ERROR(kret);
 }
 
 static int
-thread_match_callback (struct thread_info *t, void *thread_ptr)
+thread_match_callback(struct thread_info *t, void *thread_ptr)
 {
-  LONGEST desired_thread = *(LONGEST *) thread_ptr;
+  LONGEST desired_thread = *(LONGEST *)thread_ptr;
 
-  struct private_thread_info *pt = (struct private_thread_info *) t->private;
+  struct private_thread_info *pt;
+  pt = (struct private_thread_info *)t->private;
   if (pt->app_thread_port == desired_thread)
     return 1;
   else
@@ -992,85 +987,85 @@ thread_match_callback (struct thread_info *t, void *thread_ptr)
 }
 
 static void
-thread_dont_suspend_while_stepping_command (char *arg, int from_tty)
+thread_dont_suspend_while_stepping_command(char *arg, int from_tty)
 {
   struct thread_info *tp;
   int on_or_off = 0;
 #define TDS_ERRSTR "Usage: on|off <THREAD ID>|-port <EXPR>"
 
-  while (*arg == ' ' || *arg == '\t')
+  while ((*arg == ' ') || (*arg == '\t'))
     arg++;
 
   if (*arg == '\0')
-    error (TDS_ERRSTR);
+    error(TDS_ERRSTR);
 
-  if (strstr (arg, "on") == arg)
+  if (strstr(arg, "on") == arg)
     {
       on_or_off = 1;
       arg += 2;
     }
-  else if (strstr (arg, "off") == arg)
+  else if (strstr(arg, "off") == arg)
     {
       on_or_off = 0;
       arg += 3;
     }
   else
-    error (TDS_ERRSTR);
+    error(TDS_ERRSTR);
 
-  while (*arg == ' ' || *arg == '\t')
+  while ((*arg == ' ') || (*arg == '\t'))
     arg++;
 
-  if (strstr (arg, "-port") == arg)
+  if (strstr(arg, "-port") == arg)
     {
       LONGEST thread_no;
       arg += 5;
-      while (*arg == ' ' || *arg == '\t')
+      while ((*arg == ' ') || (*arg == '\t'))
 	arg++;
 
       if (*arg == '\0')
-	error ("No expression of -port flag.");
+	error("No expression of -port flag.");
 
-      thread_no = parse_and_eval_long (arg);
+      thread_no = parse_and_eval_long(arg);
 
-      tp = iterate_over_threads (thread_match_callback, &thread_no);
+      tp = iterate_over_threads(thread_match_callback, &thread_no);
     }
   else
     {
       int threadno;
       char *endptr;
 
-      threadno = strtol (arg, &endptr, 0);
+      threadno = strtol(arg, &endptr, 0);
       if (*endptr != '\0')
-	error ("Junk at end of thread id: \"%s\".", endptr);
-      tp = find_thread_id (threadno);
+	error("Junk at end of thread id: \"%s\".", endptr);
+      tp = find_thread_id(threadno);
     }
 
   if (tp == NULL)
-    error ("Couldn't find thread matching: \"%s\".", arg);
+    error("Failed to find thread matching: \"%s\".", arg);
   else
     {
-      printf_unfiltered ("Setting thread %d to %s while stepping other threads.\n",
-			 tp->num,
-			 on_or_off ? "run" : "stop");
+      printf_unfiltered("Setting thread %d to %s while stepping other threads.\n",
+                        tp->num,
+                        (on_or_off ? "run" : "stop"));
       tp->private->gdb_dont_suspend_stepping = on_or_off;
     }
 }
 
 static void
-thread_resume_command (char *tidstr, int from_tty)
+thread_resume_command(char *tidstr, int from_tty)
 {
   kern_return_t kret;
   thread_t tid;
   struct thread_basic_info info;
   unsigned int info_count = THREAD_BASIC_INFO_COUNT;
 
-  tid = parse_thread (tidstr, NULL);
+  tid = parse_thread(tidstr, NULL);
 
   kret =
-    thread_info (tid, THREAD_BASIC_INFO, (thread_info_t) & info, &info_count);
+    thread_info(tid, THREAD_BASIC_INFO, (thread_info_t)&info, &info_count);
   MACH_CHECK_ERROR(kret);
   if (info.suspend_count == 0) {
-    error ("Attempt to resume a thread with suspend count of 0");
+    error("Attempt to resume a thread with suspend count of 0");
   }
 
   kret = thread_resume (tid);
@@ -1092,7 +1087,7 @@ mark_dead_if_thread_is_gone(struct thread_info *tp, void *data)
       }
   }
   if (!found_it) {
-      tp->ptid = pid_to_ptid (-1);
+      tp->ptid = pid_to_ptid(-1);
   }
   return 0;
 }
@@ -1118,11 +1113,11 @@ macosx_prune_threads(thread_array_t thread_list, unsigned int nthreads)
   ptid_list.nthreads = nthreads;
   ptid_list.ptids = (ptid_t *)xmalloc(nthreads * sizeof(ptid_t));
 
-  for ((i = 0); (i < nthreads); i++){
+  for ((i = 0); (i < nthreads); i++) {
       ptid_t ptid = ptid_build(macosx_status->pid, 0, thread_list[i]);
       ptid_list.ptids[i] = ptid;
   }
-  if (dealloc_thread_list){
+  if (dealloc_thread_list) {
       kret =
 	vm_deallocate(mach_task_self(), (vm_address_t)thread_list,
                       (nthreads * sizeof (int)));
@@ -1142,7 +1137,7 @@ macosx_print_thread_details(struct ui_out *uiout, ptid_t ptid)
   unsigned int info_count = THREAD_BASIC_INFO_COUNT;
   kern_return_t kret;
   thread_t app_thread_name;
-  struct thread_info *tp = find_thread_pid (ptid);
+  struct thread_info *tp = find_thread_pid(ptid);
 
   thread_identifier_info_data_t tident;
 
@@ -1168,9 +1163,9 @@ macosx_print_thread_details(struct ui_out *uiout, ptid_t ptid)
   MACH_CHECK_ERROR(kret);
 
   ui_out_field_fmt(uiout, "pthread-id", "0x%s",
-                   paddr_nz (tident.thread_handle));
+                   paddr_nz(tident.thread_handle));
   ui_out_field_fmt(uiout, "unique-id", "0x%s",
-                   paddr_nz (tident.thread_id));
+                   paddr_nz(tident.thread_id));
 
   retval = proc_pidinfo(PIDGET(ptid), PROC_PIDTHREADINFO,
                         tident.thread_handle, &pth, sizeof(pth));

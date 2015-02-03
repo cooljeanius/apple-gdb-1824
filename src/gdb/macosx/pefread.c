@@ -45,7 +45,7 @@ struct pef_symfile_info
   long nsyms;
 };
 
-static void pef_new_init(struct objfile *objfile;)
+static void pef_new_init(struct objfile *objfile ATTRIBUTE_UNUSED)
 {
   return; /* FIXME: actually do something here */
 }
@@ -161,7 +161,7 @@ pef_symfile_offsets (struct objfile *objfile, struct section_addr_info *addrs)
 
   if (addrs->other[0].addr != 0)
     {
-      for (i = 0; i < objfile->sections_end - objfile->sections; i++)
+      for (i = 0; i < (objfile->sections_end - objfile->sections); i++)
         {
           objfile->sections[i].addr += addrs->other[0].addr;
           objfile->sections[i].endaddr += addrs->other[0].addr;

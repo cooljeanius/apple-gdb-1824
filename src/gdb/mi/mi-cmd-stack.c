@@ -454,8 +454,8 @@ mi_cmd_stack_info_depth(char *command, char **argv, int argc)
   if (! FAST_COUNT_STACK_DEPTH(frame_high, 0, frame_high, &i, NULL))
 #endif /* FAST_COUNT_STACK_DEPTH */
     {
-      for (i = 0, fi = get_current_frame();
-	   fi && ((i < frame_high) || (frame_high == -1));
+      for (i = 0U, fi = get_current_frame();
+	   fi && (((int)i < frame_high) || (frame_high == -1));
 	   i++, fi = get_prev_frame(fi))
 	QUIT;
     }

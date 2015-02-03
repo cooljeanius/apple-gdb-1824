@@ -98,7 +98,8 @@ fi
 AC_SUBST([MAKEINFO])dnl
 AC_SUBST([BUILD_INFO])dnl
 
-AC_CHECK_PROG([PERL],[perl],[perl],[])
+AC_CHECK_PROG([PERL],[perl],[perl],[])dnl
+  ## have it enable/disable certain parts of the Makefile:
 if test x"${PERL}" = x""; then
   HAVE_PERL='#'
 else
@@ -342,6 +343,14 @@ m4_ifdef([GCC_PICFLAG],[
 if test "x${PICFLAG}" = "x"; then
   test -z "${PICFLAG}" && PICFLAG=""
 fi
+if test "x${NOPICFLAG}" = "x"; then
+  test -z "${NOPICFLAG}" && NOPICFLAG=""
+fi
+case "${host}" in
+  i[[34567]]86-*-darwin* | powerpc-*-darwin*)
+    NOPICFLAG=-mdynamic-no-pic ;;
+  *) ;;
+esac
 ])dnl
 
 # If they did NOT specify --enable-shared, do NOT generate shared libs.
@@ -380,8 +389,10 @@ elif [[ "x${shared}" != "xyes" ]]; then
     AC_MSG_WARN([libraries are unshared; overriding user-supplied PICFLAG])
   fi
   PICFLAG=""
+  NOPICFLAG=""
 fi
 AC_SUBST([PICFLAG])dnl
+AC_SUBST([NOPICFLAG])dnl
 
 NOASANFLAG=""
 case " ${CFLAGS} " in
@@ -451,7 +462,7 @@ AC_CHECK_ALIGNOF([int])dnl
 AC_CHECK_SIZEOF([long])dnl
 AC_CHECK_ALIGNOF([long])dnl
 
-# Check for presense of long long
+# Check for presense of the 'long long' type:
 AC_CHECK_TYPE([long long],
   [AC_DEFINE([HAVE_LONG_LONG],[1],
              [Define if you have the `long long' type.])dnl
@@ -495,7 +506,7 @@ extern char foo[sizeof(long) * CHAR_BIT >= 64 ? 1 : -1];
 extern char foo[sizeof(long long) * CHAR_BIT >= 64 ? 1 : -1];
 ]])],
 [liberty_cv_uint64="unsigned long long"],[liberty_cv_uint64=none])])])])
-AC_MSG_RESULT([$liberty_cv_uint64])
+AC_MSG_RESULT([${liberty_cv_uint64}])
 if test "x${liberty_cv_uint64}" != "xnone"; then
   AC_DEFINE_UNQUOTED([UNSIGNED_64BIT_TYPE],[${liberty_cv_uint64}],
              [Define to an unsigned 64-bit type available in the compiler])
@@ -841,7 +852,7 @@ if test -z "${setobjs}"; then
         esac
       done
 
-      # VxWorks does NOT provide any of the variables in $vars, so we
+      # VxWorks does NOT provide any of the variables in ${vars}, so we
       # do NOT have to check them here.
 
       # Of the functions in ${checkfuncs}, VxWorks only has strerror.
@@ -1040,6 +1051,7 @@ AC_SUBST([datarootdir])dnl
 AC_SUBST([docdir])dnl
 AC_SUBST([htmldir])dnl
 
+# Section for mmalloc support:
 MMALLOC_CFLAGS=""
 MMALLOC=""
 AC_SUBST([MMALLOC_CFLAGS])dnl
@@ -1064,6 +1076,7 @@ else
 fi
 AC_SUBST([MMALLOC_OK])dnl
 
+# Output.
 # We need multilib support, but only if configuring for the target.
 AC_CONFIG_FILES([Makefile testsuite/Makefile])
 AC_CONFIG_COMMANDS([default],
