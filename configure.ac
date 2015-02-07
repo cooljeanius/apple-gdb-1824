@@ -247,7 +247,7 @@ AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify bzero \
 AC_MSG_CHECKING([gettext])
 AC_MSG_RESULT([ ])
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.19.3])dnl
+AM_GNU_GETTEXT_VERSION([0.19.4])dnl
 
 # Output:
 AC_CONFIG_SUBDIRS([src])dnl
