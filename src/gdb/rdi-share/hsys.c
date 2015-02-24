@@ -1,9 +1,9 @@
-/*
+/* hsys.c
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
  *
  * This software may be freely used, copied, modified, and distributed
- * provided that the above copyright notice is preserved in all copies of the
- * software.
+ * provided that the above copyright notice is preserved in all copies of
+ * the software.
  */
 
 /*
@@ -211,7 +211,7 @@ static FILE *hsysGetRealFileHandle(hsys_state *stateptr, int fh, char *flags)
 
 int HandleSysMessage(Packet *packet, hsys_state *stateptr)
 {
-  unsigned int reason_code, mode, len, c, nbytes, nbtotal, nbtogo = 0;
+  unsigned int reason_code, mode, len, c, nbytes, nbtotal, nbtogo = 0U;
   long posn, fl;
   char character;
   int err;
@@ -310,7 +310,7 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
 
       if (buffhead!=NULL) {
         len = strlen(*(stateptr->CommandLine));
-        if (len > (Armsd_BufferSize - 24)) {
+        if (len > ((unsigned int)Armsd_BufferSize - 24U)) {
 	  len = (Armsd_BufferSize - 24);
 	}
         packet->pk_length = (len + msgbuild(BUFFERDATA(buffhead),

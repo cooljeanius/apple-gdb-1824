@@ -1,9 +1,9 @@
-/*
+/* ardi.c
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
  *
  * This software may be freely used, copied, modified, and distributed
- * provided that the above copyright notice is preserved in all copies of the
- * software.
+ * provided that the above copyright notice is preserved in all copies of
+ * the software.
  */
 
 /*
@@ -118,7 +118,7 @@ static int register_debug_message_handler(void)
 
   err = Adp_ChannelRegisterRead(CI_HADP, receive_debug_packet, &dbgmsg_state);
 #ifdef DEBUG
-  if (err!=adp_ok) {
+  if (err != adp_ok) {
     angel_DebugPrint("register_debug_message_handler failed %i\n", err);
   }
 #endif /* DEBUG */
@@ -712,8 +712,8 @@ int angel_RDI_close(void) {
 int angel_RDI_read(ARMword source, void *dest, unsigned *nbytes)
 {
   Packet *packet=NULL;
-  int len;                               /* Integer to hold message length. */
-  unsigned int nbtogo = *nbytes, nbinpacket, nbdone=0;
+  int len = 0;                        /* Integer to hold message length. */
+  unsigned int nbtogo = *nbytes, nbinpacket, nbdone = len; /* 'len' == 0 */
   int rnbytes = 0, status, reason, debugID, OSinfo1, OSinfo2, err;
   unsigned int maxlen = Armsd_BufferSize-CHAN_HEADER_SIZE-ADP_ReadHeaderSize;
 
@@ -721,9 +721,9 @@ int angel_RDI_read(ARMword source, void *dest, unsigned *nbytes)
      and I can see no reason why it should have to be changed. */
   TracePrint(("angel_RDI_read: source=%.8lx dest=%p nbytes=%.8x\n",
                 (unsigned long)source, dest, *nbytes));
-  if (*nbytes == 0) return RDIError_NoError;       /* Read nothing - easy! */
-  /* check the buffer size */
-  while (nbtogo >0) {
+  if (*nbytes == 0) return RDIError_NoError;     /* Read nothing - easy! */
+  /* check the buffer size: */
+  while (nbtogo > 0) {
     register_debug_message_handler();
 
     nbinpacket = (nbtogo <= maxlen) ? nbtogo : maxlen;
@@ -739,7 +739,7 @@ int angel_RDI_read(ARMword source, void *dest, unsigned *nbytes)
       return err; /* Was there an error? */
     }
     if (status == RDIError_NoError){
-      rnbytes += PREAD(LE,(unsigned int *)(BUFFERDATA(packet->pk_buffer)+20));
+      rnbytes += (int)PREAD(LE,(unsigned int *)(BUFFERDATA(packet->pk_buffer)+20));
       TracePrint(("angel_RDI_read: rnbytes = %d\n",rnbytes));
       memcpy((((unsigned char *)dest) + nbdone),
 	     (BUFFERDATA(packet->pk_buffer) + 24), (size_t)nbinpacket);
@@ -1244,15 +1244,20 @@ static int CallStoppedProcs(unsigned reason)
 /*----------------------------------------------------------------------*/
 
 static int HandleStoppedMessage(Packet *packet, void *stateptr) {
-  unsigned int err,  reason, debugID, OSinfo1, OSinfo2, count;
+  unsigned int err, reason, debugID, OSinfo1, OSinfo2, count;
   adp_stopped_struct *stopped_info;
-  stopped_info = (adp_stopped_struct *) stateptr;
+  stopped_info = (adp_stopped_struct *)stateptr;
   IGNORE(stateptr);
   count = unpack_message(BUFFERDATA(packet->pk_buffer), "%w%w%w%w%w%w",
-                         &reason, &debugID,
-                         &OSinfo1, &OSinfo2,
-                         &stopped_info->stopped_reason, &stopped_info->data);
+                         &reason, &debugID, &OSinfo1, &OSinfo2,
+                         &stopped_info->stopped_reason,
+                         &stopped_info->data);
   DevSW_FreePacket(packet);
+
+  /* number to compare against is chosen arbitrarily: */
+  if (count >= 1U) {
+    ; /* FIXME: do something */
+  }
 
   if (reason != (ADP_Stopped | TtoH)) {
 #ifdef DEBUG
@@ -1267,7 +1272,7 @@ static int HandleStoppedMessage(Packet *packet, void *stateptr) {
 #endif /* DEBUG */
   }
 
-  err = msgsend(CI_TADP,  "%w%w%w%w%w", (ADP_Stopped | HtoT), 0,
+  err = msgsend(CI_TADP, "%w%w%w%w%w", (ADP_Stopped | HtoT), 0,
                 ADP_HandleUnknown, ADP_HandleUnknown, RDIError_NoError);
 #ifdef DEBUG
   angel_DebugPrint("Transmiting stopped acknowledge.\n");
@@ -1344,13 +1349,17 @@ static void interrupt_target(void)
     msgsend(CI_HADP, "%w%w%w%w", (ADP_InterruptRequest | HtoT), 0,
 	    ADP_HandleUnknown, ADP_HandleUnknown);
 
-    reason = ADP_InterruptRequest |TtoH;
+    reason = (ADP_InterruptRequest | TtoH);
     err = wait_for_debug_message(&reason, &debugID, &OSinfo1, &OSinfo2,
-                              &status, &packet);
+                                 &status, &packet);
     DevSW_FreePacket(packet);
 #ifdef DEBUG
     angel_DebugPrint("DEBUG: got interrupt ack ok err = %d, status=%i\n",
                      err, status);
+#else
+    if (err == 0) {
+      ; /* FIXME: do something */
+    }
 #endif /* DEBUG */
 
     return;
@@ -1567,14 +1576,14 @@ typedef struct {
 } CCState;
 static CCState ccstate = { NULL, NULL, NULL, NULL, FALSE };
 
-static void HandleDCCMessage( Packet *packet, void *stateptr )
+static void HandleDCCMessage(Packet *packet, void *stateptr)
 {
   unsigned int reason, debugID, OSinfo1, OSinfo2;
   int count;
   CCState *ccstate_p = (CCState *)stateptr;
 
-  count = unpack_message( BUFFERDATA(packet->pk_buffer), "%w%w%w%w",
-                          &reason, &debugID, &OSinfo1, &OSinfo2 );
+  count = unpack_message(BUFFERDATA(packet->pk_buffer), "%w%w%w%w",
+                         &reason, &debugID, &OSinfo1, &OSinfo2);
   switch (reason) {
       case (ADP_TDCC_ToHost | TtoH):
       {
@@ -2698,7 +2707,8 @@ const struct RDIProcVec angel_rdi = {
 
     angel_RDI_errmess,
 
-    angel_RDI_LoadAgent
+    angel_RDI_LoadAgent,
+    (rdi_targetisdead *)NULL /*targetisdead*/
 };
 
 /* EOF ardi.c */
@@ -2707,17 +2717,19 @@ const struct RDIProcVec angel_rdi = {
 
 struct foo {
     char *name;
-    int (*action)();
+    int (*action)(void);
     char *syntax;
     char **helpmessage;
     int doafterend;
     int dobeforestart;
     int doinmidline;
-} hostappl_CmdTable[1] = {{"", NULL}};
+} hostappl_CmdTable[1] = {
+  { "", NULL, "", (char **)NULL, 0, 0, 0 }
+};
 
 void hostappl_Init(void)
 {
-  /* (do nothing) */ ;
+  return; /* (do nothing, besides return) */
 }
 
 int hostappl_Backstop(void)

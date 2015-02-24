@@ -80,7 +80,7 @@ RUN_MOVEIFCHANGE = $(SHELL) $(srcdir)/../move-if-change
 DESTDIR =
 
 AR = @AR@
-AR_FLAGS = qc
+# AR_FLAGS is now set below
 RANLIB = @RANLIB@
 RANLIB_FLAGS = -fq
 STRIP = @STRIP@
@@ -103,12 +103,16 @@ CATALOGS = @CATALOGS@
 VERSION = @VERSION@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 
+# The name of the compiler to use.
+COMPILER = @COMPILER@
+
 # If you are compiling with GCC, make sure that either 1) You have the
 # fixed include files where GCC can reach them, or 2) You use the
 # -traditional flag.  Otherwise the ioctl calls in inflow.c
 # will be incorrectly compiled.  The "fixincludes" script in the gcc
 # distribution will fix your include files up.
 CC=@CC@
+CXX=@CXX@
 
 # Directory containing source files.
 srcdir = @srcdir@
@@ -120,6 +124,13 @@ AM_V_v = $(am__v_v_@AM_V@)
 am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
 am__v_v_0 =
 am__v_v_1 = -v
+
+AM_V_ARFLAGS = $(am__v_ARFLAGS_@AM_V@)
+am__v_ARFLAGS_ = $(am__v_ARFLAGS_@AM_DEFAULT_V@)
+am__v_ARFLAGS_0 = qc
+am__v_ARFLAGS_1 = qv
+
+AR_FLAGS = $(AM_V_ARFLAGS)
 
 # configure our bison/yacc usage:
 YACC=@YACC@

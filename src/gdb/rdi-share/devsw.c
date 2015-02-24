@@ -216,12 +216,12 @@ static void dumpPacket(FILE *fp, char *label, struct data_packet *p)
   if (((r & 0xffffff) == ADP_CPUread ||
        (r & 0xffffff) == ADP_CPUwrite) && (r&0x80000000)==0)
     {
-      fprintf(fp,"%02x ", p->data[i]);
+      fprintf(fp, "%02x ", p->data[i]);
       ++i;
     }
 
   for (; i<p->len; i+=4)
-    fprintf(fp,"%08x ",WordAt(p->data+i));
+    fprintf(fp, "%08lx ", WordAt(p->data + i));
 
   fprintf(fp,"\n");
 }
@@ -520,7 +520,9 @@ AdpErrs DevSW_Read(const DeviceDescr *device, const DevChanID type,
     /*
      * OK, return the head of the read queue for the given type
      */
-    /*    enqueue_packet(ds); */
+#if 0
+    enqueue_packet(ds);
+#endif /* 0 */
     *packet = Adp_removeFromQueue(&ds->ds_readqueue[type]);
     return adp_ok;
   case -1:
@@ -533,7 +535,7 @@ AdpErrs DevSW_Read(const DeviceDescr *device, const DevChanID type,
   default:
     panic("DevSW_Read: bad read status %d", read_err);
   }
-  return 0; /* get rid of a potential compiler warning */
+  return (AdpErrs)0; /* get rid of a potential compiler warning */
 }
 
 
@@ -570,6 +572,10 @@ AdpErrs DevSW_Write(const DeviceDescr *device, Packet *packet, DevChanID type)
 
     dc = &((DevSWState *)(device->SwitcherState))->ds_activewrite;
     dp = &dc->dc_packet;
+
+    if (dp == NULL) {
+        ; /* FIXME: do something */
+    }
 
     if (illegalDevChanID(type))
         return adp_illegal_args;

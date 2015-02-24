@@ -30,7 +30,7 @@
 
 # The list of gnulib modules we are importing in GDB.
 IMPORTED_GNULIB_MODULES="\
-    absolute-header alignof alloca alloca-opt assure autobuild \
+    absolute-header alignof alloca alloca-opt ansi-c++-opt assure autobuild \
     configmake \
     dirent dirfd dosname double-slash-root \
     errno error exitfail extensions extern-inline \
@@ -56,7 +56,7 @@ IMPORTED_GNULIB_MODULES="\
     unistd unlink unlink-busy update-copyright \
     vc-list-files verify \
     warnings wchar wcsncasecmp wctype-h \
-    xalloc-oversized"
+    xalloc xalloc-die xalloc-oversized"
 # (might want to check to see if any of the libiberty/gettext duplicates cause
 # any conflicts...)
 

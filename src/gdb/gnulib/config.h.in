@@ -558,6 +558,9 @@
 /* Define to 1 if you have the `memset' function. */
 #undef HAVE_MEMSET
 
+/* Define to 1 if you have the <minix/config.h> header file. */
+#undef HAVE_MINIX_CONFIG_H
+
 /* Define to 1 if you have the `mkdtemp' function. */
 #undef HAVE_MKDTEMP
 
@@ -1791,37 +1794,37 @@
 /* Enable extensions on AIX 3, Interix.  */
 #ifndef _ALL_SOURCE
 # undef _ALL_SOURCE
-#endif
+#endif /* !_ALL_SOURCE */
 /* Enable general extensions on OS X.  */
 #ifndef _DARWIN_C_SOURCE
 # undef _DARWIN_C_SOURCE
-#endif
+#endif /* !_DARWIN_C_SOURCE */
 /* Enable GNU extensions on systems that have them.  */
 #ifndef _GNU_SOURCE
 # undef _GNU_SOURCE
-#endif
+#endif /* !_GNU_SOURCE */
 /* Use GNU style printf and scanf.  */
 #ifndef __USE_MINGW_ANSI_STDIO
 # undef __USE_MINGW_ANSI_STDIO
-#endif
+#endif /* !__USE_MINGW_ANSI_STDIO */
 /* Enable threading extensions on Solaris.  */
 #ifndef _POSIX_PTHREAD_SEMANTICS
 # undef _POSIX_PTHREAD_SEMANTICS
-#endif
+#endif /* !_POSIX_PTHREAD_SEMANTICS */
 /* Enable extensions on HP NonStop.  */
 #ifndef _TANDEM_SOURCE
 # undef _TANDEM_SOURCE
-#endif
+#endif /* !_TANDEM_SOURCE */
 /* Enable X/Open extensions if necessary.  HP-UX 11.11 defines
-   mbstate_t only if _XOPEN_SOURCE is defined to 500, regardless of
-   whether compiling with -Ae or -D_HPUX_SOURCE=1.  */
+ * mbstate_t only if _XOPEN_SOURCE is defined to 500, regardless of
+ * whether compiling with -Ae or -D_HPUX_SOURCE=1.  */
 #ifndef _XOPEN_SOURCE
 # undef _XOPEN_SOURCE
-#endif
+#endif /* !_XOPEN_SOURCE */
 /* Enable general extensions on Solaris.  */
 #ifndef __EXTENSIONS__
 # undef __EXTENSIONS__
-#endif
+#endif /* !__EXTENSIONS__ */
 
 
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
@@ -1854,13 +1857,18 @@
    stat.st_size becomes 64-bit. */
 #undef _GL_WINDOWS_64_BIT_ST_SIZE
 
+/* Enable GNU extensions on systems that have them.  */
+#ifndef _GNU_SOURCE
+# undef _GNU_SOURCE
+#endif /* !_GNU_SOURCE */
+
 /* Define for large files, on AIX-style hosts. */
 #undef _LARGE_FILES
 
 /* Define to 1 if on MINIX. */
 #undef _MINIX
 
-/* Define to 1 to make NetBSD features available. MINIX 3 needs this. */
+/* Define to 1 to make NetBSD features available. MINIX 3 needs this */
 #undef _NETBSD_SOURCE
 
 /* The _Noreturn keyword of C11.  */

@@ -564,7 +564,7 @@ dist-hook:
 ## automake will only generate this rule depending on the directory from
 ## which it was run:
 am--refresh:
-	@if test "x$(subdir) != xgnulib"; then \
+	@if test "x$(subdir)" != "xgnulib"; then \
 	  echo "warning: autoreconf screwed up..." >&2; \
 	else \
 	  echo "making '$@'"; \

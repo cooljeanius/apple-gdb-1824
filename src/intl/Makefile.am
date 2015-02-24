@@ -63,7 +63,8 @@ DEFS = -DLOCALEDIR=\"$(localedir)\" -DGNULOCALEDIR=\"$(gnulocaledir)\" \
 CPPFLAGS = @CPPFLAGS@
 CFLAGS = @CFLAGS@ 
 LIBCFLAGS = $(CFLAGS) $(C_ARCHFLAGS)
-XCFLAGS = -DXCOMPILING @MAINT@ $(CFLAGS) $(XC_ARCHFLAGS)
+## FIXME: only Apple compilers handle multiple '-arch' flags correctly:
+XCFLAGS = -DXCOMPILING @MAINT@ $(CFLAGS) # $(XC_ARCHFLAGS)
 LDFLAGS = @LDFLAGS@
 
 AM_CPPFLAGS = -I. -I$(srcdir)
@@ -73,11 +74,13 @@ AM_ANSIFICATION_FLAGS = -Wstrict-prototypes -Wmissing-prototypes -Wconversion -W
 ## * -Wold-style-declaration
 ## * -Wmissing-parameter-type
 ## (should really check which warning flags are supported when configuring)
+AM_COMPILE_DEBUGFLAGS = -save-temps -fverbose-asm -ggdb
 AM_WARNFLAGS = -Wall @MAINT@ $(AM_ANSIFICATION_FLAGS)
+AM_DEBUG_CFLAGS = $(AM_WARNFLAGS) @MAINT@ $(AM_COMPILE_DEBUGFLAGS)
 AM_LDFLAGS = -framework CoreFoundation
 AM_YFLAGS = -d -t -v @MAINT@@EXTRA_YFLAGS_SEP@ -k -Wall -Wyacc
 
-COMPILE = $(CC) -c $(DEFS) $(AM_CPPFLAGS) $(AM_WARNFLAGS) $(CPPFLAGS) $(CFLAGS) $(C_ARCHFLAGS) $(XCFLAGS) @MAINT@ $(INCLUDES)
+COMPILE = $(CC) -c $(DEFS) $(AM_CPPFLAGS) $(AM_DEBUG_CFLAGS) $(CPPFLAGS) $(CFLAGS) $(C_ARCHFLAGS) $(XCFLAGS) @MAINT@ $(INCLUDES)
 .PHONY: -c -m 644 
 ## The above `.PHONY:` is a hack; `-c` and `-m` and `644` should not even
 ## have been treated as targets in the first place...
@@ -271,6 +274,7 @@ mostlyclean-local: @MAINT@ config.status
 .PHONY: mostlyclean-local
 
 clean-local: mostlyclean-local @MAINT@ config.status
+	rm -fv *.s *.i
 .PHONY: clean-local
 
 distclean-local: clean-local @MAINT@ config.status

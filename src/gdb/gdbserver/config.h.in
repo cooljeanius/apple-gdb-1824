@@ -6,6 +6,9 @@
 /* The normal alignment of `int', in bytes. */
 #undef ALIGNOF_INT
 
+/* The normal alignment of `long long', in bytes. */
+#undef ALIGNOF_LONG_LONG
+
 /* The normal alignment of `void *', in bytes. */
 #undef ALIGNOF_VOID_P
 
@@ -46,6 +49,14 @@
    you don't. */
 #undef HAVE_DECL_ADDR_NO_RANDOMIZE
 
+/* Define to 1 if you have the declaration of `alloca', and to 0 if you don't.
+   */
+#undef HAVE_DECL_ALLOCA
+
+/* Define to 1 if you have the declaration of `asprintf', and to 0 if you
+   don't. */
+#undef HAVE_DECL_ASPRINTF
+
 /* Define to 1 if you have the declaration of `basename', and to 0 if you
    don't. */
 #undef HAVE_DECL_BASENAME
@@ -53,6 +64,9 @@
 /* Define to 1 if you have the declaration of `child_get_pagesize', and to 0
    if you don't. */
 #undef HAVE_DECL_CHILD_GET_PAGESIZE
+
+/* Define to 1 if you have the declaration of `ffs', and to 0 if you don't. */
+#undef HAVE_DECL_FFS
 
 /* Define to 1 if you have the declaration of `NULL', and to 0 if you don't.
    */
@@ -62,6 +76,10 @@
    */
 #undef HAVE_DECL_PERROR
 
+/* Define to 1 if you have the declaration of `snprintf', and to 0 if you
+   don't. */
+#undef HAVE_DECL_SNPRINTF
+
 /* Define to 1 if you have the declaration of `strerror', and to 0 if you
    don't. */
 #undef HAVE_DECL_STRERROR
@@ -69,6 +87,26 @@
 /* Define to 1 if you have the declaration of `strstr', and to 0 if you don't.
    */
 #undef HAVE_DECL_STRSTR
+
+/* Define to 1 if you have the declaration of `strtol', and to 0 if you don't.
+   */
+#undef HAVE_DECL_STRTOL
+
+/* Define to 1 if you have the declaration of `strtoll', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRTOLL
+
+/* Define to 1 if you have the declaration of `strtoul', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRTOUL
+
+/* Define to 1 if you have the declaration of `strtoull', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRTOULL
+
+/* Define to 1 if you have the declaration of `strverscmp', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRVERSCMP
 
 /* Define to 1 if you have the declaration of `tzname', and to 0 if you don't.
    */
@@ -170,7 +208,7 @@
 /* Define to 1 if you have the <locale.h> header file. */
 #undef HAVE_LOCALE_H
 
-/* Define to 1 if the system has the type `long long'. */
+/* Define if you have the `long long' type. */
 #undef HAVE_LONG_LONG
 
 /* Define to 1 if the system has the type `long long int'. */
@@ -498,6 +536,9 @@
 /* Define to 1 if `vfork' works. */
 #undef HAVE_WORKING_VFORK
 
+/* Define to 1 if you have the `xfree' function. */
+#undef HAVE_XFREE
+
 /* Define to 1 if you have the `xmalloc' function. */
 #undef HAVE_XMALLOC
 
@@ -554,6 +595,9 @@
 
 /* The size of `int', as computed by sizeof. */
 #undef SIZEOF_INT
+
+/* The size of `long long', as computed by sizeof. */
+#undef SIZEOF_LONG_LONG
 
 /* The size of `void *', as computed by sizeof. */
 #undef SIZEOF_VOID_P

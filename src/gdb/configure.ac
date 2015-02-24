@@ -62,6 +62,7 @@ if test -e ${srcdir}/development.sh; then
 fi
 
 AC_PROG_CC
+AC_PROG_CXX
 AC_USE_SYSTEM_EXTENSIONS
 AC_SEARCH_LIBS([strerror],[cposix]) dnl# used to be AC\_ISC\_POSIX
 AM_PROG_CC_STDC
@@ -570,6 +571,9 @@ fi
 
 AC_ARG_PROGRAM
 
+# See if we are building with C++, and substitute COMPILER:
+GDB_AC_BUILD_WITH_CXX
+
 # Some system checks.
 m4_ifdef([ACX_LARGEFILE],[
   ACX_LARGEFILE
@@ -794,7 +798,6 @@ AN_PROGRAM([as],[AM_PROG_AS])dnl
 AN_MAKEVAR([AS],[AM_PROG_AS])dnl
 AM_PROG_AS
 AC_PROG_CPP
-AC_PROG_CXX
 
 AC_MSG_CHECKING([libtool things])
 AC_MSG_RESULT([ ])
@@ -1404,6 +1407,10 @@ fi
 AC_MSG_CHECKING([declarations])
 AC_MSG_RESULT([ ])dnl
 
+m4_ifdef([libiberty_INIT],[
+  libiberty_INIT
+])dnl
+
 dnl# just skip the first one; getting different results from the two
 dnl# conftests can lead to warnings:
 if test "x${ac_cv_have_decl_sys_siglist}" = "x" && test "x" = "Y0"; then
@@ -1429,8 +1436,11 @@ if test "x${ac_cv_have_decl_sys_siglist}" != "xyes"; then
   ## end better check for sys_siglist
 fi
 AC_CHECK_DECLS([free, malloc, realloc])dnl
-AC_CHECK_DECLS([strerror, strstr])dnl
-AC_CHECK_DECLS([getopt, snprintf, vsnprintf])dnl
+AC_CHECK_DECLS([strerror, strstr, getopt])dnl
+  ## the libiberty macro might have already checked these for us:
+unset ac_cv_have_decl_snprintf
+unset ac_cv_have_decl_vsnprintf
+AC_CHECK_DECLS([snprintf, vsnprintf])dnl
 dnl# these should probably be done above with the rest of the libunwind
 dnl# checks:
 AC_CHECK_DECLS([UNW_SLT_NONE],[],[],[
@@ -2691,6 +2701,10 @@ build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Wunsuffixed-float-constants -Wfloat-conversion -Wjump-misses-init"
 link_warnings=""
 
+if test "x${enable_build_with_cxx}" = "xyes"; then
+  build_warnings="${build_warnings} -fpermissive"
+fi
+
 # If compiler does NOT support the long long data type, see if it can
 # at least warn about it:
 if test "x${gdb_cv_c_long_long}" != "xyes"; then
@@ -2826,7 +2840,14 @@ AC_ARG_ENABLE([gdb-build-warnings],
 esac
 if test x"${silent}" != x"yes" && test x"${build_warnings}" != x""; then
   echo "Setting GDB specific compiler warning flags to try to use = ${build_warnings}" 6>&1
-fi])
+fi])dnl
+
+# The set of warnings supported by a C++ compiler is not the same as
+# of the C compiler:
+if test "x${enable_build_with_cxx}" = "xyes"; then
+    AC_LANG_PUSH([C++])
+fi
+
 WARN_CFLAGS=""
 BAD_WARN_CFLAGS=""
 WERROR_CFLAGS=""
@@ -2851,10 +2872,13 @@ then
 	  *) # Check that GCC accepts it:
 	    saved_CFLAGS="${CFLAGS}"
 	    CFLAGS="${CFLAGS} ${w} -Werror"
+	    saved_CXXFLAGS="${CXXFLAGS}"
+	    CXXFLAGS="${CXXFLAGS} ${w} -Werror"
 	    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
                               [WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
                               [BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
 	    CFLAGS="${saved_CFLAGS}"
+	    CXXFLAGS="${saved_CXXFLAGS}"
             ;;
 	esac
     done
@@ -2866,6 +2890,10 @@ then
 fi
 AC_SUBST([WARN_CFLAGS])dnl
 AC_SUBST([WERROR_CFLAGS])dnl
+
+if test "x${enable_build_with_cxx}" = "xyes"; then
+   AC_LANG_POP([C++])
+fi
 
 WARN_LDFLAGS=""
 if test "x${link_warnings}" != "x" -a "x${GCC}" = "xyes"

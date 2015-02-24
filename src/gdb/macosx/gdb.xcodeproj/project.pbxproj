@@ -1680,7 +1680,7 @@
 		2609D7950E82C40C008125DE /* dbg_rdi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dbg_rdi.h; sourceTree = "<group>"; };
 		2609D7960E82C40C008125DE /* devclnt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = devclnt.h; sourceTree = "<group>"; };
 		2609D7970E82C40C008125DE /* devices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = devices.h; sourceTree = "<group>"; };
-		2609D7980E82C40C008125DE /* devsw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = devsw.c; sourceTree = "<group>"; };
+		2609D7980E82C40C008125DE /* devsw.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; path = devsw.c; sourceTree = "<group>"; tabWidth = 8; usesTabs = 0; };
 		2609D7990E82C40C008125DE /* devsw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = devsw.h; sourceTree = "<group>"; };
 		2609D79A0E82C40C008125DE /* drivers.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = drivers.c; sourceTree = "<group>"; };
 		2609D79B0E82C40C008125DE /* drivers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = drivers.h; sourceTree = "<group>"; };

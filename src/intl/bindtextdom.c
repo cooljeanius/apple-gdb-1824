@@ -88,7 +88,7 @@ extern struct binding *_nl_domain_bindings;
 #ifdef _LIBC
 # define BINDTEXTDOMAIN __bindtextdomain
 # ifndef strdup
-#  define strdup(str) __strdup (str)
+#  define strdup(str) __strdup(str)
 # endif /* !strdup */
 #else
 # define BINDTEXTDOMAIN bindtextdomain__
@@ -100,7 +100,7 @@ char *BINDTEXTDOMAIN(const char *domainname, const char *dirname)
 {
   struct binding *binding;
 
-  /* Some sanity checks.  */
+  /* Some sanity checks: */
   if ((domainname == NULL) || (domainname[0] == '\0'))
     return NULL;
 
@@ -112,15 +112,15 @@ char *BINDTEXTDOMAIN(const char *domainname, const char *dirname)
 	  break;
       }
       if (compare < 0) {
-	  /* It is not in the list.  */
+	  /* It is not in the list: */
 	  binding = NULL;
 	  break;
       }
   }
 
   if (dirname == NULL)
-    /* The current binding has be to returned.  */
-    return binding == NULL ? (char *) _nl_default_dirname : binding->dirname;
+    /* The current binding has be to returned: */
+    return ((binding == NULL) ? (char *)_nl_default_dirname : binding->dirname);
 
   if (binding != NULL)
     {
@@ -136,69 +136,69 @@ char *BINDTEXTDOMAIN(const char *domainname, const char *dirname)
 	  else
 	    {
 #if defined _LIBC || defined HAVE_STRDUP
-	      new_dirname = strdup (dirname);
+	      new_dirname = strdup(dirname);
 	      if (new_dirname == NULL)
 		return NULL;
 #else
-	      size_t len = strlen (dirname) + 1;
-	      new_dirname = (char *) malloc (len);
+	      size_t len = (strlen(dirname) + 1UL);
+	      new_dirname = (char *)malloc(len);
 	      if (new_dirname == NULL)
 		return NULL;
 
-	      memcpy (new_dirname, dirname, len);
+	      memcpy(new_dirname, dirname, len);
 #endif /* _LIBC || HAVE_STRDUP */
 	    }
 
 	  if (binding->dirname != _nl_default_dirname)
-	    free (binding->dirname);
+	    free(binding->dirname);
 
 	  binding->dirname = new_dirname;
 	}
     }
   else
     {
-      /* We have to create a new binding.  */
+      /* We have to create a new binding: */
 #if !defined _LIBC && !defined HAVE_STRDUP
       size_t len;
 #endif /* !_LIBC && !HAVE_STRDUP */
       struct binding *new_binding =
-	(struct binding *) malloc (sizeof (*new_binding));
+	(struct binding *)malloc(sizeof(*new_binding));
 
       if (new_binding == NULL)
 	return NULL;
 
 #if defined _LIBC || defined HAVE_STRDUP
-      new_binding->domainname = strdup (domainname);
+      new_binding->domainname = strdup(domainname);
       if (new_binding->domainname == NULL)
 	return NULL;
 #else
-      len = strlen (domainname) + 1;
-      new_binding->domainname = (char *) malloc (len);
+      len = (strlen(domainname) + 1UL);
+      new_binding->domainname = (char *)malloc(len);
       if (new_binding->domainname == NULL)
 	return NULL;
-      memcpy (new_binding->domainname, domainname, len);
+      memcpy(new_binding->domainname, domainname, len);
 #endif /* _LIBC || HAVE_STRDUP */
 
-      if (strcmp (dirname, _nl_default_dirname) == 0)
-	new_binding->dirname = (char *) _nl_default_dirname;
+      if (strcmp(dirname, _nl_default_dirname) == 0)
+	new_binding->dirname = (char *)_nl_default_dirname;
       else
 	{
 #if defined _LIBC || defined HAVE_STRDUP
-	  new_binding->dirname = strdup (dirname);
+	  new_binding->dirname = strdup(dirname);
 	  if (new_binding->dirname == NULL)
 	    return NULL;
 #else
-	  len = strlen (dirname) + 1;
-	  new_binding->dirname = (char *) malloc (len);
+	  len = (strlen(dirname) + 1UL);
+	  new_binding->dirname = (char *)malloc(len);
 	  if (new_binding->dirname == NULL)
 	    return NULL;
-	  memcpy (new_binding->dirname, dirname, len);
+	  memcpy(new_binding->dirname, dirname, len);
 #endif /* _LIBC || HAVE_STRDUP */
 	}
 
-      /* Now enqueue it.  */
-      if (_nl_domain_bindings == NULL
-	  || strcmp (domainname, _nl_domain_bindings->domainname) < 0)
+      /* Now enqueue it: */
+      if ((_nl_domain_bindings == NULL)
+	  || (strcmp(domainname, _nl_domain_bindings->domainname) < 0))
 	{
 	  new_binding->next = _nl_domain_bindings;
 	  _nl_domain_bindings = new_binding;

@@ -30,6 +30,11 @@ AC_CONFIG_HEADER([config.h])dnl
 AM_MAINTAINER_MODE
 
 AC_PROG_CC
+if test "x${COMPILER}" = "x"; then
+  test -z "${COMPILER}" && export COMPILER='$(CC)'
+fi
+AC_SUBST([COMPILER])dnl
+
 AC_MSG_CHECKING([system extensions])
 AC_MSG_RESULT([ ])
 gl_USE_SYSTEM_EXTENSIONS
@@ -97,6 +102,7 @@ m4_ifdef([AM_PROG_AR],[
 ])dnl
 
 AM_PROG_AS
+AC_PROG_CXXCPP
 AC_REQUIRE_GREPS dnl# (just in case)
 
 # Check for the 'make' the user wants to use:
@@ -171,6 +177,14 @@ if test "x${ac_cv_header_wctype_h}" = "x"; then
   test -z "${ac_cv_header_wctype_h}"
   AC_CHECK_HEADERS([wctype.h])
 fi
+## mirror our parent:
+EXTRA_DEFS=""
+if test "x${ac_cv_header_sys_types_h}" = "xyes"; then
+  # this has to go separate from the configure header for gdb:
+  export DEFS="${DEFS} -DHAVE_SYS_TYPES_H"
+  export EXTRA_DEFS="-DHAVE_SYS_TYPES_H"
+fi
+AC_SUBST([EXTRA_DEFS])dnl
 
 # --------------------------------------------------------------- #
 # Checks for typedefs, structures, and compiler characteristics.  #
@@ -283,7 +297,7 @@ AC_CONFIG_FILES([Makefile Makefile_orig import/Makefile])dnl
 AC_CONFIG_COMMANDS([default],[
 case x${CONFIG_HEADERS} in
 xconfig.h:config.in)
-echo "" > stamp-h ;;
+echo "stamp" > stamp-h ;;
 esac
 ],[])dnl
 

@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #ifndef _LIBELF_H_
 #define _LIBELF_H_ 1
@@ -28,6 +28,10 @@
 #include "elf/internal.h"
 #include "elf/external.h"
 #include "bfdlink.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 /* The number of entries in a section is its size divided by the size
    of a single entry.  This is normally only applicable to reloc and
@@ -1932,4 +1936,9 @@ extern bfd_boolean _sh_elf_set_mach_from_flags
     }									\
   while (0)
 
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 #endif /* _LIBELF_H_ */
+
+/* EOF */

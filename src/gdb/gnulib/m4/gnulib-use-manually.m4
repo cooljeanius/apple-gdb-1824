@@ -1,5 +1,4 @@
-#gnulib-use-manually.m4 serial 2 -*- Autoconf -*-
-dnl# (the latest revbump in serial is actually 1 commit too late...)
+# gnulib-use-manually.m4 serial 3                          -*- Autoconf -*-
 dnl# Instead of using gnulib-tool, copy the macros we need from modules
 dnl# manually.  This macro is dependent on the exact set of modules used
 dnl# here, and as such, would not make much sense elsewhere.
@@ -368,6 +367,8 @@ AC_REQUIRE([gl_WCTYPE_H_DEFAULTS])dnl
 AC_REQUIRE([gl_FUNC_TOWCTRANS])dnl
 AC_REQUIRE([gl_FUNC_WCTRANS])dnl
 AC_REQUIRE([gl_FUNC_WCTYPE])dnl
+dnl# from gnulib module xalloc:
+AC_REQUIRE([gl_XALLOC])dnl
 dnl# other:
 if test "x${gl_LIBOBJS}" = "x"; then
   if test "x${LIBOBJS}" != "x"; then

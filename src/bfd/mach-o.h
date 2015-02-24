@@ -37,6 +37,10 @@
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_O_LOADER_H */
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 #define BFD_MACH_O_N_STAB  0xe0	/* If any of these bits set, a symbolic debugging entry.  */
 #define BFD_MACH_O_N_PEXT  0x10	/* Private external symbol bit.  */
 #define BFD_MACH_O_N_TYPE  0x0e	/* Mask for the type bits.  */
@@ -1103,6 +1107,10 @@ bfd_mach_o_backend_data;
 #ifndef SYM_MACHO_FIELDS_NOT_VALIDATED
 # define SYM_MACHO_FIELDS_NOT_VALIDATED ((bfd_vma)-2)
 #endif /* !SYM_MACHO_FIELDS_NOT_VALIDATED */
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)

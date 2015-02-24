@@ -1,18 +1,21 @@
-/*
+/* ardi.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
  *
  * This software may be freely used, copied, modified, and distributed
- * provided that the above copyright notice is preserved in all copies of the
- * software.
+ * provided that the above copyright notice is preserved in all copies of
+ * the software.
  */
 
-/*
+/* -*-C-*-
  * ardi.h
  * ADP RDI interfaces
  *
  * 1.2
  *     2000/10/12 22:56:31
  */
+
+#ifndef ardi_h_included
+#define ardi_h_included
 
 #include "host.h"
 
@@ -85,5 +88,11 @@ typedef int angel_RDI_TargetStoppedProc(unsigned stopped_reason, void *arg);
 
 extern int angel_RDI_OnTargetStopping(angel_RDI_TargetStoppedProc *fn,
                                       void *arg);
+
+extern void hostappl_Init(void);
+
+extern int hostappl_Backstop(void);
+
+#endif /* !ardi_h_included */
 
 /* EOF */

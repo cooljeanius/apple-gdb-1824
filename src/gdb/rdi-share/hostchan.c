@@ -451,8 +451,8 @@ static AdpErrs ChannelWrite(
     unsigned char *cptr;
 
 #ifdef DEBUG
-    printf( "Adp_ChannelWrite(%d, %x)\n", chan, packet );
-#endif
+    printf("Adp_ChannelWrite(%d, %x)\n", chan, packet);
+#endif /* DEBUG */
 
     if (deviceToUse == NULL)
         return adp_device_not_open;
@@ -463,7 +463,12 @@ static AdpErrs ChannelWrite(
     /*
      * fill in the channels header at the start of this buffer
      */
-    ch = channels + chan;
+    ch = (channels + chan);
+    if (ch != NULL) {
+      ; /* (ok) */
+    } else {
+      ; /* FIXME: do something here */
+    }
     cptr = packet->pk_buffer;
     *cptr++ = chan;
     *cptr = 0;
@@ -499,7 +504,7 @@ static AdpErrs send_resend_msg(DeviceID devid) {
   packet->pk_buffer[CF_OPPO_SEQ_BYTE_POS] = OppoSeq;
   packet->pk_buffer[CF_FLAGS_BYTE_POS] = (CF_RELIABLE | CF_RESEND);
   packet->pk_length = CF_DATA_BYTE_POS;
-  return DevSW_Write(deviceToUse, packet, devid);
+  return DevSW_Write(deviceToUse, packet, (DevChanID)devid);
 }
 
 static AdpErrs check_seq(unsigned char msg_home, unsigned char msg_oppo) {

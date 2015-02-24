@@ -60,7 +60,11 @@ GREP = @GREP@
 HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
 TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 
+# The name of the compiler to use:
+COMPILER = @COMPILER@
+
 CC = @CC@
+CXX = @CXX@
 
 NM = @NM@
 NM_INTERFACE = @NM_INTERFACE@
@@ -92,8 +96,9 @@ VPATH = @srcdir@
 
 # Set this up with gcc if you have gnu ld and the loader will print out
 # line numbers for undefinded refs.
-CC-LD_STATIC="gcc -static"
-CC-LD=${CC}
+CC_LD_STATIC="gcc -static"
+CC_LD=${CC}
+CXX_LD=${CXX}
 
 # Where is the "include" directory?  Traditionally ../include or ./include
 INCLUDE_DIR =  ${srcdir}/../../include
@@ -365,7 +370,7 @@ clean-info: force
 
 gdbserver$(EXEEXT): $(OBS) ${ADD_DEPS} ${CDEPS}
 	rm -f $(AM_V_v) gdbserver$(EXEEXT)
-	${CC-LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) \
+	${CC_LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) \
 	  -o gdbserver$(EXEEXT) $(OBS) $(GDBSERVER_LIBS) $(XM_CLIBS)
 
 $(LIBGNU) $(GNULIB_H): all-lib
@@ -379,7 +384,7 @@ all-lib: $(GNULIB_BUILDDIR)/Makefile
 # for linking against
 gdbreplay$(EXEEXT): $(GDBREPLAY_OBS) $(LIBGNU)
 	rm -f $(AM_V_v) gdbreplay$(EXEEXT)
-	${CC-LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) \
+	${CC_LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) \
 	  -o gdbreplay$(EXEEXT) $(GDBREPLAY_OBS) $(XM_CLIBS)
 
 gdbreplay.o: gdbreplay.c config.h
@@ -392,7 +397,7 @@ IPA_LIB=libinproctrace.so
 
 $(IPA_LIB): $(IPA_OBJS) ${ADD_DEPS} ${CDEPS}
 	rm -f $(AM_V_v) $(IPA_LIB)
-	${CC-LD} -shared -fPIC -Wl,--no-undefined $(INTERNAL_CFLAGS) \
+	${CC_LD} -shared -fPIC -Wl,--no-undefined $(INTERNAL_CFLAGS) \
 	$(INTERNAL_LDFLAGS) -o $(IPA_LIB) ${IPA_OBJS} -ldl -pthread
 
 # Put the proper machine-specific files first, so M-. on a machine

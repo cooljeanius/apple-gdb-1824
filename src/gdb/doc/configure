@@ -3228,8 +3228,8 @@ _ACEOF
 # We never need to detect it in this sub-configure.
 # But preserve it for config.status --recheck.
 
-# expand $ac_aux_dir to an absolute path
-am_aux_dir=`cd $ac_aux_dir && pwd`
+# Expand $ac_aux_dir to an absolute path.
+am_aux_dir=`cd "$ac_aux_dir" && pwd`
 
 if test x"${MISSING+set}" != xset; then
   case $am_aux_dir in

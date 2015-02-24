@@ -1,7 +1,7 @@
 /* IEEE floating point support declarations, for GDB, the GNU Debugger.
-   Copyright 1991, 1994, 1995, 1997, 2000, 2003, 2005
-   Free Software Foundation, Inc.
-
+ * Copyright 1991, 1994, 1995, 1997, 2000, 2003, 2005
+ * Free Software Foundation, Inc.  */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -16,12 +16,16 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #if !defined (FLOATFORMAT_H)
 #define FLOATFORMAT_H 1
 
 #include "ansidecl.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 /* A floatformat consists of a sign bit, an exponent and a mantissa.  Once the
    bytes are concatenated according to the byteorder flag, then each of those
@@ -132,9 +136,14 @@ floatformat_to_double (const struct floatformat *, const void *, double *);
 extern void
 floatformat_from_double (const struct floatformat *, const double *, void *);
 
-/* Return non-zero iff the data at FROM is a valid number in format FMT.  */
-
+/* Return non-zero iff the data at FROM is a valid number in format FMT: */
 extern int
 floatformat_is_valid (const struct floatformat *fmt, const void *from);
 
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
 #endif	/* defined (FLOATFORMAT_H) */
+
+/* EOF */

@@ -123,7 +123,8 @@ DeviceDescr angel_EthernetDevice =
     EthernetClose,
     EthernetRead,
     EthernetWrite,
-    EthernetIoctl
+    EthernetIoctl,
+    NULL
 };
 
 /*

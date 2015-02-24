@@ -724,7 +724,8 @@ DeviceDescr angel_SerparDevice =
     SerparClose,
     SerparRead,
     SerparWrite,
-    SerparIoctl
+    SerparIoctl,
+    NULL
 };
 
 /* EOF serpardr.c */

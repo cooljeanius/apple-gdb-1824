@@ -11,6 +11,13 @@ sinclude(../config/acinclude.m4)
 dnl# for zlib macro:
 sinclude(../config/zlib.m4)
 
+dnl# For libiberty_INIT.
+m4_include(../libiberty/m4/libiberty.m4)
+
+dnl# For --enable-build-with-cxx and COMPILER.
+m4_include(m4/build-with-cxx.m4)
+
+dnl# gettext stuff:
 sinclude(../lcmessage.m4)
 sinclude(../gettext.m4)
 dnl# The lines below arrange for aclocal not to bring gettext.m4's

@@ -97,7 +97,9 @@ typedef unsigned       char  unsigned8;
 /* and real 'bool' under C++.  It also avoids warnings such as          */
 /* C++ keyword 'bool' used as identifier.  It can be overridden by      */
 /* defining IMPLEMENT_BOOL_AS_ENUM or IMPLEMENT_BOOL_AS_INT.            */
-#undef _bool
+#ifdef _bool
+# undef _bool
+#endif /* _bool */
 
 #ifdef IMPLEMENT_BOOL_AS_ENUM
    enum _bool { _false, _true };
@@ -108,17 +110,23 @@ typedef unsigned       char  unsigned8;
 #  define _true 1
 #endif /* bool implementations */
 
-#ifdef _bool
-#  if defined(_MFC_VER) || defined(__CC_NORCROFT) /* When using MS Visual C/C++ v4.2 */
-#    define bool _bool /* avoids "'bool' is reserved word" warning      */
-#  else
-#    ifndef bool
-       typedef _bool bool;
-#    endif /* !bool */
-#  endif /* _MFC_VER || __CC_NORCROFT */
-#  define true _true
-#  define false _false
-#endif /* _bool */
+#if defined(_bool) && (defined(_true) && defined(_false)) && \
+    (!defined(true) && !defined(false))
+# if defined(_MFC_VER) || defined(__CC_NORCROFT) || \
+     (defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ >= 4))
+/* When using MS Visual C/C++ v4.2, or gcc */
+#  ifndef bool
+#   define bool _bool /* avoids "'bool' is reserved word" warning      */
+#  endif /* !bool */
+# else
+#  if !defined(bool) && !defined(__cplusplus) && !defined(_STDBOOL_H_) && \
+      (!defined(__bool_true_false_are_defined) || !__bool_true_false_are_defined)
+    typedef _bool bool;
+#  endif /* !bool && !__cplusplus && !_STDBOOL_H_ && !__bool_true_false_are_defined */
+# endif /* _MFC_VER || __CC_NORCROFT || gcc 4+ */
+# define true _true
+# define false _false
+#endif /* _bool && (_true && _false) && (!true && !false) */
 
 #define YES   true
 #define NO    false

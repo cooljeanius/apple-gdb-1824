@@ -42,6 +42,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module alignof:
   # Code from module alloca:
   # Code from module alloca-opt:
+  # Code from module ansi-c++-opt:
   # Code from module assure:
   # Code from module at-internal:
   # Code from module atexit:
@@ -197,6 +198,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module wchar:
   # Code from module wcsncasecmp:
   # Code from module wctype-h:
+  # Code from module xalloc:
+  # Code from module xalloc-die:
   # Code from module xalloc-oversized:
 ])
 
@@ -217,6 +220,7 @@ AC_DEFUN([gl_INIT],
   gl_COMMON
   gl_source_base='import'
   gl_FUNC_ALLOCA
+  gl_PROG_ANSI_CXX([CXX], [ANSICXX])
   AC_LIBOBJ([openat-proc])
   gl_FUNC_ATEXIT
   if test $ac_cv_func_atexit = no; then
@@ -613,6 +617,7 @@ AC_DEFUN([gl_INIT],
   fi
   gl_WCHAR_MODULE_INDICATOR([wcsncasecmp])
   gl_WCTYPE_H
+  gl_XALLOC
   # End of code from modules
   m4_ifval(gl_LIBSOURCES_LIST, [
     m4_syscmd([test ! -d ]m4_defn([gl_LIBSOURCES_DIR])[ ||
@@ -929,10 +934,14 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/wcsncasecmp.c
   lib/wctype-h.c
   lib/wctype.in.h
+  lib/xalloc-die.c
   lib/xalloc-oversized.h
+  lib/xalloc.h
+  lib/xmalloc.c
   m4/00gnulib.m4
   m4/absolute-header.m4
   m4/alloca.m4
+  m4/ansi-c++.m4
   m4/atexit.m4
   m4/autobuild.m4
   m4/chdir-long.m4
@@ -1066,4 +1075,5 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/wcsncasecmp.m4
   m4/wctype_h.m4
   m4/wint_t.m4
+  m4/xalloc.m4
 ])

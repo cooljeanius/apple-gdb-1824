@@ -668,7 +668,8 @@ DeviceDescr angel_SerialDevice = {
     SerialClose,
     SerialRead,
     SerialWrite,
-    SerialIoctl
+    SerialIoctl,
+    NULL
 };
 
 /* EOF */

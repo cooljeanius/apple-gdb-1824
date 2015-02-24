@@ -1,6 +1,8 @@
 *.a
+*.i
 *.lo
 *.o
+*.s
 *.status
 *libs/*
 *~
