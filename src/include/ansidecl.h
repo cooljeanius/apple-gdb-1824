@@ -114,6 +114,10 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 #ifndef	_ANSIDECL_H
 #define _ANSIDECL_H 1
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic push
@@ -263,17 +267,33 @@ So instead we use the macro below and test it against specific values.  */
 # endif /* GNUC >= 2.96 */
 #endif /* ATTRIBUTE_MALLOC */
 
-/* Attributes on labels were valid as of gcc 2.93. */
+/* Attributes on labels were valid as of gcc 2.93 and g++ 4.5.  For
+ * g++ an attribute on a label must be followed by a semicolon: */
 #ifndef ATTRIBUTE_UNUSED_LABEL
-# if (!defined (__cplusplus) && GCC_VERSION >= 2093)
-#  define ATTRIBUTE_UNUSED_LABEL ATTRIBUTE_UNUSED
-# else
-#  define ATTRIBUTE_UNUSED_LABEL
-# endif /* !__cplusplus && GNUC >= 2.93 */
-#endif /* ATTRIBUTE_UNUSED_LABEL */
+# ifndef __cplusplus
+#  if GCC_VERSION >= 2093
+#   define ATTRIBUTE_UNUSED_LABEL ATTRIBUTE_UNUSED
+#  else
+#   define ATTRIBUTE_UNUSED_LABEL
+#  endif /* gcc 2.93+ */
+# else /* __cplusplus: */
+#  if GCC_VERSION >= 4005
+#   define ATTRIBUTE_UNUSED_LABEL ATTRIBUTE_UNUSED ;
+#  else
+#   define ATTRIBUTE_UNUSED_LABEL
+#  endif /* gcc 4.5+ */
+# endif /* !__cplusplus */
+#endif /* !ATTRIBUTE_UNUSED_LABEL */
 
+/* Similarly to ARG_UNUSED below.  Prior to GCC 3.4, the C++ frontend
+   could NOT parse attributes placed after the identifier name, and now
+   the entire compiler is built with C++.  */
 #ifndef ATTRIBUTE_UNUSED
-# define ATTRIBUTE_UNUSED __attribute__ ((__unused__))
+# if GCC_VERSION >= 3004
+#  define ATTRIBUTE_UNUSED __attribute__ ((__unused__))
+# else
+#  define ATTRIBUTE_UNUSED
+# endif /* gcc 3.4+ */
 #endif /* ATTRIBUTE_UNUSED */
 
 /* Before GCC 3.4, the C++ frontend could NOT parse attributes placed after
@@ -368,11 +388,57 @@ So instead we use the macro below and test it against specific values.  */
 # endif /* GNUC >= 3.0 */
 #endif /* ATTRIBUTE_ALIGNED_ALIGNOF */
 
+/* Useful for structures whose layout must much some binary specification
+   regardless of the alignment and padding qualities of the compiler.  */
+#ifndef ATTRIBUTE_PACKED
+# define ATTRIBUTE_PACKED __attribute__ ((packed))
+#endif
+
+  /* Attribute `hot' and `cold' was valid as of gcc 4.3.  */
+#ifndef ATTRIBUTE_COLD
+# if (GCC_VERSION >= 4003)
+#  define ATTRIBUTE_COLD __attribute__ ((__cold__))
+# else
+#  define ATTRIBUTE_COLD
+# endif /* GNUC >= 4.3 */
+#endif /* ATTRIBUTE_COLD */
+#ifndef ATTRIBUTE_HOT
+# if (GCC_VERSION >= 4003)
+#  define ATTRIBUTE_HOT __attribute__ ((__hot__))
+# else
+#  define ATTRIBUTE_HOT
+# endif /* GNUC >= 4.3 */
+#endif /* ATTRIBUTE_HOT */
+
 /* We use __extension__ in some places to suppress -pedantic warnings about
  * GCC extensions. This feature did NOT work properly before gcc 2.8. */
 #if GCC_VERSION < 2008
 # define __extension__
 #endif /* gcc pre-2.8 */
+
+/* This is used to declare a const variable which should be visible
+   outside of the current compilation unit.  Use it as
+   EXPORTED_CONST int i = 1;
+   This is because the semantics of const are different in C and C++.
+   "extern const" is permitted in C but it looks strange, and gcc
+   warns about it when -Wc++-compat is not used.  */
+#ifdef __cplusplus
+# define EXPORTED_CONST extern const
+#else
+# define EXPORTED_CONST const
+#endif /* __cplusplus */
+
+/* Be conservative and only use enum bitfields with C++ or GCC.
+ * FIXME: provide a complete autoconf test for buggy enum bitfields.  */
+#ifdef __cplusplus
+# define ENUM_BITFIELD(TYPE) enum TYPE
+#else
+# if (GCC_VERSION > 2000)
+#  define ENUM_BITFIELD(TYPE) __extension__ enum TYPE
+# else
+#  define ENUM_BITFIELD(TYPE) unsigned int
+# endif /* gcc 2+ */
+#endif /* __cplusplus */
 
 /* keep condition the same as where we push: */
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
@@ -385,6 +451,10 @@ So instead we use the macro below and test it against specific values.  */
 #if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
  # pragma GCC diagnostic ignored "-Wtraditional"
 #endif /* gcc 4+ && !__clang__ */
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif	/* ansidecl.h	*/
 

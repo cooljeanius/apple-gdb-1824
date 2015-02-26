@@ -1001,7 +1001,7 @@ core_store_registers (int regno)
 }
 
 static void
-init_macho_core_ops ()
+init_macho_core_ops(void)
 {
   macho_core_ops.to_shortname = "core-macho";
   macho_core_ops.to_longname = "Mach-O core dump file";

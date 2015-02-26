@@ -734,12 +734,12 @@ int angel_RDI_read(ARMword source, void *dest, unsigned *nbytes)
     err = wait_for_debug_message(&reason, &debugID, &OSinfo1, &OSinfo2,
                                 &status, &packet);
     TracePrint(("angel_RDI_read: nbinpacket =%d status=%08x err = %d\n",
-                nbinpacket,status,err));
+                nbinpacket, status, err));
     if (err != RDIError_NoError) {
       return err; /* Was there an error? */
     }
-    if (status == RDIError_NoError){
-      rnbytes += (int)PREAD(LE,(unsigned int *)(BUFFERDATA(packet->pk_buffer)+20));
+    if (status == RDIError_NoError) {
+      rnbytes += (int)PREAD(LE, (unsigned int *)(BUFFERDATA(packet->pk_buffer) + 20U));
       TracePrint(("angel_RDI_read: rnbytes = %d\n",rnbytes));
       memcpy((((unsigned char *)dest) + nbdone),
 	     (BUFFERDATA(packet->pk_buffer) + 24), (size_t)nbinpacket);

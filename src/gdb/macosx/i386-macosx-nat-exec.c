@@ -47,20 +47,20 @@
 extern macosx_inferior_status *macosx_status;
 
 static void
-validate_inferior_registers (int regno)
+validate_inferior_registers(int regno)
 {
   int i;
   if (regno == -1)
     {
       for (i = 0; i < NUM_REGS; i++)
         {
-          if (!register_cached (i))
-            fetch_inferior_registers (i);
+          if (!register_cached(i))
+            fetch_inferior_registers(i);
         }
     }
-  else if (!register_cached (regno))
+  else if (!register_cached(regno))
     {
-      fetch_inferior_registers (regno);
+      fetch_inferior_registers(regno);
     }
 }
 
@@ -343,11 +343,10 @@ store_inferior_registers (int regno)
 
 
 /* This function handles the case of an i386 or an x86_64 inferior.
-   In the i386 case, only the lower 32 bits of the argument VALUE are
-   used.  */
-
+ * In the i386 case, only the lower 32 bits of the argument VALUE are
+ * used: */
 static void
-i386_macosx_dr_set (int regnum, uint64_t value)
+i386_macosx_dr_set(int regnum, uint64_t value)
 {
   thread_t current_thread;
   x86_debug_state_t dr_regs;
@@ -355,20 +354,20 @@ i386_macosx_dr_set (int regnum, uint64_t value)
   kern_return_t ret;
   thread_array_t thread_list;
   unsigned int nthreads;
-  int i;
+  unsigned int i;
 
-  gdb_assert (regnum >= 0 && regnum <= DR_CONTROL);
+  gdb_assert((regnum >= 0) && (regnum <= DR_CONTROL));
 
-  /* We have to set the watchpoint value in all the threads.  */
-  ret = task_threads (macosx_status->task, &thread_list, &nthreads);
+  /* We have to set the watchpoint value in all the threads: */
+  ret = task_threads(macosx_status->task, &thread_list, &nthreads);
   if (ret != KERN_SUCCESS)
     {
-      printf_unfiltered ("Error getting the task threads for task: 0x%x.\n",
-			 (int) macosx_status->task);
-      MACH_CHECK_ERROR (ret);
+      printf_unfiltered("Error getting the task threads for task: 0x%x.\n",
+                        (int)macosx_status->task);
+      MACH_CHECK_ERROR(ret);
     }
 
-  for (i = 0; i < nthreads; i++)
+  for (i = 0U; i < nthreads; i++)
     {
       current_thread = thread_list[i];
 
@@ -376,8 +375,8 @@ i386_macosx_dr_set (int regnum, uint64_t value)
         {
           dr_regs.dsh.flavor = x86_DEBUG_STATE64;
           dr_regs.dsh.count = x86_DEBUG_STATE64_COUNT;
-          ret = thread_get_state (current_thread, x86_DEBUG_STATE,
-                                  (thread_state_t) &dr_regs, &dr_count);
+          ret = thread_get_state(current_thread, x86_DEBUG_STATE,
+                                 (thread_state_t)&dr_regs, &dr_count);
 
           if (ret != KERN_SUCCESS)
             {

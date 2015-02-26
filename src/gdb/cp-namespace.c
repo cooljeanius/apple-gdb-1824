@@ -59,8 +59,7 @@ unsigned char processing_has_namespace_info;
 
 const char *processing_current_prefix;
 
-/* List of using directives that are active in the current file.  */
-
+/* List of using directives that are active in the current file: */
 static struct using_direct *using_list;
 
 static struct using_direct *cp_add_using (const char *name,
@@ -840,29 +839,30 @@ lookup_possible_namespace_symbol (const char *name, struct symtab **symtab)
   return NULL;
 }
 
-/* Print out all the possible namespace symbols.  */
-
+/* Print out all the possible namespace symbols: */
 static void
-maintenance_cplus_namespace (char *args, int from_tty)
+maintenance_cplus_namespace(char *args, int from_tty)
 {
   struct objfile *objfile;
-  printf_unfiltered (_("Possible namespaces:\n"));
-  ALL_OBJFILES (objfile)
+  printf_unfiltered(_("Possible namespaces:\n"));
+  ALL_OBJFILES(objfile)
     {
       struct dict_iterator iter;
       struct symbol *sym;
 
-      ALL_BLOCK_SYMBOLS (get_possible_namespace_block (objfile), iter, sym)
+      ALL_BLOCK_SYMBOLS(get_possible_namespace_block(objfile), iter, sym)
 	{
-	  printf_unfiltered ("%s\n", SYMBOL_PRINT_NAME (sym));
+	  printf_unfiltered("%s\n", SYMBOL_PRINT_NAME(sym));
 	}
     }
 }
 
 void
-_initialize_cp_namespace (void)
+_initialize_cp_namespace(void)
 {
-  add_cmd ("namespace", class_maintenance, maintenance_cplus_namespace,
-	   _("Print the list of possible C++ namespaces."),
-	   &maint_cplus_cmd_list);
+  add_cmd("namespace", class_maintenance, maintenance_cplus_namespace,
+	  _("Print the list of possible C++ namespaces."),
+	  &maint_cplus_cmd_list);
 }
+
+/* EOF */

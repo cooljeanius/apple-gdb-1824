@@ -580,6 +580,9 @@
 /* Define to 1 if you have the <mach-o/nlist.h> header file. */
 #undef HAVE_MACH_O_NLIST_H
 
+/* Define to 1 if you have the `mach_port_get_receive_status' function. */
+#undef HAVE_MACH_PORT_GET_RECEIVE_STATUS
+
 /* Define to 1 if you have the <mach/port.h> header file. */
 #undef HAVE_MACH_PORT_H
 

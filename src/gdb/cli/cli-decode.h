@@ -1,4 +1,4 @@
-/* Header file for GDB command decoding library.
+/* cli-decode.h: Header file for GDB command decoding library.
 
    Copyright 2000, 2003 Free Software Foundation, Inc.
 
@@ -17,7 +17,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (CLI_DECODE_H)
+#if !defined(CLI_DECODE_H)
 #define CLI_DECODE_H 1
 
 #include "command.h"
@@ -37,18 +37,26 @@ typedef enum cmd_types
     show_cmd
   }
 cmd_types;
-#endif
+#endif /* 0 */
 
 /* This structure records one command'd definition.  */
 
 
-/* This flag is used by the code executing commands to warn the user 
-   the first time a deprecated command is used, see the 'flags' field in
-   the following struct.
-*/
+/* This flag is used by the code executing commands to warn the user
+ * the first time a deprecated command is used, see the 'flags' field in
+ * the following struct: */
 #define CMD_DEPRECATED            0x1
 #define DEPRECATED_WARN_USER      0x2
 #define MALLOCED_REPLACEMENT      0x4
+
+/* temporary, until I am ready to deal with all of the fallout that would
+ * result from fixing these warnings in this header: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 struct cmd_list_element
   {
@@ -92,8 +100,8 @@ struct cmd_list_element
        specified stream.  */
     show_value_ftype *show_value_func;
 
-    /* flags : a bitfield 
-       
+    /* flags : a bitfield
+
        bit 0: (LSB) CMD_DEPRECATED, when 1 indicated that this command
        is deprecated. It may be removed from gdb's command set in the
        future.
@@ -101,7 +109,7 @@ struct cmd_list_element
        bit 1: DEPRECATED_WARN_USER, the user needs to be warned that
        this is a deprecated command.  The user should only be warned
        the first time a command is used.
-        
+
        bit 2: MALLOCED_REPLACEMENT, when functions are deprecated at
        compile time (this is the way it should, in general, be done)
        the memory containing the replacement string is statically
@@ -110,7 +118,7 @@ struct cmd_list_element
        memory for replacement is malloc'ed.  When a command is
        undeprecated or re-deprecated at runtime we don't want to risk
        calling free on statically allocated memory, so we check this
-       flag.  
+       flag.
      */
     int flags;
 
@@ -196,6 +204,13 @@ struct cmd_list_element
        aliased command can be located in case it has been hooked.  */
     struct cmd_list_element *cmd_pointer;
   };
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 /* API to the manipulation of command lists.  */
 

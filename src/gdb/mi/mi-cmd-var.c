@@ -202,7 +202,7 @@ mi_cmd_var_create(char *command, char **argv, int argc)
 				/* APPLE LOCAL begin radar 6534195  */
 				if ((get_frame_type(selected_frame) ==
 				                                INLINED_FRAME)
-				    && (sals.sals[i].line == line)
+				    && ((unsigned long)sals.sals[i].line == line)
 				    && func_sym_has_inlining(func_sym,
                                                              selected_frame))
 				  {

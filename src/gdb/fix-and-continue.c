@@ -2282,27 +2282,27 @@ print_active_functions (struct fixinfo *cur)
 void
 update_picbase_register (struct symbol *new_fun)
 {
-#if defined (TARGET_I386)
-
-  /* x86_64 doesn't use an instruction sequence to set up a pic base register;
-     it has rip-relative addressing.  */
-  if (gdbarch_lookup_osabi (exec_bfd) == GDB_OSABI_DARWIN64)
-    return;
-
-  /* Find & update the x86 PIC base register if one is used. */
-
+#if defined(TARGET_I386)
   enum i386_regnum pic_base_reg;
   CORE_ADDR pic_base_value;
-  if (i386_find_picbase_setup (BLOCK_START (SYMBOL_BLOCK_VALUE (new_fun)),
-                               &pic_base_value, &pic_base_reg))
+
+  /* x86_64 does NOT use an instruction sequence to set up a pic base
+   * register; it has rip-relative addressing: */
+  if (gdbarch_lookup_osabi(exec_bfd) == GDB_OSABI_DARWIN64)
+    return;
+
+  /* Find & update the x86 PIC base register if one is used: */
+  if (i386_find_picbase_setup(BLOCK_START(SYMBOL_BLOCK_VALUE(new_fun)),
+                              &pic_base_value, &pic_base_reg))
     {
       if (fix_and_continue_debug_flag)
-        printf_filtered ("DEBUG: updating picbase in register %d to 0x%s\n",
-                         pic_base_reg, paddr_nz (pic_base_value));
-      write_register (pic_base_reg, pic_base_value);
+        printf_filtered("DEBUG: updating picbase in register %d to 0x%s\n",
+                        pic_base_reg, paddr_nz(pic_base_value));
+      write_register(pic_base_reg, pic_base_value);
     }
-
-#endif
+#else
+  return;
+#endif /* TARGET_I386 */
 }
 
 static struct symtab *

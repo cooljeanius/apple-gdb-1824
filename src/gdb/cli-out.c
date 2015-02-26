@@ -100,15 +100,14 @@ static struct ui_out_impl cli_ui_out_impl =
   0, /* Does not need MI hacks (i.e. needs CLI hacks).  */
 };
 
-/* Prototypes for local functions */
+/* Prototypes for local functions: */
+extern void _initialize_cli_out(void);
 
-extern void _initialize_cli_out (void);
+static void field_separator(void);
 
-static void field_separator (void);
-
-static void out_field_fmt (struct ui_out *uiout, int fldno,
-			   const char *fldname,
-			   const char *format,...) ATTR_FORMAT (printf, 4, 5);
+static void out_field_fmt(struct ui_out *uiout, int fldno,
+			  const char *fldname,
+			  const char *format, ...) ATTR_FORMAT(printf, 4, 5);
 
 /* local variables */
 
@@ -205,7 +204,7 @@ cli_field_int (struct ui_out *uiout, int fldno, int width,
   cli_field_string (uiout, fldno, width, alignment, fldname, buffer);
 }
 
-/* used to ommit a field */
+/* used to omit a field */
 
 void
 cli_field_skip (struct ui_out *uiout, int fldno, int width,
@@ -249,21 +248,21 @@ cli_field_string(struct ui_out *uiout, int fldno, int width,
 	  else
 	    /* ui_center */
 	    {
-	      after = before / 2;
+	      after = (before / 2);
 	      before -= after;
 	    }
 	}
     }
 
   if (before)
-    ui_out_spaces (uiout, before);
+    ui_out_spaces(uiout, before);
   if (string)
-    out_field_fmt (uiout, fldno, fldname, "%s", string);
+    out_field_fmt(uiout, fldno, fldname, "%s", string);
   if (after)
-    ui_out_spaces (uiout, after);
+    ui_out_spaces(uiout, after);
 
   if (align != ui_noalign)
-    field_separator ();
+    field_separator();
 }
 
 /* This is the only field function that does not align: */
@@ -272,78 +271,78 @@ cli_field_fmt(struct ui_out *uiout, int fldno, int width,
               enum ui_align align, const char *fldname, const char *format,
               va_list args)
 {
-  cli_out_data *data = ui_out_data (uiout);
+  cli_out_data *data = ui_out_data(uiout);
   if (data->suppress_output)
     return;
 
-  vfprintf_filtered (data->stream, format, args);
+  vfprintf_filtered(data->stream, format, args);
 
   if (align != ui_noalign)
-    field_separator ();
+    field_separator();
 }
 
 void
-cli_spaces (struct ui_out *uiout, int numspaces)
+cli_spaces(struct ui_out *uiout, int numspaces)
 {
-  cli_out_data *data = ui_out_data (uiout);
+  cli_out_data *data = ui_out_data(uiout);
   if (data->suppress_output)
     return;
-  print_spaces_filtered (numspaces, data->stream);
+  print_spaces_filtered(numspaces, data->stream);
 }
 
 void
-cli_text (struct ui_out *uiout, const char *string)
+cli_text(struct ui_out *uiout, const char *string)
 {
-  cli_out_data *data = ui_out_data (uiout);
+  cli_out_data *data = ui_out_data(uiout);
   if (data->suppress_output)
     return;
-  fputs_filtered (string, data->stream);
+  fputs_filtered(string, data->stream);
 }
 
 /* APPLE LOCAL begin cli */
 /* VARARGS */
 void
-cli_text_fmt (struct ui_out *uiout, const char *format, va_list args)
+cli_text_fmt(struct ui_out *uiout, const char *format, va_list args)
 {
-  struct ui_out_data *data = ui_out_data (uiout);
+  struct ui_out_data *data = ui_out_data(uiout);
   if (data->suppress_output)
     return;
-  vfprintf_filtered (data->stream, format, args);
+  vfprintf_filtered(data->stream, format, args);
 }
 /* APPLE LOCAL end cli */
 
 void
-cli_message (struct ui_out *uiout, int verbosity,
-	     const char *format, va_list args)
+cli_message(struct ui_out *uiout, int verbosity,
+            const char *format, va_list args)
 {
-  cli_out_data *data = ui_out_data (uiout);
+  cli_out_data *data = ui_out_data(uiout);
   if (data->suppress_output)
     return;
-  if (ui_out_get_verblvl (uiout) >= verbosity)
-    vfprintf_unfiltered (data->stream, format, args);
+  if (ui_out_get_verblvl(uiout) >= verbosity)
+    vfprintf_unfiltered(data->stream, format, args);
 }
 
 void
 /* APPLE LOCAL const */
-cli_wrap_hint (struct ui_out *uiout, const char *identstring)
+cli_wrap_hint(struct ui_out *uiout, const char *identstring)
 {
-  cli_out_data *data = ui_out_data (uiout);
+  cli_out_data *data = ui_out_data(uiout);
   if (data->suppress_output)
     return;
-  wrap_here (identstring);
+  wrap_here((char *)identstring);
 }
 
 void
-cli_flush (struct ui_out *uiout)
+cli_flush(struct ui_out *uiout)
 {
-  cli_out_data *data = ui_out_data (uiout);
-  gdb_flush (data->stream);
+  cli_out_data *data = ui_out_data(uiout);
+  gdb_flush(data->stream);
 }
 
 int
-cli_redirect (struct ui_out *uiout, struct ui_file *outstream)
+cli_redirect(struct ui_out *uiout, struct ui_file *outstream)
 {
-  struct ui_out_data *data = ui_out_data (uiout);
+  struct ui_out_data *data = ui_out_data(uiout);
   if (outstream != NULL)
     {
       data->original_stream = data->stream;
@@ -365,65 +364,66 @@ cli_redirect (struct ui_out *uiout, struct ui_file *outstream)
 
 /* VARARGS */
 static void
-out_field_fmt (struct ui_out *uiout, int fldno,
-	       const char *fldname,
-	       const char *format,...)
+out_field_fmt(struct ui_out *uiout, int fldno,
+	      const char *fldname,
+	      const char *format, ...)
 {
-  cli_out_data *data = ui_out_data (uiout);
+  cli_out_data *data = ui_out_data(uiout);
   va_list args;
 
-  va_start (args, format);
-  vfprintf_filtered (data->stream, format, args);
+  va_start(args, format);
+  vfprintf_filtered(data->stream, format, args);
 
-  va_end (args);
+  va_end(args);
 }
 
-/* Access to ui_out format private members.  */
-
+/* Access to ui_out format private members: */
 static void
-field_separator (void)
+field_separator(void)
 {
-  cli_out_data *data = ui_out_data (uiout);
-  fputc_filtered (' ', data->stream);
+  cli_out_data *data = ui_out_data(uiout);
+  fputc_filtered(' ', data->stream);
 }
 
-/* Initalize private members at startup.  */
-
+/* Initalize private members at startup: */
 struct ui_out *
-cli_out_new (struct ui_file *stream)
+cli_out_new(struct ui_file *stream)
 {
   int flags = ui_source_list;
 
-  cli_out_data *data = XMALLOC (cli_out_data);
+  cli_out_data *data = XMALLOC(cli_out_data);
   data->stream = stream;
   data->original_stream = NULL;
   data->suppress_output = 0;
-  return ui_out_new (&cli_ui_out_impl, data, flags);
+  return ui_out_new(&cli_ui_out_impl, data, flags);
 }
 
 struct ui_out *
-cli_quoted_out_new (struct ui_file *raw)
+cli_quoted_out_new(struct ui_file *raw)
 {
   int flags = ui_source_list;
 
-  struct ui_out_data *data = XMALLOC (struct ui_out_data);
-  data->stream = mi_console_file_new (raw, "~", '"');
+  struct ui_out_data *data = XMALLOC(struct ui_out_data);
+  data->stream = mi_console_file_new(raw, "~", '"');
   data->suppress_output = 0;
-  return ui_out_new (&cli_ui_out_impl, data, flags);
+  return ui_out_new(&cli_ui_out_impl, data, flags);
 }
 
 struct ui_file *
-cli_out_set_stream (struct ui_out *uiout, struct ui_file *stream)
+cli_out_set_stream(struct ui_out *uiout, struct ui_file *stream)
 {
-  cli_out_data *data = ui_out_data (uiout);
+  cli_out_data *data = ui_out_data(uiout);
   struct ui_file *old = data->stream;
   data->stream = stream;
   return old;
 }
 
-/* Standard gdb initialization hook.  */
+/* Standard gdb initialization hook: */
 void
 _initialize_cli_out (void)
 {
-  /* nothing needs to be done */
+  /* nothing needs to be done, so just return: */
+  return;
 }
+
+/* EOF */

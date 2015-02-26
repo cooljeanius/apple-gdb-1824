@@ -331,9 +331,9 @@ read_pe_exported_syms (struct objfile *objfile)
 	  if ((func_rva >= section_data[sectix].rva_start)
 	      && (func_rva < section_data[sectix].rva_end))
 	    {
-	      add_pe_exported_sym (erva + name_rva,
-				   func_rva,
-				   section_data + sectix, dll_name, objfile);
+	      add_pe_exported_sym((char *)(erva + name_rva),
+				  func_rva,
+				  section_data + sectix, dll_name, objfile);
 	      break;
 	    }
 	}

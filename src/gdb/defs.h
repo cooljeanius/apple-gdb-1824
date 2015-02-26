@@ -110,8 +110,8 @@
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDINT_H */
 
-/* First include ansidecl.h so we can use the various macro definitions here
- * and in all subsequent file inclusions: */
+/* First include ansidecl.h so we can use the various macro definitions
+ * here and in all subsequent file inclusions: */
 #include "ansidecl.h"
 
 #include "gdb_locale.h"
@@ -421,7 +421,7 @@ enum return_value_convention
 struct cleanup
   {
     struct cleanup *next;
-    void (*function) (void *);
+    void (*function)(void *);
     void *arg;
   };
 
@@ -463,14 +463,29 @@ struct cleanup
 # endif /* __GNUC__ version check */
 #endif /* !ATTR_FORMAT */
 
-/* Be conservative and use enum bitfields only with GCC.
-   This is copied from gcc 3.3.1, system.h.  */
+/* We use __extension__ in some places to suppress -pedantic warnings
+ * about GCC extensions.  This feature did NOT work properly before
+ * gcc 2.8.  */
+#if !defined(__extension__) && defined(GCC_VERSION)
+# if (GCC_VERSION < 2008)
+#  define __extension__
+# endif /* gcc pre-2.8 */
+#endif /* !__extension__ && GCC_VERSION */
 
-#if defined(__GNUC__) && (__GNUC__ >= 2)
-# define ENUM_BITFIELD(TYPE) enum TYPE
-#else
-# define ENUM_BITFIELD(TYPE) unsigned int
-#endif /* __GNUC__ version check */
+/* Be conservative and use enum bitfields only with GCC.
+ * This is copied from gcc 3.3.1, <system.h>
+ * (and more recently from "../include/ansidecl.h"): */
+#ifndef ENUM_BITFIELD
+# ifdef __cplusplus
+#  define ENUM_BITFIELD(TYPE) enum TYPE
+# else
+#  if (defined(__GNUC__) && (__GNUC__ >= 2))
+#   define ENUM_BITFIELD(TYPE) __extension__ enum TYPE
+#  else
+#   define ENUM_BITFIELD(TYPE) unsigned int
+#  endif /* gcc 2+ */
+# endif /* __cplusplus */
+#endif /* !ENUM_BITFIELD */
 
 /* Needed for various prototypes */
 

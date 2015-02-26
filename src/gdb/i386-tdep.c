@@ -1135,7 +1135,7 @@ i386_pseudo_register_write (struct gdbarch *gdbarch, struct regcache *regcache,
    REGNUM, or -1 if there is no such register.  */
 
 static int
-i386_next_regnum (int regnum)
+i386_next_regnum(int regnum)
 {
   /* GCC allocates the registers in the order:
 
@@ -1154,7 +1154,7 @@ i386_next_regnum (int regnum)
     I386_EBP_REGNUM		/* Slot for %edi.  */
   };
 
-  if (regnum >= 0 && regnum < sizeof (next_regnum) / sizeof (next_regnum[0]))
+  if ((regnum >= 0) && ((size_t)regnum < (sizeof(next_regnum) / sizeof(next_regnum[0]))))
     return next_regnum[regnum];
 
   return -1;
@@ -1668,10 +1668,9 @@ i386_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   return gdbarch;
 }
 
-/* APPLE LOCAL: a function for checking the prologue parser by hand. */
-
+/* APPLE LOCAL: a function for checking the prologue parser by hand: */
 static void
-maintenance_i386_prologue_parser (char *arg, int from_tty)
+maintenance_i386_prologue_parser(char *arg, int from_tty)
 {
   char **argv;
   CORE_ADDR start_address, end_address;
@@ -1682,94 +1681,94 @@ maintenance_i386_prologue_parser (char *arg, int from_tty)
   struct minimal_symbol *func;
   int parse_failed = 0;
 
-  if (arg == NULL || arg[0] == '\0')
+  if ((arg == NULL) || (arg[0] == '\0'))
     return;
 
-  argv = buildargv (arg);
+  argv = buildargv(arg);
   if (argv == NULL)
     return;
-  cleanups = make_cleanup_freeargv (argv);
+  cleanups = make_cleanup_freeargv(argv);
 
-  for (argc = 0; argv[argc] != NULL && argv[argc][0] != '\0'; argc++)
+  for (argc = 0; (argv[argc] != NULL) && (argv[argc][0] != '\0'); argc++)
     ;
 
   if (argc == 0)
     {
-      do_cleanups (cleanups);
+      do_cleanups(cleanups);
       return;
     }
 
-  start_address = parse_and_eval_address (argv[0]);
+  start_address = parse_and_eval_address(argv[0]);
   if (argc == 2)
-    end_address = strtoul (argv[1], NULL, 16);
+    end_address = strtoul(argv[1], NULL, 16);
   else
-    end_address = start_address + 48; /* 48 bytes is enough for a prologue */
+    end_address = (start_address + 48); /* 48 bytes is enough for a prologue */
 
-  if (gdbarch_lookup_osabi (exec_bfd) == GDB_OSABI_DARWIN64)
-    cache = x86_alloc_frame_cache (8);
+  if (gdbarch_lookup_osabi(exec_bfd) == GDB_OSABI_DARWIN64)
+    cache = x86_alloc_frame_cache(8);
   else
-    cache = x86_alloc_frame_cache (4);
+    cache = x86_alloc_frame_cache(4);
 
-  parsed_to = x86_analyze_prologue (start_address, end_address + 1, cache);
+  parsed_to = x86_analyze_prologue(start_address, end_address + 1, cache);
 
-  func = lookup_minimal_symbol_by_pc_section (start_address, NULL);
-  printf_filtered ("Analyzing the prologue of '%s' 0x%s.\n",
-                   SYMBOL_LINKAGE_NAME (func),
-                   paddr_nz (SYMBOL_VALUE_ADDRESS (func)));
-  if (func != lookup_minimal_symbol_by_pc_section (parsed_to, NULL))
+  func = lookup_minimal_symbol_by_pc_section(start_address, NULL);
+  printf_filtered("Analyzing the prologue of '%s' 0x%s.\n",
+                  SYMBOL_LINKAGE_NAME(func),
+                  paddr_nz(SYMBOL_VALUE_ADDRESS(func)));
+  if (func != lookup_minimal_symbol_by_pc_section(parsed_to, NULL))
     {
-      printf_filtered ("Prologue scanner went to 0x%s (off the end of '%s')"
-                        " trying to\nfind a prologue.  %s is frameless?\n",
-                       paddr_nz (parsed_to),
-                       SYMBOL_LINKAGE_NAME (func), SYMBOL_LINKAGE_NAME (func));
+      printf_filtered("Prologue scanner went to 0x%s (off the end of '%s')"
+                       " trying to\nfind a prologue.  %s is frameless?\n",
+                      paddr_nz(parsed_to),
+                      SYMBOL_LINKAGE_NAME(func), SYMBOL_LINKAGE_NAME(func));
       parse_failed = 1;
     }
   else
     {
-      printf_filtered ("Prologue parser parsed to address 0x%s (%d bytes)",
-                       paddr_nz (parsed_to), (int) (parsed_to - start_address));
+      printf_filtered("Prologue parser parsed to address 0x%s (%d bytes)",
+                      paddr_nz(parsed_to), (int)(parsed_to - start_address));
       if (parsed_to == end_address -1)
-        printf_filtered (" which is the entire length of the function\n");
+        printf_filtered(" which is the entire length of the function\n");
       else
         {
-          printf_filtered (".\n");
-          if (cache->saved_regs[cache->ebp_regnum] == -1)
+          printf_filtered(".\n");
+          if (cache->saved_regs[cache->ebp_regnum] == (CORE_ADDR)-1)
             {
-              printf_filtered ("Didn't find push %%ebp and didn't parse the full range: prologue parse failed (frameless function?)\n");
+              printf_filtered("Didn't find push %%ebp and didn't parse the full range: prologue parse failed (frameless function?)\n");
               parse_failed = 1;
             }
         }
     }
 
-  printf_filtered ("\n");
-  if (cache->saved_regs[cache->ebp_regnum] == -1)
+  printf_filtered("\n");
+  if (cache->saved_regs[cache->ebp_regnum] == (CORE_ADDR)-1)
     {
-      printf_filtered ("Did not find the push %%ebp\n");
+      printf_filtered("Did not find the push %%ebp\n");
       parse_failed = 1;
     }
   else
-    printf_filtered ("Found push %%ebp\n");
+    printf_filtered("Found push %%ebp\n");
   if (cache->ebp_is_frame_pointer == 0)
     {
-      printf_filtered ("Did not find mov %%esp, %%ebp\n");
+      printf_filtered("Did not find mov %%esp, %%ebp\n");
       parse_failed = 1;
     }
   if (cache->ebp_is_frame_pointer == 1)
-    printf_filtered ("Found mov %%esp, %%ebp\n");
+    printf_filtered("Found mov %%esp, %%ebp\n");
 
   if (parse_failed)
-    printf_filtered ("\nFAILED TO PARSE func %s startaddr 0x%s\n\n",
-                     SYMBOL_LINKAGE_NAME (func), paddr_nz (start_address));
+    printf_filtered("\nFAILED TO PARSE func %s startaddr 0x%s\n\n",
+                    SYMBOL_LINKAGE_NAME(func), paddr_nz(start_address));
 
-  do_cleanups (cleanups);
+  do_cleanups(cleanups);
 }
 
 
 /* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_i386_tdep (void);
+void _initialize_i386_tdep(void);
 
 void
-_initialize_i386_tdep (void)
+_initialize_i386_tdep(void)
 {
   register_gdbarch_init (bfd_arch_i386, i386_gdbarch_init);
 

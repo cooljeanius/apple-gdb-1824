@@ -59,7 +59,6 @@ print_dynamic_range_bound (struct type *, const char *, int,
 static void print_range_type_named (char *, struct ui_file *);
 
 
-
 static char *name_buffer;
 static int name_buffer_len;
 
@@ -67,39 +66,39 @@ static int name_buffer_len;
    next call.  */
 
 static char *
-decoded_type_name (struct type *type)
+decoded_type_name(struct type *type)
 {
-  if (ada_type_name (type) == NULL)
+  if (ada_type_name(type) == NULL)
     return NULL;
   else
     {
-      char *raw_name = ada_type_name (type);
+      char *raw_name = ada_type_name(type);
       char *s, *q;
 
-      if (name_buffer == NULL || name_buffer_len <= strlen (raw_name))
+      if ((name_buffer == NULL) || (name_buffer_len <= strlen(raw_name)))
 	{
-	  name_buffer_len = 16 + 2 * strlen (raw_name);
-	  name_buffer = xrealloc (name_buffer, name_buffer_len);
+	  name_buffer_len = (16 + 2 * strlen(raw_name));
+	  name_buffer = xrealloc(name_buffer, name_buffer_len);
 	}
-      strcpy (name_buffer, raw_name);
+      strcpy(name_buffer, raw_name);
 
-      s = (char *) strstr (name_buffer, "___");
+      s = (char *)strstr(name_buffer, "___");
       if (s != NULL)
 	*s = '\0';
 
-      s = name_buffer + strlen (name_buffer) - 1;
-      while (s > name_buffer && (s[0] != '_' || s[-1] != '_'))
+      s = (name_buffer + strlen(name_buffer) - 1);
+      while ((s > name_buffer) && ((s[0] != '_') || (s[-1] != '_')))
 	s -= 1;
 
       if (s == name_buffer)
 	return name_buffer;
 
-      if (!islower (s[1]))
+      if (!islower(s[1]))
 	return NULL;
 
       for (s = q = name_buffer; *s != '\0'; q += 1)
 	{
-	  if (s[0] == '_' && s[1] == '_')
+	  if ((s[0] == '_') && (s[1] == '_'))
 	    {
 	      *q = '.';
 	      s += 2;
@@ -328,31 +327,29 @@ print_enum_type (struct type *type, struct ui_file *stream)
   fprintf_filtered (stream, ")");
 }
 
-/* Print representation of Ada fixed-point type TYPE on STREAM.  */
-
+/* Print representation of Ada fixed-point type TYPE on STREAM: */
 static void
-print_fixed_point_type (struct type *type, struct ui_file *stream)
+print_fixed_point_type(struct type *type, struct ui_file *stream)
 {
-  DOUBLEST delta = ada_delta (type);
-  DOUBLEST small = ada_fixed_to_float(type, 1.0f);
+  DOUBLEST delta = ada_delta(type);
+  DOUBLEST small = ada_fixed_to_float(type, (LONGEST)1.0f);
 
   if (delta < 0.0f)
-    fprintf_filtered (stream, "delta ??");
+    fprintf_filtered(stream, "delta ??");
   else
     {
-      fprintf_filtered (stream, "delta %g", (double) delta);
+      fprintf_filtered(stream, "delta %g", (double)delta);
       if (delta != small)
-	fprintf_filtered (stream, " <'small = %g>", (double) small);
+	fprintf_filtered(stream, " <'small = %g>", (double)small);
     }
 }
 
-/* Print representation of special VAX floating-point type TYPE on STREAM.  */
-
+/* Print representation of special VAX floating-point type TYPE on STREAM: */
 static void
-print_vax_floating_point_type (struct type *type, struct ui_file *stream)
+print_vax_floating_point_type(struct type *type, struct ui_file *stream)
 {
-  fprintf_filtered (stream, "<float format %c>",
-		    ada_vax_float_type_suffix (type));
+  fprintf_filtered(stream, "<float format %c>",
+		   ada_vax_float_type_suffix(type));
 }
 
 /* Print simple (constrained) array type TYPE on STREAM.  LEVEL is the

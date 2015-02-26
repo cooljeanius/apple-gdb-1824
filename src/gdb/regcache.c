@@ -781,15 +781,14 @@ regcache_cooked_write (struct regcache *regcache, int regnum,
 }
 
 /* Copy INLEN bytes of consecutive data from memory at MYADDR
-   into registers starting with the MYREGSTART'th byte of register data.  */
-
+ * into registers starting with the MYREGSTART'th byte of register data: */
 void
-deprecated_write_register_bytes (int myregstart, gdb_byte *myaddr, int inlen)
+deprecated_write_register_bytes(int myregstart, gdb_byte *myaddr, int inlen)
 {
-  int myregend = myregstart + inlen;
+  int myregend = (myregstart + inlen);
   int regnum;
 
-  target_prepare_to_store ();
+  target_prepare_to_store();
 
   /* Scan through the registers updating any that are covered by the
      range myregstart<=>myregend using write_register_gen, which does
@@ -805,7 +804,7 @@ deprecated_write_register_bytes (int myregstart, gdb_byte *myaddr, int inlen)
 
       /* Is this register completely outside the range the user is writing?  */
       if (myregend <= regstart || regend <= myregstart)
-	/* do nothing */ ;		
+	/* do nothing */ ;
 
       /* Is this register completely within the range the user is writing?  */
       else if (myregstart <= regstart && regend <= myregend)
@@ -1371,7 +1370,7 @@ regcache_dump (struct regcache *regcache, struct ui_file *file,
     fprintf_unfiltered (file, "*%d: Inconsistent register offsets.\n",
 			footnote_register_offset);
   if (footnote_register_type_name_null)
-    fprintf_unfiltered (file, 
+    fprintf_unfiltered (file,
 			"*%d: Register type's name NULL.\n",
 			footnote_register_type_name_null);
   do_cleanups (cleanups);
@@ -1387,7 +1386,7 @@ regcache_print (char *args, enum regcache_dump_what what_to_dump)
       struct ui_file *file = gdb_fopen (args, "w");
       if (file == NULL)
 	perror_with_name (_("maintenance print architecture"));
-      regcache_dump (current_regcache, file, what_to_dump);    
+      regcache_dump (current_regcache, file, what_to_dump);
       ui_file_delete (file);
     }
 }

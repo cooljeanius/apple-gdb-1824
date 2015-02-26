@@ -72,9 +72,9 @@ child_wait(int pid, struct target_waitstatus *status,
 #endif /* ATTR_NORETURN */
 }
 
-int child_xfer_memory
-  (CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
-   struct mem_attrib *attrib, struct target_ops *target)
+int ATTR_NORETURN
+child_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
+                  struct mem_attrib *attrib, struct target_ops *target)
 {
   internal_error(__FILE__, __LINE__,
                  "macosx_nat_inferior: unexpected call to child_xfer_memory()");

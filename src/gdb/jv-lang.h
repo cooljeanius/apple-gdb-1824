@@ -1,4 +1,4 @@
-/* Java language support definitions for GDB, the GNU debugger.
+/* jv-lang.h: Java language support definitions for GDB, the GNU debugger.
 
    Copyright 1997, 1998, 1999, 2000, 2005 Free Software Foundation,
    Inc.

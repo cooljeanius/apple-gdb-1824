@@ -909,10 +909,11 @@ macho_calculate_offsets_for_dsym (struct objfile *main_objfile,
 	       exe_sect != NULL && i < in_num_offsets;
 	       exe_sect = exe_sect->next, i++)
 	    {
-	      if (i > 0 && sym_sect != NULL)
+              struct bfd_section *sect;
+	      if ((i > 0) && (sym_sect != NULL))
 		sym_sect = sym_sect->next;
 
-	      struct bfd_section *sect = NULL;
+	      sect = NULL;
 	      if (sym_sect && strcmp (exe_sect->name, sym_sect->name) == 0)
 		sect = sym_sect;
 	      else

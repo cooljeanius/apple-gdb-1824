@@ -2713,35 +2713,35 @@ macosx_get_thread_name (ptid_t ptid)
   thread_t tid = ptid_get_tid (ptid);
   struct thread_info *tp;
 
-  buf[0] = '\0';
-  tp = find_thread_pid (ptid);
-  if (tp->private == NULL || tp->private->app_thread_port == 0)
-    return NULL;
-
   thread_identifier_info_data_t tident;
   unsigned int info_count;
   kern_return_t kret;
   struct proc_threadinfo pth;
   int retval;
 
+  buf[0] = '\0';
+  tp = find_thread_pid(ptid);
+  if ((tp->private == NULL) || (tp->private->app_thread_port == 0))
+    return NULL;
+
   info_count = THREAD_IDENTIFIER_INFO_COUNT;
-  kret = thread_info (tid, THREAD_IDENTIFIER_INFO, (thread_info_t) &tident,
-                      &info_count);
-  MACH_CHECK_ERROR (kret);
-  retval = proc_pidinfo (pid, PROC_PIDTHREADINFO, tident.thread_handle,
-                         &pth, sizeof (pth));
-  if (retval != 0 && pth.pth_name[0] != '\0')
+  kret = thread_info(tid, THREAD_IDENTIFIER_INFO, (thread_info_t)&tident,
+                     &info_count);
+  MACH_CHECK_ERROR(kret);
+  retval = proc_pidinfo(pid, PROC_PIDTHREADINFO, tident.thread_handle,
+                        &pth, sizeof(pth));
+  if ((retval != 0) && (pth.pth_name[0] != '\0'))
     {
-      strlcpy (buf, pth.pth_name, sizeof (buf));
+      strlcpy(buf, pth.pth_name, sizeof(buf));
     }
   else
     {
       if (tident.thread_handle)
         {
-          char *queue_name = get_dispatch_queue_name (tident.dispatch_qaddr);
-          if (queue_name && queue_name[0] != '\0')
+          char *queue_name = get_dispatch_queue_name(tident.dispatch_qaddr);
+          if (queue_name && (queue_name[0] != '\0'))
             {
-              strlcpy (buf, queue_name, sizeof (buf));
+              strlcpy(buf, queue_name, sizeof(buf));
             }
         }
     }

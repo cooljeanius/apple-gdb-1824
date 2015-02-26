@@ -3847,7 +3847,7 @@ show_shlib_path_substitutions_cmd (struct ui_file *file, int from_tty,
 }
 
 void
-_initialize_macosx_nat_dyld ()
+_initialize_macosx_nat_dyld(void)
 {
   macosx_dyld_thread_init (&macosx_dyld_status);
 

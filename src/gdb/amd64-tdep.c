@@ -1,4 +1,4 @@
-/* Target-dependent code for AMD64.
+/* amd64-tdep.c: Target-dependent code for AMD64.
 
    Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation,
    Inc.  Contributed by Jiri Smid, SuSE Labs.
@@ -46,18 +46,17 @@
    The latter is (forever) engraved into the canonical system name as
    returned by config.guess, and used as the name for the AMD64 port
    of GNU/Linux.  The BSD's have renamed their ports to amd64; they
-   don't like to shout.  For GDB we prefer the amd64_-prefix over the
-   x86_64_-prefix since it's so much easier to type.  */
+   do NOT like to shout.  For GDB we prefer the amd64_-prefix over the
+   x86_64_-prefix since it is so much easier to type.  */
 
-/* Register information.  */
-
+/* Register information: */
 struct amd64_register_info
 {
   char *name;
   struct type **type;
 };
 
-/* APPLE LOCAL: We'll compare this to NULL later on.  */
+/* APPLE LOCAL: We shall compare this to NULL later on: */
 static struct type *amd64_sse_type = NULL;
 
 static struct amd64_register_info const amd64_register_info[] =
@@ -127,16 +126,15 @@ static struct amd64_register_info const amd64_register_info[] =
   { "mxcsr", &builtin_type_int32 }
 };
 
-/* Total number of registers.  */
+/* Total number of registers: */
 #define AMD64_NUM_REGS \
-  (sizeof (amd64_register_info) / sizeof (amd64_register_info[0]))
+  (sizeof(amd64_register_info) / sizeof(amd64_register_info[0]))
 
-/* Return the name of register REGNUM.  */
-
+/* Return the name of register REGNUM: */
 static const char *
-amd64_register_name (int regnum)
+amd64_register_name(int regnum)
 {
-  if (regnum >= 0 && regnum < AMD64_NUM_REGS)
+  if ((regnum >= 0) && ((size_t)regnum < AMD64_NUM_REGS))
     return amd64_register_info[regnum].name;
 
   return NULL;
@@ -146,17 +144,17 @@ amd64_register_name (int regnum)
    register REGNUM. */
 
 static struct type *
-amd64_register_type (struct gdbarch *gdbarch, int regnum)
+amd64_register_type(struct gdbarch *gdbarch, int regnum)
 {
-  gdb_assert (regnum >= 0 && regnum < AMD64_NUM_REGS);
+  gdb_assert((regnum >= 0) && ((size_t)regnum < AMD64_NUM_REGS));
 
   /* APPLE LOCAL: This would more appropriately be done in
-     amd64_init_abi() but the type system isn't initialized far
-     enough for build_builtin_type_vec128i_big () to execute at
+     amd64_init_abi() but the type system is NOT initialized far
+     enough for build_builtin_type_vec128i_big() to execute at
      that point so we need to do it lazily here.  */
 
   if (amd64_sse_type == NULL)
-    amd64_sse_type = build_builtin_type_vec128i_big ();
+    amd64_sse_type = build_builtin_type_vec128i_big();
 
   return *amd64_register_info[regnum].type;
 }
@@ -604,14 +602,14 @@ amd64_return_value (struct gdbarch *gdbarch, struct type *type,
          byte order inside gdb so we need to unswap them before the
          ABI read/writes which assume the actual machine byte order.  */
 
-      if ((readbuf || writebuf) 
+      if ((readbuf || writebuf)
           && (regnum == sse_regnum[0] || regnum == sse_regnum[1]))
         {
           if (readbuf)
-	    swapped_regcache_raw_read_part (regcache, regnum, offset, 
+	    swapped_regcache_raw_read_part (regcache, regnum, offset,
                                     min (len, 8), readbuf + i * 8);
           if (writebuf)
-	    swapped_regcache_raw_write_part (regcache, regnum, offset, 
+	    swapped_regcache_raw_write_part (regcache, regnum, offset,
                                      min (len, 8), writebuf + i * 8);
           continue;
         }
@@ -685,11 +683,11 @@ amd64_push_arguments (struct regcache *regcache, int nargs,
 
       /* Check whether enough registers are available, and if the
          argument should be passed in registers at all.  */
-      if (integer_reg + needed_integer_regs > ARRAY_SIZE (integer_regnum)
-	  || sse_reg + needed_sse_regs > ARRAY_SIZE (sse_regnum)
-	  || (needed_integer_regs == 0 && needed_sse_regs == 0))
+      if (((size_t)(integer_reg + needed_integer_regs) > ARRAY_SIZE(integer_regnum))
+	  || ((size_t)(sse_reg + needed_sse_regs) > ARRAY_SIZE(sse_regnum))
+	  || ((needed_integer_regs == 0) && (needed_sse_regs == 0)))
 	{
-	  /* The argument will be passed on the stack.  */
+	  /* The argument will be passed on the stack: */
 	  num_elements += ((len + 7) / 8);
 	  stack_args[num_stack_args++] = args[i];
 	}
@@ -731,11 +729,11 @@ amd64_push_arguments (struct regcache *regcache, int nargs,
 	      memcpy (buf, valbuf + j * 8, min (len, 8));
 
               /* APPLE LOCAL: We keep the XMM registers in the "user's view"
-                 byte order inside gdb so we need to unswap them before the  
+                 byte order inside gdb so we need to unswap them before the
                  ABI read/writes which assume the actual machine byte order.  */
 
               if (class[j] == AMD64_SSE || class[j] == AMD64_SSEUP)
-	        swapped_regcache_raw_write_part (regcache, regnum, offset, 8, 
+	        swapped_regcache_raw_write_part (regcache, regnum, offset, 8,
                                                  buf);
               else
 	        regcache_raw_write_part (regcache, regnum, offset, 8, buf);
@@ -766,7 +764,7 @@ amd64_push_arguments (struct regcache *regcache, int nargs,
      containing ellipsis (...) in the declaration) %al is used as
      hidden argument to specify the number of SSE registers used.  */
   regcache_raw_write_unsigned (regcache, AMD64_RAX_REGNUM, sse_reg);
-  return sp; 
+  return sp;
 }
 
 static CORE_ADDR

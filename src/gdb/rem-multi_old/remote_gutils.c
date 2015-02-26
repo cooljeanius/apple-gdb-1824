@@ -224,7 +224,9 @@ void error(const char *string, int arg1, int arg2, int arg3)
   fflush(stdout);
   fprintf(stderr, "%s %i%i%i", string, arg1, arg2, arg3);
   fprintf(stderr, "\n");
-  /************return_to_top_level();************/
+#if 0
+  return_to_top_level();
+#endif /* 0 */
 }
 
 /* Print an error message and exit reporting failure.
@@ -232,7 +234,7 @@ void error(const char *string, int arg1, int arg2, int arg3)
  * STRING and ARG are passed to fprintf. */
 void fatal(const char *string, int arg)
 {
-  /*FIXME: move to variadic macros */
+  /*FIXME: move to variadic macros: */
   fprintf(stderr, "gdb: ");
   fprintf(stderr, "%s %i", string, arg);
   fprintf(stderr, "\n");
@@ -278,8 +280,10 @@ int query(char *ctlstr, int arg1, int arg2)
   register int answer;
 
   /* Automatically answer "yes" if input is not from a terminal. */
-  /***********if (!input_from_terminal_p())
-    return 1; *************************/
+#if 0
+  if (!input_from_terminal_p())
+    return 1;
+#endif /* 0 */
 
   while (1) {
       printf("%s %i%i", ctlstr, arg1, arg2);

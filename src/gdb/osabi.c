@@ -1,4 +1,4 @@
-/* OS ABI variant handling for GDB.
+/* osabi.c: OS ABI variant handling for GDB.
 
    Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
@@ -9,11 +9,11 @@
    the Free Software Foundation; either version 2 of the License, or
    (at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,  
+   This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-  
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place - Suite 330,
@@ -98,7 +98,7 @@ gdbarch_osabi_name (enum gdb_osabi osabi)
 
 /* Handler for a given architecture/OS ABI pair.  There should be only
    one handler for a given OS ABI each architecture family.  */
-struct gdb_osabi_handler  
+struct gdb_osabi_handler
 {
   struct gdb_osabi_handler *next;
   const struct bfd_arch_info *arch_info;
@@ -170,7 +170,7 @@ gdbarch_register_osabi (enum bfd_architecture arch, unsigned long machine,
 }
 
 
-/* Sniffer to find the OS ABI for a given file's architecture and flavour. 
+/* Sniffer to find the OS ABI for a given file's architecture and flavour.
    It is legal to have multiple sniffers for each arch/flavour pair, to
    disambiguate one OS's a.out from another, for example.  The first sniffer
    to return something other than GDB_OSABI_UNKNOWN wins, so a sniffer should
@@ -212,9 +212,9 @@ gdbarch_lookup_osabi (bfd *abfd)
   return gdbarch_lookup_osabi_from_bfd (abfd);
 }
 
-/* APPLE LOCAL: I factored out the part that just returns 
-   the user selected OSABI because sometimes you actually 
-   want to know what the ABI of THIS bfd is, so you can 
+/* APPLE LOCAL: I factored out the part that just returns
+   the user selected OSABI because sometimes you actually
+   want to know what the ABI of THIS bfd is, so you can
    see if it matches the one the user requested.  */
 
 enum gdb_osabi
@@ -226,7 +226,7 @@ gdbarch_lookup_osabi_from_bfd (bfd *abfd)
 
   /* If we don't have a binary, return the default OS ABI (if set) or
      an inconclusive result (otherwise).  */
-  if (abfd == NULL) 
+  if (abfd == NULL)
     {
       if (GDB_OSABI_DEFAULT != GDB_OSABI_UNKNOWN)
 	return GDB_OSABI_DEFAULT;
@@ -362,8 +362,8 @@ gdbarch_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
 #if defined (TARGET_ARM) && defined (TM_NEXTSTEP)
       /* APPLE LOCAL: This check doesn't work for darwin gdb setup on ARM:
 	 armv4 (-arch arm) binaries run on a armv6 system will work fine, but
-	 will load the armv6 side of any fat binaries they run across.  So 
-	 the user needs to be able to force the OSABI regardless of whether 
+	 will load the armv6 side of any fat binaries they run across.  So
+	 the user needs to be able to force the OSABI regardless of whether
 	 the armv6 code COULD run on a armv4 or not...  */
       (*handler->init_osabi) (info, gdbarch);
       return;
@@ -492,7 +492,7 @@ generic_elf_osabi_sniff_abi_tag_sections: unknown OS number %d"),
 
       return;
     }
-      
+
   /* .note.netbsd.ident notes, used by NetBSD.  */
   if (strcmp (name, ".note.netbsd.ident") == 0
       && check_note (abfd, sect, note, "NetBSD", 4, NT_NETBSD_IDENT))
@@ -566,9 +566,9 @@ generic_elf_osabi_sniffer (bfd *abfd)
          GNU/Linux).  We use HP-UX ELF as the default, but let any
          OS-specific notes override this.  */
       osabi = GDB_OSABI_HPUX_ELF;
-      bfd_map_over_sections (abfd,
-			     generic_elf_osabi_sniff_abi_tag_sections,
-			     &osabi);
+      bfd_map_over_sections(abfd,
+			    generic_elf_osabi_sniff_abi_tag_sections,
+			    &osabi);
       break;
     }
 
@@ -577,7 +577,7 @@ generic_elf_osabi_sniffer (bfd *abfd)
       /* The FreeBSD folks have been naughty; they stored the string
          "FreeBSD" in the padding of the e_ident field of the ELF
          header to "brand" their ELF binaries in FreeBSD 3.x.  */
-      if (strcmp (&elf_elfheader (abfd)->e_ident[8], "FreeBSD") == 0)
+      if (strcmp((const char *)&elf_elfheader(abfd)->e_ident[8], "FreeBSD") == 0)
 	osabi = GDB_OSABI_FREEBSD_ELF;
     }
 
@@ -646,8 +646,8 @@ set_osabi (char *args, int from_tty, struct cmd_list_element *c)
     internal_error (__FILE__, __LINE__, _("Updating OS ABI failed."));
 }
 
-/* APPLE LOCAL BEGIN: Set the osabi via option. 
-   This function wraps setting the osabi static string and calls the 
+/* APPLE LOCAL BEGIN: Set the osabi via option.
+   This function wraps setting the osabi static string and calls the
    set_osabi() function and makes a cleaner interface for external code
    to access.  */
 void

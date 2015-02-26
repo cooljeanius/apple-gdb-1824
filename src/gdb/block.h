@@ -55,6 +55,15 @@ struct address_range_list
 };
 /* APPLE LOCAL end address ranges  */
 
+/* temporary, until I am ready to deal with all of the fallout that would
+ * result from fixing these warnings in this header: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 /* All of the name-scope contours of the program
    are represented by `struct block' objects.
    All of these objects are pointed to by the blockvector.
@@ -143,6 +152,13 @@ struct block
 
   unsigned char gcc_compile_flag;
 };
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 #define BLOCK_START(bl)		(bl)->startaddr
 #define BLOCK_END(bl)		(bl)->endaddr

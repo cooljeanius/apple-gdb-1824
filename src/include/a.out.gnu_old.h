@@ -5,6 +5,7 @@
 #ifndef __A_OUT_GNU_H__
 #define __A_OUT_GNU_H__
 
+#include "ansidecl.h" /* for ENUM_BITFIELD() */
 #include "reloc_old.h" /* renamed from "reloc.h" */
 
 #define __GNU_EXEC_MACROS__ 1
@@ -33,16 +34,16 @@ struct exec
   unsigned long a_info;		/* Use macros N_MAGIC, etc for access */
   unsigned a_text;		/* length of text, in bytes */
   unsigned a_data;		/* length of data, in bytes */
-  unsigned a_bss;		/* length of uninitialized data area for file, in bytes */
+  unsigned a_bss; /* length of uninitialized data area for file in bytes */
   unsigned a_syms;		/* length of symbol table data in file, in bytes */
   unsigned a_entry;		/* start address */
-  unsigned a_trsize;		/* length of relocation info for text, in bytes */
-  unsigned a_drsize;		/* length of relocation info for data, in bytes */
+  unsigned a_trsize;	/* length of relocation info for text, in bytes */
+  unsigned a_drsize;	/* length of relocation info for data, in bytes */
 };
 #endif /* __STRUCT_EXEC_OVERRIDE__ */
 
 /* these go in the N_MACHTYPE field */
-/* These symbols could be defined by code from Suns...punt 'em */
+/* These symbols could be defined by code from Suns... punt them: */
 #undef M_UNKNOWN
 #undef M_68010
 #undef M_68020
@@ -52,7 +53,7 @@ enum machine_type {
   M_68010 = 1,
   M_68020 = 2,
   M_SPARC = 3,
-  /* skip a bunch so we don't run into any of sun's numbers */
+  /* skip a bunch so we do NOT run into any of sun's numbers */
   M_386 = 100,
   M_29K = 101,
   /* HP/BSD formats */
@@ -73,11 +74,11 @@ enum machine_type {
 
 #define N_SET_MACHTYPE(exec, machtype) \
 	((exec).a_info = \
-	 ((exec).a_info&0xff00ffff) | ((((int)(machtype))&0xff) << 16))
+	 ((exec).a_info & 0xff00ffff) | ((((int)(machtype)) & 0xff) << 16))
 
 #define N_SET_FLAGS(exec, flags) \
 	((exec).a_info = \
-	 ((exec).a_info&0x00ffffff) | (((flags) & 0xff) << 24))
+	 ((exec).a_info & 0x00ffffff) | (((flags) & 0xff) << 24))
 
 /* Code indicating object file or impure executable.  */
 #define OMAGIC 0407
@@ -91,31 +92,31 @@ enum machine_type {
    For linked files, should reflect reality if we know it.  */
 
 #ifndef N_TXTADDR
-#define N_TXTADDR(x)	(N_MAGIC(x)==OMAGIC? 0 : TEXT_START_ADDR)
-#endif
+# define N_TXTADDR(x)	((N_MAGIC(x) == OMAGIC) ? 0 : TEXT_START_ADDR)
+#endif /* !N_TXTADDR */
 
 #ifndef N_BADMAG
-#define N_BADMAG(x)	  (N_MAGIC(x) != OMAGIC		\
-			&& N_MAGIC(x) != NMAGIC		\
-  			&& N_MAGIC(x) != ZMAGIC)
-#endif
+# define N_BADMAG(x)	((N_MAGIC(x) != OMAGIC)		\
+			&& (N_MAGIC(x) != NMAGIC)		\
+  			&& (N_MAGIC(x) != ZMAGIC))
+#endif /* !N_BADMAG */
 
 /* By default, segment size is constant.  But on some machines, it can
    be a function of the a.out header (e.g. machine type).  */
 #ifndef	N_SEGSIZE
-#define	N_SEGSIZE(x)	SEGMENT_SIZE
-#endif
+# define N_SEGSIZE(x)	SEGMENT_SIZE
+#endif /* !N_SEGSIZE */
 
 /* This complexity is for encapsulated COFF support: */
 #ifndef _N_HDROFF
-#define _N_HDROFF(x)	(N_SEGSIZE(x) - sizeof (struct exec))
-#endif
+# define _N_HDROFF(x)	(N_SEGSIZE(x) - sizeof(struct exec))
+#endif /* !_N_HDROFF */
 
 #ifndef N_TXTOFF
-#define N_TXTOFF(x)	(N_MAGIC(x) == ZMAGIC ?	\
-				_N_HDROFF((x)) + sizeof (struct exec) :	\
-				sizeof (struct exec))
-#endif
+# define N_TXTOFF(x) ((N_MAGIC(x) == ZMAGIC) ?	\
+				(_N_HDROFF((x)) + sizeof(struct exec)) : \
+				sizeof(struct exec))
+#endif /* !N_TXTOFF */
 
 
 #ifndef N_DATOFF
@@ -144,10 +145,10 @@ enum machine_type {
 #endif /* !N_TXTADDR */
 
 #ifndef N_DATADDR
-#define N_DATADDR(x) \
-    (N_MAGIC(x)==OMAGIC? (N_TXTADDR(x)+(x).a_text) \
-     :  (N_SEGSIZE(x) + ((N_TXTADDR(x)+(x).a_text-1) & ~(N_SEGSIZE(x)-1))))
-#endif
+# define N_DATADDR(x) \
+     (N_MAGIC(x)==OMAGIC? (N_TXTADDR(x)+(x).a_text) \
+      :  (N_SEGSIZE(x) + ((N_TXTADDR(x)+(x).a_text-1) & ~(N_SEGSIZE(x)-1))))
+#endif /* !N_DATADDR */
 
 /* Address of bss segment in memory after it is loaded.  */
 #define N_BSSADDR(x) (N_DATADDR(x) + (x).a_data)
@@ -242,7 +243,7 @@ struct reloc_info_extended
 # define	r_symbolnum  r_index
   unsigned	r_extern:1;
   unsigned	:2;
-  enum reloc_type r_type:5;
+  ENUM_BITFIELD(reloc_type) r_type:6; /* '5' is too narrow for the type */
   long int	r_addend;
 };
 
@@ -312,3 +313,5 @@ struct relocation_info
 };
 
 #endif /* __A_OUT_GNU_H__ */
+
+/* EOF */

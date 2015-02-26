@@ -1290,6 +1290,15 @@ extern void target_preopen (int);
 
 extern void pop_target (void);
 
+/* temporary, until I am ready to deal with all of the fallout that would
+ * result from fixing these warnings in this header: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 /* Struct section_table maps address ranges to file sections.  It is
    mostly used with BFD files, but can be used without (e.g. for handling
    raw disks, or files not in formats handled by BFD).  */
@@ -1303,6 +1312,13 @@ struct section_table
 
     bfd *bfd;			/* BFD file pointer */
   };
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 /* Return the "section" containing the specified address.  */
 struct section_table *target_section_by_addr (struct target_ops *target,

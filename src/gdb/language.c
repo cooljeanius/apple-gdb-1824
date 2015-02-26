@@ -1,4 +1,4 @@
-/* Multiple source language support for GDB.
+/* language.c: Multiple source language support for GDB.
 
    Copyright 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000,
    2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
@@ -150,7 +150,7 @@ show_language_command (struct ui_file *file, int from_tty,
 static void
 set_language_command (char *ignore, int from_tty, struct cmd_list_element *c)
 {
-  int i;
+  unsigned i;
   enum language flang;
   char *err_lang;
 
@@ -160,7 +160,7 @@ set_language_command (char *ignore, int from_tty, struct cmd_list_element *c)
 The currently understood settings are:\n\n\
 local or auto    Automatic setting based on source file\n"));
 
-      for (i = 0; i < languages_size; ++i)
+      for (i = 0U; i < languages_size; ++i)
 	{
 	  /* Already dealt with these above.  */
 	  if (languages[i]->la_language == language_unknown
@@ -210,7 +210,7 @@ local or auto    Automatic setting based on source file\n"));
 	}
     }
 
-  /* Reset the language (esp. the global string "language") to the 
+  /* Reset the language (esp. the global string "language") to the
      correct values. */
   err_lang = savestring (language, strlen (language));
   make_cleanup (xfree, err_lang);	/* Free it after error */
@@ -1025,7 +1025,7 @@ add_language (const struct language_defn *lang)
    any non-NULL struct language_defn.skip_trampoline() functions.
    Return the result from the first that returns non-zero, or 0 if all
    `fail'.  */
-CORE_ADDR 
+CORE_ADDR
 skip_language_trampoline (CORE_ADDR pc)
 {
   int i;
@@ -1043,14 +1043,14 @@ skip_language_trampoline (CORE_ADDR pc)
   return 0;
 }
 
-/* Return demangled language symbol, or NULL.  
+/* Return demangled language symbol, or NULL.
    FIXME: Options are only useful for certain languages and ignored
    by others, so it would be better to remove them here and have a
-   more flexible demangler for the languages that need it.  
+   more flexible demangler for the languages that need it.
    FIXME: Sometimes the demangler is invoked when we don't know the
    language, so we can't use this everywhere.  */
 char *
-language_demangle (const struct language_defn *current_language, 
+language_demangle (const struct language_defn *current_language,
 				const char *mangled, int options)
 {
   if (current_language != NULL && current_language->la_demangle)

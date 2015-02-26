@@ -211,36 +211,35 @@ dwarf2_frame_state_free_regs (struct dwarf2_frame_state_reg_info *rs)
     }
 }
 
-/* Release the memory allocated to the frame state FS.  */
-
+/* Release the memory allocated to the frame state FS: */
 static void
 dwarf2_frame_state_free (void *p)
 {
   struct dwarf2_frame_state *fs = p;
 
-  dwarf2_frame_state_free_regs (fs->initial.prev);
-  dwarf2_frame_state_free_regs (fs->regs.prev);
-  xfree (fs->initial.reg);
-  xfree (fs->regs.reg);
-  xfree (fs);
+  dwarf2_frame_state_free_regs(fs->initial.prev);
+  dwarf2_frame_state_free_regs(fs->regs.prev);
+  xfree(fs->initial.reg);
+  xfree(fs->regs.reg);
+  xfree(fs);
 }
 
 
-/* Helper functions for execute_stack_op.  */
-
+/* Helper functions for execute_stack_op: */
 static CORE_ADDR
-read_reg (void *baton, int reg)
+read_reg(void *baton, int reg)
 {
-  struct frame_info *next_frame = (struct frame_info *) baton;
-  struct gdbarch *gdbarch = get_frame_arch (next_frame);
+  struct frame_info *next_frame = (struct frame_info *)baton;
+  struct gdbarch *gdbarch = get_frame_arch(next_frame);
   int regnum;
   gdb_byte *buf;
+  int regsize;
 
-  regnum = gdbarch_dwarf2_reg_to_regnum (current_gdbarch, reg);
-  int regsize = register_size (current_gdbarch, regnum);
+  regnum = gdbarch_dwarf2_reg_to_regnum(current_gdbarch, reg);
+  regsize = register_size(current_gdbarch, regnum);
 
-  buf = alloca (register_size (gdbarch, regnum));
-  frame_unwind_register (next_frame, regnum, buf);
+  buf = alloca(register_size(gdbarch, regnum));
+  frame_unwind_register(next_frame, regnum, buf);
 
   /* Convert the register to an integer.  This returns a LONGEST
      rather than a CORE_ADDR, but unpack_pointer does the same thing
@@ -248,9 +247,9 @@ read_reg (void *baton, int reg)
      registers.  Maybe read_reg and the associated interfaces should
      deal with "struct value" instead of CORE_ADDR.  */
 
-  /* APPLE LOCAL: Don't use unpack_long or we'll get sign extension on 
+  /* APPLE LOCAL: Don't use unpack_long or we'll get sign extension on
      addresses and it'll cause us all sorts of problems when debugging
-     32-bit programs with our 64-bit CORE_ADDRs.  I think Andrew was 
+     32-bit programs with our 64-bit CORE_ADDRs.  I think Andrew was
      wrong to use unpack_long here.  */
   return extract_unsigned_integer (buf, regsize);
 }
@@ -338,7 +337,7 @@ execute_cfa_program (gdb_byte *insn_ptr, gdb_byte *insn_end,
 	  dwarf2_frame_state_alloc_regs (&fs->regs, reg + 1);
 	  if (reg < fs->initial.num_regs)
 	    fs->regs.reg[reg] = fs->initial.reg[reg];
-	  else 
+	  else
 	    fs->regs.reg[reg].how = DWARF2_FRAME_REG_UNSPECIFIED;
 
 	  if (fs->regs.reg[reg].how == DWARF2_FRAME_REG_UNSPECIFIED)
@@ -451,7 +450,7 @@ bad CFI data; mismatched DW_CFA_restore_state at 0x%s"), paddr (fs->pc));
 	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &fs->cfa_reg);
 	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &utmp);
 
-              /* APPLE LOCAL: Don't forget to translate the CFA register 
+              /* APPLE LOCAL: Don't forget to translate the CFA register
                  number... */
               fs->cfa_reg = dwarf2_frame_adjust_regnum (gdbarch, fs->cfa_reg,
                                                         eh_frame_p);
@@ -672,7 +671,7 @@ static void *
 dwarf2_frame_init (struct obstack *obstack)
 {
   struct dwarf2_frame_ops *ops;
-  
+
   ops = OBSTACK_ZALLOC (obstack, struct dwarf2_frame_ops);
   ops->init_reg = dwarf2_frame_default_init_reg;
   return ops;
@@ -808,7 +807,7 @@ dwarf2_frame_cache (struct frame_info *next_frame, void **this_cache)
   struct cleanup *old_chain;
   struct gdbarch *gdbarch = get_frame_arch (next_frame);
 
-  /* APPLE LOCAL: We should really use something like 
+  /* APPLE LOCAL: We should really use something like
      gdbarch_num_dwarf_registers here.  gdb may know about additional
      registers that don't have code points in DWARF, e.g. on x86-64
      we have things like fstat, ftag, fiseg, fioff, foseg, fooff, etc.,
@@ -892,7 +891,7 @@ dwarf2_frame_cache (struct frame_info *next_frame, void **this_cache)
 
     case CFA_EXP:
       cache->cfa =
-	execute_stack_op (fs->cfa_exp, fs->cfa_exp_len, next_frame, 0, 
+	execute_stack_op (fs->cfa_exp, fs->cfa_exp_len, next_frame, 0,
                           fde->eh_frame_p);
       break;
 
@@ -1410,7 +1409,7 @@ read_initial_length (bfd *abfd, gdb_byte *buf, unsigned int *bytes_read_ptr)
    way.  Several "pointer encodings" are supported.  The encoding
    that's used for a particular FDE is determined by the 'R'
    augmentation in the associated CIE.  The argument of this
-   augmentation is a single byte.  
+   augmentation is a single byte.
 
    The address can be encoded as 2 bytes, 4 bytes, 8 bytes, or as a
    LEB128.  This is encoded in bits 0, 1 and 2.  Bit 3 encodes whether
@@ -1467,7 +1466,7 @@ read_encoded_value (struct comp_unit *unit, gdb_byte encoding,
   /* GCC currently doesn't generate DW_EH_PE_indirect encodings for
      FDE's.  */
   if (encoding & DW_EH_PE_indirect)
-    internal_error (__FILE__, __LINE__, 
+    internal_error (__FILE__, __LINE__,
 		    _("Unsupported encoding: DW_EH_PE_indirect"));
 
   *bytes_read_ptr = 0;
@@ -1917,7 +1916,7 @@ decode_frame_entry (struct comp_unit *unit, gdb_byte *start, int eh_frame_p)
 
 	 This becomes a problem when you have some other producer that
 	 creates frame sections that are not as strictly aligned.  That
-	 produces a hole in the frame info that gets filled by the 
+	 produces a hole in the frame info that gets filled by the
 	 linker with zeros.
 
 	 The GCC behaviour is arguably a bug, but it's effectively now

@@ -222,7 +222,7 @@ int set_trust_readonly (int newval)
 }
 
 /* set_trust_readonly() takes an int but the cleanup func must take a void*
-   so we use this trampoline func to avoid sizeof int == sizeof void* 
+   so we use this trampoline func to avoid sizeof int == sizeof void*
    confusions.  */
 void
 set_trust_readonly_cleanup (void *new)
@@ -528,7 +528,7 @@ update_current_target (void)
       INHERIT (to_save_thread_inferior_status, t);
       INHERIT (to_restore_thread_inferior_status, t);
       INHERIT (to_free_thread_inferior_status, t);
-      
+
       INHERIT (to_magic, t);
     }
 #undef INHERIT
@@ -541,48 +541,48 @@ update_current_target (void)
   if (!current_target.field)               \
     current_target.field = value
 
-  de_fault (to_open, 
-	    (void (*) (char *, int)) 
+  de_fault (to_open,
+	    (void (*) (char *, int))
 	    tcomplain);
-  de_fault (to_close, 
-	    (void (*) (int)) 
+  de_fault (to_close,
+	    (void (*) (int))
 	    target_ignore);
-  de_fault (to_attach, 
+  de_fault (to_attach,
 	    maybe_kill_then_attach);
-  de_fault (to_post_attach, 
-	    (void (*) (int)) 
+  de_fault (to_post_attach,
+	    (void (*) (int))
 	    target_ignore);
-  de_fault (to_detach, 
-	    (void (*) (char *, int)) 
+  de_fault (to_detach,
+	    (void (*) (char *, int))
 	    target_ignore);
-  de_fault (to_disconnect, 
-	    (void (*) (char *, int)) 
+  de_fault (to_disconnect,
+	    (void (*) (char *, int))
 	    tcomplain);
-  de_fault (to_resume, 
-	    (void (*) (ptid_t, int, enum target_signal)) 
+  de_fault (to_resume,
+	    (void (*) (ptid_t, int, enum target_signal))
 	    noprocess);
-  de_fault (to_wait, 
+  de_fault (to_wait,
 	    /* APPLE LOCAL gdb client data */
-	    (ptid_t (*) (ptid_t, struct target_waitstatus *, gdb_client_data client_data)) 
+	    (ptid_t (*) (ptid_t, struct target_waitstatus *, gdb_client_data client_data))
 	    noprocess);
-  de_fault (to_fetch_registers, 
-	    (void (*) (int)) 
+  de_fault (to_fetch_registers,
+	    (void (*) (int))
 	    target_ignore);
-  de_fault (to_store_registers, 
-	    (void (*) (int)) 
+  de_fault (to_store_registers,
+	    (void (*) (int))
 	    noprocess);
-  de_fault (to_prepare_to_store, 
-	    (void (*) (void)) 
+  de_fault (to_prepare_to_store,
+	    (void (*) (void))
 	    noprocess);
-  de_fault (deprecated_xfer_memory, 
-	    (int (*) (CORE_ADDR, gdb_byte *, int, int, struct mem_attrib *, struct target_ops *)) 
+  de_fault (deprecated_xfer_memory,
+	    (int (*) (CORE_ADDR, gdb_byte *, int, int, struct mem_attrib *, struct target_ops *))
 	    nomemory);
-  de_fault (to_files_info, 
-	    (void (*) (struct target_ops *)) 
+  de_fault (to_files_info,
+	    (void (*) (struct target_ops *))
 	    target_ignore);
-  de_fault (to_insert_breakpoint, 
+  de_fault (to_insert_breakpoint,
 	    memory_insert_breakpoint);
-  de_fault (to_remove_breakpoint, 
+  de_fault (to_remove_breakpoint,
 	    memory_remove_breakpoint);
   de_fault (to_can_use_hw_breakpoint,
 	    (int (*) (int, int, int))
@@ -607,114 +607,114 @@ update_current_target (void)
 	    return_zero);
   de_fault (to_region_size_ok_for_hw_watchpoint,
 	    default_region_size_ok_for_hw_watchpoint);
-  de_fault (to_terminal_init, 
-	    (void (*) (void)) 
+  de_fault (to_terminal_init,
+	    (void (*) (void))
 	    target_ignore);
-  de_fault (to_terminal_inferior, 
-	    (void (*) (void)) 
+  de_fault (to_terminal_inferior,
+	    (void (*) (void))
 	    target_ignore);
-  de_fault (to_terminal_ours_for_output, 
-	    (void (*) (void)) 
+  de_fault (to_terminal_ours_for_output,
+	    (void (*) (void))
 	    target_ignore);
-  de_fault (to_terminal_ours, 
-	    (void (*) (void)) 
+  de_fault (to_terminal_ours,
+	    (void (*) (void))
 	    target_ignore);
-  de_fault (to_terminal_save_ours, 
-	    (void (*) (void)) 
+  de_fault (to_terminal_save_ours,
+	    (void (*) (void))
 	    target_ignore);
-  de_fault (to_terminal_info, 
+  de_fault (to_terminal_info,
 	    default_terminal_info);
-  de_fault (to_kill, 
-	    (void (*) (void)) 
+  de_fault (to_kill,
+	    (void (*) (void))
 	    noprocess);
-  de_fault (to_load, 
-	    (void (*) (char *, int)) 
+  de_fault (to_load,
+	    (void (*) (char *, int))
 	    tcomplain);
-  de_fault (to_lookup_symbol, 
-	    (int (*) (char *, CORE_ADDR *)) 
+  de_fault (to_lookup_symbol,
+	    (int (*) (char *, CORE_ADDR *))
 	    nosymbol);
-  de_fault (to_create_inferior, 
+  de_fault (to_create_inferior,
 	    maybe_kill_then_create_inferior);
-  de_fault (to_post_startup_inferior, 
-	    (void (*) (ptid_t)) 
+  de_fault (to_post_startup_inferior,
+	    (void (*) (ptid_t))
 	    target_ignore);
-  de_fault (to_acknowledge_created_inferior, 
-	    (void (*) (int)) 
+  de_fault (to_acknowledge_created_inferior,
+	    (void (*) (int))
 	    target_ignore);
-  de_fault (to_insert_fork_catchpoint, 
-	    (void (*) (int)) 
+  de_fault (to_insert_fork_catchpoint,
+	    (void (*) (int))
 	    tcomplain);
-  de_fault (to_remove_fork_catchpoint, 
-	    (int (*) (int)) 
+  de_fault (to_remove_fork_catchpoint,
+	    (int (*) (int))
 	    tcomplain);
-  de_fault (to_insert_vfork_catchpoint, 
-	    (void (*) (int)) 
+  de_fault (to_insert_vfork_catchpoint,
+	    (void (*) (int))
 	    tcomplain);
-  de_fault (to_remove_vfork_catchpoint, 
-	    (int (*) (int)) 
+  de_fault (to_remove_vfork_catchpoint,
+	    (int (*) (int))
 	    tcomplain);
   de_fault (to_follow_fork,
-	    (int (*) (int)) 
+	    (int (*) (int))
 	    target_ignore);
-  de_fault (to_insert_exec_catchpoint, 
-	    (void (*) (int)) 
+  de_fault (to_insert_exec_catchpoint,
+	    (void (*) (int))
 	    tcomplain);
-  de_fault (to_remove_exec_catchpoint, 
-	    (int (*) (int)) 
+  de_fault (to_remove_exec_catchpoint,
+	    (int (*) (int))
 	    tcomplain);
-  de_fault (to_reported_exec_events_per_exec_call, 
-	    (int (*) (void)) 
+  de_fault (to_reported_exec_events_per_exec_call,
+	    (int (*) (void))
 	    return_one);
-  de_fault (to_has_exited, 
-	    (int (*) (int, int, int *)) 
+  de_fault (to_has_exited,
+	    (int (*) (int, int, int *))
 	    return_zero);
-  de_fault (to_mourn_inferior, 
-	    (void (*) (void)) 
+  de_fault (to_mourn_inferior,
+	    (void (*) (void))
 	    noprocess);
-  de_fault (to_can_run, 
+  de_fault (to_can_run,
 	    return_zero);
-  de_fault (to_notice_signals, 
-	    (void (*) (ptid_t)) 
+  de_fault (to_notice_signals,
+	    (void (*) (ptid_t))
 	    target_ignore);
-  de_fault (to_thread_alive, 
-	    (int (*) (ptid_t)) 
+  de_fault (to_thread_alive,
+	    (int (*) (ptid_t))
 	    return_zero);
-  de_fault (to_find_new_threads, 
-	    (void (*) (void)) 
+  de_fault (to_find_new_threads,
+	    (void (*) (void))
 	    target_ignore);
-  de_fault (to_extra_thread_info, 
-	    (char *(*) (struct thread_info *)) 
+  de_fault (to_extra_thread_info,
+	    (char *(*) (struct thread_info *))
 	    return_zero);
-  de_fault (to_stop, 
-	    (void (*) (void)) 
+  de_fault (to_stop,
+	    (void (*) (void))
 	    target_ignore);
   current_target.to_xfer_partial = default_xfer_partial;
-  de_fault (to_rcmd, 
-	    (void (*) (char *, struct ui_file *)) 
+  de_fault (to_rcmd,
+	    (void (*) (char *, struct ui_file *))
 	    tcomplain);
-  de_fault (to_enable_exception_callback, 
+  de_fault (to_enable_exception_callback,
 	    /* APPLE LOCAL return int */
-	    (int (*) (enum exception_event_kind, int)) 
+	    (int (*) (enum exception_event_kind, int))
 	    nosupport_runtime);
   /* APPLE LOCAL begin exception catchpoints */
-  de_fault (to_find_exception_catchpoints, 
-	    (struct symtabs_and_lines * (*) (enum exception_event_kind, struct objfile *)) 
+  de_fault (to_find_exception_catchpoints,
+	    (struct symtabs_and_lines * (*) (enum exception_event_kind, struct objfile *))
 	    nosupport_runtime);
   /* APPLE LOCAL end exception catchpoints */
-  de_fault (to_get_current_exception_event, 
-	    (struct exception_event_record * (*) (void)) 
+  de_fault (to_get_current_exception_event,
+	    (struct exception_event_record * (*) (void))
 	    nosupport_runtime);
-  de_fault (to_pid_to_exec_file, 
-	    (char *(*) (int)) 
+  de_fault (to_pid_to_exec_file,
+	    (char *(*) (int))
 	    return_zero);
-  de_fault (to_can_async_p, 
-	    (int (*) (void)) 
+  de_fault (to_can_async_p,
+	    (int (*) (void))
 	    return_zero);
-  de_fault (to_is_async_p, 
-	    (int (*) (void)) 
+  de_fault (to_is_async_p,
+	    (int (*) (void))
 	    return_zero);
-  de_fault (to_async, 
-	    (void (*) (void (*) (enum inferior_event_type, void*), void*)) 
+  de_fault (to_async,
+	    (void (*) (void (*) (enum inferior_event_type, void*), void*))
 	    target_ignore);
   /* APPLE LOCAL begin target */
   de_fault (to_pid_to_str,
@@ -740,7 +740,7 @@ update_current_target (void)
   de_fault (to_load_solib, (struct value * (*) (char *, char *)) return_zero);
   /* APPLE LOCAL complex step support.  */
   de_fault (to_keep_going, (int (*) (CORE_ADDR)) return_zero);
-  
+
   /* APPLE LOCAL target specific inferior_status support.  */
   de_fault (to_save_thread_inferior_status, (void *(*)()) return_zero);
   de_fault (to_restore_thread_inferior_status, (void (*)(void *)) target_ignore);
@@ -755,9 +755,9 @@ update_current_target (void)
   current_target.beneath = target_stack;
 
   /* APPLE LOCAL: Some data values seem to have crept into the target
-     structure.  But the inherit method doesn't work for data values, 
-     since there is no way to say a target layer doesn't provide the 
-     value.  So we will pull them off the top target...  
+     structure.  But the inherit method doesn't work for data values,
+     since there is no way to say a target layer doesn't provide the
+     value.  So we will pull them off the top target...
      FIXME: So far I have only done it for async_mask_value (the only
      one I care about at present.  Go back & check all the others as well.  */
 
@@ -823,7 +823,7 @@ push_target (struct target_ops *t)
 
   update_current_target ();
 
-  /* APPLE LOCAL: Don't call setup_target_debug() here -- do it in 
+  /* APPLE LOCAL: Don't call setup_target_debug() here -- do it in
      update_current_target().  It's important that setup_target_debug()
      not be called twice or gdb will infiloop in debug target mode.  */
 
@@ -978,7 +978,7 @@ target_section_by_addr (struct target_ops *target, CORE_ADDR addr)
    value are just as for target_xfer_partial.  */
 
 static LONGEST
-memory_xfer_partial (struct target_ops *ops, void *readbuf, 
+memory_xfer_partial (struct target_ops *ops, void *readbuf,
                      const void *writebuf, ULONGEST memaddr, LONGEST len)
 {
   LONGEST res;
@@ -1230,7 +1230,7 @@ Mode for reading from readonly sections is %s.\n"),
 
 static LONGEST
 default_xfer_partial (struct target_ops *ops, enum target_object object,
-		      const char *annex, gdb_byte *readbuf, 
+		      const char *annex, gdb_byte *readbuf,
 		      const gdb_byte *writebuf, ULONGEST offset, LONGEST len)
 {
   if (object == TARGET_OBJECT_MEMORY
@@ -1465,7 +1465,7 @@ target_kill (void)
 void
 target_detach (char *args, int from_tty)
 {
-  /* Make sure to turn off debugger mode - 
+  /* Make sure to turn off debugger mode -
      we will let the target run a bit before killing it.  */
   do_hand_call_cleanups (ALL_CLEANUPS);
   (current_target.to_detach) (args, from_tty);
@@ -1494,7 +1494,7 @@ gdb_set_async_override (void *on)
 
 /* do_restore_target_async_mask is a convenience function to use
    in make_cleanup to restore the state of the async mask. */
- 
+
 void
 do_restore_target_async_mask (int mask)
 {
@@ -1806,13 +1806,13 @@ normal_pid_to_str (ptid_t ptid)
 }
 
 
-static struct disassemble_info gdb_disassemble_info_noprint 
+static struct disassemble_info gdb_disassemble_info_noprint
                               (struct gdbarch *gdbarch, struct ui_file *file);
 int length_of_this_instruction (CORE_ADDR memaddr);
 
 /* Like target_read_memory, but slightly different parameters.  */
 static int
-dis_asm_read_memory_noprint (bfd_vma memaddr, gdb_byte *myaddr, 
+dis_asm_read_memory_noprint (bfd_vma memaddr, gdb_byte *myaddr,
                              unsigned int len, struct disassemble_info *info)
 {
   return target_read_memory (memaddr, myaddr, len);
@@ -1857,13 +1857,13 @@ gdb_disassemble_info_noprint (struct gdbarch *gdbarch, struct ui_file *file)
   return di;
 }
 
-int 
+int
 length_of_this_instruction (CORE_ADDR memaddr)
 {
   static struct ui_stream *stb = NULL;
   if (stb == NULL)
-    stb = ui_out_stream_new (uiout); 
-  struct disassemble_info di = gdb_disassemble_info_noprint (current_gdbarch, 
+    stb = ui_out_stream_new (uiout);
+  struct disassemble_info di = gdb_disassemble_info_noprint (current_gdbarch,
                                                             stb->stream);
   return TARGET_PRINT_INSN (memaddr, &di);
 }
@@ -2602,7 +2602,7 @@ debug_to_pid_to_exec_file (int pid)
   fprintf_unfiltered (gdb_stdlog, "target_pid_to_exec_file (%d) = %s\n",
 		      /* APPLE LOCAL null exec file */
 		      pid, exec_file ? exec_file : "[NULL]");
- 
+
   return exec_file;
 }
 
@@ -2625,14 +2625,14 @@ debug_check_is_objfile_loaded (struct objfile *objfile)
 static struct value *
 debug_load_solib (char *path, char *flags)
 {
-  struct value *retval = debug_target.to_load_solib (path, flags);
+  struct value *retval = debug_target.to_load_solib(path, flags);
 
   if (path == NULL)
-    fprintf_unfiltered (gdb_stdlog, "load_solib (NULL) == 0x%s\n", 
-			paddr_nz (value_as_address (retval)));
+    fprintf_unfiltered(gdb_stdlog, "load_solib (NULL) == 0x%s\n",
+                       paddr_nz(value_as_address(retval)));
   else if (path)
-    fprintf_unfiltered (gdb_stdlog, "load_solib (\"%s\",\"%s\") == 0x%s\n", path, flags,
-			paddr_nz (value_as_address (retval)));
+    fprintf_unfiltered(gdb_stdlog, "load_solib (\"%s\",\"%s\") == 0x%s\n", path, flags,
+                       paddr_nz(value_as_address(retval)));
 
   return retval;
 }
@@ -2640,25 +2640,25 @@ debug_load_solib (char *path, char *flags)
 
 /* APPLE LOCAL complex step support.  */
 static int
-debug_keep_going (CORE_ADDR stop_pc)
+debug_keep_going(CORE_ADDR stop_pc)
 {
-  int retval = debug_target.to_keep_going (stop_pc);
+  int retval = debug_target.to_keep_going(stop_pc);
 
-  fprintf_unfiltered (gdb_stdlog, "target_keep_going (0x%s) == %d\n", 
-		      paddr (stop_pc), retval);
+  fprintf_unfiltered(gdb_stdlog, "target_keep_going (0x%s) == %d\n",
+		     paddr(stop_pc), retval);
   return retval;
 
 }
 
-/* APPLE LOCAL target specific inferior_status support.  */
+/* APPLE LOCAL target specific inferior_status support: */
 static void *
-debug_save_thread_inferior_status ()
+debug_save_thread_inferior_status(void)
 {
-  void *retval = debug_target.to_save_thread_inferior_status ();
+  void *retval = debug_target.to_save_thread_inferior_status();
 
-  fprintf_unfiltered (gdb_stdlog, 
-		      "target_save_thread_inferior_status () == %p\n", 
-		      retval);
+  fprintf_unfiltered(gdb_stdlog,
+		     "target_save_thread_inferior_status() == %p\n",
+		     retval);
   return retval;
 
 }
@@ -2667,7 +2667,7 @@ debug_restore_thread_inferior_status (void *p)
 {
   debug_target.to_restore_thread_inferior_status (p);
 
-  fprintf_unfiltered (gdb_stdlog, 
+  fprintf_unfiltered (gdb_stdlog,
 		      "target_restore_thread_inferior_status (%p)\n", p);
 
 }
@@ -2677,7 +2677,7 @@ debug_free_thread_inferior_status (void *p)
 {
   debug_target.to_free_thread_inferior_status (p);
 
-  fprintf_unfiltered (gdb_stdlog, 
+  fprintf_unfiltered (gdb_stdlog,
 		      "target_free_thread_inferior_status (%p)\n", p);
 
 }
@@ -2746,11 +2746,11 @@ setup_target_debug (void)
   current_target.to_restore_thread_inferior_status = debug_restore_thread_inferior_status;
   current_target.to_free_thread_inferior_status = debug_free_thread_inferior_status;
   current_target.to_rcmd = debug_to_rcmd;
-  current_target.to_find_exception_catchpoints 
+  current_target.to_find_exception_catchpoints
     = debug_to_find_exception_catchpoints;
-  current_target.to_enable_exception_callback 
+  current_target.to_enable_exception_callback
     = debug_to_enable_exception_callback;
-  current_target.to_get_current_exception_event 
+  current_target.to_get_current_exception_event
     = debug_to_get_current_exception_event;
   current_target.to_pid_to_exec_file = debug_to_pid_to_exec_file;
 

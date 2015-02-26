@@ -1,9 +1,9 @@
-/* Multi-process/thread control defs for GDB, the GNU debugger.
+/* gdbthread.h: Multiprocess/thread control defs for GDB, the GNU debugger.
    Copyright 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1997, 1998, 1999,
    2000
    Free Software Foundation, Inc.
    Contributed by Lynx Real-Time Systems, Inc.  Los Gatos, CA.
-   
+
 
    This file is part of GDB.
 
@@ -37,11 +37,20 @@ struct symtab;
 
 #include "inlining.h"
 
+/* temporary, until I am ready to deal with all of the fallout that would
+ * result from fixing these warnings in this header: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 struct thread_info
 {
   struct thread_info *next;
   ptid_t ptid;			/* "Actual process id";
-				    In fact, this may be overloaded with 
+				    In fact, this may be overloaded with
 				    kernel thread id, etc.  */
   int num;			/* Convenient handle (GDB thread id) */
   /* State from wait_for_inferior */
@@ -57,7 +66,7 @@ struct thread_info
   /* APPLE LOCAL end remember stepping into inlined subroutine across
      intervening function calls.  */
   /* APPLE LOCAL begin step ranges.  */
-  /* The following is used in a manner similar to step_range_start 
+  /* The following is used in a manner similar to step_range_start
      and step_range_end, in those cases (currently inlined subroutines)
      where the function has multiple, non-contiguous ranges of addresses.  */
   struct address_range_list *stepping_ranges;
@@ -86,6 +95,13 @@ struct thread_info
   struct inlined_function_data *thread_inlined_call_stack;
 };
 
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 /* APPLE LOCAL begin threads */
 extern struct thread_info *thread_list;
 extern int highest_thread_num;
@@ -112,7 +128,7 @@ extern void delete_step_resume_breakpoint (void *);
    into a "pid" (which may be overloaded with extra thread information).  */
 extern ptid_t thread_id_to_pid (int);
 
-/* Translate a 'pid' (which may be overloaded with extra thread information) 
+/* Translate a 'pid' (which may be overloaded with extra thread information)
    into the integer thread id (GDB's homegrown id, not the system's).  */
 extern int pid_to_thread_id (ptid_t ptid);
 
@@ -120,7 +136,7 @@ extern int pid_to_thread_id (ptid_t ptid);
    extra thread information).  */
 extern int in_thread_list (ptid_t ptid);
 
-/* Boolean test for an already-known thread id (GDB's homegrown id, 
+/* Boolean test for an already-known thread id (GDB's homegrown id,
    not the system's).  */
 extern int valid_thread_id (int thread);
 

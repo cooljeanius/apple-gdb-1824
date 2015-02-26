@@ -42,19 +42,18 @@
 static FILE *sigthread_stderr_re = NULL;
 static int sigthread_debugflag = 0;
 
-/* A re-entrant version for use by the signal handling thread */
-
+/* A re-entrant version for use by the signal handling thread: */
 void
-sigthread_debug_re (const char *fmt, ...)
+sigthread_debug_re(const char *fmt, ...)
 {
   va_list ap;
   if (sigthread_debugflag)
     {
-      va_start (ap, fmt);
-      fprintf (sigthread_stderr_re, "[%d sigthread]: ", getpid ());
-      vfprintf (sigthread_stderr_re, fmt, ap);
-      va_end (ap);
-      fflush (sigthread_stderr_re);
+      va_start(ap, fmt);
+      fprintf(sigthread_stderr_re, "[%d sigthread]: ", getpid());
+      vfprintf(sigthread_stderr_re, fmt, ap);
+      va_end(ap);
+      fflush(sigthread_stderr_re);
     }
 }
 

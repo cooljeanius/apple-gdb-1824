@@ -1264,22 +1264,22 @@ print_syms_for_block (struct block *block,
 	         to keep the uglification to a minimum.  */
 	      struct varobj *new_var;
 	      struct cleanup *tuple_cleanup, *expr_cleanup;
-	      char *expr = SYMBOL_NATURAL_NAME (sym2);
-	      if (strstr (expr, "::") != NULL)
+	      char *expr = SYMBOL_NATURAL_NAME(sym2);
+	      if (strstr(expr, "::") != NULL)
 		{
 		  char *tmp;
-		  int len = strlen (expr);
-		  tmp = xmalloc (len + 3);
+		  int len = strlen(expr);
+		  tmp = (char *)xmalloc(len + 3);
 		  tmp[0] = '\'';
-		  memcpy (tmp + 1, expr, len);
+		  memcpy(tmp + 1, expr, len);
 		  tmp[len + 1] = '\'';
 		  tmp[len + 2] = '\0';
 		  expr = tmp;
-		  expr_cleanup = make_cleanup (xfree, expr);
+		  expr_cleanup = make_cleanup(xfree, expr);
 		}
 	      else
 		{
-		  expr_cleanup = make_cleanup (null_cleanup, NULL);
+		  expr_cleanup = make_cleanup(null_cleanup, NULL);
 		}
 
 	      /* END APPLE LOCAL */

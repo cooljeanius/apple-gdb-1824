@@ -579,7 +579,7 @@ child_pid_to_str(ptid_t ptid)
 }
 #endif /* !CHILD_PID_TO_STR */
 
-/* APPLE LOCAL make globally visible */
+/* APPLE LOCAL make globally visible: */
 void
 init_child_ops(void)
 {

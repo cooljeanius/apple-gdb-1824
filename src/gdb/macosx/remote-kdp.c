@@ -362,7 +362,7 @@ kdp_kernelversion_command (char *args, int from_tty)
    global variables as appropriate.  */
 
 static void
-kdp_hostinfo ()
+kdp_hostinfo(void)
 {
   kdp_return_t kdpret, kdpret2;
 
@@ -434,11 +434,9 @@ kdp_hostinfo ()
 }
 
 /* Look at the KDP_VERSIONINFO string to see if the kernel's
- * Mach-O UUID and load address are provided.
- */
-
+ * Mach-O UUID and load address are provided: */
 static void
-kdp_uuid_and_load_addr ()
+kdp_uuid_and_load_addr(void)
 {
   kdp_return_t kdpret, kdpret2;
 
@@ -1954,28 +1952,28 @@ kdp_files_info (struct target_ops *ops)
 }
 
 static void
-kdp_kill (void)
+kdp_kill(void)
 {
-  kdp_detach ("", 0);
+  kdp_detach("", 0);
 }
 
 static void
-kdp_load (char *args, int from_tty)
+kdp_load(char *args, int from_tty)
 {
-  error ("unsupported operation kdp_load");
+  error("unsupported operation kdp_load");
 }
 
 static void
-kdp_create_inferior (char *execfile, char *args, char **env, int fromtty)
+kdp_create_inferior(char *execfile, char *args, char **env, int fromtty)
 {
-  error ("unsupported operation kdp_create_inferior");
+  error("unsupported operation kdp_create_inferior");
 }
 
 static void
-kdp_mourn_inferior ()
+kdp_mourn_inferior(void)
 {
-  unpush_target (&kdp_ops);
-  generic_mourn_inferior ();
+  unpush_target(&kdp_ops);
+  generic_mourn_inferior();
 }
 
 static int remote_async_terminal_ours_p = 1;

@@ -1096,13 +1096,13 @@ convert_path_colons (unsigned char *dst, const unsigned char *src, size_t len)
 }
 
 static void
-convert_path (unsigned char *dst,
-              const unsigned char *src, size_t len, bfd_sym_version version)
+convert_path(unsigned char *dst,
+             const unsigned char *src, size_t len, bfd_sym_version version)
 {
   switch (version)
     {
     case BFD_SYM_VERSION_3_3R0:
-      sprintf (dst, "%.*s", (int) len, src);
+      sprintf((char *)dst, "%.*s", (int)len, src);
       break;
     case BFD_SYM_VERSION_3_5:
     case BFD_SYM_VERSION_3_4:
@@ -1533,28 +1533,28 @@ sym_dump_command (char *args, int from_tty)
              bfd_errmsg (bfd_get_error ()));
     }
 
-  if (!bfd_check_format (abfd, bfd_object))
+  if (!bfd_check_format(abfd, bfd_object))
     {
-      error ("Unable to process \"%s\": %s", symname,
-             bfd_errmsg (bfd_get_error ()));
+      error("Unable to process \"%s\": %s", symname,
+            bfd_errmsg(bfd_get_error()));
     }
 
   immediate_quit++;
   sym_symfile_display(abfd, f);
   immediate_quit--;
 
-  do_cleanups (cleanups);
+  do_cleanups(cleanups);
 }
 
 void _initialize_symread(void)
 {
-  sym_builtin_type_pstr = make_pointer_type (builtin_type_char, NULL);
-  sym_builtin_type_cstr = make_pointer_type (builtin_type_char, NULL);
+  sym_builtin_type_pstr = make_pointer_type(builtin_type_char, NULL);
+  sym_builtin_type_cstr = make_pointer_type(builtin_type_char, NULL);
 
-  add_symtab_fns (&sym_sym_fns);
+  add_symtab_fns(&sym_sym_fns);
 
-  add_com ("sym-dump", class_run, sym_dump_command,
-           "Print the contents of the specified SYM-format symbol file.");
+  add_com("sym-dump", class_run, sym_dump_command,
+          "Print the contents of the specified SYM-format symbol file.");
 }
 
 /* EOF */

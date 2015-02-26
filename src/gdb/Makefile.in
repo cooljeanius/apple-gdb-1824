@@ -114,6 +114,9 @@ COMPILER = @COMPILER@
 CC=@CC@
 CXX=@CXX@
 
+## an alias for use when linking:
+CCLD = $(CC)
+
 # Directory containing source files.
 srcdir = @srcdir@
 VPATH = @srcdir@:@srcdir@/macosx
@@ -124,6 +127,26 @@ AM_V_v = $(am__v_v_@AM_V@)
 am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
 am__v_v_0 =
 am__v_v_1 = -v
+
+AM_V_at = $(am__v_at_@AM_V@)
+am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
+am__v_at_0 = @
+am__v_at_1 = 
+
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
+
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
 
 AM_V_ARFLAGS = $(am__v_ARFLAGS_@AM_V@)
 am__v_ARFLAGS_ = $(am__v_ARFLAGS_@AM_DEFAULT_V@)
@@ -1115,7 +1138,7 @@ DISTSTUFF = $(YYFILES)
 # Prevent Sun make from putting in the machine type.  Setting
 # TARGET_ARCH to nothing works for SunOS 3, 4.0, but not for 4.1.
 .c.o:
-	$(CC) -c $(INTERNAL_CFLAGS) $<
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $<
 
 all: gdb$(EXEEXT) $(CONFIG_ALL)
 	@$(MAKE) $(FLAGS_TO_PASS) DO=all \
@@ -1241,12 +1264,13 @@ uninstall-tui:
 # The C++ name parser can be built standalone for testing.
 test-cp-name-parser.o: cp-name-parser.c $(safe_ctype_h) $(libiberty_h) \
   $(demangle_h)
-	$(CC) -c $(INTERNAL_CFLAGS) -DTEST_CPNAMES \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) -DTEST_CPNAMES \
 	  -o test-cp-name-parser.o cp-name-parser.c
 
 test-cp-name-parser$(EXEEXT): test-cp-name-parser.o $(LIBIBERTY_DEP)
-	$(CC_LD) $(INTERNAL_LDFLAGS) -o test-cp-name-parser$(EXEEXT) \
-	  test-cp-name-parser.o $(LIBIBERTY)
+	$(AM_V_CCLD)$(CC_LD) $(INTERNAL_LDFLAGS) \
+	  -o test-cp-name-parser$(EXEEXT) test-cp-name-parser.o \
+	  $(LIBIBERTY)
 
 # We do this by grepping through sources. If that turns out to be too slow,
 # we could just require every .o file to have an initialization routine
@@ -1313,7 +1337,7 @@ init.c: $(INIT_FILES)
 	  pathname=""; \
 	  if [ ! -z "$${f}" ]; then \
 	    filebase=`basename "$${f}"`; \
-	  else \
+	  elif [ -z "$${f}" ]; then \
 	    echo "reading 'f' failed" 1>&2; \
 	  fi; \
 	  if [ ! -z "$${filebase}" ]; then \
@@ -1353,32 +1377,32 @@ init.c: $(INIT_FILES)
 init.o: init.c $(defs_h) $(call_cmds_h)
 
 LIBTOOL = @LIBTOOL@
-LINK = $(LIBTOOL) --mode=link $(CC_LD)
+LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(LIBTOOLFLAGS) --mode=link $(CC_LD)
 
 TMPDIR = /tmp
 
 # Removing the old gdb 1st works better if running, at least on SunOS.
 gdb$(EXEEXT): gdb.o libgdb.a $(CONFIG_OBS) $(ADD_DEPS) $(CDEPS) $(TDEPLIBS)
 	$(MAKE) version.o
-	rm -f $(AM_V_v) gdb$(EXEEXT)
-	rm -f -r $(AM_V_v) gdb$(EXEEXT).dSYM
-	$(LINK) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
+	$(AM_V_at)rm -f $(AM_V_v) gdb$(EXEEXT)
+	$(AM_V_at)rm -f -r $(AM_V_v) gdb$(EXEEXT).dSYM
+	$(AM_V_CCLD)$(LINK) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
 		$(ADD_INFO_PLIST) \
 		-o gdb$(EXEEXT) gdb.o $(CONFIG_OBS) libgdb.a \
 		$(TDEPLIBS) $(TUI_LIBRARY) $(CLIBS) $(LOADLIBES)
-	@echo "stripping __objcInit";
+	@echo "stripping __objcInit from $@";
 	echo "__objcInit" > $(TMPDIR)/macosx-syms-to-remove;
 	-if [ -f .libs/gdb$(EXEEXT) ]; then \
 	  $(STRIP) -R $(TMPDIR)/macosx-syms-to-remove -X .libs/gdb$(EXEEXT); \
 	else \
 	  $(STRIP) -R $(TMPDIR)/macosx-syms-to-remove -X gdb$(EXEEXT); \
 	fi
-	rm -f $(AM_V_v) $(TMPDIR)/macosx-syms-to-remove;
+	$(AM_V_at)rm -f $(AM_V_v) $(TMPDIR)/macosx-syms-to-remove;
 
 
 $(TUI)$(EXEEXT): tui-main.o libgdb.a $(ADD_DEPS) $(CDEPS) $(TDEPLIBS)
-	rm -f $(AM_V_v) $(TUI)$(EXEEXT)
-	$(LINK) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
+	$(AM_V_at)rm -f $(AM_V_v) $(TUI)$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
 	  -o $(TUI)$(EXEEXT) tui-main.o libgdb.a \
 	  $(TDEPLIBS) $(TUI_LIBRARY) $(CLIBS) $(LOADLIBES)
 
@@ -1392,13 +1416,13 @@ nlm:	force
 # init.o is very important.  It pulls in the rest of GDB.
 LIBGDB_OBS= $(COMMON_OBS) $(TSOBS) $(ADD_FILES) init.o
 libgdb.a: $(LIBGDB_OBS)
-	-rm -f libgdb.a
+	$(AM_V_at)rm -f libgdb.a || echo "Building libgdb.a from scratch"
 	$(AR) $(AR_FLAGS) libgdb.a $(LIBGDB_OBS)
 	$(RANLIB) $(RANLIB_FLAGS) libgdb.a
 
 # A Mach 3.0 program to force gdb back to command level:
 stop-gdb: stop-gdb.o
-	${CC_LD} $(GLOBAL_CFLAGS) $(LDFLAGS) -o stop-gdb \
+	$(AM_V_CCLD)${CC_LD} $(GLOBAL_CFLAGS) $(LDFLAGS) -o stop-gdb \
 	  stop-gdb.o $(CLIBS) $(LOADLIBES)
 
 # This is useful when debugging GDB, because some Unices do NOT let you
@@ -1587,7 +1611,7 @@ $(srcdir)/copying.c: @MAINTAINER_MODE_TRUE@ \
 	mv $(AM_V_v) $(srcdir)/copying.tmp $(srcdir)/copying.c
 
 version.c: version.in @MAINT@ Makefile
-	rm -f version.c-tmp
+	$(AM_V_at)rm -f version.c-tmp
 	echo '#include "version.h"' >> version.c-tmp
 	if test -n "$(VERSION)"; then \
 	  echo 'const char version[] = "$(VERSION)";' >> version.c-tmp; \
@@ -1716,25 +1740,26 @@ ALLDEPFILES = \
 
 # Provide explicit rule/dependency - works for more makes.
 copying.o: $(srcdir)/copying.c @MAINT@ $(defs_h) $(command_h) $(gdbcmd_h)
-	$(CC) -c $(INTERNAL_CFLAGS) -Wno-overlength-strings \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) -Wno-overlength-strings \
 	  $(srcdir)/copying.c
 
 hpux-thread.o: $(srcdir)/hpux-thread.c @MAINT@ $(defs_h)
-	$(CC) -c $(INTERNAL_CFLAGS) -I$(srcdir)/osf-share \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) -I$(srcdir)/osf-share \
 	  -I$(srcdir)/osf-share/HP800 -I/usr/include/dce \
 	  $(srcdir)/hpux-thread.c
 
 # main.o needs an explicit build rule to get TARGET_SYSTEM_ROOT and BINDIR.
 main.o: main.c @MAINT@ $(defs_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(TARGET_SYSTEM_ROOT_DEFINE) \
-	  -DBINDIR=\"$(bindir)\" $(srcdir)/main.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) \
+	  $(TARGET_SYSTEM_ROOT_DEFINE) -DBINDIR=\"$(bindir)\" \
+	  $(srcdir)/main.c
 
 # FIXME: cagney/2004-09-16: "gnu-v3-abi.c", with a GCC 3.4 compiler,
 # gets a "assignment from incompatible pointer type" warning. The
 # return types - "enum gnu_v3_dtor_kinds" vs "enum ctor_kinds" -
 # conflict.
 gnu-v3-abi.o: $(srcdir)/gnu-v3-abi.c @MAINT@ $(defs_h)
-	$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
 	  $(srcdir)/gnu-v3-abi.c
 
 # FIXME: cagney/2003-08-10: "monitor.c" gets -Wformat-nonliteral
@@ -1744,7 +1769,7 @@ gnu-v3-abi.o: $(srcdir)/gnu-v3-abi.c @MAINT@ $(defs_h)
 # definitly will not work. "monitor.c" needs to be rewritten so that
 # it does NOT use format strings and instead uses callbacks.
 monitor.o: $(srcdir)/monitor.c @MAINT@ $(defs_h)
-	$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
 	  $(srcdir)/monitor.c
 
 # FIXME: cagney/2003-08-10: Do not try to build "printcmd.c" with
@@ -1752,26 +1777,25 @@ monitor.o: $(srcdir)/monitor.c @MAINT@ $(defs_h)
 # pass user input strings as the format parameter to host printf
 # function calls.
 printcmd.o: $(srcdir)/printcmd.c @MAINT@ $(defs_h)
-	$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
 	  $(srcdir)/printcmd.c
 
 # FIXME: Procfs.o gets -Wformat errors because things like pid_t do not
 # match output format strings.
 procfs.o: $(srcdir)/procfs.c @MAINT@ $(defs_h)
-	$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
 	  $(srcdir)/procfs.c
 
 # FIXME: Thread-db.o gets warnings because the definitions of the register
 # sets are different from kernel to kernel.
 linux-thread-db.o: $(srcdir)/linux-thread-db.c @MAINT@ $(defs_h)
-	$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
-		$(srcdir)/linux-thread-db.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
+	  $(srcdir)/linux-thread-db.c
 
 v850ice.o: $(srcdir)/v850ice.c @MAINT@ $(defs_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) $(ITCL_CFLAGS) \
-		$(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
-		$(GDBTK_CFLAGS) \
-		$(srcdir)/v850ice.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
+	  $(GDBTK_CFLAGS) $(srcdir)/v850ice.c
 
 # Message files.  Based on code in gcc/Makefile.in.
 
@@ -3060,32 +3084,32 @@ cli-cmds.o: $(srcdir)/cli/cli-cmds.c $(defs_h) $(readline_h) \
   $(objfiles_h) $(source_h) $(disasm_h) $(ui_out_h) $(top_h) \
   $(cli_decode_h) $(cli_script_h) $(cli_setshow_h) $(cli_cmds_h) \
   $(tui_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-cmds.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-cmds.c
 cli-decode.o: $(srcdir)/cli/cli-decode.c $(defs_h) $(symtab_h) \
   $(gdb_string_h) $(ui_out_h) $(cli_cmds_h) \
   $(cli_decode_h) $(tui_h) $(gdb_assert_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-decode.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-decode.c
 cli-dump.o: $(srcdir)/cli/cli-dump.c $(defs_h) $(gdb_string_h) \
   $(cli_decode_h) $(cli_cmds_h) $(value_h) $(completer_h) \
   $(cli_dump_h) $(gdb_assert_h) $(target_h) $(readline_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-dump.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-dump.c
 cli-interp.o: $(srcdir)/cli/cli-interp.c $(defs_h) $(interps_h) \
   $(wrapper_h) $(event_top_h) $(ui_out_h) $(cli_out_h) $(top_h) \
   $(gdb_string_h) $(exceptions_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-interp.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-interp.c
 cli-logging.o: $(srcdir)/cli/cli-logging.c $(defs_h) $(gdbcmd_h) \
   $(ui_out_h) $(gdb_string_h) $(cli_logging_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-logging.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-logging.c
 cli-script.o: $(srcdir)/cli/cli-script.c $(defs_h) $(value_h) \
   $(language_h) $(ui_out_h) $(gdb_string_h) $(exceptions_h) $(top_h) \
   $(cli_cmds_h) $(cli_decode_h) $(cli_script_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-script.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-script.c
 cli-setshow.o: $(srcdir)/cli/cli-setshow.c $(defs_h) $(readline_tilde_h) \
   $(value_h) $(gdb_string_h) $(ui_out_h) $(cli_decode_h) $(cli_cmds_h) \
   $(cli_setshow_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-setshow.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-setshow.c
 cli-utils.o: $(srcdir)/cli/cli-utils.c $(defs_h) $(cli_utils_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-utils.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-utils.c
 
 #
 # GDBTK sub-directory
@@ -3148,13 +3172,13 @@ clean-gdbtk:
 insight$(EXEEXT): gdbtk-main.o libgdb.a $(ADD_DEPS) \
   $(CDEPS) $(TDEPLIBS)
 	rm -f $(AM_V_v) insight$(EXEEXT)
-	$(CC_LD) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
+	$(AM_V_CCLD)$(CC_LD) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
 		-o insight$(EXEEXT) gdbtk-main.o libgdb.a \
 		$(TDEPLIBS) $(TUI_LIBRARY) $(CLIBS) $(LOADLIBES)
-	@echo "stripping __objcInit";
+	@echo "stripping __objcInit from $@";
 	echo "__objcInit" > $(TMPDIR)/macosx-syms-to-remove;
-	-$(STRIP) -R $(TMPDIR)/macosx-syms-to-remove -X gdb$(EXEEXT)
-	rm -f $(AM_V_v) $(TMPDIR)/macosx-syms-to-remove;
+	-$(STRIP) -R $(TMPDIR)/macosx-syms-to-remove -X insight$(EXEEXT)
+	$(AM_V_at)rm -f $(AM_V_v) $(TMPDIR)/macosx-syms-to-remove;
 
 gdbres.o: $(srcdir)/gdbtk/gdb.rc $(srcdir)/gdbtk/gdbtool.ico
 	$(WINDRES) --include $(srcdir)/gdbtk $(srcdir)/gdbtk/gdb.rc \
@@ -3163,9 +3187,9 @@ gdbres.o: $(srcdir)/gdbtk/gdb.rc $(srcdir)/gdbtk/gdbtool.ico
 gdbtk.o: $(srcdir)/gdbtk/generic/gdbtk.c $(srcdir)/gdbtk/generic/gdbtk.h \
   $(defs_h) $(symtab_h) $(inferior_h) $(command_h) $(bfd_h) $(symfile_h) \
   $(objfiles_h) $(target_h) $(gdb_string_h) $(tracepoint_h) $(top_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) $(ITCL_CFLAGS) \
-        $(ITK_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
-	$(GDBTK_CFLAGS) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	  $(ITCL_CFLAGS) $(ITK_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) \
+	  $(X11_CFLAGS) $(GDBTK_CFLAGS) \
 	  $(srcdir)/gdbtk/generic/gdbtk.c \
 	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\" \
 	  -DSRC_DIR=\"$(GDBTK_SRC_DIR)\"
@@ -3174,10 +3198,10 @@ gdbtk-bp.o: $(srcdir)/gdbtk/generic/gdbtk-bp.c \
   $(srcdir)/gdbtk/generic/gdbtk.h $(srcdir)/gdbtk/generic/gdbtk-cmds.h \
   $(defs_h) $(breakpoint_h) $(tracepoint_h) $(symfile_h) $(symtab_h) \
   $(gdb_string_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) $(ITCL_CFLAGS) \
-	 $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
-	$(GDBTK_CFLAGS) $(srcdir)/gdbtk/generic/gdbtk-bp.c \
-	-DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
+	  $(GDBTK_CFLAGS) $(srcdir)/gdbtk/generic/gdbtk-bp.c \
+	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
 
 gdbtk-cmds.o: $(srcdir)/gdbtk/generic/gdbtk-cmds.c \
   $(srcdir)/gdbtk/generic/gdbtk.h $(srcdir)/gdbtk/generic/gdbtk-cmds.h \
@@ -3185,62 +3209,62 @@ gdbtk-cmds.o: $(srcdir)/gdbtk/generic/gdbtk-cmds.c \
   $(gdbcore_h) $(demangle_h) $(linespec_h) $(tui_file_h) $(top_h) \
   $(annotate_h) $(block_h) $(dictionary_h) $(gdb_string_h) \
   $(dis_asm_h) $(gdbcmd_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) $(ITCL_CFLAGS) \
-	 $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
-	$(GDBTK_CFLAGS) $(srcdir)/gdbtk/generic/gdbtk-cmds.c \
-	-DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
+	  $(GDBTK_CFLAGS) $(srcdir)/gdbtk/generic/gdbtk-cmds.c \
+	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
 
 gdbtk-hooks.o: $(srcdir)/gdbtk/generic/gdbtk-hooks.c \
   $(srcdir)/gdbtk/generic/gdbtk.h $(defs_h) $(symtab_h) $(inferior_h) \
   $(command_h) $(bfd_h) $(symfile_h) $(objfiles_h) $(target_h) \
   $(gdb_string_h) $(tracepoint_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) $(ITCL_CFLAGS) \
-	$(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) $(GDBTK_CFLAGS) \
-	  $(srcdir)/gdbtk/generic/gdbtk-hooks.c \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
+	  $(GDBTK_CFLAGS) $(srcdir)/gdbtk/generic/gdbtk-hooks.c \
 	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
 
 gdbtk-interp.o: $(srcdir)/gdbtk/generic/gdbtk-interp.c $(defs_h) \
   $(interps_h) $(ui_out_h) $(ui_file_h) $(cli_out_h) $(gdb_string_h) \
   $(cli_cmds_h) $(cli_decode_h) $(srcdir)/gdbtk/generic/gdbtk.h
-	$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) $(ITCL_CFLAGS) \
-	$(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) $(GDBTK_CFLAGS) \
-		$(srcdir)/gdbtk/generic/gdbtk-interp.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
+	  $(GDBTK_CFLAGS) $(srcdir)/gdbtk/generic/gdbtk-interp.c
 
 gdbtk-main.o: $(srcdir)/gdbtk/generic/gdbtk-main.c $(defs_h) $(main_h) \
   $(gdb_string_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) $(ITCL_CFLAGS) \
-	$(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) $(GDBTK_CFLAGS) \
-	  $(srcdir)/gdbtk/generic/gdbtk-main.c \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
+	  $(GDBTK_CFLAGS) $(srcdir)/gdbtk/generic/gdbtk-main.c \
 	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
 
 gdbtk-register.o: $(srcdir)/gdbtk/generic/gdbtk-register.c \
   $(srcdir)/gdbtk/generic/gdbtk.h $(srcdir)/gdbtk/generic/gdbtk-cmds.h \
   $(defs_h) $(frame_h) $(value_h) $(gdb_string_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) $(ITCL_CFLAGS) \
-	 $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS)   \
-	$(GDBTK_CFLAGS) $(srcdir)/gdbtk/generic/gdbtk-register.c \
-	-DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
+	  $(GDBTK_CFLAGS) $(srcdir)/gdbtk/generic/gdbtk-register.c \
+	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
 
 gdbtk-stack.o: $(srcdir)/gdbtk/generic/gdbtk-stack.c \
   $(srcdir)/gdbtk/generic/gdbtk.h $(srcdir)/gdbtk/generic/gdbtk-cmds.h \
   $(srcdir)/gdbtk/generic/gdbtk-wrapper.h $(defs_h) $(target_h) \
   $(breakpoint_h) $(linespec_h) $(block_h) $(dictionary_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) $(ITCL_CFLAGS) \
-	 $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS)   \
-	$(GDBTK_CFLAGS) $(srcdir)/gdbtk/generic/gdbtk-stack.c \
-	-DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
+	  $(GDBTK_CFLAGS) $(srcdir)/gdbtk/generic/gdbtk-stack.c \
+	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
 
 gdbtk-varobj.o: $(srcdir)/gdbtk/generic/gdbtk-varobj.c \
   $(srcdir)/gdbtk/generic/gdbtk.h $(defs_h) $(value_h) $(varobj_h) \
   $(gdb_string_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) $(ITCL_CFLAGS) \
-	$(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) $(GDBTK_CFLAGS) \
-	  $(srcdir)/gdbtk/generic/gdbtk-varobj.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
+	  $(GDBTK_CFLAGS) $(srcdir)/gdbtk/generic/gdbtk-varobj.c
 
 gdbtk-wrapper.o: $(srcdir)/gdbtk/generic/gdbtk-wrapper.c \
   $(srcdir)/gdbtk/generic/gdbtk-wrapper.h $(defs_h) $(frame_h) $(value_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) $(GDBTK_CFLAGS)\
-	  $(srcdir)/gdbtk/generic/gdbtk-wrapper.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	  $(GDBTK_CFLAGS) $(srcdir)/gdbtk/generic/gdbtk-wrapper.c
 
 #
 # gdb/mi/ dependencies
@@ -3251,61 +3275,61 @@ gdbtk-wrapper.o: $(srcdir)/gdbtk/generic/gdbtk-wrapper.c \
 mi-cmd-break.o: $(srcdir)/mi/mi-cmd-break.c $(defs_h) $(mi_cmds_h) \
   $(ui_out_h) $(mi_out_h) $(breakpoint_h) $(gdb_string_h) \
   $(mi_getopt_h) $(gdb_events_h) $(gdb_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-break.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-break.c
 mi-cmd-disas.o: $(srcdir)/mi/mi-cmd-disas.c $(defs_h) $(target_h) \
   $(value_h) $(mi_cmds_h) $(mi_getopt_h) $(gdb_string_h) $(ui_out_h) \
   $(disasm_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-disas.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-disas.c
 mi-cmd-env.o: $(srcdir)/mi/mi-cmd-env.c $(defs_h) $(inferior_h) \
   $(value_h) $(mi_out_h) $(mi_cmds_h) $(mi_getopt_h) $(symtab_h) \
   $(target_h) $(environ_h) $(command_h) $(ui_out_h) $(top_h) \
   $(gdb_string_h) $(gdb_stat_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-env.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-env.c
 mi-cmd-file.o: $(srcdir)/mi/mi-cmd-file.c $(defs_h) $(mi_cmds_h) \
   $(mi_getopt_h) $(ui_out_h) $(symtab_h) $(source_h) $(objfiles_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-file.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-file.c
 mi-cmds.o: $(srcdir)/mi/mi-cmds.c $(defs_h) $(top_h) $(mi_cmds_h) \
   $(gdb_string_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmds.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmds.c
 # APPLE LOCAL begin subroutine inlining:
 mi-cmd-stack.o: $(srcdir)/mi/mi-cmd-stack.c $(defs_h) $(target_h) \
   $(frame_h) $(value_h) $(mi_cmds_h) $(ui_out_h) $(symtab_h) $(block_h) \
   $(stack_h) $(dictionary_h) $(gdb_string_h) $(inlining_h) \
   $(srcdir)/config/i386/tm-i386-macosx.h
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-stack.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-stack.c
 # APPLE LOCAL end subroutine inlining
 mi-cmd-var.o: $(srcdir)/mi/mi-cmd-var.c $(defs_h) $(mi_cmds_h) \
   $(ui_out_h) $(mi_out_h) $(varobj_h) $(value_h) $(gdb_string_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-var.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-var.c
 mi-console.o: $(srcdir)/mi/mi-console.c $(defs_h) $(mi_console_h) \
   $(gdb_string_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-console.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-console.c
 mi-getopt.o: $(srcdir)/mi/mi-getopt.c $(defs_h) $(mi_getopt_h) \
   $(gdb_string_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-getopt.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-getopt.c
 mi-interp.o: $(srcdir)/mi/mi-interp.c $(defs_h) $(gdb_string_h) \
   $(interps_h) $(event_top_h) $(event_loop_h) $(inferior_h) $(ui_out_h) \
   $(top_h) $(exceptions_h) $(mi_main_h) $(mi_cmds_h) $(mi_out_h) \
   $(mi_console_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-interp.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-interp.c
 # APPLE LOCAL begin subroutine inlining:
 mi-main.o: $(srcdir)/mi/mi-main.c $(defs_h) $(target_h) $(inferior_h) \
   $(gdb_string_h) $(exceptions_h) $(top_h) $(gdbthread_h) $(mi_cmds_h) \
   $(mi_parse_h) $(mi_getopt_h) $(mi_console_h) $(ui_out_h) $(mi_out_h) \
   $(interps_h) $(event_loop_h) $(event_top_h) $(gdbcore_h) $(value_h) \
   $(regcache_h) $(gdb_h) $(frame_h) $(mi_main_h) $(inlining_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-main.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-main.c
 # APPLE LOCAL end subroutine inlining
 mi-out.o: $(srcdir)/mi/mi-out.c $(defs_h) $(ui_out_h) $(mi_out_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-out.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-out.c
 mi-parse.o: $(srcdir)/mi/mi-parse.c $(defs_h) $(mi_cmds_h) $(mi_parse_h) \
-	$(gdb_string_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-parse.c
+  $(gdb_string_h)
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-parse.c
 mi-symbol-cmds.o: $(srcdir)/mi/mi-symbol-cmds.c $(defs_h) $(mi_cmds_h) \
-	$(symtab_h) $(ui_out_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-symbol-cmds.c
+  $(symtab_h) $(ui_out_h)
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-symbol-cmds.c
 mi-common.o: $(srcdir)/mi/mi-common.c $(mi_common_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-common.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-common.c
 
 #
 # rdi-share sub-directory
@@ -3331,7 +3355,7 @@ rdi-share/libangsd.a:	force
 
 signals.o: $(srcdir)/signals/signals.c $(server_h) $(defs_h) $(target_h) \
   $(gdb_string_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/signals/signals.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/signals/signals.c
 
 #
 # gdb/tui/ dependencies
@@ -3344,21 +3368,21 @@ tui.o: $(srcdir)/tui/tui.c $(defs_h) $(gdbcmd_h) $(tui_h) $(tui_hooks_h) \
   $(tui_win_h) $(tui_winsource_h) $(tui_windata_h) $(target_h) $(frame_h) \
   $(breakpoint_h) $(inferior_h) $(symtab_h) $(source_h) $(gdb_curses_h) \
   $(readline_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui.c
 tui-command.o: $(srcdir)/tui/tui-command.c $(defs_h) $(tui_h) \
   $(tui_data_h) $(tui_win_h) $(tui_io_h) $(gdb_curses_h) $(gdb_string_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-command.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-command.c
 tui-data.o: $(srcdir)/tui/tui-data.c $(defs_h) $(symtab_h) $(tui_h) \
   $(tui_data_h) $(tui_wingeneral_h) $(gdb_string_h) $(gdb_curses_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-data.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-data.c
 tui-disasm.o: $(srcdir)/tui/tui-disasm.c $(defs_h) $(symtab_h) \
   $(breakpoint_h) $(frame_h) $(value_h) $(source_h) $(disasm_h) \
   $(gdb_string_h) $(tui_h) $(tui_data_h) $(tui_win_h) $(tui_layout_h) \
   $(tui_winsource_h) $(tui_stack_h) $(tui_file_h) $(gdb_curses_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-disasm.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-disasm.c
 tui-file.o: $(srcdir)/tui/tui-file.c $(defs_h) $(ui_file_h) $(tui_file_h) \
   $(tui_io_h) $(tui_h) $(gdb_string_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-file.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-file.c
 tui-hooks.o: $(srcdir)/tui/tui-hooks.c $(defs_h) $(symtab_h) \
   $(inferior_h) $(command_h) $(bfd_h) $(symfile_h) $(objfiles_h) \
   $(target_h) $(gdbcore_h) $(event_loop_h) $(event_top_h) $(frame_h) \
@@ -3366,64 +3390,65 @@ tui-hooks.o: $(srcdir)/tui/tui-hooks.c $(defs_h) $(symtab_h) \
   $(tui_hooks_h) $(tui_data_h) $(tui_layout_h) $(tui_io_h) \
   $(tui_regs_h) $(tui_win_h) $(tui_stack_h) $(tui_windata_h) \
   $(tui_winsource_h) $(gdb_curses_h) $(readline_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-hooks.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-hooks.c
 tui-interp.o: $(srcdir)/tui/tui-interp.c $(defs_h) $(interps_h) $(top_h) \
   $(event_top_h) $(event_loop_h) $(ui_out_h) $(cli_out_h) \
   $(tui_data_h) $(readline_h) $(tui_win_h) $(tui_h) $(tui_io_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-interp.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-interp.c
 tui-io.o: $(srcdir)/tui/tui-io.c $(defs_h) $(target_h) $(event_loop_h) \
   $(event_top_h) $(command_h) $(top_h) $(tui_h) $(tui_data_h) $(tui_io_h) \
   $(tui_command_h) $(tui_win_h) $(tui_wingeneral_h) $(tui_file_h) \
   $(ui_out_h) $(cli_out_h) $(gdb_curses_h) $(readline_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-io.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-io.c
 tui-layout.o: $(srcdir)/tui/tui-layout.c $(defs_h) $(command_h) \
   $(symtab_h) $(frame_h) $(source_h) $(tui_h) $(tui_data_h) \
   $(tui_windata_h) $(tui_wingeneral_h) $(tui_stack_h) $(tui_regs_h) \
-  $(tui_win_h) \
-	$(tui_winsource_h) $(tui_disasm_h) $(gdb_string_h) $(gdb_curses_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-layout.c
+  $(tui_win_h) $(tui_winsource_h) $(tui_disasm_h) $(gdb_string_h) \
+  $(gdb_curses_h)
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-layout.c
 tui-main.o: $(srcdir)/tui/tui-main.c $(defs_h) $(main_h) $(gdb_string_h) \
   $(interps_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-main.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-main.c
 tui-out.o: $(srcdir)/tui/tui-out.c $(defs_h) $(ui_out_h) $(tui_h) \
   $(gdb_string_h) $(gdb_assert_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-out.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-out.c
 tui-regs.o: $(srcdir)/tui/tui-regs.c $(defs_h) $(tui_h) $(tui_data_h) \
   $(symtab_h) $(gdbtypes_h) $(gdbcmd_h) $(frame_h) $(regcache_h) \
   $(inferior_h) $(target_h) $(gdb_string_h) $(tui_layout_h) \
   $(tui_win_h) $(tui_windata_h) $(tui_wingeneral_h) $(tui_file_h) \
   $(reggroups_h) $(gdb_curses_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-regs.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-regs.c
 tui-source.o: $(srcdir)/tui/tui-source.c $(defs_h) $(symtab_h) $(frame_h) \
   $(breakpoint_h) $(source_h) $(symtab_h) $(tui_h) $(tui_data_h) \
   $(tui_stack_h) $(tui_winsource_h) $(tui_source_h) $(gdb_string_h) \
   $(gdb_curses_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-source.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-source.c
 tui-stack.o: $(srcdir)/tui/tui-stack.c $(defs_h) $(symtab_h) \
   $(breakpoint_h) $(frame_h) $(command_h) $(inferior_h) $(target_h) \
   $(top_h) $(gdb_string_h) $(tui_h) $(tui_data_h) $(tui_stack_h) \
   $(tui_wingeneral_h) $(tui_source_h) $(tui_winsource_h) $(tui_file_h) \
   $(gdb_curses_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-stack.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-stack.c
 tui-win.o: $(srcdir)/tui/tui-win.c $(defs_h) $(command_h) $(symtab_h) \
   $(breakpoint_h) $(frame_h) $(cli_cmds_h) $(top_h) $(source_h) \
   $(tui_h) $(tui_data_h) $(tui_wingeneral_h) $(tui_stack_h) \
   $(tui_regs_h) $(tui_disasm_h) $(tui_source_h) $(tui_winsource_h) \
   $(tui_windata_h) $(gdb_curses_h) $(gdb_string_h) $(readline_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-win.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-win.c
 tui-windata.o: $(srcdir)/tui/tui-windata.c $(defs_h) $(tui_h) \
   $(tui_data_h) $(tui_wingeneral_h) $(tui_regs_h) $(gdb_string_h) \
   $(gdb_curses_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-windata.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-windata.c
 tui-wingeneral.o: $(srcdir)/tui/tui-wingeneral.c $(defs_h) $(tui_h) \
   $(tui_data_h) $(tui_wingeneral_h) $(tui_win_h) $(gdb_curses_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-wingeneral.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) \
+	  $(srcdir)/tui/tui-wingeneral.c
 tui-winsource.o: $(srcdir)/tui/tui-winsource.c $(defs_h) $(symtab_h) \
   $(frame_h) $(breakpoint_h) $(value_h) $(source_h) $(tui_h) \
   $(tui_data_h) $(tui_stack_h) $(tui_win_h) $(tui_wingeneral_h) \
   $(tui_winsource_h) $(tui_source_h) $(tui_disasm_h) $(gdb_string_h) \
   $(gdb_curses_h)
-	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-winsource.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-winsource.c
 
 ### end of the gdb Makefile.in.
 
@@ -3502,11 +3527,11 @@ MAC_WARNINGS = -Wno-deprecated-declarations -Wno-four-char-constants \
 ### ('-Wno-#warnings' has to stay separate because of the quoting required)
 
 mac-nat.o: $(srcdir)/mac-nat.c $(defs_h) $(frame_h) $(inferior_h)
-	$(MAC_CC) -c $(MAC_CFLAGS) $(MAC_DEFS) $(MAC_INCLUDES) \
+	$(AM_V_CC)$(MAC_CC) -c $(MAC_CFLAGS) $(MAC_DEFS) $(MAC_INCLUDES) \
 	  $(MAC_WARNINGS) '-Wno-#warnings' mac-nat.c
 
 mac-xdep.o: $(srcdir)/mac-xdep.c $(defs_h) $(srcdir)/config/xm-mpw.h
-	$(MAC_CC) -c $(MAC_CFLAGS) $(MAC_DEFS) $(MAC_INCLUDES) \
+	$(AM_V_CC)$(MAC_CC) -c $(MAC_CFLAGS) $(MAC_DEFS) $(MAC_INCLUDES) \
 	  $(MAC_WARNINGS) '-Wno-#warnings' mac-xdep.c
 
 # can add "-progress" for more verbose output:

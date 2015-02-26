@@ -33,25 +33,25 @@
 #endif /* !assert */
 
 static kdp_return_t
-kdp_exception_reply (kdp_connection *c, kdp_pkt_t * response)
+kdp_exception_reply(kdp_connection *c, kdp_pkt_t * response)
 {
   kdp_return_t kdpret;
   kdp_exception_ack_t ack;
 
-  CHECK_FATAL (kdp_is_connected (c));
-  CHECK_FATAL (kdp_is_bound (c));
+  CHECK_FATAL(kdp_is_connected(c));
+  CHECK_FATAL(kdp_is_bound(c));
 
   ack.hdr.request = KDP_EXCEPTION;
   ack.hdr.is_reply = 1;
   ack.hdr.seq = response->exception.hdr.seq;
   ack.hdr.key = response->exception.hdr.key;
 
-  kdpret = kdp_transmit_exception (c, (kdp_pkt_t *) & ack);
+  kdpret = kdp_transmit_exception(c, (kdp_pkt_t *)&ack);
   if (kdpret != RR_SUCCESS)
     {
-      c->logger (KDP_LOG_ERROR,
-                 "kdp_exception_reply: unable to acknowledge exception: %s\n",
-                 kdp_return_string (kdpret));
+      c->logger(KDP_LOG_ERROR,
+                "kdp_exception_reply: unable to acknowledge exception: %s\n",
+                kdp_return_string(kdpret));
     }
 
   return kdpret;

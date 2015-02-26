@@ -343,13 +343,58 @@ enum array_bound_type
   BOUND_CANNOT_BE_DETERMINED
 };
 
+/* un-nested for C++ usage: */
+struct field
+{
+  union field_location
+  {
+    /* Position of this field, counting in bits from start of
+     * containing structure.
+     * For BITS_BIG_ENDIAN=1 targets, it is the bit offset to the MSB.
+     * For BITS_BIG_ENDIAN=0 targets, it is the bit offset to the LSB.
+     * For a range bound or enum value, this is the value itself. */
+
+    int bitpos;
+
+    /* For a static field, if TYPE_FIELD_STATIC_HAS_ADDR then physaddr
+     * is the location (in the target) of the static field.
+     * Otherwise, physname is the mangled label of the static field. */
+
+    CORE_ADDR physaddr;
+    char *physname;
+  }
+  loc;
+
+  /* For a function or member type, this is 1 if the argument is marked
+   * artificial.  Artificial arguments should not be shown to the user: */
+  unsigned int artificial : 1;
+
+  /* This flag is zero for non-static fields, 1 for fields whose location
+   * is specified by the label loc.physname, and 2 for fields whose
+   * location is specified by loc.physaddr: */
+  unsigned int static_kind : 2;
+
+  /* Size of this field, in bits, or zero if not packed.
+   * For an unpacked field, the field's type's length
+   * says how many bytes the field occupies: */
+  unsigned int bitsize : 29;
+
+  /* In a struct or union type, type of this field.
+   * In a function or member type, type of this argument.
+   * In an array type, the domain-type of the array: */
+  struct type *type;
+
+  /* Name of field, value or argument.
+   * NULL for range bounds, array domains, and member function
+   * arguments: */
+  char *name;
+};
+
 /* This structure is space-critical.
    Its layout has been tweaked to reduce the space used.  */
-
 struct main_type
 {
-  /* Code for kind of type */
-
+  /* Code for kind of type: */
   ENUM_BITFIELD(type_code) code : 8;
 
   /* Array bounds.  These fields appear at this location because
@@ -401,17 +446,14 @@ struct main_type
 
   struct type *target_type;
 
-  /* Flags about this type.  */
-
+  /* Flags about this type: */
   int flags : 30;
 
   /* The byte-order of the type.  Uses the same values as the byte
      order stored in the gdbarch structure. */
-
   unsigned int byte_order : 2;
 
-  /* Number of fields described for this type */
-
+  /* Number of fields described for this type: */
   short nfields;
 
   /* Field number of the virtual function table pointer in
@@ -420,7 +462,6 @@ struct main_type
      fill_in_vptr_fieldno should be called to find it if possible.
 
      Unused if this type does not have virtual functions.  */
-
   short vptr_fieldno;
 
   /* For structure and union types, a description of each field.
@@ -438,58 +479,7 @@ struct main_type
      allows all types to have the same size, which is useful
      because we can allocate the space for a type before
      we know what to put in it.  */
-
-  struct field
-  {
-    union field_location
-    {
-      /* Position of this field, counting in bits from start of
-	 containing structure.
-	 For BITS_BIG_ENDIAN=1 targets, it is the bit offset to the MSB.
-	 For BITS_BIG_ENDIAN=0 targets, it is the bit offset to the LSB.
-	 For a range bound or enum value, this is the value itself. */
-
-      int bitpos;
-
-      /* For a static field, if TYPE_FIELD_STATIC_HAS_ADDR then physaddr
-	 is the location (in the target) of the static field.
-	 Otherwise, physname is the mangled label of the static field. */
-
-      CORE_ADDR physaddr;
-      char *physname;
-    }
-    loc;
-
-    /* For a function or member type, this is 1 if the argument is marked
-       artificial.  Artificial arguments should not be shown to the
-       user.  */
-    unsigned int artificial : 1;
-
-    /* This flag is zero for non-static fields, 1 for fields whose location
-       is specified by the label loc.physname, and 2 for fields whose location
-       is specified by loc.physaddr.  */
-
-    unsigned int static_kind : 2;
-
-    /* Size of this field, in bits, or zero if not packed.
-       For an unpacked field, the field's type's length
-       says how many bytes the field occupies.  */
-
-    unsigned int bitsize : 29;
-
-    /* In a struct or union type, type of this field.
-       In a function or member type, type of this argument.
-       In an array type, the domain-type of the array.  */
-
-    struct type *type;
-
-    /* Name of field, value or argument.
-       NULL for range bounds, array domains, and member function
-       arguments.  */
-
-    char *name;
-
-  } *fields;
+  struct field *fields;
 
   /* For types with virtual functions (TYPE_CODE_STRUCT), VPTR_BASETYPE
      is the base class which defined the virtual function table pointer.
@@ -501,11 +491,9 @@ struct main_type
      type that contains the method.
 
      Unused otherwise.  */
-
   struct type *vptr_basetype;
 
-  /* Slot to point to additional language-specific fields of this type.  */
-
+  /* Slot to point to additional language-specific fields of this type: */
   union type_specific
   {
     /* CPLUS_STUFF is for TYPE_CODE_STRUCT.  It is initialized to point to
@@ -596,6 +584,100 @@ enum runtime_type
     OBJC_RUNTIME/*,*/
   };
 
+/* for use later: */
+struct fn_field
+{
+  /* If is_stub is clear, this is the mangled name which we can
+   * look up to find the address of the method (FIXME: it would
+   * be cleaner to have a pointer to the struct symbol here
+   * instead).  */
+
+  /* If is_stub is set, this is the portion of the mangled
+   * name which specifies the arguments.  For example, "ii",
+   * if there are two int arguments, or "" if there are no
+   * arguments.  See gdb_mangle_name for the conversion from this
+   * format to the one used if is_stub is clear.  */
+
+  char *physname;
+
+  /* The function type for the method.
+   * (This comment used to say "The return value of the method",
+   * but that is wrong. The function type
+   * is expected here, i.e. something with TYPE_CODE_FUNC,
+   * and *not* the return-value type). */
+
+  struct type *type;
+
+  /* For virtual functions.
+   * First baseclass that defines this virtual function.   */
+
+  struct type *fcontext;
+
+  /* Attributes:*/
+  unsigned int is_const:1;
+  unsigned int is_volatile:1;
+  unsigned int is_private:1;
+  unsigned int is_protected:1;
+  unsigned int is_public:1;
+  unsigned int is_abstract:1;
+  unsigned int is_static:1;
+  unsigned int is_final:1;
+  unsigned int is_synchronized:1;
+  unsigned int is_native:1;
+  unsigned int is_artificial:1;
+
+  /* A stub method only has some fields valid (but they are enough
+   * to reconstruct the rest of the fields).  */
+  unsigned int is_stub:1;
+
+  /* C++ method that is inlined: */
+  unsigned int is_inlined:1;
+
+  /* Unused: */
+  unsigned int dummy:3;
+
+  /* Index into that baseclass's virtual function table,
+   * minus 2; else if static: VOFFSET_STATIC; else: 0.  */
+  unsigned int voffset:16;
+
+#define VOFFSET_STATIC 1
+};
+
+/* likewise, un-nested for C++ usage: */
+struct fn_fieldlist
+{
+  /* The overloaded name: */
+  char *name;
+
+  /* The number of methods with this name: */
+  int length;
+
+  /* The list of methods: */
+  struct fn_field *fn_fields;
+};
+
+/* likewise: */
+struct template_arg
+{
+  char *name;
+  struct type *type;
+};
+
+/* likewise: */
+struct runtime_info
+{
+  short has_vtable;
+  struct type *primary_base;
+  struct type **virtual_base_list;
+};
+
+/* likewise: */
+struct local_type_info
+{
+  char *file;
+  int line;
+};
+
 struct cplus_struct_type
   {
     /* Number of base classes this type derives from.  The baseclasses are
@@ -675,105 +757,21 @@ struct cplus_struct_type
 
        fn_fieldlists points to an array of nfn_fields of these. */
 
-    struct fn_fieldlist
-      {
-
-	/* The overloaded name.  */
-
-	char *name;
-
-	/* The number of methods with this name.  */
-
-	int length;
-
-	/* The list of methods.  */
-
-	struct fn_field
-	  {
-
-	    /* If is_stub is clear, this is the mangled name which we can
-	       look up to find the address of the method (FIXME: it would
-	       be cleaner to have a pointer to the struct symbol here
-	       instead).  */
-
-	    /* If is_stub is set, this is the portion of the mangled
-	       name which specifies the arguments.  For example, "ii",
-	       if there are two int arguments, or "" if there are no
-	       arguments.  See gdb_mangle_name for the conversion from this
-	       format to the one used if is_stub is clear.  */
-
-	    char *physname;
-
-	    /* The function type for the method.
-	       (This comment used to say "The return value of the method",
-	       but that's wrong. The function type
-	       is expected here, i.e. something with TYPE_CODE_FUNC,
-	       and *not* the return-value type). */
-
-	    struct type *type;
-
-	    /* For virtual functions.
-	       First baseclass that defines this virtual function.   */
-
-	    struct type *fcontext;
-
-	    /* Attributes. */
-
-	    unsigned int is_const:1;
-	    unsigned int is_volatile:1;
-	    unsigned int is_private:1;
-	    unsigned int is_protected:1;
-	    unsigned int is_public:1;
-	    unsigned int is_abstract:1;
-	    unsigned int is_static:1;
-	    unsigned int is_final:1;
-	    unsigned int is_synchronized:1;
-	    unsigned int is_native:1;
-	    unsigned int is_artificial:1;
-
-	    /* A stub method only has some fields valid (but they are enough
-	       to reconstruct the rest of the fields).  */
-	    unsigned int is_stub:1;
-
-	    /* C++ method that is inlined */
-	    unsigned int is_inlined:1;
-
-	    /* Unused.  */
-	    unsigned int dummy:3;
-
-	    /* Index into that baseclass's virtual function table,
-	       minus 2; else if static: VOFFSET_STATIC; else: 0.  */
-
-	    unsigned int voffset:16;
-
-#define VOFFSET_STATIC 1
-
-	  }
-	 *fn_fields;
-
-      }
-     *fn_fieldlists;
+    struct fn_fieldlist *fn_fieldlists;
 
     /* If this "struct type" describes a template, then it
      * has arguments. "template_args" points to an array of
      * template arg descriptors, of length "ntemplate_args".
      * The only real information in each of these template arg descriptors
      * is a name. "type" will typically just point to a "struct type" with
-     * the placeholder TYPE_CODE_TEMPLATE_ARG type.
-     */
+     * the placeholder TYPE_CODE_TEMPLATE_ARG type.  */
     short ntemplate_args;
-    struct template_arg
-      {
-	char *name;
-	struct type *type;
-      }
-     *template_args;
+    struct template_arg *template_args;
 
     /* If this "struct type" describes a template, it has a list
      * of instantiations. "instantiations" is a pointer to an array
      * of type's, one representing each instantiation. There
-     * are "ninstantiations" elements in this array.
-     */
+     * are "ninstantiations" elements in this array.  */
     short ninstantiations;
     struct type **instantiations;
 
@@ -792,26 +790,13 @@ struct cplus_struct_type
      * a virtual table.
      *
      * ->VIRTUAL_BASE_LIST points to a list of struct type * pointers that
-     * point to the type information for all virtual bases among this type's
-     * ancestors.
-     */
-    struct runtime_info
-      {
-	short has_vtable;
-	struct type *primary_base;
-	struct type **virtual_base_list;
-      }
-     *runtime_ptr;
+     * point to the type information for all virtual bases among the
+     * ancestors of this type.  */
+    struct runtime_info *runtime_ptr;
 
     /* Pointer to information about enclosing scope, if this is a
-     * local type.  If it is not a local type, this is NULL
-     */
-    struct local_type_info
-      {
-	char *file;
-	int line;
-      }
-     *localtype_ptr;
+     * local type.  If it is not a local type, then this is NULL: */
+    struct local_type_info *localtype_ptr;
   };
 
 /* Struct used in computing virtual base list */

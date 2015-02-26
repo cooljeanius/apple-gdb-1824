@@ -1,4 +1,4 @@
-/* Line completion stuff for GDB, the GNU debugger.
+/* completer.c: Line completion stuff for GDB, the GNU debugger.
    Copyright 2000, 2001 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -42,7 +42,7 @@
 
 /* Prototypes for local functions */
 static
-char *line_completion_function (const char *text, int matches, 
+char *line_completion_function (const char *text, int matches,
 				char *line_buffer,
 				int point);
 
@@ -118,9 +118,9 @@ noop_completer (char *text, char *prefix)
   return NULL;
 }
 
-/* Complete on filenames.  */
+/* Complete on filenames: */
 char **
-filename_completer (char *text, char *word)
+filename_completer(char *text, char *word)
 {
   int subsequent_name;
   char **return_val;
@@ -128,21 +128,21 @@ filename_completer (char *text, char *word)
   int return_val_alloced;
 
   return_val_used = 0;
-  /* Small for testing.  */
+  /* Small for testing: */
   return_val_alloced = 1;
-  return_val = (char **) xmalloc (return_val_alloced * sizeof (char *));
+  return_val = (char **)xmalloc(return_val_alloced * sizeof(char *));
 
   subsequent_name = 0;
   while (1)
     {
       char *p;
-      p = rl_filename_completion_function (text, subsequent_name);
+      p = rl_filename_completion_function(text, subsequent_name);
       if (return_val_used >= return_val_alloced)
 	{
 	  return_val_alloced *= 2;
 	  return_val =
-	    (char **) xrealloc (return_val,
-				return_val_alloced * sizeof (char *));
+	    (char **)xrealloc(return_val,
+                              return_val_alloced * sizeof(char *));
 	}
       if (p == NULL)
 	{
@@ -154,33 +154,33 @@ filename_completer (char *text, char *word)
 	 by GDB is a backup file whose name ends in a `~', we will loop
 	 indefinitely.  */
       subsequent_name = 1;
-      /* Like emacs, don't complete on old versions.  Especially useful
+      /* Like emacs, do NOT complete on old versions.  Especially useful
          in the "source" command.  */
-      if (p[strlen (p) - 1] == '~')
+      if (p[strlen(p) - 1] == '~')
 	continue;
 
       {
 	char *q;
 	if (word == text)
-	  /* Return exactly p.  */
+	  /* Return exactly p: */
 	  return_val[return_val_used++] = p;
 	else if (word > text)
 	  {
-	    /* Return some portion of p.  */
-	    q = xmalloc (strlen (p) + 5);
-	    strcpy (q, p + (word - text));
+	    /* Return some portion of p: */
+	    q = (char *)xmalloc(strlen(p) + 5UL);
+	    strcpy(q, p + (word - text));
 	    return_val[return_val_used++] = q;
-	    xfree (p);
+	    xfree(p);
 	  }
 	else
 	  {
-	    /* Return some of TEXT plus p.  */
-	    q = xmalloc (strlen (p) + (text - word) + 5);
-	    strncpy (q, word, text - word);
+	    /* Return some of TEXT plus p: */
+	    q = (char *)xmalloc(strlen(p) + (text - word) + 5UL);
+	    strncpy(q, word, text - word);
 	    q[text - word] = '\0';
-	    strcat (q, p);
+	    strcat(q, p);
 	    return_val[return_val_used++] = q;
-	    xfree (p);
+	    xfree(p);
 	  }
       }
     }
@@ -191,7 +191,7 @@ filename_completer (char *text, char *word)
   /* Insure that readline does the right thing
      with respect to inserting quotes.  */
   rl_completer_word_break_characters = "";
-#endif
+#endif /* 0 */
   return return_val;
 }
 
@@ -245,7 +245,7 @@ location_completer (char *text, char *word)
 	 we found, pretend the colon is not there.  */
       else if (p < text + 3 && *p == ':' && p == text + 1 + quoted)
 	;
-#endif
+#endif /* HAVE_DOS_BASED_FILE_SYSTEM */
       else if (*p == ':' && !colon)
 	{
 	  colon = p;
@@ -303,9 +303,9 @@ location_completer (char *text, char *word)
      fn_list[] onto the end of list[].  */
   if (n_syms && n_files)
     {
-      list = xrealloc (list, (n_syms + n_files + 1) * sizeof (char *));
-      memcpy (list + n_syms, fn_list, (n_files + 1) * sizeof (char *));
-      xfree (fn_list);
+      list = (char **)xrealloc(list, (n_syms + n_files + 1) * sizeof(char *));
+      memcpy(list + n_syms, fn_list, (n_files + 1) * sizeof(char *));
+      xfree(fn_list);
     }
   else if (n_files)
     {
@@ -336,17 +336,17 @@ location_completer (char *text, char *word)
     {
       /* No completions at all.  As the final resort, try completing
 	 on the entire text as a symbol.  */
-      list = make_symbol_completion_list (orig_text, word);
+      list = make_symbol_completion_list(orig_text, word);
     }
 
   return list;
 }
 
-/* Complete on command names.  Used by "help".  */
+/* Complete on command names.  Used by "help": */
 char **
-command_completer (char *text, char *word)
+command_completer(char *text, char *word)
 {
-  return complete_on_cmdlist (cmdlist, text, word);
+  return complete_on_cmdlist(cmdlist, text, word);
 }
 
 

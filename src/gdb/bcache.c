@@ -1,4 +1,4 @@
-/* Implement a cached obstack.
+/* bcache.c: Implement a cached obstack.
    Written by Fred Fish <fnf@cygnus.com>
    Rewritten by Jim Blandy <jimb@cygnus.com>
 
@@ -71,7 +71,7 @@ struct bcache
 
   /* How many hash buckets we're using.  */
   unsigned int num_buckets;
-  
+
   /* Hash buckets.  This table is allocated using malloc, so when we
      grow the table we can return the old table to the system.  */
   struct bstring **bucket;
@@ -96,7 +96,7 @@ struct bcache
 };
 
 /* The old hash function was stolen from SDBM. This is what DB 3.0 uses now,
- * and is better than the old one. 
+ * and is better than the old one.
  */
 
 unsigned long
@@ -104,7 +104,7 @@ hash(const void *addr, int length)
 {
 		const unsigned char *k, *e;
 		unsigned long h;
-		
+
 		k = (const unsigned char *)addr;
 		e = k+length;
 		for (h=0; k< e;++k)
@@ -126,10 +126,10 @@ expand_hash_table (struct bcache *bcache)
 {
   /* A table of good hash table sizes.  Whenever we grow, we pick the
      next larger size from this table.  sizes[i] is close to 1 << (i+10),
-     so we roughly double the table size each time.  After we fall off 
+     so we roughly double the table size each time.  After we fall off
      the end of this table, we just double.  Don't laugh --- there have
      been executables sighted with a gigabyte of debug info.  */
-  static unsigned long sizes[] = { 
+  static unsigned long sizes[] = {
     1021, 2053, 4099, 8191, 16381, 32771,
     65537, 131071, 262144, 524287, 1048573, 2097143,
     4194301, 8388617, 16777213, 33554467, 67108859, 134217757,
@@ -330,9 +330,9 @@ print_percentage (int portion, int total)
 {
   if (total == 0)
     /* i18n: Like "Percentage of duplicates, by count: (not applicable)" */
-    printf_filtered (_("(not applicable)\n"));
+    printf_filtered(_("(not applicable)\n"));
   else
-    printf_filtered ("%3d%%\n", (int) (portion * 100.0 / total));
+    printf_filtered("%3d%%\n", (int)(portion * 100.0f / total));
 }
 
 
@@ -353,9 +353,9 @@ print_bcache_statistics (struct bcache *c, char *type)
      lengths, and measure chain lengths.  */
   {
     unsigned int b;
-    int *chain_length = XCALLOC (c->num_buckets + 1, int);
-    int *entry_size = XCALLOC (c->unique_count + 1, int);
-    int stringi = 0;
+    int *chain_length = XCALLOC((c->num_buckets + 1), int);
+    int *entry_size = XCALLOC((c->unique_count + 1), int);
+    unsigned long stringi = 0UL;
 
     occupied_buckets = 0;
 
@@ -368,12 +368,12 @@ print_bcache_statistics (struct bcache *c, char *type)
 	if (s)
 	  {
 	    occupied_buckets++;
-	    
+
 	    while (s)
 	      {
-		gdb_assert (b < c->num_buckets);
+		gdb_assert(b < c->num_buckets);
 		chain_length[b]++;
-		gdb_assert (stringi < c->unique_count);
+		gdb_assert(stringi < c->unique_count);
 		entry_size[stringi++] = s->length;
 		s = s->next;
 	      }
@@ -430,7 +430,7 @@ print_bcache_statistics (struct bcache *c, char *type)
     printf_filtered ("%ld\n", c->unique_size / c->unique_count);
   else
     /* i18n: "Average entry size: (not applicable)" */
-    printf_filtered (_("(not applicable)\n"));    
+    printf_filtered (_("(not applicable)\n"));
   printf_filtered (_("    Median entry size:  %d\n"), median_entry_size);
   printf_filtered ("\n");
 

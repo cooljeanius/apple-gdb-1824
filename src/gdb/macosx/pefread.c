@@ -142,35 +142,36 @@ pef_symfile_read (struct objfile *objfile, int mainline)
 }
 
 static void
-pef_symfile_finish (struct objfile *objfile)
+pef_symfile_finish(struct objfile *objfile)
 {
   return; /* FIXME: actually do something here */
 }
 
 static void
-pef_symfile_offsets (struct objfile *objfile, struct section_addr_info *addrs)
+pef_symfile_offsets(struct objfile *objfile, struct section_addr_info *addrs)
 {
-  unsigned int i;
+  unsigned int ij;
 
   objfile->num_sections = addrs->num_sections;
   objfile->section_offsets = (struct section_offsets *)
-    obstack_alloc (&objfile->objfile_obstack,
-                   SIZEOF_N_SECTION_OFFSETS (objfile->num_sections));
-  memset (objfile->section_offsets, 0,
-          SIZEOF_N_SECTION_OFFSETS (objfile->num_sections));
+    obstack_alloc(&objfile->objfile_obstack,
+                  SIZEOF_N_SECTION_OFFSETS(objfile->num_sections));
+  memset(objfile->section_offsets, 0,
+         SIZEOF_N_SECTION_OFFSETS(objfile->num_sections));
 
   if (addrs->other[0].addr != 0)
     {
-      for (i = 0; i < (objfile->sections_end - objfile->sections); i++)
+      ptrdiff_t ii;
+      for (ii = 0; ii < (objfile->sections_end - objfile->sections); ii++)
         {
-          objfile->sections[i].addr += addrs->other[0].addr;
-          objfile->sections[i].endaddr += addrs->other[0].addr;
+          objfile->sections[ii].addr += addrs->other[0].addr;
+          objfile->sections[ii].endaddr += addrs->other[0].addr;
         }
     }
 
-  for (i = 0; i < addrs->num_sections; i++)
+  for (ij = 0; ij < addrs->num_sections; ij++)
     {
-      objfile->section_offsets->offsets[i] = (long) addrs->other[0].addr;
+      objfile->section_offsets->offsets[ij] = (long)addrs->other[0].addr;
     }
 
   objfile->sect_index_text = 0;

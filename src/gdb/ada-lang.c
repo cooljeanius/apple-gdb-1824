@@ -58,7 +58,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #endif
 
 /* Define whether or not the C operator '/' truncates towards zero for
-   differently signed operands (truncation direction is undefined in C). 
+   differently signed operands (truncation direction is undefined in C).
    Copied from valarith.c.  */
 
 #ifndef TRUNCATION_TOWARDS_ZERO
@@ -305,21 +305,19 @@ ada_get_gdb_completer_word_break_characters (void)
 
 /* Read the string located at ADDR from the inferior and store the
    result into BUF.  */
-
 static void
-extract_string (CORE_ADDR addr, char *buf)
+extract_string(CORE_ADDR addr, char *buf)
 {
   int char_index = 0;
 
   /* Loop, reading one byte at a time, until we reach the '\000'
-     end-of-string marker.  */
-  do
-    {
-      target_read_memory (addr + char_index * sizeof (char),
-                          buf + char_index * sizeof (char), sizeof (char));
-      char_index++;
-    }
-  while (buf[char_index - 1] != '\000');
+   * end-of-string marker: */
+  do {
+    target_read_memory((addr + char_index * sizeof(char)),
+                       (gdb_byte *)(buf + char_index * sizeof(char)),
+                       sizeof(char));
+    char_index++;
+  } while (buf[char_index - 1] != '\000');
 }
 
 /* Assuming VECT points to an array of *SIZE objects of size
@@ -554,7 +552,7 @@ max_of_type (struct type *t)
 static LONGEST
 min_of_type (struct type *t)
 {
-  if (TYPE_UNSIGNED (t)) 
+  if (TYPE_UNSIGNED (t))
     return 0;
   else
     return min_of_size (TYPE_LENGTH (t));
@@ -971,7 +969,7 @@ Suppress:
 /* Table for keeping permanent unique copies of decoded names.  Once
    allocated, names in this table are never released.  While this is a
    storage leak, it should not be significant unless there are massive
-   changes in the set of decoded names in successive versions of a 
+   changes in the set of decoded names in successive versions of a
    symbol table loaded during a single session.  */
 static struct htab *decoded_names_store;
 
@@ -980,7 +978,7 @@ static struct htab *decoded_names_store;
    previously computed.  Tries to save the decoded name in the same
    obstack as GSYMBOL, if possible, and otherwise on the heap (so that,
    in any case, the decoded symbol has a lifetime at least that of
-   GSYMBOL).  
+   GSYMBOL).
    The GSYMBOL parameter is "mutable" in the C++ sense: logically
    const, but nevertheless modified to a semantically equivalent form
    when a decoded name is cached in it.
@@ -1380,7 +1378,7 @@ desc_arity (struct type *type)
   return 0;
 }
 
-/* Non-zero iff TYPE is a simple array type (not a pointer to one) or 
+/* Non-zero iff TYPE is a simple array type (not a pointer to one) or
    an array descriptor type (representing an unconstrained array
    type).  */
 
@@ -1774,9 +1772,9 @@ has_negatives (struct type *type)
 /* Create a new value of type TYPE from the contents of OBJ starting
    at byte OFFSET, and bit offset BIT_OFFSET within that byte,
    proceeding for BIT_SIZE bits.  If OBJ is an lval in memory, then
-   assigning through the result will set the field fetched from.  
+   assigning through the result will set the field fetched from.
    VALADDR is ignored unless OBJ is NULL, in which case,
-   VALADDR+OFFSET must address the start of storage containing the 
+   VALADDR+OFFSET must address the start of storage containing the
    packed value.  The value returned  in this case is never an lval.
    Assumes 0 <= BIT_OFFSET < HOST_CHAR_BIT.  */
 
@@ -2565,8 +2563,8 @@ resolve_subexp (struct expression **expp, int *pos, int deprocedure_p,
       break;
 
     case OP_STRING:
-      (*pos) += 3 
-        + BYTES_TO_EXP_ELEM (longest_to_int (exp->elts[pc + 1].longconst) 
+      (*pos) += 3
+        + BYTES_TO_EXP_ELEM (longest_to_int (exp->elts[pc + 1].longconst)
                              + 1);
       break;
 
@@ -3026,8 +3024,8 @@ sort_choices (struct ada_symbol_info syms[], int nsyms)
     }
 }
 
-/* Given a list of NSYMS symbols in SYMS, select up to MAX_RESULTS>0 
-   by asking the user (if necessary), returning the number selected, 
+/* Given a list of NSYMS symbols in SYMS, select up to MAX_RESULTS>0
+   by asking the user (if necessary), returning the number selected,
    and setting the first elements of SYMS items.  Error if no symbols
    selected.  */
 
@@ -3383,7 +3381,7 @@ possible_user_operator_p (enum exp_opcode op, struct value *args[])
               || TYPE_CODE (TYPE_TARGET_TYPE (type0)) != TYPE_CODE_ARRAY))
          || (TYPE_CODE (type1) != TYPE_CODE_ARRAY
              && (TYPE_CODE (type1) != TYPE_CODE_PTR
-                 || (TYPE_CODE (TYPE_TARGET_TYPE (type1)) 
+                 || (TYPE_CODE (TYPE_TARGET_TYPE (type1))
 		     != TYPE_CODE_ARRAY))));
 
     case BINOP_EXP:
@@ -3467,8 +3465,8 @@ ada_simple_renamed_entity (struct symbol *sym)
                                 /* Evaluation: Function Calls */
 
 /* Return an lvalue containing the value VAL.  This is the identity on
-   lvalues, and otherwise has the side-effect of pushing a copy of VAL 
-   on the stack, using and updating *SP as the stack pointer, and 
+   lvalues, and otherwise has the side-effect of pushing a copy of VAL
+   on the stack, using and updating *SP as the stack pointer, and
    returning an lvalue whose VALUE_ADDRESS points to the copy.  */
 
 static struct value *
@@ -3479,7 +3477,7 @@ ensure_lval (struct value *val, CORE_ADDR *sp)
       int len = TYPE_LENGTH (ada_check_typedef (value_type (val)));
 
       /* The following is taken from the structure-return code in
-	 call_function_by_hand. FIXME: Therefore, some refactoring seems 
+	 call_function_by_hand. FIXME: Therefore, some refactoring seems
 	 indicated. */
       if (INNER_THAN (1, 2))
 	{
@@ -3666,7 +3664,7 @@ standard_lookup (const char *name, const struct block *block,
 
 
 /* Non-zero iff there is at least one non-function/non-enumeral symbol
-   in the symbol fields of SYMS[0..N-1].  We treat enumerals as functions, 
+   in the symbol fields of SYMS[0..N-1].  We treat enumerals as functions,
    since they contend in overloading in the same way.  */
 static int
 is_nonfunction (struct ada_symbol_info syms[], int n)
@@ -3775,7 +3773,7 @@ add_defn_to_vec (struct obstack *obstackp,
   }
 }
 
-/* Number of ada_symbol_info structures currently collected in 
+/* Number of ada_symbol_info structures currently collected in
    current vector in *OBSTACKP.  */
 
 static int
@@ -3784,7 +3782,7 @@ num_defns_collected (struct obstack *obstackp)
   return obstack_object_size (obstackp) / sizeof (struct ada_symbol_info);
 }
 
-/* Vector of ada_symbol_info structures currently collected in current 
+/* Vector of ada_symbol_info structures currently collected in current
    vector in *OBSTACKP.  If FINISH, close off the vector and return
    its final address.  */
 
@@ -3994,8 +3992,8 @@ symtab_for_sym (struct symbol *sym)
 }
 
 /* Return a minimal symbol matching NAME according to Ada decoding
-   rules.  Returns NULL if there is no such minimal symbol.  Names 
-   prefixed with "standard__" are handled specially: "standard__" is 
+   rules.  Returns NULL if there is no such minimal symbol.  Names
+   prefixed with "standard__" are handled specially: "standard__" is
    first stripped off, and only static and global symbols are searched.  */
 
 struct minimal_symbol *
@@ -4044,7 +4042,7 @@ restore_language (void *lang)
   set_language ((enum language) lang);
 }
 
-/* As for lookup_symbol, but performed as if the current language 
+/* As for lookup_symbol, but performed as if the current language
    were LANG. */
 
 struct symbol *
@@ -4124,7 +4122,7 @@ static char *
 xget_renaming_scope (struct type *renaming_type)
 {
   /* The renaming types adhere to the following convention:
-     <scope>__<rename>___<XR extension>. 
+     <scope>__<rename>___<XR extension>.
      So, to extract the scope, we search for the "___XR" extension,
      and then backtrack until we find the first "__".  */
 
@@ -4212,8 +4210,8 @@ renaming_is_visible (const struct symbol *sym, char *function_name)
 
 /* Iterates over the SYMS list and remove any entry that corresponds to
    a renaming entity that is not visible from the function associated
-   with CURRENT_BLOCK. 
-   
+   with CURRENT_BLOCK.
+
    Rationale:
    GNAT emits a type following a specified encoding for each renaming
    entity.  Unfortunately, STABS currently does not support the definition
@@ -4227,14 +4225,14 @@ renaming_is_visible (const struct symbol *sym, char *function_name)
    remove from the SYMS list renaming symbols that should be visible
    from CURRENT_BLOCK.  However, there does not seem be a 100% reliable
    method with the current information available.  The implementation
-   below has a couple of limitations (FIXME: brobecker-2003-05-12):  
-   
+   below has a couple of limitations (FIXME: brobecker-2003-05-12):
+
       - When the user tries to print a rename in a function while there
         is another rename entity defined in a package:  Normally, the
         rename in the function has precedence over the rename in the
         package, so the latter should be removed from the list.  This is
         currently not the case.
-        
+
       - This function will incorrectly remove valid renames if
         the CURRENT_BLOCK corresponds to a function which symbol name
         has been changed by an "Export" pragma.  As a consequence,
@@ -4288,14 +4286,14 @@ remove_out_of_scope_renamings (struct ada_symbol_info *syms,
    scope and in global scopes, returning the number of matches.  Sets
    *RESULTS to point to a vector of (SYM,BLOCK,SYMTAB) triples,
    indicating the symbols found and the blocks and symbol tables (if
-   any) in which they were found.  This vector are transient---good only to 
-   the next call of ada_lookup_symbol_list.  Any non-function/non-enumeral 
+   any) in which they were found.  This vector are transient---good only to
+   the next call of ada_lookup_symbol_list.  Any non-function/non-enumeral
    symbol match within the nest of blocks whose innermost member is BLOCK0,
    is the one match returned (no other matches in that or
      enclosing blocks is returned).  If there are any matches in or
    surrounding BLOCK0, then these alone are returned.  Otherwise, the
    search extends to global and file-scope (static) symbol tables.
-   Names prefixed with "standard__" are handled specially: "standard__" 
+   Names prefixed with "standard__" are handled specially: "standard__"
    is first stripped off, and only static and global symbols are searched.  */
 
 int
@@ -4492,7 +4490,7 @@ done:
 /* Return a symbol in DOMAIN matching NAME, in BLOCK0 and enclosing
    scope and in global scopes, or NULL if none.  NAME is folded and
    encoded first.  Otherwise, the result is as for ada_lookup_symbol_list,
-   choosing the first symbol if there are multiple choices.  
+   choosing the first symbol if there are multiple choices.
    *IS_A_FIELD_OF_THIS is set to 0 and *SYMTAB is set to the symbol
    table in which the symbol was found (in both cases, these
    assignments occur only if the pointers are non-null).  */
@@ -4570,7 +4568,7 @@ ada_lookup_symbol_nonlocal (const char *name,
    names (e.g., XVE) are not included here.  Currently, the possible suffixes
    are given by either of the regular expression:
 
-   (__[0-9]+)?\.[0-9]+  [nested subprogram suffix, on platforms such 
+   (__[0-9]+)?\.[0-9]+  [nested subprogram suffix, on platforms such
                          as GNU/Linux]
    ___[0-9]+            [nested subprogram suffix, on platforms such as HP/UX]
    (X[nb]*)?((\$|__)[0-9](_?[0-9]+)|___(JM|LJM|X([FDBUP].*|R[^T]?)))?$
@@ -4672,8 +4670,8 @@ is_name_suffix (const char *str)
 }
 
 /* Return nonzero if the given string starts with a dot ('.')
-   followed by zero or more digits.  
-   
+   followed by zero or more digits.
+
    Note: brobecker/2003-11-10: A forward declaration has not been
    added at the begining of this file yet, because this function
    is only used to work around a problem found during wild matching
@@ -4790,8 +4788,8 @@ wild_match (const char *patn0, int patn_len, const char *name0)
 
 
 /* Add symbols from BLOCK matching identifier NAME in DOMAIN to
-   vector *defn_symbols, updating the list of symbols in OBSTACKP 
-   (if necessary).  If WILD, treat as NAME with a wildcard prefix. 
+   vector *defn_symbols, updating the list of symbols in OBSTACKP
+   (if necessary).  If WILD, treat as NAME with a wildcard prefix.
    OBJFILE is the section containing BLOCK.
    SYMTAB is recorded with each symbol added.  */
 
@@ -5040,8 +5038,8 @@ struct tag_args
 };
 
 /* Wrapper function used by ada_tag_name.  Given a struct tag_args*
-   value ARGS, sets ARGS->name to the tag name of ARGS->tag.  
-   The value stored in ARGS->name is valid until the next call to 
+   value ARGS, sets ARGS->name to the tag name of ARGS->tag.
+   The value stored in ARGS->name is valid until the next call to
    ada_tag_name_1.  */
 
 static int
@@ -5140,7 +5138,7 @@ ada_is_variant_part (struct type *type, int field_num)
   struct type *field_type = TYPE_FIELD_TYPE (type, field_num);
   return (TYPE_CODE (field_type) == TYPE_CODE_UNION
           || (is_dynamic_field (type, field_num)
-              && (TYPE_CODE (TYPE_TARGET_TYPE (field_type)) 
+              && (TYPE_CODE (TYPE_TARGET_TYPE (field_type))
 		  == TYPE_CODE_UNION)));
 }
 
@@ -5343,8 +5341,8 @@ ada_value_primitive_field (struct value *arg1, int offset, int fieldno,
 }
 
 /* Find field with name NAME in object of type TYPE.  If found, return 1
-   after setting *FIELD_TYPE_P to the field's type, *BYTE_OFFSET_P to 
-   OFFSET + the byte offset of the field within an object of that type, 
+   after setting *FIELD_TYPE_P to the field's type, *BYTE_OFFSET_P to
+   OFFSET + the byte offset of the field within an object of that type,
    *BIT_OFFSET_P to the bit offset modulo byte size of the field, and
    *BIT_SIZE_P to its size in bits if the field is packed, and 0 otherwise.
    Looks inside wrappers for the field.  Returns 0 if field not
@@ -5464,7 +5462,7 @@ ada_search_struct_field (char *name, struct value *arg, int offset,
    target structure/union and return it as a value with its
    appropriate type.  If ARG is a pointer or reference and the field
    is not packed, returns a reference to the field, otherwise the
-   value of the field (an lvalue if ARG is an lvalue).     
+   value of the field (an lvalue if ARG is an lvalue).
 
    The routine searches for NAME among all members of the structure itself
    and (recursively) among all members of any wrapper members
@@ -5579,7 +5577,7 @@ ada_value_struct_elt (struct value *arg, char *name, char *err)
    Matches any field whose name has NAME as a prefix, possibly
    followed by "___".
 
-   TYPE can be either a struct or union. If REFOK, TYPE may also 
+   TYPE can be either a struct or union. If REFOK, TYPE may also
    be a (pointer or reference)+ to a struct or union, and the
    ultimate target type will be searched.
 
@@ -7166,7 +7164,7 @@ ada_evaluate_subexp (struct type *expect_type, struct expression *exp,
         struct value *result;
         *pos -= 1;
         result = evaluate_subexp_standard (expect_type, exp, pos, noside);
-        /* The result type will have code OP_STRING, bashed there from 
+        /* The result type will have code OP_STRING, bashed there from
            OP_ARRAY.  Bash it back.  */
         if (TYPE_CODE (value_type (result)) == TYPE_CODE_STRING)
           TYPE_CODE (value_type (result)) = TYPE_CODE_ARRAY;
@@ -7498,7 +7496,7 @@ array or function"));
                   to_fixed_array_type (TYPE_TARGET_TYPE (value_type (array)),
                                        NULL, 1);
                 return ada_value_slice_ptr (array, arr_type0,
-                                            (int) low_bound, 
+                                            (int) low_bound,
 					    (int) high_bound);
               }
           }
@@ -7851,8 +7849,8 @@ always returns true"));
                                                  1, 1, NULL);
               if (type == NULL)
                 /* In this case, we assume that the field COULD exist
-                   in some extension of the type.  Return an object of 
-                   "type" void, which will match any formal 
+                   in some extension of the type.  Return an object of
+                   "type" void, which will match any formal
                    (see ada_type_match). */
                 return value_zero (builtin_type_void, lval_memory);
             }
@@ -7954,14 +7952,14 @@ scaling_factor (struct type *type)
   unsigned long num0, den0, num1, den1;
   int n;
 
-  n = sscanf (encoding, "_%lu_%lu_%lu_%lu", &num0, &den0, &num1, &den1);
+  n = sscanf(encoding, "_%lu_%lu_%lu_%lu", &num0, &den0, &num1, &den1);
 
   if (n < 2)
     return 1.0;
   else if (n == 4)
-    return (DOUBLEST) num1 / (DOUBLEST) den1;
+    return ((DOUBLEST)num1 / (DOUBLEST)den1);
   else
-    return (DOUBLEST) num0 / (DOUBLEST) den0;
+    return ((DOUBLEST)num0 / (DOUBLEST)den0);
 }
 
 
@@ -7969,18 +7967,18 @@ scaling_factor (struct type *type)
    type TYPE, return its floating-point equivalent.  */
 
 DOUBLEST
-ada_fixed_to_float (struct type *type, LONGEST x)
+ada_fixed_to_float(struct type *type, LONGEST x)
 {
-  return (DOUBLEST) x *scaling_factor (type);
+  return ((DOUBLEST)x * scaling_factor(type));
 }
 
 /* The representation of a fixed-point value of type TYPE
    corresponding to the value X.  */
 
 LONGEST
-ada_float_to_fixed (struct type *type, DOUBLEST x)
+ada_float_to_fixed(struct type *type, DOUBLEST x)
 {
-  return (LONGEST) (x / scaling_factor (type) + 0.5);
+  return (LONGEST)(x / scaling_factor(type) + 0.5);
 }
 
 
@@ -8301,7 +8299,7 @@ ada_op_name (enum exp_opcode opcode)
 }
 
 /* As for operator_length, but assumes PC is pointing at the first
-   element of the operator, and gives meaningful results only for the 
+   element of the operator, and gives meaningful results only for the
    Ada-specific operators.  */
 
 static void
@@ -8594,7 +8592,7 @@ ada_create_fundamental_type (struct objfile *objfile, int typeid)
       break;
     case FT_SIGNED_INTEGER:
       type = init_type (TYPE_CODE_INT, TARGET_INT_BIT /
-			TARGET_CHAR_BIT, 
+			TARGET_CHAR_BIT,
 			0, "integer", objfile);        /* FIXME -fnf */
       break;
     case FT_UNSIGNED_INTEGER:
@@ -8684,7 +8682,7 @@ ada_language_arch_info (struct gdbarch *current_gdbarch,
   lai->primitive_type_vector [ada_primitive_type_short] =
     init_type (TYPE_CODE_INT, TARGET_SHORT_BIT / TARGET_CHAR_BIT,
                0, "short_integer", (struct objfile *) NULL);
-  lai->string_char_type = 
+  lai->string_char_type =
     lai->primitive_type_vector [ada_primitive_type_char] =
     init_type (TYPE_CODE_INT, TARGET_CHAR_BIT / TARGET_CHAR_BIT,
                0, "character", (struct objfile *) NULL);

@@ -1099,7 +1099,8 @@ dyld_entry_shlib_num_matches (int shlibnum, char *args, int verbose)
 }
 
 void
-dyld_print_entry_info (struct dyld_objfile_entry *j, int shlibnum, int baselen)
+dyld_print_entry_info(struct dyld_objfile_entry *j, int shlibnum,
+                      size_t baselen)
 {
   char *name;
   char *objname;
@@ -1119,49 +1120,49 @@ dyld_print_entry_info (struct dyld_objfile_entry *j, int shlibnum, int baselen)
   const char *ptr;
   struct cleanup *list_cleanup;
 
-  dyld_entry_info (j, 1, &name, &objname, &symname,
-		   &auxobjname, &auxsymname, &dsymobjname,
-                   &addr, &slide, &prefix);
+  dyld_entry_info(j, 1, &name, &objname, &symname,
+		  &auxobjname, &auxsymname, &dsymobjname,
+                  &addr, &slide, &prefix);
 
   if (name == NULL)
     {
-      fname = savestring ("-", strlen ("-"));
+      fname = savestring("-", strlen("-"));
       is_framework = 0;
       is_bundle = 0;
     }
   else
     {
-      dyld_library_basename (name, &tfname, &tfnamelen, &is_framework,
-                             &is_bundle);
-      fname = savestring (tfname, tfnamelen);
-      xfree ((char *) tfname);
+      dyld_library_basename(name, &tfname, &tfnamelen, &is_framework,
+                            &is_bundle);
+      fname = savestring(tfname, tfnamelen);
+      xfree((char *)tfname);
     }
 
   if (j->dyld_valid)
     {
-      snprintf (addrbuf, 24, "0x%s", paddr_nz (j->dyld_addr));
+      snprintf(addrbuf, 24, "0x%s", paddr_nz (j->dyld_addr));
     }
   else
     {
-      strcpy (addrbuf, "-");
+      strcpy(addrbuf, "-");
     }
 
-  if (baselen < strlen (fname))
+  if (baselen < strlen(fname))
     {
-      baselen = strlen (fname);
+      baselen = strlen(fname);
     }
 
-  list_cleanup = make_cleanup_ui_out_list_begin_end (uiout, "shlib-info");
+  list_cleanup = make_cleanup_ui_out_list_begin_end(uiout, "shlib-info");
   if (shlibnum < 10)
-    ui_out_text (uiout, "  ");
+    ui_out_text(uiout, "  ");
   else if (shlibnum < 100)
-    ui_out_text (uiout, " ");
+    ui_out_text(uiout, " ");
 
   ui_out_field_int (uiout, "num", shlibnum);
   ui_out_spaces (uiout, 1);
 
-  ui_out_field_string (uiout, "name", fname);
-  ui_out_spaces (uiout, baselen - strlen (fname) + 1);
+  ui_out_field_string(uiout, "name", fname);
+  ui_out_spaces(uiout, baselen - strlen(fname) + 1);
 
   ptr = is_framework ? "F" : (is_bundle ? "B" : "-");
   ui_out_field_string (uiout, "kind", ptr);
@@ -1499,13 +1500,12 @@ dyld_print_shlib_info (struct dyld_objfile_info *s, unsigned int reason_mask,
 
       if ((args == NULL) || dyld_entry_shlib_num_matches (shlibnum, args, 0))
         {
-          dyld_print_entry_info (j, shlibnum, baselen);
+          dyld_print_entry_info(j, shlibnum, baselen);
         }
     }
 
-  /* Then, print all the remaining objfiles. */
-
-  ALL_OBJFILES_SAFE (objfile, temp)
+  /* Then, print all the remaining objfiles: */
+  ALL_OBJFILES_SAFE(objfile, temp)
     {
       int found = 0;
       struct dyld_objfile_entry *j;

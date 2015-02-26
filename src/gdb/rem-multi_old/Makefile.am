@@ -53,8 +53,8 @@ SERVER = remote_server.o \
 all: prog
 .PHONY: all
 
-prog: $(SERVER) Remote_Makefile
-	$(CC) -ggdb -o serve $(SERVER) ${AM_LDFLAGS}
+prog: $(SERVER) @MAINT@ Remote_Makefile
+	$(AM_V_CCLD)$(CCLD) -ggdb -o serve $(SERVER) ${AM_LDFLAGS}
 .PHONY: prog
 
 clean-local:

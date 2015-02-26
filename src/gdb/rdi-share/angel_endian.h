@@ -114,8 +114,8 @@ typedef U32 *P_U32;
                                       PWRITE16(e,a,v) : PWRITE32(e,a,v)))
 
 /* unsigned PREAD(int endianness, void *address) */
-#define PREAD16(e,a) ((e) ? GET16BE(a) : GET16LE(a))
-#define PREAD32(e,a) ((e) ? GET32BE(a) : GET32LE(a))
+#define PREAD16(e,a) (unsigned)((e) ? GET16BE(a) : GET16LE(a))
+#define PREAD32(e,a) (unsigned)((e) ? GET32BE(a) : GET32LE(a))
 #define PREAD(e,a) ((sizeof(*(a)) == sizeof(char)) ? \
                     GET8((CP_U8)a) : ((sizeof(*(a)) == sizeof(short)) ? \
                                      PREAD16(e,a) : PREAD32(e,a)))

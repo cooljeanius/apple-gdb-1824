@@ -811,40 +811,40 @@ mi_cmd_file_fix_file (char *command, char **argv, int argc)
                 architecture/osabi?  */
 
 enum mi_cmd_result
-mi_cmd_file_fix_file_is_grooved (char *command, char **argv, int argc)
+mi_cmd_file_fix_file_is_grooved(char *command, char **argv, int argc)
 {
-  int retval = fix_and_continue_supported ();
+  int retval = fix_and_continue_supported();
 
-  /* For cases where we can't determine if F&C is supported (e.g. a
-     binary hasn't yet been specified), retval is -1 and we'll just
+  /* For cases where we cannot determine if F&C is supported (e.g. a
+     binary has NOT yet been specified), retval is -1 and we willl just
      report "Supported" to our GUI and hope for the best. */
 
-  if (retval == 1 || retval == -1)
+  if ((retval == 1) || (retval == -1))
     {
-      ui_out_field_int (uiout, "supported", 1);
-      ui_out_field_string (uiout, "details", "Yes grooved!");
+      ui_out_field_int(uiout, "supported", 1);
+      ui_out_field_string(uiout, "details", "Yes grooved!");
     }
   else
     {
-      ui_out_field_int (uiout, "supported", 0);
-      ui_out_field_string (uiout, "details", "Groove is gone.");
+      ui_out_field_int(uiout, "supported", 0);
+      ui_out_field_string(uiout, "details", "Groove is gone.");
     }
 
   return MI_CMD_DONE;
 }
 
 enum mi_cmd_result
-mi_cmd_thread_list_ids (char *command, char **argv, int argc)
+mi_cmd_thread_list_ids(char *command, char **argv, int argc)
 {
-  enum gdb_rc rc = MI_CMD_DONE;
+  enum gdb_rc rc = (enum gdb_rc)MI_CMD_DONE;
 
   if (argc != 0)
     {
-      mi_error_message = xstrprintf ("mi_cmd_thread_list_ids: No arguments required.");
+      mi_error_message = xstrprintf("mi_cmd_thread_list_ids: No arguments required.");
       return MI_CMD_ERROR;
     }
   else
-    rc = gdb_list_thread_ids (uiout, &mi_error_message);
+    rc = gdb_list_thread_ids(uiout, &mi_error_message);
 
   if (rc == GDB_RC_FAIL)
     return MI_CMD_ERROR;
@@ -1186,22 +1186,23 @@ mi_cmd_data_write_register_values (char *command, char **argv, int argc)
           void *buffer;
           struct cleanup *old_chain;
 
-          /* Get the value as a number */
-          value = parse_and_eval_address (argv[i + 1]);
-          /* Get the value into an array */
-          buffer = xmalloc (DEPRECATED_REGISTER_SIZE);
-          old_chain = make_cleanup (xfree, buffer);
-          store_signed_integer (buffer, DEPRECATED_REGISTER_SIZE, value);
-          /* Write it down */
-	  deprecated_write_register_bytes
-	    (DEPRECATED_REGISTER_BYTE (regnum),
-	     buffer, register_size (current_gdbarch, regnum));
-          /* Free the buffer.  */
-          do_cleanups (old_chain);
+          /* Get the value as a number: */
+          value = parse_and_eval_address(argv[i + 1]);
+          /* Get the value into an array: */
+          buffer = xmalloc(DEPRECATED_REGISTER_SIZE);
+          old_chain = make_cleanup(xfree, buffer);
+          store_signed_integer((gdb_byte *)buffer, DEPRECATED_REGISTER_SIZE, value);
+          /* Write it down: */
+	  deprecated_write_register_bytes(DEPRECATED_REGISTER_BYTE(regnum),
+                                          (gdb_byte *)buffer,
+                                          register_size(current_gdbarch,
+                                                        regnum));
+          /* Free the buffer: */
+          do_cleanups(old_chain);
         }
       else
 	{
-	  mi_error_message = xstrprintf ("bad register number");
+	  mi_error_message = xstrprintf("bad register number");
 	  return MI_CMD_ERROR;
 	}
     }
@@ -1289,27 +1290,27 @@ mi_cmd_data_evaluate_expression (char *command, char **argv, int argc)
       return MI_CMD_ERROR;
     }
 
-  old_chain = make_cleanup_set_restore_scheduler_locking_mode (scheduler_locking_on);
+  old_chain = make_cleanup_set_restore_scheduler_locking_mode(scheduler_locking_on);
   if (unwinding_was_requested)
-    make_cleanup_set_restore_unwind_on_signal (1);
+    make_cleanup_set_restore_unwind_on_signal(1);
 
-  expr = parse_expression (expr_string);
+  expr = parse_expression(expr_string);
 
-  make_cleanup (free_current_contents, &expr);
+  make_cleanup(free_current_contents, &expr);
 
-  val = evaluate_expression (expr);
+  val = evaluate_expression(expr);
 
-  /* Print the result of the expression evaluation. */
-  val_print (value_type (val), value_contents (val),
-	     value_embedded_offset (val), VALUE_ADDRESS (val),
-	     stb->stream, 0, 0, 0, 0);
+  /* Print the result of the expression evaluation: */
+  val_print(value_type(val), value_contents(val),
+	    value_embedded_offset(val), VALUE_ADDRESS(val),
+	    stb->stream, 0, 0, 0, (enum val_prettyprint)0);
 
-  ui_out_field_stream (uiout, "value", stb);
-  ui_out_stream_delete (stb);
+  ui_out_field_stream(uiout, "value", stb);
+  ui_out_stream_delete(stb);
 
-  do_cleanups (old_chain);
+  do_cleanups(old_chain);
   /* APPLE LOCAL Disable breakpoints while updating data formatters.  */
-  do_cleanups (bp_cleanup);
+  do_cleanups(bp_cleanup);
 
   return MI_CMD_DONE;
 }
@@ -1323,33 +1324,33 @@ mi_cmd_data_evaluate_expression (char *command, char **argv, int argc)
    letting the implementation deal with it.  */
 
 enum mi_cmd_result
-mi_cmd_target_attach (char *command, char **argv, int argc)
+mi_cmd_target_attach(char *command, char **argv, int argc)
 {
   char *attach_arg;
   struct cleanup *cleanups;
 
   if (target_has_execution)
-    error ("mi_cmd_target_attach: Already debugging - detach first");
+    error("mi_cmd_target_attach: Already debugging - detach first");
 
   if (argc == 1)
     {
       attach_arg = argv[0];
-      cleanups = make_cleanup (null_cleanup, NULL);
+      cleanups = make_cleanup(null_cleanup, NULL);
     }
-  else if (argc == 2 && strcmp (argv[0], "-waitfor") == 0)
+  else if ((argc == 2) && (strcmp(argv[0], "-waitfor") == 0))
     {
-      int arg_len;
-      arg_len = strlen ("-waitfor \"") + strlen (argv[1]) + 2;
-      attach_arg = xmalloc (arg_len);
-      cleanups = make_cleanup (xfree, attach_arg);
-      snprintf (attach_arg, arg_len, "-waitfor \"%s\"", argv[1]);
+      size_t arg_len;
+      arg_len = (strlen("-waitfor \"") + strlen(argv[1]) + 2UL);
+      attach_arg = (char *)xmalloc(arg_len);
+      cleanups = make_cleanup(xfree, attach_arg);
+      snprintf(attach_arg, arg_len, "-waitfor \"%s\"", argv[1]);
     }
   else
-    error ("mi_cmd_target_attach: Usage PID|-waitfor \"PROCESS\"");
+    error("mi_cmd_target_attach: Usage PID|-waitfor \"PROCESS\"");
 
-  attach_command (attach_arg, 0);
+  attach_command(attach_arg, 0);
 
-  do_cleanups (cleanups);
+  do_cleanups(cleanups);
   return MI_CMD_DONE;
 }
 
@@ -1422,7 +1423,7 @@ struct solib_token_elem
 } *solib_token_list;
 
 enum mi_cmd_result
-mi_cmd_target_load_solib (char *command, char **argv, int argc)
+mi_cmd_target_load_solib(char *command, char **argv, int argc)
 {
   static int token_ctr = 0;
   struct value *ret_val = NULL;
@@ -1431,7 +1432,7 @@ mi_cmd_target_load_solib (char *command, char **argv, int argc)
 
   if (argc > 2)
     {
-      mi_error_message = xstrdup ("Too many arguments: target-load-solib <PATH> [<FLAGS>]");
+      mi_error_message = xstrdup("Too many arguments: target-load-solib <PATH> [<FLAGS>]");
       return MI_CMD_ERROR;
     }
   else if (argc == 0)
@@ -1456,17 +1457,16 @@ mi_cmd_target_load_solib (char *command, char **argv, int argc)
       return MI_CMD_ERROR;
     }
 
-  new_token = xmalloc (sizeof (struct solib_token_elem));
-  new_token->token = xstrprintf ("%d-solib", token_ctr++);
+  new_token = (struct solib_token_elem *)xmalloc(sizeof(struct solib_token_elem));
+  new_token->token = xstrprintf("%d-solib", token_ctr++);
   new_token->val = ret_val;
-  release_value (ret_val);
+  release_value(ret_val);
 
   new_token->next = solib_token_list;
   solib_token_list = new_token;
 
-  ui_out_field_string (uiout, "token", new_token->token);
+  ui_out_field_string(uiout, "token", new_token->token);
   return MI_CMD_DONE;
-
 }
 
 /* TARGET-UNLOAD-SOLIB
@@ -1609,7 +1609,7 @@ mi_cmd_data_read_memory (char *command, char **argv, int argc)
 
   /* create a buffer and read it in: */
   total_bytes = (word_size * nr_rows * nr_cols);
-  mbuf = xcalloc(total_bytes, 1);
+  mbuf = (char *)xcalloc(total_bytes, 1);
   make_cleanup(xfree, mbuf);
 
   nr_bytes = target_read(&current_target, TARGET_OBJECT_MEMORY, NULL,
@@ -1711,13 +1711,13 @@ mi_cmd_data_read_memory (char *command, char **argv, int argc)
 
    Prints nothing. */
 enum mi_cmd_result
-mi_cmd_data_write_memory (char *command, char **argv, int argc)
+mi_cmd_data_write_memory(char *command, char **argv, int argc)
 {
   CORE_ADDR addr;
   char word_format;
   long word_size;
   /* FIXME: ezannoni 2000-02-17 LONGEST could possibly not be big
-     enough when using a compiler other than GCC. */
+   * enough when using a compiler other than GCC: */
   LONGEST value;
   void *buffer;
   struct cleanup *old_chain;
@@ -1731,20 +1731,22 @@ mi_cmd_data_write_memory (char *command, char **argv, int argc)
   static struct mi_opt opts[] =
   {
     {"o", OFFSET_OPT, 1},
-    {0, 0, 0},
+    { 0, 0, 0 },
   };
 
   while (1)
     {
-      int opt = mi_getopt ("mi_cmd_data_write_memory", argc, argv, opts,
-			   &optind, &optarg);
+      int opt = mi_getopt("mi_cmd_data_write_memory", argc, argv, opts,
+			  &optind, &optarg);
       if (opt < 0)
 	break;
-      switch ((enum opt) opt)
+      switch ((enum opt)opt)
 	{
 	case OFFSET_OPT:
-	  offset = atol (optarg);
+	  offset = atol(optarg);
 	  break;
+        default:
+          break;
 	}
     }
   argv += optind;
@@ -1752,46 +1754,46 @@ mi_cmd_data_write_memory (char *command, char **argv, int argc)
 
   if (argc != 4)
     {
-      mi_error_message = xstrprintf ("mi_cmd_data_write_memory: Usage: [-o COLUMN_OFFSET] ADDR FORMAT WORD-SIZE VALUE.");
+      mi_error_message = xstrprintf("mi_cmd_data_write_memory: Usage: [-o COLUMN_OFFSET] ADDR FORMAT WORD-SIZE VALUE.");
       return MI_CMD_ERROR;
     }
 
   /* Extract all the arguments. */
-  /* Start address of the memory dump. */
-  addr = parse_and_eval_address (argv[0]);
-  /* The format character to use when displaying a memory word. See
-     the ``x'' command. */
+  /* Start address of the memory dump: */
+  addr = parse_and_eval_address(argv[0]);
+  /* The format character to use when displaying a memory word.  See
+   * the ``x'' command: */
   word_format = argv[1][0];
-  /* The size of the memory word. */
-  word_size = atol (argv[2]);
+  /* The size of the memory word: */
+  word_size = atol(argv[2]);
 
-  /* Calculate the real address of the write destination. */
+  /* Calculate the real address of the write destination: */
   addr += (offset * word_size);
 
-  /* Get the value as a number */
-  value = parse_and_eval_address (argv[3]);
-  /* Get the value into an array */
-  buffer = xmalloc (word_size);
-  old_chain = make_cleanup (xfree, buffer);
-  store_signed_integer (buffer, word_size, value);
-  /* Write it down to memory */
-  write_memory (addr, buffer, word_size);
-  /* Free the buffer.  */
-  do_cleanups (old_chain);
+  /* Get the value as a number: */
+  value = parse_and_eval_address(argv[3]);
+  /* Get the value into an array: */
+  buffer = xmalloc(word_size);
+  old_chain = make_cleanup(xfree, buffer);
+  store_signed_integer((gdb_byte *)buffer, word_size, value);
+  /* Write it down to memory: */
+  write_memory(addr, (const bfd_byte *)buffer, word_size);
+  /* Free the buffer: */
+  do_cleanups(old_chain);
 
   return MI_CMD_DONE;
 }
 
 enum mi_cmd_result
-mi_cmd_enable_timings (char *command, char **argv, int argc)
+mi_cmd_enable_timings(char *command, char **argv, int argc)
 {
   if (argc == 0)
     do_timings = 1;
   else if (argc == 1)
     {
-      if (strcmp (argv[0], "yes") == 0)
+      if (strcmp(argv[0], "yes") == 0)
 	do_timings = 1;
-      else if (strcmp (argv[0], "no") == 0)
+      else if (strcmp(argv[0], "no") == 0)
 	do_timings = 0;
       else
 	goto usage_error;
@@ -2050,10 +2052,10 @@ captured_mi_execute_command (struct ui_out *uiout, void *data)
 
 
 void
-mi_interpreter_exec_continuation (struct continuation_arg *in_arg)
+mi_interpreter_exec_continuation(struct continuation_arg *in_arg)
 {
   struct mi_continuation_arg *arg
-    = (struct mi_continuation_arg *) in_arg;
+    = (struct mi_continuation_arg *)in_arg;
 
   if (!target_executing)
     {
@@ -2064,19 +2066,19 @@ mi_interpreter_exec_continuation (struct continuation_arg *in_arg)
 	 suppress the prompt. */
 
       if (arg->cleanups != NULL)
-	do_exec_cleanups (arg->cleanups);
+	do_exec_cleanups(arg->cleanups);
 
       if (arg && arg->token)
-	fputs_unfiltered (arg->token, raw_stdout);
+	fputs_unfiltered(arg->token, raw_stdout);
 
-      fputs_unfiltered ("*stopped", raw_stdout);
+      fputs_unfiltered("*stopped", raw_stdout);
       if (do_timings && arg && arg->timestamp)
         {
-          end_remote_counts (arg->timestamp);
-	  print_diff_now (arg->timestamp);
+          end_remote_counts(arg->timestamp);
+	  print_diff_now(arg->timestamp);
         }
-      mi_out_put (uiout, raw_stdout);
-      fputs_unfiltered ("\n", raw_stdout);
+      mi_out_put(uiout, raw_stdout);
+      fputs_unfiltered("\n", raw_stdout);
 
       /* Tricky point - we need to add this continuation
 	 before we run the actions, since one of the breakpoint commands
@@ -2087,15 +2089,15 @@ mi_interpreter_exec_continuation (struct continuation_arg *in_arg)
 	{
 	  if (arg && arg->timestamp)
             {
-	      timestamp (arg->timestamp);
-              start_remote_counts (arg->timestamp, arg->token);
+	      timestamp(arg->timestamp);
+              start_remote_counts(arg->timestamp, arg->token);
             }
 
-	  add_continuation (mi_interpreter_exec_continuation,
-			  (struct continuation_arg *) arg);
+	  add_continuation(mi_interpreter_exec_continuation,
+                           (struct continuation_arg *)arg);
 	}
 
-      bpstat_do_actions (&stop_bpstat);
+      bpstat_do_actions(&stop_bpstat);
 
       if (!target_executing)
 	{
@@ -2126,7 +2128,7 @@ mi_interpreter_exec_continuation (struct continuation_arg *in_arg)
     }
   else if (target_can_async_p())
     {
-      add_continuation (mi_interpreter_exec_continuation, in_arg);
+      add_continuation(mi_interpreter_exec_continuation, in_arg);
     }
 }
 
@@ -2550,18 +2552,19 @@ mi_exec_async_cli_cmd_continuation (struct continuation_arg *in_arg)
 	  gdb_flush (raw_stdout);
 	}
     }
-  else if (target_can_async_p ())
+  else if (target_can_async_p())
     {
-      add_continuation (mi_exec_async_cli_cmd_continuation,
-                        (struct continuation_arg *) in_arg);
+      add_continuation(mi_exec_async_cli_cmd_continuation,
+                       (struct continuation_arg *)in_arg);
     }
 }
 
 void
-mi_setup_architecture_data (void)
+mi_setup_architecture_data(void)
 {
-  old_regs = xmalloc ((NUM_REGS + NUM_PSEUDO_REGS) * MAX_REGISTER_SIZE + 1);
-  memset (old_regs, 0, (NUM_REGS + NUM_PSEUDO_REGS) * MAX_REGISTER_SIZE + 1);
+  old_regs = (char *)xmalloc((NUM_REGS + NUM_PSEUDO_REGS) * MAX_REGISTER_SIZE + 1UL);
+  memset(old_regs, 0,
+         ((NUM_REGS + NUM_PSEUDO_REGS) * MAX_REGISTER_SIZE + 1));
 }
 
 void
@@ -2670,7 +2673,7 @@ mi_interp_sync_fake_running(void)
 
   if (current_command_token)
     {
-      prefix = xmalloc(strlen(current_command_token) + 2);
+      prefix = (char *)xmalloc(strlen(current_command_token) + 2UL);
       sprintf(prefix, "%s^", current_command_token);
       free_me = 1;
     }

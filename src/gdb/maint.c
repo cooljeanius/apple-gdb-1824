@@ -1,4 +1,4 @@
-/* Support for GDB maintenance commands.
+/* maint.c: Support for GDB maintenance commands.
 
    Copyright 1992, 1993, 1994, 1995, 1996, 1997, 1999, 2000, 2001,
    2002, 2003, 2004 Free Software Foundation, Inc.
@@ -163,7 +163,7 @@ maintenance_demangle (char *args, int from_tty)
 	 language is not correct... */
 
 #if 0
-      demangled = language_demangle (current_language, args, 
+      demangled = language_demangle (current_language, args,
 				     DMGL_ANSI | DMGL_PARAMS);
 #endif
       switch (current_language->la_language)
@@ -253,7 +253,7 @@ match_substring (const char *string, const char *substr)
   return 0;
 }
 
-static int 
+static int
 match_bfd_flags (char *string, flagword flags)
 {
   if (flags & SEC_ALLOC)
@@ -326,8 +326,8 @@ print_bfd_flags (flagword flags)
 }
 
 static void
-maint_print_section_info (const char *name, flagword flags, 
-			  CORE_ADDR addr, CORE_ADDR endaddr, 
+maint_print_section_info (const char *name, flagword flags,
+			  CORE_ADDR addr, CORE_ADDR endaddr,
 			  unsigned long filepos)
 {
   /* FIXME-32x64: Need deprecated_print_address_numeric with field
@@ -342,8 +342,8 @@ maint_print_section_info (const char *name, flagword flags,
 }
 
 static void
-print_bfd_section_info (bfd *abfd, 
-			asection *asect, 
+print_bfd_section_info (bfd *abfd,
+			asection *asect,
 			void *arg)
 {
   flagword flags = bfd_get_section_flags (abfd, asect);
@@ -362,8 +362,8 @@ print_bfd_section_info (bfd *abfd,
 }
 
 static void
-print_objfile_section_info (bfd *abfd, 
-			    struct obj_section *asect, 
+print_objfile_section_info (bfd *abfd,
+			    struct obj_section *asect,
 			    char *string)
 {
   flagword flags = bfd_get_section_flags (abfd, asect->the_bfd_section);
@@ -373,7 +373,7 @@ print_objfile_section_info (bfd *abfd,
       || match_substring (string, name)
       || match_bfd_flags (string, flags))
     {
-      maint_print_section_info (name, flags, asect->addr, asect->endaddr, 
+      maint_print_section_info (name, flags, asect->addr, asect->endaddr,
 			  asect->the_bfd_section->filepos);
     }
 }
@@ -392,16 +392,16 @@ maintenance_info_sections (char *arg, int from_tty)
 	  struct objfile *ofile;
 	  struct obj_section *osect;
 
-	  /* Only this function cares about the 'ALLOBJ' argument; 
+	  /* Only this function cares about the 'ALLOBJ' argument;
 	     if 'ALLOBJ' is the only argument, discard it rather than
-	     passing it down to print_objfile_section_info (which 
+	     passing it down to print_objfile_section_info (which
 	     wouldn't know how to handle it).  */
 	  if (strcmp (arg, "ALLOBJ") == 0)
 	    arg = NULL;
 
 	  ALL_OBJFILES (ofile)
 	    {
-	      printf_filtered (_("  Object file: %s\n"), 
+	      printf_filtered (_("  Object file: %s\n"),
 			       bfd_get_filename (ofile->obfd));
 	      ALL_OBJFILE_OSECTIONS (ofile, osect)
 		{
@@ -409,7 +409,7 @@ maintenance_info_sections (char *arg, int from_tty)
 		}
 	    }
 	}
-      else 
+      else
 	bfd_map_over_sections (exec_bfd, print_bfd_section_info, arg);
     }
 
@@ -440,7 +440,7 @@ maintenance_print_architecture (char *args, int from_tty)
       struct ui_file *file = gdb_fopen (args, "w");
       if (file == NULL)
 	perror_with_name (_("maintenance print architecture"));
-      gdbarch_dump (current_gdbarch, file);    
+      gdbarch_dump (current_gdbarch, file);
       ui_file_delete (file);
     }
 }
@@ -753,7 +753,7 @@ static int n_timers = 0;
 int maint_use_timers = 0;
 
 /* Turns on and off printing interval timers.  Right now this
-   is an all or nothing thing.  But we could ass a timer regexp 
+   is an all or nothing thing.  But we could ass a timer regexp
    or timer list or something and check the timers against that.  */
 
 static void
@@ -770,7 +770,7 @@ maintenance_interval_display (char *args, int from_tty)
 	xfree (active_timer_list);
       active_timer_list = NULL;
     }
-  else 
+  else
     {
       maint_use_timers = 1;
       if (active_timer_list != NULL)
@@ -797,7 +797,7 @@ init_timer (char *name)
   if (n_timers == max_timers)
     {
       max_timers += 64;
-      timer_list = (struct gdb_timer *) 
+      timer_list = (struct gdb_timer *)
 	xrealloc (timer_list, max_timers * sizeof (struct gdb_timer *));
     }
   this_timer = n_timers;
@@ -810,11 +810,11 @@ init_timer (char *name)
 }
 
 /* Push TIMER onto the timer stack.  */
- 
+
 static void
 push_timer (struct gdb_timer *timer)
 {
-  struct gdb_timer_stack *next = 
+  struct gdb_timer_stack *next =
     (struct gdb_timer_stack *) xmalloc (sizeof (struct gdb_timer_stack));
 
   next->timer = timer;
@@ -822,7 +822,7 @@ push_timer (struct gdb_timer *timer)
   timer_stack = next;
 }
 
-/* This pops the top timer from the timer stack, and 
+/* This pops the top timer from the timer stack, and
    also charges it's time to the next timer's child_time.  */
 
 void
@@ -842,7 +842,7 @@ pop_timer (void)
 /* This gets the current interval for TIMER, and charges it
    to the timer.  */
 
-static void 
+static void
 stop_timer (struct gdb_timer *timer)
 {
   timer->last_interval = get_run_time () - timer->last_start  - timer->child_times;
@@ -853,42 +853,41 @@ stop_timer (struct gdb_timer *timer)
    the interval information, otherwise we just print out the total.  */
 
 static void
-report_timer_internal (struct gdb_timer *timer, int last_interval_p)
+report_timer_internal(struct gdb_timer *timer, int last_interval_p)
 {
   struct cleanup *notify_cleanup;
-  notify_cleanup = make_cleanup_ui_out_notify_begin_end (uiout, "timer-data");
+  notify_cleanup = make_cleanup_ui_out_notify_begin_end(uiout, "timer-data");
 
-  ui_out_text (uiout, "\n*+*+* Timer ");
-  ui_out_field_string (uiout, "name", timer->name);
+  ui_out_text(uiout, "\n*+*+* Timer ");
+  ui_out_field_string(uiout, "name", timer->name);
   if (last_interval_p)
     {
-      ui_out_text (uiout, " - ");
-      ui_out_field_string (uiout, "mssg", timer->last_mssg);
+      ui_out_text(uiout, " - ");
+      ui_out_field_string(uiout, "mssg", timer->last_mssg);
     }
-  ui_out_text (uiout, " total: ");
-  ui_out_field_fmt (uiout, "total", "%0.5f", timer->total_time/ 1000000.0);
+  ui_out_text(uiout, " total: ");
+  ui_out_field_fmt(uiout, "total", "%0.5f", (timer->total_time / 1000000.0f));
   if (last_interval_p)
     {
-      ui_out_text (uiout, " interval: ");
-      ui_out_field_fmt (uiout, "interval", "%0.5f", timer->last_interval / 1000000.0);
-      ui_out_text (uiout, " child times: ");
-      ui_out_field_fmt (uiout, "child", "%0.5f", timer->child_times / 1000000.0);
+      ui_out_text(uiout, " interval: ");
+      ui_out_field_fmt(uiout, "interval", "%0.5f", (timer->last_interval / 1000000.0f));
+      ui_out_text(uiout, " child times: ");
+      ui_out_field_fmt(uiout, "child", "%0.5f", (timer->child_times / 1000000.0f));
     }
-  ui_out_text (uiout, " *-*-*\n");
-  
+  ui_out_text(uiout, " *-*-*\n");
+
   if (last_interval_p)
-    xfree (timer->last_mssg);
-  do_cleanups (notify_cleanup);
+    xfree(timer->last_mssg);
+  do_cleanups(notify_cleanup);
 }
 
-/* Report summary times for all timers.  */
-
+/* Report summary times for all timers: */
 static void
-maintenance_report_interval_command (char *args, int is_tty)
+maintenance_report_interval_command(char *args, int is_tty)
 {
   int i;
   for (i = 0; i < n_timers; i++)
-    report_timer_internal (&timer_list[i], 0);
+    report_timer_internal(&timer_list[i], 0);
 }
 
 /* Stops timer pointed to by PTR, reports it and pops it.
@@ -922,7 +921,7 @@ make_cleanup_start_report_timer (int timer_id, char *string)
 
   if (timer_id > n_timers)
     error ("Invalid timer in start_timers");
-  
+
   timer = &timer_list[timer_id];
 
   push_timer (timer);
@@ -976,7 +975,7 @@ start_timer (int *timer_var, char *timer_name, char *this_mssg)
   if (*timer_var == -1)
     return make_cleanup (null_cleanup, 0);
 
-  return make_cleanup_start_report_timer (*timer_var, this_mssg);	
+  return make_cleanup_start_report_timer (*timer_var, this_mssg);
 }
 
 

@@ -148,28 +148,29 @@ inferior_read_generic (bfd *abfd, void *stream, void *data, file_ptr nbytes, fil
 }
 
 static file_ptr
-inferior_read_mach_o (bfd *abfd, void *stream, void *data, file_ptr nbytes, file_ptr offset)
+inferior_read_mach_o(bfd *abfd, void *stream, void *data, file_ptr nbytes, file_ptr offset)
 {
-  struct inferior_info *iptr = (struct inferior_info *) stream;
+  struct inferior_info *iptr = (struct inferior_info *)stream;
   unsigned int i;
+  bfd_vma process_shared_cache_slide;
 
-  CHECK_FATAL (iptr != NULL);
+  CHECK_FATAL(iptr != NULL);
 
-  if (!valid_target_for_inferior_bfd ())
+  if (!valid_target_for_inferior_bfd())
     {
-      bfd_set_error (bfd_error_no_contents);
+      bfd_set_error(bfd_error_no_contents);
       return 0;
     }
 
-  if (!bfd_target_is_mach_o (abfd))
+  if (!bfd_target_is_mach_o(abfd))
     {
-      bfd_set_error (bfd_error_invalid_target);
+      bfd_set_error(bfd_error_invalid_target);
       return 0;
     }
 
   {
     struct mach_o_data_struct *mdata = NULL;
-    CHECK_FATAL (bfd_mach_o_valid (abfd));
+    CHECK_FATAL(bfd_mach_o_valid(abfd));
     mdata = abfd->tdata.mach_o_data;
     if (mdata->scanning_load_cmds == 1)
       {
@@ -187,7 +188,7 @@ inferior_read_mach_o (bfd *abfd, void *stream, void *data, file_ptr nbytes, file
       The same slide value will be applied to all sections of the dylib
       so we determine it outside the section loop below.  */
 
-    bfd_vma process_shared_cache_slide = 0;
+    process_shared_cache_slide = 0UL;
     if (iptr->offset == 0)
       {
         for (i = 0; i < mdata->header.ncmds; i++)

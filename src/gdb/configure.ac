@@ -1650,6 +1650,12 @@ AC_CHECK_TYPES([mach_port_t],[],[],[
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_PORT_H */
 ])dnl
+  ## if we have that type, then check for this function, as well:
+if test "x${ac_cv_type_mach_port_t}" = "xyes"; then
+  test -n "${ac_cv_type_mach_port_t}"
+  AC_CHECK_FUNCS([mach_port_get_receive_status])dnl
+  ## (for macosx-nat-inferior-debug.c)
+fi
 dnl# The "x86_debug_state32_t" type is checked for in an APPLE_LOCAL
 dnl# section below.
 dnl# "long long" support is also checked farther below.
@@ -2684,14 +2690,13 @@ AC_SUBST([TARGET_SYSTEM_ROOT_DEFINE])dnl
 # NOTE: If you add to this list, remember to update
 # gdb/doc/gdbint.texinfo.
 build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
--Wparentheses -Wdeclaration-after-statement \
+-Wparentheses -Wdeclaration-after-statement -Wc++-compat \
 -Wpointer-arith -Wpointer-sign \
--Wno-unused -Wunused-value -Wunused-label -Wunused-function \
--Wunused-result \
+-Wno-unused -Wunused-value -Wunused-label -Wunused-result \
 -Wempty-body -Wmissing-parameter-type -Wmissing-declarations \
 -Wno-format-security -Wno-format \
 -Wold-style-declaration -Wold-style-definition -Wstrict-prototypes \
--Wabi -Wmissing-noreturn -Waddress -Warray-bounds -Wattributes \
+-Wmissing-noreturn -Waddress -Warray-bounds -Wattributes \
 -Wswitch -Wclobbered -Wcoverage-mismatch -Wdiv-by-zero \
 -Wdouble-promotion -Wfree-nonheap-object -Wsign-compare \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
@@ -2702,7 +2707,9 @@ build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
-  build_warnings="${build_warnings} -fpermissive"
+  ## Special warnings only for C++ compilations:
+  cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo"
+  build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 fi
 
 # If compiler does NOT support the long long data type, see if it can
@@ -2754,6 +2761,8 @@ opt_warnings="-Wuninitialized -Winit-self -Wvolatile-register-var \
 if test x${CFLAGS+set} = xset; then
   case "${CFLAGS}" in
     *"-O0"* )
+      ## we will miss out on warnings about signed integer overflow in this
+      ## case, so turn them into runtime errors instead, for debugging:
       build_warnings="${build_warnings} -ftrapv"
     ;;
     *"-O"* )
@@ -2776,13 +2785,12 @@ fi
 #  * -Wsign-conversion (likewise)
 #  * -Wmissing-prototypes (I like this one, but redundant with other flag)
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
-#  * -Woverloaded-virtual (If we ever switch to c++)
 #  * -Winline (I can never tell if the compiler is right or not with this)
 #  * -Wformat (currently we explicitly disable this)
 #  * -Wundef (only if we can figure out how to fix the issue with caddr_t)
 #  * -Wunused-macros (if we also add back -Wundef as per above)
+#  * -Wunused-function (had been added, but I hate fixing it)
 #  * -Wnested-externs (can be redundant with -Wimplicit)
-#  * -Wc++-compat (had added, but got too noisy in some headers)
 #  * -Wchar-subscripts (upstream FSF gdb explicitly disables this)
 #  * -Wunused-local-typedefs (`mig` generates code that triggers this)
 #  * -Wenum-compare (not really sure how to solve for now...)
@@ -2800,14 +2808,15 @@ fi
 #  * -Wunused-function (hard to fix)
 #  * -Wunused-value (dummy workaround method for this is dumb)
 #  * -Wstrict-prototypes (would already do similar checks anyways)
-#  * -Wabi (might only make sense for c++)
 #  * -Wmissing-noreturn (might want to use the newer version instead)
 #  * -Wvolatile-register-var (kinda pointless)
 #  * -Wswitch (I like this one, but others might not)
+#  * -Wc++-compat (noisy in some headers, but upstream is moving to C++)
 # Up for debate in some other way:
 #  * -Wstrict-overflow (i.e., could change the value assigned to it. We use
 #    "1" now because that is the default for "-Wall", but "2" is the
 #    default when no value is used with it with an "=", and the max is "5")
+#  * -Wabi (currently only used for C++, but sometimes accepted for just C)
 # NOT actually up for debate:
 #  * -Werror (never add this)
 #  * -pedantic-errors (likewise, never add this)

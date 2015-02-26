@@ -1730,19 +1730,19 @@ make_cleanup_restrict_to_objfile (struct objfile *objfile)
    or just "Jabber".  */
 
 struct objfile *
-find_objfile_by_name (const char *name, int exact)
+find_objfile_by_name(const char *name, int exact)
 {
   struct objfile *o, *temp;
-  if (name == NULL || *name == '\0')
+  if ((name == NULL) || (*name == '\0'))
     return NULL;
 
   ALL_OBJFILES_SAFE (o, temp)
     {
        enum objfile_matches_name_return r;
-       r = objfile_matches_name (o, name);
-       if (exact && r == objfile_match_exact)
+       r = objfile_matches_name(o, (char *)name);
+       if (exact && (r == objfile_match_exact))
          return o;
-       if (!exact && r == objfile_match_base)
+       if (!exact && (r == objfile_match_base))
          return o;
     }
 
@@ -1752,24 +1752,24 @@ find_objfile_by_name (const char *name, int exact)
    */
 
   const char *memobj_str = "[memory object \"";
-  int memobj_strlen = strlen (memobj_str);
+  int memobj_strlen = strlen(memobj_str);
   char buf[PATH_MAX + 1];
   ALL_OBJFILES_SAFE (o, temp)
     {
        if (o->name == NULL)
          continue;
-       if (strncmp (memobj_str, o->name, memobj_strlen) != 0)
+       if (strncmp(memobj_str, o->name, memobj_strlen) != 0)
          continue;
-       strcpy (buf, o->name + memobj_strlen);
+       strcpy(buf, (o->name + memobj_strlen));
        buf[PATH_MAX] = '\0';
-       char *t = strchr (buf, '"');
+       char *t = strchr(buf, '"');
        if (t == NULL)
          continue;
        *t = '\0';
 
-       if (strcmp (buf, name) == 0)
+       if (strcmp(buf, name) == 0)
          return o;
-       if (exact == 0 && strstr (buf, name) != NULL)
+       if ((exact == 0) && (strstr(buf, name) != NULL))
          return o;
     }
 

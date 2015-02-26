@@ -209,7 +209,8 @@ void dyld_entry_info (struct dyld_objfile_entry *e, int print_basenames,
                       char **in_auxobjname, char **in_auxsymname, char **in_dsymobjname,
 		      char **addr, char **slide, char **prefix);
 
-void dyld_print_entry_info (struct dyld_objfile_entry *j, int shlibnum, int baselen);
+void dyld_print_entry_info(struct dyld_objfile_entry *j, int shlibnum,
+                           size_t baselen);
 
 int dyld_shlib_info_basename_length (struct dyld_objfile_info *, unsigned int);
 

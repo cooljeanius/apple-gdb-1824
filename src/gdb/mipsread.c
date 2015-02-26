@@ -1,4 +1,4 @@
-/* Read a symbol table in MIPS' format (Third-Eye).
+/* mipsread.c: Read a symbol table in MIPS' format (Third-Eye).
 
    Copyright 1986, 1987, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996,
    1998, 1999, 2000, 2001, 2003, 2004
@@ -325,13 +325,13 @@ read_alphacoff_dynamic_symtab (struct section_offsets *section_offsets,
 	  if (sym_value == 0)
 	    {
 	      int got_entry_offset =
-		(i - dt_mips_gotsym + dt_mips_local_gotno) * got_entry_size;
+		((i - dt_mips_gotsym + dt_mips_local_gotno) * got_entry_size);
 
-	      if (got_entry_offset < 0 || got_entry_offset >= got_secsize)
+	      if ((got_entry_offset < 0) || (got_entry_offset >= got_secsize))
 		continue;
 	      sym_value =
-		bfd_h_get_64 (abfd,
-			      (bfd_byte *) (got_secptr + got_entry_offset));
+		bfd_h_get_64(abfd,
+			     (bfd_byte *)(got_secptr + got_entry_offset));
 	      if (sym_value == 0)
 		continue;
 	    }
@@ -351,7 +351,7 @@ read_alphacoff_dynamic_symtab (struct section_offsets *section_offsets,
 		ms_type = mst_text;
 	      else
 		ms_type = mst_file_text;
-	      sym_value += ANOFFSET (section_offsets, SECT_OFF_TEXT (objfile));
+	      sym_value += ANOFFSET(section_offsets, SECT_OFF_TEXT(objfile));
 	    }
 	  else if (sym_shndx == SHN_MIPS_DATA)
 	    {
@@ -359,7 +359,7 @@ read_alphacoff_dynamic_symtab (struct section_offsets *section_offsets,
 		ms_type = mst_data;
 	      else
 		ms_type = mst_file_data;
-	      sym_value += ANOFFSET (section_offsets, SECT_OFF_DATA (objfile));
+	      sym_value += ANOFFSET(section_offsets, SECT_OFF_DATA(objfile));
 	    }
 	  else if (sym_shndx == SHN_MIPS_ACOMMON)
 	    {
@@ -367,7 +367,7 @@ read_alphacoff_dynamic_symtab (struct section_offsets *section_offsets,
 		ms_type = mst_bss;
 	      else
 		ms_type = mst_file_bss;
-	      sym_value += ANOFFSET (section_offsets, SECT_OFF_BSS (objfile));
+	      sym_value += ANOFFSET(section_offsets, SECT_OFF_BSS(objfile));
 	    }
 	  else if (sym_shndx == SHN_ABS)
 	    {
@@ -379,30 +379,31 @@ read_alphacoff_dynamic_symtab (struct section_offsets *section_offsets,
 	    }
 	}
 
-      prim_record_minimal_symbol (name, sym_value, ms_type, objfile);
+      prim_record_minimal_symbol(name, sym_value, ms_type, objfile);
     }
 
-  do_cleanups (cleanups);
+  do_cleanups(cleanups);
 }
 
-/* Initialization.  */
-
+/* Initialization: */
 static struct sym_fns ecoff_sym_fns =
 {
   bfd_target_ecoff_flavour,
-  mipscoff_new_init,		/* sym_new_init: init anything gbl to entire symtab */
-  mipscoff_symfile_init,	/* sym_init: read initial info, setup for sym_read() */
-  mipscoff_symfile_read,	/* sym_read: read a symbol file into symtab */
-  mipscoff_symfile_finish,	/* sym_finish: finished with file, cleanup */
-  default_symfile_offsets,	/* sym_offsets: dummy FIXME til implem sym reloc */
-  NULL				/* next: pointer to next struct sym_fns */
+  mipscoff_new_init, /* sym_new_init: init anything gbl to entire symtab */
+  mipscoff_symfile_init, /* sym_init: read initial info, setup for sym_read() */
+  mipscoff_symfile_read, /* sym_read: read a symbol file into symtab */
+  mipscoff_symfile_finish, /* sym_finish: finished with file, cleanup */
+  default_symfile_offsets, /* sym_offsets: dummy FIXME til implem sym reloc */
+  NULL			/* next: pointer to next struct sym_fns */
 };
 
-/* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_mipsread (void);
+/* Provide a prototype to silence the '-Wmissing-prototypes' flag:  */
+void _initialize_mipsread(void);
 
 void
-_initialize_mipsread (void)
+_initialize_mipsread(void)
 {
-  add_symtab_fns (&ecoff_sym_fns);
+  add_symtab_fns(&ecoff_sym_fns);
 }
+
+/* EOF */

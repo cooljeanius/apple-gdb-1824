@@ -71,7 +71,7 @@
 #include "objc-lang.h"
 
 /* A note on memory usage for this file.
-   
+
    At the present time, this code reads the debug info sections into
    the objfile's objfile_obstack.  A definite improvement for startup
    time, on platforms which do not emit relocations for debug
@@ -210,7 +210,7 @@ struct dwarf2_per_objfile
   char *loc_buffer;
   /* APPLE LOCAL debug inlined section  */
   char *inlined_buffer;
-  
+
   /* APPLE LOCAL: use mmap for dwarf sections.  */
 #if 0
 #ifdef HAVE_MMAP
@@ -270,10 +270,10 @@ struct rb_repository_data {
 /* Function declarations for red-black tree manipulation functions.  See
    function definitions for more informatino about the functions.  */
 
-static struct rb_tree_node *rb_tree_find_and_remove_node 
+static struct rb_tree_node *rb_tree_find_and_remove_node
                               (struct rb_tree_node **,
 			       struct rb_tree_node *, long long, int);
-static struct rb_tree_node *rb_tree_remove_node (struct rb_tree_node **, 
+static struct rb_tree_node *rb_tree_remove_node (struct rb_tree_node **,
 						  struct rb_tree_node *);
 static struct rb_tree_node *rb_tree_minimum (struct rb_tree_node *);
 static struct rb_tree_node *rb_tree_successor (struct rb_tree_node *);
@@ -396,7 +396,7 @@ struct comp_unit_head
   struct comp_unit_head *next;
 
   /* Base address of this compilation unit.  */
-  /* APPLE LOCAL NB: I've changed this from BASE_ADDRESS to 
+  /* APPLE LOCAL NB: I've changed this from BASE_ADDRESS to
      BASE_ADDRESS_UNTRANSLATED to make it clear what this value
      is.  In the case of debug-info-in-.o-files or a kext dSYM,
      where the DWARF info does not have the final relocated
@@ -674,7 +674,7 @@ struct partial_die_info
        repository referred to by DW_AT_APPLE_repository_specification.  */
 
     unsigned int repo_spec_id;
-    
+
     /* The filename of the dwarf sql repository file, if one was used.  */
 
     char *repo_name;
@@ -689,9 +689,9 @@ struct partial_die_info
 
     /* APPLE LOCAL begin psym equivalences  */
     /* The psym equivalence name this die contains, if any.  */
-    char *equiv_name;		     
+    char *equiv_name;
     /* APPLE LOCAL end psym equivalences  */
-  
+
     /* APPLE LOCAL begin differentiate between Arm & Thumb */
     short int isa_value;
     /* APPLE LOCAL end differentiate between Arm & Thumb */
@@ -797,7 +797,7 @@ struct dwarf_block
 /* APPLE LOCAL avoid unused var warning.  */
 /* static struct partial_die_info zeroed_partial_die; */
 
-/* APPLE LOCAL: Track the current common block symbol so we can properly 
+/* APPLE LOCAL: Track the current common block symbol so we can properly
    offset addresses within that common block.  */
 static char *decode_locdesc_common = NULL;
 
@@ -1128,8 +1128,8 @@ static void read_lexical_block_scope (struct die_info *, struct dwarf2_cu *);
 
 /* APPLE LOCAL begin address ranges  */
 static int dwarf2_get_pc_bounds (struct die_info *,
-				 CORE_ADDR *, CORE_ADDR *, 
-				 struct address_range_list **, 
+				 CORE_ADDR *, CORE_ADDR *,
+				 struct address_range_list **,
 				 struct dwarf2_cu *);
 /* APPLE LOCAL end address ranges  */
 
@@ -1173,7 +1173,7 @@ static CORE_ADDR decode_locdesc (struct dwarf_block *, struct dwarf2_cu *);
 
 static void read_array_type (struct die_info *, struct dwarf2_cu *);
 
-static enum dwarf_array_dim_ordering read_array_order (struct die_info *, 
+static enum dwarf_array_dim_ordering read_array_order (struct die_info *,
 						       struct dwarf2_cu *);
 
 static void read_tag_pointer_type (struct die_info *, struct dwarf2_cu *);
@@ -1345,13 +1345,13 @@ static int
 dwarf2_has_info_1 (struct objfile *objfile, bfd *abfd)
 {
   struct dwarf2_per_objfile *data;
-  
+
   /* Initialize per-objfile state.  */
   data = obstack_alloc (&objfile->objfile_obstack, sizeof (*data));
   memset (data, 0, sizeof (*data));
   set_objfile_data (objfile, dwarf2_objfile_data_key, data);
   dwarf2_per_objfile = data;
-   
+
   dwarf_info_section = 0;
   dwarf_abbrev_section = 0;
   dwarf_line_section = 0;
@@ -1363,7 +1363,7 @@ dwarf2_has_info_1 (struct objfile *objfile, bfd *abfd)
   dwarf_loc_section = 0;
   /* APPLE LOCAL debug inlined section  */
   dwarf_inlined_section = 0;
- 
+
   bfd_map_over_sections (abfd, dwarf2_locate_sections, NULL);
   return (dwarf_info_section != NULL && dwarf_abbrev_section != NULL);
 }
@@ -1465,19 +1465,19 @@ dwarf2_copy_dwarf_from_file (struct objfile *objfile, bfd *abfd)
 {
   /* We definitely need the .debug_info and .debug_abbrev sections */
 
-  dwarf2_per_objfile->info_buffer = dwarf2_read_section (objfile, abfd, 
+  dwarf2_per_objfile->info_buffer = dwarf2_read_section (objfile, abfd,
                                                          dwarf_info_section);
-  dwarf2_per_objfile->abbrev_buffer = dwarf2_read_section (objfile, abfd, 
+  dwarf2_per_objfile->abbrev_buffer = dwarf2_read_section (objfile, abfd,
                                                           dwarf_abbrev_section);
 
   if (dwarf_line_section)
-    dwarf2_per_objfile->line_buffer = dwarf2_read_section (objfile, abfd, 
+    dwarf2_per_objfile->line_buffer = dwarf2_read_section (objfile, abfd,
                                                             dwarf_line_section);
   else
     dwarf2_per_objfile->line_buffer = NULL;
 
   if (dwarf_str_section)
-    dwarf2_per_objfile->str_buffer = dwarf2_read_section (objfile, abfd, 
+    dwarf2_per_objfile->str_buffer = dwarf2_read_section (objfile, abfd,
                                                           dwarf_str_section);
   else
     dwarf2_per_objfile->str_buffer = NULL;
@@ -1489,13 +1489,13 @@ dwarf2_copy_dwarf_from_file (struct objfile *objfile, bfd *abfd)
     dwarf2_per_objfile->macinfo_buffer = NULL;
 
   if (dwarf_ranges_section)
-    dwarf2_per_objfile->ranges_buffer = dwarf2_read_section (objfile, abfd, 
+    dwarf2_per_objfile->ranges_buffer = dwarf2_read_section (objfile, abfd,
                                                           dwarf_ranges_section);
   else
     dwarf2_per_objfile->ranges_buffer = NULL;
 
   if (dwarf_loc_section)
-    dwarf2_per_objfile->loc_buffer = dwarf2_read_section (objfile, abfd, 
+    dwarf2_per_objfile->loc_buffer = dwarf2_read_section (objfile, abfd,
                                                           dwarf_loc_section);
   else
     dwarf2_per_objfile->loc_buffer = NULL;
@@ -1604,12 +1604,12 @@ dwarf2_scan_inlined_section_for_psymbols (struct partial_symtab *pst,
   struct dwarf2_cu fake_cu;
 
   /* FIXME temporary workaround for debug_inlined sections that cause gdb
-     to provide incorrect backtraces, v. <rdar://problem/6771834> 
+     to provide incorrect backtraces, v. <rdar://problem/6771834>
      jmolenda/2009-04-08  */
   return;
 
   if (maint_use_timers)
-    timing_cleanup = start_timer (&timer, "debug_inlined", 
+    timing_cleanup = start_timer (&timer, "debug_inlined",
 				  PSYMTAB_OSO_NAME (pst));
 
   if (PSYMTAB_OSO_NAME (pst) == NULL || pst->readin)
@@ -1633,7 +1633,7 @@ dwarf2_scan_inlined_section_for_psymbols (struct partial_symtab *pst,
       goto close_bfd;
     }
 
-  inlined_section = bfd_sections_find_if (abfd, find_debug_inlined_section, 
+  inlined_section = bfd_sections_find_if (abfd, find_debug_inlined_section,
 					  NULL);
 
   if (inlined_section == NULL)
@@ -1728,7 +1728,7 @@ dwarf2_scan_inlined_section_for_psymbols (struct partial_symtab *pst,
 	     inlined, followed by pairs of {low_pc address, die offset}
 	     for each time the subroutine was inlined.  */
 
-          str_offset = read_offset (abfd, inlined_ptr, &(fake_cu.header), 
+          str_offset = read_offset (abfd, inlined_ptr, &(fake_cu.header),
                                     &bytes_read);
           if (str_offset >= str_size)
             error ("W_FORM_strp pointing outside of .debug_str section [in module %s]", bfd_get_filename (abfd));
@@ -1736,7 +1736,7 @@ dwarf2_scan_inlined_section_for_psymbols (struct partial_symtab *pst,
 	  inlined_ptr += bytes_read;
 	  total_bytes_read += bytes_read;
 
-          str_offset = read_offset (abfd, inlined_ptr, &(fake_cu.header), 
+          str_offset = read_offset (abfd, inlined_ptr, &(fake_cu.header),
                                     &bytes_read);
           if (str_offset >= str_size)
             error ("W_FORM_strp pointing outside of .debug_str section [in module %s]", bfd_get_filename (abfd));
@@ -1744,11 +1744,11 @@ dwarf2_scan_inlined_section_for_psymbols (struct partial_symtab *pst,
 	  inlined_ptr += bytes_read;
 	  total_bytes_read += bytes_read;
 
-	  num_entries = read_unsigned_leb128 (abfd, inlined_ptr, 
+	  num_entries = read_unsigned_leb128 (abfd, inlined_ptr,
 					      (unsigned int *) &bytes_read);
 	  inlined_ptr += bytes_read;
 	  total_bytes_read += bytes_read;
-	  
+
 	  for (i = 0; i < num_entries; i++)
 	    {
 	      CORE_ADDR low_pc;
@@ -1780,7 +1780,7 @@ dwarf2_scan_inlined_section_for_psymbols (struct partial_symtab *pst,
 		  add_psymbol_to_list (mips_name, strlen (mips_name),
 				       VAR_DOMAIN, LOC_BLOCK,
 				       &objfile->global_psymbols,
-				       0, low_pc, 
+				       0, low_pc,
 				       psymtab_language, objfile);
 		}
 	      /* APPLE LOCAL end radar 6600806  */
@@ -1808,12 +1808,12 @@ dwarf2_scan_inlined_section_for_psymbols (struct partial_symtab *pst,
 static bfd_boolean
 find_pubtypes (bfd *ignore_abfd, asection *sectp, void *ignore)
 {
-  if (sectp->name 
+  if (sectp->name
       && strcmp (sectp->name, PUBTYPES_SECTION) == 0)
     {
       return 1;
     }
-  else 
+  else
     return 0;
 }
 
@@ -1824,7 +1824,7 @@ find_pubtypes (bfd *ignore_abfd, asection *sectp, void *ignore)
    archive.  */
 
 void
-dwarf2_scan_pubtype_for_psymbols (struct partial_symtab *pst, 
+dwarf2_scan_pubtype_for_psymbols (struct partial_symtab *pst,
 			   struct objfile *objfile,
 			   enum language psymtab_language)
 {
@@ -1851,8 +1851,8 @@ dwarf2_scan_pubtype_for_psymbols (struct partial_symtab *pst,
   if (abfd == NULL)
     {
       warning ("Could not open OSO file %s "
-	       "to scan for pubtypes for objfile %s", 
-	       PSYMTAB_OSO_NAME (pst), 
+	       "to scan for pubtypes for objfile %s",
+	       PSYMTAB_OSO_NAME (pst),
 	       objfile->name ? objfile->name : "<unknown>");
       if (maint_use_timers)
 	do_cleanups (timing_cleanup);
@@ -1871,7 +1871,7 @@ dwarf2_scan_pubtype_for_psymbols (struct partial_symtab *pst,
       goto close_bfd;
     }
 
-  /* mmap in the pubtypes section.  
+  /* mmap in the pubtypes section.
      FIXME: Insert a no-mmap version...   */
 
   pubtypes_size = bfd_get_section_size (pubtypes_section);
@@ -1906,7 +1906,7 @@ dwarf2_scan_pubtype_for_psymbols (struct partial_symtab *pst,
   fake_cu_header.initial_length_size = 0;
   pubtypes_ptr = pubtypes_data;
 
-  /* The pubtypes header is one or more sets of data.  Each set has a 
+  /* The pubtypes header is one or more sets of data.  Each set has a
      header (which we aren't going to do anything with here) and then
      a pairs of {offset, type string} terminated by a O offset.  */
 
@@ -1916,7 +1916,7 @@ dwarf2_scan_pubtype_for_psymbols (struct partial_symtab *pst,
       LONGEST length, info_offset, info_length;
       unsigned char version;
 
-      length = read_initial_length (abfd, pubtypes_ptr, 
+      length = read_initial_length (abfd, pubtypes_ptr,
 				    &fake_cu_header, &bytes_read);
       pubtypes_ptr += bytes_read;
       version = read_2_bytes (abfd, pubtypes_ptr);
@@ -1943,10 +1943,10 @@ dwarf2_scan_pubtype_for_psymbols (struct partial_symtab *pst,
 	  /* read_string returns the length of the string WITH the null.  */
 	  type_name = read_string (abfd, pubtypes_ptr, &type_name_length);
 	  pubtypes_ptr += type_name_length;
-	  
+
 	  if (type_name != NULL)
 	    {
-	      /* We can't tell whether the name we've been given is a 
+	      /* We can't tell whether the name we've been given is a
 		 typedef or a tag name.  So add it to both.  Yuck...
 		 But we want this scan to be really fast, so we don't
 		 want to have to peek into the .debug_info.  */
@@ -1969,7 +1969,7 @@ dwarf2_scan_pubtype_for_psymbols (struct partial_symtab *pst,
 				   &objfile->global_psymbols,
 				   0, 0,
 				   psymtab_language, objfile);
-	    }	      
+	    }
 
 	}
     }
@@ -2122,7 +2122,7 @@ dwarf2_create_include_psymtab (char *name, struct partial_symtab *pst,
 /* Read the Line Number Program data and extract the list of files
    included by the source file represented by PST.  Build an include
    partial symtab for each of these included files.
-   
+
    This procedure assumes that there *is* a Line Number Program in
    the given CU.  Callers should check that PDI->HAS_STMT_LIST is set
    before calling this procedure.  */
@@ -2146,7 +2146,7 @@ dwarf2_build_include_psymtabs (struct dwarf2_cu *cu,
 }
 
 /* APPLE LOCAL begin dwarf repository  */
-static int open_dwarf_repository (char *, char *, struct objfile *, 
+static int open_dwarf_repository (char *, char *, struct objfile *,
 				  struct dwarf2_cu *);
 static void dwarf2_read_repository_abbrevs (struct dwarf2_cu *);
 static struct dwarf2_cu *build_dummy_cu (struct objfile *, struct dwarf2_cu *);
@@ -2154,15 +2154,15 @@ static struct objfile *build_dummy_objfile (struct objfile *);
 static void read_in_db_abbrev_table (struct abbrev_info **, sqlite3 *);
 static void db_error (char *, char *, sqlite3 *);
 static struct die_info *db_lookup_type (int , sqlite3 *, struct abbrev_info *);
-static void fill_in_die_info (struct die_info *, int, uint8_t *,  uint8_t *, 
+static void fill_in_die_info (struct die_info *, int, uint8_t *,  uint8_t *,
 			      struct abbrev_info *, sqlite3 *);
 static uint32_t get_uleb128 (uint8_t **);
-static uint8_t *db_read_attribute_value (struct attribute *, unsigned, 
+static uint8_t *db_read_attribute_value (struct attribute *, unsigned,
 					 uint8_t **);
-static struct die_info *follow_db_ref (struct die_info *, struct attribute *, 
+static struct die_info *follow_db_ref (struct die_info *, struct attribute *,
 				       struct dwarf2_cu *);
 static void set_repository_cu_language (unsigned int, struct dwarf2_cu *);
-static struct attribute *get_repository_name (struct attribute *, 
+static struct attribute *get_repository_name (struct attribute *,
 					      struct dwarf2_cu *);
 static int finalize_stmts (sqlite3 *);
 static struct database_info *find_open_repository (sqlite3 *);
@@ -2225,7 +2225,7 @@ scan_partial_inlined_function_symbols (struct dwarf2_cu *cu)
       unsigned total_length;
       unsigned version;
       unsigned addr_size;
- 
+
       char *fn_name;
       char *mips_name;
       struct comp_unit_head *cu_header = &cu->header;
@@ -2233,7 +2233,7 @@ scan_partial_inlined_function_symbols (struct dwarf2_cu *cu)
       /* NOTE: Final format for each entry (after the section header),
          is: mips name, regular name, # of inlining instances,
          followed by a {die_ref, lowpc} pair for each inlined
-         subroutine call. 
+         subroutine call.
 
          The section header consists of:  The length of the section,
 	 the DWARF version, and the size of an address.  */
@@ -2242,7 +2242,7 @@ scan_partial_inlined_function_symbols (struct dwarf2_cu *cu)
 
       inlined_ptr = dwarf2_per_objfile->inlined_buffer;
 
-      total_length = read_initial_length (abfd, inlined_ptr, &cu->header, 
+      total_length = read_initial_length (abfd, inlined_ptr, &cu->header,
 					  (int *) &bytes_read);
       inlined_ptr += bytes_read;
 
@@ -2275,7 +2275,7 @@ scan_partial_inlined_function_symbols (struct dwarf2_cu *cu)
 					  &bytes_read);
 	  inlined_ptr += bytes_read;
 
-	  num_instances = read_unsigned_leb128 (abfd, inlined_ptr, 
+	  num_instances = read_unsigned_leb128 (abfd, inlined_ptr,
 						&bytes_read);
 	  inlined_ptr += bytes_read;
 
@@ -2287,11 +2287,11 @@ scan_partial_inlined_function_symbols (struct dwarf2_cu *cu)
 					     (int *) &bytes_read);
 	      inlined_ptr += bytes_read;
 
-	      low_pc = read_address (abfd, inlined_ptr, cu, 
+	      low_pc = read_address (abfd, inlined_ptr, cu,
 				     (int *) &bytes_read);
 	      inlined_ptr += bytes_read;
-	      
-	      if (translate_debug_map_address (cu->addr_map , low_pc, &addr, 
+
+	      if (translate_debug_map_address (cu->addr_map , low_pc, &addr,
 					       0))
 		low_pc = addr;
 
@@ -2305,7 +2305,7 @@ scan_partial_inlined_function_symbols (struct dwarf2_cu *cu)
 					      &objfile->global_psymbols,
 					      0, low_pc + baseaddr,
 					      cu->language, objfile);
-		  
+
 		  if (cu->language == language_cplus
 		      && cu->has_namespace_info == 0
 		      && psym != NULL
@@ -2513,7 +2513,7 @@ dwarf2_build_psymtabs_hard (struct objfile *objfile, int mainline)
     }
 
   sort_objfile_thumb_psyms (objfile);
-    
+
   do_cleanups (back_to);
 
 }
@@ -2590,7 +2590,7 @@ create_all_comp_units (struct objfile *objfile)
   n_allocated = 10;
   all_comp_units = xmalloc (n_allocated
 			    * sizeof (struct dwarf2_per_cu_data *));
-  
+
   while (info_ptr < dwarf2_per_objfile->info_buffer + dwarf2_per_objfile->info_size)
     {
       struct comp_unit_head cu_header;
@@ -2655,7 +2655,7 @@ add_equiv_psym (struct equiv_psym_list **equiv_psyms,
 
   if (*equiv_psyms == NULL)
     {
-      *equiv_psyms = (struct equiv_psym_list *) xmalloc 
+      *equiv_psyms = (struct equiv_psym_list *) xmalloc
                                             (sizeof (struct equiv_psym_list));
       (*equiv_psyms)->sym_list = (char **) xmalloc (10 * sizeof (char *));
       (*equiv_psyms)->list_size = 10;
@@ -2924,7 +2924,8 @@ add_partial_symbol (struct partial_die_info *pdi, struct dwarf2_cu *cu)
 	}
       /* APPLE LOCAL begin - Differentiate between arm & thumb  */
       if (pdi->isa_value == DW_ISA_ARM_thumb)
-        objfile_add_special_psym (objfile, psym, pdi->isa_value);
+        objfile_add_special_psym(objfile, (struct partial_symbol *)psym,
+                                 pdi->isa_value);
       /* APPLE LOCAL end - Differentiate between arm & thumb  */
       break;
     case DW_TAG_variable:
@@ -2971,7 +2972,7 @@ add_partial_symbol (struct partial_die_info *pdi, struct dwarf2_cu *cu)
     case DW_TAG_typedef:
     case DW_TAG_base_type:
     case DW_TAG_subrange_type:
-      /* APPLE LOCAL: Put it in the global_psymbols list, not 
+      /* APPLE LOCAL: Put it in the global_psymbols list, not
          static_psymbols.  */
       add_psymbol_to_list (actual_name, strlen (actual_name),
 			   VAR_DOMAIN, LOC_TYPEDEF,
@@ -2994,7 +2995,7 @@ add_partial_symbol (struct partial_die_info *pdi, struct dwarf2_cu *cu)
 	 static vs. global.  */
       if (pdi->has_children == 0)
 	return;
-      /* APPLE LOCAL: Put it in the global_psymbols list, not 
+      /* APPLE LOCAL: Put it in the global_psymbols list, not
          static_psymbols regardless of which language it came from.  */
       add_psymbol_to_list (actual_name, strlen (actual_name),
 			   STRUCT_DOMAIN, LOC_TYPEDEF,
@@ -3188,7 +3189,7 @@ peek_die_abbrev (char *info_ptr, int *bytes_read, struct dwarf2_cu *cu)
      producer didn't correctly terminate the debug info. Return a NULL
      so we don't try and parse this DIE and also fill the BYTES_READ
      pointer with zero so we don't think we consumed any data.  */
-  if (info_ptr - dwarf2_per_objfile->info_buffer >= 
+  if (info_ptr - dwarf2_per_objfile->info_buffer >=
       cu->header.offset + cu->header.length + cu->header.initial_length_size)
     {
       if (bytes_read)
@@ -3392,7 +3393,7 @@ dwarf2_psymtab_to_symtab (struct partial_symtab *pst)
 
 /* APPLE LOCAL debug map: A call back function passed to qsort ().  */
 
-static int 
+static int
 compare_map_entries_oso_addr (const void *a, const void *b)
 {
   struct oso_final_addr_tuple *map_a = (struct oso_final_addr_tuple *) a;
@@ -3412,10 +3413,10 @@ compare_map_entries_oso_addr (const void *a, const void *b)
 }
 
 /* APPLE LOCAL debug map: A call back function passed to qsort_r ().
-   Used when create an alternate index of the tuple array, sorted by 
+   Used when create an alternate index of the tuple array, sorted by
    function-end address.  */
 
-static int 
+static int
 compare_map_entries_final_addr_index (void *thunk, const void *a, const void *b)
 {
   struct oso_final_addr_tuple *tuples = (struct oso_final_addr_tuple *) thunk;
@@ -3425,7 +3426,7 @@ compare_map_entries_final_addr_index (void *thunk, const void *a, const void *b)
   CORE_ADDR addr_b = tuples[idx_b].final_addr;
 
   /* Fall back and sort on OSO low addrs when final addrs are the same (which
-     should only happen for stuff that didn't make it into the final 
+     should only happen for stuff that didn't make it into the final
      executable).  */
   if (addr_a == addr_b)
     {
@@ -3437,13 +3438,13 @@ compare_map_entries_final_addr_index (void *thunk, const void *a, const void *b)
     return 0;
   else if (addr_a < addr_b)
     return -1;
-  else 
+  else
     return 1;
 }
 
 /* APPLE LOCAL debug map: A call back function passed to qsort ().  */
 
-static int 
+static int
 compare_map_entries_name (const void *a, const void *b)
 {
   struct oso_final_addr_tuple *map_a = (struct oso_final_addr_tuple *) a;
@@ -3455,11 +3456,11 @@ compare_map_entries_name (const void *a, const void *b)
 
 /* APPLE LOCAL debug map: Given an array of symbol names & addresses from
    a .o file and the actual final addresses from an objfile's minsyms,
-   create a mapping table between the two. 
+   create a mapping table between the two.
 
-   NLISTS is an array of symbol name/addresses from the .o file; 
-   NOSO_NLISTS_COUNT is the number of elements in that array.  
-   PST is the partial symbol table we're expanding.  
+   NLISTS is an array of symbol name/addresses from the .o file;
+   NOSO_NLISTS_COUNT is the number of elements in that array.
+   PST is the partial symbol table we're expanding.
 
    This function frees NLISTS by the time it is done; it malloc's the
    space for the oso-to-final-address table.  */
@@ -3472,19 +3473,19 @@ convert_oso_map_to_final_map (struct nlist_rec *nlists,
                               struct partial_symtab *pst)
 {
   int i, j;
-  struct oso_to_final_addr_map *map = 
+  struct oso_to_final_addr_map *map =
                              xmalloc (sizeof (struct oso_to_final_addr_map));
   /* APPLE LOCAL avoid unused var warning.  */
   /* struct objfile *minsym_lookup_objfile; */
 
   /* Store the load address of the objfile in a convenient local variable.
-     For an executable or dylib with a seg1addr that was honored, this 
+     For an executable or dylib with a seg1addr that was honored, this
      will be 0; for anything that slid, it will be the slide value.  */
   CORE_ADDR baseaddr = objfile_text_section_offset (pst->objfile);
 
-  map->tuples = (struct oso_final_addr_tuple *) 
+  map->tuples = (struct oso_final_addr_tuple *)
            xmalloc (sizeof (struct oso_final_addr_tuple) * oso_nlists_count);
-  map->final_addr_index = NULL; 
+  map->final_addr_index = NULL;
 
   j = 0;
   for (i = 0; i < oso_nlists_count; i++)
@@ -3499,7 +3500,7 @@ convert_oso_map_to_final_map (struct nlist_rec *nlists,
           || pst->language == language_auto)
         demangled  = cplus_demangle (nlists[i].name, DMGL_PARAMS | DMGL_ANSI);
       if (pst->language == language_java)
-        demangled  = cplus_demangle (nlists[i].name, 
+        demangled  = cplus_demangle (nlists[i].name,
                                      DMGL_PARAMS | DMGL_ANSI | DMGL_JAVA);
       if (demangled != NULL)
         free_demangled = 1;     /* Remember to free it */
@@ -3508,13 +3509,13 @@ convert_oso_map_to_final_map (struct nlist_rec *nlists,
 
       /* First try looking it up in this psymtab -- static symbols may occur
          in multiple compilation units (psymtabs) and we must get the correct
-         one.  This lookup is a linear search (the table is sorted by 
+         one.  This lookup is a linear search (the table is sorted by
          source name, not linkage name) but I don't see a better option.  */
 
-      psym = lookup_partial_symbol (pst, demangled, nlists[i].name, 
+      psym = lookup_partial_symbol (pst, demangled, nlists[i].name,
                                     1, VAR_DOMAIN);
       if (psym == NULL)
-        psym = lookup_partial_symbol (pst, demangled, nlists[i].name, 
+        psym = lookup_partial_symbol (pst, demangled, nlists[i].name,
                                     0, VAR_DOMAIN);
 
       /* We're done with the demangled name now.  */
@@ -3528,11 +3529,11 @@ convert_oso_map_to_final_map (struct nlist_rec *nlists,
 	 lookup_minimal_symbol search.  */
 
       if (psym && SYMBOL_VALUE_ADDRESS (psym) != baseaddr)
-         minsym = lookup_minimal_symbol_by_pc_section_from_objfile 
-                         (SYMBOL_VALUE_ADDRESS (psym), 
+         minsym = lookup_minimal_symbol_by_pc_section_from_objfile
+                         (SYMBOL_VALUE_ADDRESS (psym),
                           SYMBOL_BFD_SECTION (psym), pst->objfile);
       else
-        minsym = lookup_minimal_symbol (nlists[i].name, NULL, 
+        minsym = lookup_minimal_symbol (nlists[i].name, NULL,
                                         pst->objfile);
 
       /* lookup_minimal_symbol() returns an address with the offset
@@ -3549,7 +3550,7 @@ convert_oso_map_to_final_map (struct nlist_rec *nlists,
           else
             actual_address = SYMBOL_VALUE_ADDRESS (minsym) - baseaddr;
 
-          /* Assume that no *real* symbol can end up at address 0 in a 
+          /* Assume that no *real* symbol can end up at address 0 in a
              final linked executable/dylib/bundle.  */
           if (actual_address == 0 && nlists[i].addr == 0)
             {
@@ -3590,45 +3591,45 @@ convert_oso_map_to_final_map (struct nlist_rec *nlists,
 	    {
 	      if (debug_debugmap)
 	      	{
-		  fprintf_unfiltered (gdb_stdlog, 
-				      "debugmap: removing tuple[%i] ('%s')\n", 
+		  fprintf_unfiltered (gdb_stdlog,
+				      "debugmap: removing tuple[%i] ('%s')\n",
 				      i, map->tuples[i].name);
 		}
 	      continue; /* Skip useless tuple, and don't increment J.  */
 	    }
-	  
-	  /* If we have skipped some tuples, we need to copy subsequent ones 
+
+	  /* If we have skipped some tuples, we need to copy subsequent ones
 	     back to fill the gaps.  */
 	  if (j < i)
 	    map->tuples[j] = map->tuples[i];
-	    
+
 	  map->tuples[j].oso_high_addr = map->tuples[i+1].oso_low_addr;
 	  j++;
 	}
-		
+
       gdb_assert(j <= map->entries);
       map->tuples[j].oso_high_addr = (CORE_ADDR) -1;
       /* Adjust the number of tuple if they changed.  */
       map->entries = j + 1;
-      
+
       /* Allocate the final_addr_index array.  */
       map->final_addr_index = (int *) xmalloc (sizeof (int) * map->entries);
 
       /* Initialize final_addr_index so it can be sorted using qsort_r.  */
       for (i = 0; i < map->entries; i++)
-        map->final_addr_index[i] = i; 
-  
+        map->final_addr_index[i] = i;
+
       /* Sort the final_addr_index array.  */
-      qsort_r (map->final_addr_index, map->entries, sizeof (int), 
+      qsort_r (map->final_addr_index, map->entries, sizeof (int),
 	       map->tuples, compare_map_entries_final_addr_index);
     }
   else if (map->entries == 1)
     {
       map->tuples[0].oso_high_addr = (CORE_ADDR) -1;
       map->final_addr_index = (int *) xmalloc (sizeof (int));
-      map->final_addr_index[0] = 0; 
+      map->final_addr_index[0] = 0;
     }
- 
+
   /* Print out the final addr indexes array.  */
   if (debug_debugmap >= 6)
     {
@@ -3637,9 +3638,9 @@ convert_oso_map_to_final_map (struct nlist_rec *nlists,
 	{
 	  int idx = map->final_addr_index[i];
 	  final_addr = map->tuples[idx].final_addr;
-	  fprintf_unfiltered (gdb_stdlog, 
-			      "map->final_addr_index[%3i] = %3i (map->tuples[%3i] oso_addr [%s - %s) final_addr = %s for %s\n", 
-			      i, idx, idx, 
+	  fprintf_unfiltered (gdb_stdlog,
+			      "map->final_addr_index[%3i] = %3i (map->tuples[%3i] oso_addr [%s - %s) final_addr = %s for %s\n",
+			      i, idx, idx,
 			      paddr (map->tuples[idx].oso_low_addr),
 			      paddr (map->tuples[idx].oso_high_addr),
 			      map->tuples[idx].present_in_final ?
@@ -3658,7 +3659,7 @@ convert_oso_map_to_final_map (struct nlist_rec *nlists,
   else
     {
       map->common_pairs = (struct oso_final_addr_tuple *)
-               xmalloc (sizeof (struct oso_final_addr_tuple) * 
+               xmalloc (sizeof (struct oso_final_addr_tuple) *
                         oso_common_symnames_count);
       j = 0;
       for (i = 0; i < oso_common_symnames_count; i++)
@@ -3672,16 +3673,16 @@ convert_oso_map_to_final_map (struct nlist_rec *nlists,
 
           CORE_ADDR baseaddr = objfile_data_section_offset (pst->objfile);
 
-          minsym = lookup_minimal_symbol (oso_common_symnames[i], NULL, 
+          minsym = lookup_minimal_symbol (oso_common_symnames[i], NULL,
                                           pst->objfile);
 
           /* We're only looking for data here */
           if (minsym && minsym->type == mst_data)
             {
-              CORE_ADDR actual_address = SYMBOL_VALUE_ADDRESS (minsym) - 
+              CORE_ADDR actual_address = SYMBOL_VALUE_ADDRESS (minsym) -
                                          baseaddr;
 
-              /* Assume that no *real* symbol can end up at address 0 in a 
+              /* Assume that no *real* symbol can end up at address 0 in a
                  final linked executable/dylib/bundle.  */
               if (actual_address == 0)
                 {
@@ -3717,9 +3718,9 @@ convert_oso_map_to_final_map (struct nlist_rec *nlists,
    statics and globals.  The psymtab is derived from the debug map (stab)
    entries in the kextload-output .sym file.
 
-   NLISTS is an array of symbol name/addresses from the .o file; 
-   NOSO_NLISTS_COUNT is the number of elements in that array.  
-   PST is the partial symbol table we're expanding.  
+   NLISTS is an array of symbol name/addresses from the .o file;
+   NOSO_NLISTS_COUNT is the number of elements in that array.
+   PST is the partial symbol table we're expanding.
 
    This function frees NLISTS by the time it is done; it malloc's the
    space for the oso-to-final-address table.  */
@@ -3733,19 +3734,19 @@ create_kext_addr_map (struct nlist_rec *nlists,
 {
   int i, j;
   struct partial_symbol **psym;
-  struct oso_to_final_addr_map *map = 
+  struct oso_to_final_addr_map *map =
                              xmalloc (sizeof (struct oso_to_final_addr_map));
   map->entries = map->common_entries = 0;
 
   /* Store the load address of the objfile in a convenient local variable.
-     For an executable or dylib with a seg1addr that was honored, this 
+     For an executable or dylib with a seg1addr that was honored, this
      will be 0; for anything that slid, it will be the slide value.  */
   CORE_ADDR baseaddr = objfile_text_section_offset (pst->objfile);
 
-  int number_of_psymbols = 
+  int number_of_psymbols =
      pst->n_global_syms + pst->n_static_syms;
 
-  map->tuples = (struct oso_final_addr_tuple *) 
+  map->tuples = (struct oso_final_addr_tuple *)
            xmalloc (sizeof (struct oso_final_addr_tuple) * number_of_psymbols);
   map->final_addr_index = NULL;
 
@@ -3755,7 +3756,7 @@ create_kext_addr_map (struct nlist_rec *nlists,
      kext executable, irrespective of compilation unit because they are
      not grouped in compilation units by the time ld -r is finished with
      them. :(  The result is that we're going to do a full pass over all
-     nlist records for each partial symbol we have in this pst.  
+     nlist records for each partial symbol we have in this pst.
      I should sort the nlist records by symbol name and bsearch it... */
 
   for (psym = pst->objfile->global_psymbols.list + pst->globals_offset;
@@ -3778,12 +3779,12 @@ create_kext_addr_map (struct nlist_rec *nlists,
       if (!matched)
         continue;
       if (*psym && SYMBOL_VALUE_ADDRESS (*psym) != baseaddr)
-         minsym = lookup_minimal_symbol_by_pc_section_from_objfile 
-                         (SYMBOL_VALUE_ADDRESS (*psym), 
+         minsym = lookup_minimal_symbol_by_pc_section_from_objfile
+                         (SYMBOL_VALUE_ADDRESS (*psym),
                           SYMBOL_BFD_SECTION (*psym),
                           pst->objfile->separate_debug_objfile_backlink);
       else
-        minsym = lookup_minimal_symbol (nlists[i].name, NULL, 
+        minsym = lookup_minimal_symbol (nlists[i].name, NULL,
                                 pst->objfile->separate_debug_objfile_backlink);
 
       /* lookup_minimal_symbol() returns an address with the offset
@@ -3800,7 +3801,7 @@ create_kext_addr_map (struct nlist_rec *nlists,
           else
             actual_address = SYMBOL_VALUE_ADDRESS (minsym) - baseaddr;
 
-          /* Assume that no *real* symbol can end up at address 0 in a 
+          /* Assume that no *real* symbol can end up at address 0 in a
              final linked executable/dylib/bundle.  */
           if (actual_address == 0 && nlists[i].addr == 0)
             {
@@ -3839,12 +3840,12 @@ create_kext_addr_map (struct nlist_rec *nlists,
       if (!matched)
         continue;
       if (*psym && SYMBOL_VALUE_ADDRESS (*psym) != baseaddr)
-         minsym = lookup_minimal_symbol_by_pc_section_from_objfile 
-                         (SYMBOL_VALUE_ADDRESS (*psym), 
+         minsym = lookup_minimal_symbol_by_pc_section_from_objfile
+                         (SYMBOL_VALUE_ADDRESS (*psym),
                           SYMBOL_BFD_SECTION (*psym),
                           pst->objfile->separate_debug_objfile_backlink);
       else
-        minsym = lookup_minimal_symbol (nlists[i].name, NULL, 
+        minsym = lookup_minimal_symbol (nlists[i].name, NULL,
                                 pst->objfile->separate_debug_objfile_backlink);
 
       /* lookup_minimal_symbol() returns an address with the offset
@@ -3861,7 +3862,7 @@ create_kext_addr_map (struct nlist_rec *nlists,
           else
             actual_address = SYMBOL_VALUE_ADDRESS (minsym) - baseaddr;
 
-          /* Assume that no *real* symbol can end up at address 0 in a 
+          /* Assume that no *real* symbol can end up at address 0 in a
              final linked executable/dylib/bundle.  */
           if (actual_address == 0 && nlists[i].addr == 0)
             {
@@ -3905,45 +3906,45 @@ create_kext_addr_map (struct nlist_rec *nlists,
 	    {
 	      if (debug_debugmap)
 	      	{
-		  fprintf_unfiltered (gdb_stdlog, 
-				      "debugmap: removing tuple[%i] ('%s')\n", 
+		  fprintf_unfiltered (gdb_stdlog,
+				      "debugmap: removing tuple[%i] ('%s')\n",
 				      i, map->tuples[i].name);
 		}
 	      continue; /* Skip useless tuple, and don't increment J.  */
 	    }
-	  
-	  /* If we have skipped some tuples, we need to copy subsequent ones 
+
+	  /* If we have skipped some tuples, we need to copy subsequent ones
 	     back to fill the gaps.  */
 	  if (j < i)
 	    map->tuples[j] = map->tuples[i];
-	    
+
 	  map->tuples[j].oso_high_addr = map->tuples[i+1].oso_low_addr;
 	  j++;
 	}
-		
+
       gdb_assert(j <= map->entries);
       map->tuples[j].oso_high_addr = (CORE_ADDR) -1;
       /* Adjust the number of tuple if they changed.  */
       map->entries = j + 1;
-      
+
       /* Allocate the final_addr_index array.  */
       map->final_addr_index = (int *) xmalloc (sizeof (int) * map->entries);
 
       /* Initialize final_addr_index so it can be sorted using qsort_r.  */
       for (i = 0; i < map->entries; i++)
-        map->final_addr_index[i] = i; 
-  
+        map->final_addr_index[i] = i;
+
       /* Sort the final_addr_index array.  */
-      qsort_r (map->final_addr_index, map->entries, sizeof (int), 
+      qsort_r (map->final_addr_index, map->entries, sizeof (int),
 	       map->tuples, compare_map_entries_final_addr_index);
     }
   else if (map->entries == 1)
     {
       map->tuples[0].oso_high_addr = (CORE_ADDR) -1;
       map->final_addr_index = (int *) xmalloc (sizeof (int));
-      map->final_addr_index[0] = 0; 
+      map->final_addr_index[0] = 0;
     }
-  
+
   /* Print out the final addr indexes array.  */
   if (debug_debugmap >= 6)
     {
@@ -3955,7 +3956,7 @@ create_kext_addr_map (struct nlist_rec *nlists,
           fprintf_unfiltered (gdb_stdlog,
                       "map->final_addr_index[%3d] = map->tuples[%3d] (0x%s)\n",
                               i, idx, paddr_nz (map->tuples[idx].final_addr));
-        }                   
+        }
     }
 
   map->common_entries = 0;
@@ -3967,7 +3968,7 @@ create_kext_addr_map (struct nlist_rec *nlists,
 
 /* APPLE LOCAL debug map: Callback function for bsearch() */
 /* This function assumes the address *KEY is a DW_AT_high_pc.  */
-static int 
+static int
 compare_translation_tuples_highpc (const void *key, const void *arrmem)
 {
   CORE_ADDR oso_addr = *((CORE_ADDR *) key);
@@ -3982,7 +3983,7 @@ compare_translation_tuples_highpc (const void *key, const void *arrmem)
 
 /* APPLE LOCAL debug map: Callback function for bsearch() */
 /* This function assumes the address *KEY is not a DW_AT_high_pc.  */
-static int 
+static int
 compare_translation_tuples_nothighpc (const void *key, const void *arrmem)
 {
   CORE_ADDR oso_addr = *((CORE_ADDR *) key);
@@ -4001,7 +4002,7 @@ compare_translation_tuples_nothighpc (const void *key, const void *arrmem)
    oso_low_addr <= address <= oso_high_addr. This is used when parsing line
    tables.
  */
-static int 
+static int
 compare_translation_tuples_inclusive (const void *key, const void *arrmem)
 {
   CORE_ADDR oso_addr = *((CORE_ADDR *) key);
@@ -4017,8 +4018,8 @@ compare_translation_tuples_inclusive (const void *key, const void *arrmem)
 /* APPLE LOCAL debug map: Sometimes we need to be able to figure out
    what the next final address in a debug map is. This function compares
    final address values by iterating through the FINAL_ADDR_INDEX member
-   in a struct oso_to_final_addr_map'. See comments in definition of the 
-   'oso_to_final_addr_map' structure for full details on 
+   in a struct oso_to_final_addr_map'. See comments in definition of the
+   'oso_to_final_addr_map' structure for full details on
    FINAL_ADDR_INDEXES.  */
 
 struct final_addr_key
@@ -4027,7 +4028,7 @@ struct final_addr_key
   struct oso_to_final_addr_map *map;
 };
 
-static int 
+static int
 compare_translation_final_addr (const void *key, const void *arrmem)
 {
   struct final_addr_key *final_addr_key = (struct final_addr_key *) key;
@@ -4057,25 +4058,25 @@ compare_translation_final_addr (const void *key, const void *arrmem)
 }
 
 /* APPLE LOCAL debug map: Translate an address from a .o file's DWARF
-   into the actual address in the linked executable.  
+   into the actual address in the linked executable.
    OSO_ADDR is the address in the .o file to be translated.
    *ADDR is set to the translated (executable image) address.
 
    HIGHPC indicates that this address is from a DW_AT_high_pc.
-   this is a hack to avoid the problem where we have 
+   this is a hack to avoid the problem where we have
       func1:  0x100 - 0x200  (DW_AT_low_pc = 0x100, DW_AT_high_pc = 0x200)
       func2:  0x200 - 0x300  (DW_AT_low_pc = 0x200, DW_AT_high_pc = 0x300)
    they end up in the final executable reordered
       func2: start at 0x3000
       func1: start at 0x4500
-   Given 0x200, which does it get translated to?  0x3000 or 0x4600?  
+   Given 0x200, which does it get translated to?  0x3000 or 0x4600?
    Hence the HIGHPC argument.
 
    When an address has succesfully been translated, 1 is returned.
    When an address has not been translated, 0 is returned.
 
    If there is no debug map, *ADDR is set to OSO_ADDR and a value
-   of 1 is returned.  i.e. the input address and output address 
+   of 1 is returned.  i.e. the input address and output address
    are the same.
 
    If there is no matching translation entry, 0 is returned and
@@ -4084,7 +4085,7 @@ compare_translation_final_addr (const void *key, const void *arrmem)
    the final link edit stage.  */
 
 int
-translate_debug_map_address (struct oso_to_final_addr_map *map, 
+translate_debug_map_address (struct oso_to_final_addr_map *map,
                              CORE_ADDR oso_addr, CORE_ADDR *addr, int highpc)
 {
   /* Handle the case where this is traditional dwarf (no debug map) */
@@ -4101,9 +4102,9 @@ translate_debug_map_address (struct oso_to_final_addr_map *map,
       int delta = oso_addr - map->tuples[0].oso_low_addr;
       *addr = map->tuples[0].final_addr + delta;
       if (debug_debugmap)
-        fprintf_unfiltered (gdb_stdlog, 
+        fprintf_unfiltered (gdb_stdlog,
                             "debugmap: translated 0x%s to 0x%s sym '%s' in %s\n",
-                            paddr_nz (oso_addr), paddr_nz (*addr), 
+                            paddr_nz (oso_addr), paddr_nz (*addr),
                             map->tuples[0].name, map->pst->filename);
       return 1;
     }
@@ -4111,12 +4112,12 @@ translate_debug_map_address (struct oso_to_final_addr_map *map,
   struct oso_final_addr_tuple *match;
 
   if (highpc == 0)
-    match = bsearch (&oso_addr, map->tuples, map->entries, 
-                     sizeof (struct oso_final_addr_tuple), 
+    match = bsearch (&oso_addr, map->tuples, map->entries,
+                     sizeof (struct oso_final_addr_tuple),
                      compare_translation_tuples_nothighpc);
   else
-    match = bsearch (&oso_addr, map->tuples, map->entries, 
-                     sizeof (struct oso_final_addr_tuple), 
+    match = bsearch (&oso_addr, map->tuples, map->entries,
+                     sizeof (struct oso_final_addr_tuple),
                      compare_translation_tuples_highpc);
 
   /* The address is in a block of code that failed to make it to the
@@ -4125,19 +4126,19 @@ translate_debug_map_address (struct oso_to_final_addr_map *map,
 
   if (match == NULL || !match->present_in_final)
     {
-      if (debug_debugmap)      
+      if (debug_debugmap)
 	{
 	  if (match == NULL)
-	    fprintf_unfiltered (gdb_stdlog, 
+	    fprintf_unfiltered (gdb_stdlog,
 				"debugmap: did not translate 0x%s in %s "
 				"highpc == %d\n",
 				paddr_nz (oso_addr), map->pst->filename,
 				highpc);
 	  else
-	    fprintf_unfiltered (gdb_stdlog, 
+	    fprintf_unfiltered (gdb_stdlog,
 				"debugmap: did not translate 0x%s "
 				"(dead-stripped %s) in %s highpc == %d\n",
-				paddr_nz (oso_addr), 
+				paddr_nz (oso_addr),
 				match->name,
 				map->pst->filename,
 				highpc);
@@ -4154,12 +4155,12 @@ translate_debug_map_address (struct oso_to_final_addr_map *map,
    of type 'C' with the "address" being the size of the item.  So the usual
    "Look up the .o file address from the dwarf file in our address map"
    technique fails -- all of these symbols have a .o address of 0.
-   So instead we do the search by symbol name.  
+   So instead we do the search by symbol name.
 
    This function returns 1 if a matching symbol name was found, else 0.  */
 
 static int
-translate_common_symbol_debug_map_address (struct oso_to_final_addr_map *map, 
+translate_common_symbol_debug_map_address (struct oso_to_final_addr_map *map,
                                            const char *name, CORE_ADDR *addr)
 {
   int i;
@@ -4176,23 +4177,23 @@ translate_common_symbol_debug_map_address (struct oso_to_final_addr_map *map,
       {
         *addr = map->common_pairs[i].final_addr;
         if (debug_debugmap)
-          fprintf_unfiltered (gdb_stdlog, 
+          fprintf_unfiltered (gdb_stdlog,
                               "debugmap: translated common symbol '%s' to 0x%s in %s\n",
-                              name, paddr_nz (*addr), 
+                              name, paddr_nz (*addr),
                               map->pst->filename);
         return 1;
       }
 
   if (debug_debugmap)
-    fprintf_unfiltered (gdb_stdlog, 
-                        "debugmap: failed to translate common symbol '%s' in %s\n", 
+    fprintf_unfiltered (gdb_stdlog,
+                        "debugmap: failed to translate common symbol '%s' in %s\n",
                         name, map->pst->filename);
   return 0;
 }
 
 /* APPLE LOCAL  */
 
-void 
+void
 dwarf2_kext_psymtab_to_symtab (struct partial_symtab *pst)
 {
   bfd *containing_archive = NULL;
@@ -4242,10 +4243,10 @@ dwarf2_kext_psymtab_to_symtab (struct partial_symtab *pst)
      match the dSYM addresses but have no relation to the actual
      kextload'ed addresses of the binary loaded in kernel memory.  */
 
-  oso_bfd = symfile_bfd_open (pst->objfile->not_loaded_kext_filename, 0, 
+  oso_bfd = symfile_bfd_open (pst->objfile->not_loaded_kext_filename, 0,
 			      GDB_OSABI_UNKNOWN);
   if (oso_bfd == NULL)
-    error ("Couldn't open kext file '%s'", 
+    error ("Couldn't open kext file '%s'",
            pst->objfile->not_loaded_kext_filename);
 
   /* treat the kext binary bundle as if it were a .o file; read the
@@ -4254,8 +4255,8 @@ dwarf2_kext_psymtab_to_symtab (struct partial_symtab *pst)
   read_oso_nlists (oso_bfd, pst, &oso_nlists, &oso_nlists_count,
                    &oso_common_symnames, &oso_common_symnames_count);
 
-  addr_map = create_kext_addr_map (oso_nlists, oso_nlists_count, 
-                                           oso_common_symnames, 
+  addr_map = create_kext_addr_map (oso_nlists, oso_nlists_count,
+                                           oso_common_symnames,
                                            oso_common_symnames_count, pst);
 
   /* Restore our global data from the objfile's data store if we've already
@@ -4264,7 +4265,7 @@ dwarf2_kext_psymtab_to_symtab (struct partial_symtab *pst)
      that global state and save it in the objfile.
 
      Note that pst->objfile is the dSYM binary; pst->objfile_obfd is the BFD
-     for the dSYM binary.  The addresses in the dSYM are the 0-based un-loaded 
+     for the dSYM binary.  The addresses in the dSYM are the 0-based un-loaded
      addresses that need to be updated before they can be used.  */
 
   dwarf2_per_objfile = objfile_data (pst->objfile, dwarf2_objfile_data_key);
@@ -4284,7 +4285,7 @@ dwarf2_kext_psymtab_to_symtab (struct partial_symtab *pst)
   // file will have the debug map notes from ONE of those .dSYMs and if
   // the full source pathnames don't match between the .sym and .dSYM,
   // we have to fall back to trying a basename-only match when we look for
-  // a source file.  We try looking for one directory name + basename 
+  // a source file.  We try looking for one directory name + basename
   // before reverting to just-basename matching.
 
   // kexts are especially unusual in this case because the source for
@@ -4301,11 +4302,11 @@ dwarf2_kext_psymtab_to_symtab (struct partial_symtab *pst)
   // Try matching just the base filename
   if (kext_dsym_comp_unit_start == NULL)
     kext_dsym_comp_unit_start = find_debug_info_for_pst (pst, 0);
- 
+
   if (kext_dsym_comp_unit_start == NULL)
     error ("Searching for the DWARF debug info for source file '%s' but did not find a matching source file name in '%s'",
            pst->filename, pst->objfile->name);
-  
+
   /* Normally the struct dwarf2_per_cu_data is constructed as a part of
      the dwarf partial symtab creation.  So fake one up here.  */
   this_cu = (struct dwarf2_per_cu_data *)
@@ -4313,8 +4314,8 @@ dwarf2_kext_psymtab_to_symtab (struct partial_symtab *pst)
                                  sizeof (struct dwarf2_per_cu_data));
 
   this_cu->offset = kext_dsym_comp_unit_start - dwarf2_per_objfile->info_buffer;
-  this_cu->length = read_initial_length (oso_bfd, 
-                                         kext_dsym_comp_unit_start, 
+  this_cu->length = read_initial_length (oso_bfd,
+                                         kext_dsym_comp_unit_start,
                                          NULL, &bytes_read);
   this_cu->queued = 0;
   this_cu->cu = NULL;
@@ -4336,12 +4337,12 @@ dwarf2_kext_psymtab_to_symtab (struct partial_symtab *pst)
 /* APPLE LOCAL debug map: Expand a partial symbol table to a symbol table
    in a DWARF debug map type situation.  I have to skip around between
    functions normally called a partial_symtab creation time and functions
-   called at symtab creation time in this func so it's a little odd.  
+   called at symtab creation time in this func so it's a little odd.
 
    The address translation map is not freed at the end -- there may be pointers
    to it in location list expressions so we'll need to keep it around.  */
 
-void 
+void
 dwarf2_debug_map_psymtab_to_symtab (struct partial_symtab *pst)
 {
   int cached;
@@ -4405,14 +4406,14 @@ dwarf2_debug_map_psymtab_to_symtab (struct partial_symtab *pst)
   read_oso_nlists (oso_bfd, pst, &oso_nlists, &oso_nlists_count,
                    &oso_common_symnames, &oso_common_symnames_count);
 
-  addr_map = convert_oso_map_to_final_map (oso_nlists, oso_nlists_count, 
-                                           oso_common_symnames, 
+  addr_map = convert_oso_map_to_final_map (oso_nlists, oso_nlists_count,
+                                           oso_common_symnames,
                                            oso_common_symnames_count, pst);
 
 
   dwarf2_has_info_1 (pst->objfile, oso_bfd);
   dwarf2_copy_dwarf_from_file (pst->objfile, oso_bfd);
-  
+
   /* Normally the struct dwarf2_per_cu_data is constructed as a part of
      the dwarf partial symtab creation.  So fake one up here.  */
   this_cu = (struct dwarf2_per_cu_data *)
@@ -4420,8 +4421,8 @@ dwarf2_debug_map_psymtab_to_symtab (struct partial_symtab *pst)
                                  sizeof (struct dwarf2_per_cu_data));
 
   this_cu->offset = 0;   /* First (and only) CU in the debug_info */
-  this_cu->length = read_initial_length (oso_bfd, 
-                                         dwarf2_per_objfile->info_buffer, 
+  this_cu->length = read_initial_length (oso_bfd,
+                                         dwarf2_per_objfile->info_buffer,
                                          NULL, &bytes_read);
   this_cu->queued = 0;
   this_cu->cu = NULL;
@@ -4444,9 +4445,9 @@ dwarf2_debug_map_psymtab_to_symtab (struct partial_symtab *pst)
 }
 
 /* MATCH_AMOUNT specifies how much of the filename path must match.
-   See the explanation of why this is being done in 
+   See the explanation of why this is being done in
    dwarf2_kext_psymtab_to_symtab().  If MATCH_AMOUNT is -1, we require
-   a full source pathname match.  If it's 0, only the base names are 
+   a full source pathname match.  If it's 0, only the base names are
    matched.  If 1, it's the base names plus the parent directory.  */
 
 char *
@@ -4458,7 +4459,7 @@ find_debug_info_for_pst (struct partial_symtab *pst, int match_amount)
   bfd *dsym_abfd = pst->objfile->obfd;
   struct objfile *dsym_objfile = pst->objfile;
 
-  /* Any cached compilation units will be linked by the per-objfile 
+  /* Any cached compilation units will be linked by the per-objfile
      read_in_chain.  Make sure to free them when we're done.  */
   info_ptr = dwarf2_per_objfile->info_buffer;
   back_to = make_cleanup (free_cached_comp_units, NULL);
@@ -4524,16 +4525,16 @@ find_debug_info_for_pst (struct partial_symtab *pst, int match_amount)
               do_cleanups (back_to);
               return beg_of_comp_unit;
             }
-          if (match_amount >= 0 
-              && pst_filename 
-              && pst_filename[0] != '\0' 
+          if (match_amount >= 0
+              && pst_filename
+              && pst_filename[0] != '\0'
               && comp_unit_die.name[0] != '\0')
             {
               int pst_file_len = strlen (pst_filename);
               int cu_len = strlen (comp_unit_die.name);
               if (cu_len != 0 && pst_file_len != 0
-                  && cu_len > pst_file_len 
-                  && strcmp (&(comp_unit_die.name[cu_len - pst_file_len]), 
+                  && cu_len > pst_file_len
+                  && strcmp (&(comp_unit_die.name[cu_len - pst_file_len]),
                              pst_filename) == 0)
                 {
                   do_cleanups (back_to);
@@ -4998,7 +4999,7 @@ process_die (struct die_info *die, struct dwarf2_cu *cu)
       break;
     /* APPLE LOCAL: If we pass a NULL type to new_symbol, then
        the type registered in the symbol for the typedef will
-       be the target of the typedef, not the typedef itself.  
+       be the target of the typedef, not the typedef itself.
        That's wrong, so process the typedef, and pass it's
        type to new_symbol.  */
     case DW_TAG_typedef:
@@ -5033,7 +5034,7 @@ read_file_scope (struct die_info *die, struct dwarf2_cu *cu)
   bfd *abfd = objfile->obfd;
   struct line_header *line_header = 0;
   CORE_ADDR baseaddr;
-  
+
   baseaddr = objfile_text_section_offset (objfile);
 
   /* APPLE LOCAL: If we have a debug map and reasonable looking
@@ -5042,8 +5043,8 @@ read_file_scope (struct die_info *die, struct dwarf2_cu *cu)
      measurement of the maximum pc address range of this compilation
      unit in the final linked executable.  */
 
-  if (cu->addr_map 
-      && cu->per_cu->psymtab->textlow != -1 
+  if (cu->addr_map
+      && cu->per_cu->psymtab->textlow != -1
       && cu->per_cu->psymtab->textlow != baseaddr
       && cu->per_cu->psymtab->texthigh != 0)
     {
@@ -5092,7 +5093,7 @@ read_file_scope (struct die_info *die, struct dwarf2_cu *cu)
     }
 
   attr = dwarf2_attr (die, DW_AT_producer, cu);
-  if (attr) 
+  if (attr)
     cu->producer = DW_STRING (attr);
 
   /* APPLE LOCAL begin Inform users about debugging optimized code  */
@@ -5100,7 +5101,7 @@ read_file_scope (struct die_info *die, struct dwarf2_cu *cu)
   if (attr)
     cu->cu_is_optimized = 1;
   /* APPLE LOCAL end Inform users about debugging optimized code  */
-  
+
   /* We assume that we're processing GCC output. */
   processing_gcc_compilation = 2;
 #if 0
@@ -5185,8 +5186,8 @@ add_to_cu_func_list (const char *name, CORE_ADDR lowpc, CORE_ADDR highpc,
 /* APPLE LOCAL begin subroutine inlining  */
 static void
 dwarf2_add_to_list_of_inlined_calls (struct objfile *objfile,
-				     struct attribute *file_attr, 
-				     struct attribute *line_attr, 
+				     struct attribute *file_attr,
+				     struct attribute *line_attr,
 				     struct attribute *column_attr,
 				     CORE_ADDR lowpc, CORE_ADDR highpc,
 				     /* APPLE LOCAL - address ranges  */
@@ -5201,7 +5202,7 @@ dwarf2_add_to_list_of_inlined_calls (struct objfile *objfile,
   struct dwarf_inlined_call_record *new;
   struct rb_tree_node *new_call_site;
 
-  new = (struct dwarf_inlined_call_record *) xmalloc 
+  new = (struct dwarf_inlined_call_record *) xmalloc
                                           (sizeof (struct dwarf_inlined_call_record));
   new->file_index = DW_UNSND (file_attr);
   new->line = DW_UNSND (line_attr);
@@ -5229,7 +5230,7 @@ dwarf2_add_to_list_of_inlined_calls (struct objfile *objfile,
 
   /* APPLE LOCAL radar 6545149 */
   new->func_sym = func_sym;
-  
+
   /* Now wrap call_site information into red-black tree node, for quick
      insertion/lookup in list of call sites.  */
 
@@ -5252,7 +5253,7 @@ dwarf2_add_to_list_of_inlined_calls (struct objfile *objfile,
      check_inlined_function_calls to put the appropriate information in
      the appropriate files' line tables.  */
 
-  rb_tree_insert (&(objfile->inlined_call_sites), objfile->inlined_call_sites, 
+  rb_tree_insert (&(objfile->inlined_call_sites), objfile->inlined_call_sites,
 		  new_call_site);
 }
 
@@ -5308,7 +5309,7 @@ read_inlined_subroutine_scope (struct die_info *die, struct dwarf2_cu *cu)
   name = dwarf2_linkage_name (die, cu);
 
   /* Add call_site file, line #, and lowpc to line table (waiting list)!  */
-  
+
   file_attr = dwarf2_attr (die, DW_AT_call_file, cu);
   line_attr = dwarf2_attr (die, DW_AT_call_line, cu);
   column_attr = dwarf2_attr (die, DW_AT_call_column, cu);
@@ -5337,7 +5338,7 @@ read_inlined_subroutine_scope (struct die_info *die, struct dwarf2_cu *cu)
   /* APPLE LOCAL begin radar 6545149  - moved code to here (see below).  */
   new = push_context (0, lowpc);
   new->name = new_symbol (die, die->type, cu);
-  add_symbol_to_inlined_subroutine_list (new->name, 
+  add_symbol_to_inlined_subroutine_list (new->name,
 					 &inlined_subroutine_symbols);
   /* APPLE LOCAL end radar 6545149  - moved code to here.  */
 
@@ -5345,16 +5346,16 @@ read_inlined_subroutine_scope (struct die_info *die, struct dwarf2_cu *cu)
      we try to make use of it.  Also make sure we have names for the caller
      and callee functions.  */
 
-  if (file_attr 
+  if (file_attr
       && line_attr
       && decl_file
       && decl_line
       && name
       && parent_name)
     /* APPLE LOCAL begin address ranges  */
-    dwarf2_add_to_list_of_inlined_calls (objfile, file_attr, line_attr, 
-					 column_attr, lowpc, highpc, ranges, 
-					 name, parent_name, decl_file, 
+    dwarf2_add_to_list_of_inlined_calls (objfile, file_attr, line_attr,
+					 column_attr, lowpc, highpc, ranges,
+					 name, parent_name, decl_file,
 					 /* APPLE LOCAL radar 6545149  */
 					 decl_line, new->name);
     /* APPLE LOCAL end address ranges  */
@@ -5408,7 +5409,7 @@ read_func_scope (struct die_info *die, struct dwarf2_cu *cu)
   /* Ignore functions with missing or empty names and functions with
      missing or invalid low and high pc attributes.  */
   /* APPLE LOCAL begin address ranges  */
-  if (name == NULL 
+  if (name == NULL
       || !dwarf2_get_pc_bounds (die, &lowpc, &highpc, &ranges, cu))
     return;
   /* APPLE LOCAL end address ranges  */
@@ -5440,7 +5441,7 @@ read_func_scope (struct die_info *die, struct dwarf2_cu *cu)
          Thus, when processing die #4, we have to pretend that we're
          in the context of its DW_AT_specification, namely the contex
          of die #3.  */
-	
+
       if (spec_die != NULL)
 	{
 	  char *specification_prefix = determine_prefix (spec_die, cu);
@@ -5503,7 +5504,7 @@ read_func_scope (struct die_info *die, struct dwarf2_cu *cu)
   finish_block (new->name, &local_symbols, new->old_blocks,
 		lowpc, highpc, ranges, objfile);
   /* APPLE LOCAL end address ranges  */
-  
+
   /* In C++, we can have functions nested inside functions (e.g., when
      a function declares a class that has methods).  This means that
      when we finish processing a function scope, we may need to go
@@ -5541,7 +5542,7 @@ read_lexical_block_scope (struct die_info *die, struct dwarf2_cu *cu)
   /* Ignore blocks with missing or invalid low and high pc attributes.  */
   /* ??? Perhaps consider discontiguous blocks defined by DW_AT_ranges
      as multiple lexical blocks?  Handling children in a sane way would
-     be nasty.  Might be easier to properly extend generic blocks to 
+     be nasty.  Might be easier to properly extend generic blocks to
      describe ranges.  */
   /* APPLE LOCAL begin address ranges  */
   if (!dwarf2_get_pc_bounds (die, &lowpc, &highpc, &ranges, cu))
@@ -5590,7 +5591,7 @@ read_lexical_block_scope (struct die_info *die, struct dwarf2_cu *cu)
 /* APPLE LOCAL: What is returned in the case of a discontiguous range?
    I say the minimal low pc and the maximal high pc should be returned.  */
 static int
-dwarf2_get_pc_bounds (struct die_info *die, CORE_ADDR *lowpc, 
+dwarf2_get_pc_bounds (struct die_info *die, CORE_ADDR *lowpc,
 		      CORE_ADDR *highpc, struct address_range_list **ranges,
 		      struct dwarf2_cu *cu)
 /* APPLE LOCAL end address ranges  */
@@ -5654,15 +5655,15 @@ dwarf2_get_pc_bounds (struct die_info *die, CORE_ADDR *lowpc,
 	  int max_elts;
 	  int cur_elt = 0;
 
-	  tmp_ranges = (struct address_range_list *) 
+	  tmp_ranges = (struct address_range_list *)
 	                       xmalloc (sizeof (struct address_range_list));
 
 	  max_elts = 10;
 	  tmp_ranges->nelts = 0;
-	  tmp_ranges->ranges = (struct address_range *) 
+	  tmp_ranges->ranges = (struct address_range *)
 	                  xmalloc (max_elts * sizeof (struct address_range));
 
-	  memset (tmp_ranges->ranges, 0, 
+	  memset (tmp_ranges->ranges, 0,
 		  max_elts * sizeof (struct address_range));
 	  /* APPLE LOCAL end address ranges  */
 
@@ -5702,7 +5703,7 @@ dwarf2_get_pc_bounds (struct die_info *die, CORE_ADDR *lowpc,
 		{
 		  max_elts = 2 * max_elts;
 		  tmp_ranges->ranges = (struct address_range *) xrealloc
-		    (tmp_ranges->ranges, 
+		    (tmp_ranges->ranges,
 		     max_elts * sizeof (struct address_range));
 		}
 	      /* APPLE LOCAL end address ranges  */
@@ -5819,7 +5820,7 @@ get_scope_pc_bounds (struct die_info *die,
 	    /* APPLE LOCAL begin address ranges  */
 	    /* FIXME:  I'm not sure the logic here is correct in the
 	       presence of multiple non-contiguous address ranges.   */
-	    if (dwarf2_get_pc_bounds (child, &current_low, &current_high, 
+	    if (dwarf2_get_pc_bounds (child, &current_low, &current_high,
 				      &ranges, cu))
 	    /* APPLE LOCAL end address ranges  */
 	      {
@@ -5862,7 +5863,7 @@ get_scope_pc_bounds (struct die_info *die,
 static void
 dwarf2_add_field (struct field_info *fip, struct die_info *die,
 		  struct dwarf2_cu *cu)
-{ 
+{
   /* APPLE LOCAL avoid unused var warning.  */
   /* struct objfile *objfile = cu->objfile; */
   struct nextfield *new_field;
@@ -5901,7 +5902,7 @@ dwarf2_add_field (struct field_info *fip, struct die_info *die,
   if (die->tag == DW_TAG_member && ! die_is_declaration (die, cu))
     {
       /* Data member other than a C++ static data member.  */
-      
+
       /* Get type of field.  */
       fp->type = die_type (die, cu);
 
@@ -5996,7 +5997,7 @@ dwarf2_add_field (struct field_info *fip, struct die_info *die,
 	 is a declaration, but all versions of G++ as of this writing
 	 (so through at least 3.2.1) incorrectly generate
 	 DW_TAG_variable tags.  */
-      
+
       char *physname;
 
       /* Get name of field.  */
@@ -6485,7 +6486,7 @@ read_structure_type (struct die_info *die, struct dwarf2_cu *cu)
       do_cleanups (back_to);
     }
 
-  /* APPLE LOCAL: Figure out which runtime this type belongs to...  
+  /* APPLE LOCAL: Figure out which runtime this type belongs to...
      Only do this for ObjC & ObjC++.  Otherwise we default to the
      C++ runtime.  We could add defines for ADA etc, but we don't
      use that, and it's really only important when you can mix runtimes
@@ -6525,21 +6526,21 @@ read_structure_type (struct die_info *die, struct dwarf2_cu *cu)
 	      break;
 	    }
 	}
-	  
+
       if (!found)
 	{
 	  if (TYPE_N_BASECLASSES (type) == 0)
 	    {
-	      /* If there are no baseclasses, see if this is the 
+	      /* If there are no baseclasses, see if this is the
 		 base of the ObjC Hierarchy.  */
-	      if (TYPE_TAG_NAME (type) 
+	      if (TYPE_TAG_NAME (type)
 		  && (strcmp(TYPE_TAG_NAME (type), "NSObject") == 0))
 		{
 		  /* Have to allocate the cplus_stuff up here, since if there is no
 		     inheritance tag then we won't have set it up yet.  In the other
 		     branches of this test we're implicitly using the fact that if
 		     the cplus_stuff is not allocated, then we shouldn't set the
-		     runtime (TYPE_RUNTIME doesn't set anything if the cplus_stuff 
+		     runtime (TYPE_RUNTIME doesn't set anything if the cplus_stuff
 		     is NULL.)  */
 		  ALLOCATE_CPLUS_STRUCT_TYPE (type);
 		  TYPE_RUNTIME (type) = OBJC_RUNTIME;
@@ -6565,10 +6566,10 @@ read_structure_type (struct die_info *die, struct dwarf2_cu *cu)
     TYPE_RUNTIME (type) = CPLUS_RUNTIME;
 
   /* APPLE LOCAL: The ivar offsets of Obj classes can't
-     be determined from the information in the declaring 
+     be determined from the information in the declaring
      header file.  So we need to fix them up from the
      runtime.  I don't want to have to do this for every
-     class right now, however.  So I just mark all the 
+     class right now, however.  So I just mark all the
      lengths invalid, and get around to fixing them up
      when they are read through TYPE_FIELD_BITPOS or
      TYPE_LENGTH.  */
@@ -6579,7 +6580,7 @@ read_structure_type (struct die_info *die, struct dwarf2_cu *cu)
   attr = dwarf2_attr (die, DW_AT_APPLE_block, cu);
   if (attr)
     TYPE_FLAGS (type) |= TYPE_FLAG_APPLE_CLOSURE;
-  
+
   processing_current_prefix = previous_prefix;
   if (back_to != NULL)
     do_cleanups (back_to);
@@ -6606,7 +6607,7 @@ process_structure_scope (struct die_info *die, struct dwarf2_cu *cu)
   while (child_die != NULL && child_die->tag)
     {
       if (child_die->tag == DW_TAG_member
-	  || (child_die->tag == DW_TAG_variable 
+	  || (child_die->tag == DW_TAG_variable
              /* APPLE LOCAL */
 	      && dwarf2_attr (child_die, DW_AT_const_value, cu) == NULL)
 	  || child_die->tag == DW_TAG_inheritance)
@@ -6707,7 +6708,7 @@ determine_class_name (struct die_info *die, struct dwarf2_cu *cu)
 	{
 	  if (child->tag == DW_TAG_subprogram)
 	    {
-	      new_prefix 
+	      new_prefix
 		= language_class_name_from_physname (cu->language_defn,
 						     dwarf2_linkage_name
 						     (child, cu));
@@ -6722,7 +6723,7 @@ determine_class_name (struct die_info *die, struct dwarf2_cu *cu)
     {
       const char *name = dwarf2_name (die, cu);
       new_prefix = typename_concat (NULL, processing_current_prefix,
-				    name ? name : "<<anonymous>>", 
+				    name ? name : "<<anonymous>>",
 				    cu);
     }
 
@@ -6902,7 +6903,7 @@ read_array_type (struct die_info *die, struct dwarf2_cu *cu)
 }
 
 static enum dwarf_array_dim_ordering
-read_array_order (struct die_info *die, struct dwarf2_cu *cu) 
+read_array_order (struct die_info *die, struct dwarf2_cu *cu)
 {
   struct attribute *attr;
 
@@ -6912,10 +6913,10 @@ read_array_order (struct die_info *die, struct dwarf2_cu *cu)
 
   /*
     GNU F77 is a special case, as at 08/2004 array type info is the
-    opposite order to the dwarf2 specification, but data is still 
+    opposite order to the dwarf2 specification, but data is still
     laid out as per normal fortran.
 
-    FIXME: dsl/2004-8-20: If G77 is ever fixed, this will also need 
+    FIXME: dsl/2004-8-20: If G77 is ever fixed, this will also need
     version checking.
   */
 
@@ -6925,7 +6926,7 @@ read_array_order (struct die_info *die, struct dwarf2_cu *cu)
       return DW_ORD_row_major;
     }
 
-  switch (cu->language_defn->la_array_ordering) 
+  switch (cu->language_defn->la_array_ordering)
     {
     case array_column_major:
       return DW_ORD_col_major;
@@ -7059,7 +7060,7 @@ read_namespace (struct die_info *die, struct dwarf2_cu *cu)
   if (die->child != NULL)
     {
       struct die_info *child_die = die->child;
-      
+
       while (child_die && child_die->tag)
 	{
 	  process_die (child_die, cu);
@@ -7132,7 +7133,7 @@ read_tag_pointer_type (struct die_info *die, struct dwarf2_cu *cu)
     struct attribute *attr;
     struct type *id_type;
     char *name;
-    if (cu->language == language_objc 
+    if (cu->language == language_objc
 	|| cu->language == language_objcplus)
       {
 	attr = dwarf2_attr (die, DW_AT_name, cu);
@@ -7149,14 +7150,14 @@ read_tag_pointer_type (struct die_info *die, struct dwarf2_cu *cu)
 		return;
 	      }
 	    id_type = make_pointer_type (id_type, NULL);
-	    set_die_type (die, init_type (TYPE_CODE_TYPEDEF, 0, 
-					  TYPE_FLAG_TARGET_STUB, 
-					  name, cu->objfile), 
+	    set_die_type (die, init_type (TYPE_CODE_TYPEDEF, 0,
+					  TYPE_FLAG_TARGET_STUB,
+					  name, cu->objfile),
 			  cu);
 	    TYPE_TARGET_TYPE (die->type) = id_type;
 	    /* We need to make the symbol for "id" here because
 	       pointer types don't usually get symbols, so all
-	       our callers will skip doing this.  
+	       our callers will skip doing this.
 	       Also, since we're converting a pointer type
 	       to a typedef, we need to get the tag right for
 	       new_symbol or it won't do the right things.  */
@@ -7294,7 +7295,7 @@ read_tag_const_type (struct die_info *die, struct dwarf2_cu *cu)
     }
 
   base_type = die_type (die, cu);
-  set_die_type (die, make_cvr_type (1, TYPE_VOLATILE (base_type), 
+  set_die_type (die, make_cvr_type (1, TYPE_VOLATILE (base_type),
                                     TYPE_RESTRICT (base_type), base_type, 0),
 		cu);
 }
@@ -7310,7 +7311,7 @@ read_tag_volatile_type (struct die_info *die, struct dwarf2_cu *cu)
     }
 
   base_type = die_type (die, cu);
-  set_die_type (die, make_cvr_type (TYPE_CONST (base_type), 1, 
+  set_die_type (die, make_cvr_type (TYPE_CONST (base_type), 1,
                                     TYPE_RESTRICT (base_type), base_type, 0),
 		cu);
 }
@@ -7326,7 +7327,7 @@ read_tag_restrict_type (struct die_info *die, struct dwarf2_cu *cu)
     }
 
   base_type = die_type (die, cu);
-  set_die_type (die, make_cvr_type (TYPE_CONST (base_type), 
+  set_die_type (die, make_cvr_type (TYPE_CONST (base_type),
                                    TYPE_VOLATILE (base_type), 1, base_type, 0),
 		cu);
 }
@@ -7598,7 +7599,7 @@ read_subrange_type (struct die_info *die, struct dwarf2_cu *cu)
   struct attribute *attr;
   int low = 0;
   int high = -1;
-  
+
   /* If we have already decoded this die, then nothing more to do.  */
   if (die->type)
     return;
@@ -7615,7 +7616,7 @@ read_subrange_type (struct die_info *die, struct dwarf2_cu *cu)
     base_type = alloc_type (NULL);
 
   if (cu->language == language_fortran)
-    { 
+    {
       /* FORTRAN implies a lower bound of 1, if not given.  */
       low = 1;
     }
@@ -7629,7 +7630,7 @@ read_subrange_type (struct die_info *die, struct dwarf2_cu *cu)
 
   attr = dwarf2_attr (die, DW_AT_upper_bound, cu);
   if (attr)
-    {       
+    {
       if (attr->form == DW_FORM_block1)
         {
           /* GCC encodes arrays with unspecified or dynamic length
@@ -7654,14 +7655,14 @@ read_subrange_type (struct die_info *die, struct dwarf2_cu *cu)
   attr = dwarf2_attr (die, DW_AT_name, cu);
   if (attr && DW_STRING (attr))
     TYPE_NAME (range_type) = DW_STRING (attr);
-  
+
   attr = dwarf2_attr (die, DW_AT_byte_size, cu);
   if (attr)
     TYPE_LENGTH_ASSIGN (range_type) = DW_UNSND (attr);
 
   set_die_type (die, range_type, cu);
 }
-  
+
 
 /* Read a whole compilation unit into a linked list of dies.  */
 
@@ -7826,7 +7827,7 @@ dwarf2_read_abbrevs (bfd *abfd, struct dwarf2_cu *cu)
 
   allocated_attrs = ATTR_ALLOC_CHUNK;
   cur_attrs = xmalloc (allocated_attrs * sizeof (struct attr_abbrev));
-  
+
   /* loop until we reach an abbrev number of 0 */
   while (abbrev_number)
     {
@@ -8058,7 +8059,7 @@ load_partial_dies (bfd *abfd, char *info_ptr, int building_psymtab,
 	      || part_die->tag == DW_TAG_subrange_type))
 	{
 	  if (building_psymtab && part_die->name != NULL)
-            /* APPLE LOCAL: Put it in the global_psymbols list, not 
+            /* APPLE LOCAL: Put it in the global_psymbols list, not
                static_psymbols.  */
 	    add_psymbol_to_list (part_die->name, strlen (part_die->name),
 				 VAR_DOMAIN, LOC_TYPEDEF,
@@ -8256,7 +8257,7 @@ read_partial_die (struct partial_die_info *part_die,
 		  char *short_end;
 		  char *end = part_die->name + strlen(part_die->name);
 		  int is_equivalence_name = 1;
-		  
+
 		  short_name = part_die->name + 2;
 		  extension = strchr (short_name, '$');
 		  if (extension)
@@ -8272,11 +8273,11 @@ read_partial_die (struct partial_die_info *part_die,
 			    is_equivalence_name = 0;
 			  extension++;
 			}
-		      
+
 		    }
 		  else
 		    is_equivalence_name = 0;
-		  
+
 		  if (is_equivalence_name)
 		    {
 		      psym_equivalences = 1;
@@ -8285,7 +8286,7 @@ read_partial_die (struct partial_die_info *part_die,
 		      part_die->equiv_name = part_die->name;
 		      short_end[0] = '$';
 		    }
-		  
+
 		}
 	      /* APPLE LOCAL end psym equivalences  */
 	    }
@@ -8849,19 +8850,19 @@ read_address (bfd *abfd, char *buf, struct dwarf2_cu *cu, int *bytes_read)
 
    The value returned via bytes_read should be used to increment the
    relevant pointer after calling read_initial_length().
-   
+
    As a side effect, this function sets the fields initial_length_size
    and offset_size in cu_header to the values appropriate for the
    length field.  (The format of the initial length field determines
    the width of file offsets to be fetched later with read_offset().)
-   
+
    [ Note:  read_initial_length() and read_offset() are based on the
      document entitled "DWARF Debugging Information Format", revision
      3, draft 8, dated November 19, 2001.  This document was obtained
      from:
 
 	http://reality.sgiweb.org/davea/dwarf3-draft8-011125.pdf
-     
+
      This document is only a draft and is subject to change.  (So beware.)
 
      Details regarding the older, non-standard 64-bit format were
@@ -9146,7 +9147,7 @@ dwarf2_attr (struct die_info *die, unsigned int name, struct dwarf2_cu *cu)
 
   if (spec)
     return dwarf2_attr (follow_die_ref (die, spec, cu), name, cu);
-  
+
   /* APPLE LOCAL begin dwarf repository  */
   if (repository_spec)
     {
@@ -9239,7 +9240,7 @@ add_include_dir (struct line_header *lh, char *include_dir)
 
   lh->include_dirs[lh->num_include_dirs++] = include_dir;
 }
- 
+
 
 /* Add an entry to LH's file name table.  */
 static void
@@ -9273,7 +9274,7 @@ add_file_name (struct line_header *lh,
   fe->length = length;
   fe->included_p = 0;
 }
- 
+
 
 /* Read the statement program header starting at OFFSET in
    .debug_line, according to the endianness of ABFD.  Return a pointer
@@ -9317,7 +9318,7 @@ dwarf_decode_line_header (unsigned int offset, bfd *abfd,
 
   /* Read in the header.  */
   /* APPLE LOCAL Add cast to avoid type mismatch in arg4 warning.  */
-  lh->total_length = 
+  lh->total_length =
     read_initial_length (abfd, line_ptr, &cu->header, (int *) &bytes_read);
   line_ptr += bytes_read;
   if (line_ptr + lh->total_length > (dwarf2_per_objfile->line_buffer
@@ -9330,7 +9331,7 @@ dwarf_decode_line_header (unsigned int offset, bfd *abfd,
   lh->version = read_2_bytes (abfd, line_ptr);
   line_ptr += 2;
   /* APPLE LOCAL Add cast to avoid type mismatch in arg4 warning.  */
-  lh->header_length = read_offset (abfd, line_ptr, &cu->header, 
+  lh->header_length = read_offset (abfd, line_ptr, &cu->header,
 				   (int *) &bytes_read);
   line_ptr += bytes_read;
   lh->minimum_instruction_length = read_1_byte (abfd, line_ptr);
@@ -9377,7 +9378,7 @@ dwarf_decode_line_header (unsigned int offset, bfd *abfd,
       add_file_name (lh, cur_file, dir_index, mod_time, length);
     }
   line_ptr += bytes_read;
-  lh->statement_program_start = line_ptr; 
+  lh->statement_program_start = line_ptr;
 
   if (line_ptr > (dwarf2_per_objfile->line_buffer
 		  + dwarf2_per_objfile->line_size))
@@ -9475,8 +9476,8 @@ check_inlined_function_calls (struct subfile *subfile, int file_index, int line,
       /* Look for an inlining instance with the address and file_index passed
 	 in.  */
 
-      rb_node = rb_tree_find_and_remove_node (&(objfile->inlined_call_sites), 
-					      objfile->inlined_call_sites, 
+      rb_node = rb_tree_find_and_remove_node (&(objfile->inlined_call_sites),
+					      objfile->inlined_call_sites,
 					      address, file_index);
 
       /* The secondary key in the rb_tree corresponds to the file index of
@@ -9486,7 +9487,7 @@ check_inlined_function_calls (struct subfile *subfile, int file_index, int line,
 	 create) the correct subfile records for either or both of those
 	 files.  */
 
-      if (rb_node 
+      if (rb_node
 	  && rb_node->secondary_key == file_index)
 	{
 	  tmp_subfile = subfile;
@@ -9499,9 +9500,9 @@ check_inlined_function_calls (struct subfile *subfile, int file_index, int line,
 	     differnt file_index than was passed in.  */
 
 	  if (!rb_node)
-	    rb_node = rb_tree_find_and_remove_node 
-	                                      (&(objfile->inlined_call_sites), 
-					       objfile->inlined_call_sites, 
+	    rb_node = rb_tree_find_and_remove_node
+	                                      (&(objfile->inlined_call_sites),
+					       objfile->inlined_call_sites,
 					       address, -1);
 
 	  /* We found an inlining instance, but it has a different
@@ -9530,61 +9531,61 @@ check_inlined_function_calls (struct subfile *subfile, int file_index, int line,
 	{
 	  if (current->file_index == file_index)
 	    call_site_subfile = subfile;
-	  
+
 	  if (current->decl_file_index == file_index)
 	    decl_site_subfile = subfile;
-	  
+
 	  if (call_site_subfile == NULL)
-            call_basename = lbasename 
+            call_basename = lbasename
                                (lh->file_names[current->file_index - 1].name);
-	  
+
 	  if (decl_site_subfile == NULL)
-	    decl_basename = lbasename 
+	    decl_basename = lbasename
                           (lh->file_names[current->decl_file_index - 1].name);
 
 	  /* Look for subfiles for call site and decl site files,
 	     if necessary.  */
 
-	  for (tmp_subfile = subfiles; 
-	       tmp_subfile 
+	  for (tmp_subfile = subfiles;
+	       tmp_subfile
                  && (call_site_subfile == NULL || decl_site_subfile == NULL);
 	       tmp_subfile = tmp_subfile->next)
 	    {
 	      tmp_basename = lbasename (tmp_subfile->name);
 
-	      if (call_site_subfile == NULL 
+	      if (call_site_subfile == NULL
                   && (strcmp (tmp_basename, call_basename) == 0))
 		call_site_subfile = tmp_subfile;
-	      
-	      if (decl_site_subfile == NULL 
+
+	      if (decl_site_subfile == NULL
                   && (strcmp (tmp_basename, decl_basename) == 0))
 		decl_site_subfile = tmp_subfile;
 	    }
 	}
-      
-      /* If the subfile record for either the call site file or the decl 
-	 site file (or both) does not exist yet, we need to create the 
+
+      /* If the subfile record for either the call site file or the decl
+	 site file (or both) does not exist yet, we need to create the
 	 record(s).  */
-      
+
       if (current && (call_site_subfile == NULL || decl_site_subfile == NULL))
 	{
 	  struct file_entry *fe;
 	  char *dir;
-	  
+
 	  if (call_site_subfile == NULL)
 	    {
 	      fe = &lh->file_names[current->file_index - 1];
-	      
+
 	      if (fe->dir_index)
 		dir = lh->include_dirs[fe->dir_index - 1];
 	      else
 		dir = comp_dir;
-	      
+
 	      /* Create the new subfile record.  */
-	      
+
 	      dwarf2_start_subfile (fe->name, dir, cu->comp_dir);
 	    }
-	  
+
 	  if (decl_site_subfile == NULL)
 	    {
 	      fe = &lh->file_names[current->decl_file_index - 1];
@@ -9592,27 +9593,27 @@ check_inlined_function_calls (struct subfile *subfile, int file_index, int line,
 		dir = lh->include_dirs[fe->dir_index - 1];
 	      else
 		dir = comp_dir;
-	      
+
 	      /* Create the new subfile record.  */
-	      
+
 	      dwarf2_start_subfile (fe->name, dir, cu->comp_dir);
 	    }
-	  
+
 	  /* Now we have to find the newly created record(s).  */
-	  
-	  for (tmp_subfile = subfiles; tmp_subfile; 
+
+	  for (tmp_subfile = subfiles; tmp_subfile;
 	       tmp_subfile = tmp_subfile->next)
 	    {
 	      tmp_basename = lbasename (tmp_subfile->name);
-	      
-	      if (call_site_subfile == NULL 
+
+	      if (call_site_subfile == NULL
                   && (strcmp (tmp_basename, call_basename) == 0))
 		call_site_subfile = tmp_subfile;
-	      
-	      if (decl_site_subfile == NULL 
+
+	      if (decl_site_subfile == NULL
                   && (strcmp (tmp_basename, decl_basename) == 0))
 		decl_site_subfile = tmp_subfile;
-	      
+
 	      if (call_site_subfile && decl_site_subfile)
 		break;
 	    }
@@ -9626,22 +9627,22 @@ check_inlined_function_calls (struct subfile *subfile, int file_index, int line,
       if (current)
 	{
 	  if (call_site_subfile != decl_site_subfile)
-	    record_line (call_site_subfile, current->line, address, 0, 
+	    record_line (call_site_subfile, current->line, address, 0,
 			 NORMAL_LT_ENTRY);
 
 	  if (dwarf2_debug_inlined_stepping)
-	    fprintf_unfiltered (gdb_stdout, "%s inlined into %s:\n", 
+	    fprintf_unfiltered (gdb_stdout, "%s inlined into %s:\n",
 				current->name, current->parent_name);
-	  
-	  record_line (call_site_subfile, current->line, current->lowpc, 
+
+	  record_line (call_site_subfile, current->line, current->lowpc,
 		       current->highpc,
 		       INLINED_CALL_SITE_LT_ENTRY);
-	  record_line (decl_site_subfile, current->decl_line + 1, 
+	  record_line (decl_site_subfile, current->decl_line + 1,
 		       current->lowpc, current->highpc,
 		       INLINED_SUBROUTINE_LT_ENTRY);
 	  /* APPLE LOCAL begin address ranges  */
 	  inlined_function_add_function_names (objfile,
-					       current->lowpc, 
+					       current->lowpc,
 					       current->highpc,
 					       current->line, current->column,
 					       current->name,
@@ -9661,9 +9662,9 @@ check_inlined_function_calls (struct subfile *subfile, int file_index, int line,
 
 /* APPLE LOCAL end subroutine inlining  */
 
-/* APPLE LOCAL begin: debug map line table support. 
+/* APPLE LOCAL begin: debug map line table support.
 
-  Line tables have their addresses fixed up on the fly as object files are 
+  Line tables have their addresses fixed up on the fly as object files are
   read in. Function re-ordering and dead code stripping can seriously affect
   the DWARF line tables. This function will take care of properly mapping line
   table rows to what they should be in the internal gdb representation. If
@@ -9691,7 +9692,7 @@ check_inlined_function_calls (struct subfile *subfile, int file_index, int line,
   0x00000104    1   52 func_5
   0x00000120    1   53 func_5
   0x0000013c    1   54 func_5
-  
+
   0x00000154    1   62 func_6
   0x00000178    1   64 func_6
   0x00000184    1   65 func_6
@@ -9709,7 +9710,7 @@ lowpc        highpc	function
 0x00001d50 - 0x00001d84 func_1
 
   When building the line table, we will try and translate each address. If the
-  address is in the middle of a line table (isn't a end of sequence 
+  address is in the middle of a line table (isn't a end of sequence
   (LNE_end_sequence)), we need to check each address to see if it is in mapped
   in the output both as a low and high pc address.
  */
@@ -9725,8 +9726,8 @@ translate_debug_map_address_with_tuple (struct oso_to_final_addr_map *map,
   CORE_ADDR final_addr = match->final_addr + delta;
 
   /* For the high pc address, find the next final address and make sure it
-     doesn't overlap into that next address range. If it does, trim the 
-     current address range down. See comments in definition of the 
+     doesn't overlap into that next address range. If it does, trim the
+     current address range down. See comments in definition of the
      'oso_to_final_addr_map' structure for full details.  */
   if (highpc && map->final_addr_index)
     {
@@ -9734,25 +9735,25 @@ translate_debug_map_address_with_tuple (struct oso_to_final_addr_map *map,
 	 our match.  */
       struct final_addr_key final_addr_key = { match->final_addr, map };
 
-      int *match_fa_idx_ptr = bsearch (&final_addr_key, 
-				       map->final_addr_index, 
+      int *match_fa_idx_ptr = bsearch (&final_addr_key,
+				       map->final_addr_index,
 				       map->entries, sizeof (int),
 				       compare_translation_final_addr);
 
       if (match_fa_idx_ptr != NULL
-          && *match_fa_idx_ptr >= 0 
+          && *match_fa_idx_ptr >= 0
           && *match_fa_idx_ptr <= map->entries)
 	{
 	  /* We found a matching final address, now we can check the next
 	     entry (if there is one) to see if we need to shrink the address
 	     range for this function.  */
 	  int *next_fa_idx_ptr = match_fa_idx_ptr + 1;
-	  if (next_fa_idx_ptr - map->final_addr_index < map->entries 
+	  if (next_fa_idx_ptr - map->final_addr_index < map->entries
 	      && *next_fa_idx_ptr < map->entries)
 	    {
 	      if (map->tuples[*next_fa_idx_ptr].present_in_final)
 		{
-		  int new_delta = map->tuples[*next_fa_idx_ptr].final_addr - 
+		  int new_delta = map->tuples[*next_fa_idx_ptr].final_addr -
 				  match->final_addr;
 		  if (new_delta < delta)
 		    {
@@ -9761,10 +9762,10 @@ translate_debug_map_address_with_tuple (struct oso_to_final_addr_map *map,
 			 entry.  */
 		      final_addr = match->final_addr + new_delta;
 		      if (debug_debugmap > 5)
-			fprintf_unfiltered (gdb_stdlog, 
+			fprintf_unfiltered (gdb_stdlog,
 					    "debugmap: decreasing end address"
 					    " for '%s' in %s by %d bytes.\n",
-					    match->name, map->pst->filename, 
+					    match->name, map->pst->filename,
 					    delta - new_delta);
 		    }
 		}
@@ -9784,27 +9785,27 @@ translate_debug_map_address_with_tuple (struct oso_to_final_addr_map *map,
   if (final_addr > map->pst->texthigh)
     {
       if (debug_debugmap > 5)
-	fprintf_unfiltered (gdb_stdlog, 
+	fprintf_unfiltered (gdb_stdlog,
 			    "debugmap: address 0x%s beyond high text address "
 			    "0x%s for %s, capping to 0x%s\n",
-			    paddr_nz (final_addr), paddr_nz (map->pst->texthigh), 
+			    paddr_nz (final_addr), paddr_nz (map->pst->texthigh),
 			    match->name, paddr_nz (map->pst->texthigh));
       final_addr = map->pst->texthigh;
     }
 #endif
 
   if (debug_debugmap)
-    fprintf_unfiltered (gdb_stdlog, 
+    fprintf_unfiltered (gdb_stdlog,
                         "debugmap: (highpc = %i) translated 0x%s to 0x%s "
-			"for '%s' in %s\n", highpc, paddr (oso_addr), 
+			"for '%s' in %s\n", highpc, paddr (oso_addr),
 			paddr (final_addr), match->name, map->pst->filename);
   return final_addr;
 }
 
-/* 
+/*
   Properly records line table entries for executables with debug maps, or for
   executables with linked DWARF.
-  
+
   There are many cases to watch out for when we have a debug map that can
   cause problems:
     - When function a b c were contiguous in the object file and:
@@ -9814,15 +9815,15 @@ translate_debug_map_address_with_tuple (struct oso_to_final_addr_map *map,
       - functions from other compile units get inserted between a b and c
         (order files)
       - function a b and c are reordered
-	
+
   There are many variations, but the safest thing to do is to detect when we
   are translating ADDRESS that the same as OSO_HIGH_ADDR member of a
-  tuple and take extra care when translating these entries. 
+  tuple and take extra care when translating these entries.
  */
 
 static int
-dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu, 
-		    CORE_ADDR address, CORE_ADDR baseaddr, int file, int line, 
+dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu,
+		    CORE_ADDR address, CORE_ADDR baseaddr, int file, int line,
 		    int end_sequence)
 {
   CORE_ADDR final_addr = (CORE_ADDR) -1;
@@ -9853,8 +9854,8 @@ dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu
 	  /* Find a matching entry. Note that we can end up pickup up either
 	     the correct entry for an normal or end address, but this can save
 	     us from having to do two searches.  */
-	  match = bsearch (&address, map->tuples, map->entries, 
-			   sizeof (struct oso_final_addr_tuple), 
+	  match = bsearch (&address, map->tuples, map->entries,
+			   sizeof (struct oso_final_addr_tuple),
 			   compare_translation_tuples_inclusive);
 	}
 
@@ -9862,7 +9863,7 @@ dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu
 	{
 	  struct oso_final_addr_tuple *next = NULL;
 	  /* Our binary search may kick up the next entry due to it including
-	     both the start and end OSO address, so set MATCH to the previous 
+	     both the start and end OSO address, so set MATCH to the previous
 	     entry if needed.  */
 	  if (address == match->oso_low_addr)
 	    {
@@ -9873,20 +9874,20 @@ dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu
 		}
 	    }
 
-	  /* We now have MATCH that contains ADDRESS where ADDRESS may be 
+	  /* We now have MATCH that contains ADDRESS where ADDRESS may be
 	     equal to the end address in that range. We _might_ have NEXT
 	     which is the next oso address range in our tuples, but it may
 	     be NULL if MATCH is the last or only entry.  */
 	  if (address < match->oso_high_addr)
 	    {
-	      /* ADDRESS is less than the OSO_HIGH_ADDR of MATCH, 
+	      /* ADDRESS is less than the OSO_HIGH_ADDR of MATCH,
 	         we have found the correct MATCH and don't need to do
 		 anything special.  */
 	      if (match->present_in_final)
 		{
-		  final_addr = translate_debug_map_address_with_tuple (map, 
-							     	       match, 
-							     	       address, 
+		  final_addr = translate_debug_map_address_with_tuple (map,
+							     	       match,
+							     	       address,
     							           end_sequence);
 		  record_final_addr = 1;
 		}
@@ -9894,13 +9895,13 @@ dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu
 	  else if (address == match->oso_high_addr)
 	    {
 	      /* ADDRESS matches the OSO_HIGH_ADDR of MATCH which means that
-	         ADDRESS is at the highpc of a function (func_a), and possibly 
-		 at the start address of another function (func_b). If this 
+	         ADDRESS is at the highpc of a function (func_a), and possibly
+		 at the start address of another function (func_b). If this
 		 isn't an end_sequence line table row, we need to make sure the
-		 func_a and func_b appear contiguously in the final executable. 
+		 func_a and func_b appear contiguously in the final executable.
 		 If they don't, we need to translate the address once as a high
-		 PC for func_a, and again as a normal address for func_b and 
-		 potentially add a line table entry for the end of func_a if 
+		 PC for func_a, and again as a normal address for func_b and
+		 potentially add a line table entry for the end of func_a if
 		 they aren't contiguous in the final output.  */
 	      if (next == NULL)
 		{
@@ -9909,16 +9910,16 @@ dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu
 		  if (match + 1 < last_tuple)
 		    next = match + 1;
 		}
-	      
+
 	      if (match->present_in_final)
 		{
 		  /* Translate ADDRESS as a highpc address for the function
 		     described by MATCH (func_a).  */
-		  final_addr = translate_debug_map_address_with_tuple (map, 
-								       match, 
-								       address, 
+		  final_addr = translate_debug_map_address_with_tuple (map,
+								       match,
+								       address,
 								       1);
-		  record_final_addr = 1; 
+		  record_final_addr = 1;
 		}
 
 	      if (next)
@@ -9927,7 +9928,7 @@ dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu
 		  if (next->present_in_final)
 		    {
 		      /* NEXT is in the linked executable, so translate this
-			 address as normal address and store the result 
+			 address as normal address and store the result
 			 in NEXT_FINAL_ADDR.  */
 		      CORE_ADDR next_final_addr;
 		      next_final_addr = translate_debug_map_address_with_tuple (
@@ -9943,22 +9944,22 @@ dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu
 			      /* We need to fabricate a fake end sequence since
 			         both MATCH and NEXT are in the final executable
 				 but are not contiguous. We already translated
-				 ADDRESS as a highpc address above so we need 
+				 ADDRESS as a highpc address above so we need
 				 to add this address to our line table.  */
 			      final_addr += baseaddr;
 			      final_addr = check_cu_functions (final_addr, cu);
 			      if (debug_debugmap > 7)
-				fprintf_unfiltered (gdb_stdlog, 
+				fprintf_unfiltered (gdb_stdlog,
  "dwarf2_record_line: record_line (%s:%i, 0x%s) for %s (create end sequence)\n",
-						current_subfile->name, 0, 
-						paddr_nz (final_addr), 
+						current_subfile->name, 0,
+						paddr_nz (final_addr),
 						map->pst->filename);
-			      record_line (current_subfile, 0, final_addr, 0, 
+			      record_line (current_subfile, 0, final_addr, 0,
 					   NORMAL_LT_ENTRY);
-							
+
 			      num_lines_recorded++;
 			    }
-			    
+
 			  /* Change our current line's address to the next
 			     entry's final address.  */
 			  final_addr = next_final_addr;
@@ -9977,7 +9978,7 @@ dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu
 			     has.  */
 			  fake_end_sequence = 1;
 			  if (debug_debugmap > 7)
-			    fprintf_unfiltered (gdb_stdlog, 
+			    fprintf_unfiltered (gdb_stdlog,
                    "dwarf2_record_line: turning row (0x%s) into end sequence.\n",
 						paddr_nz (final_addr));
 			}
@@ -9989,7 +9990,7 @@ dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu
 	{
 	  /* Address doesn't exist in tuples.  */
 	  if (debug_debugmap > 7)
-	    fprintf_unfiltered (gdb_stdlog, 
+	    fprintf_unfiltered (gdb_stdlog,
                        "dwarf2_record_line: translate failed for 0x%s in %s\n",
 				paddr_nz (final_addr), map->pst->filename);
 	}
@@ -9997,18 +9998,18 @@ dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu
 
   if (record_final_addr)
     {
-      /* Now record our line table entry by adding BASEADDR and doing some 
+      /* Now record our line table entry by adding BASEADDR and doing some
 	 other final checks.  */
       final_addr += baseaddr;
       final_addr = check_cu_functions (final_addr, cu);
       /* Set our FINAL_LINE correctly (zero means the end address range for
          the previous line table entry).  */
       int final_line = (end_sequence || fake_end_sequence) ? 0 : line;
-      
+
       if (debug_debugmap > 7)
-	fprintf_unfiltered (gdb_stdlog, 
+	fprintf_unfiltered (gdb_stdlog,
                       "dwarf2_record_line: record_line (%s:%i, 0x%s) for %s\n",
-			    current_subfile->name, final_line, 
+			    current_subfile->name, final_line,
 			    paddr_nz (final_addr), map->pst->filename);
 
       record_line (current_subfile, final_line, final_addr, 0, NORMAL_LT_ENTRY);
@@ -10018,7 +10019,7 @@ dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu
 	  /* Only generate the inlined function calls when we are in the middle
 	     of a line table (not at a real end_sequence) otherwise we may try
 	     and generate the inline function calls using the wrong subfile.  */
-	  check_inlined_function_calls (current_subfile, file, final_line, 
+	  check_inlined_function_calls (current_subfile, file, final_line,
 					final_addr, lh, cu, comp_dir);
 	}
       /* APPLE LOCAL end subroutine inlining  */
@@ -10039,7 +10040,7 @@ dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu
       to create all necessary symbol tables, and their linetables.
       The compilation directory of the file is passed in COMP_DIR,
       and must not be NULL.
-   
+
    2. If PST is not NULL, this procedure reads the program to determine
       the list of files included by the unit represented by PST, and
       builds all the associated partial symbol tables.  In this case,
@@ -10113,7 +10114,7 @@ dwarf_decode_lines (struct line_header *lh, char *comp_dir, bfd *abfd,
 	    }
 
 	  if (op_code >= lh->opcode_base)
-	    {		
+	    {
 	      /* Special operand.  */
 	      adj_opcode = op_code - lh->opcode_base;
 	      address += (adj_opcode / lh->line_range)
@@ -10121,14 +10122,14 @@ dwarf_decode_lines (struct line_header *lh, char *comp_dir, bfd *abfd,
 	      line += lh->line_base + (adj_opcode % lh->line_range);
               lh->file_names[file - 1].included_p = 1;
               if (!decode_for_pst_p)
-		dwarf2_record_line (lh, comp_dir, cu, address, baseaddr, file, 
+		dwarf2_record_line (lh, comp_dir, cu, address, baseaddr, file,
 				    line, end_sequence);
 	      basic_block = 1;
 	    }
 	  else switch (op_code)
 	    {
 	    case DW_LNS_extended_op:
-	      /* APPLE LOCAL: Check for missing DW_LNE_end_sequence at 
+	      /* APPLE LOCAL: Check for missing DW_LNE_end_sequence at
 	         the end of the line table. */
 	      if (line_ptr >= line_end)
 		{
@@ -10148,12 +10149,12 @@ dwarf_decode_lines (struct line_header *lh, char *comp_dir, bfd *abfd,
 		  end_sequence = 1;
                   lh->file_names[file - 1].included_p = 1;
 		  if (!decode_for_pst_p)
-		    dwarf2_record_line (lh, comp_dir, cu, address, baseaddr, 
+		    dwarf2_record_line (lh, comp_dir, cu, address, baseaddr,
 					file, line, end_sequence);
 		  break;
 		case DW_LNE_set_address:
                   /* APPLE LOCAL Add cast to avoid type mismatch in arg4 warn.*/
-		  address = read_address (abfd, line_ptr, cu, 
+		  address = read_address (abfd, line_ptr, cu,
 					  (int *) &bytes_read);
 		  line_ptr += bytes_read;
 		  break;
@@ -10161,7 +10162,7 @@ dwarf_decode_lines (struct line_header *lh, char *comp_dir, bfd *abfd,
                   {
                     char *cur_file;
                     unsigned int dir_index, mod_time, length;
-                    
+
                     cur_file = read_string (abfd, line_ptr, &bytes_read);
                     line_ptr += bytes_read;
                     dir_index =
@@ -10185,7 +10186,7 @@ dwarf_decode_lines (struct line_header *lh, char *comp_dir, bfd *abfd,
 	    case DW_LNS_copy:
               lh->file_names[file - 1].included_p = 1;
               if (!decode_for_pst_p)
-		dwarf2_record_line (lh, comp_dir, cu, address, baseaddr, file, 
+		dwarf2_record_line (lh, comp_dir, cu, address, baseaddr, file,
 				    line, end_sequence);
 	      basic_block = 0;
 	      break;
@@ -10280,11 +10281,11 @@ dwarf_decode_lines (struct line_header *lh, char *comp_dir, bfd *abfd,
                 make_cleanup (xfree, include_name);
               }
 
-            /* APPLE LOCAL: Re-check include_name to make sure it is absolute 
-               before making the psymtab filename absolute since "dir_name" 
+            /* APPLE LOCAL: Re-check include_name to make sure it is absolute
+               before making the psymtab filename absolute since "dir_name"
                can be a relative path.  */
-            if (IS_ABSOLUTE_PATH (include_name) 
-                && !IS_ABSOLUTE_PATH (pst_filename) 
+            if (IS_ABSOLUTE_PATH (include_name)
+                && !IS_ABSOLUTE_PATH (pst_filename)
                 && pst->dirname != NULL)
               {
                 pst_filename = concat (pst->dirname, SLASH_STRING,
@@ -10356,7 +10357,7 @@ dwarf2_start_subfile (char *filename, char *dirname, char *comp_dir)
 
   if (!IS_ABSOLUTE_PATH (filename) && dirname == NULL)
     dirname = comp_dir;
-  else 
+  else
     if (!IS_ABSOLUTE_PATH (filename) && !IS_ABSOLUTE_PATH (dirname))
       {
         dirname = concat (comp_dir, SLASH_STRING, dirname, (char *) NULL);
@@ -10401,7 +10402,7 @@ var_decode_location (struct attribute *attr, struct symbol *sym,
       && DW_BLOCK (attr)->data[0] == DW_OP_addr)
     {
       int dummy;
-      CORE_ADDR symaddr = read_address (objfile->obfd, 
+      CORE_ADDR symaddr = read_address (objfile->obfd,
                                         DW_BLOCK (attr)->data + 1, cu, &dummy);
       /* APPLE LOCAL: debug map */
       if (symaddr == 0)
@@ -10425,7 +10426,7 @@ var_decode_location (struct attribute *attr, struct symbol *sym,
         }
       fixup_symbol_section (sym, objfile);
       /* Offset using the main executable's section offsets.  */
-      SYMBOL_VALUE_ADDRESS (sym) += objfile_section_offset (objfile, 
+      SYMBOL_VALUE_ADDRESS (sym) += objfile_section_offset (objfile,
 						SYMBOL_SECTION (sym));
       SYMBOL_CLASS (sym) = LOC_STATIC;
       return;
@@ -10613,7 +10614,7 @@ new_symbol (struct die_info *die, struct type *type, struct dwarf2_cu *cu)
 	      dwarf2_const_value (attr, sym, cu);
 	    }
 	  /* FIXME:  This assert should be true, but gcc isn't always giving
-	     DW_AT_location for parameters of inlined subroutines yet.  
+	     DW_AT_location for parameters of inlined subroutines yet.
 	     gdb_assert (SYMBOL_CLASS (sym) != LOC_STATIC);
 	  */
 	  add_symbol_to_list (sym, cu->list_in_scope);
@@ -10641,7 +10642,7 @@ new_symbol (struct die_info *die, struct type *type, struct dwarf2_cu *cu)
 	      || cu->language == language_java)
 	    {
 	      struct type *type = SYMBOL_TYPE (sym);
-	      
+
 	      if (TYPE_TAG_NAME (type) != NULL)
 		{
 		  /* FIXME: carlton/2003-11-10: Should this use
@@ -10670,12 +10671,12 @@ new_symbol (struct die_info *die, struct type *type, struct dwarf2_cu *cu)
                scope but within gdb it doesn't buy us anything to scope their
                visibility the same way.  If we need a definition of a type in
                a compile unit where it isn't defined, we're going to have to
-               find that definition in another compile unit - so we might as 
+               find that definition in another compile unit - so we might as
                well mark these as global and save ourselves a round of failing
                lookups.  */
 	    list_to_add = (cu->list_in_scope == &file_symbols
 			   ? &global_symbols : cu->list_in_scope);
-	  
+
 	    add_symbol_to_list (sym, list_to_add);
 
 	    /* The semantics of C++ state that "struct foo { ... }" also
@@ -10683,12 +10684,12 @@ new_symbol (struct die_info *die, struct type *type, struct dwarf2_cu *cu)
 	       defines a typedef for the class.  Synthesize a typedef symbol
 	       so that "ptype foo" works as expected.  Objective C classes
 	       can also benefit from this, but we must make sure to only add
-	       ones that are classes and not ones that are just plain 
+	       ones that are classes and not ones that are just plain
 	       structures. We currently rely on the fact that an objective
 	       C class will have C++ like attributes.  */
 	    if (cu->language == language_cplus
 		|| cu->language == language_java
-		|| ((cu->language == language_objc || 
+		|| ((cu->language == language_objc ||
 		    cu->language == language_objcplus) &&
 		    HAVE_CPLUS_STRUCT (SYMBOL_TYPE (sym))))
 	      {
@@ -10716,7 +10717,7 @@ new_symbol (struct die_info *die, struct type *type, struct dwarf2_cu *cu)
 	    }
 	  SYMBOL_CLASS (sym) = LOC_TYPEDEF;
 	  SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
-          /* APPLE LOCAL: Put typedefs at the global scope for easier 
+          /* APPLE LOCAL: Put typedefs at the global scope for easier
              searching.  */
 	  add_symbol_to_list (sym, &global_symbols);
 	  break;
@@ -10724,7 +10725,7 @@ new_symbol (struct die_info *die, struct type *type, struct dwarf2_cu *cu)
         case DW_TAG_subrange_type:
 	  SYMBOL_CLASS (sym) = LOC_TYPEDEF;
 	  SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
-          /* APPLE LOCAL: Put base types at the global scope for easier 
+          /* APPLE LOCAL: Put base types at the global scope for easier
              searching.  */
 	  add_symbol_to_list (sym, &global_symbols);
 	  break;
@@ -10751,7 +10752,7 @@ new_symbol (struct die_info *die, struct type *type, struct dwarf2_cu *cu)
 			   && (cu->language == language_cplus
 			       || cu->language == language_java)
 			   ? &global_symbols : cu->list_in_scope);
-	  
+
 	    add_symbol_to_list (sym, list_to_add);
 	  }
 	  break;
@@ -10799,7 +10800,7 @@ dwarf2_const_value (struct attribute *attr, struct symbol *sym,
       {
         CORE_ADDR addr;
         if (translate_debug_map_address (cu->addr_map, DW_ADDR (attr), &addr, 0))
-          store_unsigned_integer ((gdb_byte *) SYMBOL_VALUE_BYTES (sym), 
+          store_unsigned_integer ((gdb_byte *) SYMBOL_VALUE_BYTES (sym),
 			          cu_header->addr_size, addr);
         else
           {
@@ -10916,7 +10917,7 @@ die_type (struct die_info *die, struct dwarf2_cu *cu)
       return dwarf2_fundamental_type (cu->objfile, FT_VOID, cu);
     }
   /* APPLE LOCAL end dwarf repository  */
-	
+
   type = tag_type_to_type (type_die, cu);
   if (!type)
     {
@@ -10947,7 +10948,7 @@ die_containing_type (struct die_info *die, struct dwarf2_cu *cu)
     {
       if (type_die)
 	dump_die (type_die);
-      error (_("Dwarf Error: Problem turning containing type into gdb type [in module %s]"), 
+      error (_("Dwarf Error: Problem turning containing type into gdb type [in module %s]"),
 		      cu->objfile->name);
     }
   return type;
@@ -10966,7 +10967,7 @@ tag_type_to_type (struct die_info *die, struct dwarf2_cu *cu)
       if (!die->type)
 	{
 	  dump_die (die);
-	  error (_("Dwarf Error: Cannot find type of die [in module %s]"), 
+	  error (_("Dwarf Error: Cannot find type of die [in module %s]"),
 			  cu->objfile->name);
 	}
       return die->type;
@@ -10980,7 +10981,7 @@ read_type_die (struct die_info *die, struct dwarf2_cu *cu)
   const char *old_prefix = processing_current_prefix;
   struct cleanup *back_to = make_cleanup (xfree, prefix);
   processing_current_prefix = prefix;
-  
+
   switch (die->tag)
     {
     case DW_TAG_class_type:
@@ -11128,7 +11129,7 @@ determine_prefix (struct die_info *die, struct dwarf2_cu *cu)
 #define MAX_SEP_LEN 2  /* sizeof ("::")  */
 
 static char *
-typename_concat (struct obstack *obs, const char *prefix, const char *suffix, 
+typename_concat (struct obstack *obs, const char *prefix, const char *suffix,
 		 struct dwarf2_cu *cu)
 {
   char *sep;
@@ -11142,7 +11143,7 @@ typename_concat (struct obstack *obs, const char *prefix, const char *suffix,
 
   if (obs == NULL)
     {
-      /* APPLE LOCAL: The FSF code passes prefix & suffix to strlen w/o checking 
+      /* APPLE LOCAL: The FSF code passes prefix & suffix to strlen w/o checking
 	 if they are NULL.  */
       int suffixlen = 0, prefixlen = 0;
       char *retval;
@@ -11153,13 +11154,13 @@ typename_concat (struct obstack *obs, const char *prefix, const char *suffix,
 	prefixlen = strlen (prefix);
 
       retval = xmalloc (prefixlen
-			+ MAX_SEP_LEN 
-			+ suffixlen 
+			+ MAX_SEP_LEN
+			+ suffixlen
 			+ 1);
 
       /* END APPLE LOCAL */
       retval[0] = '\0';
-      
+
       if (prefix)
 	{
 	  strcpy (retval, prefix);
@@ -11167,13 +11168,13 @@ typename_concat (struct obstack *obs, const char *prefix, const char *suffix,
 	}
       if (suffix)
 	strcat (retval, suffix);
-      
+
       return retval;
     }
   else
     {
       /* We have an obstack.  */
-      /* APPLE LOCAL: Don't send NULL prefix or suffix to obconcat, 
+      /* APPLE LOCAL: Don't send NULL prefix or suffix to obconcat,
 	 it doesn't check.  */
       return obconcat (obs, prefix ? prefix : "", sep, suffix ? suffix : "");
     }
@@ -12338,7 +12339,7 @@ follow_die_ref (struct die_info *src_die, struct attribute *attr,
                            cu->header.initial_length_size)
     {
       struct dwarf2_per_cu_data *per_cu;
-      per_cu = dwarf2_find_containing_comp_unit (DW_ADDR (attr), 
+      per_cu = dwarf2_find_containing_comp_unit (DW_ADDR (attr),
                                                  cu->objfile);
       target_cu = per_cu->cu;
     }
@@ -12407,7 +12408,7 @@ dwarf2_fundamental_type (struct objfile *objfile, int typeid,
 
    Note that stack[0] is unused except as a default error return. */
 
-/* APPLE LOCAL: Size of the location expression stack in bytes, 
+/* APPLE LOCAL: Size of the location expression stack in bytes,
    for bounds checking.  */
 #define LOCDESC_STACKSIZE 64
 
@@ -12523,18 +12524,18 @@ decode_locdesc (struct dwarf_block *blk, struct dwarf2_cu *cu)
           /* APPLE LOCAL: debug map */
           {
             CORE_ADDR addr;
-            /* APPLE LOCAL: If we're in the middle of processing a 
-               DW_TAG_common_block, DW_OP_addr refers to an offset within 
+            /* APPLE LOCAL: If we're in the middle of processing a
+               DW_TAG_common_block, DW_OP_addr refers to an offset within
                that common block, I guess. */
             if (decode_locdesc_common &&
-                translate_common_symbol_debug_map_address (cu->addr_map, 
+                translate_common_symbol_debug_map_address (cu->addr_map,
                                            decode_locdesc_common, &addr))
              {
                 CORE_ADDR off = read_address (objfile->obfd, &data[i], cu,
                                             (int *) &bytes_read);
                 stack[++stacki] = addr + off;
              }
-            else if (translate_debug_map_address (cu->addr_map, 
+            else if (translate_debug_map_address (cu->addr_map,
                                           read_address (objfile->obfd, &data[i],
 					  cu, (int *) &bytes_read), &addr, 0))
               stack[++stacki] = addr;
@@ -12630,7 +12631,7 @@ decode_locdesc (struct dwarf_block *blk, struct dwarf2_cu *cu)
 	  if (i < size)
 	    dwarf2_complex_location_expr_complaint ();
           break;
-	  
+
 	/* APPLE LOCAL begin variable initialized status  */
 	case DW_OP_APPLE_uninit:
 	  break;
@@ -12695,7 +12696,7 @@ static char *
 file_full_name (int file, struct line_header *lh, const char *comp_dir)
 {
   struct file_entry *fe = &lh->file_names[file - 1];
-  
+
   if (IS_ABSOLUTE_PATH (fe->name))
     return xstrdup (fe->name);
   else
@@ -12747,7 +12748,7 @@ macro_start_file (int file, int line,
     current_file = macro_include (current_file, line, full_name);
 
   xfree (full_name);
-              
+
   return current_file;
 }
 
@@ -12804,7 +12805,7 @@ parse_macro_definition (struct macro_source_file *file, int line,
 
      The Dwarf 2 spec says that an object-like macro's name is always
      followed by a space, but versions of GCC around March 2002 omit
-     the space when the macro's definition is the empty string. 
+     the space when the macro's definition is the empty string.
 
      The Dwarf 2 spec says that there should be no spaces between the
      formal arguments in a function-like macro's formal argument list,
@@ -12833,7 +12834,7 @@ parse_macro_definition (struct macro_source_file *file, int line,
 	  dwarf2_macro_malformed_definition_complaint (body);
           replacement = body + name_len;
         }
-      
+
       macro_define_object (file, line, name, replacement);
 
       xfree (name);
@@ -12891,14 +12892,14 @@ parse_macro_definition (struct macro_source_file *file, int line,
           if (*p == ' ')
             /* Perfectly formed definition, no complaints.  */
             macro_define_function (file, line, name,
-                                   argc, (const char **) argv, 
+                                   argc, (const char **) argv,
                                    p + 1);
           else if (*p == '\0')
             {
               /* Complain, but do define it.  */
 	      dwarf2_macro_malformed_definition_complaint (body);
               macro_define_function (file, line, name,
-                                     argc, (const char **) argv, 
+                                     argc, (const char **) argv,
                                      p);
             }
           else
@@ -13095,7 +13096,7 @@ dwarf2_symbol_mark_computed (struct attribute *attr, struct symbol *sym,
 	 don't run off the edge of the section.  */
       baton->size = dwarf2_per_objfile->loc_size - DW_UNSND (attr);
       /* APPLE LOCAL add cast to avoid type warning.  */
-      baton->data = (gdb_byte *) dwarf2_per_objfile->loc_buffer + 
+      baton->data = (gdb_byte *) dwarf2_per_objfile->loc_buffer +
                                  DW_UNSND (attr);
       baton->base_address_untranslated = cu->header.base_address_untranslated;
 
@@ -13141,7 +13142,7 @@ dwarf2_symbol_mark_computed (struct attribute *attr, struct symbol *sym,
           baton->base_address_untranslated = INVALID_ADDRESS;
           baton->addr_map = NULL;
 	}
-      
+
       SYMBOL_OPS (sym) = &dwarf2_locexpr_funcs;
       SYMBOL_LOCATION_BATON (sym) = baton;
     }
@@ -13549,7 +13550,7 @@ set_dwarf2_cmd (char *args, int from_tty)
 
 static void
 show_dwarf2_cmd (char *args, int from_tty)
-{ 
+{
   cmd_show_list (show_dwarf2_cmdlist, from_tty, "");
 }
 
@@ -13594,13 +13595,13 @@ caching, which can slow down startup."),
 			    &show_dwarf2_cmdlist);
 
   /* APPLE LOCAL begin subroutine inlining  */
-  add_setshow_boolean_cmd ("inlined-stepping", class_support, 
+  add_setshow_boolean_cmd ("inlined-stepping", class_support,
 			   &dwarf2_allow_inlined_stepping,
 	      _("Set the ability to maneuver through inlined function calls as if they were normal calls."),
 	      _("Show the ability to maneuver through inlined function calls as if they were normal calls."),
 			   NULL, NULL, NULL, &setlist, &showlist);
 
-  add_setshow_boolean_cmd ("inlined-stepping", class_obscure, 
+  add_setshow_boolean_cmd ("inlined-stepping", class_obscure,
 			   &dwarf2_debug_inlined_stepping,
 	      _("Set the extra information for debugging gdb's maneuvering through inlined function calls."),
 	      _("Show the extra information for debugging gdb's maneuvering through inlined function calls."),
@@ -13622,8 +13623,8 @@ caching, which can slow down startup."),
 /*
   This "section" contains several sub-sections:
 
-  1. Red Black Trees.  This sub-section contains code for defining, creating 
-  and manipulating red-black trees, which is how we efficiently keep track of 
+  1. Red Black Trees.  This sub-section contains code for defining, creating
+  and manipulating red-black trees, which is how we efficiently keep track of
   (and access) types already retrieved and decoded from a repository.
 
   2. Global repositories and data structures.  This sub-section contains code
@@ -13648,7 +13649,7 @@ caching, which can slow down startup."),
    never be the same color as its children.
 
    The following types, used by the functions in this section, are defined
-   near the beginning of this file  (look for the label "red-black trees, 
+   near the beginning of this file  (look for the label "red-black trees,
    part 1"):
 
         enum rb_tree_colors;  (type)
@@ -13698,11 +13699,11 @@ rb_tree_find_node (struct rb_tree_node *root, long long key, int secondary_key)
 
 /* This function searches the tree ROOT recursively until it
    finds a node with the key KEY, secondary key SECONDARY_KEY and third key
-   THIRD_KEY, which it returns.  If there is no such node in the tree it 
+   THIRD_KEY, which it returns.  If there is no such node in the tree it
    returns NULL.  */
 
 struct rb_tree_node *
-rb_tree_find_node_all_keys (struct rb_tree_node *root, long long key, 
+rb_tree_find_node_all_keys (struct rb_tree_node *root, long long key,
 			    int secondary_key, long long third_key)
 {
   if (!root)
@@ -13714,7 +13715,7 @@ rb_tree_find_node_all_keys (struct rb_tree_node *root, long long key,
 	return rb_tree_find_node_all_keys (root->left, key, secondary_key,
 					   third_key);
       else if (secondary_key > root->secondary_key)
-	return rb_tree_find_node_all_keys (root->right, key, secondary_key, 
+	return rb_tree_find_node_all_keys (root->right, key, secondary_key,
 					   third_key);
       else /* (secondary_key == root->secondary_key)  */
 	{
@@ -13729,7 +13730,7 @@ rb_tree_find_node_all_keys (struct rb_tree_node *root, long long key,
 	}
     }
   else if (key < root->key)
-    return rb_tree_find_node_all_keys (root->left, key, secondary_key, 
+    return rb_tree_find_node_all_keys (root->left, key, secondary_key,
 				       third_key);
   else
     return rb_tree_find_node_all_keys (root->right, key, secondary_key,
@@ -13743,8 +13744,8 @@ rb_tree_find_node_all_keys (struct rb_tree_node *root, long long key,
    the tree, and returns a copy of the node.  */
 
 static struct rb_tree_node *
-rb_tree_find_and_remove_node (struct rb_tree_node **root, 
-			      struct rb_tree_node *cur_node, long long key, 
+rb_tree_find_and_remove_node (struct rb_tree_node **root,
+			      struct rb_tree_node *cur_node, long long key,
 			      int secondary_key)
 {
   struct rb_tree_node *result;
@@ -13756,17 +13757,17 @@ rb_tree_find_and_remove_node (struct rb_tree_node **root,
     {
       if (cur_node->left
 	  && cur_node->left->key == key)
-	return rb_tree_find_and_remove_node (root, cur_node->left, key, 
+	return rb_tree_find_and_remove_node (root, cur_node->left, key,
 					     secondary_key);
-     
+
       result = rb_tree_remove_node (root, cur_node);
       return result;
     }
   else if (key < cur_node->key)
-    return rb_tree_find_and_remove_node (root, cur_node->left, key, 
+    return rb_tree_find_and_remove_node (root, cur_node->left, key,
 					 secondary_key);
   else
-    return rb_tree_find_and_remove_node (root, cur_node->right, key, 
+    return rb_tree_find_and_remove_node (root, cur_node->right, key,
 					 secondary_key);
 }
 
@@ -13804,7 +13805,7 @@ rb_tree_successor (struct rb_tree_node *node)
 }
 
 /* This function takes a red-black tree (ROOT) that has had a node
-   removed at X, and restores the red-black properties to the tree. 
+   removed at X, and restores the red-black properties to the tree.
    It uses the algorithm from pate 274 of the Corman et. al. textbook.  */
 
 static void
@@ -13820,7 +13821,7 @@ rb_delete_fixup (struct rb_tree_node **root, struct rb_tree_node *x)
      balanced again).
 
      'w' is the sibling in the tree of 'x'.  'w' must be non-NULL, otherwise
-     the tree was messed up to begin with. 
+     the tree was messed up to begin with.
 
      For details about the particular cases mentioned below, see the
      algorithm explanation in the book.  */
@@ -13845,7 +13846,7 @@ rb_delete_fixup (struct rb_tree_node **root, struct rb_tree_node *x)
 
 	  /* Case 2: Both of w's children are BLACK (where NULL counts
 	     as BLACK).  In this case, color w red, and push the blackness
-	     up the tree one node, making what used to be x's parent be 
+	     up the tree one node, making what used to be x's parent be
 	     the new x (and return to top of loop).  */
 
 	  if ((!w->left || w->left->color == BLACK)   /* Case 2  */
@@ -13869,7 +13870,7 @@ rb_delete_fixup (struct rb_tree_node **root, struct rb_tree_node *x)
 		}
 
 	      /* Case 4  */
-	      
+
 	      w->color = x->parent->color;
 	      x->parent->color = BLACK;
 	      if (w->right)
@@ -13895,7 +13896,7 @@ rb_delete_fixup (struct rb_tree_node **root, struct rb_tree_node *x)
 
 	  /* Case 2: Both of w's children are BLACK (where NULL counts
 	     as BLACK).  In this case, color w red, and push the blackness
-	     up the tree one node, making what used to be x's parent be 
+	     up the tree one node, making what used to be x's parent be
 	     the new x (and return to top of loop).  */
 
 	  if ((!w->right || w->right->color == BLACK)
@@ -13936,7 +13937,7 @@ rb_delete_fixup (struct rb_tree_node **root, struct rb_tree_node *x)
    (NODE), remove the NODE from the TREE, keeping the tree properly balanced
    and colored, and return a copy of the removed node.  This function uses
    the algorithm on page 273 of the Corman, Leiserson and Rivest textbook
-   mentioned previously. 
+   mentioned previously.
 
    First we make a copy of the node to be deleted, so we can return the
    data from that node.  We need to make a copy rather than returning the
@@ -13987,7 +13988,7 @@ rb_tree_remove_node (struct rb_tree_node **root, struct rb_tree_node *node)
   deleted_node->parent = NULL;
 
   /* Now proceed to 'delete' the node ("z") from the tree.  */
-  
+
 
   /* Removing a node with one child from a red-black tree is not too
      difficult, but removing a node with two children IS difficult.
@@ -14004,7 +14005,7 @@ rb_tree_remove_node (struct rb_tree_node **root, struct rb_tree_node *node)
      tree.  If 'z' has at most one child, 'y' will point to the same
      node as 'z'.  If 'z' has two children, 'y' will point to 'z's
      successor in the tree.  */
-  
+
   if (!z->left || !z->right)
     y = z;
   else
@@ -14095,7 +14096,7 @@ rb_tree_remove_node (struct rb_tree_node **root, struct rb_tree_node *node)
 		  w = y_parent->left;
 		}
 	    }
-	  
+
 	  if ((!w->left || w->left->color == BLACK)
 	      && (!w->right || w->right->color == BLACK))
 	    {
@@ -14112,7 +14113,7 @@ rb_tree_remove_node (struct rb_tree_node **root, struct rb_tree_node *node)
 		  right_rotate (root, w);
 		  w = y_parent->right;
 		}
-	      
+
 	      w->color = y_parent->color;
 	      y_parent->color = BLACK;
 	      if (w->right)
@@ -14130,7 +14131,7 @@ rb_tree_remove_node (struct rb_tree_node **root, struct rb_tree_node *node)
 		  left_rotate (root, w);
 		  w = y_parent->left;
 		}
-	      
+
 	      w->color = y_parent->color;
 	      y_parent->color = BLACK;
 	      if (w->left)
@@ -14150,7 +14151,7 @@ rb_tree_remove_node (struct rb_tree_node **root, struct rb_tree_node *node)
   return deleted_node;
 }
 
-/* Given a (red-black) tree structure like the one on the left, 
+/* Given a (red-black) tree structure like the one on the left,
    perform a "left-rotation" so that the result is like the one
    on the right (parent, x, and y are individual tree nodes; a, b,
    and c represent sub-trees, possibly null):
@@ -14169,7 +14170,7 @@ static void
 left_rotate (struct rb_tree_node **root, struct rb_tree_node *x)
 {
   struct rb_tree_node *y;
-  
+
   if (!x->right)
     return;
 
@@ -14192,7 +14193,7 @@ left_rotate (struct rb_tree_node **root, struct rb_tree_node *x)
   x->parent = y;
 }
 
-/* Given a (red-black) tree structure like the one on the left, 
+/* Given a (red-black) tree structure like the one on the left,
    perform a "right-rotation" so that the result is like the one
    on the right (parent, x, and y are individual tree nodes; a, b,
    and c represent sub-trees, possibly null):
@@ -14222,12 +14223,12 @@ right_rotate (struct rb_tree_node **root, struct rb_tree_node *x)
     y->right->parent = x;
 
   y->parent = x->parent;
-  
+
   if (x->parent == NULL)
     *root = y;
   else if (x == x->parent->left)
     x->parent->left = y;
-  else 
+  else
     x->parent->right = y;
 
   y->right = x;
@@ -14385,7 +14386,7 @@ rb_tree_insert (struct rb_tree_node **root, struct rb_tree_node *tree,
 
 /* Begin repository sub-section 2:  Global repositories data structures.
    This section defines the following:
-          MAX_OPEN_DBS  (global constant) 
+          MAX_OPEN_DBS  (global constant)
 
 	  The following two type definitions got moved earlier in this file,
 	  but are reproduced below:
@@ -14409,7 +14410,7 @@ rb_tree_insert (struct rb_tree_node **root, struct rb_tree_node *tree,
 
 	  repositories (global variable, array of struct database_info)
 	  num_open_dbs (global variable, int)
-	  
+
 	  find_open_repository    (function)
 	  lookup_repository_type  (function)
 	  initialize_repositories (function)
@@ -14424,7 +14425,7 @@ rb_tree_insert (struct rb_tree_node **root, struct rb_tree_node *tree,
 struct database_info *repositories = NULL;
 int num_open_dbs = 0;
 
-/* Given an open sqlite3 db (probably obtained from an objfile struct), find and 
+/* Given an open sqlite3 db (probably obtained from an objfile struct), find and
    return the global repository record for that db.  */
 
 static struct database_info *
@@ -14466,7 +14467,7 @@ lookup_repository_type (int type_id, sqlite3 *db, struct dwarf2_cu *cu,
 	      rb_tmp = (struct rb_repository_data *) new_node->data;
 	      temp_type = rb_tmp->type_data;
 	      type_die = rb_tmp->die_data;
-	    }	
+	    }
 	}
 
       if (!new_node)
@@ -14474,7 +14475,7 @@ lookup_repository_type (int type_id, sqlite3 *db, struct dwarf2_cu *cu,
 	  struct rb_repository_data *tmp_node;
 
 	  type_die = db_lookup_type (type_id, db, repository->abbrev_table);
-	  new_node = (struct rb_tree_node *) 
+	  new_node = (struct rb_tree_node *)
 	    xmalloc (sizeof(struct rb_tree_node));
 
 	  tmp_node = (struct rb_repository_data *) xmalloc (sizeof (struct rb_repository_data));
@@ -14486,7 +14487,7 @@ lookup_repository_type (int type_id, sqlite3 *db, struct dwarf2_cu *cu,
 	  new_node->right = NULL;
 	  new_node->parent = NULL;
 	  new_node->color = UNINIT;
-	  rb_tree_insert (&repository->db_types, 
+	  rb_tree_insert (&repository->db_types,
 			  repository->db_types, new_node);
 	  temp_type = tag_type_to_type (type_die, cu);
 	  ((struct rb_repository_data *) new_node->data)->type_data = temp_type;
@@ -14531,7 +14532,7 @@ initialize_repositories (void)
 /* Given a directory and filename for a repository (and an objfile that
    contains compilation units that reference the repository), open
    the repository (if not already open), initialize the appropriate objfile
-   fields, and update the corresponding global repository record 
+   fields, and update the corresponding global repository record
    appropriately (including incrementing the use-count).  */
 
 static int
@@ -14579,7 +14580,7 @@ open_dwarf_repository (char *dirname, char *filename, struct objfile *objfile,
 	      if (!repositories[i].dummy_cu)
 		{
 		  repositories[i].dummy_cu = build_dummy_cu (objfile, cu);
-		  repositories[i].dummy_cu->objfile = 
+		  repositories[i].dummy_cu->objfile =
 		                                    repositories[i].dummy_objfile;
 		  repositories[i].dummy_cu->repository = repositories[i].db;
 		}
@@ -14766,7 +14767,7 @@ read_in_db_abbrev_table (struct abbrev_info **abbrev_table, sqlite3 *db)
   int idx;
   int attributes_len;
 
-  *abbrev_table = (struct abbrev_info *) xmalloc (cur_table_size 
+  *abbrev_table = (struct abbrev_info *) xmalloc (cur_table_size
 						 * sizeof (struct abbrev_info));
 
   db_status = sqlite3_prepare_v2 (db, select_string, strlen (select_string),
@@ -14809,7 +14810,7 @@ read_in_db_abbrev_table (struct abbrev_info **abbrev_table, sqlite3 *db)
 	    if (form || attrib)
 	      {
 		num_attribs++;
-		attr_node = (struct attr_pair *) xmalloc (sizeof 
+		attr_node = (struct attr_pair *) xmalloc (sizeof
 							 (struct attr_pair));
 		attr_node->attribute = attrib;
 		attr_node->form = form;
@@ -14821,8 +14822,8 @@ read_in_db_abbrev_table (struct abbrev_info **abbrev_table, sqlite3 *db)
 	      }
 	  } while (attrib != 0 || form != 0);
 	  (*abbrev_table)[abbrev_id].num_attrs = num_attribs;
-	  (*abbrev_table)[abbrev_id].attrs = 
-	    (struct attr_abbrev *) 
+	  (*abbrev_table)[abbrev_id].attrs =
+	    (struct attr_abbrev *)
 	                    xmalloc (num_attribs * sizeof (struct attr_abbrev));
 	  for (attr_node = a_list, idx = 0; attr_node && idx < num_attribs;
 	       attr_node = attr_node->next, idx++)
@@ -14849,7 +14850,7 @@ read_in_db_abbrev_table (struct abbrev_info **abbrev_table, sqlite3 *db)
 
 
 static void
-fill_in_die_info (struct die_info *new_die, int die_len, uint8_t *die_bytes, 
+fill_in_die_info (struct die_info *new_die, int die_len, uint8_t *die_bytes,
 		  uint8_t *d_ptr, struct abbrev_info *abbrev_table,
 		  sqlite3 *db)
 {
@@ -14859,12 +14860,12 @@ fill_in_die_info (struct die_info *new_die, int die_len, uint8_t *die_bytes,
   int num_attrs = new_die->num_attrs;
 
   abbrev = abbrev_table[abbrev_id];
-  new_die->attrs = (struct attribute *) 
+  new_die->attrs = (struct attribute *)
                                 xmalloc (num_attrs * sizeof (struct attribute));
   for (i = 0; i < abbrev.num_attrs; i++)
     {
       new_die->attrs[i].name = abbrev.attrs[i].name;
-      db_read_attribute_value (&(new_die->attrs[i]), 
+      db_read_attribute_value (&(new_die->attrs[i]),
 			       abbrev.attrs[i].form,
 			       &d_ptr);
     }
@@ -14896,7 +14897,7 @@ fill_in_die_info (struct die_info *new_die, int die_len, uint8_t *die_bytes,
 	    }
 	}
     }
-  
+
 }
 
 static struct die_info *
@@ -14915,10 +14916,10 @@ db_lookup_type (int type_id, sqlite3 *db, struct abbrev_info *abbrev_table)
   if (db_status == SQLITE_OK)
     {
       db_status = sqlite3_bind_int (db_stmt1, 1, type_id);
-      
+
       if (db_status != SQLITE_OK)
 	db_error ("db_lookup_type", "sqlite3_bind_int failed", db);
-      
+
       db_status = sqlite3_step (db_stmt1);
 
       if (db_status == SQLITE_ROW)
@@ -14950,7 +14951,7 @@ db_lookup_type (int type_id, sqlite3 *db, struct abbrev_info *abbrev_table)
 	db_status = sqlite3_step (db_stmt1);
     }
   else
-    db_error ("db_lookup_type", 
+    db_error ("db_lookup_type",
 	      db_stmt1 ? "sqlite3_reset failed" : "sqlite3_prepare_v2 failed",
 	      db);
 
@@ -15006,7 +15007,7 @@ build_dummy_objfile (struct objfile *old_objfile)
 
   memset (new_objfile, 0, sizeof (struct objfile));
   new_objfile->md = NULL;
-  obstack_specify_allocation (&new_objfile->objfile_obstack, 0, 0, xmalloc, 
+  obstack_specify_allocation (&new_objfile->objfile_obstack, 0, 0, xmalloc,
 			      xfree);
 
   new_objfile->data = NULL;
@@ -15137,7 +15138,7 @@ db_read_signed_leb128 (uint8_t *info_ptr, unsigned int *bytes_read)
 }
 
 static uint8_t *
-db_read_attribute_value (struct attribute *attr, unsigned form, 
+db_read_attribute_value (struct attribute *attr, unsigned form,
 			 uint8_t **info_ptr)
 {
   unsigned int bytes_read;
@@ -15211,7 +15212,7 @@ db_read_attribute_value (struct attribute *attr, unsigned form,
       form = db_read_unsigned_leb128 (*info_ptr, &bytes_read);
       *info_ptr += bytes_read;
       *info_ptr = db_read_attribute_value (attr, form, info_ptr);
-      break; 
+      break;
     case DW_FORM_flag_present:
       DW_UNSND (attr) = 1;
       break;
@@ -15233,14 +15234,14 @@ db_read_attribute_value (struct attribute *attr, unsigned form,
 }
 
 static struct die_info *
-follow_db_ref (struct die_info *die, struct attribute *repository_spec, 
+follow_db_ref (struct die_info *die, struct attribute *repository_spec,
 	       struct dwarf2_cu *cu)
 {
   int db_id;
   int want_die_p = 1;
   sqlite3 *db = cu->repository;
   struct die_info *db_die;
- 
+
   db_id = DW_UNSND (repository_spec);
   db_die = (struct die_info *) lookup_repository_type (db_id, db, cu, want_die_p);
 
@@ -15255,7 +15256,7 @@ set_repository_cu_language (unsigned int language, struct dwarf2_cu *old_cu)
 
   if (!db)
     internal_error (__FILE__, __LINE__, _("Missing database.\n"));
-  
+
   repository = find_open_repository (db);
   if (repository)
     set_cu_language (language, repository->dummy_cu);
@@ -15275,7 +15276,7 @@ get_repository_name (struct attribute *attr, struct dwarf2_cu *cu)
 
   if (db)
     {
-	db_status = sqlite3_prepare_v2 (db, FIND_STRING_STR, 
+	db_status = sqlite3_prepare_v2 (db, FIND_STRING_STR,
 					strlen (FIND_STRING_STR), &db_stmt2,
 					&pzTail);
 
@@ -15298,7 +15299,7 @@ get_repository_name (struct attribute *attr, struct dwarf2_cu *cu)
 
       if (name)
 	{
-	  name_attribute = (struct attribute *) xmalloc 
+	  name_attribute = (struct attribute *) xmalloc
 	                                            (sizeof (struct attribute));
 	  name_attribute->name = DW_AT_name;
 	  name_attribute->form = DW_FORM_string;
@@ -15490,7 +15491,7 @@ rb_print_node (struct rb_tree_node *tree)
     }
 }
 
-static void 
+static void
 rb_print_tree (struct rb_tree_node *tree, int indent_level)
 {
   char *spaces;

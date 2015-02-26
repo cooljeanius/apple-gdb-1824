@@ -1131,7 +1131,7 @@ command_line_input (char *prompt_arg, int repeat, char *annotation_suffix)
     {
       if (linelength > linesize)
 	{
-	  line = xrealloc (line, linelength);
+	  line = (char *)xrealloc(line, linelength);
 	  linesize = linelength;
 	}
       strcpy (line, linebuffer);

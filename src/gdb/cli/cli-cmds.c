@@ -182,21 +182,19 @@ error_no_arg (char *why)
 }
 
 /* The "info" command is defined as a prefix, with allow_unknown = 0.
-   Therefore, its own definition is called only for "info" with no args.  */
-
+ * Therefore, its own definition is called only for "info" with no args: */
 static void
-info_command (char *arg, int from_tty)
+info_command(char *arg, int from_tty)
 {
-  printf_unfiltered (_("\"info\" must be followed by the name of an info command.\n"));
-  help_list (infolist, "info ", -1, gdb_stdout);
+  printf_unfiltered(_("\"info\" must be followed by the name of an info command.\n"));
+  help_list(infolist, "info ", (enum command_class)-1, gdb_stdout);
 }
 
-/* The "show" command with no arguments shows all the settings.  */
-
+/* The "show" command with no arguments shows all the settings: */
 static void
-show_command (char *arg, int from_tty)
+show_command(char *arg, int from_tty)
 {
-  cmd_show_list (showlist, from_tty, "");
+  cmd_show_list(showlist, from_tty, "");
 }
 
 /* Provide documentation on command or list given by COMMAND.  FROM_TTY
@@ -941,7 +939,7 @@ disassemble_command (char *arg, int from_tty)
   char *space_index;
 #if 0
   asection *section;
-#endif
+#endif /* 0 */
 
   name = NULL;
   if (!arg)
@@ -958,7 +956,7 @@ disassemble_command (char *arg, int from_tty)
       if (tui_active)
 	/* FIXME: cagney/2004-02-07: This should be an observer.  */
 	low = tui_get_low_disassembly_address (low, pc);
-#endif
+#endif /* TUI */
       low += DEPRECATED_FUNCTION_START_OFFSET;
     }
   else if (!(space_index = (char *) strchr (arg, ' ')))
@@ -973,20 +971,20 @@ disassemble_command (char *arg, int from_tty)
       if (tui_active)
 	/* FIXME: cagney/2004-02-07: This should be an observer.  */
 	low = tui_get_low_disassembly_address (low, pc);
-#endif
+#endif /* TUI */
       low += DEPRECATED_FUNCTION_START_OFFSET;
     }
   else
     {
-      /* Two arguments.  */
+      /* Two arguments: */
       *space_index = '\0';
       low = parse_and_eval_address (arg);
       high = parse_and_eval_address (space_index + 1);
     }
 
 #if defined(TUI)
-  if (!tui_is_window_visible (DISASSEM_WIN))
-#endif
+  if (!tui_is_window_visible(DISASSEM_WIN))
+#endif /* TUI */
     {
       printf_filtered ("Dump of assembler code ");
       if (name != NULL)
@@ -1012,13 +1010,13 @@ disassemble_command (char *arg, int from_tty)
 #if defined(TUI)
   else
     {
-      tui_show_assembly (low);
+      tui_show_assembly(low);
     }
-#endif
+#endif /* TUI */
 }
 
 static void
-make_command (char *arg, int from_tty)
+make_command(char *arg, int from_tty)
 {
   char *p;
 
@@ -1026,16 +1024,16 @@ make_command (char *arg, int from_tty)
     p = "make";
   else
     {
-      p = xmalloc (sizeof ("make ") + strlen (arg));
-      strcpy (p, "make ");
-      strcpy (p + sizeof ("make ") - 1, arg);
+      p = (char *)xmalloc(sizeof("make ") + strlen(arg));
+      strcpy(p, "make ");
+      strcpy(p + sizeof("make ") - 1, arg);
     }
 
-  shell_escape (p, from_tty);
+  shell_escape(p, from_tty);
 }
 
 static void
-show_user (char *args, int from_tty)
+show_user(char *args, int from_tty)
 {
   struct cmd_list_element *c;
   extern struct cmd_list_element *cmdlist;
@@ -1137,10 +1135,10 @@ ambiguous_line_spec (struct symtabs_and_lines *sals)
 }
 
 static void
-set_debug (char *arg, int from_tty)
+set_debug(char *arg, int from_tty)
 {
-  printf_unfiltered (_("\"set debug\" must be followed by the name of a print subcommand.\n"));
-  help_list (setdebuglist, "set debug ", -1, gdb_stdout);
+  printf_unfiltered(_("\"set debug\" must be followed by the name of a print subcommand.\n"));
+  help_list(setdebuglist, "set debug ", (enum command_class)-1, gdb_stdout);
 }
 
 static void

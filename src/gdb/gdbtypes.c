@@ -410,7 +410,7 @@ make_function_type (struct type *type, struct type **typeptr, int optimized)
 
   TYPE_LENGTH_ASSIGN (ntype) = 1;
   TYPE_CODE (ntype) = TYPE_CODE_FUNC;
-  
+
   /* APPLE LOCAL begin Inform users about debugging optimized code  */
   if (optimized)
     TYPE_FLAGS (ntype) |= TYPE_FLAG_OPTIMIZED;
@@ -451,7 +451,7 @@ address_space_name_to_int (char *space_identifier)
     error (_("Unknown address space specifier: \"%s\""), space_identifier);
 }
 
-/* Identify address space identifier by integer flag as defined in 
+/* Identify address space identifier by integer flag as defined in
    gdbtypes.h -- return the string version of the adress space name. */
 
 const char *
@@ -506,7 +506,7 @@ make_qualified_type (struct type *type, int new_flags,
       TYPE_MAIN_TYPE (ntype) = TYPE_MAIN_TYPE (type);
 #endif
       /* APPLE LOCAL: Don't do this, if NTYPE already
-	 has been linked to another type in this chain, 
+	 has been linked to another type in this chain,
 	 then you won't set the type in the chained type
 	 correctly, AND you will blow away the chain
 	 unnecessarily.  */
@@ -515,7 +515,7 @@ make_qualified_type (struct type *type, int new_flags,
 #endif
     }
 
-  /* APPLE LOCAL: I don't think this is right either.  If you 
+  /* APPLE LOCAL: I don't think this is right either.  If you
      get here because STORAGE is NULL, then these are NULL already,
      alloc_type_instance sees to that.
      If you get passed in a type that already has it's pointer type
@@ -601,7 +601,7 @@ make_type_with_address_space (struct type *type, int space_flag)
    type whereever TYPE lives.  If TYPEPTR is non-zero, set it to the
    new type we construct.  */
 struct type *
-make_cvr_type (int cnst, int voltl, int restrct, struct type *type, 
+make_cvr_type (int cnst, int voltl, int restrct, struct type *type,
                struct type **typeptr)
 {
   struct type *ntype;	/* New type */
@@ -629,7 +629,7 @@ make_cvr_type (int cnst, int voltl, int restrct, struct type *type,
     {
 
       /* APPLE LOCAL if we somehow ended up with a type code error
-         over at *TYPEPTR, return a type error and in the hopes 
+         over at *TYPEPTR, return a type error and in the hopes
          that we can continue operation instead of asserting out
          and stopping the debugger.  */
 
@@ -661,12 +661,12 @@ make_cvr_type (int cnst, int voltl, int restrct, struct type *type,
       gdb_assert (TYPE_OBJFILE (*typeptr) == TYPE_OBJFILE (type)
 		  || (TYPE_STUB (*typeptr) || TYPE_IS_OPAQUE (*typeptr)));
 #else
-      if (TYPE_OBJFILE (*typeptr) != TYPE_OBJFILE (type) 
+      if (TYPE_OBJFILE (*typeptr) != TYPE_OBJFILE (type)
           && !TYPE_STUB (*typeptr) && !TYPE_IS_OPAQUE (*typeptr))
         return builtin_type_error;
 #endif
     }
-  
+
   ntype = make_qualified_type (type, new_flags, typeptr ? *typeptr : NULL);
 
   if (typeptr != NULL)
@@ -733,7 +733,7 @@ lookup_member_type (struct type *type, struct type *domain)
   return (mtype);
 }
 
-/* Allocate a stub method whose return type is TYPE.  
+/* Allocate a stub method whose return type is TYPE.
    This apparently happens for speed of symbol reading, since parsing
    out the arguments to the method is cpu-intensive, the way we are doing
    it.  So, we will fill in arguments later.
@@ -992,11 +992,11 @@ create_array_type (struct type *result_type, struct type *element_type,
   /* APPLE LOCAL: If the element type is undefined, then we are going
      to set the length to zero here.  Add this to the list of undefined
      arrays, then in end_symtab we'll come back and see if we know the
-     element type then.  
+     element type then.
      Another possibility is the element type is an array type that
      WAS undef'ed, but has now been defined.  Since we haven't done
-     the cleanup_undefined_arrays yet, the length won't be set on 
-     this yet.  So we need to add array's of this array to the 
+     the cleanup_undefined_arrays yet, the length won't be set on
+     this yet.  So we need to add array's of this array to the
      undefined arrays, and do it on cleanup.  */
 
   if (TYPE_CODE (element_type) == TYPE_CODE_UNDEF
@@ -1035,7 +1035,7 @@ struct type *
 create_string_type (struct type *result_type, struct type *range_type)
 {
   struct type *string_char_type;
-      
+
   string_char_type = language_string_char_type (current_language,
 						current_gdbarch);
   result_type = create_array_type (result_type,
@@ -1093,7 +1093,7 @@ init_simd_type (char *name,
 {
   struct type *simd_type;
   struct type *array_type;
-  
+
   simd_type = init_composite_type (name, TYPE_CODE_STRUCT);
   array_type = create_array_type (0, elt_type,
 				  create_range_type (0, builtin_type_int,
@@ -1106,7 +1106,7 @@ static struct type *
 init_vector_type (struct type *elt_type, int n)
 {
   struct type *array_type;
- 
+
   array_type = create_array_type (0, elt_type,
 				  create_range_type (0, builtin_type_int,
 						     0, n-1));
@@ -1150,7 +1150,7 @@ build_builtin_type_vec128 (void)
   /* Construct a type for the 128 bit registers.  The type we're
      building is this: */
 #if 0
- union __gdb_builtin_type_vec128 
+ union __gdb_builtin_type_vec128
   {
     int128_t uint128;
     float v4_float[4];
@@ -1174,7 +1174,7 @@ build_builtin_type_vec128 (void)
   return t;
 }
 
-/* Smash TYPE to be a type of members of DOMAIN with type TO_TYPE. 
+/* Smash TYPE to be a type of members of DOMAIN with type TO_TYPE.
    A MEMBER is a wierd thing -- it amounts to a typed offset into
    a struct, e.g. "an int at offset 8".  A MEMBER TYPE doesn't
    include the offset (that's the value of the MEMBER itself), but does
@@ -1327,9 +1327,7 @@ lookup_struct (char *name, struct block *block)
    causing an error if it isn't found. */
 
 struct type *
-lookup_struct_no_error (name, block)
-     char *name;
-     struct block *block;
+lookup_struct_no_error(char *name, struct block *block)
 {
   register struct symbol *sym;
 
@@ -1426,7 +1424,7 @@ lookup_template_type (char *name, struct type *type, struct block *block)
   return (SYMBOL_TYPE (sym));
 }
 
-/* Given a type TYPE, lookup the type of the component of type named NAME.  
+/* Given a type TYPE, lookup the type of the component of type named NAME.
 
    TYPE can be either a struct or union, or a pointer or reference to a struct or
    union.  If it is a pointer or reference, its target type is automatically used.
@@ -1505,7 +1503,7 @@ lookup_struct_elt_type (struct type *type, char *name, int noerr)
   target_terminal_ours ();
   gdb_flush (gdb_stdout);
 
-  type_for_printing = type_sprint (type, "", -1); 
+  type_for_printing = type_sprint (type, "", -1);
   make_cleanup (xfree, type_for_printing);
   error ("Type %s has no component named %s.", type_for_printing, name);
 
@@ -1599,7 +1597,7 @@ remove_all_typedefs (struct type *type)
 	default:
 	  error ("Should never get here, keeps the compiler quiet");
 	}
-	  
+
     }
   return type;
 }
@@ -1615,7 +1613,7 @@ remove_all_typedefs (struct type *type)
    be a mistake, though--we might load in more symbols which contain a
    full definition for the type.
 
-   This used to be coded as a macro, but I don't think it is called 
+   This used to be coded as a macro, but I don't think it is called
    often enough to merit such treatment.  */
 
 /* Find the real type of TYPE.  This function returns the real type, after
@@ -1638,7 +1636,7 @@ check_typedef (struct type *type)
 
 	     typedef struct foo foo
 
-	     but not always.  
+	     but not always.
 
 	     We need to figure out why this is happening, but for now,
 	     this makes the error benign... */
@@ -1775,9 +1773,9 @@ check_typedef (struct type *type)
   if (TYPE_TARGET_TYPE (type) == type)
     {
       /* TYPE_CODE_UNDEF */
-      TYPE_TARGET_TYPE (type) = alloc_type (NULL);    
+      TYPE_TARGET_TYPE (type) = alloc_type (NULL);
     }
-        
+
   /* Cache TYPE_LENGTH for future use.  Only change it if it actually
      needs changing, in case the symbol information is in a read-only
      section. */
@@ -2032,7 +2030,7 @@ init_type (enum type_code code, int length, int flags, char *name,
     {
       if (length * TARGET_CHAR_BIT != TARGET_LONG_DOUBLE_BIT)
 	{
-	  TYPE_FLOATFORMAT(type) = gdbarch_long_double_format (current_gdbarch); 
+	  TYPE_FLOATFORMAT(type) = gdbarch_long_double_format (current_gdbarch);
 	}
     }
 
@@ -2168,7 +2166,7 @@ is_integral_type (struct type *t)
 	 || (TYPE_CODE (t) == TYPE_CODE_BOOL)));
 }
 
-/* Check whether BASE is an ancestor or base class or DCLASS 
+/* Check whether BASE is an ancestor or base class or DCLASS
    Return 1 if so, and 0 if not.
    Note: callers may want to check for identity of the types before
    calling this function -- identical types are considered to satisfy
@@ -2290,7 +2288,7 @@ static struct vbase *current_vbase_list = NULL;
    items. The vbasetype pointer of each item in the list points to the
    type information for a virtual base of the argument DCLASS.
 
-   Helper function for virtual_base_list(). 
+   Helper function for virtual_base_list().
    Note: the list goes backward, right-to-left. virtual_base_list()
    copies the items out in reverse order.  */
 
@@ -3806,20 +3804,20 @@ gdbtypes_post_init (struct gdbarch *gdbarch)
 
 
 /* APPLE LOCAL BEGIN: Helper functions for easily building bitfield
-   built in types. 
+   built in types.
 
    Build a builtin enum type named NAME that represents a single integer
    bitfield that is SIZE bytes long. FLAGS from the TYPE_FLAG_xxx definitions
    can be OR'ed together to modify the enumeration. This can be used to
    create internal enumeration types for use with the build_builtin_bitfield ()
-   function. NAME is the name of the built in type and should start with 
-   "__gdb_builtin_type" followed by the type name. ENUMS is an array of 
-   NUM_ENUMS gdbtypes_enum_info structures that describe each enumeration. 
+   function. NAME is the name of the built in type and should start with
+   "__gdb_builtin_type" followed by the type name. ENUMS is an array of
+   NUM_ENUMS gdbtypes_enum_info structures that describe each enumeration.
    This function will copy NAME and gdbtypes_enum_info.name strings -- creating
    a potential memory leak -- but since builtin types need to permanently be
-   around and are typically created in the initialization functions, the leak 
+   around and are typically created in the initialization functions, the leak
    should be small and contained.
-   
+
    Sample code:
     struct type *enum_type;
     static struct gdbtypes_enum_info enums[] = {
@@ -3829,15 +3827,15 @@ gdbtypes_post_init (struct gdbarch *gdbarch)
       {"six",	6 }
     };
     uint32_t num_enums = sizeof (enums)/sizeof (enums[0]);
-    enum_type build_builtin_enum ("__gdb_builtin_type_small_numbers", 4, 
+    enum_type build_builtin_enum ("__gdb_builtin_type_small_numbers", 4,
 				  TYPE_FLAG_UNSIGNED, enums, num_enums);
    */
 struct type *
-build_builtin_enum (const char *name, uint32_t size, int flags, 
+build_builtin_enum (const char *name, uint32_t size, int flags,
 		    struct gdbtypes_enum_info *enums, uint32_t num_enums)
 {
   int i;
-  struct type *t = init_type (TYPE_CODE_ENUM, size, flags, xstrdup (name), 
+  struct type *t = init_type (TYPE_CODE_ENUM, size, flags, xstrdup (name),
 			      (struct objfile *) NULL);
   TYPE_NFIELDS (t) = num_enums;
   const int fields_size = sizeof (struct field) * TYPE_NFIELDS (t);
@@ -3846,39 +3844,39 @@ build_builtin_enum (const char *name, uint32_t size, int flags,
   for (i = 0; i < num_enums; i++)
     {
       TYPE_FIELD_NAME (t, i) = xstrdup (enums[i].name);
-      TYPE_FIELD_BITPOS_ASSIGN (t, i) = enums[i].value;  
+      TYPE_FIELD_BITPOS_ASSIGN (t, i) = enums[i].value;
     }
   gdb_assert (i == TYPE_NFIELDS (t));
   TYPE_LENGTH_ASSIGN (t) = size;
   return t;
 }
 
-/* Helper function that builds a builtin bitfield type named NAME that  
-   represents a single integer bitfield that is SIZE bytes long. This can 
-   be used as a register's type to display a register's contents as a 
-   structure containing bitfields. NAME is the name of the built in type 
-   and should start with "__gdb_builtin_type" followed by the type name. 
-   BITFIELDS is an array of NUM_BITFIELDS gdbtypes_bitfield_info structures 
-   that describe each bitfield in the type. 
-   This function will copy NAME and gdbtypes_bitfield_info.name strings -- 
-   creating a potential memory leak -- but since builtin types need to 
-   permanently be around and are typically created in the initialization 
+/* Helper function that builds a builtin bitfield type named NAME that
+   represents a single integer bitfield that is SIZE bytes long. This can
+   be used as a register's type to display a register's contents as a
+   structure containing bitfields. NAME is the name of the built in type
+   and should start with "__gdb_builtin_type" followed by the type name.
+   BITFIELDS is an array of NUM_BITFIELDS gdbtypes_bitfield_info structures
+   that describe each bitfield in the type.
+   This function will copy NAME and gdbtypes_bitfield_info.name strings --
+   creating a potential memory leak -- but since builtin types need to
+   permanently be around and are typically created in the initialization
    functions, the leak should be small and contained.
    Sample code:
-  
+
     type * bitfield_type;
     struct gdbtypes_bitfield_info bitfields[] = {
       {"bit31",  builtin_type_uint32,  31, 31 },
-      {"num",   enum_type,             15,  8 }, 
+      {"num",   enum_type,             15,  8 },
       {"nibble", builtin_type_uint32,   3,  0 }
     };
     uint32_t num_bitfields = sizeof (bitfields)/sizeof (bitfields[0]);
-    bitfield_type = build_builtin_bitfield ("__gdb_builtin_type_test", 4, 
+    bitfield_type = build_builtin_bitfield ("__gdb_builtin_type_test", 4,
 					   bitfields, num_bitfields);
 */
 struct type *
-build_builtin_bitfield (const char *name, uint32_t size, 
-			struct gdbtypes_bitfield_info *bitfields, 
+build_builtin_bitfield (const char *name, uint32_t size,
+			struct gdbtypes_bitfield_info *bitfields,
 			uint32_t num_bitfields)
 {
   struct type *t;
@@ -3894,7 +3892,7 @@ build_builtin_bitfield (const char *name, uint32_t size,
       TYPE_FIELD_NAME (t, i) = xstrdup (bitfields[i].name);
       TYPE_FIELD_TYPE (t, i) = bitfields[i].type;
       TYPE_FIELD_BITSIZE (t, i) = bitfields[i].msbit - bitfields[i].lsbit + 1;
-      TYPE_FIELD_BITPOS_ASSIGN (t, i) = bitfields[i].lsbit;  
+      TYPE_FIELD_BITPOS_ASSIGN (t, i) = bitfields[i].lsbit;
     }
   gdb_assert (i == TYPE_NFIELDS (t));
   TYPE_LENGTH_ASSIGN (t) = size;
@@ -3923,12 +3921,12 @@ get_closure_implementation_fn (struct value *in_value)
 
   /* APPLE LOCAL begin radar 6307592, new Blocks ABI  */
 
-  /* We might have either an old-style block struct or a new-style block 
+  /* We might have either an old-style block struct or a new-style block
      struct; we will need to check for both.
 
      The old style struct was:
 
-     struct __invoke_impl 
+     struct __invoke_impl
      {
          void *isa;
 	 int32_t Flags;
@@ -3938,7 +3936,7 @@ get_closure_implementation_fn (struct value *in_value)
 
       The new style struct is:
 
-      struct __block_literal_generic 
+      struct __block_literal_generic
       {
           void *--isa;
 	  int __flags;
@@ -3958,19 +3956,19 @@ get_closure_implementation_fn (struct value *in_value)
   if (!funcPtr_val && e.reason == RETURN_ERROR)
     {
       /* See if we've got an old-style block...  */
-      
+
       TRY_CATCH (e, RETURN_MASK_ALL)
 	{
-	  funcPtr_val = value_struct_elt (&in_value, NULL, "FuncPtr", NULL, 
+	  funcPtr_val = value_struct_elt (&in_value, NULL, "FuncPtr", NULL,
 					  "");
 	}
     }
-  
+
   if (e.reason != NO_ERROR || funcPtr_val == NULL)
     return NULL;
 
   /* APPLE LOCAL end radar 6307592, new Blocks ABI  */
-  
+
   /* The generic block structure only points to a generic function
      type.  To get the real function type, look up the function
      implementation's debug info.  */
@@ -4007,7 +4005,7 @@ get_closure_implementation_fn (struct value *in_value)
    TYPE_CODE_PTR, we will return a pointer.
 
    FIXME, at this point, we should have some extensible runtime
-   module that provides dynamic type callouts.  But for now just add 'em by 
+   module that provides dynamic type callouts.  But for now just add 'em by
    hand.  */
 
 struct type *
@@ -4038,7 +4036,7 @@ get_closure_dynamic_type (struct value *in_value)
       TRY_CATCH (e, RETURN_MASK_ALL)
 	{
 	  funcPtr_val = get_closure_implementation_fn (in_value);
-	  
+
 	  if (funcPtr_val != NULL)
 	    {
 	      /* Look up the first argument to the implementation
@@ -4298,5 +4296,6 @@ Show if GDB should honor the 'stride' parameter of array types."), NULL,
   undef_arrays_length = 0;
   undef_arrays = (struct type **)
     xmalloc (undef_arrays_allocated * sizeof (struct type *));
-
 }
+
+/* EOF */

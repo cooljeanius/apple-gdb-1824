@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-nat-utils.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002, 2004
    Free Software Foundation, Inc.
 
@@ -57,9 +57,9 @@
 #include "macosx-nat-utils.h"
 #include "macosx-nat-dyld.h"
 
-static const char *make_info_plist_path (const char *bundle, 
-					 const char *bundle_suffix,
-					 const char *plist_bundle_path);
+static const char *make_info_plist_path(const char *bundle,
+                                        const char *bundle_suffix,
+                                        const char *plist_bundle_path);
 
 
 /* Given a pathname to an application bundle
@@ -69,13 +69,13 @@ static const char *make_info_plist_path (const char *bundle,
    We can find it by looking at the Contents/Info.plist or we
    can fall back on the old reliable
      Sketch.app -> Sketch/Contents/MacOS/Sketch
-   rule of thumb.  
+   rule of thumb.
 
    The returned string has been xmalloc()'ed and it is the responsibility of
    the caller to xfree it.  */
 
 char *
-macosx_filename_in_bundle (const char *filename, int mainline)
+macosx_filename_in_bundle(const char *filename, int mainline)
 {
   const char *info_plist_filename = NULL;
   char *full_pathname = NULL;
@@ -91,15 +91,15 @@ macosx_filename_in_bundle (const char *filename, int mainline)
   /* Check for shallow bundles where the bundle relative property list path
      is "/Info.plist". Shallow bundles have the Info.plist and the
      executable right inside the bundle directory.  */
-  info_plist_filename = make_info_plist_path (filename, ".app", "Info.plist");
+  info_plist_filename = make_info_plist_path(filename, ".app", "Info.plist");
   if (info_plist_filename)
-    plist = macosx_parse_plist (info_plist_filename);
+    plist = macosx_parse_plist(info_plist_filename);
 
   if (plist == NULL)
     {
-      info_plist_filename = make_info_plist_path (filename, ".xpc", "Info.plist");
+      info_plist_filename = make_info_plist_path(filename, ".xpc", "Info.plist");
       if (info_plist_filename)
-        plist = macosx_parse_plist (info_plist_filename);
+        plist = macosx_parse_plist(info_plist_filename);
     }
 
   /* Did we find a valid property list in the shallow bundle?  */
@@ -109,44 +109,45 @@ macosx_filename_in_bundle (const char *filename, int mainline)
     }
   else
     {
-      /* Check for a property list in a normal bundle.  */
-      xfree ((char *) info_plist_filename);
-      info_plist_filename = make_info_plist_path (filename, ".app", 
-						  "Contents/Info.plist");
+      /* Check for a property list in a normal bundle: */
+      xfree((char *)info_plist_filename);
+      info_plist_filename = make_info_plist_path(filename, ".app",
+                                                 "Contents/Info.plist");
       if (info_plist_filename)
-	plist = macosx_parse_plist (info_plist_filename);
+	plist = macosx_parse_plist(info_plist_filename);
 
       if (plist == NULL)
         {
-          info_plist_filename = make_info_plist_path (filename, ".xpc", "Contents/Info.plist");
+          info_plist_filename = make_info_plist_path(filename, ".xpc", "Contents/Info.plist");
           if (info_plist_filename)
-            plist = macosx_parse_plist (info_plist_filename);
+            plist = macosx_parse_plist(info_plist_filename);
         }
     }
 
   if (plist != NULL)
     {
       const char *bundle_exe_from_plist;
-      
-      bundle_exe_from_plist = macosx_get_plist_posix_value (plist, 
+
+      bundle_exe_from_plist = macosx_get_plist_posix_value(plist,
 						     "CFBundleExecutable");
-      macosx_free_plist (&plist);
+      macosx_free_plist(&plist);
       if (bundle_exe_from_plist != NULL)
 	{
-	  /* Length of the Info.plist directory without the NULL.  */
-	  int info_plist_dir_len = strlen (info_plist_filename) - 
-				   strlen ("Info.plist");
-	  /* Length of our result including the NULL terminator.  */
-	  int full_pathname_length = info_plist_dir_len + 
-				     strlen (bundle_exe_from_plist) + 1;
+	  /* Length of the Info.plist directory without the NULL: */
+	  size_t info_plist_dir_len = (strlen(info_plist_filename)
+                                    - strlen("Info.plist"));
+	  /* Length of our result including the NULL terminator: */
+	  size_t full_pathname_length = (info_plist_dir_len
+                                         + strlen(bundle_exe_from_plist)
+                                         + 1UL);
 
-	  /* Add the length for the MacOS directory for normal bundles.  */
+	  /* Add the length for the MacOS directory for normal bundles: */
 	  if (!shallow_bundle)
-	    full_pathname_length += strlen ("MacOS/");
+	    full_pathname_length += strlen("MacOS/");
 
-	  /* Allocate enough space for our resulting path. */
-	  full_pathname = xmalloc (full_pathname_length);
-	  
+	  /* Allocate enough space for our resulting path: */
+	  full_pathname = xmalloc(full_pathname_length);
+
 	  if (full_pathname)
 	    {
 	      memcpy (full_pathname, info_plist_filename, info_plist_dir_len);
@@ -172,7 +173,7 @@ macosx_filename_in_bundle (const char *filename, int mainline)
     /a/b/c/Foo.app
     /a/b/c/Foo.app/
     /a/b/c/Foo.app/Contents/MacOS/Foo
-   (for BUNDLE_SUFFIX of ".app" and PLIST_BUNDLE_PATH of 
+   (for BUNDLE_SUFFIX of ".app" and PLIST_BUNDLE_PATH of
     "Contents/Info.plist") return the string
     /a/b/c/Foo.app/Contents/Info.plist
    The return string has been xmalloc()'ed; it is the caller's
@@ -190,7 +191,7 @@ make_info_plist_path (const char *bundle, const char *bundle_suffix,
   int bundle_suffix_len = strlen (bundle_suffix);
 
   /* Find the last occurrence of the bundle_suffix.  */
-  for (t = strstr (bundle, bundle_suffix); t != NULL; 
+  for (t = strstr (bundle, bundle_suffix); t != NULL;
        t = strstr (t+1, bundle_suffix))
     bundle_suffix_pos = t;
 
@@ -199,8 +200,8 @@ make_info_plist_path (const char *bundle, const char *bundle_suffix,
       /* Length of the bundle directory name without the trailing directory
          delimiter.  */
       int bundle_dir_len = (bundle_suffix_pos - bundle) + bundle_suffix_len;
-      /* Allocate enough memory for the bundle directory path with 
-	 suffix, a directory delimiter, the relative plist bundle path, 
+      /* Allocate enough memory for the bundle directory path with
+	 suffix, a directory delimiter, the relative plist bundle path,
 	 and a NULL terminator.  */
       int info_plist_len = bundle_dir_len + 1 + strlen (plist_bundle_path) + 1;
 
@@ -226,13 +227,13 @@ make_info_plist_path (const char *bundle, const char *bundle_suffix,
 }
 
 /* Given a valid PATH to a "Info.plist" files, parse the property list
-   contents into an opaque type that can be used to extract key values. The 
+   contents into an opaque type that can be used to extract key values. The
    property list can be text XML, or a binary plist. The opaque plist pointer
-   that is returned should be freed using a call to macosx_free_plist () when 
-   no more values are required from the property list. A valid pointer to a 
-   property list will be returned, or NULL if the file does NOT exist or if 
-   there are any problems parsing the property list file. Valid property 
-   list pointers should be released using a call to macosx_free_plist () 
+   that is returned should be freed using a call to macosx_free_plist () when
+   no more values are required from the property list. A valid pointer to a
+   property list will be returned, or NULL if the file does NOT exist or if
+   there are any problems parsing the property list file. Valid property
+   list pointers should be released using a call to macosx_free_plist ()
    when the property list is no longer needed.  */
 
 const void *
@@ -249,23 +250,23 @@ macosx_parse_plist (const char *path)
   /* Create URL text for the Info.plist file.  */
   strcpy (url_text, url_header);
   strcat (url_text, path);
-  
+
   /* Generate a CoreFoundation URL from the URL text.  */
-  url = CFURLCreateWithBytes (cf_alloc, (const UInt8 *)url_text, 
+  url = CFURLCreateWithBytes (cf_alloc, (const UInt8 *)url_text,
 			      url_text_len, kCFStringEncodingUTF8, NULL);
   if (url)
     {
-      /* Extract the contents of the file into a CoreFoundation data 
+      /* Extract the contents of the file into a CoreFoundation data
 	 buffer.  */
       CFDataRef data = NULL;
-      if (CFURLCreateDataAndPropertiesFromResource (cf_alloc, url, &data, 
-						    NULL, NULL,NULL) 
+      if (CFURLCreateDataAndPropertiesFromResource (cf_alloc, url, &data,
+						    NULL, NULL,NULL)
 						    && data != NULL)
 	{
-	  /* Create the property list from XML data or from the binary 
+	  /* Create the property list from XML data or from the binary
 	     plist data.  */
-	  plist = CFPropertyListCreateFromXMLData (cf_alloc, data, 
-						   kCFPropertyListImmutable, 
+	  plist = CFPropertyListCreateFromXMLData (cf_alloc, data,
+						   kCFPropertyListImmutable,
 						   NULL);
 	  CFRelease (data);
 	  if (plist != NULL)
@@ -287,9 +288,9 @@ macosx_parse_plist (const char *path)
 }
 
 
-/* Return the string value suitable for use with posix file system calls for 
+/* Return the string value suitable for use with posix file system calls for
    KEY found in PLIST. NULL will be returned if KEY does not have a valid value
-   in the the property list, if the value is not a string, or if there were 
+   in the the property list, if the value is not a string, or if there were
    errors extracting the value for KEY.  */
 const char *
 macosx_get_plist_posix_value (const void *plist, const char* key)
@@ -297,23 +298,23 @@ macosx_get_plist_posix_value (const void *plist, const char* key)
   char *value = NULL;
   if (plist == NULL)
     return NULL;
-  CFStringRef cf_key = CFStringCreateWithCString (kCFAllocatorDefault, key, 
+  CFStringRef cf_key = CFStringCreateWithCString (kCFAllocatorDefault, key,
 						  kCFStringEncodingUTF8);
   CFStringRef cf_value = CFDictionaryGetValue ((CFDictionaryRef) plist, cf_key);
   if (cf_value != NULL && CFGetTypeID (cf_value) == CFStringGetTypeID ())
     {
-      CFIndex max_value_len = CFStringGetMaximumSizeOfFileSystemRepresentation 
+      CFIndex max_value_len = CFStringGetMaximumSizeOfFileSystemRepresentation
 								(cf_value);
       if (max_value_len > 0)
 	{
 	  value = (char *) xmalloc (max_value_len + 1);
 	  if (value)
 	    {
-	      if (!CFStringGetFileSystemRepresentation (cf_value, value, 
+	      if (!CFStringGetFileSystemRepresentation (cf_value, value,
 							max_value_len))
 		{
-		  /* We failed to get a file system representation 
-		     of the bundle executable, just free the buffer 
+		  /* We failed to get a file system representation
+		     of the bundle executable, just free the buffer
 		     we malloc'ed.  */
 		  xfree (value);
 		  value = NULL;
@@ -330,7 +331,7 @@ macosx_get_plist_posix_value (const void *plist, const char* key)
 
 
 /* Return the string value for KEY found in PLIST. NULL will be returned if
-   KEY does not have a valid value in the the property list, if the value 
+   KEY does not have a valid value in the the property list, if the value
    is not a string, or if there were errors extracting the value for KEY.  */
 const char *
 macosx_get_plist_string_value (const void *plist, const char* key)
@@ -338,24 +339,24 @@ macosx_get_plist_string_value (const void *plist, const char* key)
   char *value = NULL;
   if (plist == NULL)
     return NULL;
-  CFStringRef cf_key = CFStringCreateWithCString (kCFAllocatorDefault, key, 
+  CFStringRef cf_key = CFStringCreateWithCString (kCFAllocatorDefault, key,
 						  kCFStringEncodingUTF8);
   CFStringRef cf_value = CFDictionaryGetValue ((CFDictionaryRef) plist, cf_key);
   if (cf_value != NULL && CFGetTypeID (cf_value) == CFStringGetTypeID ())
     {
       CFIndex max_value_len = CFStringGetLength (cf_value);
-      max_value_len = CFStringGetMaximumSizeForEncoding (max_value_len, 
+      max_value_len = CFStringGetMaximumSizeForEncoding (max_value_len,
 							 kCFStringEncodingUTF8);
       if (max_value_len > 0)
 	{
 	  value = xmalloc (max_value_len + 1);
 	  if (value)
 	    {
-	      if (!CFStringGetCString (cf_value, value, max_value_len, 
+	      if (!CFStringGetCString (cf_value, value, max_value_len,
 				       kCFStringEncodingUTF8))
 		{
-		  /* We failed to get a file system representation 
-		     of the bundle executable, just free the buffer 
+		  /* We failed to get a file system representation
+		     of the bundle executable, just free the buffer
 		     we malloc'ed.  */
 		  xfree (value);
 		  value = NULL;
@@ -368,7 +369,7 @@ macosx_get_plist_string_value (const void *plist, const char* key)
   return value;
 }
 
-/* Free a property list pointer that was obtained from a call to 
+/* Free a property list pointer that was obtained from a call to
    macosx_parse_plist.  */
 void
 macosx_free_plist (const void **plist)
@@ -456,17 +457,17 @@ mach_warn_error (kern_return_t ret, const char *file,
 static int malloc_unsafe_flag = -1;
 
 static void
-do_reset_malloc_unsafe_flag (void *unused)
+do_reset_malloc_unsafe_flag(void *unused)
 {
   malloc_unsafe_flag = -1;
 }
 
-/* macosx_check_malloc_is_unsafe calls into LibC to see if the malloc lock is taken
-   by any thread. It returns 1 if malloc is locked, 0 if malloc is unlocked, and
-   -1 if LibC does not support the malloc lock check function. */
-
+/* macosx_check_malloc_is_unsafe calls into LibC to see if the malloc lock
+ * is taken by any thread. It returns 1 if malloc is locked, 0 if malloc
+ * is unlocked, and -1 if LibC does not support the malloc lock check
+ * function: */
 static int
-macosx_check_malloc_is_unsafe ()
+macosx_check_malloc_is_unsafe(void)
 {
   static struct cached_value *malloc_check_fn = NULL;
   struct cleanup *scheduler_cleanup;
@@ -563,7 +564,7 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
 
   static regex_t macosx_unsafe_patterns[LAST_SUBSYSTEM_INDEX];
   static int patterns_initialized = 0;
-  
+
   if (!patterns_initialized)
     {
       int i;
@@ -572,7 +573,7 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
       for (i = 0; i < LAST_SUBSYSTEM_INDEX; i++)
 	{
 	  int err_code;
-	  err_code = regcomp (&(macosx_unsafe_patterns[i]), 
+	  err_code = regcomp (&(macosx_unsafe_patterns[i]),
 			      macosx_unsafe_regexes[i],
 			      REG_EXTENDED|REG_NOSUB);
 	  if (err_code != 0)
@@ -581,7 +582,7 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
 	      regerror (err_code, &(macosx_unsafe_patterns[i]),
 			err_str, 512);
 	      internal_error (__FILE__, __LINE__,
-			      "Could NOT compile unsafe call pattern %s, error %s", 
+			      "Could NOT compile unsafe call pattern %s, error %s",
 			      macosx_unsafe_regexes[i], err_str);
 	    }
 	}
@@ -607,7 +608,7 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
 	   * So if the caller has asked explicitly about the current thread only, or
 	   * the scheduler mode is set to off, just try the patterns.  */
 
-      if (thread_mode == CHECK_CURRENT_THREAD 
+      if (thread_mode == CHECK_CURRENT_THREAD
 	  || (thread_mode == CHECK_SCHEDULER_VALUE && !scheduler_lock_on_p ()))
           malloc_unsafe = -1;
       else
@@ -622,7 +623,7 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
 	}
       else if (malloc_unsafe == -1)
 	{
-	  unsafe_patterns[num_unsafe_patterns] 
+	  unsafe_patterns[num_unsafe_patterns]
 	    = macosx_unsafe_patterns[MALLOC_SUBSYSTEM_INDEX];
 	  num_unsafe_patterns++;
 	  if (depth < 5)
@@ -634,7 +635,7 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
     {
       struct cleanup *runtime_cleanup;
       enum objc_debugger_mode_result objc_retval = objc_debugger_mode_unknown;
-      
+
       /* Again, the debugger mode requires you only run the current thread. If the
 	   * caller requested information about the current thread, that means she will
 	   * be running the all threads - just with code on the current thread. So we
@@ -659,14 +660,14 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
         {
 
           /* If we have the new objc runtime, I am going to be a little more
-             paranoid, and if any frames in the first 5 stack frames are in 
+             paranoid, and if any frames in the first 5 stack frames are in
              libobjc, then I will bail. According to Greg, pretty much any routine
              in libobjc in the new runtime is likely to hold an objc lock.  */
 
           if (new_objc_runtime_internals ())
             {
               struct objfile *libobjc_objfile;
-              
+
               libobjc_objfile = find_libobjc_objfile ();
               if (libobjc_objfile != NULL)
                 {
@@ -678,7 +679,7 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
                                "the current thread to determine whether it is safe.");
                       return 0;
                     }
-	      
+
                   while (frame_relative_level (fi) < 5)
                     {
                       struct obj_section *obj_sect = find_pc_section (get_frame_pc (fi));
@@ -722,7 +723,7 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
 	{
 	  ULONGEST locked;
 
-	  if (safe_read_memory_unsigned_integer (SYMBOL_VALUE_ADDRESS (dyld_lock_p), 
+	  if (safe_read_memory_unsigned_integer (SYMBOL_VALUE_ADDRESS (dyld_lock_p),
 						 4, &locked))
 	    {
 	      got_it_easy = 1;
@@ -730,29 +731,29 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
 		return 0;
 	    }
 	}
-	    
+
       if (!got_it_easy)
 	{
-	  unsafe_patterns[num_unsafe_patterns] 
+	  unsafe_patterns[num_unsafe_patterns]
 	    = macosx_unsafe_patterns[LOADER_SUBSYSTEM_INDEX];
 	  num_unsafe_patterns++;
 	  if (depth < 5)
 	    depth = 5;
 	}
     }
-  
+
   if (which & SPINLOCK_SUBSYSTEM)
     {
-      unsafe_patterns[num_unsafe_patterns] 
+      unsafe_patterns[num_unsafe_patterns]
 	= macosx_unsafe_patterns[SPINLOCK_SUBSYSTEM_INDEX];
       num_unsafe_patterns++;
       if (depth < 1)
 	depth = 1;
-    }      
+    }
 
   if (num_unsafe_patterns > 0)
-    { 
-      retval = check_safe_call (unsafe_patterns, num_unsafe_patterns, depth, 
+    {
+      retval = check_safe_call (unsafe_patterns, num_unsafe_patterns, depth,
 				thread_mode);
     }
 
@@ -787,7 +788,7 @@ macosx_load_dylib (char *name, char *flags)
 
   struct cleanup *debugger_mode_cleanup;
   struct cleanup *sched_cleanup;
-  static struct cached_value *dlopen_function = NULL; 
+  static struct cached_value *dlopen_function = NULL;
   struct value *arg_val[2];
   struct value *ret_val;
   int int_flags;
@@ -800,7 +801,7 @@ macosx_load_dylib (char *name, char *flags)
     {
       if (lookup_minimal_symbol ("dlopen", 0, 0))
 	{
-	  dlopen_function = create_cached_function ("dlopen", 
+	  dlopen_function = create_cached_function ("dlopen",
 						    builtin_type_voidptrfuncptr);
 	}
     }
@@ -813,7 +814,7 @@ macosx_load_dylib (char *name, char *flags)
     {
       if (lookup_minimal_symbol ("dlerror", 0, 0))
 	{
-	  dlerror_function = create_cached_function ("dlerror", 
+	  dlerror_function = create_cached_function ("dlerror",
 						    builtin_type_voidptrfuncptr);
 	}
     }
@@ -883,7 +884,7 @@ macosx_load_dylib (char *name, char *flags)
       if (dlopen_token == 0)
 	{
 	  /* This indicates an error in the attempt to
-	     call dlopen.  Call dlerror to get a pointer 
+	     call dlopen.  Call dlerror to get a pointer
 	     to the error message.  */
 
 	  char *error_str;
@@ -914,7 +915,7 @@ macosx_load_dylib (char *name, char *flags)
 	  else
 	    error ("Error calling dlopen for \"%s\", could not fetch error string.",
 		   name);
-	  
+
 	}
       else
 	{

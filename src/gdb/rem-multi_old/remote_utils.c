@@ -258,7 +258,7 @@ void prepare_resume_reply(char *buf, char *status, unsigned char signal)
   char ch = '0';
 
   *buf++ = 'S';
-  *buf++ = status; /* pointer misuse here? */
+  *buf++ = *status; /* FIXME: there might have been pointer misuse here? */
   nib = ((signal & 0xf0) >> 4);
   *buf++ = tohex(nib);
   nib = (signal & 0x0f);

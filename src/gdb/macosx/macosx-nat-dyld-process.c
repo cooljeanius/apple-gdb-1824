@@ -121,23 +121,23 @@ struct bfd_memory_footprint_group {
   int length;    /* Length in buckets */
 };
 
-static void mark_buckets_as_used (struct pre_run_memory_map *map, int i, struct bfd_memory_footprint *fp);
+static void mark_buckets_as_used(struct pre_run_memory_map *map, int i, struct bfd_memory_footprint *fp);
 
 static int
 dyld_print_status(void)
 {
-  /* do not print status dots when executing MI */
-  return !ui_out_is_mi_like_p (uiout);
+  /* do not print status dots when executing MI: */
+  return !ui_out_is_mi_like_p(uiout);
 }
 
 void
-dyld_add_inserted_libraries (struct dyld_objfile_info *info,
-                             const struct dyld_path_info *d)
+dyld_add_inserted_libraries(struct dyld_objfile_info *info,
+                            const struct dyld_path_info *d)
 {
   const char *s1, *s2;
 
-  CHECK_FATAL (info != NULL);
-  CHECK_FATAL (d != NULL);
+  CHECK_FATAL(info != NULL);
+  CHECK_FATAL(d != NULL);
 
   s1 = d->insert_libraries;
   if (s1 == NULL)
@@ -2574,31 +2574,31 @@ dyld_update_shlibs (struct dyld_path_info *d, struct dyld_objfile_info *result)
 }
 
 void
-dyld_purge_cached_libraries (struct dyld_objfile_info *info)
+dyld_purge_cached_libraries(struct dyld_objfile_info *info)
 {
   int i;
   struct dyld_objfile_entry *e;
-  CHECK_FATAL (info != NULL);
+  CHECK_FATAL(info != NULL);
 
-  DYLD_ALL_OBJFILE_INFO_ENTRIES (info, e, i)
+  DYLD_ALL_OBJFILE_INFO_ENTRIES(info, e, i)
     if (e->reason & dyld_reason_cached_mask)
       {
-        dyld_remove_objfile (e);
-        dyld_objfile_entry_clear (e);
+        dyld_remove_objfile(e);
+        dyld_objfile_entry_clear(e);
       }
 
-  dyld_shlibs_updated (info);
+  dyld_shlibs_updated(info);
 }
 
 void
-_initialize_macosx_nat_dyld_process ()
+_initialize_macosx_nat_dyld_process(void)
 {
-  add_setshow_boolean_cmd ("check-uuids", class_obscure,
-			   &dyld_check_uuids_flag, _("\
+  add_setshow_boolean_cmd("check-uuids", class_obscure,
+                          &dyld_check_uuids_flag, _("\
 Set if GDB should check the binary UUID between the file on disk and the one loaded in memory."), _("\
 Set if GDB should check the binary UUID between the file on disk and the one loaded in memory."), NULL,
-			   NULL, NULL,
-			   &setshliblist, &showshliblist);
+                          NULL, NULL,
+                          &setshliblist, &showshliblist);
 }
 
 /* EOF */

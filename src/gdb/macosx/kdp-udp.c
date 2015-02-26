@@ -55,7 +55,7 @@ kdp_log_packetbuf(kdp_log_function *f, kdp_log_level l, char *prefix,
   char *s = strbuf;
 
   for (i = 0; i < len; i++) {
-    sprintf (s, "0x%02x", (unsigned char) buf[i]);
+    sprintf(s, "0x%02x", (unsigned char)buf[i]);
     s += 4;
     *s++ = ' ';
   }
@@ -65,34 +65,34 @@ kdp_log_packetbuf(kdp_log_function *f, kdp_log_level l, char *prefix,
   f (l, "%s: %s", prefix, strbuf);
 }
 
-/* Transmit packet on port specified by host_port. */
-
+/* Transmit packet on port specified by host_port: */
 kdp_return_t
-kdp_transmit_fd (kdp_connection *c, kdp_pkt_t * packet, int fd)
+kdp_transmit_fd(kdp_connection *c, kdp_pkt_t *packet, int fd)
 {
   char buf[KDP_MAX_PACKET_SIZE];
   size_t plen = 0;
   kdp_return_t kret;
   int ret = -1;
 
-  CHECK_FATAL (kdp_is_bound (c));
+  CHECK_FATAL(kdp_is_bound(c));
 
-  kret = kdp_marshal (c, packet, buf, KDP_MAX_PACKET_SIZE, &plen);
+  kret = kdp_marshal(c, packet, (unsigned char *)buf, KDP_MAX_PACKET_SIZE,
+                     &plen);
   if (kret != RR_SUCCESS)
     {
-      c->logger (KDP_LOG_ERROR,
-                 "send_debug_packet: error marshalling packet: %s\n",
-                 kdp_return_string (kret));
+      c->logger(KDP_LOG_ERROR,
+                "send_debug_packet: error marshalling packet: %s\n",
+                kdp_return_string(kret));
       return kret;
     }
 
-  c->logger (KDP_LOG_DEBUG, "kdp_transmit_fd: transmitting packet\n");
-  kdp_log_packet (c->logger, KDP_LOG_DEBUG, packet);
+  c->logger(KDP_LOG_DEBUG, "kdp_transmit_fd: transmitting packet\n");
+  kdp_log_packet(c->logger, KDP_LOG_DEBUG, packet);
 
-  kdp_log_packetbuf (c->logger, KDP_LOG_PACKET, "transmitting packet", buf, plen);
+  kdp_log_packetbuf(c->logger, KDP_LOG_PACKET, "transmitting packet", buf, plen);
 
-  ret = sendto (fd, buf, plen, 0,
-                (struct sockaddr *) &c->target_sin, sizeof (c->target_sin));
+  ret = sendto(fd, buf, plen, 0,
+               (struct sockaddr *)&c->target_sin, sizeof(c->target_sin));
   if (ret < 0)
     {
       if (errno == EINTR)
@@ -101,16 +101,16 @@ kdp_transmit_fd (kdp_connection *c, kdp_pkt_t * packet, int fd)
         }
       else
         {
-          c->logger (KDP_LOG_ERROR,
-                     "kdp_transmit_fd: sendto returns %d: %s (%d)\n", ret,
-                     strerror (errno), errno);
+          c->logger(KDP_LOG_ERROR,
+                    "kdp_transmit_fd: sendto returns %d: %s (%d)\n", ret,
+                    strerror(errno), errno);
           return RR_IP_ERROR;
         }
     }
   if (ret != plen)
     {
-      c->logger (KDP_LOG_ERROR, "kdp_transmit_fd: unable to transmit packet ",
-                 "(only %lu of %lu bytes were transmitted)", ret, plen);
+      c->logger(KDP_LOG_ERROR, "kdp_transmit_fd: unable to transmit packet ",
+                "(only %lu of %lu bytes were transmitted)", ret, plen);
       return RR_BYTE_COUNT;
     }
 
@@ -180,7 +180,7 @@ kdp_receive_fd (kdp_connection *c, kdp_pkt_t * packet, int fd, int timeout)
 
   kdp_log_packetbuf (c->logger, KDP_LOG_PACKET, "received packet", buf, rlen);
 
-  kret = kdp_unmarshal (c, packet, buf, rlen);
+  kret = kdp_unmarshal(c, packet, (const unsigned char *)buf, rlen);
   if (kret != RR_SUCCESS)
     {
       c->logger (KDP_LOG_ERROR,

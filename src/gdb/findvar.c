@@ -197,29 +197,29 @@ extract_long_unsigned_integer_with_byte_order (const gdb_byte *addr, int orig_le
 /* Treat the bytes at BUF as a pointer of type TYPE, and return the
    address it represents.  */
 CORE_ADDR
-extract_typed_address (const gdb_byte *buf, struct type *type)
+extract_typed_address(const gdb_byte *buf, struct type *type)
 {
-  if (TYPE_CODE (type) != TYPE_CODE_PTR
-      && TYPE_CODE (type) != TYPE_CODE_REF)
-    internal_error (__FILE__, __LINE__,
-		    _("extract_typed_address: "
-		    "type is not a pointer or reference"));
+  if ((TYPE_CODE(type) != TYPE_CODE_PTR)
+      && (TYPE_CODE(type) != TYPE_CODE_REF))
+    internal_error(__FILE__, __LINE__,
+		   _("extract_typed_address: "
+		   "type is not a pointer or reference"));
 
-  return POINTER_TO_ADDRESS (type, buf);
+  return POINTER_TO_ADDRESS(type, buf);
 }
 
-extern void store_signed_integer (gdb_byte *addr, int len, LONGEST val)
+extern void store_signed_integer(gdb_byte *addr, int len, LONGEST val)
 {
-  /* APPLE LOCAL explicit byte order */
-  store_signed_integer_with_byte_order (addr, len, val, BFD_ENDIAN_UNKNOWN);
+  /* APPLE LOCAL explicit byte order: */
+  store_signed_integer_with_byte_order(addr, len, val, BFD_ENDIAN_UNKNOWN);
 }
 
 void
-store_signed_integer_with_byte_order (gdb_byte *addr, int len, LONGEST val, int byte_order)
+store_signed_integer_with_byte_order(gdb_byte *addr, int len, LONGEST val, int byte_order)
 {
   gdb_byte *p;
   gdb_byte *startaddr = addr;
-  gdb_byte *endaddr = startaddr + len;
+  gdb_byte *endaddr = (startaddr + len);
 
   /* Start at the least significant end of the integer, and work towards
      the most significant.  */
@@ -425,7 +425,7 @@ symbol_read_needs_frame (struct symbol *sym)
 
 /* Given a struct symbol for a variable,
    and a stack frame id, read the value of the variable
-   and return a (pointer to a) struct value containing the value. 
+   and return a (pointer to a) struct value containing the value.
    If the variable cannot be found, return a zero pointer.
    If FRAME is NULL, use the deprecated_selected_frame.  */
 
@@ -683,7 +683,7 @@ value_from_register (struct type *type, int regnum, struct frame_info *frame)
          length is zero, it could be anything.  But if allowed to see
          a zero-length type, the register-finding loop below will set
          neither mem_stor nor reg_stor, and then report an internal
-         error.  
+         error.
 
          Zero-length types can legitimately arise from declarations
          like 'struct {}' (a GCC extension, not valid ISO C).  GDB may
@@ -741,7 +741,7 @@ value_from_register (struct type *type, int regnum, struct frame_info *frame)
 	  optimized += optim;
 	  if (register_cached (local_regnum) == -1)
 	    return NULL;	/* register value not available */
-	  
+
 	  if (regnum == local_regnum)
 	    {
 	      first_addr = addr;
@@ -751,7 +751,7 @@ value_from_register (struct type *type, int regnum, struct frame_info *frame)
 	  else
 	    {
 	      mem_stor++;
-	      
+
 	      /* FIXME: cagney/2004-11-12: I think this is trying to
 		 check that the stored registers are adjacent in
 		 memory.  It isn't doing a good job?  */
@@ -761,27 +761,27 @@ value_from_register (struct type *type, int regnum, struct frame_info *frame)
 	    }
 	  last_addr = addr;
 	}
-      
+
       if (mem_tracking && mem_stor && !reg_stor)
 	{
-	  VALUE_LVAL (v) = lval_memory;
-	  VALUE_ADDRESS (v) = first_addr;
+	  VALUE_LVAL(v) = lval_memory;
+	  VALUE_ADDRESS(v) = first_addr;
 	}
       else
 	{
-	  VALUE_LVAL (v) = lval_register;
-	  VALUE_FRAME_ID (v) = get_frame_id (frame);
-	  VALUE_REGNUM (v) = regnum;
+	  VALUE_LVAL(v) = lval_register;
+	  VALUE_FRAME_ID(v) = get_frame_id(frame);
+	  VALUE_REGNUM(v) = regnum;
 	}
-      
-      set_value_optimized_out (v, optimized);
-      
+
+      set_value_optimized_out(v, (enum opt_state)optimized);
+
       /* Any structure stored in more than one register will always be
          an integral number of registers.  Otherwise, you need to do
          some fiddling with the last register copied here for little
          endian machines.  */
-      if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG
-	  && len < register_size (current_gdbarch, regnum))
+      if ((TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
+	  && len < register_size(current_gdbarch, regnum))
 	/* Big-endian, and we want less than full size.  */
 	set_value_offset (v, register_size (current_gdbarch, regnum) - len);
       else
@@ -793,7 +793,7 @@ value_from_register (struct type *type, int regnum, struct frame_info *frame)
 
 
 /* Given a struct symbol for a variable or function,
-   and a stack frame id, 
+   and a stack frame id,
    return a (pointer to a) struct value containing the properly typed
    address.  */
 
@@ -829,7 +829,7 @@ locate_var_value (struct symbol *var, struct frame_info *frame)
 		  && *REGISTER_NAME (VALUE_REGNUM (lazy_value)) != '\0');
       error (_("Address requested for identifier "
 	       "\"%s\" which is in register $%s"),
-            SYMBOL_PRINT_NAME (var), 
+            SYMBOL_PRINT_NAME (var),
 	    REGISTER_NAME (VALUE_REGNUM (lazy_value)));
       break;
 

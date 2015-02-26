@@ -3778,10 +3778,10 @@ struct gdb_copy_dyld_cache_local_symbols_entry *dyld_shared_cache_entries = NULL
 int dyld_shared_cache_entries_count = 0;
 
 void
-free_dyld_shared_cache_local_syms ()
+free_dyld_shared_cache_local_syms(void)
 {
   if (dyld_shared_cache_raw)
-    xfree (dyld_shared_cache_raw);
+    xfree(dyld_shared_cache_raw);
   dyld_shared_cache_raw = NULL;
   dyld_shared_cache_local_nlists = NULL;
   dyld_shared_cache_local_nlists_count = 0;
@@ -3793,9 +3793,9 @@ free_dyld_shared_cache_local_syms ()
 
 
 void
-get_dyld_shared_cache_local_syms ()
+get_dyld_shared_cache_local_syms(void)
 {
-#if defined (TARGET_ARM) && defined (NM_NEXTSTEP)
+#if defined(TARGET_ARM) && defined(NM_NEXTSTEP)
 
   if (dyld_shared_cache_raw != NULL)
     return;
@@ -3806,87 +3806,88 @@ get_dyld_shared_cache_local_syms ()
      this process is not using the system-wide shared cache and we should
      not import/use these nlist records.  */
 
-  int wordsize = gdbarch_tdep (current_gdbarch)->wordsize;
+  int wordsize = gdbarch_tdep(current_gdbarch)->wordsize;
   int nlist_entry_size;
   if (wordsize == 4)
     nlist_entry_size = 12;
   else
     nlist_entry_size = 16;
 
-  const char *osabi_name = gdbarch_osabi_name (gdbarch_osabi (current_gdbarch));
+  const char *osabi_name = gdbarch_osabi_name(gdbarch_osabi(current_gdbarch));
   const char *arch_name = NULL;
-  if (strcmp (osabi_name, "Darwin") == 0)
+  if (strcmp(osabi_name, "Darwin") == 0)
     arch_name = "arm";
-  else if (strcmp (osabi_name, "DarwinV6") == 0)
+  else if (strcmp(osabi_name, "DarwinV6") == 0)
     arch_name = "armv6";
-  else if (strcmp (osabi_name, "DarwinV7") == 0)
+  else if (strcmp(osabi_name, "DarwinV7") == 0)
     arch_name = "armv7";
-  else if (strcmp (osabi_name, "DarwinV7S") == 0)
+  else if (strcmp(osabi_name, "DarwinV7S") == 0)
     arch_name = "armv7s";
-  else if (strcmp (osabi_name, "DarwinV7F") == 0)
+  else if (strcmp(osabi_name, "DarwinV7F") == 0)
     arch_name = "armv7";
   if (arch_name == NULL)
     return;
   char dsc_path[PATH_MAX];
   snprintf(dsc_path, sizeof(dsc_path),
-         "/System/Library/Caches/com.apple.dyld/dyld_shared_cache_%s",
-         arch_name);
-  FILE *dsc = fopen (dsc_path, "r");
+           "/System/Library/Caches/com.apple.dyld/dyld_shared_cache_%s",
+           arch_name);
+  FILE *dsc = fopen(dsc_path, "r");
   if (dsc == NULL)
     return;
   struct gdb_copy_dyld_cache_header dsc_header;
-  if (fread (&dsc_header, sizeof (dsc_header), 1, dsc) != 1)
+  if (fread(&dsc_header, sizeof(dsc_header), 1, dsc) != 1)
     {
-      fclose (dsc);
+      fclose(dsc);
       return;
     }
 
   /* We are dealing with an older dyld shared cache file that does NOT have
-   * this info.
-   */
-  if (dsc_header.mappingOffset < sizeof (struct gdb_copy_dyld_cache_header))
+   * this info: */
+  if (dsc_header.mappingOffset < sizeof(struct gdb_copy_dyld_cache_header))
     {
-      fclose (dsc);
+      fclose(dsc);
       return;
     }
 
-  if (fseek (dsc, dsc_header.localSymbolsOffset, SEEK_SET) != 0)
+  if (fseek(dsc, dsc_header.localSymbolsOffset, SEEK_SET) != 0)
     {
-      fclose (dsc);
+      fclose(dsc);
       return;
     }
 
-  dyld_shared_cache_raw = (uint8_t *) xmalloc (dsc_header.localSymbolsSize);
-  if (fread (dyld_shared_cache_raw, dsc_header.localSymbolsSize, 1, dsc) != 1)
+  dyld_shared_cache_raw = (uint8_t *)xmalloc(dsc_header.localSymbolsSize);
+  if (fread(dyld_shared_cache_raw, dsc_header.localSymbolsSize, 1, dsc) != 1)
     {
-      free_dyld_shared_cache_local_syms ();
-      fclose (dsc);
+      free_dyld_shared_cache_local_syms();
+      fclose(dsc);
       return;
     }
-  fclose (dsc);
+  fclose(dsc);
 
   struct gdb_copy_dyld_cache_local_symbols_info *locsyms_header;
-  locsyms_header = (struct gdb_copy_dyld_cache_local_symbols_info *) dyld_shared_cache_raw;
+  locsyms_header = (struct gdb_copy_dyld_cache_local_symbols_info *)dyld_shared_cache_raw;
 
-  dyld_shared_cache_local_nlists = dyld_shared_cache_raw + locsyms_header->nlistOffset;
+  dyld_shared_cache_local_nlists = (dyld_shared_cache_raw + locsyms_header->nlistOffset);
   dyld_shared_cache_local_nlists_count = locsyms_header->nlistCount;
 
-  dyld_shared_cache_strings = (char *) dyld_shared_cache_raw + locsyms_header->stringsOffset;
+  dyld_shared_cache_strings = ((char *)dyld_shared_cache_raw + locsyms_header->stringsOffset);
   dyld_shared_cache_strings_size = locsyms_header->stringsSize;
 
-  dyld_shared_cache_entries = (struct gdb_copy_dyld_cache_local_symbols_entry *) dyld_shared_cache_raw + locsyms_header->entriesOffset;
+  dyld_shared_cache_entries = ((struct gdb_copy_dyld_cache_local_symbols_entry *)dyld_shared_cache_raw + locsyms_header->entriesOffset);
   dyld_shared_cache_entries_count = locsyms_header->entriesCount;
+#else
+  return;
 #endif /* TARGET_ARM && NM_NEXTSTEP */
 }
 
 struct gdb_copy_dyld_cache_local_symbols_entry *
-get_dyld_shared_cache_entry (CORE_ADDR intended_load_addr)
+get_dyld_shared_cache_entry(CORE_ADDR intended_load_addr)
 {
-  get_dyld_shared_cache_local_syms ();
+  get_dyld_shared_cache_local_syms();
   int i = 0;
   while (i < dyld_shared_cache_entries_count)
     {
-      if (dyld_shared_cache_entries[i].dylibOffset == intended_load_addr - 0x30000000)
+      if (dyld_shared_cache_entries[i].dylibOffset == (intended_load_addr - 0x30000000))
         return &dyld_shared_cache_entries[i];
       i++;
     }
@@ -3895,66 +3896,65 @@ get_dyld_shared_cache_entry (CORE_ADDR intended_load_addr)
 
 
 void
-_initialize_macosx_tdep ()
+_initialize_macosx_tdep(void)
 {
   struct cmd_list_element *c;
-  macosx_symbol_types_init ();
+  macosx_symbol_types_init();
 
-  add_info ("trampoline", info_trampoline_command,
-            "Resolve function for DYLD trampoline stub and/or Objective-C call");
-  c = add_com ("open", class_support, open_command, _("\
+  add_info("trampoline", info_trampoline_command,
+           "Resolve function for DYLD trampoline stub and/or Objective-C call");
+  c = add_com("open", class_support, open_command, _("\
 Open the named source file in an application determined by LaunchServices.\n\
 With no arguments, open the currently selected source file.\n\
 Also takes file:line to hilight the file at the given line."));
-  set_cmd_completer (c, filename_completer);
-  add_com_alias ("op", "open", class_support, 1);
-  add_com_alias ("ope", "open", class_support, 1);
+  set_cmd_completer(c, filename_completer);
+  add_com_alias("op", "open", class_support, 1);
+  add_com_alias("ope", "open", class_support, 1);
 
-  add_com ("flushstack", class_maintenance, stack_flush_command,
-           "Force gdb to flush its stack-frame cache (maintainer command)");
+  add_com("flushstack", class_maintenance, stack_flush_command,
+          "Force gdb to flush its stack-frame cache (maintainer command)");
 
-  add_com_alias ("flush", "flushregs", class_maintenance, 1);
+  add_com_alias("flush", "flushregs", class_maintenance, 1);
 
-  add_com ("update", class_obscure, update_command,
-           "Re-read current state information from inferior.");
+  add_com("update", class_obscure, update_command,
+          "Re-read current state information from inferior.");
 
-  add_setshow_boolean_cmd ("locate-dsym", class_obscure,
-			    &dsym_locate_enabled, _("\
+  add_setshow_boolean_cmd("locate-dsym", class_obscure,
+                          &dsym_locate_enabled, _("\
 Set locate dSYM files using the DebugSymbols framework."), _("\
 Show locate dSYM files using the DebugSymbols framework."), _("\
 If set, gdb will try and locate dSYM files using the DebugSymbols framework."),
-			    NULL, NULL,
-			    &setlist, &showlist);
+                          NULL, NULL,
+                          &setlist, &showlist);
 
-  add_setshow_boolean_cmd ("kaslr-memory-search", class_obscure,
-			    &kaslr_memory_search_enabled, _("\
+  add_setshow_boolean_cmd("kaslr-memory-search", class_obscure,
+                          &kaslr_memory_search_enabled, _("\
 Set whether gdb should do a search through memory for the kernel on 'target remote'."), _("\
 Show whether gdb should do a search through memory for the kernel on 'target remote'."), _("\
 If set, gdb may look through memory for a kernel when doing 'target remote'"),
-			    NULL, NULL,
-			    &setlist, &showlist);
+                          NULL, NULL,
+                          &setlist, &showlist);
 
-  add_cmd ("list-kexts", class_maintenance,
-           maintenance_list_kexts,
-           "List kexts loaded by the kernel (when kernel debugging).",
-           &maintenancelist);
+  add_cmd("list-kexts", class_maintenance,
+          maintenance_list_kexts,
+          "List kexts loaded by the kernel (when kernel debugging).",
+          &maintenancelist);
 
-  add_setshow_boolean_cmd ("disable-aslr", class_obscure,
-			   &disable_aslr_flag, _("\
+  add_setshow_boolean_cmd("disable-aslr", class_obscure,
+                          &disable_aslr_flag, _("\
 Set if GDB should disable shared library address randomization."), _("\
 Show if GDB should disable shared library address randomization."), NULL,
-			   NULL, NULL,
-			   &setlist, &showlist);
+                          NULL, NULL,
+                          &setlist, &showlist);
 
-  c = add_cmd ("add-all-kexts", class_files, add_all_kexts_command, _("\
+  c = add_cmd("add-all-kexts", class_files, add_all_kexts_command, _("\
 Usage: add-all-kexts\n\
 Load the dSYMs for all of the kexts loaded in a live kernel/kernel coredump.\n\
 You must be attached to a live kernel (usually via kdp) or be debugging a\n\
 kernel coredump to use this command -- gdb will examine the kernel memory\n\
 to find the list of kexts and what addresses they are loaded at.\n"),
-               &cmdlist);
-  set_cmd_completer (c, filename_completer);
-
+              &cmdlist);
+  set_cmd_completer(c, filename_completer);
 }
 
 /* EOF */

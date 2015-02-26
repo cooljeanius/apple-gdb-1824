@@ -121,18 +121,18 @@ mi_interpreter_init (void)
 }
 
 static int
-mi_interpreter_resume (void *data)
+mi_interpreter_resume(void *data)
 {
-  struct mi_interp *mi = data;
+  struct mi_interp *mi = (struct mi_interp *)data;
   /* As per hack note in mi_interpreter_init, swap in the output channels... */
 
-  gdb_setup_readline ();
+  gdb_setup_readline();
 
   /* These overwrite some of the initialization done in
      _intialize_event_loop.  */
   call_readline = gdb_readline2;
   input_handler = mi_execute_command_wrapper;
-  add_file_handler (input_fd, stdin_event_handler, 0);
+  add_file_handler(input_fd, stdin_event_handler, 0);
   async_command_editing_p = 0;
   /* FIXME: This is a total hack for now.  PB's use of the MI
      implicitly relies on a bug in the async support which allows
@@ -263,11 +263,11 @@ mi_cmd_interpreter_exec (char *command, char **argv, int argc)
       char *buff = NULL;
       /* Do this in a cleaner way...  We want to force execution to be
          asynchronous for commands that run the target.  */
-      if (target_can_async_p () && (strncmp (argv[0], "console", 7) == 0))
+      if (target_can_async_p() && (strncmp(argv[0], "console", 7) == 0))
 	{
-	  int len = strlen (argv[i]);
-	  buff = xmalloc (len + 2);
-	  memcpy (buff, argv[i], len);
+	  int len = strlen(argv[i]);
+	  buff = (char *)xmalloc(len + 2UL);
+	  memcpy(buff, argv[i], len);
 	  buff[len] = '&';
 	  buff[len + 1] = '\0';
 	}
@@ -337,18 +337,18 @@ mi_cmd_interpreter_exec (char *command, char **argv, int argc)
      mi_dont_register_continuation.  Maybe this had NOT been added yet when
      they adopted the code.  */
 
-  if (target_can_async_p () && target_executing
+  if (target_can_async_p() && target_executing
       && !mi_dont_register_continuation)
     {
       struct mi_continuation_arg *cont_args =
-        mi_setup_continuation_arg (NULL);
+        mi_setup_continuation_arg(NULL);
 
       if (current_command_token)
-        fputs_unfiltered (current_command_token, raw_stdout);
+        fputs_unfiltered(current_command_token, raw_stdout);
 
-      fputs_unfiltered ("^running\n", raw_stdout);
-      add_continuation (mi_interpreter_exec_continuation,
-                        (void *) cont_args);
+      fputs_unfiltered("^running\n", raw_stdout);
+      add_continuation(mi_interpreter_exec_continuation,
+                       (void *)cont_args);
     }
 
   return result;

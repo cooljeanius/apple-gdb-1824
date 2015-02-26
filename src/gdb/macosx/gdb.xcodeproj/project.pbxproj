@@ -383,6 +383,7 @@
 		A589D5C81A311DF100E717B9 /* cptest.c in Sources */ = {isa = PBXBuildFile; fileRef = A589D5C01A311DA800E717B9 /* cptest.c */; };
 		A589D5C91A311DF700E717B9 /* libcheckpoint.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A589CB581A30F15100E717B9 /* libcheckpoint.dylib */; };
 		A5A66DD41A54CA6000EDD221 /* trad-user.h in Headers */ = {isa = PBXBuildFile; fileRef = A5A66DD31A54CA6000EDD221 /* trad-user.h */; };
+		A5FE69901A9E935D005583F9 /* macosx-nat-info.h in Headers */ = {isa = PBXBuildFile; fileRef = A5FE698F1A9E935D005583F9 /* macosx-nat-info.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1505,7 +1506,7 @@
 		2609D6C60E82C40C008125DE /* macosx-nat-info.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "macosx-nat-info.c"; sourceTree = "<group>"; };
 		2609D6C70E82C40C008125DE /* macosx-nat-infthread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "macosx-nat-infthread.c"; sourceTree = "<group>"; };
 		2609D6C80E82C40C008125DE /* macosx-nat-infthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "macosx-nat-infthread.h"; sourceTree = "<group>"; };
-		2609D6C90E82C40C008125DE /* macosx-nat-mutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "macosx-nat-mutils.c"; sourceTree = "<group>"; };
+		2609D6C90E82C40C008125DE /* macosx-nat-mutils.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.c; path = "macosx-nat-mutils.c"; sourceTree = "<group>"; tabWidth = 8; usesTabs = 0; };
 		2609D6CA0E82C40C008125DE /* macosx-nat-mutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "macosx-nat-mutils.h"; sourceTree = "<group>"; };
 		2609D6CB0E82C40C008125DE /* macosx-nat-sigthread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "macosx-nat-sigthread.c"; sourceTree = "<group>"; };
 		2609D6CC0E82C40C008125DE /* macosx-nat-sigthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "macosx-nat-sigthread.h"; sourceTree = "<group>"; };
@@ -4785,6 +4786,7 @@
 		A5AFD2051A58B6DD006C21FE /* CodeFragmentTypes.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; name = CodeFragmentTypes.r; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/CodeFragmentTypes.r"; sourceTree = "<absolute>"; };
 		A5AFD2061A58B6F1006C21FE /* c-exp.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; name = "c-exp.y"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/c-exp.y"; sourceTree = "<absolute>"; };
 		A5C4A6571A7A950900DBC833 /* cli-logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "cli-logging.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/cli/cli-logging.h"; sourceTree = "<absolute>"; };
+		A5FE698F1A9E935D005583F9 /* macosx-nat-info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "macosx-nat-info.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/macosx/macosx-nat-info.h"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -7216,6 +7218,7 @@
 				2609D6C40E82C40C008125DE /* macosx-nat-inferior.c */,
 				2609D6C50E82C40C008125DE /* macosx-nat-inferior.h */,
 				2609D6C60E82C40C008125DE /* macosx-nat-info.c */,
+				A5FE698F1A9E935D005583F9 /* macosx-nat-info.h */,
 				2609D6C70E82C40C008125DE /* macosx-nat-infthread.c */,
 				2609D6C80E82C40C008125DE /* macosx-nat-infthread.h */,
 				2609D6C90E82C40C008125DE /* macosx-nat-mutils.c */,
@@ -10763,6 +10766,7 @@
 				A53ABD8D1A38C88F002F20B2 /* link.h in Headers */,
 				A51B3F1A1A493694002170CE /* plugin.h in Headers */,
 				A5A66DD41A54CA6000EDD221 /* trad-user.h in Headers */,
+				A5FE69901A9E935D005583F9 /* macosx-nat-info.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

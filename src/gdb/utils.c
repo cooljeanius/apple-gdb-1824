@@ -606,20 +606,21 @@ free_current_contents (void *ptr)
    we have a do-nothing one to always use as the base. */
 
 void
-null_cleanup (void *arg)
+null_cleanup(void *arg)
 {
+  return;
 }
 
 /* Add a continuation to the continuation list, the global list
-   cmd_continuation. The new continuation will be added at the front.*/
+ * cmd_continuation. The new continuation will be added at the front: */
 void
-add_continuation (void (*continuation_hook) (struct continuation_arg *),
-		  struct continuation_arg *arg_list)
+add_continuation(void (*continuation_hook)(struct continuation_arg *),
+		 struct continuation_arg *arg_list)
 {
   struct continuation *continuation_ptr;
 
   continuation_ptr =
-    (struct continuation *) xmalloc (sizeof (struct continuation));
+    (struct continuation *)xmalloc(sizeof(struct continuation));
   continuation_ptr->continuation_hook = continuation_hook;
   continuation_ptr->arg_list = arg_list;
   continuation_ptr->next = cmd_continuation;
@@ -3960,7 +3961,7 @@ unlimit_file_rlimit(void)
   ret = setrlimit(RLIMIT_NOFILE, &limit);
   if (ret != 0)
     {
-      /* Okay, that didn't work, let us try something that is at least
+      /* Okay, that failed, so let us try something that is at least
        * reasonably big: */
       limit.rlim_cur = 10000;
       ret = setrlimit(RLIMIT_NOFILE, &limit);
@@ -3972,7 +3973,7 @@ unlimit_file_rlimit(void)
 
   /* Reserve 10% of file descriptors for non-BFD uses, or 5, whichever
    * is greater.  Allocate at least one file descriptor for use by BFD: */
-  reserve = (limit.rlim_cur * 0.1f);
+  reserve = (rlim_t)(limit.rlim_cur * 0.1f);
   reserve = ((reserve > 5) ? reserve : 5);
   if (reserve >= limit.rlim_cur)
     {

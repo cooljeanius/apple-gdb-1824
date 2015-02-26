@@ -140,6 +140,26 @@ am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
 am__v_v_0 =
 am__v_v_1 = -v
 
+AM_V_at = $(am__v_at_@AM_V@)
+am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
+am__v_at_0 = @
+am__v_at_1 = 
+
+AM_V_GEN = $(am__v_GEN_@AM_V@)
+am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
+am__v_GEN_0 = @echo "  GEN     " $@;
+am__v_GEN_1 = 
+
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
+
 # All the includes used for CFLAGS and for lint.
 # -I. for config files.
 # -I${srcdir} for our headers.
@@ -324,7 +344,7 @@ generated_files = config.h $(GNULIB_H)
 # Prevent Sun make from putting in the machine type.  Setting
 # TARGET_ARCH to nothing works for SunOS 3, 4.0, but not for 4.1.
 .c.o:
-	${CC} -c $(CPPFLAGS) ${INTERNAL_CFLAGS} $<
+	$(AM_V_CC)${CC} -c $(CPPFLAGS) ${INTERNAL_CFLAGS} $<
 
 all: gdbserver$(EXEEXT) gdbreplay$(EXEEXT) $(extra_libraries)
 
@@ -369,8 +389,8 @@ install-html:
 clean-info: force
 
 gdbserver$(EXEEXT): $(OBS) ${ADD_DEPS} ${CDEPS}
-	rm -f $(AM_V_v) gdbserver$(EXEEXT)
-	${CC_LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) \
+	$(AM_V_at)rm -f $(AM_V_v) gdbserver$(EXEEXT)
+	$(AM_V_CCLD)${CC_LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) \
 	  -o gdbserver$(EXEEXT) $(OBS) $(GDBSERVER_LIBS) $(XM_CLIBS)
 
 $(LIBGNU) $(GNULIB_H): all-lib
@@ -383,8 +403,8 @@ all-lib: $(GNULIB_BUILDDIR)/Makefile
 # dependency can be satisfied without it actually existing to be available
 # for linking against
 gdbreplay$(EXEEXT): $(GDBREPLAY_OBS) $(LIBGNU)
-	rm -f $(AM_V_v) gdbreplay$(EXEEXT)
-	${CC_LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) \
+	$(AM_V_at)rm -f $(AM_V_v) gdbreplay$(EXEEXT)
+	$(AM_V_CCLD)${CC_LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) \
 	  -o gdbreplay$(EXEEXT) $(GDBREPLAY_OBS) $(XM_CLIBS)
 
 gdbreplay.o: gdbreplay.c config.h
@@ -396,9 +416,10 @@ IPA_OBJS=ax-ipa.o tracepoint-ipa.o format-ipa.o utils-ipa.o \
 IPA_LIB=libinproctrace.so
 
 $(IPA_LIB): $(IPA_OBJS) ${ADD_DEPS} ${CDEPS}
-	rm -f $(AM_V_v) $(IPA_LIB)
-	${CC_LD} -shared -fPIC -Wl,--no-undefined $(INTERNAL_CFLAGS) \
-	$(INTERNAL_LDFLAGS) -o $(IPA_LIB) ${IPA_OBJS} -ldl -pthread
+	$(AM_V_at)rm -f $(AM_V_v) $(IPA_LIB)
+	$(AM_V_CCLD)${CC_LD} -shared -fPIC -Wl,--no-undefined \
+	  $(INTERNAL_CFLAGS) $(INTERNAL_LDFLAGS) -o $(IPA_LIB) \
+	  ${IPA_OBJS} -ldl -pthread
 
 # Put the proper machine-specific files first, so M-. on a machine
 # specific routine gets the one for the correct machine.
@@ -496,7 +517,7 @@ force:
 
 version.c: Makefile $(srcdir)/../version.in $(srcdir)/../../bfd/version.h \
   $(srcdir)/../common/create-version.sh
-	if [ -f $(srcdir)/../common/create-version.sh ]; then \
+	$(AM_V_GEN)if [ -f $(srcdir)/../common/create-version.sh ]; then \
 	  echo "using new rules to make $@"; \
 	  SH_V=$(V) $(SHELL) $(srcdir)/../common/create-version.sh \
 	    $(srcdir)/.. $(host_alias) $(target_alias) version.c; \
@@ -508,7 +529,7 @@ version.c: Makefile $(srcdir)/../version.in $(srcdir)/../../bfd/version.h \
 xml-builtin.c: stamp-xml
 	@echo "this target '$@' just makes its dep '$<'"
 stamp-xml: $(XML_DIR)/feature_to_c.sh Makefile $(XML_FILES)
-	rm -f $(AM_V_v) xml-builtin.tmp
+	$(AM_V_at)rm -f $(AM_V_v) xml-builtin.tmp
 	$(SHELL) $(XML_DIR)/feature_to_c.sh xml-builtin.tmp $(XML_FILES)
 	$(SHELL) $(srcdir)/../../move-if-change xml-builtin.tmp xml-builtin.c
 	echo "timestamp: `date`" | tee stamp-xml
@@ -546,46 +567,46 @@ IPAGENT_COMPILE = $(COMPILE.pre) $(IPAGENT_CFLAGS) $(COMPILE.post)
 
 # In-process agent object rules:
 ax-ipa.o: ax.c
-	$(IPAGENT_COMPILE) $(WARN_CFLAGS_NO_FORMAT) $<
+	$(AM_V_CC)$(IPAGENT_COMPILE) $(WARN_CFLAGS_NO_FORMAT) $<
 	$(POSTCOMPILE)
 tracepoint-ipa.o: tracepoint.c
-	$(IPAGENT_COMPILE) $<
+	$(AM_V_CC)$(IPAGENT_COMPILE) $<
 	$(POSTCOMPILE)
 utils-ipa.o: utils.c
-	$(IPAGENT_COMPILE) $<
+	$(AM_V_CC)$(IPAGENT_COMPILE) $<
 	$(POSTCOMPILE)
 format-ipa.o: ../common/format.c
-	$(IPAGENT_COMPILE) $<
+	$(AM_V_CC)$(IPAGENT_COMPILE) $<
 	$(POSTCOMPILE)
 common-utils-ipa.o: ../common/common-utils.c
-	$(IPAGENT_COMPILE) $<
+	$(AM_V_CC)$(IPAGENT_COMPILE) $<
 	$(POSTCOMPILE)
 remote-utils-ipa.o: remote-utils.c
-	$(IPAGENT_COMPILE) $<
+	$(AM_V_CC)$(IPAGENT_COMPILE) $<
 	$(POSTCOMPILE)
 regcache-ipa.o: regcache.c
-	$(IPAGENT_COMPILE) $<
+	$(AM_V_CC)$(IPAGENT_COMPILE) $<
 	$(POSTCOMPILE)
 i386-linux-ipa.o: i386-linux.c
-	$(IPAGENT_COMPILE) $<
+	$(AM_V_CC)$(IPAGENT_COMPILE) $<
 	$(POSTCOMPILE)
 linux-i386-ipa.o: linux-i386-ipa.c
-	$(IPAGENT_COMPILE) $<
+	$(AM_V_CC)$(IPAGENT_COMPILE) $<
 	$(POSTCOMPILE)
 linux-amd64-ipa.o: linux-amd64-ipa.c
-	$(IPAGENT_COMPILE) $<
+	$(AM_V_CC)$(IPAGENT_COMPILE) $<
 	$(POSTCOMPILE)
 amd64-linux-ipa.o: amd64-linux.c
-	$(IPAGENT_COMPILE) $<
+	$(AM_V_CC)$(IPAGENT_COMPILE) $<
 	$(POSTCOMPILE)
 tdesc-ipa.o: tdesc.c
-	$(IPAGENT_COMPILE) $<
+	$(AM_V_CC)$(IPAGENT_COMPILE) $<
 	$(POSTCOMPILE)
 print-utils-ipa.o: ../common/print-utils.c
-	$(IPAGENT_COMPILE) $<
+	$(AM_V_CC)$(IPAGENT_COMPILE) $<
 	$(POSTCOMPILE)
 rsp-low-ipa.o: ../common/rsp-low.c
-	$(IPAGENT_COMPILE) $<
+	$(AM_V_CC)$(IPAGENT_COMPILE) $<
 	$(POSTCOMPILE)
 
 # end ipa rules
@@ -624,7 +645,7 @@ ax_h = $(srcdir)/ax.h $(server_h) $(regcache_h)
 tracepoint_h = $(srcdir)/tracepoint.h
 
 ax.o: ax.c $(server_h) $(ax_h) $(tracepoint_h)
-	$(COMPILE) $(WARN_CFLAGS_NO_FORMAT) $<
+	$(AM_V_CC)$(COMPILE) $(WARN_CFLAGS_NO_FORMAT) $<
 	$(POSTCOMPILE)
 
 gdbthread_h = $(srcdir)/gdbthread.h $(server_h) $(inferiors_h)
@@ -634,66 +655,66 @@ tracepoint.o: tracepoint.c $(server_h) $(tracepoint_h) $(gdbthread_h) \
 
 # objects whose sources are from ../signals:
 signals.o: ../signals/signals.c $(server_h)
-	$(CC) -c $(CPPFLAGS) $(INTERNAL_CFLAGS) $< -DGDBSERVER
+	$(AM_V_CC)$(CC) -c $(CPPFLAGS) $(INTERNAL_CFLAGS) $< -DGDBSERVER
 
 # non-ipa objects whose sources are from ../common:
 print-utils.o: ../common/print-utils.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 rsp-low.o: ../common/rsp-low.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 linux-procfs.o: ../common/linux-procfs.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 linux-ptrace.o: ../common/linux-ptrace.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 common-utils.o: ../common/common-utils.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 vec.o: ../common/vec.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 gdb_vecs.o: ../common/gdb_vecs.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 xml-utils.o: ../common/xml-utils.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 linux-osdata.o: ../common/linux-osdata.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 ptid.o: ../common/ptid.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 buffer.o: ../common/buffer.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 format.o: ../common/format.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 filestuff.o: ../common/filestuff.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 agent.o: ../common/agent.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 linux-btrace.o: ../common/linux-btrace.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 mips-linux-watch.o: ../common/mips-linux-watch.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 
 # Native object files rules from ../nat:
 linux-waitpid.o: ../nat/linux-waitpid.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 
 # objects whose sources are from ../target:
 waitstatus.o: ../target/waitstatus.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 
 # We build vasprintf with -DHAVE_CONFIG_H because we want that unit to
@@ -701,16 +722,16 @@ waitstatus.o: ../target/waitstatus.c
 # included, and the compiler emits a warning about implicitly defined
 # functions (missing declaration).
 vasprintf.o: $(LIBIBERTY_DIR)/vasprintf.c
-	$(COMPILE) $< -DHAVE_CONFIG_H
+	$(AM_V_CC)$(COMPILE) $< -DHAVE_CONFIG_H
 	$(POSTCOMPILE)
 vsnprintf.o: $(LIBIBERTY_DIR)/vsnprintf.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 safe-ctype.o: $(LIBIBERTY_DIR)/safe-ctype.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 lbasename.o: $(LIBIBERTY_DIR)/lbasename.c
-	$(COMPILE) $<
+	$(AM_V_CC)$(COMPILE) $<
 	$(POSTCOMPILE)
 
 i387_fp_h = $(srcdir)/i387-fp.h
@@ -720,7 +741,8 @@ i387-fp.o: i387-fp.c $(i387_fp_h) $(server_h)
 inlining_h = $(srcdir)/../inlining.h
 
 linux-low.o: linux-low.c $(linux_low_h) $(server_h) $(inlining_h)
-	$(CC) -c $(CPPFLAGS) $(INTERNAL_CFLAGS) $< @USE_THREAD_DB@
+	$(AM_V_CC)$(CC) -c $(CPPFLAGS) $(INTERNAL_CFLAGS) $< \
+	  @USE_THREAD_DB@
 
 linux-aarch64-low.o: linux-aarch64-low.c $(server_h) $(linux_low_h) \
   $(gdb_proc_service_h)
@@ -811,212 +833,306 @@ win32-low.o: win32-low.c $(server_h) $(regcache_h) $(win32_low_h)
 # (but try to keep it alphabetical otherwise)
 aarch64.o : aarch64.c $(regdef_h)
 aarch64.c : $(regformat_dir)/aarch64.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/aarch64.dat aarch64.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/aarch64.dat aarch64.c
 reg-arm.o : reg-arm.c $(regdef_h)
 reg-arm.c : $(regformat_dir)/reg-arm.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-arm.dat reg-arm.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-arm.dat reg-arm.c
 reg-arm-macosx.o : reg-arm-macosx.c $(regdef_h)
 reg-arm-macosx.c : $(regformat_dir)/reg-arm-macosx.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-arm-macosx.dat reg-arm-macosx.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-arm-macosx.dat \
+	  reg-arm-macosx.c
 arm-with-iwmmxt.o : arm-with-iwmmxt.c $(regdef_h)
 arm-with-iwmmxt.c : $(regformat_dir)/arm-with-iwmmxt.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/arm-with-iwmmxt.dat arm-with-iwmmxt.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/arm-with-iwmmxt.dat \
+	  arm-with-iwmmxt.c
 arm-with-vfpv2.o : arm-with-vfpv2.c $(regdef_h)
 arm-with-vfpv2.c : $(regformat_dir)/arm-with-vfpv2.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/arm-with-vfpv2.dat arm-with-vfpv2.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/arm-with-vfpv2.dat \
+	  arm-with-vfpv2.c
 arm-with-vfpv3.o : arm-with-vfpv3.c $(regdef_h)
 arm-with-vfpv3.c : $(regformat_dir)/arm-with-vfpv3.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/arm-with-vfpv3.dat arm-with-vfpv3.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/arm-with-vfpv3.dat \
+	  arm-with-vfpv3.c
 arm-with-neon.o : arm-with-neon.c $(regdef_h)
 arm-with-neon.c : $(regformat_dir)/arm-with-neon.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/arm-with-neon.dat arm-with-neon.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/arm-with-neon.dat \
+	  arm-with-neon.c
 reg-bfin.o : reg-bfin.c $(regdef_h)
 reg-bfin.c : $(regformat_dir)/reg-bfin.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-bfin.dat reg-bfin.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-bfin.dat \
+	  reg-bfin.c
 reg-cris.o : reg-cris.c $(regdef_h)
 reg-cris.c : $(regformat_dir)/reg-cris.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-cris.dat reg-cris.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-cris.dat \
+	  reg-cris.c
 reg-crisv32.o : reg-crisv32.c $(regdef_h)
 reg-crisv32.c : $(regformat_dir)/reg-crisv32.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-crisv32.dat reg-crisv32.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-crisv32.dat \
+	  reg-crisv32.c
 reg-i386.o : reg-i386.c $(regdef_h)
 reg-i386.c : $(regformat_dir)/reg-i386.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-i386.dat reg-i386.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-i386.dat \
+	  reg-i386.c
 reg-i386-linux.o : reg-i386-linux.c $(regdef_h)
 reg-i386-linux.c : $(regformat_dir)/reg-i386-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-i386-linux.dat reg-i386-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-i386-linux.dat \
+	  reg-i386-linux.c
 i386.o : i386.c $(regdef_h)
 i386.c : $(regformat_dir)/i386/i386.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/i386.dat i386.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/i386/i386.dat i386.c
 i386-linux.o : i386-linux.c $(regdef_h)
 i386-linux.c : $(regformat_dir)/i386/i386-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/i386-linux.dat i386-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/i386/i386-linux.dat \
+	  i386-linux.c
 i386-avx.c : $(regformat_dir)/i386/i386-avx.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/i386-avx.dat i386-avx.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/i386/i386-avx.dat \
+	  i386-avx.c
 i386-avx-linux.c : $(regformat_dir)/i386/i386-avx-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/i386-avx-linux.dat i386-avx-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/i386/i386-avx-linux.dat i386-avx-linux.c
 i386-avx512.c : $(regformat_dir)/i386/i386-avx512.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/i386-avx512.dat i386-avx512.c
-i386-avx512-linux.c : $(regformat_dir)/i386/i386-avx512-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/i386-avx512-linux.dat i386-avx512-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/i386/i386-avx512.dat \
+	  i386-avx512.c
+i386-avx512-linux.c : $(regformat_dir)/i386/i386-avx512-linux.dat \
+  $(regdat_sh)
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/i386/i386-avx512-linux.dat i386-avx512-linux.c
 i386-mpx.c : $(regformat_dir)/i386/i386-mpx.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/i386-mpx.dat i386-mpx.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/i386/i386-mpx.dat \
+	  i386-mpx.c
 i386-mpx-linux.c : $(regformat_dir)/i386/i386-mpx-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/i386-mpx-linux.dat i386-mpx-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/i386/i386-mpx-linux.dat i386-mpx-linux.c
 i386-mmx.c : $(regformat_dir)/i386/i386-mmx.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/i386-mmx.dat i386-mmx.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/i386/i386-mmx.dat \
+	  i386-mmx.c
 i386-mmx-linux.c : $(regformat_dir)/i386/i386-mmx-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/i386-mmx-linux.dat i386-mmx-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/i386/i386-mmx-linux.dat i386-mmx-linux.c
 reg-ia64.o : reg-ia64.c $(regdef_h)
 reg-ia64.c : $(regformat_dir)/reg-ia64.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-ia64.dat reg-ia64.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-ia64.dat \
+	  reg-ia64.c
 reg-m32r.o : reg-m32r.c $(regdef_h)
 reg-m32r.c : $(regformat_dir)/reg-m32r.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-m32r.dat reg-m32r.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-m32r.dat \
+	  reg-m32r.c
 reg-m68k.o : reg-m68k.c $(regdef_h)
 reg-m68k.c : $(regformat_dir)/reg-m68k.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-m68k.dat reg-m68k.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-m68k.dat \
+	  reg-m68k.c
 reg-cf.c : $(regformat_dir)/reg-cf.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-cf.dat reg-cf.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-cf.dat reg-cf.c
 reg-mips.o : reg-mips.c $(regdef_h)
 reg-mips.c : $(regformat_dir)/reg-mips.dat $(regdat_sh)
 	$(run_regdat_sh) $(regformat_dir)/reg-mips.dat reg-mips.c
 mips-linux.c : $(regformat_dir)/mips-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/mips-linux.dat mips-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/mips-linux.dat \
+	  mips-linux.c
 mips-dsp-linux.c : $(regformat_dir)/mips-dsp-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/mips-dsp-linux.dat mips-dsp-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/mips-dsp-linux.dat \
+	  mips-dsp-linux.c
 mips64-linux.c : $(regformat_dir)/mips64-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/mips64-linux.dat mips64-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/mips64-linux.dat \
+	  mips64-linux.c
 mips64-dsp-linux.c : $(regformat_dir)/mips64-dsp-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/mips64-dsp-linux.dat mips64-dsp-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/mips64-dsp-linux.dat \
+	  mips64-dsp-linux.c
 nios2-linux.c :	$(regformat_dir)/nios2-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/nios2-linux.dat nios2-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/nios2-linux.dat \
+	  nios2-linux.c
 reg-ppc.o : reg-ppc.c $(regdef_h)
 reg-ppc.c : $(regformat_dir)/reg-ppc.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-ppc.dat reg-ppc.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-ppc.dat reg-ppc.c
 reg-ppc64.o : reg-ppc64.c $(regdef_h)
 reg-ppc64.c : $(regformat_dir)/reg-ppc64.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-ppc64.dat reg-ppc64.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-ppc64.dat \
+	  reg-ppc64.c
 powerpc-32.c : $(regformat_dir)/rs6000/powerpc-32.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-32.dat powerpc-32.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/rs6000/powerpc-32.dat powerpc-32.c
 powerpc-32l.c : $(regformat_dir)/rs6000/powerpc-32l.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-32l.dat powerpc-32l.c
-powerpc-altivec32l.c : $(regformat_dir)/rs6000/powerpc-altivec32l.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-altivec32l.dat powerpc-altivec32l.c
-powerpc-cell32l.c : $(regformat_dir)/rs6000/powerpc-cell32l.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-cell32l.dat powerpc-cell32l.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/rs6000/powerpc-32l.dat powerpc-32l.c
+powerpc-altivec32l.c : $(regformat_dir)/rs6000/powerpc-altivec32l.dat \
+  $(regdat_sh)
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/rs6000/powerpc-altivec32l.dat \
+	  powerpc-altivec32l.c
+powerpc-cell32l.c : $(regformat_dir)/rs6000/powerpc-cell32l.dat \
+  $(regdat_sh)
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/rs6000/powerpc-cell32l.dat powerpc-cell32l.c
 powerpc-vsx32l.c : $(regformat_dir)/rs6000/powerpc-vsx32l.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-vsx32l.dat powerpc-vsx32l.c
-powerpc-isa205-32l.c : $(regformat_dir)/rs6000/powerpc-isa205-32l.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-isa205-32l.dat powerpc-isa205-32l.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/rs6000/powerpc-vsx32l.dat powerpc-vsx32l.c
+powerpc-isa205-32l.c : $(regformat_dir)/rs6000/powerpc-isa205-32l.dat \
+  $(regdat_sh)
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/rs6000/powerpc-isa205-32l.dat \
+	  powerpc-isa205-32l.c
 powerpc-isa205-altivec32l.c : $(regformat_dir)/rs6000/powerpc-isa205-altivec32l.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-isa205-altivec32l.dat powerpc-isa205-altivec32l.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/rs6000/powerpc-isa205-altivec32l.dat \
+	  powerpc-isa205-altivec32l.c
 powerpc-isa205-vsx32l.c : $(regformat_dir)/rs6000/powerpc-isa205-vsx32l.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-isa205-vsx32l.dat powerpc-isa205-vsx32l.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/rs6000/powerpc-isa205-vsx32l.dat \
+	  powerpc-isa205-vsx32l.c
 powerpc-e500l.c : $(regformat_dir)/rs6000/powerpc-e500l.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-e500l.dat powerpc-e500l.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/rs6000/powerpc-e500l.dat powerpc-e500l.c
 powerpc-64l.c : $(regformat_dir)/rs6000/powerpc-64l.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-64l.dat powerpc-64l.c
-powerpc-altivec64l.c : $(regformat_dir)/rs6000/powerpc-altivec64l.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-altivec64l.dat powerpc-altivec64l.c
-powerpc-cell64l.c : $(regformat_dir)/rs6000/powerpc-cell64l.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-cell64l.dat powerpc-cell64l.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/rs6000/powerpc-64l.dat powerpc-64l.c
+powerpc-altivec64l.c : $(regformat_dir)/rs6000/powerpc-altivec64l.dat \
+  $(regdat_sh)
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/rs6000/powerpc-altivec64l.dat \
+	  powerpc-altivec64l.c
+powerpc-cell64l.c : $(regformat_dir)/rs6000/powerpc-cell64l.dat \
+  $(regdat_sh)
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/rs6000/powerpc-cell64l.dat powerpc-cell64l.c
 powerpc-vsx64l.c : $(regformat_dir)/rs6000/powerpc-vsx64l.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-vsx64l.dat powerpc-vsx64l.c
-powerpc-isa205-64l.c : $(regformat_dir)/rs6000/powerpc-isa205-64l.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-isa205-64l.dat powerpc-isa205-64l.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/rs6000/powerpc-vsx64l.dat powerpc-vsx64l.c
+powerpc-isa205-64l.c : $(regformat_dir)/rs6000/powerpc-isa205-64l.dat \
+  $(regdat_sh)
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/rs6000/powerpc-isa205-64l.dat \
+	  powerpc-isa205-64l.c
 powerpc-isa205-altivec64l.c : $(regformat_dir)/rs6000/powerpc-isa205-altivec64l.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-isa205-altivec64l.dat powerpc-isa205-altivec64l.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/rs6000/powerpc-isa205-altivec64l.dat \
+	  powerpc-isa205-altivec64l.c
 powerpc-isa205-vsx64l.c : $(regformat_dir)/rs6000/powerpc-isa205-vsx64l.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-isa205-vsx64l.dat powerpc-isa205-vsx64l.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/rs6000/powerpc-isa205-vsx64l.dat \
+	  powerpc-isa205-vsx64l.c
 reg-s390.o : reg-s390.c $(regdef_h)
 reg-s390.c : $(regformat_dir)/reg-s390.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-s390.dat reg-s390.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-s390.dat \
+	  reg-s390.c
 reg-s390x.o : reg-s390x.c $(regdef_h)
 reg-s390x.c : $(regformat_dir)/reg-s390x.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-s390x.dat reg-s390x.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-s390x.dat \
+	  reg-s390x.c
 s390-linux32.c : $(regformat_dir)/s390-linux32.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/s390-linux32.dat s390-linux32.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/s390-linux32.dat \
+	  s390-linux32.c
 s390-linux32v1.c : $(regformat_dir)/s390-linux32v1.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/s390-linux32v1.dat s390-linux32v1.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/s390-linux32v1.dat \
+	  s390-linux32v1.c
 s390-linux32v2.c : $(regformat_dir)/s390-linux32v2.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/s390-linux32v2.dat s390-linux32v2.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/s390-linux32v2.dat \
+	  s390-linux32v2.c
 s390-linux64.c : $(regformat_dir)/s390-linux64.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/s390-linux64.dat s390-linux64.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/s390-linux64.dat \
+	  s390-linux64.c
 s390-linux64v1.c : $(regformat_dir)/s390-linux64v1.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/s390-linux64v1.dat s390-linux64v1.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/s390-linux64v1.dat \
+	  s390-linux64v1.c
 s390-linux64v2.c : $(regformat_dir)/s390-linux64v2.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/s390-linux64v2.dat s390-linux64v2.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/s390-linux64v2.dat \
+	  s390-linux64v2.c
 s390-te-linux64.c : $(regformat_dir)/s390-te-linux64.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/s390-te-linux64.dat s390-te-linux64.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/s390-te-linux64.dat \
+	  s390-te-linux64.c
 s390x-linux64.c : $(regformat_dir)/s390x-linux64.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/s390x-linux64.dat s390x-linux64.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/s390x-linux64.dat \
+	  s390x-linux64.c
 s390x-linux64v1.c : $(regformat_dir)/s390x-linux64v1.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/s390x-linux64v1.dat s390x-linux64v1.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/s390x-linux64v1.dat \
+	  s390x-linux64v1.c
 s390x-linux64v2.c : $(regformat_dir)/s390x-linux64v2.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/s390x-linux64v2.dat s390x-linux64v2.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/s390x-linux64v2.dat \
+	  s390x-linux64v2.c
 s390x-te-linux64.c : $(regformat_dir)/s390x-te-linux64.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/s390x-te-linux64.dat s390x-te-linux64.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/s390x-te-linux64.dat \
+	  s390x-te-linux64.c
 reg-sh.o : reg-sh.c $(regdef_h)
 reg-sh.c : $(regformat_dir)/reg-sh.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-sh.dat reg-sh.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-sh.dat reg-sh.c
 tic6x-c64xp-linux.c : $(regformat_dir)/tic6x-c64xp-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/tic6x-c64xp-linux.dat tic6x-c64xp-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/tic6x-c64xp-linux.dat tic6x-c64xp-linux.c
 tic6x-c64x-linux.c : $(regformat_dir)/tic6x-c64x-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/tic6x-c64x-linux.dat tic6x-c64x-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/tic6x-c64x-linux.dat \
+	  tic6x-c64x-linux.c
 tic6x-c62x-linux.c : $(regformat_dir)/tic6x-c62x-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/tic6x-c62x-linux.dat tic6x-c62x-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/tic6x-c62x-linux.dat \
+	  tic6x-c62x-linux.c
 reg-tilegx.c : $(regformat_dir)/reg-tilegx.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-tilegx.dat reg-tilegx.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-tilegx.dat \
+	  reg-tilegx.c
 reg-tilegx32.c : $(regformat_dir)/reg-tilegx32.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-tilegx32.dat reg-tilegx32.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-tilegx32.dat \
+	  reg-tilegx32.c
 reg-sparc64.c : $(regformat_dir)/reg-sparc64.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-sparc64.dat reg-sparc64.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-sparc64.dat \
+	  reg-sparc64.c
 reg-spu.c : $(regformat_dir)/reg-spu.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-spu.dat reg-spu.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-spu.dat reg-spu.c
 # Yes, the underscore does change into a hyphen for x64_64 here...
 reg-x86-64.o : reg-x86-64.c $(server_h) $(regdef_h) $(regcache_h) \
   $(tdesc_h)
 reg-x86-64.c : $(regformat_dir)/reg-x86-64.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-x86-64.dat reg-x86-64.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-x86-64.dat \
+	  reg-x86-64.c
 amd64.o : amd64.c $(server_h) $(tdesc_h)
 amd64.c : $(regformat_dir)/i386/amd64.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/amd64.dat amd64.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/i386/amd64.dat amd64.c
 amd64-linux.c : $(regformat_dir)/i386/amd64-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/amd64-linux.dat amd64-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/i386/amd64-linux.dat \
+	  amd64-linux.c
 amd64-avx.o : amd64-avx.c $(server_h) $(tdesc_h)
 amd64-avx.c : $(regformat_dir)/i386/amd64-avx.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/amd64-avx.dat amd64-avx.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/i386/amd64-avx.dat \
+	  amd64-avx.c
 amd64-avx-linux.c : $(regformat_dir)/i386/amd64-avx-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/amd64-avx-linux.dat amd64-avx-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/i386/amd64-avx-linux.dat amd64-avx-linux.c
 amd64-avx512.o : amd64-avx512.c $(server_h) $(tdesc_h)
 amd64-avx512.c : $(regformat_dir)/i386/amd64-avx512.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/amd64-avx512.dat amd64-avx512.c
-amd64-avx512-linux.c : $(regformat_dir)/i386/amd64-avx512-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/amd64-avx512-linux.dat amd64-avx512-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/i386/amd64-avx512.dat amd64-avx512.c
+amd64-avx512-linux.c : $(regformat_dir)/i386/amd64-avx512-linux.dat \
+  $(regdat_sh)
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/i386/amd64-avx512-linux.dat amd64-avx512-linux.c
 amd64-mpx.o : amd64-mpx.c $(server_h) $(tdesc_h)
 amd64-mpx.c : $(regformat_dir)/i386/amd64-mpx.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/amd64-mpx.dat amd64-mpx.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/i386/amd64-mpx.dat \
+	  amd64-mpx.c
 amd64-mpx-linux.c : $(regformat_dir)/i386/amd64-mpx-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/amd64-mpx-linux.dat amd64-mpx-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/i386/amd64-mpx-linux.dat amd64-mpx-linux.c
 x32.o : x32.c $(server_h) $(regdef_h) $(tdesc_h)
 x32.c : $(regformat_dir)/i386/x32.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/x32.dat x32.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/i386/x32.dat x32.c
 x32-linux.c : $(regformat_dir)/i386/x32-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/x32-linux.dat x32-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/i386/x32-linux.dat \
+	  x32-linux.c
 x32-avx.o : x32-avx.c $(server_h) $(regdef_h) $(tdesc_h)
 x32-avx.c : $(regformat_dir)/i386/x32-avx.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/x32-avx.dat x32-avx.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/i386/x32-avx.dat \
+	  x32-avx.c
 x32-avx-linux.c : $(regformat_dir)/i386/x32-avx-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/x32-avx-linux.dat x32-avx-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/i386/x32-avx-linux.dat x32-avx-linux.c
 x32-avx512.o : x32-avx512.c $(server_h) $(regdef_h) $(tdesc_h)
 x32-avx512.c : $(regformat_dir)/i386/x32-avx512.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/x32-avx512.dat x32-avx512.c
-x32-avx512-linux.c : $(regformat_dir)/i386/x32-avx512-linux.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/i386/x32-avx512-linux.dat x32-avx512-linux.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/i386/x32-avx512.dat \
+	  x32-avx512.c
+x32-avx512-linux.c : $(regformat_dir)/i386/x32-avx512-linux.dat \
+  $(regdat_sh)
+	$(AM_V_GEN)$(run_regdat_sh) \
+	  $(regformat_dir)/i386/x32-avx512-linux.dat x32-avx512-linux.c
 reg-xtensa.o : reg-xtensa.c $(regdef_h)
 reg-xtensa.c : $(regformat_dir)/reg-xtensa.dat $(regdat_sh)
-	$(run_regdat_sh) $(regformat_dir)/reg-xtensa.dat reg-xtensa.c
+	$(AM_V_GEN)$(run_regdat_sh) $(regformat_dir)/reg-xtensa.dat \
+	  reg-xtensa.c
 
 # other objects from generated sources:
 version.o: version.c

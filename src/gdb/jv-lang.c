@@ -1,4 +1,4 @@
-/* Java language support routines for GDB, the GNU debugger.
+/* jv-lang.c: Java language support routines for GDB, the GNU debugger.
 
    Copyright 1997, 1998, 1999, 2000, 2003, 2004, 2005 Free Software
    Foundation, Inc.
@@ -50,21 +50,20 @@ struct type *java_float_type;
 struct type *java_double_type;
 struct type *java_void_type;
 
-/* Local functions */
+/* Local function prototypes: */
+extern void _initialize_java_language(void);
 
-extern void _initialize_java_language (void);
+static size_t java_demangled_signature_length(char *);
+static void java_demangled_signature_copy(char *, char *);
 
-static int java_demangled_signature_length (char *);
-static void java_demangled_signature_copy (char *, char *);
+static struct symtab *get_java_class_symtab(void);
+static char *get_java_utf8_name(struct obstack *obstack, struct value *name);
+static int java_class_is_primitive(struct value *clas);
+static struct value *java_value_string(char *ptr, int len);
 
-static struct symtab *get_java_class_symtab (void);
-static char *get_java_utf8_name (struct obstack *obstack, struct value *name);
-static int java_class_is_primitive (struct value *clas);
-static struct value *java_value_string (char *ptr, int len);
+static void java_emit_char(int c, struct ui_file * stream, int quoter);
 
-static void java_emit_char (int c, struct ui_file * stream, int quoter);
-
-static char *java_class_name_from_physname (const char *physname);
+static char *java_class_name_from_physname(const char *physname);
 
 /* This objfile contains symtabs that have been dynamically created
    to record dynamically loaded Java classes and dynamically
@@ -309,17 +308,17 @@ type_from_class (struct value *clas)
   if (name[0] == '[')
     {
       char *signature = name;
-      int namelen = java_demangled_signature_length (signature);
-      if (namelen > strlen (name))
-	name = obstack_alloc (&objfile->objfile_obstack, namelen + 1);
-      java_demangled_signature_copy (name, signature);
+      size_t namelen = java_demangled_signature_length(signature);
+      if (namelen > strlen(name))
+	name = obstack_alloc(&objfile->objfile_obstack, namelen + 1);
+      java_demangled_signature_copy(name, signature);
       name[namelen] = '\0';
       is_array = 1;
       temp = clas;
-      /* Set array element type. */
-      temp = value_struct_elt (&temp, NULL, "methods", NULL, "structure");
-      deprecated_set_value_type (temp, lookup_pointer_type (value_type (clas)));
-      TYPE_TARGET_TYPE (type) = type_from_class (temp);
+      /* Set array element type: */
+      temp = value_struct_elt(&temp, NULL, "methods", NULL, "structure");
+      deprecated_set_value_type(temp, lookup_pointer_type(value_type(clas)));
+      TYPE_TARGET_TYPE(type) = type_from_class(temp);
     }
 
   ALLOCATE_CPLUS_STRUCT_TYPE (type);
@@ -696,8 +695,8 @@ java_primitive_type_from_name (char *name, int namelen)
 /* Return the length (in bytes) of demangled name of the Java type
    signature string SIGNATURE. */
 
-static int
-java_demangled_signature_length (char *signature)
+static size_t
+java_demangled_signature_length(char *signature)
 {
   int array = 0;
   for (; *signature == '['; signature++)
@@ -706,9 +705,9 @@ java_demangled_signature_length (char *signature)
     {
     case 'L':
       /* Subtract 2 for 'L' and ';'. */
-      return strlen (signature) - 2 + array;
+      return strlen(signature) - 2 + array;
     default:
-      return strlen (TYPE_NAME (java_primitive_type (signature[0]))) + array;
+      return strlen(TYPE_NAME(java_primitive_type(signature[0]))) + array;
     }
 }
 
@@ -759,9 +758,9 @@ java_demangled_signature_copy (char *result, char *signature)
 char *
 java_demangle_type_signature (char *signature)
 {
-  int length = java_demangled_signature_length (signature);
-  char *result = xmalloc (length + 1);
-  java_demangled_signature_copy (result, signature);
+  size_t length = java_demangled_signature_length (signature);
+  char *result = (char *)xmalloc(length + 1);
+  java_demangled_signature_copy(result, signature);
   result[length] = '\0';
   return result;
 }
@@ -1010,7 +1009,7 @@ java_find_last_component (const char *name)
 /* Return the name of the class containing method PHYSNAME.  */
 
 static char *
-java_class_name_from_physname (const char *physname) 
+java_class_name_from_physname (const char *physname)
 {
   char *ret = NULL;
   const char *end;
@@ -1071,7 +1070,7 @@ const struct op_print java_op_print_tab[] =
   {NULL, 0, 0, 0}
 };
 
-const struct exp_descriptor exp_descriptor_java = 
+const struct exp_descriptor exp_descriptor_java =
 {
   print_subexp_standard,
   operator_length_standard,

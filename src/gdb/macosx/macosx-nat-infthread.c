@@ -51,6 +51,8 @@
 
 extern macosx_inferior_status *macosx_status;
 
+extern void _initialize_threads(void);
+
 static int get_dispatch_queue_flags(CORE_ADDR dispatch_qaddr, uint32_t *flags);
 
 #define set_trace_bit(thread) modify_trace_bit(thread, 1)
@@ -531,8 +533,7 @@ get_application_thread_port (thread_t our_name)
    * in the application and extract a right for them. The right will include
    * the port name in our port namespace, so we can use that to find the
    * thread we are looking for. Of course, we do NOT actually need another
-   * right to each of these ports, so we deallocate it when we are done.  */
-
+   * right to each of these ports, so we deallocate it when we are done: */
   ret = mach_port_names (macosx_status->task, &names, &names_count, &types,
                    &types_count);
   if (ret != KERN_SUCCESS) {
@@ -540,7 +541,7 @@ get_application_thread_port (thread_t our_name)
       return (thread_t)0x0;
   }
 
-  for ((i = 0); (i < names_count); i++) {
+  for (i = 0; i < names_count; i++) {
       mach_port_t local_name;
       mach_msg_type_name_t local_type;
 
@@ -609,7 +610,7 @@ read_dispatch_offsets(void)
                                                  NULL, NULL);
   if ((dispatch_queue_offsets == NULL)
       || (SYMBOL_VALUE_ADDRESS(dispatch_queue_offsets) == 0)
-      || (SYMBOL_VALUE_ADDRESS(dispatch_queue_offsets) == -1))
+      || (SYMBOL_VALUE_ADDRESS(dispatch_queue_offsets) == (CORE_ADDR)-1))
     return NULL;
 
   dispatch_offsets = (struct dispatch_offsets_info *)
@@ -980,7 +981,7 @@ thread_match_callback(struct thread_info *t, void *thread_ptr)
 
   struct private_thread_info *pt;
   pt = (struct private_thread_info *)t->private;
-  if (pt->app_thread_port == desired_thread)
+  if (pt->app_thread_port == (thread_t)desired_thread)
     return 1;
   else
     return 0;
@@ -1077,10 +1078,10 @@ static int
 mark_dead_if_thread_is_gone(struct thread_info *tp, void *data)
 {
   struct ptid_list *ptids = (struct ptid_list *)data;
-  int i;
+  unsigned int i;
   int found_it = 0;
 
-  for ((i = 0); (i < ptids->nthreads); i++) {
+  for (i = 0U; i < ptids->nthreads; i++) {
       if (ptid_equal(tp->ptid, ptids->ptids[i])) {
 	  found_it = 1;
 	  break;
@@ -1189,7 +1190,7 @@ macosx_print_thread_details(struct ui_out *uiout, ptid_t ptid)
 void
 _initialize_threads(void)
 {
-#if defined (TARGET_ARM)
+#if defined(TARGET_ARM)
   arm_macosx_tdep_inf_status.macosx_half_step_pc = (CORE_ADDR)-1;
 #endif /* TARGET_ARM */
 

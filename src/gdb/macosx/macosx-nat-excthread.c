@@ -274,6 +274,8 @@ kern_return_t
   return KERN_FAILURE;
 }
 
+extern macosx_inferior_status *macosx_status;
+
 kern_return_t
 #ifdef HAVE_64_BIT_MACH_EXCEPTIONS
   catch_mach_exception_raise
@@ -300,7 +302,6 @@ kern_return_t
   /* If the task is not the same, it is for our child process.
      In that case, return KERN_FAILURE so the exception will
      get routed on to the child.  */
-  extern macosx_inferior_status *macosx_status;
   if (macosx_status->task == task_port)
     return KERN_SUCCESS;
   else

@@ -142,28 +142,28 @@ taloop:
     {
     case 2:
     case 6:
-      print_longest (stream, format ? format : 'd', 1, svalue >> 2);
+      print_longest(stream, format ? format : 'd', 1, svalue >> 2);
       break;
     case 4:
-      if (SCM_ICHRP (svalue))
+      if (SCM_ICHRP(svalue))
 	{
-	  svalue = SCM_ICHR (svalue);
-	  scm_printchar (svalue, stream);
+	  svalue = SCM_ICHR(svalue);
+	  scm_printchar(svalue, stream);
 	  break;
 	}
-      else if (SCM_IFLAGP (svalue)
-	       && (SCM_ISYMNUM (svalue)
-		   < (sizeof scm_isymnames / sizeof (char *))))
+      else if (SCM_IFLAGP(svalue)
+	       && ((size_t)SCM_ISYMNUM(svalue)
+		   < (sizeof(scm_isymnames) / sizeof(char *))))
 	{
-	  fputs_filtered (SCM_ISYMCHARS (svalue), stream);
+	  fputs_filtered(SCM_ISYMCHARS(svalue), stream);
 	  break;
 	}
-      else if (SCM_ILOCP (svalue))
+      else if (SCM_ILOCP(svalue))
 	{
-	  fprintf_filtered (stream, "#@%ld%c%ld",
-			    (long) SCM_IFRAME (svalue),
-			    SCM_ICDRP (svalue) ? '-' : '+',
-			    (long) SCM_IDIST (svalue));
+	  fprintf_filtered(stream, "#@%ld%c%ld",
+			   (long)SCM_IFRAME(svalue),
+			   (SCM_ICDRP(svalue) ? '-' : '+'),
+			   (long)SCM_IDIST(svalue));
 	  break;
 	}
       else
@@ -287,7 +287,7 @@ taloop:
 	      {
 		result
 		  = scm_apply (hook,
-			       scm_listify (exp, port, 
+			       scm_listify (exp, port,
 					    (writing ? BOOL_T : BOOL_F),
 					    SCM_UNDEFINED),
 			       EOL);
@@ -336,8 +336,8 @@ taloop:
 	  break;
 	case tc7_port:
 	  i = PTOBNUM (exp);
-	  if (i < scm_numptob 
-	      && scm_ptobs[i].print 
+	  if (i < scm_numptob
+	      && scm_ptobs[i].print
 	      && (scm_ptobs[i].print) (exp, port, writing))
 	    break;
 	  goto punk;

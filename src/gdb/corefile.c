@@ -343,7 +343,7 @@ do_captured_read_memory_integer (void *data)
    if successful.  */
 
 int
-safe_read_memory_integer (CORE_ADDR memaddr, int len, LONGEST *return_value)
+safe_read_memory_integer(CORE_ADDR memaddr, int len, LONGEST *return_value)
 {
   int status;
   struct captured_read_memory_integer_arguments args;
@@ -351,8 +351,8 @@ safe_read_memory_integer (CORE_ADDR memaddr, int len, LONGEST *return_value)
   args.len = len;
   args.signedp = 1;
 
-  status = catch_errors (do_captured_read_memory_integer, &args,
-                        "", RETURN_MASK_ALL);
+  status = catch_errors(do_captured_read_memory_integer, &args,
+                       "", RETURN_MASK_ALL);
   if (status)
     *return_value = args.result.sresult;
 
@@ -361,7 +361,7 @@ safe_read_memory_integer (CORE_ADDR memaddr, int len, LONGEST *return_value)
 
 /* APPLE LOCAL begin unsigned */
 int
-safe_read_memory_unsigned_integer (CORE_ADDR memaddr, int len, ULONGEST *return_value)
+safe_read_memory_unsigned_integer(CORE_ADDR memaddr, int len, ULONGEST *return_value)
 {
   int status;
   struct captured_read_memory_integer_arguments args;
@@ -369,8 +369,8 @@ safe_read_memory_unsigned_integer (CORE_ADDR memaddr, int len, ULONGEST *return_
   args.len = len;
   args.signedp = 0;
 
-  status = catch_errors (do_captured_read_memory_integer, &args,
-                        "", RETURN_MASK_ALL);
+  status = catch_errors(do_captured_read_memory_integer, &args,
+                       "", RETURN_MASK_ALL);
   if (status)
     *return_value = args.result.uresult;
 
@@ -379,21 +379,21 @@ safe_read_memory_unsigned_integer (CORE_ADDR memaddr, int len, ULONGEST *return_
 /* APPLE LOCAL end unsigned */
 
 LONGEST
-read_memory_integer (CORE_ADDR memaddr, int len)
+read_memory_integer(CORE_ADDR memaddr, int len)
 {
   char buf[sizeof (LONGEST)];
 
-  read_memory (memaddr, buf, len);
-  return extract_signed_integer (buf, len);
+  read_memory(memaddr, (gdb_byte *)buf, len);
+  return extract_signed_integer(buf, len);
 }
 
 ULONGEST
-read_memory_unsigned_integer (CORE_ADDR memaddr, int len)
+read_memory_unsigned_integer(CORE_ADDR memaddr, int len)
 {
-  char buf[sizeof (ULONGEST)];
+  char buf[sizeof(ULONGEST)];
 
-  read_memory (memaddr, buf, len);
-  return extract_unsigned_integer (buf, len);
+  read_memory(memaddr, (gdb_byte *)buf, len);
+  return extract_unsigned_integer(buf, len);
 }
 
 void

@@ -589,17 +589,17 @@ x86_macosx_init_abi_64 (struct gdbarch_info info, struct gdbarch *gdbarch)
   set_gdbarch_skip_trampoline_code (gdbarch, macosx_skip_trampoline_code);
   set_gdbarch_get_longjmp_target (gdbarch, x86_64_macosx_get_longjmp_target);
 
-  set_gdbarch_in_solib_return_trampoline (gdbarch,
-                                          macosx_in_solib_return_trampoline);
+  set_gdbarch_in_solib_return_trampoline(gdbarch,
+                                         macosx_in_solib_return_trampoline);
 
   tdep->struct_return = reg_struct_return;
 
   tdep->sigcontext_addr = amd64_macosx_thread_state_addr;
   tdep->sc_reg_offset = amd64_macosx_thread_state_reg_offset;
-  tdep->sc_num_regs = ARRAY_SIZE (amd64_macosx_thread_state_reg_offset);
+  tdep->sc_num_regs = ARRAY_SIZE(amd64_macosx_thread_state_reg_offset);
 
   tdep->jb_pc_offset = 148;
-  set_gdbarch_integer_to_address (gdbarch, i386_integer_to_address);
+  set_gdbarch_integer_to_address(gdbarch, i386_integer_to_address);
 }
 
 static int
@@ -609,10 +609,10 @@ i386_mach_o_query_64bit(void)
   int supports64bit;
   size_t sz;
 
-  sz = sizeof (supports64bit);
-  result = sysctlbyname ("hw.optional.x86_64", &supports64bit, &sz, NULL, 0);
-  return (result == 0
-          && sz == sizeof (supports64bit)
+  sz = sizeof(supports64bit);
+  result = sysctlbyname("hw.optional.x86_64", &supports64bit, &sz, NULL, 0);
+  return ((result == 0)
+          && (sz == sizeof(supports64bit))
           && supports64bit);
 }
 
@@ -641,27 +641,27 @@ i386_mach_o_osabi_sniffer (bfd *abfd)
  */
 
 int
-i386_fast_show_stack (unsigned int count_limit,
-		      unsigned int print_start,
-		      unsigned int print_end,
+i386_fast_show_stack(unsigned int count_limit,
+		     unsigned int print_start,
+		     unsigned int print_end,
                      unsigned int *count,
-                     void (print_fun) (struct ui_out * uiout, int *frame_num,
-                                       CORE_ADDR pc, CORE_ADDR fp))
+                     void (print_fun)(struct ui_out *uiout, int *frame_num,
+                                      CORE_ADDR pc, CORE_ADDR fp))
 {
   CORE_ADDR fp, prev_fp;
   static CORE_ADDR sigtramp_start = 0;
   static CORE_ADDR sigtramp_end = 0;
-  unsigned int i = 0;
+  unsigned int i = 0U;
   int more_frames;
   int err = 0;
   struct frame_info *fi;
   ULONGEST next_fp = 0;
   ULONGEST pc = 0;
-  int wordsize = gdbarch_tdep (current_gdbarch)->wordsize;
+  int wordsize = gdbarch_tdep(current_gdbarch)->wordsize;
 
-  more_frames = fast_show_stack_trace_prologue (count_limit, print_start, print_end, wordsize,
-						&sigtramp_start, &sigtramp_end,
-						&i, &fi, print_fun);
+  more_frames = fast_show_stack_trace_prologue(count_limit, print_start, print_end, wordsize,
+                                               &sigtramp_start, &sigtramp_end,
+                                               &i, &fi, print_fun);
 
   if (more_frames < 0)
     {
@@ -669,7 +669,7 @@ i386_fast_show_stack (unsigned int count_limit,
       goto i386_count_finish;
     }
 
-  if (i >= count_limit || !more_frames)
+  if ((i >= count_limit) || !more_frames)
     goto i386_count_finish;
 
   /* gdb's idea of a stack frame is 8 bytes off from the actual
@@ -677,43 +677,43 @@ i386_fast_show_stack (unsigned int count_limit,
      eip as part of the frame).  So pull off 8 bytes from the
      "fp" to get an actual EBP value for walking the stack.  */
 
-  fp = get_frame_base (fi);
-  pc = get_frame_pc (fi);
+  fp = get_frame_base(fi);
+  pc = get_frame_pc(fi);
   prev_fp = fp;             /* Start with a reasonable default value.  */
-  fp = fp - 2 * wordsize;
-  prev_fp = prev_fp - 2 * wordsize;
+  fp = (fp - 2 * wordsize);
+  prev_fp = (prev_fp - 2 * wordsize);
   while (1)
     {
       if ((sigtramp_start <= pc) && (pc < sigtramp_end))
         {
           CORE_ADDR thread_state_at =
-                    i386_macosx_thread_state_addr_1 (sigtramp_start, pc,
-                                                     fp, prev_fp + 2 * wordsize);
+                    i386_macosx_thread_state_addr_1(sigtramp_start, pc,
+                                                    fp, prev_fp + 2 * wordsize);
           prev_fp = fp;
-          if (!safe_read_memory_unsigned_integer (thread_state_at +
+          if (!safe_read_memory_unsigned_integer(thread_state_at +
                           i386_macosx_thread_state_reg_offset[I386_EBP_REGNUM],
                            wordsize, &fp))
             goto i386_count_finish;
-          if (!safe_read_memory_unsigned_integer (thread_state_at +
+          if (!safe_read_memory_unsigned_integer(thread_state_at +
                           i386_macosx_thread_state_reg_offset[I386_EIP_REGNUM],
                            wordsize, &pc))
             goto i386_count_finish;
         }
       else
         {
-          if (!safe_read_memory_unsigned_integer (fp, wordsize, &next_fp))
+          if (!safe_read_memory_unsigned_integer(fp, wordsize, &next_fp))
             goto i386_count_finish;
           if (next_fp == 0)
             goto i386_count_finish;
 	  else if (fp == next_fp)
 	    {
-	      /* This shouldn't ever happen, but if it does we will
+	      /* This should never happen, but if it does we will
 		 loop forever here, so protect against that.  */
-	      warning ("Frame pointer point back at the previous frame");
+	      warning("Frame pointer point back at the previous frame");
 	      err = 1;
 	      goto i386_count_finish;
 	    }
-          if (!safe_read_memory_unsigned_integer (fp + wordsize, wordsize, &pc))
+          if (!safe_read_memory_unsigned_integer(fp + wordsize, wordsize, &pc))
             goto i386_count_finish;
           if (pc == 0x0)
             goto i386_count_finish;
@@ -724,15 +724,15 @@ i386_fast_show_stack (unsigned int count_limit,
       /* Add 8 to the EBP to show the frame pointer as gdb likes
          to show it.  */
 
-      /* Let's raise the load level here.  That will mean that if we are
+      /* Let us raise the load level here.  That will mean that if we are
 	 going to print the names, they will be accurate.  Also, it means
-	 if the main executable has it's load-state lowered, we'll detect
+	 if the main executable has its load-state lowered, we shall detect
 	 main correctly.  */
 
-      pc_set_load_state (pc, OBJF_SYM_ALL, 0);
+      pc_set_load_state(pc, OBJF_SYM_ALL, 0);
 
-      if (print_fun && (i >= print_start && i < print_end))
-        print_fun (uiout, &i, pc, fp + 2 * wordsize);
+      if (print_fun && ((i >= print_start) && (i < print_end)))
+        print_fun(uiout, (int *)&i, pc, (fp + 2 * wordsize));
       i++;
 
       if (!backtrace_past_main && addr_inside_main_func (pc))
@@ -744,7 +744,7 @@ i386_fast_show_stack (unsigned int count_limit,
 
 i386_count_finish:
   if (print_fun)
-    ui_out_end (uiout, ui_out_type_list);
+    ui_out_end(uiout, ui_out_type_list);
 
   *count = i;
   return (!err);
