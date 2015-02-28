@@ -1,4 +1,4 @@
-/* Dynamic architecture support for GDB, the GNU debugger.
+/* arch-utils.h: Dynamic architecture support for GDB, the GNU debugger.
 
    Copyright 1998, 1999, 2000, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -159,8 +159,14 @@ extern void gdbarch_info_fill (struct gdbarch *gdbarch,
 
 extern struct gdbarch *gdbarch_from_bfd (bfd *abfd);
 
-/* APPLE LOCAL: I need a way to programmatically do "set architecture".  */
+/* APPLE LOCAL: I need a way to programmatically do "set architecture": */
 int set_architecture_from_string (char *);
+
+#if 1
+/* This is used various places, but I failed to find a prototype for it
+ * anywhere else: */
+extern struct gdbarch *get_current_arch(void);
+#endif /* 1 */
 #endif /* GDBARCH_UTILS_H */
 
 /* EOF */

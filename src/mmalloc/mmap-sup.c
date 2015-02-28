@@ -267,7 +267,7 @@ __mmalloc_mmap_morecore(struct mdesc *mdp, int size)
     }
 
   /* We are allocating memory.  Make sure we have an open file
-   * descriptor and then go on to get the memory. */
+   * descriptor and then go on to get the memory: */
 #ifndef MAP_ANONYMOUS
   if (mdp->fd < 0)
     {
@@ -441,7 +441,7 @@ mmalloc_findbase_hidden(size_t size)
   fd = -1;
 #else
 # ifdef MAP_FILE
-  flags = MAP_PRIVATE | MAP_FILE;
+  flags = (MAP_PRIVATE | MAP_FILE);
 # else
   flags = MAP_PRIVATE;
 # endif /* MAP_FILE */

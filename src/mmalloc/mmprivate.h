@@ -28,6 +28,8 @@ Boston, MA 02111-1307, USA.
 #define __MMPRIVATE_H 1
 
 #ifdef HAVE_CONFIG_H
+/* FIXME: guard against inclusion of other "config.h" headers
+ * from sister subdirs: */
 # include "config.h"
 #else
 # ifndef _MMPRIVATE_H_NON_AUTOTOOLS_BUILD

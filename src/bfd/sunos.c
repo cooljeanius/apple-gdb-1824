@@ -123,7 +123,7 @@ struct sunos_dynamic_info
    structure to FALSE to avoid doing this work again.  */
 
 static bfd_boolean
-sunos_read_dynamic_info (bfd *abfd)
+sunos_read_dynamic_info(bfd *abfd)
 {
   struct sunos_dynamic_info *info;
   asection *dynsec;
@@ -133,17 +133,17 @@ sunos_read_dynamic_info (bfd *abfd)
   struct external_sun4_dynamic_link linkinfo;
   bfd_size_type amt;
 
-  if (obj_aout_dynamic_info (abfd) != NULL)
+  if (obj_aout_dynamic_info(abfd) != NULL)
     return TRUE;
 
   if ((abfd->flags & DYNAMIC) == 0)
     {
-      bfd_set_error (bfd_error_invalid_operation);
+      bfd_set_error(bfd_error_invalid_operation);
       return FALSE;
     }
 
-  amt = sizeof (struct sunos_dynamic_info);
-  info = bfd_zalloc (abfd, amt);
+  amt = sizeof(struct sunos_dynamic_info);
+  info = (struct sunos_dynamic_info *)bfd_zalloc(abfd, amt);
   if (!info)
     return FALSE;
   info->valid = FALSE;
@@ -261,41 +261,40 @@ sunos_get_dynamic_symtab_upper_bound (bfd *abfd)
   return (info->dynsym_count + 1) * sizeof (asymbol *);
 }
 
-/* Read the external dynamic symbols.  */
-
+/* Read the external dynamic symbols: */
 static bfd_boolean
-sunos_slurp_dynamic_symtab (bfd *abfd)
+sunos_slurp_dynamic_symtab(bfd *abfd)
 {
   struct sunos_dynamic_info *info;
   bfd_size_type amt;
 
-  /* Get the general dynamic information.  */
-  if (obj_aout_dynamic_info (abfd) == NULL)
+  /* Get the general dynamic information: */
+  if (obj_aout_dynamic_info(abfd) == NULL)
     {
-      if (! sunos_read_dynamic_info (abfd))
+      if (! sunos_read_dynamic_info(abfd))
 	  return FALSE;
     }
 
-  info = (struct sunos_dynamic_info *) obj_aout_dynamic_info (abfd);
+  info = (struct sunos_dynamic_info *)obj_aout_dynamic_info(abfd);
   if (! info->valid)
     {
-      bfd_set_error (bfd_error_no_symbols);
+      bfd_set_error(bfd_error_no_symbols);
       return FALSE;
     }
 
-  /* Get the dynamic nlist structures.  */
+  /* Get the dynamic nlist structures: */
   if (info->dynsym == NULL)
     {
-      amt = (bfd_size_type) info->dynsym_count * EXTERNAL_NLIST_SIZE;
-      info->dynsym = bfd_alloc (abfd, amt);
-      if (info->dynsym == NULL && info->dynsym_count != 0)
+      amt = ((bfd_size_type)info->dynsym_count * EXTERNAL_NLIST_SIZE);
+      info->dynsym = (struct external_nlist *)bfd_alloc(abfd, amt);
+      if ((info->dynsym == NULL) && (info->dynsym_count != 0))
 	return FALSE;
-      if (bfd_seek (abfd, (file_ptr) info->dyninfo.ld_stab, SEEK_SET) != 0
-	  || bfd_bread ((void *) info->dynsym, amt, abfd) != amt)
+      if ((bfd_seek(abfd, (file_ptr)info->dyninfo.ld_stab, SEEK_SET) != 0)
+	  || (bfd_bread((void *)info->dynsym, amt, abfd) != amt))
 	{
 	  if (info->dynsym != NULL)
 	    {
-	      bfd_release (abfd, info->dynsym);
+	      bfd_release(abfd, info->dynsym);
 	      info->dynsym = NULL;
 	    }
 	  return FALSE;
@@ -652,26 +651,26 @@ struct sunos_link_hash_table
   bfd_vma got_base;
 };
 
-/* Routine to create an entry in an SunOS link hash table.  */
-
+/* Routine to create an entry in an SunOS link hash table: */
 static struct bfd_hash_entry *
-sunos_link_hash_newfunc (struct bfd_hash_entry *entry,
-			 struct bfd_hash_table *table,
-			 const char *string)
+sunos_link_hash_newfunc(struct bfd_hash_entry *entry,
+                        struct bfd_hash_table *table,
+                        const char *string)
 {
-  struct sunos_link_hash_entry *ret = (struct sunos_link_hash_entry *) entry;
+  struct sunos_link_hash_entry *ret = (struct sunos_link_hash_entry *)entry;
 
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
   if (ret ==  NULL)
-    ret = bfd_hash_allocate (table, sizeof (* ret));
+    ret = (struct sunos_link_hash_entry *)bfd_hash_allocate(table,
+                                                            sizeof(* ret));
   if (ret == NULL)
     return NULL;
 
-  /* Call the allocation method of the superclass.  */
+  /* Call the allocation method of the superclass: */
   ret = ((struct sunos_link_hash_entry *)
-	 NAME (aout, link_hash_newfunc) ((struct bfd_hash_entry *) ret,
-					 table, string));
+	 NAME(aout, link_hash_newfunc)((struct bfd_hash_entry *)ret,
+                                       table, string));
   if (ret != NULL)
     {
       /* Set local fields.  */
@@ -682,24 +681,23 @@ sunos_link_hash_newfunc (struct bfd_hash_entry *entry,
       ret->flags = 0;
     }
 
-  return (struct bfd_hash_entry *) ret;
+  return (struct bfd_hash_entry *)ret;
 }
 
-/* Create a SunOS link hash table.  */
-
+/* Create a SunOS link hash table: */
 static struct bfd_link_hash_table *
-sunos_link_hash_table_create (bfd *abfd)
+sunos_link_hash_table_create(bfd *abfd)
 {
   struct sunos_link_hash_table *ret;
-  bfd_size_type amt = sizeof (struct sunos_link_hash_table);
+  bfd_size_type amt = sizeof(struct sunos_link_hash_table);
 
-  ret = bfd_malloc (amt);
+  ret = (struct sunos_link_hash_table *)bfd_malloc(amt);
   if (ret ==  NULL)
     return NULL;
-  if (! NAME (aout, link_hash_table_init) (&ret->root, abfd,
-					   sunos_link_hash_newfunc))
+  if (! NAME(aout, link_hash_table_init)(&ret->root, abfd,
+                                         sunos_link_hash_newfunc))
     {
-      free (ret);
+      free(ret);
       return NULL;
     }
 
@@ -1721,20 +1719,20 @@ sunos_scan_relocs (struct bfd_link_info *info,
     return TRUE;
 
   if (! info->keep_memory)
-    relocs = free_relocs = bfd_malloc (rel_size);
+    relocs = free_relocs = bfd_malloc(rel_size);
   else
     {
       struct aout_section_data_struct *n;
-      bfd_size_type amt = sizeof (struct aout_section_data_struct);
+      bfd_size_type amt = sizeof(struct aout_section_data_struct);
 
-      n = bfd_alloc (abfd, amt);
+      n = (struct aout_section_data_struct *)bfd_alloc(abfd, amt);
       if (n == NULL)
 	relocs = NULL;
       else
 	{
-	  set_aout_section_data (sec, n);
-	  relocs = bfd_malloc (rel_size);
-	  aout_section_data (sec)->relocs = relocs;
+	  set_aout_section_data(sec, n);
+	  relocs = bfd_malloc(rel_size);
+	  aout_section_data(sec)->relocs = relocs;
 	}
     }
   if (relocs == NULL)

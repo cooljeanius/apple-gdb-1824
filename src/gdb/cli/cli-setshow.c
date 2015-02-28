@@ -1,4 +1,4 @@
-/* Handle set and show GDB commands.
+/* cli-setshow.c: Handle set and show GDB commands.
 
    Copyright 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
@@ -122,7 +122,7 @@ deprecated_show_value_hack (struct ui_file *ignore_file,
    command).  C is the command list element for the command.  */
 
 void
-do_setshow_command (char *arg, int from_tty, struct cmd_list_element *c)
+do_setshow_command(char *arg, int from_tty, struct cmd_list_element *c)
 {
   if (c->type == set_cmd)
     {
@@ -130,16 +130,16 @@ do_setshow_command (char *arg, int from_tty, struct cmd_list_element *c)
 	{
 	case var_string:
 	  {
-	    char *new;
+	    char *newstr;
 	    char *p;
 	    char *q;
 	    int ch;
 
 	    if (arg == NULL)
 	      arg = "";
-	    new = (char *) xmalloc (strlen (arg) + 2);
+	    newstr = (char *)xmalloc(strlen(arg) + 2);
 	    p = arg;
-	    q = new;
+	    q = newstr;
 	    while ((ch = *p++) != '\000')
 	      {
 		if (ch == '\\')
@@ -153,7 +153,7 @@ do_setshow_command (char *arg, int from_tty, struct cmd_list_element *c)
 		       right before a newline.  */
 		    if (*p == 0)
 		      break;
-		    ch = parse_escape (&p);
+		    ch = parse_escape(&p);
 		    if (ch == 0)
 		      break;	/* C loses */
 		    else if (ch > 0)
@@ -165,66 +165,66 @@ do_setshow_command (char *arg, int from_tty, struct cmd_list_element *c)
 #if 0
 	    if (*(p - 1) != '\\')
 	      *q++ = ' ';
-#endif
+#endif /* 0 */
 	    *q++ = '\0';
-	    new = (char *) xrealloc (new, q - new);
-	    if (*(char **) c->var != NULL)
-	      xfree (*(char **) c->var);
-	    *(char **) c->var = new;
+	    newstr = (char *)xrealloc(newstr, (q - newstr));
+	    if (*(char **)c->var != NULL)
+	      xfree(*(char **)c->var);
+	    *(char **)c->var = newstr;
 	  }
 	  break;
 	case var_string_noescape:
 	  if (arg == NULL)
 	    arg = "";
-	  if (*(char **) c->var != NULL)
-	    xfree (*(char **) c->var);
-	  *(char **) c->var = savestring (arg, strlen (arg));
+	  if (*(char **)c->var != NULL)
+	    xfree(*(char **)c->var);
+	  *(char **)c->var = savestring(arg, strlen(arg));
 	  break;
 	case var_optional_filename:
 	  if (arg == NULL)
 	    arg = "";
-	  if (*(char **) c->var != NULL)
-	    xfree (*(char **) c->var);
-	  *(char **) c->var = savestring (arg, strlen (arg));
+	  if (*(char **)c->var != NULL)
+	    xfree(*(char **)c->var);
+	  *(char **)c->var = savestring(arg, strlen(arg));
 	  break;
 	case var_filename:
 	  if (arg == NULL)
-	    error_no_arg (_("filename to set it to."));
-	  if (*(char **) c->var != NULL)
-	    xfree (*(char **) c->var);
-	  *(char **) c->var = tilde_expand (arg);
+	    error_no_arg(_("filename to set it to."));
+	  if (*(char **)c->var != NULL)
+	    xfree (*(char **)c->var);
+	  *(char **)c->var = tilde_expand(arg);
 	  break;
 	case var_boolean:
-	  *(int *) c->var = parse_binary_operation (arg);
+	  *(int *)c->var = parse_binary_operation(arg);
 	  break;
 	case var_auto_boolean:
-	  *(enum auto_boolean *) c->var = parse_auto_binary_operation (arg);
+	  *(enum auto_boolean *)c->var = parse_auto_binary_operation(arg);
 	  break;
 	case var_uinteger:
 	  if (arg == NULL)
-	    error_no_arg (_("integer to set it to."));
-	  *(unsigned int *) c->var = parse_and_eval_long (arg);
-	  if (*(unsigned int *) c->var == 0)
-	    *(unsigned int *) c->var = UINT_MAX;
+	    error_no_arg(_("integer to set it to."));
+	  *(unsigned int *)c->var = parse_and_eval_long(arg);
+	  if (*(unsigned int *)c->var == 0)
+	    *(unsigned int *)c->var = UINT_MAX;
 	  break;
 	case var_integer:
 	  {
 	    unsigned int val;
 	    if (arg == NULL)
-	      error_no_arg (_("integer to set it to."));
-	    val = parse_and_eval_long (arg);
+	      error_no_arg(_("integer to set it to."));
+	    val = parse_and_eval_long(arg);
 	    if (val == 0)
-	      *(int *) c->var = INT_MAX;
+	      *(int *)c->var = INT_MAX;
 	    else if (val >= INT_MAX)
-	      error (_("integer %u out of range"), val);
+	      error(_("integer %u out of range"), val);
 	    else
-	      *(int *) c->var = val;
+	      *(int *)c->var = val;
 	    break;
 	  }
 	case var_zinteger:
 	  if (arg == NULL)
-	    error_no_arg (_("integer to set it to."));
-	  *(int *) c->var = parse_and_eval_long (arg);
+	    error_no_arg(_("integer to set it to."));
+	  *(int *)c->var = parse_and_eval_long(arg);
 	  break;
 	case var_enum:
 	  {
@@ -240,16 +240,16 @@ do_setshow_command (char *arg, int from_tty, struct cmd_list_element *c)
 	    /* If an argument was supplied, parse it. */
 	    if (arg != NULL)
 	      {
-		p = strchr (arg, ' ');
+		p = strchr(arg, ' ');
 
 		if (p)
-		  len = p - arg;
+		  len = (p - arg);
 		else
-		  len = strlen (arg);
+		  len = strlen(arg);
 
 		nmatches = 0;
 		for (i = 0; c->enums[i]; i++)
-		  if (strncmp (arg, c->enums[i], len) == 0)
+		  if (strncmp(arg, c->enums[i], len) == 0)
 		    {
 		      if (c->enums[i][len] == '\0')
 			{
@@ -266,37 +266,37 @@ do_setshow_command (char *arg, int from_tty, struct cmd_list_element *c)
 	      }
 
 	    if (nmatches == 1)
-	      *(const char **) c->var = match;
+	      *(const char **)c->var = match;
 	    else
 	      {
                 /* If there was an error, print an informative
                    error message.  */
-                struct ui_file *tmp_error_stream = mem_fileopen ();
+                struct ui_file *tmp_error_stream = mem_fileopen();
                 make_cleanup_ui_file_delete (tmp_error_stream);
-		
-                if (arg == NULL)
-                  fprintf_unfiltered (tmp_error_stream, "Requires an argument.");
-                else if (nmatches <= 0)
-                  fprintf_unfiltered (tmp_error_stream, "Undefined item: \"%s\".", arg);
-		else if (nmatches > 1)
-                  fprintf_unfiltered  (tmp_error_stream, "Ambiguous item \"%s\".", arg);
 
-                fprintf_unfiltered (tmp_error_stream, " Valid arguments are ");
+                if (arg == NULL)
+                  fprintf_unfiltered(tmp_error_stream, "Requires an argument.");
+                else if (nmatches <= 0)
+                  fprintf_unfiltered(tmp_error_stream, "Undefined item: \"%s\".", arg);
+		else if (nmatches > 1)
+                  fprintf_unfiltered(tmp_error_stream, "Ambiguous item \"%s\".", arg);
+
+                fprintf_unfiltered(tmp_error_stream, " Valid arguments are ");
                 for (i = 0; c->enums[i]; i++)
                   {
                     if (i != 0)
-                      fprintf_unfiltered (tmp_error_stream, ", ");
-                    fputs_unfiltered (c->enums[i], tmp_error_stream);
+                      fprintf_unfiltered(tmp_error_stream, ", ");
+                    fputs_unfiltered(c->enums[i], tmp_error_stream);
                   }
-                fprintf_unfiltered (tmp_error_stream, ".");
-                error_stream (tmp_error_stream);
+                fprintf_unfiltered(tmp_error_stream, ".");
+                error_stream(tmp_error_stream);
 	      }
 
 	    /* END APPLE LOCAL */
 	  }
 	  break;
 	default:
-	  error (_("gdb internal error: bad var_type in do_setshow_command"));
+	  error(_("gdb internal error: bad var_type in do_setshow_command"));
 	}
     }
   else if (c->type == show_cmd)
@@ -304,70 +304,70 @@ do_setshow_command (char *arg, int from_tty, struct cmd_list_element *c)
       struct cleanup *old_chain;
       struct ui_stream *stb;
 
-      stb = ui_out_stream_new (uiout);
-      old_chain = make_cleanup_ui_out_stream_delete (stb);
+      stb = ui_out_stream_new(uiout);
+      old_chain = make_cleanup_ui_out_stream_delete(stb);
 
-      /* Possibly call the pre hook.  */
+      /* Possibly call the pre hook: */
       if (c->pre_show_hook)
-	(c->pre_show_hook) (c);
+	(c->pre_show_hook)(c);
 
       switch (c->var_type)
 	{
 	case var_string:
 	  {
-	    if (*(unsigned char **) c->var)
-	      fputstr_filtered (*(char **) c->var, '"', stb->stream);
+	    if (*(unsigned char **)c->var)
+	      fputstr_filtered(*(char **)c->var, '"', stb->stream);
 	  }
 	  break;
 	case var_string_noescape:
 	case var_optional_filename:
 	case var_filename:
 	case var_enum:
-	  if (*(char **) c->var)
-	    fputs_filtered (*(char **) c->var, stb->stream);
+	  if (*(char **)c->var)
+	    fputs_filtered(*(char **)c->var, stb->stream);
 	  break;
 	case var_boolean:
-	  fputs_filtered (*(int *) c->var ? "on" : "off", stb->stream);
+	  fputs_filtered(*(int *)c->var ? "on" : "off", stb->stream);
 	  break;
 	case var_auto_boolean:
-	  switch (*(enum auto_boolean*) c->var)
+	  switch (*(enum auto_boolean*)c->var)
 	    {
 	    case AUTO_BOOLEAN_TRUE:
-	      fputs_filtered ("on", stb->stream);
+	      fputs_filtered("on", stb->stream);
 	      break;
 	    case AUTO_BOOLEAN_FALSE:
-	      fputs_filtered ("off", stb->stream);
+	      fputs_filtered("off", stb->stream);
 	      break;
 	    case AUTO_BOOLEAN_AUTO:
-	      fputs_filtered ("auto", stb->stream);
+	      fputs_filtered("auto", stb->stream);
 	      break;
 	    default:
-	      internal_error (__FILE__, __LINE__,
-			      _("do_setshow_command: invalid var_auto_boolean"));
+	      internal_error(__FILE__, __LINE__,
+			     _("do_setshow_command: invalid var_auto_boolean"));
 	      break;
 	    }
 	  break;
 	case var_uinteger:
-	  if (*(unsigned int *) c->var == UINT_MAX)
+	  if (*(unsigned int *)c->var == UINT_MAX)
 	    {
-	      fputs_filtered ("unlimited", stb->stream);
+	      fputs_filtered("unlimited", stb->stream);
 	      break;
 	    }
 	  /* else fall through */
 	case var_zinteger:
-	  fprintf_filtered (stb->stream, "%u", *(unsigned int *) c->var);
+	  fprintf_filtered(stb->stream, "%u", *(unsigned int *)c->var);
 	  break;
 	case var_integer:
-	  if (*(int *) c->var == INT_MAX)
+	  if (*(int *)c->var == INT_MAX)
 	    {
-	      fputs_filtered ("unlimited", stb->stream);
+	      fputs_filtered("unlimited", stb->stream);
 	    }
 	  else
-	    fprintf_filtered (stb->stream, "%d", *(int *) c->var);
+	    fprintf_filtered(stb->stream, "%d", *(int *)c->var);
 	  break;
 
 	default:
-	  error (_("gdb internal error: bad var_type in do_setshow_command"));
+	  error(_("gdb internal error: bad var_type in do_setshow_command"));
 	}
 
 
@@ -376,35 +376,34 @@ do_setshow_command (char *arg, int from_tty, struct cmd_list_element *c)
 	 code to print the value out.  For the latter there should be
 	 MI and CLI specific versions.  */
 
-      if (ui_out_is_mi_like_p (uiout))
-	ui_out_field_stream (uiout, "value", stb);
+      if (ui_out_is_mi_like_p(uiout))
+	ui_out_field_stream(uiout, "value", stb);
       else
 	{
 	  long length;
-	  char *value = ui_file_xstrdup (stb->stream, &length);
-	  make_cleanup (xfree, value);
+	  char *value = ui_file_xstrdup(stb->stream, &length);
+	  make_cleanup(xfree, value);
 	  if (c->show_value_func != NULL)
-	    c->show_value_func (gdb_stdout, from_tty, c, value);
+	    c->show_value_func(gdb_stdout, from_tty, c, value);
 	  else
-	    deprecated_show_value_hack (gdb_stdout, from_tty, c, value);
+	    deprecated_show_value_hack(gdb_stdout, from_tty, c, value);
 	}
-      do_cleanups (old_chain);
+      do_cleanups(old_chain);
     }
   else
-    error (_("gdb internal error: bad cmd_type in do_setshow_command"));
-  c->func (c, NULL, from_tty);
-  if (c->type == set_cmd && deprecated_set_hook)
-    deprecated_set_hook (c);
+    error(_("gdb internal error: bad cmd_type in do_setshow_command"));
+  c->func(c, NULL, from_tty);
+  if ((c->type == set_cmd) && deprecated_set_hook)
+    deprecated_set_hook(c);
 }
 
-/* Show all the settings in a list of show commands.  */
-
+/* Show all the settings in a list of show commands: */
 void
-cmd_show_list (struct cmd_list_element *list, int from_tty, char *prefix)
+cmd_show_list(struct cmd_list_element *list, int from_tty, char *prefix)
 {
   struct cleanup *showlist_chain;
 
-  showlist_chain = make_cleanup_ui_out_tuple_begin_end (uiout, "showlist");
+  showlist_chain = make_cleanup_ui_out_tuple_begin_end(uiout, "showlist");
   for (; list != NULL; list = list->next)
     {
       /* If we find a prefix, run its list, prefixing our output by its
@@ -417,22 +416,24 @@ cmd_show_list (struct cmd_list_element *list, int from_tty, char *prefix)
 	  if (ui_out_is_mi_like_p (uiout))
 	    ui_out_field_string (uiout, "prefix", new_prefix);
 	  cmd_show_list (*list->prefixlist, from_tty, new_prefix);
-	  /* Close the tuple.  */
-	  do_cleanups (optionlist_chain);
+	  /* Close the tuple: */
+	  do_cleanups(optionlist_chain);
 	}
       if (list->type == show_cmd)
 	{
 	  struct cleanup *option_chain
-	    = make_cleanup_ui_out_tuple_begin_end (uiout, "option");
-	  ui_out_text (uiout, prefix);
-	  ui_out_field_string (uiout, "name", list->name);
-	  ui_out_text (uiout, ":  ");
-	  do_setshow_command ((char *) NULL, from_tty, list);
-          /* Close the tuple.  */
-	  do_cleanups (option_chain);
+	    = make_cleanup_ui_out_tuple_begin_end(uiout, "option");
+	  ui_out_text(uiout, prefix);
+	  ui_out_field_string(uiout, "name", list->name);
+	  ui_out_text(uiout, ":  ");
+	  do_setshow_command((char *)NULL, from_tty, list);
+          /* Close the tuple: */
+	  do_cleanups(option_chain);
 	}
     }
-  /* Close the tuple.  */
-  do_cleanups (showlist_chain);
+  /* Close the tuple: */
+  do_cleanups(showlist_chain);
 }
+
+/* EOF */
 

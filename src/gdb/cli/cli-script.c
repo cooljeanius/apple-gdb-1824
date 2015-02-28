@@ -216,52 +216,51 @@ print_command_lines (struct ui_out *uiout, struct command_line *cmd,
     }				/* while (list) */
 }
 
-/* Handle pre-post hooks.  */
-
+/* Handle pre-post hooks: */
 static void
-clear_hook_in_cleanup (void *data)
+clear_hook_in_cleanup(void *data)
 {
-  struct cmd_list_element *c = data;
+  struct cmd_list_element *c = (struct cmd_list_element *)data;
   c->hook_in = 0; /* Allow hook to work again once it is complete */
 }
 
 void
-execute_cmd_pre_hook (struct cmd_list_element *c)
+execute_cmd_pre_hook(struct cmd_list_element *c)
 {
   if ((c->hook_pre) && (!c->hook_in))
     {
-      struct cleanup *cleanups = make_cleanup (clear_hook_in_cleanup, c);
+      struct cleanup *cleanups = make_cleanup(clear_hook_in_cleanup, c);
       c->hook_in = 1; /* Prevent recursive hooking */
-      execute_user_command (c->hook_pre, (char *) 0);
-      do_cleanups (cleanups);
+      execute_user_command(c->hook_pre, (char *)0);
+      do_cleanups(cleanups);
     }
 }
 
 void
-execute_cmd_post_hook (struct cmd_list_element *c)
+execute_cmd_post_hook(struct cmd_list_element *c)
 {
   if ((c->hook_post) && (!c->hook_in))
     {
-      struct cleanup *cleanups = make_cleanup (clear_hook_in_cleanup, c);
+      struct cleanup *cleanups = make_cleanup(clear_hook_in_cleanup, c);
       c->hook_in = 1; /* Prevent recursive hooking */
-      execute_user_command (c->hook_post, (char *) 0);
-      do_cleanups (cleanups);
+      execute_user_command(c->hook_post, (char *)0);
+      do_cleanups(cleanups);
     }
 }
 
-/* Execute the command in CMD.  */
+/* Execute the command in CMD: */
 static void
-do_restore_user_call_depth (void * call_depth)
+do_restore_user_call_depth(void *call_depth)
 {
-  int * depth = call_depth;
+  int *depth = (int *)call_depth;
   /* We will be returning_to_top_level() at this point, so we want to
-     reset our depth. */
+     reset our depth: */
   (*depth) = 0;
 }
 
 
 void
-execute_user_command (struct cmd_list_element *c, char *args)
+execute_user_command(struct cmd_list_element *c, char *args)
 {
   struct command_line *cmdlines;
   struct cleanup *old_chain;
@@ -269,7 +268,7 @@ execute_user_command (struct cmd_list_element *c, char *args)
   static int user_call_depth = 0;
   extern int max_user_call_depth;
 
-  old_chain = setup_user_args (args);
+  old_chain = setup_user_args(args);
 
   cmdlines = c->user_commands;
   if (cmdlines == 0)
@@ -1078,10 +1077,9 @@ read_command_lines_1(char * (*read_next_line_func)(void))
   return (head);
 }
 
-/* Free a chain of struct command_line's.  */
-
+/* Free a chain of struct command_line's: */
 void
-free_command_lines (struct command_line **lptr)
+free_command_lines(struct command_line **lptr)
 {
   struct command_line *l = *lptr;
   struct command_line *next;
@@ -1094,39 +1092,39 @@ free_command_lines (struct command_line **lptr)
 	{
 	  blist = l->body_list;
 	  for (i = 0; i < l->body_count; i++, blist++)
-	    free_command_lines (blist);
+	    free_command_lines(blist);
 	}
       next = l->next;
-      xfree (l->line);
-      xfree (l);
+      xfree(l->line);
+      xfree(l);
       l = next;
     }
   *lptr = NULL;
 }
 
 static void
-do_free_command_lines_cleanup (void *arg)
+do_free_command_lines_cleanup(void *arg)
 {
-  free_command_lines (arg);
+  free_command_lines((struct command_line **)arg);
 }
 
 struct cleanup *
-make_cleanup_free_command_lines (struct command_line **arg)
+make_cleanup_free_command_lines(struct command_line **arg)
 {
-  return make_cleanup (do_free_command_lines_cleanup, arg);
+  return make_cleanup(do_free_command_lines_cleanup, arg);
 }
 
 struct command_line *
-copy_command_lines (struct command_line *cmds)
+copy_command_lines(struct command_line *cmds)
 {
   struct command_line *result = NULL;
 
   if (cmds)
     {
-      result = (struct command_line *) xmalloc (sizeof (struct command_line));
+      result = (struct command_line *)xmalloc(sizeof(struct command_line));
 
-      result->next = copy_command_lines (cmds->next);
-      result->line = xstrdup (cmds->line);
+      result->next = copy_command_lines(cmds->next);
+      result->line = xstrdup(cmds->line);
       result->control_type = cmds->control_type;
       result->body_count = cmds->body_count;
       if (cmds->body_count > 0)
@@ -1147,30 +1145,31 @@ copy_command_lines (struct command_line *cmds)
 }
 
 static void
-validate_comname (char *comname)
+validate_comname(char *comname)
 {
   char *p;
 
   if (comname == 0)
-    error_no_arg (_("name of command to define"));
+    error_no_arg(_("name of command to define"));
 
   p = comname;
   while (*p)
     {
-      if (!isalnum (*p) && *p != '-' && *p != '_')
-	error (_("Junk in argument list: \"%s\""), p);
+      if (!isalnum(*p) && (*p != '-') && (*p != '_'))
+	error(_("Junk in argument list: \"%s\""), p);
       p++;
     }
 }
 
-/* This is just a placeholder in the command data structures.  */
+/* This is just a placeholder in the command data structures: */
 static void
-user_defined_command (char *ignore, int from_tty)
+user_defined_command(char *ignore, int from_tty)
 {
+  return;
 }
 
 void
-define_command (char *comname, int from_tty)
+define_command(char *comname, int from_tty)
 {
 #define MAX_TMPBUF 128
   enum cmd_hook_type
@@ -1183,8 +1182,8 @@ define_command (char *comname, int from_tty)
   struct cmd_list_element *c, *newc, *hookc = 0;
   char *tem = comname;
   char tmpbuf[MAX_TMPBUF];
-  int  hook_type      = CMD_NO_HOOK;
-  int  hook_name_size = 0;
+  int hook_type = CMD_NO_HOOK;
+  int hook_name_size = 0;
 
 #define	HOOK_STRING	"hook-"
 #define	HOOK_LEN 5
@@ -1193,20 +1192,20 @@ define_command (char *comname, int from_tty)
 
   validate_comname (comname);
 
-  /* Look it up, and verify that we got an exact match.  */
-  c = lookup_cmd (&tem, cmdlist, "", -1, 1);
-  if (c && strcmp (comname, c->name) != 0)
+  /* Look it up, and verify that we got an exact match: */
+  c = lookup_cmd(&tem, cmdlist, "", -1, 1);
+  if (c && (strcmp(comname, c->name) != 0))
     c = 0;
 
   if (c)
     {
       int q;
-      if (c->class == class_user || c->class == class_alias)
-	q = query (_("Redefine command \"%s\"? "), c->name);
+      if ((c->class == class_user) || (c->class == class_alias))
+	q = query(_("Redefine command \"%s\"? "), c->name);
       else
-	q = query (_("Really redefine built-in command \"%s\"? "), c->name);
+	q = query(_("Really redefine built-in command \"%s\"? "), c->name);
       if (!q)
-	error (_("Command \"%s\" not redefined."), c->name);
+	error(_("Command \"%s\" not redefined."), c->name);
     }
 
   /* If this new command is a hook, then mark the command which it
@@ -1240,23 +1239,23 @@ define_command (char *comname, int from_tty)
 	}
     }
 
-  comname = savestring (comname, strlen (comname));
+  comname = savestring(comname, strlen(comname));
 
   /* If the rest of the commands will be case insensitive, this one
      should behave in the same manner. */
   for (tem = comname; *tem; tem++)
-    if (isupper (*tem))
-      *tem = tolower (*tem);
+    if (isupper(*tem))
+      *tem = tolower(*tem);
 
-  sprintf (tmpbuf, "Type commands for definition of \"%s\".", comname);
-  cmds = read_command_lines (tmpbuf, from_tty);
+  sprintf(tmpbuf, "Type commands for definition of \"%s\".", comname);
+  cmds = read_command_lines(tmpbuf, from_tty);
 
-  if (c && c->class == class_user)
-    free_command_lines (&c->user_commands);
+  if (c && (c->class == class_user))
+    free_command_lines(&c->user_commands);
 
-  newc = add_cmd (comname, class_user, user_defined_command,
-		  (c && c->class == class_user)
-		  ? c->doc : savestring ("User-defined.", 13), &cmdlist);
+  newc = add_cmd(comname, class_user, user_defined_command,
+		 (c && (c->class == class_user))
+		 ? c->doc : savestring ("User-defined.", 13), &cmdlist);
   newc->user_commands = cmds;
 
   /* If this new command is a hook, then mark both commands as being
@@ -1281,22 +1280,22 @@ define_command (char *comname, int from_tty)
 }
 
 void
-document_command (char *comname, int from_tty)
+document_command(char *comname, int from_tty)
 {
   struct command_line *doclines;
   struct cmd_list_element *c;
   char *tem = comname;
   char tmpbuf[128];
 
-  validate_comname (comname);
+  validate_comname(comname);
 
-  c = lookup_cmd (&tem, cmdlist, "", 0, 1);
+  c = lookup_cmd(&tem, cmdlist, "", 0, 1);
 
   if (c->class != class_user)
-    error (_("Command \"%s\" is built-in."), comname);
+    error(_("Command \"%s\" is built-in."), comname);
 
-  sprintf (tmpbuf, "Type documentation for \"%s\".", comname);
-  doclines = read_command_lines (tmpbuf, from_tty);
+  sprintf(tmpbuf, "Type documentation for \"%s\".", comname);
+  doclines = read_command_lines(tmpbuf, from_tty);
 
   if (c->doc)
     xfree (c->doc);
@@ -1306,20 +1305,20 @@ document_command (char *comname, int from_tty)
     int len = 0;
 
     for (cl1 = doclines; cl1; cl1 = cl1->next)
-      len += strlen (cl1->line) + 1;
+      len += (strlen(cl1->line) + 1);
 
-    c->doc = (char *) xmalloc (len + 1);
+    c->doc = (char *)xmalloc(len + 1);
     *c->doc = 0;
 
     for (cl1 = doclines; cl1; cl1 = cl1->next)
       {
-	strcat (c->doc, cl1->line);
+	strcat(c->doc, cl1->line);
 	if (cl1->next)
-	  strcat (c->doc, "\n");
+	  strcat(c->doc, "\n");
       }
   }
 
-  free_command_lines (&doclines);
+  free_command_lines(&doclines);
 }
 
 struct source_cleanup_lines_args
@@ -1329,18 +1328,18 @@ struct source_cleanup_lines_args
 };
 
 static void
-source_cleanup_lines (void *args)
+source_cleanup_lines(void *args)
 {
-  struct source_cleanup_lines_args *p =
-  (struct source_cleanup_lines_args *) args;
+  struct source_cleanup_lines_args *p;
+  p = (struct source_cleanup_lines_args *)args;
   source_line_number = p->old_line;
   source_file_name = p->old_file;
 }
 
 static void
-do_fclose_cleanup (void *stream)
+do_fclose_cleanup(void *stream)
 {
-  fclose (stream);
+  fclose((FILE *)stream);
 }
 
 struct wrapped_read_command_file_args
@@ -1349,10 +1348,11 @@ struct wrapped_read_command_file_args
 };
 
 static void
-wrapped_read_command_file (struct ui_out *uiout, void *data)
+wrapped_read_command_file(struct ui_out *uiout, void *data)
 {
-  struct wrapped_read_command_file_args *args = data;
-  read_command_file (args->stream);
+  struct wrapped_read_command_file_args *args;
+  args = (struct wrapped_read_command_file_args *)data;
+  read_command_file(args->stream);
 }
 
 /* Used to implement source_command: */

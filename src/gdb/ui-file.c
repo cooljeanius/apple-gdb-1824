@@ -1,4 +1,4 @@
-/* UI_FILE - a generic STDIO like output stream.
+/* ui-file.c: UI_FILE - a generic STDIO like output stream.
 
    Copyright 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 
@@ -52,67 +52,63 @@ struct ui_file
 int ui_file_magic;
 
 struct ui_file *
-ui_file_new (void)
+ui_file_new(void)
 {
-  struct ui_file *file = xmalloc (sizeof (struct ui_file));
+  struct ui_file *file = (struct ui_file *)xmalloc(sizeof(struct ui_file));
   file->magic = &ui_file_magic;
-  set_ui_file_data (file, NULL, null_file_delete);
-  set_ui_file_flush (file, null_file_flush);
-  set_ui_file_write (file, null_file_write);
-  set_ui_file_fputs (file, null_file_fputs);
-  set_ui_file_read (file, null_file_read);
-  set_ui_file_isatty (file, null_file_isatty);
-  set_ui_file_rewind (file, null_file_rewind);
-  set_ui_file_put (file, null_file_put);
+  set_ui_file_data(file, NULL, null_file_delete);
+  set_ui_file_flush(file, null_file_flush);
+  set_ui_file_write(file, null_file_write);
+  set_ui_file_fputs(file, null_file_fputs);
+  set_ui_file_read(file, null_file_read);
+  set_ui_file_isatty(file, null_file_isatty);
+  set_ui_file_rewind(file, null_file_rewind);
+  set_ui_file_put(file, null_file_put);
   return file;
 }
 
 void
-ui_file_delete (struct ui_file *file)
+ui_file_delete(struct ui_file *file)
 {
-  file->to_delete (file);
-  xfree (file);
+  file->to_delete(file);
+  xfree(file);
 }
 
 static int
-null_file_isatty (struct ui_file *file)
+null_file_isatty(struct ui_file *file)
 {
   return 0;
 }
 
 static void
-null_file_rewind (struct ui_file *file)
+null_file_rewind(struct ui_file *file)
 {
   return;
 }
 
 static void
-null_file_put (struct ui_file *file,
-	       ui_file_put_method_ftype *write,
-	       void *dest)
+null_file_put(struct ui_file *file, ui_file_put_method_ftype *write,
+	      void *dest)
 {
   return;
 }
 
 static void
-null_file_flush (struct ui_file *file)
+null_file_flush(struct ui_file *file)
 {
   return;
 }
 
 static void
-null_file_write (struct ui_file *file,
-		 const char *buf,
-		 long sizeof_buf)
+null_file_write(struct ui_file *file, const char *buf, long sizeof_buf)
 {
   if (file->to_fputs == null_file_fputs)
-    /* Both the write and fputs methods are null. Discard the
-       request. */
+    /* Both the write and fputs methods are null.  Discard the request: */
     return;
   else
     {
-      /* The fputs method isn't null, slowly pass the write request
-         onto that.  FYI, this isn't as bad as it may look - the
+      /* The fputs method is NOT null, so slowly pass the write request
+         onto that.  FYI, this is NOT as bad as it may look - the
          current (as of 1999-11-07) printf_* function calls fputc and
          fputc does exactly the below.  By having a write function it
          is possible to clean up that code.  */
@@ -122,100 +118,94 @@ null_file_write (struct ui_file *file,
       for (i = 0; i < sizeof_buf; i++)
 	{
 	  b[0] = buf[i];
-	  file->to_fputs (b, file);
+	  file->to_fputs(b, file);
 	}
       return;
     }
 }
 
 static long
-null_file_read (struct ui_file *file,
-		char *buf,
-		long sizeof_buf)
+null_file_read(struct ui_file *file, char *buf, long sizeof_buf)
 {
   errno = EBADF;
   return 0;
 }
 
 static void
-null_file_fputs (const char *buf, struct ui_file *file)
+null_file_fputs(const char *buf, struct ui_file *file)
 {
   if (file->to_write == null_file_write)
-    /* Both the write and fputs methods are null. Discard the
-       request. */
+    /* Both the write and fputs methods are null.  Discard the request: */
     return;
   else
     {
-      /* The write method was implemented, use that. */
-      file->to_write (file, buf, strlen (buf));
+      /* The write method was implemented, so use that: */
+      file->to_write(file, buf, strlen(buf));
     }
 }
 
 static void
-null_file_delete (struct ui_file *file)
+null_file_delete(struct ui_file *file)
 {
   return;
 }
 
 void *
-ui_file_data (struct ui_file *file)
+ui_file_data(struct ui_file *file)
 {
   if (file->magic != &ui_file_magic)
-    internal_error (__FILE__, __LINE__,
-		    _("ui_file_data: bad magic number"));
+    internal_error(__FILE__, __LINE__,
+		   _("ui_file_data: bad magic number"));
   return file->to_data;
 }
 
 void
-gdb_flush (struct ui_file *file)
+gdb_flush(struct ui_file *file)
 {
-  file->to_flush (file);
+  file->to_flush(file);
 }
 
 int
-ui_file_isatty (struct ui_file *file)
+ui_file_isatty(struct ui_file *file)
 {
-  return file->to_isatty (file);
+  return file->to_isatty(file);
 }
 
 void
-ui_file_rewind (struct ui_file *file)
+ui_file_rewind(struct ui_file *file)
 {
-  file->to_rewind (file);
+  file->to_rewind(file);
 }
 
 void
-ui_file_put (struct ui_file *file,
-	      ui_file_put_method_ftype *write,
-	      void *dest)
+ui_file_put(struct ui_file *file, ui_file_put_method_ftype *write,
+            void *dest)
 {
-  file->to_put (file, write, dest);
+  file->to_put(file, write, dest);
 }
 
 void
-ui_file_write (struct ui_file *file,
-		const char *buf,
-		long length_buf)
+ui_file_write(struct ui_file *file, const char *buf, long length_buf)
 {
   if (buf)
-    file->to_write (file, buf, length_buf);
+    file->to_write(file, buf, length_buf);
 }
 
 long
-ui_file_read (struct ui_file *file, char *buf, long length_buf)
+ui_file_read(struct ui_file *file, char *buf, long length_buf)
 {
-  return file->to_read (file, buf, length_buf); 
+  return file->to_read(file, buf, length_buf);
 }
 
 void
-fputs_unfiltered (const char *buf, struct ui_file *file)
+fputs_unfiltered(const char *buf, struct ui_file *file)
 {
   /* Not all the ui_file's handle null buffers correctly (e.g.
      stdio_file_fputs just passes it to fputs, which crashes...
      Better to handle it here at the throttle point. */
 
   if (buf)
-    file->to_fputs (buf, file);
+    file->to_fputs(buf, file);
 }
 
 void
@@ -602,22 +592,24 @@ tee_file_write (struct ui_file *file, const char *buf, long length_buf)
 }
 
 static void
-tee_file_fputs (const char *linebuffer, struct ui_file *file)
+tee_file_fputs(const char *linebuffer, struct ui_file *file)
 {
-  struct tee_file *tee = ui_file_data (file);
+  struct tee_file *tee = (struct tee_file *)ui_file_data(file);
   if (tee->magic != &tee_file_magic)
-    internal_error (__FILE__, __LINE__,
-		    _("tee_file_fputs: bad magic number"));
-  tee->one->to_fputs (linebuffer, tee->one);
-  tee->two->to_fputs (linebuffer, tee->two);
+    internal_error(__FILE__, __LINE__,
+		   _("tee_file_fputs: bad magic number"));
+  tee->one->to_fputs(linebuffer, tee->one);
+  tee->two->to_fputs(linebuffer, tee->two);
 }
 
 static int
-tee_file_isatty (struct ui_file *file)
+tee_file_isatty(struct ui_file *file)
 {
-  struct tee_file *tee = ui_file_data (file);
+  struct tee_file *tee = (struct tee_file *)ui_file_data(file);
   if (tee->magic != &tee_file_magic)
-    internal_error (__FILE__, __LINE__,
-		    _("tee_file_isatty: bad magic number"));
+    internal_error(__FILE__, __LINE__,
+                   _("tee_file_isatty: bad magic number"));
   return (0);
 }
+
+/* EOF */

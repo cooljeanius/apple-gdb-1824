@@ -1451,19 +1451,19 @@ elf32_hppa_check_relocs (bfd *abfd,
 		     easily.  Oh well.  */
 
 		  asection *sr;
-		  sr = bfd_section_from_r_symndx (abfd, &htab->sym_sec,
-						       sec, r_symndx);
+		  sr = bfd_section_from_r_symndx(abfd, &htab->sym_sec,
+                                                 sec, r_symndx);
 		  if (sr == NULL)
 		    return FALSE;
 
 		  hdh_head = ((struct elf32_hppa_dyn_reloc_entry **)
-			  &elf_section_data (sr)->local_dynrel);
+                              &elf_section_data(sr)->local_dynrel);
 		}
 
 	      hdh_p = *hdh_head;
-	      if (hdh_p == NULL || hdh_p->sec != sec)
+	      if ((hdh_p == NULL) || (hdh_p->sec != sec))
 		{
-		  hdh_p = bfd_alloc (htab->etab.dynobj, sizeof *hdh_p);
+		  hdh_p = bfd_alloc(htab->etab.dynobj, sizeof(*hdh_p));
 		  if (hdh_p == NULL)
 		    return FALSE;
 		  hdh_p->hdh_next = *hdh_head;

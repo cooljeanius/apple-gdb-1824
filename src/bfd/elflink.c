@@ -518,9 +518,8 @@ bfd_elf_record_link_assignment (struct bfd_link_info *info,
    in a discarded section, eg. a discarded link-once section symbol.  */
 
 int
-bfd_elf_link_record_local_dynamic_symbol (struct bfd_link_info *info,
-					  bfd *input_bfd,
-					  long input_indx)
+bfd_elf_link_record_local_dynamic_symbol(struct bfd_link_info *info,
+					 bfd *input_bfd, long input_indx)
 {
   bfd_size_type amt;
   struct elf_link_local_dynamic_entry *entry;
@@ -529,18 +528,18 @@ bfd_elf_link_record_local_dynamic_symbol (struct bfd_link_info *info,
   unsigned long dynstr_index;
   char *name;
   Elf_External_Sym_Shndx eshndx;
-  char esym[sizeof (Elf64_External_Sym)];
+  char esym[sizeof(Elf64_External_Sym)];
 
-  if (! is_elf_hash_table (info->hash))
+  if (! is_elf_hash_table(info->hash))
     return 0;
 
-  /* See if the entry exists already.  */
-  for (entry = elf_hash_table (info)->dynlocal; entry ; entry = entry->next)
-    if (entry->input_bfd == input_bfd && entry->input_indx == input_indx)
+  /* See if the entry exists already: */
+  for (entry = elf_hash_table(info)->dynlocal; entry; entry = entry->next)
+    if ((entry->input_bfd == input_bfd) && entry->input_indx == input_indx)
       return 1;
 
-  amt = sizeof (*entry);
-  entry = bfd_alloc (input_bfd, amt);
+  amt = sizeof(*entry);
+  entry = (struct elf_link_local_dynamic_entry *)bfd_alloc(input_bfd, amt);
   if (entry == NULL)
     return 0;
 
@@ -760,18 +759,14 @@ _bfd_elf_link_renumber_dynsyms (bfd *output_bfd,
    object is overridden by a regular object.  */
 
 bfd_boolean
-_bfd_elf_merge_symbol (bfd *abfd,
-		       struct bfd_link_info *info,
-		       const char *name,
-		       Elf_Internal_Sym *sym,
-		       asection **psec,
-		       bfd_vma *pvalue,
-		       unsigned int *pold_alignment,
-		       struct elf_link_hash_entry **sym_hash,
-		       bfd_boolean *skip,
-		       bfd_boolean *override,
-		       bfd_boolean *type_change_ok,
-		       bfd_boolean *size_change_ok)
+_bfd_elf_merge_symbol(bfd *abfd, struct bfd_link_info *info,
+                      const char *name, Elf_Internal_Sym *sym,
+                      asection **psec, bfd_vma *pvalue,
+		      unsigned int *pold_alignment,
+                      struct elf_link_hash_entry **sym_hash,
+		      bfd_boolean *skip, bfd_boolean *override,
+		      bfd_boolean *type_change_ok,
+                      bfd_boolean *size_change_ok)
 {
   asection *sec, *oldsec;
   struct elf_link_hash_entry *h;
@@ -4526,7 +4521,7 @@ _bfd_elf_archive_symbol_lookup (bfd *abfd,
 }
 
 /* Add symbols from an ELF archive file to the linker hash table.  We
-   don't use _bfd_generic_link_add_archive_symbols because of a
+   do NOT use _bfd_generic_link_add_archive_symbols because of a
    problem which arises on UnixWare.  The UnixWare libc.so is an
    archive which includes an entry libc.so.1 which defines a bunch of
    symbols.  The libc.so archive also includes a number of other

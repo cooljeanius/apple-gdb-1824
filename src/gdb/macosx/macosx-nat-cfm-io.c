@@ -35,10 +35,11 @@
 
 #include <string.h>
 
+#include "macosx-nat-cfm-io.h"
 
 void
-pef_load_library (const struct dyld_path_info *d,
-                  struct dyld_objfile_entry *e)
+pef_load_library(const struct dyld_path_info *d,
+                 struct dyld_objfile_entry *e)
 {
   bfd *pbfd = NULL;
   bfd *sbfd = NULL;
@@ -83,7 +84,7 @@ pef_load_library (const struct dyld_path_info *d,
       return;
     }
 
-  symname = xmalloc (strlen (e->dyld_name) + strlen (".xSYM") + 1);
+  symname = (char *)xmalloc(strlen(e->dyld_name) + strlen(".xSYM") + 1);
   sprintf (symname, "%s%s", e->dyld_name, ".xSYM");
   sbfd = bfd_openr (symname, "sym");
   if (sbfd == NULL)
@@ -134,13 +135,15 @@ pef_load_library (const struct dyld_path_info *d,
 
   if (sbfd != NULL)
     {
-      if (!bfd_check_format (sbfd, bfd_object))
+      if (!bfd_check_format(sbfd, bfd_object))
         {
-          warning ("file \"%s\" is not a valid symbol file", sbfd->filename);
+          warning("file \"%s\" is not a valid symbol file", sbfd->filename);
         }
       else
         {
-          symbol_file_add_bfd_safe (sbfd, 0, addrs, 0, 0, 0, e->load_flag, 0, 0, NULL);
+          symbol_file_add_bfd_safe(sbfd, 0, addrs, 0, 0, 0, e->load_flag, 0, 0, NULL);
         }
     }
 }
+
+/* EOF */

@@ -1523,37 +1523,35 @@ bfd_sym_unparse_symbol_scope(enum bfd_sym_symbol_scope scope)
 }
 
 void
-bfd_sym_print_file_reference (bfd *abfd,
-			      FILE *f,
-			      bfd_sym_file_reference *entry)
+bfd_sym_print_file_reference(bfd *abfd, FILE *f,
+			     bfd_sym_file_reference *entry)
 {
   bfd_sym_file_references_table_entry frtentry;
   int ret;
 
-  ret = bfd_sym_fetch_file_references_table_entry (abfd, &frtentry,
-						   entry->fref_frte_index);
+  ret = bfd_sym_fetch_file_references_table_entry(abfd, &frtentry,
+						  entry->fref_frte_index);
   fprintf (f, "FILE ");
 
   if ((ret < 0) || (frtentry.generic.type != BFD_SYM_FILE_NAME_INDEX))
     fprintf (f, "[INVALID]");
   else
-    fprintf (f, "\"%.*s\"",
-	     bfd_sym_symbol_name (abfd, frtentry.filename.nte_index)[0],
-	     &bfd_sym_symbol_name (abfd, frtentry.filename.nte_index)[1]);
+    fprintf(f, "\"%.*s\"",
+	    bfd_sym_symbol_name(abfd, frtentry.filename.nte_index)[0],
+	    &bfd_sym_symbol_name(abfd, frtentry.filename.nte_index)[1]);
 
-  fprintf (f, " (FRTE %lu)", entry->fref_frte_index);
+  fprintf(f, " (FRTE %lu)", entry->fref_frte_index);
 }
 
 void
-bfd_sym_print_resources_table_entry (bfd *abfd,
-				     FILE *f,
-				     bfd_sym_resources_table_entry *entry)
+bfd_sym_print_resources_table_entry(bfd *abfd, FILE *f,
+				    bfd_sym_resources_table_entry *entry)
 {
-  fprintf (f, " \"%.*s\" (NTE %lu), type \"%.4s\", num %u, size %lu, MTE %lu -- %lu",
-	   bfd_sym_symbol_name (abfd, entry->rte_nte_index)[0],
-	   &bfd_sym_symbol_name (abfd, entry->rte_nte_index)[1],
-	   entry->rte_nte_index, entry->rte_res_type, entry->rte_res_number,
-	   entry->rte_res_size, entry->rte_mte_first, entry->rte_mte_last);
+  fprintf(f, " \"%.*s\" (NTE %lu), type \"%.4s\", num %u, size %lu, MTE %lu -- %lu",
+	  bfd_sym_symbol_name (abfd, entry->rte_nte_index)[0],
+	  &bfd_sym_symbol_name (abfd, entry->rte_nte_index)[1],
+	  entry->rte_nte_index, entry->rte_res_type, entry->rte_res_number,
+	  entry->rte_res_size, entry->rte_mte_first, entry->rte_mte_last);
 }
 
 void
@@ -1600,54 +1598,54 @@ bfd_sym_print_modules_table_entry(bfd *abfd, FILE *f,
 }
 
 void
-bfd_sym_print_file_references_table_entry (bfd *abfd,
-					   FILE *f,
-					   bfd_sym_file_references_table_entry *entry)
+bfd_sym_print_file_references_table_entry(bfd *abfd, FILE *f,
+					  bfd_sym_file_references_table_entry *entry)
 {
   switch (entry->generic.type)
     {
     case BFD_SYM_FILE_NAME_INDEX:
-      fprintf (f, "FILE \"%.*s\" (NTE %lu), modtime ",
-	       bfd_sym_symbol_name (abfd, entry->filename.nte_index)[0],
-	       &bfd_sym_symbol_name (abfd, entry->filename.nte_index)[1],
-	       entry->filename.nte_index);
+      fprintf(f, "FILE \"%.*s\" (NTE %lu), modtime ",
+	      bfd_sym_symbol_name(abfd, entry->filename.nte_index)[0],
+	      &bfd_sym_symbol_name(abfd, entry->filename.nte_index)[1],
+	      entry->filename.nte_index);
 
-      fprintf (f, "[UNIMPLEMENTED]");
-      /* printModDate (entry->filename.mod_date); */
-      fprintf (f, " (0x%lx)", entry->filename.mod_date);
+      fprintf(f, "[UNIMPLEMENTED]");
+#if 0
+      printModDate(entry->filename.mod_date);
+#endif /* 0 */
+      fprintf(f, " (0x%lx)", entry->filename.mod_date);
       break;
 
     case BFD_SYM_END_OF_LIST:
-      fprintf (f, "END");
+      fprintf(f, "END");
       break;
 
     default:
-      fprintf (f, "\"%.*s\" (MTE %lu), offset %lu",
-	       bfd_sym_module_name (abfd, entry->entry.mte_index)[0],
-	       &bfd_sym_module_name (abfd, entry->entry.mte_index)[1],
-	       entry->entry.mte_index,
-	       entry->entry.file_offset);
+      fprintf(f, "\"%.*s\" (MTE %lu), offset %lu",
+	      bfd_sym_module_name(abfd, entry->entry.mte_index)[0],
+	      &bfd_sym_module_name(abfd, entry->entry.mte_index)[1],
+	      entry->entry.mte_index,
+	      entry->entry.file_offset);
       break;
     }
 }
 
 void
-bfd_sym_print_contained_modules_table_entry (bfd *abfd,
-					     FILE *f,
-					     bfd_sym_contained_modules_table_entry *entry)
+bfd_sym_print_contained_modules_table_entry(bfd *abfd, FILE *f,
+                                            bfd_sym_contained_modules_table_entry *entry)
 {
   switch (entry->generic.type)
     {
     case BFD_SYM_END_OF_LIST:
-      fprintf (f, "END");
+      fprintf(f, "END");
       break;
 
     default:
-      fprintf (f, "\"%.*s\" (MTE %lu, NTE %lu)",
-	       bfd_sym_module_name (abfd, entry->entry.mte_index)[0],
-	       &bfd_sym_module_name (abfd, entry->entry.mte_index)[1],
-	       entry->entry.mte_index,
-	       entry->entry.nte_index);
+      fprintf(f, "\"%.*s\" (MTE %lu, NTE %lu)",
+	      bfd_sym_module_name(abfd, entry->entry.mte_index)[0],
+	      &bfd_sym_module_name(abfd, entry->entry.mte_index)[1],
+	      entry->entry.mte_index,
+	      entry->entry.nte_index);
       break;
     }
 }
@@ -1706,29 +1704,28 @@ bfd_sym_print_contained_variables_table_entry(bfd *abfd, FILE *f,
 }
 
 void
-bfd_sym_print_contained_statements_table_entry (bfd *abfd,
-						FILE *f,
-						bfd_sym_contained_statements_table_entry *entry)
+bfd_sym_print_contained_statements_table_entry(bfd *abfd, FILE *f,
+                                               bfd_sym_contained_statements_table_entry *entry)
 {
   if (entry->generic.type == BFD_SYM_END_OF_LIST)
     {
-      fprintf (f, "END");
+      fprintf(f, "END");
       return;
     }
 
   if (entry->generic.type == BFD_SYM_SOURCE_FILE_CHANGE)
     {
-      bfd_sym_print_file_reference (abfd, f, &entry->file.fref);
-      fprintf (f, " offset %lu", entry->file.fref.fref_offset);
+      bfd_sym_print_file_reference(abfd, f, &entry->file.fref);
+      fprintf(f, " offset %lu", entry->file.fref.fref_offset);
       return;
     }
 
-  fprintf (f, "\"%.*s\" (MTE %lu), offset %lu, delta %lu",
-	   bfd_sym_module_name (abfd, entry->entry.mte_index)[0],
-	   &bfd_sym_module_name (abfd, entry->entry.mte_index)[1],
-	   entry->entry.mte_index,
-	   entry->entry.mte_offset,
-	   entry->entry.file_delta);
+  fprintf(f, "\"%.*s\" (MTE %lu), offset %lu, delta %lu",
+	  bfd_sym_module_name(abfd, entry->entry.mte_index)[0],
+	  &bfd_sym_module_name(abfd, entry->entry.mte_index)[1],
+	  entry->entry.mte_index,
+	  entry->entry.mte_offset,
+	  entry->entry.file_delta);
 }
 
 void

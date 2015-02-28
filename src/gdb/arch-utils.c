@@ -367,12 +367,12 @@ static int target_byte_order = BFD_ENDIAN_BIG;
 static int target_byte_order_auto = 1;
 
 enum bfd_endian
-selected_byte_order (void)
+selected_byte_order(void)
 {
   if (target_byte_order_auto)
     return BFD_ENDIAN_UNKNOWN;
   else
-    return target_byte_order;
+    return (enum bfd_endian)target_byte_order;
 }
 
 static const char endian_big[] = "big";
@@ -653,17 +653,16 @@ static const bfd_target *default_bfd_vec;
 #endif
 
 void
-initialize_current_architecture (void)
+initialize_current_architecture(void)
 {
-  const char **arches = gdbarch_printable_names ();
+  const char **arches = gdbarch_printable_names();
 
-  /* determine a default architecture and byte order. */
+  /* determine a default architecture and byte order: */
   struct gdbarch_info info;
-  gdbarch_info_init (&info);
+  gdbarch_info_init(&info);
 
-  /* Find a default architecture. */
-  if (info.bfd_arch_info == NULL
-      && default_bfd_arch != NULL)
+  /* Find a default architecture: */
+  if ((info.bfd_arch_info == NULL) && (default_bfd_arch != NULL))
     info.bfd_arch_info = default_bfd_arch;
   if (info.bfd_arch_info == NULL)
     {
@@ -673,23 +672,23 @@ initialize_current_architecture (void)
       const char **arch;
       for (arch = arches; *arch != NULL; arch++)
 	{
-	  if (strcmp (*arch, chosen) < 0)
+	  if (strcmp(*arch, chosen) < 0)
 	    chosen = *arch;
 	}
       if (chosen == NULL)
-	internal_error (__FILE__, __LINE__,
-			_("initialize_current_architecture: No arch"));
-      info.bfd_arch_info = bfd_scan_arch (chosen);
+	internal_error(__FILE__, __LINE__,
+                       _("initialize_current_architecture: No arch"));
+      info.bfd_arch_info = bfd_scan_arch(chosen);
       if (info.bfd_arch_info == NULL)
-	internal_error (__FILE__, __LINE__,
-			_("initialize_current_architecture: Arch not found"));
+	internal_error(__FILE__, __LINE__,
+                       _("initialize_current_architecture: Arch not found"));
     }
 
-  /* Take several guesses at a byte order.  */
-  if (info.byte_order == BFD_ENDIAN_UNKNOWN
-      && default_bfd_vec != NULL)
+  /* Take several guesses at a byte order: */
+  if ((info.byte_order == BFD_ENDIAN_UNKNOWN)
+      && (default_bfd_vec != NULL))
     {
-      /* Extract BFD's default vector's byte order. */
+      /* Extract BFD's default vector's byte order: */
       switch (default_bfd_vec->byteorder)
 	{
 	case BFD_ENDIAN_BIG:
@@ -704,12 +703,12 @@ initialize_current_architecture (void)
     }
   if (info.byte_order == BFD_ENDIAN_UNKNOWN)
     {
-      /* look for ``*el-*'' in the target name. */
+      /* look for ``*el-*'' in the target name: */
       const char *chp;
       chp = strchr (target_name, '-');
-      if (chp != NULL
-	  && chp - 2 >= target_name
-	  && strncmp (chp - 2, "el", 2) == 0)
+      if ((chp != NULL)
+	  && ((chp - 2) >= target_name)
+	  && (strncmp(chp - 2, "el", 2) == 0))
 	info.byte_order = BFD_ENDIAN_LITTLE;
     }
   if (info.byte_order == BFD_ENDIAN_UNKNOWN)
@@ -719,9 +718,9 @@ initialize_current_architecture (void)
     }
 
   if (! gdbarch_update_p (info))
-    internal_error (__FILE__, __LINE__,
-		    _("initialize_current_architecture: Selection of "
-		      "initial architecture failed"));
+    internal_error(__FILE__, __LINE__,
+		   _("initialize_current_architecture: Selection of "
+		     "initial architecture failed"));
 
   /* Create the ``set architecture'' command appending ``auto'' to the
      list of architectures. */
@@ -729,16 +728,16 @@ initialize_current_architecture (void)
     /* Append ``auto''. */
     int nr;
     for (nr = 0; arches[nr] != NULL; nr++);
-    arches = xrealloc (arches, sizeof (char*) * (nr + 2));
+    arches = (const char **)xrealloc(arches, sizeof(char *) * (nr + 2));
     arches[nr + 0] = "auto";
     arches[nr + 1] = NULL;
-    add_setshow_enum_cmd ("architecture", class_support,
-			  arches, &set_architecture_string, _("\
+    add_setshow_enum_cmd("architecture", class_support,
+                         arches, &set_architecture_string, _("\
 Set architecture of target."), _("\
 Show architecture of target."), NULL,
-			  set_architecture, show_architecture,
-			  &setlist, &showlist);
-    add_alias_cmd ("processor", "architecture", class_support, 1, &setlist);
+                         set_architecture, show_architecture,
+                         &setlist, &showlist);
+    add_alias_cmd("processor", "architecture", class_support, 1, &setlist);
   }
 }
 

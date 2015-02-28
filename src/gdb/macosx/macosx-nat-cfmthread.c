@@ -32,6 +32,8 @@
 #include "macosx-nat-cfmthread.h"
 #include "macosx-nat-cfm.h"
 
+extern void _initialize_macosx_nat_cfmthread(void);
+
 static CORE_ADDR lookup_address(const char *s)
 {
   struct minimal_symbol *msym;
@@ -84,7 +86,9 @@ void macosx_cfm_thread_destroy(macosx_cfm_thread_status *s)
   macosx_cfm_thread_init(s);
 }
 
-void _initialize_macosx_nat_cfmthread(void)
+/* remember, function name must start in column 0 for init.c to work: */
+void
+_initialize_macosx_nat_cfmthread(void)
 {
   return; /* FIXME: actually do something here */
 }

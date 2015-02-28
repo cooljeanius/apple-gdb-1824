@@ -95,6 +95,17 @@ extern long
   cfm_fetch_connection_info
   (struct cfm_parser *parser, CORE_ADDR addr, NCFragConnectionInfo *info);
 
+/**/
+extern long
+cfm_parse_section_info(struct cfm_parser *parser,
+                       unsigned char *buf,
+                       size_t len, NCFragSectionInfo *info);
+
+extern long
+cfm_parse_instance_info(struct cfm_parser *parser,
+                        unsigned char *buf,
+                        size_t len, NCFragInstanceInfo *info);
+
 extern long
   cfm_parse_container_info
   (struct cfm_parser *parser, unsigned char *buf, size_t len,

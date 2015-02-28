@@ -968,22 +968,16 @@ mn10300_elf_gc_mark_hook(asection *sec,
 
 /* Perform a relocation as part of a final link: */
 static bfd_reloc_status_type
-mn10300_elf_final_link_relocate(howto, input_bfd, output_bfd,
-                                input_section, contents, offset, value,
-                                addend, h, symndx, info, sym_sec, is_local)
-     reloc_howto_type *howto;
-     bfd *input_bfd;
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     asection *input_section;
-     bfd_byte *contents;
-     bfd_vma offset;
-     bfd_vma value;
-     bfd_vma addend;
-     struct elf_link_hash_entry * h;
-     unsigned long symndx;
-     struct bfd_link_info *info;
-     asection *sym_sec ATTRIBUTE_UNUSED;
-     int is_local ATTRIBUTE_UNUSED;
+mn10300_elf_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
+                                bfd *output_bfd ATTRIBUTE_UNUSED,
+                                asection *input_section,
+                                bfd_byte *contents, bfd_vma offset,
+                                bfd_vma value, bfd_vma addend,
+                                struct elf_link_hash_entry *h,
+                                unsigned long symndx,
+                                struct bfd_link_info *info,
+                                asection *sym_sec ATTRIBUTE_UNUSED,
+                                int is_local ATTRIBUTE_UNUSED)
 {
   unsigned long r_type = howto->type;
   bfd_byte *hit_data = contents + offset;
@@ -1377,16 +1371,11 @@ mn10300_elf_final_link_relocate(howto, input_bfd, output_bfd,
 
 /* Relocate an MN10300 ELF section: */
 static bfd_boolean
-mn10300_elf_relocate_section(output_bfd, info, input_bfd, input_section,
-                             contents, relocs, local_syms, local_sections)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     Elf_Internal_Rela *relocs;
-     Elf_Internal_Sym *local_syms;
-     asection **local_sections;
+mn10300_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+                             bfd *input_bfd, asection *input_section,
+                             bfd_byte *contents, Elf_Internal_Rela *relocs,
+                             Elf_Internal_Sym *local_syms,
+                             asection **local_sections)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
@@ -1395,8 +1384,8 @@ mn10300_elf_relocate_section(output_bfd, info, input_bfd, input_section,
   if (info->relocatable)
     return TRUE;
 
-  symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (input_bfd);
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(input_bfd);
 
   rel = relocs;
   relend = relocs + input_section->reloc_count;
@@ -2989,6 +2978,9 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 		       Note that this is not required, and it may be slow.  */
 		    *again = TRUE;
 		    break;
+
+                  default:
+                    break;
 		  }
 	      else if ((code & 0xf0) == 0x80
 		       || (code & 0xf0) == 0x90)
@@ -3090,6 +3082,9 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 		       Note that this is not required, and it may be slow.  */
 		    *again = TRUE;
 		    break;
+
+                  default:
+                    break;
 		  }
 	      else if ((code & 0xf0) < 0xf0)
 		switch (code & 0xfc)
@@ -3107,19 +3102,17 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 		    /* Not safe if the high bit is on as relaxing may
 		       move the value out of high mem and thus not fit
 		       in a signed 16bit value.  */
-		    if (code == 0xcc
-			&& (value & 0x8000))
+		    if ((code == 0xcc) && (value & 0x8000))
 		      continue;
 
-		    /* mov imm16, an zero-extends the immediate.  */
-		    if (code == 0xdc
-			&& (long)value < 0)
+		    /* mov imm16, an zero-extends the immediate: */
+		    if ((code == 0xdc) && (long)value < 0)
 		      continue;
 
-		    /* Note that we've changed the relocation contents, etc.  */
-		    elf_section_data (sec)->relocs = internal_relocs;
-		    elf_section_data (sec)->this_hdr.contents = contents;
-		    symtab_hdr->contents = (unsigned char *) isymbuf;
+		    /* Note that we have changed the relocation contents, etc.  */
+		    elf_section_data(sec)->relocs = internal_relocs;
+		    elf_section_data(sec)->this_hdr.contents = contents;
+		    symtab_hdr->contents = (unsigned char *)isymbuf;
 
 		    if ((code & 0xfc) == 0xcc)
 		      code = 0x2c + (code & 0x03);
@@ -3132,31 +3125,31 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 		    else if ((code & 0xfc) == 0xac)
 		      code = 0x38 + (code & 0x03);
 		    else
-		      abort ();
+		      abort();
 
-		    /* Fix the opcode.  */
-		    bfd_put_8 (abfd, code, contents + irel->r_offset - 2);
+		    /* Fix the opcode: */
+		    bfd_put_8(abfd, code, contents + irel->r_offset - 2);
 
-		    /* Fix the relocation's type.  */
-		    irel->r_info = ELF32_R_INFO (ELF32_R_SYM (irel->r_info),
-						 (ELF32_R_TYPE (irel->r_info)
-						  == (int) R_MN10300_GOTOFF32)
-						 ? R_MN10300_GOTOFF16
-						 : (ELF32_R_TYPE (irel->r_info)
-						    == (int) R_MN10300_GOT32)
-						 ? R_MN10300_GOT16
-						 : (ELF32_R_TYPE (irel->r_info)
-						    == (int) R_MN10300_GOTPC32)
-						 ? R_MN10300_GOTPC16 :
-						 R_MN10300_16);
+		    /* Fix the relocation's type: */
+		    irel->r_info = ELF32_R_INFO(ELF32_R_SYM(irel->r_info),
+                                                (ELF32_R_TYPE(irel->r_info)
+                                                 == (int)R_MN10300_GOTOFF32)
+                                                ? R_MN10300_GOTOFF16
+                                                : (ELF32_R_TYPE(irel->r_info)
+                                                   == (int)R_MN10300_GOT32)
+                                                ? R_MN10300_GOT16
+                                                : (ELF32_R_TYPE(irel->r_info)
+                                                   == (int)R_MN10300_GOTPC32)
+                                                ? R_MN10300_GOTPC16
+                                                : R_MN10300_16);
 
 		    /* The opcode got shorter too, so we have to fix the
 		       addend and offset too!  */
 		    irel->r_offset -= 1;
 
-		    /* Delete three bytes of data.  */
-		    if (!mn10300_elf_relax_delete_bytes (abfd, sec,
-							 irel->r_offset + 1, 3))
+		    /* Delete three bytes of data: */
+		    if (!mn10300_elf_relax_delete_bytes(abfd, sec,
+                                                        irel->r_offset + 1, 3))
 		      goto error_return;
 
 		    /* That will change things, so, we should relax again.
@@ -3192,47 +3185,49 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 		  case 0xe1:
 		  case 0xe2:
 		  case 0xe3:
-		    /* cmp imm16, an zero-extends the immediate.  */
-		    if (code == 0xdc
-			&& (long)value < 0)
+		    /* cmp imm16, an zero-extends the immediate: */
+		    if ((code == 0xdc) && ((long)value < 0))
 		      continue;
 
-		    /* So do sp-based offsets.  */
-		    if (code >= 0xb0 && code <= 0xb3
-			&& (long)value < 0)
+		    /* So do sp-based offsets: */
+		    if ((code >= 0xb0) && (code <= 0xb3)
+			&& ((long)value < 0))
 		      continue;
 
-		    /* Note that we've changed the relocation contents, etc.  */
-		    elf_section_data (sec)->relocs = internal_relocs;
-		    elf_section_data (sec)->this_hdr.contents = contents;
-		    symtab_hdr->contents = (unsigned char *) isymbuf;
+		    /* Note that we have changed the relocation contents, etc.  */
+		    elf_section_data(sec)->relocs = internal_relocs;
+		    elf_section_data(sec)->this_hdr.contents = contents;
+		    symtab_hdr->contents = (unsigned char *)isymbuf;
 
-		    /* Fix the opcode.  */
-		    bfd_put_8 (abfd, 0xfa, contents + irel->r_offset - 2);
-		    bfd_put_8 (abfd, code, contents + irel->r_offset - 1);
+		    /* Fix the opcode: */
+		    bfd_put_8(abfd, 0xfa, contents + irel->r_offset - 2);
+		    bfd_put_8(abfd, code, contents + irel->r_offset - 1);
 
-		    /* Fix the relocation's type.  */
-		    irel->r_info = ELF32_R_INFO (ELF32_R_SYM (irel->r_info),
-						 (ELF32_R_TYPE (irel->r_info)
-						  == (int) R_MN10300_GOTOFF32)
-						 ? R_MN10300_GOTOFF16
-						 : (ELF32_R_TYPE (irel->r_info)
-						    == (int) R_MN10300_GOT32)
-						 ? R_MN10300_GOT16
-						 : (ELF32_R_TYPE (irel->r_info)
-						    == (int) R_MN10300_GOTPC32)
-						 ? R_MN10300_GOTPC16 :
-						 R_MN10300_16);
+		    /* Fix the relocation's type: */
+		    irel->r_info = ELF32_R_INFO(ELF32_R_SYM(irel->r_info),
+                                                (ELF32_R_TYPE(irel->r_info)
+                                                 == (int)R_MN10300_GOTOFF32)
+                                                ? R_MN10300_GOTOFF16
+                                                : (ELF32_R_TYPE(irel->r_info)
+                                                   == (int)R_MN10300_GOT32)
+                                                ? R_MN10300_GOT16
+                                                : (ELF32_R_TYPE(irel->r_info)
+                                                   == (int)R_MN10300_GOTPC32)
+                                                ? R_MN10300_GOTPC16
+                                                : R_MN10300_16);
 
-		    /* Delete two bytes of data.  */
-		    if (!mn10300_elf_relax_delete_bytes (abfd, sec,
-							 irel->r_offset + 2, 2))
+		    /* Delete two bytes of data: */
+		    if (!mn10300_elf_relax_delete_bytes(abfd, sec,
+                                                        irel->r_offset + 2, 2))
 		      goto error_return;
 
 		    /* That will change things, so, we should relax again.
 		       Note that this is not required, and it may be slow.  */
 		    *again = TRUE;
 		    break;
+
+                  default:
+                    break;
 		  }
 	      else if (code == 0xfe)
 		{
@@ -3537,14 +3532,12 @@ mn10300_elf_symbol_address_p(bfd *abfd, asection *sec,
    which uses mn10300_elf_relocate_section.  */
 
 static bfd_byte *
-mn10300_elf_get_relocated_section_contents (output_bfd, link_info, link_order,
-					    data, relocatable, symbols)
-     bfd *output_bfd;
-     struct bfd_link_info *link_info;
-     struct bfd_link_order *link_order;
-     bfd_byte *data;
-     bfd_boolean relocatable;
-     asymbol **symbols;
+mn10300_elf_get_relocated_section_contents(bfd *output_bfd,
+                                           struct bfd_link_info *link_info,
+                                           struct bfd_link_order *link_order,
+					   bfd_byte *data,
+                                           bfd_boolean relocatable,
+                                           asymbol **symbols)
 {
   Elf_Internal_Shdr *symtab_hdr;
   asection *input_section = link_order->u.indirect.section;

@@ -218,7 +218,7 @@ static const bfd_byte elf_m68k_plt_entry[PLT_ENTRY_SIZE] =
 };
 
 
-#define CFV4E_PLT_ENTRY_SIZE 24 
+#define CFV4E_PLT_ENTRY_SIZE 24
 
 #define CFV4E_FLAG(abfd)  (elf_elfheader (abfd)->e_flags & EF_CFV4E)
 
@@ -729,9 +729,9 @@ elf_m68k_check_relocs (abfd, info, sec, relocs)
 		 function is only called if we are using an m68kelf linker
 		 hash table, which means that h is really a pointer to an
 		 elf_m68k_link_hash_entry.  */
-	      if (ELF32_R_TYPE (rel->r_info) == R_68K_PC8
-		  || ELF32_R_TYPE (rel->r_info) == R_68K_PC16
-		  || ELF32_R_TYPE (rel->r_info) == R_68K_PC32)
+	      if ((ELF32_R_TYPE(rel->r_info) == R_68K_PC8)
+		  || (ELF32_R_TYPE(rel->r_info) == R_68K_PC16)
+		  || (ELF32_R_TYPE(rel->r_info) == R_68K_PC32))
 		{
 		  struct elf_m68k_pcrel_relocs_copied *p;
 		  struct elf_m68k_pcrel_relocs_copied **head;
@@ -739,20 +739,20 @@ elf_m68k_check_relocs (abfd, info, sec, relocs)
 		  if (h != NULL)
 		    {
 		      struct elf_m68k_link_hash_entry *eh
-			= elf_m68k_hash_entry (h);
+			= elf_m68k_hash_entry(h);
 		      head = &eh->pcrel_relocs_copied;
 		    }
 		  else
 		    {
 		      asection *s;
 		      s = (bfd_section_from_r_symndx
-			   (abfd, &elf_m68k_hash_table (info)->sym_sec,
+			   (abfd, &elf_m68k_hash_table(info)->sym_sec,
 			    sec, r_symndx));
 		      if (s == NULL)
 			return FALSE;
 
 		      head = ((struct elf_m68k_pcrel_relocs_copied **)
-			      &elf_section_data (s)->local_dynrel);
+			      &elf_section_data(s)->local_dynrel);
 		    }
 
 		  for (p = *head; p != NULL; p = p->next)

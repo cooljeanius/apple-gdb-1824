@@ -1056,23 +1056,23 @@ mmo_get_spec_section (bfd *abfd, int spec_data_number)
 	  && (buf[1] != LOP_QUOTE || bfd_bread (buf, 4, abfd) != 4)))
     goto format_error_free;
 
-  section_vma |= (bfd_vma) bfd_get_32 (abfd, buf);
+  section_vma |= (bfd_vma)bfd_get_32(abfd, buf);
 
-  sec = mmo_make_section (abfd, secname);
-  free (secname);
+  sec = mmo_make_section(abfd, secname);
+  free(secname);
   if (sec == NULL)
     goto format_error;
 
   /* We allocate a buffer here for the advertised size, with head room for
      tetrabyte alignment.  */
-  loc = bfd_zmalloc (section_length + 3
-		     + sizeof (struct mmo_data_list_struct));
+  loc = (struct mmo_data_list_struct *)bfd_zmalloc(section_length + 3
+                                                   + sizeof(struct mmo_data_list_struct));
   if (loc == NULL)
     goto format_error;
 
   /* Use a TETRA-rounded size for the allocated buffer; we set the
      "visible" section size below.  */
-  loc->size = (section_length + 3) & ~3;
+  loc->size = ((section_length + 3) & ~3);
 
   /* Add in the section flags we found to those bfd entered during this
      process and set the contents.  */
@@ -2636,8 +2636,9 @@ mmo_internal_add_3_sym (bfd *abfd, struct mmo_symbol_trie *rootp,
 
   while (*name != 0)
     {
-      /* Create middle branches for the rest of the characters.  */
-      trie = bfd_zalloc (abfd, sizeof (struct mmo_symbol_trie));
+      /* Create middle branches for the rest of the characters: */
+      trie = (struct mmo_symbol_trie *)bfd_zalloc(abfd,
+                                                  sizeof(struct mmo_symbol_trie));
       *triep = trie;
       trie->symchar = *name++;
       triep = &trie->middle;

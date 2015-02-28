@@ -1448,21 +1448,21 @@ malloc_history_info_command(char *arg, int from_tty)
     }
 
 #if HAVE_64_BIT_STACK_LOGGING
-  addr = (mach_vm_address_t) parse_and_eval_address (arg);
+  addr = (mach_vm_address_t)parse_and_eval_address(arg);
 #elif HAVE_32_BIT_STACK_LOGGING
-  addr = parse_and_eval_address (arg);
+  addr = parse_and_eval_address(arg);
 #endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
 
   if (!target_has_execution)
-    error ("Cannot get malloc history: target is not running");
+    error("Cannot get malloc history: target is not running");
 
-  if (inferior_environ == NULL
-      || get_in_environ (inferior_environ, "MallocStackLoggingNoCompact") == NULL)
+  if ((inferior_environ == NULL)
+      || (get_in_environ(inferior_environ, "MallocStackLoggingNoCompact") == NULL))
     {
-      warning ("MallocStackLoggingNoCompact not set in target's environment"
-	       " so the malloc history will not be available.");
+      warning("MallocStackLoggingNoCompact not set in target's environment"
+	      " so the malloc history will not be available.");
     }
-  cleanup = make_cleanup_ui_out_list_begin_end (uiout, "stacks");
+  cleanup = make_cleanup_ui_out_list_begin_end(uiout, "stacks");
 
   if (exact)
     {
@@ -1489,11 +1489,11 @@ malloc_history_info_command(char *arg, int from_tty)
 
   if (malloc_path_string_buffer[0] == '\0')
     {
-      /* Only search for the logging function once.  */
+      /* Only search for the logging function once: */
       static int already_looked = 0;
 
       if (!already_looked)
-        logging_file_path_fn = dlsym (RTLD_DEFAULT, stack_logging_set_file_function);
+        logging_file_path_fn = (set_logging_file_path_ptr)dlsym(RTLD_DEFAULT, stack_logging_set_file_function);
       already_looked = 1;
 
       if (logging_file_path_fn != NULL)
@@ -1501,7 +1501,7 @@ malloc_history_info_command(char *arg, int from_tty)
           /* Okay, look for the symbol in question: */
 
           struct minimal_symbol *filename_variable
-            = lookup_minimal_symbol (stack_log_filename_variable, NULL, NULL);
+            = lookup_minimal_symbol(stack_log_filename_variable, NULL, NULL);
           if (filename_variable)
             {
               TRY_CATCH (except, RETURN_MASK_ERROR)
@@ -1596,7 +1596,7 @@ build_path_to_element(struct type *type, CORE_ADDR offset, char **symbol_name)
 	      if (*symbol_name == NULL)
 		{
 		  orig_len = 0;
-		  *symbol_name = xmalloc(strlen(TYPE_FIELD_NAME(type, i)) + 1UL);
+		  *symbol_name = (char *)xmalloc(strlen(TYPE_FIELD_NAME(type, i)) + 1UL);
 		  strcpy(*symbol_name, TYPE_FIELD_NAME(type, i));
 		}
 	      else
@@ -1604,9 +1604,10 @@ build_path_to_element(struct type *type, CORE_ADDR offset, char **symbol_name)
 		  orig_len = strlen(*symbol_name);
 
 		  /* Grow the string to accomodate the dot and the field name: */
-		  *symbol_name = xrealloc(*symbol_name, (orig_len + 1UL
-                                                         + strlen(TYPE_FIELD_NAME(type, i))
-                                                         + 1UL));
+		  *symbol_name = (char *)xrealloc(*symbol_name,
+                                                  (orig_len + 1UL
+                                                   + strlen(TYPE_FIELD_NAME(type, i))
+                                                   + 1UL));
 		  (*symbol_name)[orig_len] = '.';
 
 		  strcpy((*symbol_name + orig_len + 1),

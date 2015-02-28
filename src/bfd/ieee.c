@@ -1043,9 +1043,9 @@ ieee_canonicalize_symtab (bfd *abfd, asymbol **location)
 }
 
 static asection *
-get_section_entry (bfd *abfd, ieee_data_type *ieee, unsigned int index)
+get_section_entry(bfd *abfd, ieee_data_type *ieee, unsigned int uindex)
 {
-  if (index >= ieee->section_table_size)
+  if (uindex >= ieee->section_table_size)
     {
       unsigned int c, i;
       asection **n;
@@ -1054,7 +1054,7 @@ get_section_entry (bfd *abfd, ieee_data_type *ieee, unsigned int index)
       c = ieee->section_table_size;
       if (c == 0)
 	c = 20;
-      while (c <= index)
+      while (c <= uindex)
 	c *= 2;
 
       amt = c;
@@ -1070,21 +1070,21 @@ get_section_entry (bfd *abfd, ieee_data_type *ieee, unsigned int index)
       ieee->section_table_size = c;
     }
 
-  if (ieee->section_table[index] == (asection *)NULL)
+  if (ieee->section_table[uindex] == (asection *)NULL)
     {
-      char *tmp = (char *)bfd_alloc(abfd, (bfd_size_type) 11);
+      char *tmp = (char *)bfd_alloc(abfd, (bfd_size_type)11UL);
       asection *section;
 
       if (!tmp)
 	return NULL;
-      sprintf(tmp, " fsec%4d", index);
+      sprintf(tmp, " fsec%4d", uindex);
       section = bfd_make_section(abfd, tmp);
-      ieee->section_table[index] = section;
+      ieee->section_table[uindex] = section;
       section->flags = SEC_NO_FLAGS;
-      section->target_index = index;
-      ieee->section_table[index] = section;
+      section->target_index = uindex;
+      ieee->section_table[uindex] = section;
     }
-  return ieee->section_table[index];
+  return ieee->section_table[uindex];
 }
 
 static void

@@ -3984,22 +3984,22 @@ m32r_elf_check_relocs (bfd *abfd,
                 {
                   asection *s;
 
-                  /* Track dynamic relocs needed for local syms too.  */
-                  s = bfd_section_from_r_symndx (abfd, &htab->sym_sec,
-                                                 sec, r_symndx);
+                  /* Track dynamic relocs needed for local syms too: */
+                  s = bfd_section_from_r_symndx(abfd, &htab->sym_sec,
+                                                sec, r_symndx);
                   if (s == NULL)
                     return FALSE;
 
                   head = ((struct elf_m32r_dyn_relocs **)
-                          &elf_section_data (s)->local_dynrel);
+                          &elf_section_data(s)->local_dynrel);
                 }
 
               p = *head;
-              if (p == NULL || p->sec != sec)
+              if ((p == NULL) || (p->sec != sec))
                 {
-                  bfd_size_type amt = sizeof (*p);
+                  bfd_size_type amt = sizeof(*p);
 
-                  p = bfd_alloc (dynobj, amt);
+                  p = bfd_alloc(dynobj, amt);
                   if (p == NULL)
                     return FALSE;
                   p->next = *head;

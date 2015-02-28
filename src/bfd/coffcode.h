@@ -3047,7 +3047,7 @@ coff_compute_section_file_positions(bfd *abfd)
       }
     section_list[i] = NULL;
 
-    qsort (section_list, count, sizeof (asection *), sort_by_secaddr);
+    qsort(section_list, count, sizeof(asection *), sort_by_secaddr);
 
     /* Rethread the linked list into sorted order; at the same time,
        assign target_index values.  */
@@ -3077,7 +3077,7 @@ coff_compute_section_file_positions(bfd *abfd)
 	  current->target_index = target_index++;
       }
 
-    free (section_list);
+    free(section_list);
   }
 #else /* ! COFF_IMAGE_WITH_PE */
   {

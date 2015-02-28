@@ -325,7 +325,9 @@ static void init_darwin_kernel_ops(void)
   darwin_kernel_ops.to_has_execution = 0;
 }
 
-void _initialize_remote_darwin_kernel(void)
+/* remember, function name must start in column 0 for init.c to work: */
+void
+_initialize_remote_darwin_kernel(void)
 {
   init_darwin_kernel_ops();
   add_target(&darwin_kernel_ops);

@@ -16,7 +16,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* This structure contains everything that BFD knows about a target.
    It includes things like its byte order, name, what routines to call
@@ -27,52 +27,56 @@
    one for little-endian machines.   */
 
 #ifndef bfd_elfNN_close_and_cleanup
-#define	bfd_elfNN_close_and_cleanup _bfd_elf_close_and_cleanup
-#endif
+# define bfd_elfNN_close_and_cleanup _bfd_elf_close_and_cleanup
+#endif /* !bfd_elfNN_close_and_cleanup */
 #define bfd_elfNN_bfd_free_cached_info _bfd_generic_bfd_free_cached_info
 #ifndef bfd_elfNN_get_section_contents
-#define bfd_elfNN_get_section_contents _bfd_generic_get_section_contents
-#endif
+# define bfd_elfNN_get_section_contents _bfd_generic_get_section_contents
+#endif /* !bfd_elfNN_get_section_contents */
 
 #define bfd_elfNN_canonicalize_dynamic_symtab \
   _bfd_elf_canonicalize_dynamic_symtab
 #ifndef bfd_elfNN_get_synthetic_symtab
-#define bfd_elfNN_get_synthetic_symtab \
-  _bfd_elf_get_synthetic_symtab
-#endif
+# define bfd_elfNN_get_synthetic_symtab \
+   _bfd_elf_get_synthetic_symtab
+#endif /* !bfd_elfNN_get_synthetic_symtab */
 #ifndef bfd_elfNN_canonicalize_reloc
-#define bfd_elfNN_canonicalize_reloc	_bfd_elf_canonicalize_reloc
-#endif
+# define bfd_elfNN_canonicalize_reloc	_bfd_elf_canonicalize_reloc
+#endif /* ! bfd_elfNN_canonicalize_reloc */
 #ifndef bfd_elfNN_find_nearest_line
-#define bfd_elfNN_find_nearest_line	_bfd_elf_find_nearest_line
-#endif
+# define bfd_elfNN_find_nearest_line	_bfd_elf_find_nearest_line
+#endif /* !bfd_elfNN_find_nearest_line */
 #ifndef bfd_elfNN_find_inliner_info
-#define bfd_elfNN_find_inliner_info	_bfd_elf_find_inliner_info
-#endif
+# define bfd_elfNN_find_inliner_info	_bfd_elf_find_inliner_info
+#endif /* !bfd_elfNN_find_inliner_info */
 #define bfd_elfNN_read_minisymbols	_bfd_elf_read_minisymbols
 #define bfd_elfNN_minisymbol_to_symbol	_bfd_elf_minisymbol_to_symbol
 #define bfd_elfNN_get_dynamic_symtab_upper_bound \
   _bfd_elf_get_dynamic_symtab_upper_bound
 #define bfd_elfNN_get_lineno		_bfd_elf_get_lineno
 #ifndef bfd_elfNN_get_reloc_upper_bound
-#define bfd_elfNN_get_reloc_upper_bound _bfd_elf_get_reloc_upper_bound
-#endif
+# define bfd_elfNN_get_reloc_upper_bound _bfd_elf_get_reloc_upper_bound
+#endif /* !bfd_elfNN_get_reloc_upper_bound */
 #ifndef bfd_elfNN_get_symbol_info
-#define bfd_elfNN_get_symbol_info	_bfd_elf_get_symbol_info
-#endif
+# define bfd_elfNN_get_symbol_info	_bfd_elf_get_symbol_info
+#endif /* !bfd_elfNN_get_symbol_info */
 #define bfd_elfNN_canonicalize_symtab	_bfd_elf_canonicalize_symtab
 #define bfd_elfNN_get_symtab_upper_bound _bfd_elf_get_symtab_upper_bound
 #define bfd_elfNN_make_empty_symbol	_bfd_elf_make_empty_symbol
 #ifndef bfd_elfNN_new_section_hook
-#define bfd_elfNN_new_section_hook	_bfd_elf_new_section_hook
-#endif
+# define bfd_elfNN_new_section_hook	_bfd_elf_new_section_hook
+#endif /* !bfd_elfNN_new_section_hook */
 #define bfd_elfNN_set_arch_mach		_bfd_elf_set_arch_mach
 #ifndef bfd_elfNN_set_section_contents
-#define bfd_elfNN_set_section_contents	_bfd_elf_set_section_contents
-#endif
+# define bfd_elfNN_set_section_contents	_bfd_elf_set_section_contents
+#endif /* !bfd_elfNN_set_section_contents */
 #define bfd_elfNN_sizeof_headers	_bfd_elf_sizeof_headers
-#define bfd_elfNN_write_object_contents _bfd_elf_write_object_contents
-#define bfd_elfNN_write_corefile_contents _bfd_elf_write_corefile_contents
+#ifndef bfd_elfNN_write_object_contents
+# define bfd_elfNN_write_object_contents _bfd_elf_write_object_contents
+#endif /* !bfd_elfNN_write_object_contents */
+#ifndef bfd_elfNN_write_corefile_contents
+# define bfd_elfNN_write_corefile_contents _bfd_elf_write_corefile_contents
+#endif /* !bfd_elfNN_write_corefile_contents */
 
 #define bfd_elfNN_get_section_contents_in_window \
   _bfd_generic_get_section_contents_in_window
@@ -80,42 +84,42 @@
   _bfd_generic_get_section_contents_in_window_with_mode
 
 #ifndef elf_backend_can_refcount
-#define elf_backend_can_refcount 0
+# define elf_backend_can_refcount 0
 #endif
 #ifndef elf_backend_want_got_plt
-#define elf_backend_want_got_plt 0
+# define elf_backend_want_got_plt 0
 #endif
 #ifndef elf_backend_plt_readonly
-#define elf_backend_plt_readonly 0
+# define elf_backend_plt_readonly 0
 #endif
 #ifndef elf_backend_want_plt_sym
-#define elf_backend_want_plt_sym 0
+# define elf_backend_want_plt_sym 0
 #endif
 #ifndef elf_backend_plt_not_loaded
-#define elf_backend_plt_not_loaded 0
+# define elf_backend_plt_not_loaded 0
 #endif
 #ifndef elf_backend_plt_alignment
-#define elf_backend_plt_alignment 2
+# define elf_backend_plt_alignment 2
 #endif
 #ifndef elf_backend_want_dynbss
-#define elf_backend_want_dynbss 1
+# define elf_backend_want_dynbss 1
 #endif
 #ifndef elf_backend_want_p_paddr_set_to_zero
-#define elf_backend_want_p_paddr_set_to_zero 0
+# define elf_backend_want_p_paddr_set_to_zero 0
 #endif
 
 #define bfd_elfNN_bfd_debug_info_start	bfd_void
 #define bfd_elfNN_bfd_debug_info_end	bfd_void
 #define bfd_elfNN_bfd_debug_info_accumulate \
-  ((void (*) (bfd*, struct bfd_section *)) bfd_void)
+  ((void (*)(bfd*, struct bfd_section *)) bfd_void)
 
 #ifndef bfd_elfNN_bfd_get_relocated_section_contents
-#define bfd_elfNN_bfd_get_relocated_section_contents \
-  bfd_generic_get_relocated_section_contents
+# define bfd_elfNN_bfd_get_relocated_section_contents \
+   bfd_generic_get_relocated_section_contents
 #endif
 
 #ifndef bfd_elfNN_bfd_relax_section
-#define bfd_elfNN_bfd_relax_section bfd_generic_relax_section
+# define bfd_elfNN_bfd_relax_section bfd_generic_relax_section
 #endif
 
 #ifndef elf_backend_can_gc_sections

@@ -68,54 +68,54 @@ struct gdb_events mi_async_hooks =
 /* END APPLE LOCAL */
 
 /* These are the interpreter setup, etc. functions for the MI interpreter */
-static void mi_command_loop (int mi_version);
+static void mi_command_loop(int mi_version);
 
 /* These are hooks that we put in place while doing interpreter_exec
    so we can report interesting things that happened "behind the mi's
    back" in this command */
-static int mi_interp_query_hook (const char *ctlstr, va_list ap)
-     ATTR_FORMAT (printf, 1, 0);
+static int mi_interp_query_hook(const char *ctlstr, va_list ap)
+     ATTR_FORMAT(printf, 1, 0);
 
-static void mi3_command_loop (void);
-static void mi2_command_loop (void);
-static void mi1_command_loop (void);
+static void mi3_command_loop(void);
+static void mi2_command_loop(void);
+static void mi1_command_loop(void);
 
 /* APPLE LOCAL: We need to preserve the mi0 interpreter, because
-   that's what CodeWarrior 9 uses (though it just requests "mi".  */
-static void mi0_command_loop (void);
+   that is what CodeWarrior 9 uses (though it just requests "mi"): */
+static void mi0_command_loop(void);
 
 static char *
-mi_interp_read_one_line_hook (char *prompt, int repeat, char *anno);
+mi_interp_read_one_line_hook(char *prompt, int repeat, char *anno);
 
-static void mi_load_progress (const char *section_name,
-			      unsigned long sent_so_far,
-			      unsigned long total_section,
-			      unsigned long total_sent,
-			      unsigned long grand_total);
+static void mi_load_progress(const char *section_name,
+			     unsigned long sent_so_far,
+			     unsigned long total_section,
+			     unsigned long total_sent,
+			     unsigned long grand_total);
 
 
 static void *
-mi_interpreter_init (void)
+mi_interpreter_init(void)
 {
-  struct mi_interp *mi = XMALLOC (struct mi_interp);
+  struct mi_interp *mi = XMALLOC(struct mi_interp);
 
   /* Why is this a part of the mi architecture? */
 
-  mi_setup_architecture_data ();
+  mi_setup_architecture_data();
 
   /* HACK: We need to force stdout/stderr to point at the console.  This avoids
      any potential side effects caused by legacy code that is still
      using the TUI / fputs_unfiltered_hook.  So we set up output channels for
      this now, and swap them in when we are run. */
 
-  raw_stdout = stdio_fileopen (stdout);
+  raw_stdout = stdio_fileopen(stdout);
 
-  /* Create MI channels */
-  mi->out = mi_console_file_new (raw_stdout, "~", '"');
-  mi->err = mi_console_file_new (raw_stdout, "&", '"');
+  /* Create MI channels: */
+  mi->out = mi_console_file_new(raw_stdout, "~", '"');
+  mi->err = mi_console_file_new(raw_stdout, "&", '"');
   mi->log = mi->err;
-  mi->targ = mi_console_file_new (raw_stdout, "@", '"');
-  mi->event_channel = mi_console_file_new (raw_stdout, "=", 0);
+  mi->targ = mi_console_file_new(raw_stdout, "@", '"');
+  mi->event_channel = mi_console_file_new(raw_stdout, "=", 0);
 
   return mi;
 }
@@ -143,31 +143,31 @@ mi_interpreter_resume(void *data)
   sync_execution = 0;
 
   gdb_stdout = mi->out;
-  /* Route error and log output through the MI */
+  /* Route error and log output through the MI: */
   gdb_stderr = mi->err;
   gdb_stdlog = mi->log;
-  /* Route target output through the MI. */
+  /* Route target output through the MI: */
   gdb_stdtarg = mi->targ;
 
   /* Replace all the hooks that we know about.  There really needs to
      be a better way of doing this... */
-  clear_interpreter_hooks ();
+  clear_interpreter_hooks();
 
   deprecated_show_load_progress = mi_load_progress;
   print_frame_more_info_hook = mi_print_frame_more_info;
 
-  /* If we're _the_ interpreter, take control. */
-  if (current_interp_named_p (INTERP_MI1))
+  /* If we are _the_ interpreter, then take control: */
+  if (current_interp_named_p(INTERP_MI1))
     deprecated_command_loop_hook = mi1_command_loop;
-  else if (current_interp_named_p (INTERP_MI2))
+  else if (current_interp_named_p(INTERP_MI2))
     deprecated_command_loop_hook = mi2_command_loop;
-  else if (current_interp_named_p (INTERP_MI3))
+  else if (current_interp_named_p(INTERP_MI3))
     deprecated_command_loop_hook = mi3_command_loop;
   else
     /* APPLE LOCAL: The default needs to be mi0,
-       because that's what CodeWarrior expects.  */
+     * because that is what CodeWarrior expects: */
     deprecated_command_loop_hook = mi0_command_loop;
-  deprecated_set_gdb_event_hooks (&mi_async_hooks);
+  deprecated_set_gdb_event_hooks(&mi_async_hooks);
 
   return 1;
 }
@@ -180,23 +180,23 @@ mi_interpreter_suspend(void *data)
 }
 
 static struct gdb_exception
-mi_interpreter_exec (void *data, const char *command)
+mi_interpreter_exec(void *data, const char *command)
 {
-  char *tmp = alloca (strlen (command) + 1);
-  strcpy (tmp, command);
-  mi_execute_command_wrapper (tmp);
+  char *tmp = alloca(strlen(command) + 1);
+  strcpy(tmp, command);
+  mi_execute_command_wrapper(tmp);
   return exception_none;
 }
 
-/* Never display the default gdb prompt in mi case.  */
+/* Never display the default gdb prompt in mi case: */
 static int
-mi_interpreter_prompt_p (void *data)
+mi_interpreter_prompt_p(void *data)
 {
   return 0;
 }
 
 enum mi_cmd_result
-mi_cmd_interpreter_exec (char *command, char **argv, int argc)
+mi_cmd_interpreter_exec(char *command, char **argv, int argc)
 {
   struct interp *interp_to_use;
   struct interp *old_interp;
@@ -208,31 +208,32 @@ mi_cmd_interpreter_exec (char *command, char **argv, int argc)
 
   if (argc < 2)
     {
-      mi_error_message = xstrprintf ("mi_cmd_interpreter_exec: Usage: -interpreter-exec interp command");
+      mi_error_message = xstrprintf("mi_cmd_interpreter_exec: Usage: -interpreter-exec interp command");
       return MI_CMD_ERROR;
     }
 
   interp_to_use = interp_lookup (argv[0]);
   if (interp_to_use == NULL)
     {
-      mi_error_message = xstrprintf ("mi_cmd_interpreter_exec: could not find interpreter \"%s\"", argv[0]);
+      mi_error_message = xstrprintf("mi_cmd_interpreter_exec: could not find interpreter \"%s\"",
+                                    argv[0]);
       return MI_CMD_ERROR;
     }
 
   if (!interp_exec_p (interp_to_use))
     {
-      mi_error_message = xstrprintf ("mi_cmd_interpreter_exec: interpreter \"%s\" does not support command execution",
-				     argv[0]);
+      mi_error_message = xstrprintf("mi_cmd_interpreter_exec: interpreter \"%s\" does not support command execution",
+				    argv[0]);
       return MI_CMD_ERROR;
     }
 
-  old_quiet = interp_set_quiet (interp_to_use, 1);
+  old_quiet = interp_set_quiet(interp_to_use, 1);
 
-  old_interp = interp_set (interp_to_use);
+  old_interp = interp_set(interp_to_use);
   if (old_interp == NULL)
     {
-      asprintf (&mi_error_message,
-                "Could not switch to interpreter \"%s\".", argv[0]);
+      asprintf(&mi_error_message,
+               "Could not switch to interpreter \"%s\".", argv[0]);
       return MI_CMD_ERROR;
     }
 
@@ -281,16 +282,16 @@ mi_cmd_interpreter_exec (char *command, char **argv, int argc)
       {
 	struct gdb_exception e;
 	mi_interp_exec_cmd_did_run = 0;
-	e = interp_exec (interp_to_use, argv[i]);
+	e = interp_exec(interp_to_use, argv[i]);
 	if (e.reason < 0)
 	  {
-	    mi_error_message = xstrdup (e.message);
+	    mi_error_message = xstrdup(e.message);
 	    result = MI_CMD_ERROR;
 	    break;
 	  }
       }
-      xfree (buff);
-      do_exec_error_cleanups (ALL_CLEANUPS);
+      xfree(buff);
+      do_exec_error_cleanups(ALL_CLEANUPS);
       sync_execution = 0;
     }
 
@@ -315,15 +316,14 @@ mi_cmd_interpreter_exec (char *command, char **argv, int argc)
     {
       stop_step = 1;
       if (current_command_token)
-	fputs_unfiltered (current_command_token, raw_stdout);
-      fputs_unfiltered ("^running\n", raw_stdout);
+	fputs_unfiltered(current_command_token, raw_stdout);
+      fputs_unfiltered("^running\n", raw_stdout);
 
-      ui_out_field_string (uiout, "reason",
-			   async_reason_lookup
-			   (EXEC_ASYNC_END_STEPPING_RANGE));
+      ui_out_field_string(uiout, "reason",
+			  async_reason_lookup(EXEC_ASYNC_END_STEPPING_RANGE));
 
-      ui_out_print_annotation_int (uiout, 0, "thread-id",
-				   pid_to_thread_id (inferior_ptid));
+      ui_out_print_annotation_int(uiout, 0, "thread-id",
+				  pid_to_thread_id(inferior_ptid));
     }
 
   /* APPLE LOCAL end subroutine inlining  */
@@ -348,7 +348,7 @@ mi_cmd_interpreter_exec (char *command, char **argv, int argc)
 
       fputs_unfiltered("^running\n", raw_stdout);
       add_continuation(mi_interpreter_exec_continuation,
-                       (void *)cont_args);
+                       (struct continuation_arg *)(void *)cont_args);
     }
 
   return result;

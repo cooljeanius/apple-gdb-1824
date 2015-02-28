@@ -79,17 +79,15 @@ static bfd_boolean MY(write_object_contents) PARAMS ((bfd *abfd));
 #include "aout-target.h"
 
 static bfd_reloc_status_type mips_fix_jmp_addr
-  PARAMS ((bfd *, arelent *, struct bfd_symbol *, PTR, asection *,
-	   bfd *, char **));
+  PARAMS((bfd *, arelent *, struct bfd_symbol *, PTR, asection *,
+	  bfd *, char **));
 static reloc_howto_type *MY(reloc_howto_type_lookup)
-  PARAMS ((bfd *, bfd_reloc_code_real_type));
+  PARAMS((bfd *, bfd_reloc_code_real_type));
 
-long MY(canonicalize_reloc) PARAMS ((bfd *, sec_ptr, arelent **, asymbol **));
+long MY(canonicalize_reloc) PARAMS((bfd *, sec_ptr, arelent **, asymbol **));
 
 static void
-MY(set_arch_mach) (abfd, machtype)
-     bfd *abfd;
-     unsigned long machtype;
+MY(set_arch_mach)(bfd *abfd, unsigned long machtype)
 {
   enum bfd_architecture arch;
   unsigned int machine;
@@ -101,35 +99,32 @@ MY(set_arch_mach) (abfd, machtype)
       arch = bfd_arch_mips;
       machine = bfd_mach_mips3000;
       break;
-
     case M_MIPS2:
       arch = bfd_arch_mips;
       machine = bfd_mach_mips4000;
       break;
-
     default:
       arch = bfd_arch_obscure;
       machine = 0;
       break;
     }
 
-  bfd_set_arch_mach (abfd, arch, machine);
+  bfd_set_arch_mach(abfd, arch, machine);
 }
 
 /* Determine the size of a relocation entry, based on the architecture */
 static void
-MY (choose_reloc_size) (abfd)
-     bfd *abfd;
+MY(choose_reloc_size)(bfd *abfd)
 {
-  switch (bfd_get_arch (abfd))
+  switch (bfd_get_arch(abfd))
     {
     case bfd_arch_sparc:
     case bfd_arch_a29k:
     case bfd_arch_mips:
-      obj_reloc_entry_size (abfd) = RELOC_EXT_SIZE;
+      obj_reloc_entry_size(abfd) = RELOC_EXT_SIZE;
       break;
     default:
-      obj_reloc_entry_size (abfd) = RELOC_STD_SIZE;
+      obj_reloc_entry_size(abfd) = RELOC_STD_SIZE;
       break;
     }
 }
@@ -139,14 +134,13 @@ MY (choose_reloc_size) (abfd)
   file header, symbols, and relocation.  */
 
 static bfd_boolean
-MY (write_object_contents) (abfd)
-     bfd *abfd;
+MY(write_object_contents)(bfd *abfd)
 {
   struct external_exec exec_bytes;
-  struct internal_exec *execp = exec_hdr (abfd);
+  struct internal_exec *execp = exec_hdr(abfd);
 
   /* Magic number, maestro, please!  */
-  switch (bfd_get_arch (abfd))
+  switch (bfd_get_arch(abfd))
     {
     case bfd_arch_m68k:
       switch (bfd_get_mach (abfd))
@@ -208,30 +202,25 @@ MY (write_object_contents) (abfd)
    program counter, then we need to signal an error.  */
 
 static bfd_reloc_status_type
-mips_fix_jmp_addr (abfd, reloc_entry, symbol, data, input_section, output_bfd,
-		   error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry;
-     struct bfd_symbol *symbol;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section;
-     bfd *output_bfd;
-     char **error_message ATTRIBUTE_UNUSED;
+mips_fix_jmp_addr(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
+                  struct bfd_symbol *symbol, PTR data ATTRIBUTE_UNUSED,
+                  asection *input_section, bfd *output_bfd,
+                  char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation, pc;
 
-  /* If this is a partial relocation, just continue.  */
+  /* If this is a partial relocation, then just continue: */
   if (output_bfd != (bfd *)NULL)
     return bfd_reloc_continue;
 
-  /* If this is an undefined symbol, return error */
-  if (bfd_is_und_section (symbol->section)
-      && (symbol->flags & BSF_WEAK) == 0)
+  /* If this is an undefined symbol, then return error: */
+  if (bfd_is_und_section(symbol->section)
+      && ((symbol->flags & BSF_WEAK) == 0))
     return bfd_reloc_undefined;
 
   /* Work out which section the relocation is targeted at and the
-     initial relocation command value.  */
-  if (bfd_is_com_section (symbol->section))
+   * initial relocation command value: */
+  if (bfd_is_com_section(symbol->section))
     relocation = 0;
   else
     relocation = symbol->value;
@@ -240,8 +229,8 @@ mips_fix_jmp_addr (abfd, reloc_entry, symbol, data, input_section, output_bfd,
   relocation += symbol->section->output_offset;
   relocation += reloc_entry->addend;
 
-  pc = input_section->output_section->vma + input_section->output_offset +
-    reloc_entry->address + 4;
+  pc = (input_section->output_section->vma + input_section->output_offset
+        + reloc_entry->address + 4);
 
   if ((relocation & 0xF0000000) != (pc & 0xF0000000))
     return bfd_reloc_overflow;
@@ -255,34 +244,29 @@ mips_fix_jmp_addr (abfd, reloc_entry, symbol, data, input_section, output_bfd,
    when the low bits are added at run time.  */
 
 static bfd_reloc_status_type
-mips_fix_hi16_s PARAMS ((bfd *, arelent *, asymbol *, PTR,
-			 asection *, bfd *, char **));
+mips_fix_hi16_s PARAMS((bfd *, arelent *, asymbol *, PTR,
+                        asection *, bfd *, char **));
 
 static bfd_reloc_status_type
-mips_fix_hi16_s (abfd, reloc_entry, symbol, data, input_section,
-		 output_bfd, error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry;
-     asymbol *symbol;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section ATTRIBUTE_UNUSED;
-     bfd *output_bfd;
-     char **error_message ATTRIBUTE_UNUSED;
+mips_fix_hi16_s(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
+                asymbol *symbol, PTR data ATTRIBUTE_UNUSED,
+                asection *input_section ATTRIBUTE_UNUSED,
+                bfd *output_bfd, char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
 
-  /* If this is a partial relocation, just continue.  */
+  /* If this is a partial relocation, then just continue: */
   if (output_bfd != (bfd *)NULL)
     return bfd_reloc_continue;
 
-  /* If this is an undefined symbol, return error.  */
-  if (bfd_is_und_section (symbol->section)
+  /* If this is an undefined symbol, then return error: */
+  if (bfd_is_und_section(symbol->section)
       && (symbol->flags & BSF_WEAK) == 0)
     return bfd_reloc_undefined;
 
   /* Work out which section the relocation is targeted at and the
-     initial relocation command value.  */
-  if (bfd_is_com_section (symbol->section))
+   * initial relocation command value: */
+  if (bfd_is_com_section(symbol->section))
     relocation = 0;
   else
     relocation = symbol->value;
@@ -315,12 +299,10 @@ static reloc_howto_type mips_howto_table_ext[] = {
 };
 
 static reloc_howto_type *
-MY(reloc_howto_type_lookup) (abfd, code)
-     bfd *abfd;
-     bfd_reloc_code_real_type code;
+MY(reloc_howto_type_lookup)(bfd *abfd, bfd_reloc_code_real_type code)
 {
 
-  if (bfd_get_arch (abfd) != bfd_arch_mips)
+  if (bfd_get_arch(abfd) != bfd_arch_mips)
     return 0;
 
   switch (code)
@@ -346,17 +328,14 @@ MY(reloc_howto_type_lookup) (abfd, code)
 /* This is just like the standard aoutx.h version but we need to do our
    own mapping of external reloc type values to howto entries.  */
 long
-MY(canonicalize_reloc) (abfd, section, relptr, symbols)
-      bfd *abfd;
-      sec_ptr section;
-      arelent **relptr;
-      asymbol **symbols;
+MY(canonicalize_reloc)(bfd *abfd, sec_ptr section, arelent **relptr,
+                       asymbol **symbols)
 {
   arelent *tblptr = section->relocation;
   unsigned int count, c;
   extern reloc_howto_type NAME(aout,ext_howto_table)[];
 
-  /* If we have already read in the relocation table, return the values.  */
+  /* If we have already read in the relocation table, return the values: */
   if (section->flags & SEC_CONSTRUCTOR)
     {
       arelent_chain *chain = section->constructor_chain;

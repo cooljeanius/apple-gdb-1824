@@ -1183,10 +1183,10 @@ target_xfer_partial (struct target_ops *ops,
    it makes no progress, and then return how much was transferred). */
 
 int
-target_read_memory (CORE_ADDR memaddr, gdb_byte *myaddr, int len)
+target_read_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len)
 {
-  if (target_read (&current_target, TARGET_OBJECT_MEMORY, NULL,
-		   myaddr, memaddr, len) == len)
+  if (target_read(&current_target, TARGET_OBJECT_MEMORY, NULL,
+		  myaddr, memaddr, len) == len)
     return 0;
   else
     return EIO;

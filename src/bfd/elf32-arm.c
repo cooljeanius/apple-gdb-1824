@@ -5117,21 +5117,21 @@ elf32_arm_check_relocs (bfd *abfd, struct bfd_link_info *info,
 		       easily.  Oh well.  */
 
 		    asection *s;
-		    s = bfd_section_from_r_symndx (abfd, &htab->sym_sec,
-						   sec, r_symndx);
+		    s = bfd_section_from_r_symndx(abfd, &htab->sym_sec,
+						  sec, r_symndx);
 		    if (s == NULL)
 		      return FALSE;
 
 		    head = ((struct elf32_arm_relocs_copied **)
-			    &elf_section_data (s)->local_dynrel);
+			    &elf_section_data(s)->local_dynrel);
 		  }
 
 		p = *head;
-		if (p == NULL || p->section != sec)
+		if ((p == NULL) || (p->section != sec))
 		  {
-		    bfd_size_type amt = sizeof *p;
+		    bfd_size_type amt = sizeof(*p);
 
-		    p = bfd_alloc (htab->root.dynobj, amt);
+		    p = bfd_alloc(htab->root.dynobj, amt);
 		    if (p == NULL)
 		      return FALSE;
 		    p->next = *head;
@@ -5770,7 +5770,7 @@ elf32_arm_size_dynamic_sections (bfd * output_bfd ATTRIBUTE_UNUSED,
       Elf_Internal_Shdr *symtab_hdr;
       asection *srel;
 
-      if (bfd_get_flavour (ibfd) != bfd_target_elf_flavour)
+      if (bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
 	continue;
 
       for (s = ibfd->sections; s != NULL; s = s->next)
@@ -5778,12 +5778,12 @@ elf32_arm_size_dynamic_sections (bfd * output_bfd ATTRIBUTE_UNUSED,
 	  struct elf32_arm_relocs_copied *p;
 
 	  for (p = *((struct elf32_arm_relocs_copied **)
-		     &elf_section_data (s)->local_dynrel);
+		     &elf_section_data(s)->local_dynrel);
 	       p != NULL;
 	       p = p->next)
 	    {
-	      if (!bfd_is_abs_section (p->section)
-		  && bfd_is_abs_section (p->section->output_section))
+	      if (!bfd_is_abs_section(p->section)
+		  && bfd_is_abs_section(p->section->output_section))
 		{
 		  /* Input section has been discarded, either because
 		     it is a copy of a linkonce section or due to

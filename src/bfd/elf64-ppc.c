@@ -4767,19 +4767,19 @@ ppc64_elf_check_relocs (bfd *abfd, struct bfd_link_info *info,
 		     easily.  Oh well.  */
 
 		  asection *s;
-		  s = bfd_section_from_r_symndx (abfd, &htab->sym_sec,
-						 sec, r_symndx);
+		  s = bfd_section_from_r_symndx(abfd, &htab->sym_sec,
+                                                sec, r_symndx);
 		  if (s == NULL)
 		    return FALSE;
 
 		  head = ((struct ppc_dyn_relocs **)
-			  &elf_section_data (s)->local_dynrel);
+			  &elf_section_data(s)->local_dynrel);
 		}
 
 	      p = *head;
-	      if (p == NULL || p->sec != sec)
+	      if ((p == NULL) || (p->sec != sec))
 		{
-		  p = bfd_alloc (htab->elf.dynobj, sizeof *p);
+		  p = bfd_alloc(htab->elf.dynobj, sizeof(*p));
 		  if (p == NULL)
 		    return FALSE;
 		  p->next = *head;
@@ -6110,17 +6110,17 @@ dec_dynrel_count (bfd_vma r_info,
     return TRUE;
 
   if (h != NULL)
-    pp = &((struct ppc_link_hash_entry *) h)->dyn_relocs;
+    pp = &((struct ppc_link_hash_entry *)h)->dyn_relocs;
   else if (sym_sec != NULL)
-    pp = (struct ppc_dyn_relocs **) &elf_section_data (sym_sec)->local_dynrel;
+    pp = (struct ppc_dyn_relocs **)&elf_section_data(sym_sec)->local_dynrel;
   else
-    pp = (struct ppc_dyn_relocs **) &elf_section_data (sec)->local_dynrel;
+    pp = (struct ppc_dyn_relocs **)&elf_section_data(sec)->local_dynrel;
 
   while ((p = *pp) != NULL)
     {
       if (p->sec == sec)
 	{
-	  if (!MUST_BE_DYN_RELOC (r_type))
+	  if (!MUST_BE_DYN_RELOC(r_type))
 	    p->pc_count -= 1;
 	  p->count -= 1;
 	  if (p->count == 0)
@@ -7619,24 +7619,24 @@ ppc64_elf_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 	  s->size += 16;
 	  if (info->shared)
 	    {
-	      srel = ppc64_elf_tdata (ibfd)->relgot;
-	      srel->size += sizeof (Elf64_External_Rela);
+	      srel = ppc64_elf_tdata(ibfd)->relgot;
+	      srel->size += sizeof(Elf64_External_Rela);
 	    }
 	}
       else
-	ppc64_tlsld_got (ibfd)->offset = (bfd_vma) -1;
+	ppc64_tlsld_got(ibfd)->offset = (bfd_vma)-1;
 
       for (s = ibfd->sections; s != NULL; s = s->next)
 	{
 	  struct ppc_dyn_relocs *p;
 
 	  for (p = *((struct ppc_dyn_relocs **)
-		     &elf_section_data (s)->local_dynrel);
+		     &elf_section_data(s)->local_dynrel);
 	       p != NULL;
 	       p = p->next)
 	    {
-	      if (!bfd_is_abs_section (p->sec)
-		  && bfd_is_abs_section (p->sec->output_section))
+	      if (!bfd_is_abs_section(p->sec)
+		  && bfd_is_abs_section(p->sec->output_section))
 		{
 		  /* Input section has been discarded, either because
 		     it is a copy of a linkonce section or due to

@@ -1,4 +1,4 @@
-/* Data structures for RS/6000 shared libraries, for GDB.
+/* xcoffsolib.h: Data structures for RS/6000 shared libraries, for GDB.
    Copyright 1991, 1992, 1993, 1994, 1996, 1997, 2000
    Free Software Foundation, Inc.
 
@@ -30,6 +30,15 @@
 #ifndef XCOFFSOLIB_H
 #define XCOFFSOLIB_H
 
+/* temporary, until I am ready to deal with all of the fallout that would
+ * result from fixing these warnings in this header: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 struct vmap
   {
     struct vmap *nxt;		/* ptr to next in chain                 */
@@ -51,6 +60,12 @@ struct vmap
     unsigned padding:15;
   };
 
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 struct vmap_and_bfd
   {

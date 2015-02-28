@@ -1,4 +1,4 @@
-/* MI Command Set - MI parser.
+/* mi-parse.c: MI Command Set - MI parser.
 
    Copyright 2000, 2001, 2002 Free Software Foundation, Inc.
 
@@ -33,19 +33,19 @@
 #include "gdb_string.h"
 
 static void
-mi_parse_argv (char *args, struct mi_parse *parse)
+mi_parse_argv(char *args, struct mi_parse *parse)
 {
   char *chp = args;
   int argc = 0;
-  char **argv = xmalloc ((argc + 1) * sizeof (char *));
+  char **argv = (char **)xmalloc((argc + 1) * sizeof(char *));
   argv[argc] = NULL;
   while (1)
     {
       char *arg;
-      /* skip leading white space */
-      while (isspace (*chp))
+      /* skip leading white space: */
+      while (isspace(*chp))
 	chp++;
-      /* Three possibilities: EOF, quoted string, or other text. */
+      /* Three possibilities: EOF, quoted string, or other text: */
       switch (*chp)
 	{
 	case '\0':
@@ -54,21 +54,21 @@ mi_parse_argv (char *args, struct mi_parse *parse)
 	  return;
 	case '"':
 	  {
-	    /* A quoted string. */
+	    /* A quoted string: */
 	    int len;
-	    char *start = chp + 1;
-	    /* Determine the buffer size. */
+	    char *start = (chp + 1);
+	    /* Determine the buffer size: */
 	    chp = start;
 	    len = 0;
-	    while (*chp != '\0' && *chp != '"')
+	    while ((*chp != '\0') && (*chp != '"'))
 	      {
 		if (*chp == '\\')
 		  {
 		    chp++;
-		    if (parse_escape (&chp) <= 0)
+		    if (parse_escape(&chp) <= 0)
 		      {
 			/* Do not allow split lines or "\000" */
-			freeargv (argv);
+			freeargv(argv);
 			return;
 		      }
 		  }
@@ -76,29 +76,29 @@ mi_parse_argv (char *args, struct mi_parse *parse)
 		  chp++;
 		len++;
 	      }
-	    /* Insist on a closing quote. */
+	    /* Insist on a closing quote: */
 	    if (*chp != '"')
 	      {
-		freeargv (argv);
+		freeargv(argv);
 		return;
 	      }
-	    /* Insist on trailing white space. */
-	    if (chp[1] != '\0' && !isspace (chp[1]))
+	    /* Insist on trailing white space: */
+	    if ((chp[1] != '\0') && !isspace(chp[1]))
 	      {
-		freeargv (argv);
+		freeargv(argv);
 		return;
 	      }
-	    /* create the buffer. */
-	    arg = xmalloc ((len + 1) * sizeof (char));
-	    /* And copy the characters in. */
+	    /* create the buffer: */
+	    arg = (char *)xmalloc((len + 1) * sizeof(char));
+	    /* And copy the characters in: */
 	    chp = start;
 	    len = 0;
-	    while (*chp != '\0' && *chp != '"')
+	    while ((*chp != '\0') && (*chp != '"'))
 	      {
 		if (*chp == '\\')
 		  {
 		    chp++;
-		    arg[len] = parse_escape (&chp);
+		    arg[len] = parse_escape(&chp);
 		  }
 		else
 		  arg[len] = *chp++;
@@ -114,19 +114,19 @@ mi_parse_argv (char *args, struct mi_parse *parse)
 	       characters into a buffer. */
 	    int len;
 	    char *start = chp;
-	    while (*chp != '\0' && !isspace (*chp))
+	    while ((*chp != '\0') && !isspace(*chp))
 	      {
 		chp++;
 	      }
-	    len = chp - start;
-	    arg = xmalloc ((len + 1) * sizeof (char));
+	    len = (chp - start);
+	    arg = (char *)xmalloc((len + 1) * sizeof(char));
 	    strncpy (arg, start, len);
 	    arg[len] = '\0';
 	    break;
 	  }
 	}
-      /* Append arg to argv. */
-      argv = xrealloc (argv, (argc + 2) * sizeof (char *));
+      /* Append arg to argv: */
+      argv = (char **)xrealloc(argv, (argc + 2) * sizeof(char *));
       argv[argc++] = arg;
       argv[argc] = NULL;
     }
@@ -134,92 +134,89 @@ mi_parse_argv (char *args, struct mi_parse *parse)
 
 
 void
-mi_parse_free (struct mi_parse *parse)
+mi_parse_free(struct mi_parse *parse)
 {
   if (parse == NULL)
     return;
   if (parse->command != NULL)
-    xfree (parse->command);
+    xfree(parse->command);
   if (parse->token != NULL)
-    xfree (parse->token);
+    xfree(parse->token);
   if (parse->args != NULL)
-    xfree (parse->args);
+    xfree(parse->args);
   if (parse->argv != NULL)
-    freeargv (parse->argv);
+    freeargv(parse->argv);
   if (parse->cmd_start != NULL)
-    xfree (parse->cmd_start);
-  xfree (parse);
+    xfree(parse->cmd_start);
+  xfree(parse);
 }
 
 
 struct mi_parse *
-mi_parse (char *cmd)
+mi_parse(char *cmd)
 {
   char *chp;
-  struct mi_parse *parse = XMALLOC (struct mi_parse);
-  memset (parse, 0, sizeof (*parse));
+  struct mi_parse *parse = XMALLOC(struct mi_parse);
+  memset(parse, 0, sizeof(*parse));
 
-  /* Before starting, skip leading white space. */
-  while (isspace (*cmd))
+  /* Before starting, skip leading white space: */
+  while (isspace(*cmd))
     cmd++;
 
-  /* Find/skip any token and then extract it. */
-  for (chp = cmd; *chp >= '0' && *chp <= '9'; chp++)
+  /* Find/skip any token and then extract it: */
+  for (chp = cmd; (*chp >= '0') && (*chp <= '9'); chp++)
     ;
-  parse->token = xmalloc ((chp - cmd + 1) * sizeof (char *));
-  memcpy (parse->token, cmd, (chp - cmd));
+  parse->token = (char *)xmalloc((chp - cmd + 1) * sizeof(char *));
+  memcpy(parse->token, cmd, (chp - cmd));
   parse->token[chp - cmd] = '\0';
 
-  /* This wasn't a real MI command.  Return it as a CLI_COMMAND. */
+  /* This was NOT a real MI command.  Return it as a CLI_COMMAND: */
   if (*chp != '-')
     {
-      while (isspace (*chp))
+      while (isspace(*chp))
 	chp++;
-      parse->command = xstrdup (chp);
+      parse->command = xstrdup(chp);
       parse->op = CLI_COMMAND;
       return parse;
     }
 
-  /* Extract the command. */
+  /* Extract the command: */
   {
-    char *tmp = chp + 1;	/* discard ``-'' */
-    for (; *chp && !isspace (*chp); chp++)
+    char *tmp = (chp + 1);	/* discard ``-'' */
+    for (; *chp && !isspace(*chp); chp++)
       ;
-    parse->command = xmalloc ((chp - tmp + 1) * sizeof (char *));
-    memcpy (parse->command, tmp, chp - tmp);
+    parse->command = (char *)xmalloc((chp - tmp + 1) * sizeof(char *));
+    memcpy(parse->command, tmp, chp - tmp);
     parse->command[chp - tmp] = '\0';
   }
 
-  /* Find the command in the MI table. */
-  parse->cmd = mi_lookup (parse->command);
+  /* Find the command in the MI table: */
+  parse->cmd = mi_lookup(parse->command);
   if (parse->cmd == NULL)
     {
-      /* FIXME: This should be a function call. */
-      fprintf_unfiltered
-	(raw_stdout,
-	 "%s^error,msg=\"Undefined MI command: %s\"\n",
-	 parse->token, parse->command);
-      mi_parse_free (parse);
+      /* FIXME: This should be a function call: */
+      fprintf_unfiltered(raw_stdout,
+                         "%s^error,msg=\"Undefined MI command: %s\"\n",
+                         parse->token, parse->command);
+      mi_parse_free(parse);
       return NULL;
     }
 
-  /* Skip white space following the command. */
-  while (isspace (*chp))
+  /* Skip white space following the command: */
+  while (isspace(*chp))
     chp++;
 
-  /* For new argv commands, attempt to return the parsed argument
-     list. */
+  /* For new argv commands, attempt to return the parsed argument list: */
   if (parse->cmd->argv_func != NULL)
     {
-      mi_parse_argv (chp, parse);
+      mi_parse_argv(chp, parse);
       if (parse->argv == NULL)
 	{
-	  /* FIXME: This should be a function call. */
-	  fprintf_unfiltered
-	    (raw_stdout,
-	     "%s^error,msg=\"Problem parsing arguments: %s %s\"\n",
-	     parse->token, parse->command, chp);
-	  mi_parse_free (parse);
+	  /* FIXME: This should be a function call: */
+	  fprintf_unfiltered(raw_stdout,
+                             "%s^error,msg=\"Problem parsing arguments: %s %s\"\n",
+                             parse->token, parse->command, chp);
+	  mi_parse_free(parse);
 	  return NULL;
 	}
     }
@@ -227,13 +224,14 @@ mi_parse (char *cmd)
   /* FIXME: DELETE THIS */
   /* For CLI and old ARGS commands, also return the remainder of the
      command line as a single string. */
-  if (parse->cmd->args_func != NULL
-      || parse->cmd->cli.cmd != NULL)
+  if ((parse->cmd->args_func != NULL) || (parse->cmd->cli.cmd != NULL))
     {
-      parse->args = xstrdup (chp);
+      parse->args = xstrdup(chp);
     }
 
-  /* Fully parsed. */
+  /* Fully parsed: */
   parse->op = MI_COMMAND;
   return parse;
 }
+
+/* EOF */

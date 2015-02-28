@@ -846,28 +846,28 @@ amd64_frame_sniffer (struct frame_info *next_frame)
    on both platforms.  */
 
 static struct x86_frame_cache *
-amd64_sigtramp_frame_cache (struct frame_info *next_frame, void **this_cache)
+amd64_sigtramp_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct x86_frame_cache *cache;
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
   CORE_ADDR addr;
   gdb_byte buf[8];
   int i;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct x86_frame_cache *)*this_cache;
 
-  cache = x86_alloc_frame_cache (8);
+  cache = x86_alloc_frame_cache(8);
 
-  frame_unwind_register (next_frame, AMD64_RSP_REGNUM, buf);
-  cache->frame_base = extract_unsigned_integer (buf, 8);
+  frame_unwind_register(next_frame, AMD64_RSP_REGNUM, buf);
+  cache->frame_base = extract_unsigned_integer(buf, 8);
 
-  addr = tdep->sigcontext_addr (next_frame);
-  gdb_assert (tdep->sc_reg_offset);
-  gdb_assert (tdep->sc_num_regs <= AMD64_NUM_SAVED_REGS);
+  addr = tdep->sigcontext_addr(next_frame);
+  gdb_assert(tdep->sc_reg_offset);
+  gdb_assert(tdep->sc_num_regs <= AMD64_NUM_SAVED_REGS);
   for (i = 0; i < tdep->sc_num_regs; i++)
     if (tdep->sc_reg_offset[i] != -1)
-      cache->saved_regs[i] = addr + tdep->sc_reg_offset[i];
+      cache->saved_regs[i] = (addr + tdep->sc_reg_offset[i]);
   cache->saved_regs_are_absolute = 1;
 
   cache->prologue_scan_status = full_scan_succeeded;
@@ -1147,19 +1147,19 @@ amd64_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
    reserved bits in *FXSAVE.  */
 
 void
-amd64_supply_fxsave (struct regcache *regcache, int regnum,
-		      const void *fxsave)
+amd64_supply_fxsave(struct regcache *regcache, int regnum,
+                    const void *fxsave)
 {
-  i387_supply_fxsave (regcache, regnum, fxsave);
+  i387_supply_fxsave(regcache, regnum, fxsave);
 
-  if (fxsave && gdbarch_ptr_bit (get_regcache_arch (regcache)) == 64)
+  if (fxsave && (gdbarch_ptr_bit(get_regcache_arch(regcache)) == 64))
     {
-      const gdb_byte *regs = fxsave;
+      const gdb_byte *regs = (const gdb_byte *)fxsave;
 
-      if (regnum == -1 || regnum == I387_FISEG_REGNUM)
-	regcache_raw_supply (regcache, I387_FISEG_REGNUM, regs + 12);
-      if (regnum == -1 || regnum == I387_FOSEG_REGNUM)
-	regcache_raw_supply (regcache, I387_FOSEG_REGNUM, regs + 20);
+      if ((regnum == -1) || (regnum == I387_FISEG_REGNUM))
+	regcache_raw_supply(regcache, I387_FISEG_REGNUM, regs + 12);
+      if ((regnum == -1) || (regnum == I387_FOSEG_REGNUM))
+	regcache_raw_supply(regcache, I387_FOSEG_REGNUM, regs + 20);
     }
 }
 
@@ -1169,18 +1169,20 @@ amd64_supply_fxsave (struct regcache *regcache, int regnum,
    bits in *FXSAVE.  */
 
 void
-amd64_collect_fxsave (const struct regcache *regcache, int regnum,
-		      void *fxsave)
+amd64_collect_fxsave(const struct regcache *regcache, int regnum,
+		     void *fxsave)
 {
-  gdb_byte *regs = fxsave;
+  gdb_byte *regs = (gdb_byte *)fxsave;
 
-  i387_collect_fxsave (regcache, regnum, fxsave);
+  i387_collect_fxsave(regcache, regnum, fxsave);
 
-  if (gdbarch_ptr_bit (get_regcache_arch (regcache)) == 64)
+  if (gdbarch_ptr_bit(get_regcache_arch(regcache)) == 64)
     {
-      if (regnum == -1 || regnum == I387_FISEG_REGNUM)
-	regcache_raw_collect (regcache, I387_FISEG_REGNUM, regs + 12);
-      if (regnum == -1 || regnum == I387_FOSEG_REGNUM)
-	regcache_raw_collect (regcache, I387_FOSEG_REGNUM, regs + 20);
+      if ((regnum == -1) || (regnum == I387_FISEG_REGNUM))
+	regcache_raw_collect(regcache, I387_FISEG_REGNUM, regs + 12);
+      if ((regnum == -1) || (regnum == I387_FOSEG_REGNUM))
+	regcache_raw_collect(regcache, I387_FOSEG_REGNUM, regs + 20);
     }
 }
+
+/* EOF */

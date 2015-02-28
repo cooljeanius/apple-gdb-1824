@@ -1130,17 +1130,17 @@ elf_slurp_symbol_table(bfd *abfd, asymbol **symptrs, bfd_boolean dynamic)
 	    goto error_return;
 	}
 
-      /* Skip first symbol, which is a null dummy.  */
+      /* Skip first symbol, which is a null dummy: */
       xver = xverbuf;
       if (xver != NULL)
 	++xver;
-      isymend = isymbuf + symcount;
-      for (isym = isymbuf + 1, sym = symbase; isym < isymend; isym++, sym++)
+      isymend = (isymbuf + symcount);
+      for (isym = (isymbuf + 1), sym = symbase; isym < isymend; isym++, sym++)
 	{
-	  memcpy (&sym->internal_elf_sym, isym, sizeof (Elf_Internal_Sym));
+	  memcpy(&sym->internal_elf_sym, isym, sizeof(Elf_Internal_Sym));
 	  sym->symbol.the_bfd = abfd;
 
-	  sym->symbol.name = bfd_elf_sym_name (abfd, hdr, isym, NULL);
+	  sym->symbol.name = bfd_elf_sym_name(abfd, hdr, isym, NULL);
 
 	  sym->symbol.value = isym->st_value;
 
@@ -1239,7 +1239,8 @@ elf_slurp_symbol_table(bfd *abfd, asymbol **symptrs, bfd_boolean dynamic)
 
   /* Do some backend-specific processing on this symbol table: */
   if (ebd->elf_backend_symbol_table_processing)
-    (*ebd->elf_backend_symbol_table_processing)(abfd, symbase, symcount);
+    (*ebd->elf_backend_symbol_table_processing)(abfd, symbase,
+                                                (unsigned int)symcount);
 
   /* We rely on the zalloc to clear out the final symbol entry: */
   symcount = (sym - symbase);
@@ -1477,71 +1478,67 @@ elf_symbol_flags(flagword flags)
 
   buffer[0] = '\0';
   if (flags & BSF_LOCAL)
-    strcat (buffer, " local");
+    strcat(buffer, " local");
 
   if (flags & BSF_GLOBAL)
-    strcat (buffer, " global");
+    strcat(buffer, " global");
 
   if (flags & BSF_DEBUGGING)
-    strcat (buffer, " debug");
+    strcat(buffer, " debug");
 
   if (flags & BSF_FUNCTION)
-    strcat (buffer, " function");
+    strcat(buffer, " function");
 
   if (flags & BSF_KEEP)
-    strcat (buffer, " keep");
+    strcat(buffer, " keep");
 
   if (flags & BSF_KEEP_G)
-    strcat (buffer, " keep_g");
+    strcat(buffer, " keep_g");
 
   if (flags & BSF_WEAK)
-    strcat (buffer, " weak");
+    strcat(buffer, " weak");
 
   if (flags & BSF_SECTION_SYM)
-    strcat (buffer, " section-sym");
+    strcat(buffer, " section-sym");
 
   if (flags & BSF_OLD_COMMON)
-    strcat (buffer, " old-common");
+    strcat(buffer, " old-common");
 
   if (flags & BSF_NOT_AT_END)
-    strcat (buffer, " not-at-end");
+    strcat(buffer, " not-at-end");
 
   if (flags & BSF_CONSTRUCTOR)
-    strcat (buffer, " constructor");
+    strcat(buffer, " constructor");
 
   if (flags & BSF_WARNING)
-    strcat (buffer, " warning");
+    strcat(buffer, " warning");
 
   if (flags & BSF_INDIRECT)
-    strcat (buffer, " indirect");
+    strcat(buffer, " indirect");
 
   if (flags & BSF_FILE)
-    strcat (buffer, " file");
+    strcat(buffer, " file");
 
   if (flags & DYNAMIC)
-    strcat (buffer, " dynamic");
+    strcat(buffer, " dynamic");
 
-  if (flags & ~(BSF_LOCAL
-		| BSF_GLOBAL
-		| BSF_DEBUGGING
-		| BSF_FUNCTION
-		| BSF_KEEP
-		| BSF_KEEP_G
-		| BSF_WEAK
-		| BSF_SECTION_SYM
-		| BSF_OLD_COMMON
-		| BSF_NOT_AT_END
-		| BSF_CONSTRUCTOR
-		| BSF_WARNING
-		| BSF_INDIRECT
-		| BSF_FILE
-		| BSF_DYNAMIC))
-    strcat (buffer, " unknown-bits");
+  if (flags & ~(BSF_LOCAL | BSF_GLOBAL | BSF_DEBUGGING | BSF_FUNCTION
+		| BSF_KEEP | BSF_KEEP_G | BSF_WEAK | BSF_SECTION_SYM
+		| BSF_OLD_COMMON | BSF_NOT_AT_END | BSF_CONSTRUCTOR
+		| BSF_WARNING | BSF_INDIRECT | BSF_FILE | BSF_DYNAMIC))
+    strcat(buffer, " unknown-bits");
 
   return buffer;
 }
-#endif
+#endif /* DEBUG */
 
+#if !defined(DEFS_H) && !defined(SERVER_H) && !defined(CORE_ADDR) && \
+    !defined(CORE_ADDR_DEFINED)
+/* An address in the program being debugged. Host byte order: */
+typedef bfd_vma CORE_ADDR;
+# define CORE_ADDR_DEFINED 1
+#endif /* !DEFS_H && !SERVER_H && !CORE_ADDR && !CORE_ADDR_DEFINED */
+
 /* Create a new BFD as if by bfd_openr.  Rather than opening a file,
    reconstruct an ELF file by reading the segments out of remote memory
    based on the ELF file header at EHDR_VMA and the ELF program headers it
@@ -1635,8 +1632,9 @@ NAME(_bfd_elf,bfd_from_remote_memory)
       bfd_set_error(bfd_error_no_memory);
       return NULL;
     }
-  err = target_read_memory(ehdr_vma + i_ehdr.e_phoff, (bfd_byte *)x_phdrs,
-                           i_ehdr.e_phnum * sizeof(x_phdrs[0]));
+  err = target_read_memory((CORE_ADDR)(ehdr_vma + i_ehdr.e_phoff),
+                           (bfd_byte *)x_phdrs,
+                           (int)(i_ehdr.e_phnum * sizeof(x_phdrs[0])));
   if (err)
     {
       free(x_phdrs);
@@ -1712,9 +1710,10 @@ NAME(_bfd_elf,bfd_from_remote_memory)
 		       + i_phdrs[i].p_align - 1) & -i_phdrs[i].p_align;
 	if (end > (bfd_vma)contents_size)
 	  end = contents_size;
-	err = target_read_memory((loadbase + i_phdrs[i].p_vaddr)
-				 & -i_phdrs[i].p_align,
-				 (contents + start), (end - start));
+	err = target_read_memory((CORE_ADDR)((loadbase + i_phdrs[i].p_vaddr)
+                                             & -i_phdrs[i].p_align),
+				 (contents + start),
+                                 (int)(end - start));
 	if (err)
 	  {
 	    free(x_phdrs);

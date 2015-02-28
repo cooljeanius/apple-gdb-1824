@@ -1,4 +1,4 @@
-/* Work with fat "Universal Binaries", for GDB.
+/* macosx-fat-utils.c: Work with fat "Universal Binaries", for GDB.
 
  Copyright 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996,
  1997, 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation,
@@ -29,10 +29,9 @@
 #include "macosx-fat-utils.h"
 
 /* APPLE LOCAL: This routine opens the slice of a fat file (faking as a
-   bfd_archive) that matches the current architecture.  */
-
+ * bfd_archive) that matches the current architecture: */
 bfd *
-open_bfd_matching_arch (bfd *archive_bfd, bfd_format expected_format)
+open_bfd_matching_arch(bfd *archive_bfd, bfd_format expected_format)
 {
   enum gdb_osabi osabi;
   bfd *abfd;
@@ -40,9 +39,9 @@ open_bfd_matching_arch (bfd *archive_bfd, bfd_format expected_format)
   osabi = GDB_OSABI_UNINITIALIZED;
   abfd = NULL;
 
-  osabi = gdbarch_osabi (get_current_arch ());
+  osabi = gdbarch_osabi(get_current_arch());
   if ((osabi <= GDB_OSABI_UNKNOWN) || (osabi >= GDB_OSABI_INVALID))
-    osabi = gdbarch_lookup_osabi (archive_bfd);
+    osabi = gdbarch_lookup_osabi(archive_bfd);
 
   /* FIXME: gdbarch_lookup_osabi() does NOT work yet on archive_bfd,
    * so hardcode instead: */
@@ -51,21 +50,23 @@ open_bfd_matching_arch (bfd *archive_bfd, bfd_format expected_format)
 
   for (;;)
     {
-      abfd = bfd_openr_next_archived_file (archive_bfd, abfd);
+      abfd = bfd_openr_next_archived_file(archive_bfd, abfd);
       if (abfd == NULL)
         break;
-      if (! bfd_check_format (abfd, expected_format))
+      if (! bfd_check_format(abfd, expected_format))
         continue;
-      if (osabi == gdbarch_lookup_osabi_from_bfd (abfd))
+      if (osabi == gdbarch_lookup_osabi_from_bfd(abfd))
         break;
     }
 
-  // Copy the filename of the archive to the binary bfd.
+  /* Copy the filename of the archive to the binary bfd: */
   if (abfd)
   {
-    xfree(abfd->filename);
+    xfree((void *)abfd->filename);
     abfd->filename = archive_bfd->filename;
   }
 
   return abfd;
 }
+
+/* EOF */

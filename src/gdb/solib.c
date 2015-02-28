@@ -49,23 +49,25 @@
 
 /* Architecture-specific operations.  */
 
-/* Per-architecture data key.  */
+/* Per-architecture data key: */
 static struct gdbarch_data *solib_data;
 
 static void *
-solib_init (struct obstack *obstack)
+solib_init(struct obstack *obstack)
 {
   struct target_so_ops **ops;
 
-  ops = OBSTACK_ZALLOC (obstack, struct target_so_ops *);
+  ops = (struct target_so_ops **)OBSTACK_ZALLOC(obstack,
+                                                struct target_so_ops *);
   *ops = current_target_so_ops;
   return ops;
 }
 
 static struct target_so_ops *
-solib_ops (struct gdbarch *gdbarch)
+solib_ops(struct gdbarch *gdbarch)
 {
-  struct target_so_ops **ops = gdbarch_data (gdbarch, solib_data);
+  struct target_so_ops **ops;
+  ops = (struct target_so_ops **)gdbarch_data(gdbarch, solib_data);
   return *ops;
 }
 
@@ -156,22 +158,22 @@ solib_open (char *in_pathname, char **found_pathname)
         temp_pathname = in_pathname;
       else
 	{
-	  int prefix_len = strlen (solib_absolute_prefix);
+	  int prefix_len = strlen(solib_absolute_prefix);
 
-	  /* Remove trailing slashes from absolute prefix.  */
-	  while (prefix_len > 0
-		 && IS_DIR_SEPARATOR (solib_absolute_prefix[prefix_len - 1]))
+	  /* Remove trailing slashes from absolute prefix: */
+	  while ((prefix_len > 0)
+		 && IS_DIR_SEPARATOR(solib_absolute_prefix[prefix_len - 1]))
 	    prefix_len--;
 
-	  /* Cat the prefixed pathname together.  */
-	  temp_pathname = alloca (prefix_len + strlen (in_pathname) + 1);
-	  strncpy (temp_pathname, solib_absolute_prefix, prefix_len);
+	  /* Cat the prefixed pathname together: */
+	  temp_pathname = (char *)alloca(prefix_len + strlen(in_pathname) + 1UL);
+	  strncpy(temp_pathname, solib_absolute_prefix, prefix_len);
 	  temp_pathname[prefix_len] = '\0';
-	  strcat (temp_pathname, in_pathname);
+	  strcat(temp_pathname, in_pathname);
 	}
 
-      /* Now see if we can open it.  */
-      found_file = open (temp_pathname, O_RDONLY, 0);
+      /* Now see if we can open it: */
+      found_file = open(temp_pathname, O_RDONLY, 0);
     }
 
   /* If the search in solib_absolute_prefix failed, and the path name is
@@ -631,19 +633,19 @@ update_solib_list (int from_tty, struct target_ops *target)
 
 /* APPLE LOCAL return a value */
 int
-solib_add (char *pattern, int from_tty, struct target_ops *target, int readsyms)
+solib_add(char *pattern, int from_tty, struct target_ops *target, int readsyms)
 {
   struct so_list *gdb;
 
   if (pattern)
     {
-      char *re_err = re_comp (pattern);
+      char *re_err = (char *)re_comp(pattern);
 
       if (re_err)
-	error (_("Invalid regexp: %s"), re_err);
+	error(_("Invalid regexp: %s"), re_err);
     }
 
-  update_solib_list (from_tty, target);
+  update_solib_list(from_tty, target);
 
   /* Walk the list of currently loaded shared libraries, and read
      symbols for any that match the pattern --- or any whose symbols

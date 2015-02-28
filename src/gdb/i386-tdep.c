@@ -326,10 +326,10 @@ i386_breakpoint_from_pc (CORE_ADDR *pc, int *len)
    be set to the register that contains the pic base. */
 
 int
-i386_find_picbase_setup (CORE_ADDR pc, CORE_ADDR *picbase_addr,
-                         enum i386_regnum *picbase_reg)
+i386_find_picbase_setup(CORE_ADDR pc, CORE_ADDR *picbase_addr,
+                        enum i386_regnum *picbase_reg)
 {
-  int limit = 32;  /* number made up by me; 32 bytes is enough for a prologue */
+  int limit = 32; /* number made up by me; 32 bytes is enough for a prologue */
   int skip = 0;
   int found_call_insn = 0;
   unsigned char op;
@@ -343,12 +343,12 @@ i386_find_picbase_setup (CORE_ADDR pc, CORE_ADDR *picbase_addr,
 
   while (skip < limit)
     {
-      int length = length_of_this_instruction (pc + skip);
-      /* Did we just find a CALL instruction?  It's probably our
+      int length = length_of_this_instruction(pc + skip);
+      /* Did we just find a CALL instruction?  It is probably our
          picbase setup call.  */
       if (length == 5)
         {
-          uint32_t buf = read_memory_unsigned_integer (pc + skip, 1);
+          uint32_t buf = read_memory_unsigned_integer(pc + skip, 1);
           if (buf == 0xe8)  /* 0xe8 == CALL disp32 */
             {
               found_call_insn = 1;
@@ -373,19 +373,19 @@ i386_find_picbase_setup (CORE_ADDR pc, CORE_ADDR *picbase_addr,
   if (rel32 == 0x0)
     {
       /* Check for `pop r' (opcode 0x58 + rd). */
-      op = read_memory_unsigned_integer (offset_from, 1);
+      op = read_memory_unsigned_integer(offset_from, 1);
       if ((op & 0xf8) != 0x58)
         return 0;
 
       if (picbase_addr != NULL)
         *picbase_addr = offset_from;
       if (picbase_reg != NULL)
-        *picbase_reg = (enum i386_regnum) op & 0x7;
+        *picbase_reg = ((enum i386_regnum)op & 0x7);
       return 1;
     }
 
-  dest = lookup_minimal_symbol_by_pc ((uint32_t) rel32 + offset_from);
-  if (dest == NULL || SYMBOL_LINKAGE_NAME (dest) == NULL)
+  dest = lookup_minimal_symbol_by_pc((uint32_t)rel32 + offset_from);
+  if ((dest == NULL) || (SYMBOL_LINKAGE_NAME(dest) == NULL))
     return 0;
 
   /* We're looking for a call to one of the __i686.get_pc_thunk.ax functions,
@@ -481,45 +481,44 @@ static const struct frame_unwind i386_frame_unwind =
 };
 
 static const struct frame_unwind *
-i386_frame_sniffer (struct frame_info *next_frame)
+i386_frame_sniffer(struct frame_info *next_frame)
 {
   return &i386_frame_unwind;
 }
 
 
-/* Signal trampolines.  */
-
+/* Signal trampolines: */
 static struct x86_frame_cache *
-i386_sigtramp_frame_cache (struct frame_info *next_frame, void **this_cache)
+i386_sigtramp_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct x86_frame_cache *cache;
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
   CORE_ADDR addr;
   gdb_byte buf[4];
 
   if (*this_cache)
-    return *this_cache;
+    return (struct x86_frame_cache *)*this_cache;
 
-  cache = x86_alloc_frame_cache (4);
+  cache = x86_alloc_frame_cache(4);
 
-  frame_unwind_register (next_frame, I386_ESP_REGNUM, buf);
-  cache->frame_base = extract_unsigned_integer (buf, 4);
+  frame_unwind_register(next_frame, I386_ESP_REGNUM, buf);
+  cache->frame_base = extract_unsigned_integer(buf, 4);
 
-  addr = tdep->sigcontext_addr (next_frame);
+  addr = tdep->sigcontext_addr(next_frame);
   if (tdep->sc_reg_offset)
     {
       int i;
 
-      gdb_assert (tdep->sc_num_regs <= I386_NUM_SAVED_REGS);
+      gdb_assert(tdep->sc_num_regs <= I386_NUM_SAVED_REGS);
 
       for (i = 0; i < tdep->sc_num_regs; i++)
 	if (tdep->sc_reg_offset[i] != -1)
-	  cache->saved_regs[i] = addr + tdep->sc_reg_offset[i];
+	  cache->saved_regs[i] = (addr + tdep->sc_reg_offset[i]);
     }
   else
     {
-      cache->saved_regs[I386_EIP_REGNUM] = addr + tdep->sc_pc_offset;
-      cache->saved_regs[I386_ESP_REGNUM] = addr + tdep->sc_sp_offset;
+      cache->saved_regs[I386_EIP_REGNUM] = (addr + tdep->sc_pc_offset);
+      cache->saved_regs[I386_ESP_REGNUM] = (addr + tdep->sc_sp_offset);
     }
 
   cache->saved_regs_are_absolute = 1;
@@ -1260,20 +1259,20 @@ i386_value_to_register (struct frame_info *frame, int regnum,
    REGCACHE.  If REGNUM is -1, do this for all registers in REGSET.  */
 
 void
-i386_supply_gregset (const struct regset *regset, struct regcache *regcache,
-		     int regnum, const void *gregs, size_t len)
+i386_supply_gregset(const struct regset *regset, struct regcache *regcache,
+		    int regnum, const void *gregs, size_t len)
 {
-  const struct gdbarch_tdep *tdep = gdbarch_tdep (regset->arch);
-  const gdb_byte *regs = gregs;
+  const struct gdbarch_tdep *tdep = gdbarch_tdep(regset->arch);
+  const gdb_byte *regs = (const gdb_byte *)gregs;
   int i;
 
-  gdb_assert (len == tdep->sizeof_gregset);
+  gdb_assert(len == tdep->sizeof_gregset);
 
   for (i = 0; i < tdep->gregset_num_regs; i++)
     {
-      if ((regnum == i || regnum == -1)
-	  && tdep->gregset_reg_offset[i] != -1)
-	regcache_raw_supply (regcache, i, regs + tdep->gregset_reg_offset[i]);
+      if (((regnum == i) || (regnum == -1))
+	  && (tdep->gregset_reg_offset[i] != -1))
+	regcache_raw_supply(regcache, i, regs + tdep->gregset_reg_offset[i]);
     }
 }
 
@@ -1283,21 +1282,21 @@ i386_supply_gregset (const struct regset *regset, struct regcache *regcache,
    all registers in REGSET.  */
 
 void
-i386_collect_gregset (const struct regset *regset,
-		      const struct regcache *regcache,
-		      int regnum, void *gregs, size_t len)
+i386_collect_gregset(const struct regset *regset,
+		     const struct regcache *regcache,
+		     int regnum, void *gregs, size_t len)
 {
-  const struct gdbarch_tdep *tdep = gdbarch_tdep (regset->arch);
-  gdb_byte *regs = gregs;
+  const struct gdbarch_tdep *tdep = gdbarch_tdep(regset->arch);
+  gdb_byte *regs = (gdb_byte *)gregs;
   int i;
 
-  gdb_assert (len == tdep->sizeof_gregset);
+  gdb_assert(len == tdep->sizeof_gregset);
 
   for (i = 0; i < tdep->gregset_num_regs; i++)
     {
-      if ((regnum == i || regnum == -1)
-	  && tdep->gregset_reg_offset[i] != -1)
-	regcache_raw_collect (regcache, i, regs + tdep->gregset_reg_offset[i]);
+      if (((regnum == i) || (regnum == -1))
+	  && (tdep->gregset_reg_offset[i] != -1))
+	regcache_raw_collect(regcache, i, (regs + tdep->gregset_reg_offset[i]));
     }
 }
 

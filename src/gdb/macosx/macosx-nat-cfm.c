@@ -400,8 +400,8 @@ cfm_fetch_container_info (struct cfm_parser *parser,
 
   info->name[0] = name_length;
 
-  ret = target_read (&current_target, TARGET_OBJECT_MEMORY, NULL,
-                     &info->name[1], name_addr, name_length);
+  ret = target_read(&current_target, TARGET_OBJECT_MEMORY, NULL,
+                    (gdb_byte *)&info->name[1], name_addr, name_length);
   if (ret < 0)
     return CFM_INTERNAL_ERROR;
 
@@ -454,31 +454,31 @@ cfm_fetch_connection_info (struct cfm_parser *parser,
 }
 
 long
-cfm_parse_section_info (struct cfm_parser *parser,
-                        unsigned char *buf,
-                        size_t len, NCFragSectionInfo *info)
+cfm_parse_section_info(struct cfm_parser *parser,
+                       unsigned char *buf,
+                       size_t len, NCFragSectionInfo *info)
 {
-  if (parser->section_total_length_offset + 4 > len)
+  if ((parser->section_total_length_offset + 4) > len)
     {
       return -1;
     }
 
-  info->length = bfd_getb32 (buf + parser->section_total_length_offset);
+  info->length = bfd_getb32(buf + parser->section_total_length_offset);
 
   return 0;
 }
 
 long
-cfm_parse_instance_info (struct cfm_parser *parser,
-                         unsigned char *buf,
-                         size_t len, NCFragInstanceInfo *info)
+cfm_parse_instance_info(struct cfm_parser *parser,
+                        unsigned char *buf,
+                        size_t len, NCFragInstanceInfo *info)
 {
-  if (parser->instance_address_offset + 4 > len)
+  if ((parser->instance_address_offset + 4) > len)
     {
       return -1;
     }
 
-  info->address = bfd_getb32 (buf + parser->instance_address_offset);
+  info->address = bfd_getb32(buf + parser->instance_address_offset);
 
   return 0;
 }

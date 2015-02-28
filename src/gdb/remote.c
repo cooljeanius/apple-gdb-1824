@@ -5199,28 +5199,28 @@ watchpoint_to_Z_packet (int type)
 }
 
 static int
-remote_insert_watchpoint (CORE_ADDR addr, int len, int type)
+remote_insert_watchpoint(CORE_ADDR addr, int len, int type)
 {
-  struct remote_state *rs = get_remote_state ();
-  char *buf = alloca (rs->remote_packet_size);
+  struct remote_state *rs = get_remote_state();
+  char *buf = alloca(rs->remote_packet_size);
   char *p;
-  enum Z_packet_type packet = watchpoint_to_Z_packet (type);
+  enum Z_packet_type packet = (enum Z_packet_type)watchpoint_to_Z_packet(type);
 
   if (remote_protocol_Z[packet].support == PACKET_DISABLE)
-    error (_("Can't set hardware watchpoints without the '%s' (%s) packet."),
-	   remote_protocol_Z[packet].name,
-	   remote_protocol_Z[packet].title);
+    error(_("Cannot set hardware watchpoints without the '%s' (%s) packet."),
+	  remote_protocol_Z[packet].name,
+	  remote_protocol_Z[packet].title);
 
-  sprintf (buf, "Z%x,", packet);
-  p = strchr (buf, '\0');
-  addr = remote_address_masked (addr);
-  p += hexnumstr (p, (ULONGEST) addr);
-  sprintf (p, ",%x", len);
+  sprintf(buf, "Z%x,", packet);
+  p = strchr(buf, '\0');
+  addr = remote_address_masked(addr);
+  p += hexnumstr(p, (ULONGEST)addr);
+  sprintf(p, ",%x", len);
 
-  putpkt (buf);
-  getpkt (buf, (rs->remote_packet_size), 0);
+  putpkt(buf);
+  getpkt(buf, (rs->remote_packet_size), 0);
 
-  switch (packet_ok (buf, &remote_protocol_Z[packet]))
+  switch (packet_ok(buf, &remote_protocol_Z[packet]))
     {
     case PACKET_ERROR:
     case PACKET_UNKNOWN:
@@ -5228,33 +5228,33 @@ remote_insert_watchpoint (CORE_ADDR addr, int len, int type)
     case PACKET_OK:
       return 0;
     }
-  internal_error (__FILE__, __LINE__,
-		  _("remote_insert_watchpoint: reached end of function"));
+  internal_error(__FILE__, __LINE__,
+		 _("remote_insert_watchpoint: reached end of function"));
 }
 
 
 static int
-remote_remove_watchpoint (CORE_ADDR addr, int len, int type)
+remote_remove_watchpoint(CORE_ADDR addr, int len, int type)
 {
-  struct remote_state *rs = get_remote_state ();
-  char *buf = alloca (rs->remote_packet_size);
+  struct remote_state *rs = get_remote_state();
+  char *buf = alloca(rs->remote_packet_size);
   char *p;
-  enum Z_packet_type packet = watchpoint_to_Z_packet (type);
+  enum Z_packet_type packet = (enum Z_packet_type)watchpoint_to_Z_packet(type);
 
   if (remote_protocol_Z[packet].support == PACKET_DISABLE)
-    error (_("Can't clear hardware watchpoints without the '%s' (%s) packet."),
-	   remote_protocol_Z[packet].name,
-	   remote_protocol_Z[packet].title);
+    error(_("Cannot clear hardware watchpoints without the '%s' (%s) packet."),
+	  remote_protocol_Z[packet].name,
+	  remote_protocol_Z[packet].title);
 
-  sprintf (buf, "z%x,", packet);
-  p = strchr (buf, '\0');
-  addr = remote_address_masked (addr);
-  p += hexnumstr (p, (ULONGEST) addr);
-  sprintf (p, ",%x", len);
-  putpkt (buf);
-  getpkt (buf, (rs->remote_packet_size), 0);
+  sprintf(buf, "z%x,", packet);
+  p = strchr(buf, '\0');
+  addr = remote_address_masked(addr);
+  p += hexnumstr(p, (ULONGEST)addr);
+  sprintf(p, ",%x", len);
+  putpkt(buf);
+  getpkt(buf, (rs->remote_packet_size), 0);
 
-  switch (packet_ok (buf, &remote_protocol_Z[packet]))
+  switch (packet_ok(buf, &remote_protocol_Z[packet]))
     {
     case PACKET_ERROR:
     case PACKET_UNKNOWN:

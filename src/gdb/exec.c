@@ -1,4 +1,4 @@
-/* Work with executable files, for GDB. 
+/* exec.c: Work with executable files, for GDB.
 
    Copyright 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996,
    1997, 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation,
@@ -81,38 +81,38 @@ int set_only_read_from_live_memory (int newval)
   return oldval;
 }
 
-/* set_only_read_from_live_memory_cleanup() takes an int but the 
-   cleanup func must take a void* so we use this trampoline func 
+/* set_only_read_from_live_memory_cleanup() takes an int but the
+   cleanup func must take a void* so we use this trampoline func
    to avoid sizeof int == sizeof void* confusions.  */
 void
-set_only_read_from_live_memory_cleanup (void *new)
+set_only_read_from_live_memory_cleanup(void *newptr)
 {
-  set_only_read_from_live_memory ((int) new);
+  set_only_read_from_live_memory((int)newptr);
 }
 
 
 /* APPLE LOCAL begin async */
 static void
-standard_async (void (*callback) (enum inferior_event_type event_type, 
-				  void *context), void *context)
+standard_async(void (*callback)(enum inferior_event_type event_type,
+                                void *context), void *context)
 {
   return;
 }
 
-int standard_is_async_p (void)
+int standard_is_async_p(void)
 {
   return (current_target.to_async_mask_value);
 }
 
-int standard_can_async_p (void)
+int standard_can_async_p(void)
 {
   return (current_target.to_async_mask_value);
 }
 /* APPLE LOCAL end async */
 
-struct vmap *map_vmap (bfd *, bfd *);
+struct vmap *map_vmap(bfd *, bfd *);
 
-void (*deprecated_file_changed_hook) (char *);
+void (*deprecated_file_changed_hook)(char *);
 
 /* Prototypes for local functions */
 
@@ -253,7 +253,7 @@ solib_add_stub (PTR from_ttyp)
    figure out the pathname from the pid.  (In this case, we shouldn't
    ask the user whether the current target should be shut down --
    we're supplying the exec pathname late for good reason.)
-   
+
    ARGS is assumed to be the filename. */
 
 void
@@ -337,13 +337,13 @@ exec_file_attach (char *filename, int from_tty)
       if (bfd_check_format (exec_bfd, bfd_archive))
 	{
 	  bfd *tmp_bfd;
-	  tmp_bfd = open_bfd_matching_arch (exec_bfd, bfd_object, 
+	  tmp_bfd = open_bfd_matching_arch (exec_bfd, bfd_object,
 					    GDB_OSABI_UNKNOWN);
 	  if (tmp_bfd != NULL)
 	    exec_bfd = tmp_bfd;
 	}
       /* APPLE LOCAL end fat binaries */
-      
+
       if (!bfd_check_format (exec_bfd, bfd_object))
 	{
 	  /* Make sure to close exec_bfd, or else "run" might try to use
@@ -397,7 +397,7 @@ exec_file_attach (char *filename, int from_tty)
       catch_errors (solib_add_stub, &from_tty, (char *) 0,
 		    RETURN_MASK_ALL);
 #endif
-  
+
       /* Tell display code (if any) about the changed file name.  */
       if (deprecated_exec_file_display_hook)
 	(*deprecated_exec_file_display_hook) (filename);
@@ -411,7 +411,7 @@ exec_file_attach (char *filename, int from_tty)
    Note that we have to explicitly ignore additional args, since we can
    be called from file_command(), which also calls symbol_file_command()
    which can take multiple args.
-   
+
    If ARGS is NULL, we just want to close the exec file. */
 
 static void
@@ -419,7 +419,7 @@ exec_file_command (char *args, int from_tty)
 {
   char **argv;
   char *filename;
-  
+
   target_preopen (from_tty);
 
   if (args)
@@ -447,7 +447,7 @@ exec_file_command (char *args, int from_tty)
     exec_file_attach (NULL, from_tty);
 }
 
-/* Set both the exec file and the symbol file, in one command.  
+/* Set both the exec file and the symbol file, in one command.
    What a novelty.  Why did GDB go through four major releases before this
    command was added?  */
 
@@ -463,7 +463,7 @@ file_command (char *arg, int from_tty)
 }
 
 
-/* Locate all mappable sections of a BFD file. 
+/* Locate all mappable sections of a BFD file.
    table_pp_char is a char * to get it through bfd_map_over_sections;
    we cast it back to its proper type.  */
 
@@ -898,9 +898,9 @@ ignore (CORE_ADDR addr, bfd_byte *contents)
 /* Find mapped memory. */
 
 extern void
-exec_set_find_memory_regions (int (*func) (int (*) (CORE_ADDR, 
-						    unsigned long, 
-						    int, int, int, 
+exec_set_find_memory_regions (int (*func) (int (*) (CORE_ADDR,
+						    unsigned long,
+						    int, int, int,
 						    void *),
 					   void *))
 {

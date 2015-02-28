@@ -3468,19 +3468,19 @@ ppc_elf_check_relocs (bfd *abfd,
 		     easily.  Oh well.  */
 
 		  asection *s;
-		  s = bfd_section_from_r_symndx (abfd, &htab->sym_sec,
-						 sec, r_symndx);
+		  s = bfd_section_from_r_symndx(abfd, &htab->sym_sec,
+                                                sec, r_symndx);
 		  if (s == NULL)
 		    return FALSE;
 
 		  head = ((struct ppc_elf_dyn_relocs **)
-			  &elf_section_data (s)->local_dynrel);
+			  &elf_section_data(s)->local_dynrel);
 		}
 
 	      p = *head;
-	      if (p == NULL || p->sec != sec)
+	      if ((p == NULL) || (p->sec != sec))
 		{
-		  p = bfd_alloc (htab->elf.dynobj, sizeof *p);
+		  p = bfd_alloc(htab->elf.dynobj, sizeof(*p));
 		  if (p == NULL)
 		    return FALSE;
 		  p->next = *head;

@@ -951,21 +951,21 @@ elf64_x86_64_check_relocs (bfd *abfd, struct bfd_link_info *info, asection *sec,
 		     easily.  Oh well.  */
 
 		  asection *s;
-		  s = bfd_section_from_r_symndx (abfd, &htab->sym_sec,
-						 sec, r_symndx);
+		  s = bfd_section_from_r_symndx(abfd, &htab->sym_sec,
+                                                sec, r_symndx);
 		  if (s == NULL)
 		    return FALSE;
 
 		  head = ((struct elf64_x86_64_dyn_relocs **)
-			  &elf_section_data (s)->local_dynrel);
+			  &elf_section_data(s)->local_dynrel);
 		}
 
 	      p = *head;
-	      if (p == NULL || p->sec != sec)
+	      if ((p == NULL) || (p->sec != sec))
 		{
-		  bfd_size_type amt = sizeof *p;
+		  bfd_size_type amt = sizeof(*p);
 		  p = ((struct elf64_x86_64_dyn_relocs *)
-		       bfd_alloc (htab->elf.dynobj, amt));
+		       bfd_alloc(htab->elf.dynobj, amt));
 		  if (p == NULL)
 		    return FALSE;
 		  p->next = *head;
@@ -1572,7 +1572,7 @@ elf64_x86_64_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
       Elf_Internal_Shdr *symtab_hdr;
       asection *srel;
 
-      if (bfd_get_flavour (ibfd) != bfd_target_elf_flavour)
+      if (bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
 	continue;
 
       for (s = ibfd->sections; s != NULL; s = s->next)
@@ -1580,12 +1580,12 @@ elf64_x86_64_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 	  struct elf64_x86_64_dyn_relocs *p;
 
 	  for (p = *((struct elf64_x86_64_dyn_relocs **)
-		     &elf_section_data (s)->local_dynrel);
+		     &elf_section_data(s)->local_dynrel);
 	       p != NULL;
 	       p = p->next)
 	    {
-	      if (!bfd_is_abs_section (p->sec)
-		  && bfd_is_abs_section (p->sec->output_section))
+	      if (!bfd_is_abs_section(p->sec)
+		  && bfd_is_abs_section(p->sec->output_section))
 		{
 		  /* Input section has been discarded, either because
 		     it is a copy of a linkonce section or due to
@@ -3052,7 +3052,7 @@ elf64_x86_64_merge_symbol (struct bfd_link_info *info ATTRIBUTE_UNUSED,
 	}
       else if (sym->st_shndx == SHN_X86_64_LCOMMON
 	       && (elf_section_flags (*oldsec) & SHF_X86_64_LARGE) == 0)
-	*psec = *sec = bfd_com_section_ptr; 
+	*psec = *sec = bfd_com_section_ptr;
     }
 
   return TRUE;
@@ -3062,7 +3062,7 @@ static int
 elf64_x86_64_additional_program_headers (bfd *abfd)
 {
   asection *s;
-  int count = 0; 
+  int count = 0;
 
   /* Check to see if we need a large readonly segment.  */
   s = bfd_get_section_by_name (abfd, ".lrodata");
@@ -3079,7 +3079,7 @@ elf64_x86_64_additional_program_headers (bfd *abfd)
   return count;
 }
 
-static const struct bfd_elf_special_section 
+static const struct bfd_elf_special_section
   elf64_x86_64_special_sections[]=
 {
   { ".gnu.linkonce.lb",	16, -2, SHT_NOBITS,   SHF_ALLOC + SHF_WRITE + SHF_X86_64_LARGE},

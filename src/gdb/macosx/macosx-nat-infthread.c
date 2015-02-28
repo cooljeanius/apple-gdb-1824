@@ -591,6 +591,8 @@ const struct dispatch_queue_offsets_s {
   const uint16_t dqo_running;
   const uint16_t dqo_running_size;
 } dispatch_queue_offsets;
+/* FIXME: '-Wc++-compat' says to initialize the above struct, but the
+ * version in the header I copied it from does no such thing... */
 #endif /* !dispatch_queue_offsets_s && !dispatch_queue_offsets && !__DISPATCH_QUEUE_PRIVATE__ */
 
 /* libdispatch has a structure (symbol name dispatch_queue_offsets) which

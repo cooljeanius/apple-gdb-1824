@@ -68,13 +68,15 @@
 
 struct target_ops macho_core_ops;
 
+extern void _initialize_core_macho(void);
+
 static struct bfd_section *
-lookup_section (bfd *abfd, unsigned int n)
+lookup_section(bfd *abfd, unsigned int n)
 {
   struct bfd_section *sect = NULL;
 
-  CHECK_FATAL (abfd != NULL);
-  CHECK_FATAL (n < bfd_count_sections (abfd));
+  CHECK_FATAL(abfd != NULL);
+  CHECK_FATAL(n < bfd_count_sections(abfd));
 
   sect = abfd->sections;
 
@@ -895,32 +897,33 @@ core_fetch_registers (int regno)
 #else
 # error "unsupported architecture"
 #endif /* TARGET_foo */
-		  /* If we recognized the flavour, get the registers for it.  */
+		  /* If we recognized the flavour, then get the registers
+                   * for it: */
 		  if (flavour != 0)
 		    {
-		      if (create_core_thread_state_cache (thrd_info))
-			core_cache_section_registers (sec, flavour,
-				  thrd_info->private->core_thread_state);
+		      if (create_core_thread_state_cache(thrd_info))
+			core_cache_section_registers(sec, flavour,
+                                                     (core_cached_registers_raw_t *)thrd_info->private->core_thread_state);
 		    }
 		}
 	    }
 	}
     }
-  /* Fetch the registers from our cache.  */
-  core_fetch_cached_thread_registers ();
+  /* Fetch the registers from our cache: */
+  core_fetch_cached_thread_registers();
 }
 
 static void
-core_files_info (struct target_ops *t)
+core_files_info(struct target_ops *t)
 {
-  print_section_info (t, core_bfd);
+  print_section_info(t, core_bfd);
 }
 
 static char *
-macosx_core_ptid_to_str (ptid_t pid)
+macosx_core_ptid_to_str(ptid_t pid)
 {
   static char buf[128];
-  sprintf (buf, "core thread %lu", ptid_get_lwp (pid));
+  sprintf(buf, "core thread %lu", ptid_get_lwp (pid));
   return buf;
 }
 
@@ -1028,7 +1031,9 @@ init_macho_core_ops(void)
   macho_core_ops.to_magic = OPS_MAGIC;
 };
 
-void _initialize_core_macho(void)
+/* remember, function name must start in column 0 for init.c to work: */
+void
+_initialize_core_macho(void)
 {
   init_macho_core_ops();
   add_target(&macho_core_ops);

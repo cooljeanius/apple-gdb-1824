@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 # include <sys/core.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "osf-core.c expects <sys/core.h> to be included."
+ #  warning "osf-core.c expects <sys/core.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* __OSF__ || HAVE_SYS_CORE_H */
 
@@ -86,21 +86,21 @@ static const bfd_target *osf_core_core_file_p(bfd *abfd)
   struct core_filehdr core_header;
   bfd_size_type amt;
 
-  amt = sizeof core_header;
-  val = bfd_bread ((PTR) &core_header, amt, abfd);
-  if (val != sizeof core_header)
+  amt = sizeof(core_header);
+  val = bfd_bread((PTR)&core_header, amt, abfd);
+  if (val != sizeof(core_header))
     return NULL;
 
-  if (strncmp (core_header.magic, "Core", 4) != 0)
+  if (strncmp(core_header.magic, "Core", 4) != 0)
     return NULL;
 
-  core_hdr (abfd) = (struct osf_core_struct *)
-    bfd_zalloc (abfd, (bfd_size_type) sizeof (struct osf_core_struct));
-  if (!core_hdr (abfd))
+  core_hdr(abfd) = (struct osf_core_struct *)
+    bfd_zalloc(abfd, (bfd_size_type)sizeof(struct osf_core_struct));
+  if (!core_hdr(abfd))
     return NULL;
 
-  strncpy (core_command (abfd), core_header.name, MAXCOMLEN + 1);
-  core_signal (abfd) = core_header.signo;
+  strncpy(core_command(abfd), core_header.name, (MAXCOMLEN + 1));
+  core_signal(abfd) = core_header.signo;
 
   for (i = 0; i < core_header.nscns; i++)
     {
@@ -108,12 +108,12 @@ static const bfd_target *osf_core_core_file_p(bfd *abfd)
       flagword flags;
 
       amt = sizeof core_scnhdr;
-      val = bfd_bread ((PTR) &core_scnhdr, amt, abfd);
+      val = bfd_bread((PTR)&core_scnhdr, amt, abfd);
       if (val != sizeof core_scnhdr)
 	break;
 
-      /* Skip empty sections.  */
-      if (core_scnhdr.size == 0 || core_scnhdr.scnptr == 0)
+      /* Skip empty sections: */
+      if ((core_scnhdr.size == 0) || (core_scnhdr.scnptr == 0))
 	continue;
 
       switch (core_scnhdr.scntype)
@@ -142,14 +142,14 @@ static const bfd_target *osf_core_core_file_p(bfd *abfd)
 	  continue;
 	}
 
-      if (!make_bfd_asection (abfd, secname, flags,
-			      (bfd_size_type) core_scnhdr.size,
-			      (bfd_vma) core_scnhdr.vaddr,
-			      (file_ptr) core_scnhdr.scnptr))
+      if (!make_bfd_asection(abfd, secname, flags,
+			     (bfd_size_type)core_scnhdr.size,
+			     (bfd_vma)core_scnhdr.vaddr,
+			     (file_ptr)core_scnhdr.scnptr))
 	goto fail;
     }
 
-  /* OK, we believe you.  You're a core file (sure, sure).  */
+  /* OK, we believe you.  You are a core file (sure, sure).  */
 
   return abfd->xvec;
 
@@ -187,12 +187,12 @@ swap_abort(void)
   abort();
 }
 
-#define	NO_GET ((bfd_vma (*) (const void *)) swap_abort)
-#define	NO_PUT ((void (*) (bfd_vma, void *)) swap_abort)
-#define	NO_GETS ((bfd_signed_vma (*) (const void *)) swap_abort)
-#define	NO_GET64 ((bfd_uint64_t (*) (const void *)) swap_abort)
-#define	NO_PUT64 ((void (*) (bfd_uint64_t, void *)) swap_abort)
-#define	NO_GETS64 ((bfd_int64_t (*) (const void *)) swap_abort)
+#define	NO_GET ((bfd_vma (*)(const void *))swap_abort)
+#define	NO_PUT ((void (*)(bfd_vma, void *))swap_abort)
+#define	NO_GETS ((bfd_signed_vma (*)(const void *))swap_abort)
+#define	NO_GET64 ((bfd_uint64_t (*)(const void *))swap_abort)
+#define	NO_PUT64 ((void (*)(bfd_uint64_t, void *))swap_abort)
+#define	NO_GETS64 ((bfd_int64_t (*)(const void *))swap_abort)
 
 const bfd_target osf_core_vec =
   {
@@ -229,17 +229,19 @@ const bfd_target osf_core_vec =
       bfd_false, bfd_false
     },
 
-    BFD_JUMP_TABLE_GENERIC (_bfd_generic),
-    BFD_JUMP_TABLE_COPY (_bfd_generic),
-    BFD_JUMP_TABLE_CORE (osf_core),
-    BFD_JUMP_TABLE_ARCHIVE (_bfd_noarchive),
-    BFD_JUMP_TABLE_SYMBOLS (_bfd_nosymbols),
-    BFD_JUMP_TABLE_RELOCS (_bfd_norelocs),
-    BFD_JUMP_TABLE_WRITE (_bfd_generic),
-    BFD_JUMP_TABLE_LINK (_bfd_nolink),
-    BFD_JUMP_TABLE_DYNAMIC (_bfd_nodynamic),
+    BFD_JUMP_TABLE_GENERIC(_bfd_generic),
+    BFD_JUMP_TABLE_COPY(_bfd_generic),
+    BFD_JUMP_TABLE_CORE(osf_core),
+    BFD_JUMP_TABLE_ARCHIVE(_bfd_noarchive),
+    BFD_JUMP_TABLE_SYMBOLS(_bfd_nosymbols),
+    BFD_JUMP_TABLE_RELOCS(_bfd_norelocs),
+    BFD_JUMP_TABLE_WRITE(_bfd_generic),
+    BFD_JUMP_TABLE_LINK(_bfd_nolink),
+    BFD_JUMP_TABLE_DYNAMIC(_bfd_nodynamic),
 
     NULL,
 
     (PTR) 0			/* backend_data */
   };
+
+/* EOF */

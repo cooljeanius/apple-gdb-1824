@@ -59,7 +59,7 @@ AC_ARG_ENABLE([pedantic],
   [case "${enableval}" in
      yes | y) PEDANTIC_WARNINGS="yes" ;;
      no | n)  PEDANTIC_WARNINGS="no" ;;
-     *) AC_MSG_ERROR([bad value ${enableval} for --enable-werror]) ;;
+     *) AC_MSG_ERROR([bad value ${enableval} for --enable-pedantic]) ;;
    esac])dnl
 
 AC_REQUIRE([AC_PROG_CC])dnl
@@ -76,6 +76,8 @@ fi
 
 if test "x${PEDANTIC_WARNINGS}" = "xyes"; then
     WARN_CFLAGS="${WARN_CFLAGS} -pedantic -Wdeclaration-after-statement"
+    ## fake the '-ansi' flag; actually using it has additional effects:
+    WARN_CFLAGS="${WARN_CFLAGS} -D__STRICT_ANSI__"
 fi
 		   
 AC_ARG_ENABLE([build-warnings],

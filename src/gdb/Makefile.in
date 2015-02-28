@@ -128,6 +128,16 @@ am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
 am__v_v_0 =
 am__v_v_1 = -v
 
+AM_V_P = $(am__v_P_@AM_V@)
+am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
+am__v_P_0 = false
+am__v_P_1 = :
+
+AM_V_GEN = $(am__v_GEN_@AM_V@)
+am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
+am__v_GEN_0 = @echo "  GEN     " $@;
+am__v_GEN_1 = 
+
 AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
@@ -147,6 +157,11 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+
+AM_V_AR = $(am__v_AR_@AM_V@)
+am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
+am__v_AR_0 = @echo "  AR      " $@;
+am__v_AR_1 = 
 
 AM_V_ARFLAGS = $(am__v_ARFLAGS_@AM_V@)
 am__v_ARFLAGS_ = $(am__v_ARFLAGS_@AM_DEFAULT_V@)
@@ -1312,7 +1327,9 @@ test-cp-name-parser$(EXEEXT): test-cp-name-parser.o $(LIBIBERTY_DEP)
 INIT_FILES = $(COMMON_OBS) $(TSOBS)
 init.c: $(INIT_FILES)
 	@echo "Making init.c"
-	@echo "Using $(INIT_FILES)"
+	@if [ "x$(AM_V_P)" != "xfalse" ]; then \
+	  echo "Using $(INIT_FILES)"; \
+	fi
 	@rm -f init.c-tmp init.l-tmp
 	@touch init.c-tmp
 	@echo "gdbtypes" > init.l-tmp
@@ -1338,7 +1355,9 @@ init.c: $(INIT_FILES)
 	  if [ ! -z "$${f}" ]; then \
 	    filebase=`basename "$${f}"`; \
 	  elif [ -z "$${f}" ]; then \
-	    echo "reading 'f' failed" 1>&2; \
+	    if [ "x$(AM_V_P)" != "xfalse" ]; then \
+	      echo "reading 'f' failed" 1>&2; \
+	    fi; \
 	  fi; \
 	  if [ ! -z "$${filebase}" ]; then \
 	  for prefix in . tui mi cli macosx signals; do \
@@ -1417,7 +1436,7 @@ nlm:	force
 LIBGDB_OBS= $(COMMON_OBS) $(TSOBS) $(ADD_FILES) init.o
 libgdb.a: $(LIBGDB_OBS)
 	$(AM_V_at)rm -f libgdb.a || echo "Building libgdb.a from scratch"
-	$(AR) $(AR_FLAGS) libgdb.a $(LIBGDB_OBS)
+	$(AM_V_AR)$(AR) $(AR_FLAGS) libgdb.a $(LIBGDB_OBS)
 	$(RANLIB) $(RANLIB_FLAGS) libgdb.a
 
 # A Mach 3.0 program to force gdb back to command level:

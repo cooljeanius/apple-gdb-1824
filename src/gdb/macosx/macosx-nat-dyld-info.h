@@ -1,9 +1,11 @@
+/* macosx-nat-dyld-info.h */
+
 #ifndef __GDB_MACOSX_NAT_DYLD_INFO_H__
 #define __GDB_MACOSX_NAT_DYLD_INFO_H__
 
 #include "defs.h"
 #include <mach/machine.h>       /* cpu_type_t, cpu_subtype_t */
-#include <mach-o/loader.h>      /* struct mach_header, struct load_command */
+#include <mach-o/loader.h>    /* struct mach_header, struct load_command */
 
 struct _bfd;
 
@@ -247,3 +249,5 @@ enum gdb_osabi dyld_objfile_entry_osabi (const struct dyld_objfile_entry *e);
        (n) = dyld_next_allocated_shlib (info, (n) + 1))
 
 #endif /* __GDB_MACOSX_NAT_DYLD_INFO_H__ */
+
+/* EOF */

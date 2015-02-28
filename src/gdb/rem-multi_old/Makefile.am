@@ -38,6 +38,12 @@ REMOTE_CFLAGS_COMBINED = ${AM_CPPFLAGS} ${DEFS} ${AM_CFLAGS}
 AM_LDFLAGS = -L. -L.. $(C_ARCHFLAGS)
 CC = @CC@
 
+## extend the verbosity control:
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
+am__v_v_0 =
+am__v_v_1 = -v
+
 bin_PROGRAMS = serve
 
 serve_SOURCES = remote_server.c \
@@ -54,17 +60,21 @@ all: prog
 .PHONY: all
 
 prog: $(SERVER) @MAINT@ Remote_Makefile
-	$(AM_V_CCLD)$(CCLD) -ggdb -o serve $(SERVER) ${AM_LDFLAGS}
+	@if test ! -e serve || test ! -x serve; then \
+	  $(CCLD) -ggdb -o serve $(SERVER) ${AM_LDFLAGS}; \
+	else \
+	  echo "$@ (i.e. 'serve') is already good to go."; \
+	fi
 .PHONY: prog
 
 clean-local:
-	rm -fv $(SERVER) serve prog
+	rm -f $(AM_V_v) $(SERVER) serve prog
 .PHONY: clean-local
 
 DISTCLEANFILES = autoscan.log @MAINT@ *~
 
 distclean-local: clean-local
-	rm -rfv autom4te.cache || rmdir autom4te.cache
+	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 .PHONY: distclean-local
 
 EXTRA_DIST = Remote_Makefile

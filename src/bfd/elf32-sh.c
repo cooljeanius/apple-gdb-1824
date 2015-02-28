@@ -6552,7 +6552,7 @@ sh_elf_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	      /* If this is a global symbol, we count the number of
 		 relocations we need for this symbol.  */
 	      if (h != NULL)
-		head = &((struct elf_sh_link_hash_entry *) h)->dyn_relocs;
+		head = &((struct elf_sh_link_hash_entry *)h)->dyn_relocs;
 	      else
 		{
 		  asection *s;

@@ -391,13 +391,13 @@ gdbarch_alloc (const struct gdbarch_info *info,
 
   /* Create an obstack for allocating all the per-architecture memory,
      then use that to allocate the architecture vector.  */
-  struct obstack *obstack = XMALLOC (struct obstack);
-  obstack_init (obstack);
-  current_gdbarch = obstack_alloc (obstack, sizeof (*current_gdbarch));
-  memset (current_gdbarch, 0, sizeof (*current_gdbarch));
+  struct obstack *obstack = XMALLOC(struct obstack);
+  obstack_init(obstack);
+  current_gdbarch = (struct gdbarch *)obstack_alloc(obstack, sizeof(*current_gdbarch));
+  memset(current_gdbarch, 0, sizeof(*current_gdbarch));
   current_gdbarch->obstack = obstack;
 
-  alloc_gdbarch_data (current_gdbarch);
+  alloc_gdbarch_data(current_gdbarch);
 
   current_gdbarch->tdep = tdep;
 
@@ -3975,7 +3975,7 @@ struct gdbarch_swap_registry
   struct gdbarch_swap_registration *registrations;
 };
 
-struct gdbarch_swap_registry gdbarch_swap_registry = 
+struct gdbarch_swap_registry gdbarch_swap_registry =
 {
   0, NULL,
 };
@@ -4052,8 +4052,7 @@ current_gdbarch_swap_in_hack (struct gdbarch *new_gdbarch)
 }
 
 
-/* Keep a registry of the architectures known by GDB. */
-
+/* Keep a registry of the architectures known by GDB: */
 struct gdbarch_registration
 {
   enum bfd_architecture bfd_architecture;
@@ -4066,15 +4065,15 @@ struct gdbarch_registration
 static struct gdbarch_registration *gdbarch_registry = NULL;
 
 static void
-append_name (const char ***buf, int *nr, const char *name)
+append_name(const char ***buf, int *nr, const char *name)
 {
-  *buf = xrealloc (*buf, sizeof (char**) * (*nr + 1));
+  *buf = (const char **)xrealloc(*buf, sizeof(char **) * (*nr + 1));
   (*buf)[*nr] = name;
   *nr += 1;
 }
 
 const char **
-gdbarch_printable_names (void)
+gdbarch_printable_names(void)
 {
   /* Accumulate a list of names based on the registed list of
      architectures. */
@@ -4277,7 +4276,7 @@ find_arch_by_info (struct gdbarch *old_gdbarch, struct gdbarch_info info)
 			"New architecture 0x%08lx (%s) selected\n",
 			(long) new_gdbarch,
 			new_gdbarch->bfd_arch_info->printable_name);
-  
+
   /* Insert the new architecture into the front of the architecture
      list (keep the list sorted Most Recently Used).  */
   {
@@ -4285,7 +4284,7 @@ find_arch_by_info (struct gdbarch *old_gdbarch, struct gdbarch_info info)
     this->next = rego->arches;
     this->gdbarch = new_gdbarch;
     rego->arches = this;
-  }    
+  }
 
   /* Check that the newly installed architecture is valid.  Plug in
      any post init values.  */

@@ -1,9 +1,9 @@
-/* BFD back-end for PowerPC Microsoft Portable Executable files.
+/* coff-ppc.c: BFD backend for PowerPC Microsoft Portable Executable files.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
-   Original version pieced together by Kim Knuttila (krk@cygnus.com)
+   Original version pieced together by Kim Knuttila <krk@cygnus.com>
 
    There is nothing new under the sun. This file draws a lot on other
    coff files, in particular, those for the rs/6000, alpha, mips, and
@@ -44,8 +44,8 @@
 #include "coff/pe.h"
 
 #ifdef BADMAG
-#undef BADMAG
-#endif
+# undef BADMAG
+#endif /* BADMAG */
 
 #define BADMAG(x) PPCBADMAG(x)
 
@@ -54,8 +54,8 @@
 /* This file is compiled more than once, but we only compile the
    final_link routine once.  */
 extern bfd_boolean ppc_bfd_coff_final_link
-  PARAMS ((bfd *, struct bfd_link_info *));
-extern void dump_toc PARAMS ((PTR));
+  PARAMS((bfd *, struct bfd_link_info *));
+extern void dump_toc PARAMS((PTR));
 
 /* The toc is a set of bfd_vma fields. We use the fact that valid
    addresses are even (i.e. the bit representing "1" is off) to allow
@@ -76,30 +76,30 @@ extern void dump_toc PARAMS ((PTR));
 #define MARK_AS_WRITTEN(x)  ((x) |= 1)
 #define MAKE_ADDR_AGAIN(x)  ((x) &= ~1)
 
-/* Turn on this check if you suspect something amiss in the hash tables.  */
+/* Turn on this check if you suspect something amiss in the hash tables: */
 #ifdef DEBUG_HASH
 
-/* Need a 7 char string for an eye catcher.  */
-#define EYE "krkjunk"
+/* Need a 7 char string for an eye catcher: */
+# define EYE "krkjunk"
 
-#define HASH_CHECK_DCL char eye_catcher[8];
-#define HASH_CHECK_INIT(ret)      strcpy(ret->eye_catcher, EYE)
-#define HASH_CHECK(addr) \
- if (strcmp(addr->eye_catcher, EYE) != 0) \
-  { \
-    fprintf (stderr,\
-    _("File %s, line %d, Hash check failure, bad eye %8s\n"), \
-    __FILE__, __LINE__, addr->eye_catcher); \
-    abort (); \
- }
+# define HASH_CHECK_DCL char eye_catcher[8];
+# define HASH_CHECK_INIT(ret)      strcpy(ret->eye_catcher, EYE)
+# define HASH_CHECK(addr) \
+  if (strcmp(addr->eye_catcher, EYE) != 0) \
+   { \
+     fprintf(stderr,\
+             _("File %s, line %d, Hash check failure, bad eye %8s\n"), \
+             __FILE__, __LINE__, addr->eye_catcher); \
+     abort(); \
+  }
 
 #else
 
-#define HASH_CHECK_DCL
-#define HASH_CHECK_INIT(ret)
-#define HASH_CHECK(addr)
+# define HASH_CHECK_DCL
+# define HASH_CHECK_INIT(ret)
+# define HASH_CHECK(addr)
 
-#endif
+#endif /* DEBUG_HASH */
 
 /* In order not to add an int to every hash table item for every coff
    linker, we define our own hash table, derived from the coff one.  */
@@ -127,22 +127,22 @@ struct ppc_coff_link_hash_table
 };
 
 static struct bfd_hash_entry *ppc_coff_link_hash_newfunc
-  PARAMS ((struct bfd_hash_entry *, struct bfd_hash_table *,
-	   const char *));
+  PARAMS((struct bfd_hash_entry *, struct bfd_hash_table *,
+	  const char *));
 static bfd_boolean ppc_coff_link_hash_table_init
-  PARAMS ((struct ppc_coff_link_hash_table *, bfd *,
-	   struct bfd_hash_entry *(*) (struct bfd_hash_entry *,
-				       struct bfd_hash_table *,
-				       const char *)));
+  PARAMS((struct ppc_coff_link_hash_table *, bfd *,
+	  struct bfd_hash_entry *(*)(struct bfd_hash_entry *,
+                                     struct bfd_hash_table *,
+                                     const char *)));
 static struct bfd_link_hash_table *ppc_coff_link_hash_table_create
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 static bfd_boolean coff_ppc_relocate_section
-  PARAMS ((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
-	   struct internal_reloc *, struct internal_syment *, asection **));
+  PARAMS((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
+	  struct internal_reloc *, struct internal_syment *, asection **));
 static reloc_howto_type *coff_ppc_rtype_to_howto
-  PARAMS ((bfd *, asection *, struct internal_reloc *,
-	   struct coff_link_hash_entry *, struct internal_syment *,
-	   bfd_vma *));
+  PARAMS((bfd *, asection *, struct internal_reloc *,
+	  struct coff_link_hash_entry *, struct internal_syment *,
+	  bfd_vma *));
 
 /* Routine to create an entry in the link hash table: */
 static struct bfd_hash_entry *
@@ -151,34 +151,34 @@ ppc_coff_link_hash_newfunc(struct bfd_hash_entry *entry,
                            const char *string)
 {
   struct ppc_coff_link_hash_entry *ret =
-    (struct ppc_coff_link_hash_entry *) entry;
+    (struct ppc_coff_link_hash_entry *)entry;
 
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
-  if (ret == (struct ppc_coff_link_hash_entry *) NULL)
+  if (ret == (struct ppc_coff_link_hash_entry *)NULL)
     ret = (struct ppc_coff_link_hash_entry *)
-      bfd_hash_allocate (table,
-			 sizeof (struct ppc_coff_link_hash_entry));
+      bfd_hash_allocate(table,
+                        sizeof(struct ppc_coff_link_hash_entry));
 
-  if (ret == (struct ppc_coff_link_hash_entry *) NULL)
+  if (ret == (struct ppc_coff_link_hash_entry *)NULL)
     return NULL;
 
-  /* Call the allocation method of the superclass.  */
+  /* Call the allocation method of the superclass: */
   ret = ((struct ppc_coff_link_hash_entry *)
-	 _bfd_coff_link_hash_newfunc ((struct bfd_hash_entry *) ret,
-				      table, string));
+	 _bfd_coff_link_hash_newfunc((struct bfd_hash_entry *)ret,
+				     table, string));
 
   if (ret)
     {
-      /* Initialize the local fields.  */
-      SET_UNALLOCATED (ret->toc_offset);
+      /* Initialize the local fields: */
+      SET_UNALLOCATED(ret->toc_offset);
       ret->symbol_is_glue = 0;
       ret->glue_insn = 0;
 
-      HASH_CHECK_INIT (ret);
+      HASH_CHECK_INIT(ret);
     }
 
-  return (struct bfd_hash_entry *) ret;
+  return (struct bfd_hash_entry *)ret;
 }
 
 /* Initialize a PE linker hash table: */
@@ -203,11 +203,11 @@ ppc_coff_link_hash_table_create(bfd *abfd)
   ret = (struct ppc_coff_link_hash_table *)bfd_malloc(amt);
   if (ret == NULL)
     return NULL;
-  if (! ppc_coff_link_hash_table_init (ret, abfd,
-					ppc_coff_link_hash_newfunc))
+  if (! ppc_coff_link_hash_table_init(ret, abfd,
+                                      ppc_coff_link_hash_newfunc))
     {
-      free (ret);
-      return (struct bfd_link_hash_table *) NULL;
+      free(ret);
+      return (struct bfd_link_hash_table *)NULL;
     }
   return &ret->root.root;
 }
@@ -226,7 +226,7 @@ ppc_coff_link_hash_table_create(bfd *abfd)
 
 #define COFF_DEFAULT_SECTION_ALIGNMENT_POWER (3)
 
-/* In case we're on a 32-bit machine, construct a 64-bit "-1" value
+/* In case we are on a 32-bit machine, construct a 64-bit "-1" value
    from smaller values.  Start with zero, widen, *then* decrement.  */
 #define MINUS_ONE	(((bfd_vma)0) - 1)
 
@@ -253,8 +253,10 @@ ppc_coff_link_hash_table_create(bfd *abfd)
 /* 26-bit PC-relative offset, shifted left 2 (branch relative) */
 #define IMAGE_REL_PPC_REL24             0x0006
 
+#ifndef IMAGE_REL_PPC_REL14
 /* 16-bit PC-relative offset, shifted left 2 (br cond relative) */
-#define IMAGE_REL_PPC_REL14             0x0007
+# define IMAGE_REL_PPC_REL14            0x0007
+#endif /* !IMAGE_REL_PPC_REL14 */
 
 /* 16-bit offset from TOC base */
 #define IMAGE_REL_PPC_TOCREL16          0x0008
@@ -292,14 +294,20 @@ ppc_coff_link_hash_table_create(bfd *abfd)
 
 /* Flag bits in IMAGE_RELOCATION.TYPE.  */
 
-/* Subtract reloc value rather than adding it.  */
-#define IMAGE_REL_PPC_NEG               0x0100
+#ifndef IMAGE_REL_PPC_NEG
+/* Subtract reloc value rather than adding it: */
+# define IMAGE_REL_PPC_NEG              0x0100
+#endif /* !IMAGE_REL_PPC_NEG */
 
-/* Fix branch prediction bit to predict branch taken.  */
-#define IMAGE_REL_PPC_BRTAKEN           0x0200
+#ifndef IMAGE_REL_PPC_BRTAKEN
+/* Fix branch prediction bit to predict branch taken: */
+# define IMAGE_REL_PPC_BRTAKEN          0x0200
+#endif /* !IMAGE_REL_PPC_BRTAKEN */
 
-/* Fix branch prediction bit to predict branch not taken.  */
-#define IMAGE_REL_PPC_BRNTAKEN          0x0400
+#ifndef IMAGE_REL_PPC_BRNTAKEN
+/* Fix branch prediction bit to predict branch not taken: */
+# define IMAGE_REL_PPC_BRNTAKEN         0x0400
+#endif /* !IMAGE_REL_PPC_BRNTAKEN */
 
 /* TOC slot defined in file (or, data in toc).  */
 #define IMAGE_REL_PPC_TOCDEFN           0x0800
@@ -2624,5 +2632,17 @@ const bfd_target TARGET_BIG_SYM =
 #ifdef IS_UNALLOCATED
 # undef IS_UNALLOCATED
 #endif /* IS_UNALLOCATED */
+#ifdef IMAGE_REL_PPC_REL14
+# undef IMAGE_REL_PPC_REL14
+#endif /* IMAGE_REL_PPC_REL14 */
+#ifdef IMAGE_REL_PPC_NEG
+# undef IMAGE_REL_PPC_NEG
+#endif /* IMAGE_REL_PPC_NEG */
+#ifdef IMAGE_REL_PPC_BRTAKEN
+# undef IMAGE_REL_PPC_BRTAKEN
+#endif /* IMAGE_REL_PPC_BRTAKEN */
+#ifdef IMAGE_REL_PPC_BRNTAKEN
+# undef IMAGE_REL_PPC_BRNTAKEN
+#endif /* IMAGE_REL_PPC_BRNTAKEN */
 
 /* EOF */

@@ -177,14 +177,14 @@ struct reloc_info_extended
 {
   unsigned long r_address;
   unsigned int  r_index:24;
-/* r_index is a struct member, so it is unnecessary to check if it is defined
- * here: */
+/* r_index is a struct member, so it is unnecessary to check if it is
+ * defined here: */
 #if !defined(r_symbolnum)
 # define r_symbolnum r_index
 #endif /* !r_symbolnum */
   unsigned	r_extern:1;
   unsigned	:2;
-  enum reloc_type r_type:5;
+  ENUM_BITFIELD(reloc_type) r_type:6; /* '5' is too narrow for the type */
   long int	r_addend;
 };
 

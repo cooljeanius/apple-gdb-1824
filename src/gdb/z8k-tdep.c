@@ -394,20 +394,20 @@ z8k_set_pointer_size (int newsize)
          (the direct reference to _initialize_gdbtypes() below
          eliminated) then Makefile.in should be updated so that
          z8k-tdep.c is again compiled with -Werror. */
-      _initialize_gdbtypes ();
+      _initialize_gdbtypes();
     }
 }
 
 static void
-segmented_command (char *args, int from_tty)
+segmented_command(char *args, int from_tty)
 {
-  z8k_set_pointer_size (32);
+  z8k_set_pointer_size(32);
 }
 
 static void
-unsegmented_command (char *args, int from_tty)
+unsegmented_command(char *args, int from_tty)
 {
-  z8k_set_pointer_size (16);
+  z8k_set_pointer_size(16);
 }
 
 static void

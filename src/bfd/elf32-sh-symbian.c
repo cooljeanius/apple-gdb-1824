@@ -17,17 +17,19 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* Stop elf32-sh.c from defining any target vectors.  */
 #define SH_TARGET_ALREADY_DEFINED
 #define sh_find_elf_flags           sh_symbian_find_elf_flags
-#define sh_elf_get_flags_from_mach  sh_symbian_elf_get_flags_from_mach 
+#define sh_elf_get_flags_from_mach  sh_symbian_elf_get_flags_from_mach
 #include "elf32-sh.c"
 
-
-//#define DEBUG 1
-#define DEBUG 0
+#if 0
+# define DEBUG 1
+#else
+# define DEBUG 0
+#endif /* 0 */
 
 #define DIRECTIVE_HEADER	"#<SYMEDIT>#\n"
 #define DIRECTIVE_IMPORT	"IMPORT "
@@ -127,7 +129,7 @@ sh_symbian_import_as (struct bfd_link_info *info, bfd * abfd,
 	bfd_set_error (bfd_error_invalid_operation);
 	_bfd_error_handler (_("%B: IMPORT AS directive for %s conceals previous IMPORT AS"),
 			    abfd, current_name);
-	return FALSE;	    
+	return FALSE;
       }
 
   if ((node = bfd_malloc (sizeof * node)) == NULL)
@@ -146,7 +148,7 @@ sh_symbian_import_as (struct bfd_link_info *info, bfd * abfd,
     }
   else
     strcpy (node->current_name, current_name);
-  
+
   if ((node->new_name = bfd_malloc (strlen (new_name) + 1)) == NULL)
     {
       if (DEBUG)
@@ -376,7 +378,7 @@ sh_symbian_process_embedded_commands (struct bfd_link_info *info, bfd * abfd,
 	  if (DEBUG)
 	    fprintf (stderr, "offset into .directive section: %ld\n",
 		     (long) (directive - (char *) contents));
-	  
+
 	  bfd_set_error (bfd_error_invalid_operation);
 	  _bfd_error_handler (_("%B: Unrecognised .directive command: %s"),
 			      abfd, directive);
@@ -408,7 +410,7 @@ bfd_elf32_sh_symbian_process_directives (struct bfd_link_info *info, bfd * abfd)
 
   if (!contents)
     bfd_set_error (bfd_error_no_memory);
-  else 
+  else
     {
       if (bfd_get_section_contents (abfd, sec, contents, 0, sz))
 	result = sh_symbian_process_embedded_commands (info, abfd, sec, contents);
@@ -443,9 +445,9 @@ sh_symbian_relocate_section (bfd *                  output_bfd,
       symbol_rename *                ptr;
       bfd_size_type                  num_global_syms;
       unsigned long		     num_local_syms;
-      
+
       BFD_ASSERT (! elf_bad_symtab (input_bfd));
- 
+
       symtab_hdr       = & elf_tdata (input_bfd)->symtab_hdr;
       hash_table       = elf_hash_table (info);
       num_local_syms   = symtab_hdr->sh_info;
@@ -468,7 +470,7 @@ sh_symbian_relocate_section (bfd *                  output_bfd,
 		fprintf (stderr, "IMPORT AS: current symbol '%s' does not exist\n", ptr->current_name);
 	      continue;
 	    }
-	  
+
 	  new_hash = elf_link_hash_lookup (hash_table, ptr->new_name, FALSE, FALSE, TRUE);
 
 	  /* If we could not find the symbol then it is a new, undefined symbol.
@@ -566,7 +568,7 @@ sh_symbian_relocate_section (bfd *                  output_bfd,
 	  int                          r_type;
 	  unsigned long                r_symndx;
 	  struct elf_link_hash_entry * h;
-      
+
 	  r_symndx = ELF32_R_SYM (rel->r_info);
 	  r_type = ELF32_R_TYPE (rel->r_info);
 
@@ -609,15 +611,15 @@ sh_symbian_relocate_section (bfd *                  output_bfd,
 	      }
 	}
     }
-  
-  return sh_elf_relocate_section (output_bfd, info, input_bfd, input_section,
-				  contents, relocs, local_syms, local_sections);
+
+  return sh_elf_relocate_section(output_bfd, info, input_bfd, input_section,
+				 contents, relocs, local_syms, local_sections);
 }
 
 static bfd_boolean
-sh_symbian_check_directives (bfd *abfd, struct bfd_link_info *info)
+sh_symbian_check_directives(bfd *abfd, struct bfd_link_info *info)
 {
-  return bfd_elf32_sh_symbian_process_directives (info, abfd);
+  return bfd_elf32_sh_symbian_process_directives(info, abfd);
 }
 
 #define TARGET_LITTLE_SYM	bfd_elf32_shl_symbian_vec
@@ -629,3 +631,5 @@ sh_symbian_check_directives (bfd *abfd, struct bfd_link_info *info)
 #define elf_backend_check_directives    sh_symbian_check_directives
 
 #include "elf32-target.h"
+
+/* EOF */

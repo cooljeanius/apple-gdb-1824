@@ -48,44 +48,46 @@
 #include "i386-macosx-tdep.h"
 
 #define supply_unsigned_int(regnum, val)\
-store_unsigned_integer (buf, 4, val); \
-regcache_raw_supply (current_regcache, regnum, buf);
+  store_unsigned_integer(buf, 4, val); \
+  regcache_raw_supply(current_regcache, regnum, buf);
 
 #define collect_unsigned_int(regnum, addr)\
-regcache_raw_collect (current_regcache, regnum, buf); \
-(* (addr)) = extract_unsigned_integer (buf, 4);
+  regcache_raw_collect(current_regcache, regnum, buf); \
+  (*(addr)) = extract_unsigned_integer(buf, 4);
 
 #define supply_unsigned_int64(regnum, val)\
-store_unsigned_integer (buf, 8, val); \
-regcache_raw_supply (current_regcache, regnum, buf);
+  store_unsigned_integer(buf, 8, val); \
+  regcache_raw_supply(current_regcache, regnum, buf);
 
 #define collect_unsigned_int64(regnum, addr)\
-regcache_raw_collect (current_regcache, regnum, buf); \
-(* (addr)) = extract_unsigned_integer (buf, 8);
+  regcache_raw_collect(current_regcache, regnum, buf); \
+  (*(addr)) = extract_unsigned_integer(buf, 8);
 
-static int x86_64_macosx_get_longjmp_target (CORE_ADDR *pc);
-static int i386_macosx_get_longjmp_target (CORE_ADDR *pc);
+static int x86_64_macosx_get_longjmp_target(CORE_ADDR *pc);
+static int i386_macosx_get_longjmp_target(CORE_ADDR *pc);
+
+extern void _initialize_i386_macosx_tdep(void);
 
 void
-i386_macosx_fetch_gp_registers (gdb_i386_thread_state_t *sp_regs)
+i386_macosx_fetch_gp_registers(gdb_i386_thread_state_t *sp_regs)
 {
   gdb_byte buf[4];
-  supply_unsigned_int (0, sp_regs->eax);
-  supply_unsigned_int (1, sp_regs->ecx);
-  supply_unsigned_int (2, sp_regs->edx);
-  supply_unsigned_int (3, sp_regs->ebx);
-  supply_unsigned_int (4, sp_regs->esp);
-  supply_unsigned_int (5, sp_regs->ebp);
-  supply_unsigned_int (6, sp_regs->esi);
-  supply_unsigned_int (7, sp_regs->edi);
-  supply_unsigned_int (8, sp_regs->eip);
-  supply_unsigned_int (9, sp_regs->eflags);
-  supply_unsigned_int (10, sp_regs->cs);
-  supply_unsigned_int (11, sp_regs->ss);
-  supply_unsigned_int (12, sp_regs->ds);
-  supply_unsigned_int (13, sp_regs->es);
-  supply_unsigned_int (14, sp_regs->fs);
-  supply_unsigned_int (15, sp_regs->gs);
+  supply_unsigned_int(0, sp_regs->eax);
+  supply_unsigned_int(1, sp_regs->ecx);
+  supply_unsigned_int(2, sp_regs->edx);
+  supply_unsigned_int(3, sp_regs->ebx);
+  supply_unsigned_int(4, sp_regs->esp);
+  supply_unsigned_int(5, sp_regs->ebp);
+  supply_unsigned_int(6, sp_regs->esi);
+  supply_unsigned_int(7, sp_regs->edi);
+  supply_unsigned_int(8, sp_regs->eip);
+  supply_unsigned_int(9, sp_regs->eflags);
+  supply_unsigned_int(10, sp_regs->cs);
+  supply_unsigned_int(11, sp_regs->ss);
+  supply_unsigned_int(12, sp_regs->ds);
+  supply_unsigned_int(13, sp_regs->es);
+  supply_unsigned_int(14, sp_regs->fs);
+  supply_unsigned_int(15, sp_regs->gs);
 }
 
 void
@@ -868,22 +870,24 @@ i386_throw_catch_find_typeinfo (struct frame_info *curr_frame,
   typeinfo_str =
     typeinfo_sym->ginfo.language_specific.cplus_specific.demangled_name;
   if ((typeinfo_str == NULL)
-      || (strstr (typeinfo_str, "typeinfo for ") != typeinfo_str))
+      || (strstr(typeinfo_str, "typeinfo for ") != typeinfo_str))
     return NULL;
 
-  return typeinfo_str + strlen ("typeinfo for ");
+  return (typeinfo_str + strlen("typeinfo for "));
 }
 
-void _initialize_i386_macosx_tdep(void)
+/* remember, function name must start in column 0 for init.c to work: */
+void
+_initialize_i386_macosx_tdep(void)
 {
-  gdbarch_register_osabi_sniffer (bfd_arch_unknown, bfd_target_mach_o_flavour,
-                                  i386_mach_o_osabi_sniffer);
+  gdbarch_register_osabi_sniffer(bfd_arch_unknown, bfd_target_mach_o_flavour,
+                                 i386_mach_o_osabi_sniffer);
 
-  gdbarch_register_osabi (bfd_arch_i386, 0, GDB_OSABI_DARWIN,
-                          i386_macosx_init_abi);
+  gdbarch_register_osabi(bfd_arch_i386, 0, GDB_OSABI_DARWIN,
+                         i386_macosx_init_abi);
 
-  gdbarch_register_osabi (bfd_arch_i386, bfd_mach_x86_64,
-                          GDB_OSABI_DARWIN64, x86_macosx_init_abi_64);
+  gdbarch_register_osabi(bfd_arch_i386, bfd_mach_x86_64,
+                         GDB_OSABI_DARWIN64, x86_macosx_init_abi_64);
 }
 
 /* EOF */

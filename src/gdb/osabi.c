@@ -417,40 +417,39 @@ check_note (bfd *abfd, asection *sect, const char *note,
   if (bfd_h_get_32 (abfd, note + 4) != descsz)
     return 0;
 
-  /* Check the note type.  */
-  if (bfd_h_get_32 (abfd, note + 8) != type)
+  /* Check the note type: */
+  if (bfd_h_get_32(abfd, note + 8) != type)
     return 0;
 
   return 1;
 }
 
-/* Generic sniffer for ELF flavoured files.  */
-
+/* Generic sniffer for ELF flavoured files: */
 void
-generic_elf_osabi_sniff_abi_tag_sections (bfd *abfd, asection *sect, void *obj)
+generic_elf_osabi_sniff_abi_tag_sections(bfd *abfd, asection *sect, void *obj)
 {
-  enum gdb_osabi *osabi = obj;
+  enum gdb_osabi *osabi = (enum gdb_osabi *)obj;
   const char *name;
   unsigned int sectsize;
   char *note;
 
-  name = bfd_get_section_name (abfd, sect);
-  sectsize = bfd_section_size (abfd, sect);
+  name = bfd_get_section_name(abfd, sect);
+  sectsize = bfd_section_size(abfd, sect);
 
-  /* Limit the amount of data to read.  */
+  /* Limit the amount of data to read: */
   if (sectsize > MAX_NOTESZ)
     sectsize = MAX_NOTESZ;
 
-  note = alloca (sectsize);
-  bfd_get_section_contents (abfd, sect, note, 0, sectsize);
+  note = (char *)alloca(sectsize);
+  bfd_get_section_contents(abfd, sect, note, 0, sectsize);
 
-  /* .note.ABI-tag notes, used by GNU/Linux and FreeBSD.  */
-  if (strcmp (name, ".note.ABI-tag") == 0)
+  /* .note.ABI-tag notes, used by GNU/Linux and FreeBSD: */
+  if (strcmp(name, ".note.ABI-tag") == 0)
     {
-      /* GNU.  */
-      if (check_note (abfd, sect, note, "GNU", 16, NT_GNU_ABI_TAG))
+      /* GNU: */
+      if (check_note(abfd, sect, note, "GNU", 16, NT_GNU_ABI_TAG))
 	{
-	  unsigned int abi_tag = bfd_h_get_32 (abfd, note + 16);
+	  unsigned int abi_tag = bfd_h_get_32(abfd, note + 16);
 
 	  switch (abi_tag)
 	    {
@@ -585,40 +584,41 @@ generic_elf_osabi_sniffer (bfd *abfd)
 }
 
 int
-set_osabi_from_string (char *in_osabi_string)
+set_osabi_from_string(char *in_osabi_string)
 {
   struct gdbarch_info info;
   int i;
   for (i = 1; i < GDB_OSABI_INVALID; i++)
-    if (strcmp (in_osabi_string, gdbarch_osabi_name (i)) == 0)
+    if (strcmp(in_osabi_string,
+               gdbarch_osabi_name((enum gdb_osabi)i)) == 0)
       {
-	set_osabi_string = xstrdup (in_osabi_string);
-	user_selected_osabi = i;
+	set_osabi_string = xstrdup(in_osabi_string);
+	user_selected_osabi = (enum gdb_osabi)i;
 	user_osabi_state = osabi_user;
 	break;
       }
   if (i == GDB_OSABI_INVALID)
     return 0;
-  gdbarch_info_init (&info);
-  if (! gdbarch_update_p (info))
+  gdbarch_info_init(&info);
+  if (! gdbarch_update_p(info))
     return 0;
 
   return 1;
 }
 
 static void
-set_osabi (char *args, int from_tty, struct cmd_list_element *c)
+set_osabi(char *args, int from_tty, struct cmd_list_element *c)
 {
   struct gdbarch_info info;
 
-  if (strcmp (set_osabi_string, "auto") == 0)
+  if (strcmp(set_osabi_string, "auto") == 0)
     user_osabi_state = osabi_auto;
-  else if (strcmp (set_osabi_string, "default") == 0)
+  else if (strcmp(set_osabi_string, "default") == 0)
     {
       user_selected_osabi = GDB_OSABI_DEFAULT;
       user_osabi_state = osabi_user;
     }
-  else if (strcmp (set_osabi_string, "none") == 0)
+  else if (strcmp(set_osabi_string, "none") == 0)
     {
       user_selected_osabi = GDB_OSABI_UNKNOWN;
       user_osabi_state = osabi_user;
@@ -627,23 +627,24 @@ set_osabi (char *args, int from_tty, struct cmd_list_element *c)
     {
       int i;
       for (i = 1; i < GDB_OSABI_INVALID; i++)
-	if (strcmp (set_osabi_string, gdbarch_osabi_name (i)) == 0)
+	if (strcmp(set_osabi_string,
+                   gdbarch_osabi_name((enum gdb_osabi)i)) == 0)
 	  {
-	    user_selected_osabi = i;
+	    user_selected_osabi = (enum gdb_osabi)i;
 	    user_osabi_state = osabi_user;
 	    break;
 	  }
       if (i == GDB_OSABI_INVALID)
-	internal_error (__FILE__, __LINE__,
-			_("Invalid OS ABI \"%s\" passed to command handler."),
-			set_osabi_string);
+	internal_error(__FILE__, __LINE__,
+                       _("Invalid OS ABI \"%s\" passed to command handler."),
+                       set_osabi_string);
     }
 
   /* NOTE: At some point (true multiple architectures) we'll need to be more
      graceful here.  */
-  gdbarch_info_init (&info);
-  if (! gdbarch_update_p (info))
-    internal_error (__FILE__, __LINE__, _("Updating OS ABI failed."));
+  gdbarch_info_init(&info);
+  if (! gdbarch_update_p(info))
+    internal_error(__FILE__, __LINE__, _("Updating OS ABI failed."));
 }
 
 /* APPLE LOCAL BEGIN: Set the osabi via option.
