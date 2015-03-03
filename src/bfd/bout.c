@@ -1080,12 +1080,10 @@ abs32code (bfd *abfd,
 }
 
 static int
-aligncode (bfd *abfd,
-	   asection *input_section,
-	   arelent *r,
-	   unsigned int shrink)
+aligncode(bfd *abfd, asection *input_section, arelent *r,
+	  unsigned int shrink)
 {
-  bfd_vma dot = output_addr (input_section) + r->address;
+  bfd_vma dot = (output_addr(input_section) + r->address);
   bfd_vma gap;
   bfd_vma old_end;
   bfd_vma new_end;
@@ -1096,30 +1094,34 @@ aligncode (bfd *abfd,
      smaller  - the current size is already the same size as or bigger
      than the alignment required.  */
 
-  /* Calculate the first byte following the padding before we optimize.  */
-  old_end = ((dot + size ) & ~size) + size+1;
+  /* Calculate the first byte following the padding before we optimize: */
+  old_end = (((dot + size ) & ~size) + (size + 1));
   /* Work out where the new end will be - remember that we're smaller
      than we used to be.  */
   new_end = ((dot - shrink + size) & ~size);
 
-  /* This is the new end.  */
+  /* This is the new end: */
   gap = old_end - ((dot + size) & ~size);
 
-  shrink_delta = (old_end - new_end) - shrink;
+  shrink_delta = ((old_end - new_end) - shrink);
 
   if (shrink_delta)
     {
-      /* Change the reloc so that it knows how far to align to.  */
-      r->howto = howto_done_align_table + (r->howto - howto_align_table);
+      /* Change the reloc so that it knows how far to align to: */
+      r->howto = (howto_done_align_table + (r->howto - howto_align_table));
 
       /* Encode the stuff into the addend - for future use we need to
 	 know how big the reloc used to be.  */
-      r->addend = old_end - dot + r->address;
+      r->addend = (old_end - dot + r->address);
 
       /* This will be N bytes smaller in the long run, adjust all the symbols.  */
-      perform_slip (abfd, shrink_delta, input_section, r->address - shrink);
+      perform_slip(abfd, shrink_delta, input_section, r->address - shrink);
       shrink += shrink_delta;
     }
+
+  if (gap > 1L) {
+    ; /* (do nothing, just silences '-Wunused-but-set-variable') */
+  }
 
   return shrink;
 }

@@ -1,6 +1,6 @@
 /* dllwrap.c -- wrapper for DLLTOOL and GCC to generate PE style DLLs
-   Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
-   Contributed by Mumit Khan (khan@xraylith.wisc.edu).
+   Copyright 1998-2004 Free Software Foundation, Inc.
+   Contributed by Mumit Khan <khan@xraylith.wisc.edu>.
 
    This file is part of GNU Binutils.
 
@@ -19,16 +19,16 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
    02110-1301, USA.  */
 
-/* AIX requires this to be the first thing in the file.  */
+/* AIX requires this to be the first thing in the file: */
 #ifndef __GNUC__
 # ifdef _AIX
  #pragma alloca
-#endif
-#endif
+# endif /* _AIX */
+#endif /* !__GNUC__ */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 
 #include "bfd.h"
 #include "libiberty.h"

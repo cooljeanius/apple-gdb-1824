@@ -477,11 +477,11 @@ extern int _bfd_vms_write_dbg (bfd *, int);
 #define EVAX_OFFSET	256	/* Type ofset for EVAX codes in switch.  */
 /* Miscellaneous definitions.  */
 
-#if __GNUC__
+#if __GNUC__ && (!defined(__STRICT_ANSI__) || !__STRICT_ANSI__)
 typedef unsigned long long uquad;
 #else
 typedef unsigned long uquad;
-#endif
+#endif /* __GNUC__ && !__STRICT_ANSI__ */
 
 #define MAX_OUTREC_SIZE 4096
 #define MIN_OUTREC_LUFT 64

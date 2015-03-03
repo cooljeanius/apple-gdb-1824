@@ -320,6 +320,7 @@ m4_ifdef([ACX_BUGURL],[
 ])dnl
 
 AM_BINUTILS_WARNINGS
+AM_BINUTILS_CLANG_STATIC_ANALYSIS
 
 dnl# add some insurance to our "config.h" header:
 AH_TOP([

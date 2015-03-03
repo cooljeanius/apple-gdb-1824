@@ -188,7 +188,7 @@ bfd_pef_parse_traceback_table(bfd *abfd, asection *section,
       if ((pos + offset + 2) > len) {
         return -1;
       }
-      name.name_len = bfd_getb16(buf + pos + offset);
+      name.name_len = (unsigned short)bfd_getb16(buf + pos + offset);
       offset += 2;
 
       if (name.name_len > 4096) {
@@ -235,7 +235,7 @@ bfd_pef_parse_traceback_table(bfd *abfd, asection *section,
     fprintf(file, " [length = 0x%lx]", (long) offset);
   }
 
-  return offset;
+  return (int)offset;
 }
 
 static void
@@ -257,7 +257,7 @@ bfd_pef_print_symbol(bfd *abfd, void * afile, asymbol *symbol,
       if (strncmp(symbol->name, "__traceback_", strlen("__traceback_")) == 0)
 	{
 	  unsigned char *buf = (unsigned char *)alloca(symbol->udata.i);
-	  size_t offset = (symbol->value + 4);
+	  size_t offset = (symbol->value + 4UL);
 	  size_t len = symbol->udata.i;
 	  int ret;
 
@@ -347,7 +347,7 @@ bfd_pef_make_bfd_section(bfd *abfd, bfd_pef_section *section)
   bfdsec->vma = (section->default_address + section->container_offset);
   bfdsec->lma = (section->default_address + section->container_offset);
   bfdsec->size = section->container_length;
-  bfdsec->filepos = section->container_offset;
+  bfdsec->filepos = (file_ptr)section->container_offset;
   bfdsec->alignment_power = section->alignment;
 
   bfdsec->flags = bfd_pef_section_flags(section);
@@ -361,11 +361,11 @@ bfd_pef_parse_loader_header(bfd *abfd ATTRIBUTE_UNUSED, unsigned char *buf,
 {
   BFD_ASSERT(len == 56);
 
-  header->main_section = bfd_getb32(buf);
+  header->main_section = (long)bfd_getb32(buf);
   header->main_offset = bfd_getb32(buf + 4);
-  header->init_section = bfd_getb32(buf + 8);
+  header->init_section = (long)bfd_getb32(buf + 8);
   header->init_offset = bfd_getb32(buf + 12);
-  header->term_section = bfd_getb32(buf + 16);
+  header->term_section = (long)bfd_getb32(buf + 16);
   header->term_offset = bfd_getb32(buf + 20);
   header->imported_library_count = bfd_getb32(buf + 24);
   header->total_imported_symbol_count = bfd_getb32(buf + 28);
@@ -393,7 +393,7 @@ bfd_pef_parse_imported_library(bfd *abfd ATTRIBUTE_UNUSED,
   header->first_imported_symbol = bfd_getb32(buf + 16);
   header->options = buf[20];
   header->reserved_a = buf[21];
-  header->reserved_b = bfd_getb16(buf + 22);
+  header->reserved_b = (unsigned short)bfd_getb16(buf + 22);
 
   return 0;
 }
@@ -408,7 +408,7 @@ bfd_pef_parse_imported_symbol(bfd *abfd ATTRIBUTE_UNUSED,
   BFD_ASSERT(len == 4UL);
 
   value = bfd_getb32(buf);
-  symbol->symclass = (value >> 24);
+  symbol->symclass = (unsigned char)(value >> 24U);
   symbol->name = (value & 0x00ffffff);
 
   return 0;
@@ -424,7 +424,7 @@ bfd_pef_scan_section(bfd *abfd, bfd_pef_section *section)
     return -1;
   }
 
-  section->name_offset = bfd_h_get_32(abfd, buf);
+  section->name_offset = (long)bfd_h_get_32(abfd, buf);
   section->default_address = bfd_h_get_32(abfd, (buf + 4));
   section->total_length = bfd_h_get_32(abfd, (buf + 8));
   section->unpacked_length = bfd_h_get_32(abfd, (buf + 12));
@@ -631,8 +631,8 @@ bfd_pef_read_header(bfd *abfd, bfd_pef_header *header)
   header->old_definition_version = bfd_getb32(buf + 20);
   header->old_implementation_version = bfd_getb32(buf + 24);
   header->current_version = bfd_getb32(buf + 28);
-  header->section_count = (bfd_getb32(buf + 32) + 1);
-  header->instantiated_section_count = bfd_getb32(buf + 34);
+  header->section_count = (unsigned short)(bfd_getb32(buf + 32) + 1U);
+  header->instantiated_section_count = (unsigned short)bfd_getb32(buf +34);
   header->reserved = bfd_getb32(buf + 36);
 
   return 0;
@@ -745,17 +745,17 @@ bfd_pef_parse_traceback_tables(bfd *abfd, asection *sec,
 	  traceback.the_bfd = abfd;
 	  traceback.section = sec;
 	  traceback.flags = 0;
-	  traceback.udata.i = ret;
+	  traceback.udata.i = (bfd_vma)ret;
 
 	  *(csym[count]) = function;
 	  *(csym[count + 1]) = traceback;
 	}
 
-      pos += ret;
+      pos += (size_t)ret;
       count += 2;
     }
 
-  *nsym = count;
+  *nsym = (long)count;
   return 0;
 }
 
@@ -971,15 +971,15 @@ bfd_pef_parse_function_stubs(bfd *abfd, asection *codesec,
 static long
 bfd_pef_parse_symbols(bfd *abfd, asymbol **csym)
 {
-  unsigned long count = 0;
+  unsigned long count = 0UL;
 
   asection *codesec = NULL;
   unsigned char *codebuf = NULL;
-  size_t codelen = 0;
+  size_t codelen = 0UL;
 
   asection *loadersec = NULL;
   unsigned char *loaderbuf = NULL;
-  size_t loaderlen = 0;
+  size_t loaderlen = 0UL;
 
   codesec = bfd_get_section_by_name(abfd, "code");
   if (codesec != NULL)
@@ -1007,18 +1007,18 @@ bfd_pef_parse_symbols(bfd *abfd, asymbol **csym)
       }
     }
 
-  count = 0;
+  count = 0UL;
   if (codesec != NULL)
     {
-      long ncount = 0;
+      long ncount = 0L;
       bfd_pef_parse_traceback_tables(abfd, codesec, codebuf, codelen,
                                      &ncount, csym);
-      count += ncount;
+      count += (unsigned long)ncount;
     }
 
   if ((codesec != NULL) && (loadersec != NULL))
     {
-      unsigned long ncount = 0;
+      unsigned long ncount = 0UL;
       bfd_pef_parse_function_stubs(abfd, codesec, codebuf, codelen,
                                    loaderbuf, loaderlen, &ncount,
                                    ((csym != NULL) ? (csym + count) : NULL));
@@ -1038,7 +1038,7 @@ bfd_pef_parse_symbols(bfd *abfd, asymbol **csym)
     free(loaderbuf);
   }
 
-  return count;
+  return (long)count;
 }
 
 static long
@@ -1052,10 +1052,10 @@ bfd_pef_get_symtab_upper_bound(bfd *abfd)
 {
   long nsyms = bfd_pef_count_symbols(abfd);
 
-  if (nsyms < 0) {
+  if (nsyms < 0L) {
     return nsyms;
   }
-  return ((nsyms + 1) * sizeof(asymbol *));
+  return (long)((size_t)(nsyms + 1L) * sizeof(asymbol *));
 }
 
 static long
@@ -1064,13 +1064,13 @@ bfd_pef_canonicalize_symtab(bfd *abfd, asymbol **alocation)
   long i;
   asymbol *syms;
   long ret;
-  long nsyms = bfd_pef_count_symbols (abfd);
+  long nsyms = bfd_pef_count_symbols(abfd);
 
   if (nsyms < 0) {
     return nsyms;
   }
 
-  syms = (asymbol *)bfd_alloc(abfd, nsyms * sizeof(asymbol));
+  syms = (asymbol *)bfd_alloc(abfd, ((size_t)nsyms * sizeof(asymbol)));
   if (syms == NULL) {
     return -1;
   }

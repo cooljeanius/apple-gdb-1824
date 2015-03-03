@@ -1,4 +1,4 @@
-/* Support for printing Fortran types for GDB, the GNU debugger.
+/* f-typeprint.c: Support printing Fortran types in GDB, the GNU debugger.
 
    Copyright 1986, 1988, 1989, 1991, 1993, 1994, 1995, 1996, 1998,
    2000, 2001, 2002, 2003 Free Software Foundation, Inc.
@@ -143,7 +143,7 @@ f_type_print_varspec_prefix (struct type *type, struct ui_file *stream,
     case TYPE_CODE_COMPLEX:
     case TYPE_CODE_TYPEDEF:
       /* These types need no prefix.  They are listed here so that
-         gcc -Wall will reveal any types that haven't been handled.  */
+         gcc -Wall will reveal any types that have NOT been handled.  */
       break;
     }
 }

@@ -321,6 +321,10 @@ MY_swap_std_reloc_out(bfd *abfd, arelent *g,
     }
 
   MY_put_reloc(abfd, r_extern, r_index, g->address, g->howto, natptr);
+
+  if (r_addend >= 1U) {
+    return; /* (unnecessary; just silences '-Wunused-but-set-variable') */
+  }
 }
 
 bfd_reloc_status_type

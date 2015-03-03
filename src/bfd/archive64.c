@@ -206,8 +206,8 @@ bfd_elf64_archive_write_armap(bfd *arch, unsigned int elength,
 	  count++;
 	}
       /* Add size of this archive entry: */
-      archive_member_file_ptr += (arelt_size(current)
-				  + sizeof(struct ar_hdr));
+      archive_member_file_ptr += (file_ptr)((size_t)arelt_size(current)
+                                            + sizeof(struct ar_hdr));
       /* remember about the even alignment: */
       archive_member_file_ptr += (archive_member_file_ptr % 2);
       current = current->next;

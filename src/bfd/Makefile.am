@@ -99,6 +99,8 @@ BFD32_LIBS = \
 
 BFD64_LIBS = archive64.lo
 
+BFD64_PLISTS = archive64.plist
+
 BFD32_LIBS_CFILES = \
 	archive.c archures.c bfd.c bfdio.c bfdwin.c \
 	cache.c coffgen.c corefile.c \
@@ -798,6 +800,8 @@ OPTIONAL_BACKENDS = \
 	sco5-core.lo \
 	trad-core.lo
 
+## FIXME: add corresponding plists
+
 # Source files corresponding to the previous optional libtool objects:
 OPTIONAL_BACKENDS_CFILES = \
 	aix386-core.c \
@@ -833,6 +837,9 @@ INCINTL = @INCINTL@
 
 AM_CPPFLAGS = @HDEFINES@ @COREFLAG@ @TDEFINES@ $(CSEARCH) $(CSWITCHES) \
 	$(HAVEVECS) $(INCINTL)
+
+RUN_CLANG_ANALYZER = $(CLANG_ANALYZER) $(DEFS) $(CPPFLAGS) $(CFLAGS) \
+	$(CSEARCH) $(HAVEVECS) $(INCINTL) --analyze
 
 # C source files that correspond to .o's.
 SOURCE_CFILES = \
@@ -893,6 +900,15 @@ am__v_v_1 = -v
 # files to check for translations (I think?):
 SRC_POTFILES = $(SOURCE_CFILES) $(SOURCE_HFILES)
 BLD_POTFILES = $(BUILD_CFILES) $(BUILD_HFILES)
+
+## where to put clang static analysis plists:
+analysisdir = $(builddir)/clang_static_analysis
+
+SUFFIXES = .c .o .lo .plist
+
+.c.plist:
+	@if test ! -d $(analysisdir); then $(MKDIR_P) $(analysisdir); fi
+	$(RUN_CLANG_ANALYZER) -o $(analysisdir)/$@ $<
 
 po/SRC-POTFILES.in: @MAINT@ Makefile $(SRC_POTFILES)
 	$(AM_V_GEN)for file in $(SRC_POTFILES); do echo $${file}; done \

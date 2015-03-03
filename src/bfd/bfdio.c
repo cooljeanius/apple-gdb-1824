@@ -58,7 +58,7 @@ real_fseek(FILE *file, file_ptr offset, int whence)
 #if defined(HAVE_FSEEKO64)
   return fseeko64(file, offset, whence);
 #elif defined(HAVE_FSEEKO)
-  return fseeko(file, offset, whence);
+  return fseeko(file, (off_t)offset, whence);
 #else
   return fseek(file, offset, whence);
 #endif /* HAVE_FSEEKO64 || HAVE_FSEEKO || HAVE_FSEEK */

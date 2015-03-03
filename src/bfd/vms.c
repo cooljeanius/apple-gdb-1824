@@ -472,7 +472,9 @@ vms_new_section_hook (bfd * abfd, asection *section)
   vms_debug (1, "vms_new_section_hook (%p, [%d]%s), count %d\n",
 	     abfd, section->index, section->name, section_count);
 #endif /* VMS_DEBUG */
-  bfd_set_section_alignment(abfd, section, 4);
+  if (bfd_set_section_alignment(abfd, section, 4)) {
+    ; /* (do nothing; just silences '-Wunused-value') */
+  }
 
   if (section_count > PRIV(section_count)) {
       bfd_size_type amt = section_count;

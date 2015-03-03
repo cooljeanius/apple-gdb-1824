@@ -542,13 +542,13 @@ fill_sym (FILE *dbg_file, bfd *abfd)
 static void
 read_os9k_psymtab (struct objfile *objfile, CORE_ADDR text_addr, int text_size)
 {
-  register struct internal_symstruct *bufp = 0;		/* =0 avoids gcc -Wall glitch */
+  register struct internal_symstruct *bufp = 0;	/* =0 avoids gcc -Wall glitch */
   register char *namestring;
   int past_first_source_file = 0;
   CORE_ADDR last_o_file_start = 0;
 #if 0
   struct cleanup *back_to;
-#endif
+#endif /* 0 */
   bfd *abfd;
   FILE *fp;
 

@@ -1,4 +1,4 @@
-/* Ubicom IP2xxx specific support for 32-bit ELF
+/* elf32-ip2k.c: Ubicom IP2xxx specific support for 32-bit ELF
    Copyright 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 

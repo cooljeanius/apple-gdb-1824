@@ -1070,15 +1070,18 @@ tir_sta (bfd * abfd, unsigned char *ptr)
 	char *name;
 	vms_symbol_entry *entry;
 
-	envidx = bfd_getl16 (ptr);
+	envidx = bfd_getl16(ptr);
+        if (envidx == 0) {
+          ;
+        }
 	ptr += 2;
-	name = _bfd_vms_save_counted_string (ptr);
-	entry = _bfd_vms_enter_symbol (abfd, name);
+	name = _bfd_vms_save_counted_string(ptr);
+	entry = _bfd_vms_enter_symbol(abfd, name);
 	if (entry == NULL)
 	  return NULL;
-	(*_bfd_error_handler) (_("stack-local-symbol not fully implemented"));
-	_bfd_vms_push (abfd, (uquad) 0, -1);
-	ptr += *ptr + 1;
+	(*_bfd_error_handler)(_("stack-local-symbol not fully implemented"));
+	_bfd_vms_push(abfd, (uquad)0, -1);
+	ptr += (*ptr + 1);
       }
       break;
 

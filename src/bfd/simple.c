@@ -238,6 +238,10 @@ bfd_simple_get_relocated_section_contents(bfd *abfd, asection *sec,
   else
     storage_needed = 0;
 
+  if (storage_needed == 0) {
+    ; /* (do nothing) */
+  }
+
   contents = bfd_get_relocated_section_contents(abfd, &link_info,
                                                 &link_order, outbuf, 0,
                                                 symbol_table);

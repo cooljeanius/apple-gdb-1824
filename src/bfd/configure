@@ -717,6 +717,7 @@ target_noncanonical
 host_noncanonical
 INSTALL_LIBBFD_FALSE
 INSTALL_LIBBFD_TRUE
+CLANG_ANALYZER
 NO_WERROR
 WARN_LDFLAGS
 WARN_DEFS
@@ -920,7 +921,8 @@ CCASFLAGS
 CXX
 CXXFLAGS
 CCC
-CXXCPP'
+CXXCPP
+CLANG_ANALYZER'
 
 
 # Initialize some variables set by options.
@@ -1611,6 +1613,8 @@ Some influential environment variables:
   CXX         C++ compiler command
   CXXFLAGS    C++ compiler flags
   CXXCPP      C++ preprocessor
+  CLANG_ANALYZER
+              Path to the clang static analyzer
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -18743,8 +18747,11 @@ fi
 WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wmissing-declarations -Wimplicit -Wparentheses -Wextra -Wc++-compat \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
--Wmissing-parameter-type -Wshadow -Wabi -Wmissing-include-dirs"
-WARN_DEFS="-D_FORTIFY_SOURCE=2"
+-Wmissing-parameter-type -Wshadow -Wabi -Wmissing-include-dirs \
+-Wconversion -Wfloat-conversion -Wsign-conversion \
+-Wtraditional-conversion -Wshorten-64-to-32 -Wshadow"
+# "-Wconversion" and friends are because of a comment in libbfd.c
+WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint"
 WARN_LDFLAGS=""
 
 
@@ -18815,6 +18822,7 @@ if test "x${PEDANTIC_WARNINGS}" = "xyes"; then
     WARN_CFLAGS="${WARN_CFLAGS} -pedantic -Wdeclaration-after-statement"
     ## fake the '-ansi' flag; actually using it has additional effects:
     WARN_CFLAGS="${WARN_CFLAGS} -D__STRICT_ANSI__"
+    WARN_DEFS="${WARN_DEFS} -D__STRICT_ANSI__"
 fi
 
 # Check whether --enable-build-warnings was given.
@@ -18828,6 +18836,48 @@ if test "${enable_build_warnings+set}" = set; then :
         WARN_CFLAGS="${t} ${WARN_CFLAGS}";;
   *)    WARN_CFLAGS=`echo "${enableval}" | sed -e "s/,/ /g"`;;
 esac
+fi
+
+if test "x${WARN_DEFS}" != "x" -a "x${GCC}" = "xyes"
+then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking preprocessor definitons to use when warning" >&5
+$as_echo_n "checking preprocessor definitons to use when warning... " >&6; }
+    for w in ${WARN_DEFS}; do
+	case ${w} in
+	*) # Check its use with the preprocessor.
+	    saved_DEFS="${DEFS}"
+	    DEFS="${DEFS} ${w}"
+            # The above fails to actually get it into the compile command,
+            # so do this as well:
+	    saved_CFLAGS="${CFLAGS}"
+	    CFLAGS="${CFLAGS} -Wp,${w}"
+            # Actually that fails as well, so one more try:
+            saved_CPPFLAGS="${CPPFLAGS}"
+	    CPPFLAGS="${CPPFLAGS} ${w}"
+	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_cpp "$LINENO"; then :
+  MY_WARN_DEFS="${MY_WARN_DEFS} ${w}"
+fi
+rm -f conftest.err conftest.i conftest.$ac_ext
+	    DEFS="${saved_DEFS}"
+	    CFLAGS="${saved_CFLAGS}"
+	    CPPFLAGS="${saved_CPPFLAGS}"
+	esac
+    done
+    # Have to use second variable to avoid overwriting and/or duplicates:
+    WARN_DEFS="${MY_WARN_DEFS}"
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${WARN_DEFS}" >&5
+$as_echo "${WARN_DEFS}" >&6; }
 fi
 
 BAD_WARN_CFLAGS=""
@@ -18912,6 +18962,45 @@ if test x"${silent}" != x"yes" && test x"${WARN_LDFLAGS}" != x""; then
   echo "Setting linker warning flags = ${WARN_LDFLAGS}" 6>&1
 fi
 
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for the clang static analyzer" >&5
+$as_echo_n "checking for the clang static analyzer... " >&6; }
+if ${ac_cv_path_CLANG_ANALYZER+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -z "$CLANG_ANALYZER"; then
+  ac_path_CLANG_ANALYZER_found=false
+  # Loop through the user's path and test for each of PROGNAME-LIST
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in ${PATH}
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_prog in clang clang++ clang-mp-3.5 clang-mp-3.4 clang-mp-3.3 clang-mp-3.2; do
+    for ac_exec_ext in '' $ac_executable_extensions; do
+      ac_path_CLANG_ANALYZER="$as_dir/$ac_prog$ac_exec_ext"
+      as_fn_executable_p "$ac_path_CLANG_ANALYZER" || continue
+${ac_path_CLANG_ANALYZER} --analyze /dev/null > /dev/null 2>&1 && \
+      ac_cv_path_CLANG_ANALYZER=${ac_path_CLANG_ANALYZER}
+      ac_path_CLANG_ANALYZER_found=:
+      $ac_path_CLANG_ANALYZER_found && break 3
+    done
+  done
+  done
+IFS=$as_save_IFS
+  if test -z "$ac_cv_path_CLANG_ANALYZER"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: we will not be able to do static analysis with clang" >&5
+$as_echo "$as_me: WARNING: we will not be able to do static analysis with clang" >&2;}
+  fi
+else
+  ac_cv_path_CLANG_ANALYZER=$CLANG_ANALYZER
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_CLANG_ANALYZER" >&5
+$as_echo "$ac_cv_path_CLANG_ANALYZER" >&6; }  ## (need this extra line here)
+CLANG_ANALYZER=${ac_cv_path_CLANG_ANALYZER}
 
 
 

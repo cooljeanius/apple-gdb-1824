@@ -80,13 +80,15 @@ m4_ifdef([AM_PROG_AR],[
 ],[
   AC_CHECK_TOOL([AR],[ar])dnl
 ])dnl
-AC_CHECK_TOOL([RANLIB],[ranlib],[:])
+AC_CHECK_TOOL([RANLIB],[ranlib],[:])dnl
+  ## keep autoscan happy:
 if test "x${RANLIB}" = "x"; then
   test -z "${RANLIB}"
   AC_PROG_RANLIB
 else
   test ! -z "${RANLIB}" && export RANLIB
-  AC_SUBST([RANLIB])
+  AC_SUBST([RANLIB])dnl
+  ## (keep from being empty)
 fi
 
 # Checks for libraries.
@@ -109,7 +111,7 @@ AC_C_CONST
 AC_C_PROTOTYPES
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
-AC_CHECK_TYPES([caddr_t])
+AC_CHECK_TYPES([caddr_t])dnl
 AC_CHECK_TYPES([port_t],[],[
   # failed to find port_t, try a replacement type:
   AC_CHECK_TYPES([mach_port_t],[
@@ -122,7 +124,7 @@ AC_CHECK_TYPES([port_t],[],[
 #  warning "This conftest for mach_port_array_t wants <mach/port.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_PORT_H */
-    ])
+    ])dnl
     AC_CHECK_TYPES([mach_port_type_t],[],[],[
 #ifdef HAVE_MACH_PORT_H
 # include <mach/port.h>
@@ -131,7 +133,7 @@ AC_CHECK_TYPES([port_t],[],[
 #  warning "This conftest for mach_port_type_t wants <mach/port.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_PORT_H */
-    ])
+    ])dnl
   ],[
     # failed to find mach_port_t, try a replacement type:
     AC_CHECK_TYPES([ipc_port_t],[],[],[
@@ -142,7 +144,7 @@ AC_CHECK_TYPES([port_t],[],[
 #  warning "This conftest for ipc_port_t wants <ipc/ipc_types.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_IPC_IPC_TYPES_H */
-    ])
+    ])dnl
   ],[
 #ifdef HAVE_MACH_PORT_H
 # include <mach/port.h>
@@ -151,7 +153,7 @@ AC_CHECK_TYPES([port_t],[],[
 #  warning "This conftest for mach_port_t wants to include <mach/port.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_PORT_H */
-  ])
+  ])dnl
 ],[
 #ifdef HAVE_MACH_PORT_H
 # include <mach/port.h>
@@ -160,7 +162,7 @@ AC_CHECK_TYPES([port_t],[],[
 #  warning "This conftest for port_t expects <mach/port.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_PORT_H */
-])
+])dnl
 AC_TYPE_INT32_T
 AC_TYPE_UINT32_T
 

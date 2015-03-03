@@ -2164,16 +2164,16 @@ bfd_sym_display_name_table_entry(bfd *abfd, FILE *f, unsigned char *entry)
   if ((sdata->version >= BFD_SYM_VERSION_3_4) && (entry[0] == 255) && (entry[1] == 0)) {
       unsigned short length = (unsigned short)bfd_getb16(entry + 2);
       fprintf(f, "[%8lu] \"%.*s\"\n", local_index, length, (entry + 4));
-      offset = (2 + length + 1);
+      offset = (unsigned long)(2UL + length + 1UL);
   } else {
       if (!((entry[0] == 0) || ((entry[0] == 1) && (entry[1] == '\0')))) {
 	  fprintf(f, "[%8lu] \"%.*s\"\n", local_index, entry[0], (entry + 1));
       }
 
       if (sdata->version >= BFD_SYM_VERSION_3_4) {
-	  offset = (entry[0] + 2);
+	  offset = (unsigned long)(entry[0] + 2UL);
       } else {
-	  offset = (entry[0] + 1);
+	  offset = (unsigned long)(entry[0] + 1UL);
       }
   }
 

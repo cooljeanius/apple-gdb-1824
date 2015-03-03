@@ -5,8 +5,11 @@ AC_DEFUN([AM_BINUTILS_WARNINGS],[
 WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wmissing-declarations -Wimplicit -Wparentheses -Wextra -Wc++-compat \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
--Wmissing-parameter-type -Wshadow -Wabi -Wmissing-include-dirs"
-WARN_DEFS="-D_FORTIFY_SOURCE=2"
+-Wmissing-parameter-type -Wshadow -Wabi -Wmissing-include-dirs \
+-Wconversion -Wfloat-conversion -Wsign-conversion \
+-Wtraditional-conversion -Wshorten-64-to-32 -Wshadow"
+# "-Wconversion" and friends are because of a comment in libbfd.c
+WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint"
 WARN_LDFLAGS=""
 
 AC_REQUIRE([AC_CANONICAL_HOST])dnl
@@ -78,6 +81,7 @@ if test "x${PEDANTIC_WARNINGS}" = "xyes"; then
     WARN_CFLAGS="${WARN_CFLAGS} -pedantic -Wdeclaration-after-statement"
     ## fake the '-ansi' flag; actually using it has additional effects:
     WARN_CFLAGS="${WARN_CFLAGS} -D__STRICT_ANSI__"
+    WARN_DEFS="${WARN_DEFS} -D__STRICT_ANSI__"
 fi
 		   
 AC_ARG_ENABLE([build-warnings],
@@ -92,6 +96,33 @@ AC_ARG_ENABLE([build-warnings],
         WARN_CFLAGS="${t} ${WARN_CFLAGS}";;
   *)    WARN_CFLAGS=`echo "${enableval}" | sed -e "s/,/ /g"`;;
 esac])dnl
+
+if test "x${WARN_DEFS}" != "x" -a "x${GCC}" = "xyes"
+then
+    AC_MSG_CHECKING([preprocessor definitons to use when warning])
+    for w in ${WARN_DEFS}; do
+	case ${w} in
+	*) # Check its use with the preprocessor.
+	    saved_DEFS="${DEFS}"
+	    DEFS="${DEFS} ${w}"
+            # The above fails to actually get it into the compile command,
+            # so do this as well:
+	    saved_CFLAGS="${CFLAGS}"
+	    CFLAGS="${CFLAGS} -Wp,${w}"
+            # Actually that fails as well, so one more try:
+            saved_CPPFLAGS="${CPPFLAGS}"
+	    CPPFLAGS="${CPPFLAGS} ${w}"
+	    AC_PREPROC_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+                              [MY_WARN_DEFS="${MY_WARN_DEFS} ${w}"],[])
+	    DEFS="${saved_DEFS}"
+	    CFLAGS="${saved_CFLAGS}"
+	    CPPFLAGS="${saved_CPPFLAGS}"
+	esac
+    done
+    # Have to use second variable to avoid overwriting and/or duplicates:
+    WARN_DEFS="${MY_WARN_DEFS}"
+    AC_MSG_RESULT([${WARN_DEFS}])
+fi
 
 BAD_WARN_CFLAGS=""
 if test "x${WARN_CFLAGS}" != "x" -a "x${GCC}" = "xyes"
@@ -146,4 +177,19 @@ AC_SUBST([WARN_CFLAGS])dnl
 AC_SUBST([WARN_DEFS])dnl
 AC_SUBST([WARN_LDFLAGS])dnl
 AC_SUBST([NO_WERROR])dnl
+])dnl
+
+AC_DEFUN([AM_BINUTILS_CLANG_STATIC_ANALYSIS],[
+AC_ARG_VAR([CLANG_ANALYZER],[Path to the clang static analyzer])dnl
+AC_CACHE_CHECK([for the clang static analyzer],[ac_cv_path_CLANG_ANALYZER],
+  [AC_PATH_PROGS_FEATURE_CHECK([CLANG_ANALYZER],
+    [clang clang++ clang-mp-3.5 clang-mp-3.4 clang-mp-3.3 clang-mp-3.2],
+    [[${ac_path_CLANG_ANALYZER} --analyze /dev/null > /dev/null 2>&1 && \
+      ac_cv_path_CLANG_ANALYZER=${ac_path_CLANG_ANALYZER}
+      ac_path_CLANG_ANALYZER_found=:]],
+    [AC_MSG_WARN([we will not be able to do static analysis with clang])],
+    [${PATH}])dnl# end program check
+  ])dnl# end cache check
+  ## (need this extra line here)
+AC_SUBST([CLANG_ANALYZER],[${ac_cv_path_CLANG_ANALYZER}])dnl
 ])dnl

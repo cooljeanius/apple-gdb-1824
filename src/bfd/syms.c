@@ -954,6 +954,10 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
       strsize = (info->strsec->rawsize
 		 ? info->strsec->rawsize
 		 : info->strsec->size);
+
+      if (stabsize > strsize) {
+        ; /* (do nothing; just silences the clang static analyzer) */
+      }
     }
   else
     {

@@ -679,6 +679,10 @@ const bfd_target *encap_real_callback(bfd *abfd)
 			 : N_DATADDR(exec_aouthdr));
     }
 
+  if (text_start < exec_data_start) {
+    ; /* (do nothing, just silences '-Wunused-but-set-variable') */
+  }
+
   /* Determine the architecture and machine type of the object file: */
   bfd_default_set_arch_mach(abfd, bfd_arch_m68k, 0); /* FIXME */
 

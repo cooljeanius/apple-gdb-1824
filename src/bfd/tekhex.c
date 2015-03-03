@@ -654,16 +654,17 @@ tekhex_set_section_contents (bfd *abfd,
 {
   if (! abfd->output_has_begun)
     {
-      /* The first time around, allocate enough sections to hold all the chunks.  */
-      asection *s = abfd->sections;
+      /* The first time around, allocate enough sections to hold all of the
+       * chunks: */
+      asection *s; /* (no need to initialize here; done in the loop) */
       bfd_vma vma;
 
       for (s = abfd->sections; s; s = s->next)
 	{
 	  if (s->flags & SEC_LOAD)
 	    {
-	      for (vma = s->vma & ~(bfd_vma) CHUNK_MASK;
-		   vma < s->vma + s->size;
+	      for (vma = (s->vma & ~(bfd_vma)CHUNK_MASK);
+		   vma < (s->vma + s->size);
 		   vma += CHUNK_MASK)
 		find_chunk (abfd, vma);
 	    }

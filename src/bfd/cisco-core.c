@@ -28,13 +28,13 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 /* for MSVC builds */
 #ifndef SIGTRAP
 # define SIGTRAP 5
-#endif
+#endif /* !SIGTRAP */
 #ifndef SIGEMT
 # define SIGEMT 6
-#endif
+#endif /* !SIGEMT */
 #ifndef SIGBUS
 # define SIGBUS 10
-#endif
+#endif /* !SIGBUS */
 
 int crash_info_locs[] = {
   0x0250,	/* mips, ppc, x86, i960 */
@@ -46,24 +46,24 @@ int crash_info_locs[] = {
 };
 
 #define CRASH_MAGIC	0xdead1234
-#define MASK_ADDR(x)	((x) & 0x0fffffff)	/* Mask crash info address */
+#define MASK_ADDR(x)	((x) & 0x0fffffff)    /* Mask crash info address */
 
 typedef enum {
     CRASH_REASON_NOTCRASHED = 0,
     CRASH_REASON_EXCEPTION = 1,
-    CRASH_REASON_CORRUPT = 2,
+    CRASH_REASON_CORRUPT = 2/*,*/
 } crashreason;
 
 typedef struct {
-  char magic[4];		/* Magic number */
-  char version[4];		/* Version number */
-  char reason[4];		/* Crash reason */
-  char cpu_vector[4];		/* CPU vector for exceptions */
-  char registers[4];		/* Pointer to saved registers */
-  char rambase[4];		/* Base of RAM (not in V1 crash info) */
-  char textbase[4];		/* Base of .text section (not in V3 crash info) */
-  char database[4];		/* Base of .data section (not in V3 crash info) */
-  char bssbase[4];		/* Base of .bss section (not in V3 crash info) */
+  char magic[4];	/* Magic number */
+  char version[4];	/* Version number */
+  char reason[4];	/* Crash reason */
+  char cpu_vector[4];	/* CPU vector for exceptions */
+  char registers[4];	/* Pointer to saved registers */
+  char rambase[4];	/* Base of RAM (not in V1 crash info) */
+  char textbase[4];	/* Base of .text section (not in V3 crash info) */
+  char database[4];	/* Base of .data section (not in V3 crash info) */
+  char bssbase[4];	/* Base of .bss section (not in V3 crash info) */
 } crashinfo_external;
 
 struct cisco_core_struct

@@ -199,7 +199,7 @@ _bfd_get_file_window_mmap(bfd *abfd, ufile_ptr offset, bfd_size_type size,
                      (writable
                       ? (MAP_FILE | MAP_PRIVATE)
                       : (MAP_FILE | MAP_SHARED)),
-                     fd, file_offset);
+                     fd, (off_t)file_offset);
       if (i->data == (void *)-1)
 	{
 	  /* An error happened.  Report it, or try using malloc, or

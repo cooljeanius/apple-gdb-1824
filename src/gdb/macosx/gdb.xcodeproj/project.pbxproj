@@ -23,7 +23,6 @@
 /* Begin PBXBuildFile section */
 		61D2205D192D610A00FA979E /* aix386-core.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE560E82C407008125DE /* aix386-core.c */; settings = {COMPILER_FLAGS = "-Wunused-parameter"; }; };
 		61D2205E192D610A00FA979E /* aix5ppc-core.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE570E82C407008125DE /* aix5ppc-core.c */; };
-		61D2205F192D610A00FA979E /* aout-adobe.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE580E82C407008125DE /* aout-adobe.c */; settings = {COMPILER_FLAGS = "-Wfatal-errors"; }; };
 		61D22060192D610A00FA979E /* aout-arm.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE590E82C407008125DE /* aout-arm.c */; };
 		61D22061192D610A00FA979E /* aout-cris.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE5A0E82C407008125DE /* aout-cris.c */; };
 		61D22063192D610A00FA979E /* aout-ns32k.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE5C0E82C407008125DE /* aout-ns32k.c */; };
@@ -42,7 +41,6 @@
 		61D22070192D613F00FA979E /* bfdio.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE6D0E82C407008125DE /* bfdio.c */; settings = {COMPILER_FLAGS = "-Wconversion -Wshorten-64-to-32"; }; };
 		61D22071192D613F00FA979E /* bfdwin.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE6E0E82C407008125DE /* bfdwin.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D22072192D613F00FA979E /* binary.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE6F0E82C407008125DE /* binary.c */; };
-		61D22073192D613F00FA979E /* bout.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE700E82C407008125DE /* bout.c */; settings = {COMPILER_FLAGS = "-Wfatal-errors"; }; };
 		61D22074192D613F00FA979E /* cache.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE710E82C407008125DE /* cache.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D22075192D613F00FA979E /* cf-i386lynx.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE720E82C407008125DE /* cf-i386lynx.c */; };
 		61D22076192D613F00FA979E /* cf-sparclynx.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE730E82C407008125DE /* cf-sparclynx.c */; };
@@ -253,7 +251,6 @@
 		61D22145192D61C300FA979E /* hp300bsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF780E82C408008125DE /* hp300bsd.c */; };
 		61D22146192D61C300FA979E /* hp300hpux.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF790E82C408008125DE /* hp300hpux.c */; };
 		61D22147192D61C300FA979E /* hppabsd-core.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF7A0E82C408008125DE /* hppabsd-core.c */; };
-		61D22148192D61C300FA979E /* hpux-core.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF7B0E82C408008125DE /* hpux-core.c */; settings = {COMPILER_FLAGS = "-Wno-switch-default -Wno-unused-variable"; }; };
 		61D22149192D61C300FA979E /* i386aout.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF7C0E82C408008125DE /* i386aout.c */; };
 		61D2214A192D61C300FA979E /* i386bsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF7D0E82C408008125DE /* i386bsd.c */; };
 		61D2214B192D61C300FA979E /* i386dynix.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF7E0E82C408008125DE /* i386dynix.c */; };
@@ -261,9 +258,7 @@
 		61D2214D192D61C300FA979E /* i386linux.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF800E82C408008125DE /* i386linux.c */; };
 		61D2214E192D61C300FA979E /* i386lynx.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF810E82C408008125DE /* i386lynx.c */; };
 		61D2214F192D61C300FA979E /* i386mach3.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF820E82C408008125DE /* i386mach3.c */; };
-		61D22150192D61C300FA979E /* i386msdos.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF830E82C408008125DE /* i386msdos.c */; settings = {COMPILER_FLAGS = "-Wfatal-errors"; }; };
 		61D22151192D61C300FA979E /* i386netbsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF840E82C408008125DE /* i386netbsd.c */; };
-		61D22152192D61C300FA979E /* i386os9k.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF850E82C408008125DE /* i386os9k.c */; settings = {COMPILER_FLAGS = "-Wfatal-errors"; }; };
 		61D22153192D61C300FA979E /* ieee.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF860E82C408008125DE /* ieee.c */; settings = {COMPILER_FLAGS = "-fno-strict-aliasing"; }; };
 		61D22154192D61C300FA979E /* ihex.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF870E82C408008125DE /* ihex.c */; };
 		61D22155192D61C300FA979E /* init.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF880E82C408008125DE /* init.c */; };
@@ -294,7 +289,6 @@
 		61D2216F192D61C300FA979E /* merge.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFA60E82C408008125DE /* merge.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D22170192D61C300FA979E /* mipsbsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFA70E82C408008125DE /* mipsbsd.c */; settings = {COMPILER_FLAGS = "-Wno-nested-externs"; }; };
 		61D22171192D61C300FA979E /* mmo.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFA80E82C408008125DE /* mmo.c */; };
-		61D22172192D61C300FA979E /* netbsd-core.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFA90E82C408008125DE /* netbsd-core.c */; settings = {COMPILER_FLAGS = "-Wno-unused-variable -Wfatal-errors"; }; };
 		61D22173192D61C300FA979E /* netbsd.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CFAA0E82C408008125DE /* netbsd.h */; };
 		61D22174192D61C300FA979E /* newsos3.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFAB0E82C408008125DE /* newsos3.c */; };
 		61D22175192D61C300FA979E /* nlm-target.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CFAC0E82C408008125DE /* nlm-target.h */; };
@@ -311,7 +305,6 @@
 		61D22180192D61C300FA979E /* ns32knetbsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFB70E82C408008125DE /* ns32knetbsd.c */; settings = {COMPILER_FLAGS = "-Wno-unused-macros"; }; };
 		61D22181192D61C300FA979E /* oasys.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFB80E82C408008125DE /* oasys.c */; settings = {COMPILER_FLAGS = "-fno-strict-aliasing"; }; };
 		61D22182192D61C300FA979E /* opncls.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFB90E82C408008125DE /* opncls.c */; settings = {COMPILER_FLAGS = "-Wno-shadow"; }; };
-		61D22183192D61C300FA979E /* osf-core.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFBA0E82C408008125DE /* osf-core.c */; settings = {COMPILER_FLAGS = "-Wfatal-errors"; }; };
 		61D22184192D61C300FA979E /* pc532-mach.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFBB0E82C408008125DE /* pc532-mach.c */; };
 		61D22185192D61C300FA979E /* pdp11.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFBC0E82C408008125DE /* pdp11.c */; };
 		61D22186192D61C300FA979E /* pe-arm.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFBD0E82C408008125DE /* pe-arm.c */; };
@@ -337,7 +330,6 @@
 		61D2219A192D61C300FA979E /* reloc16.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFE30E82C408008125DE /* reloc16.c */; };
 		61D2219B192D61C300FA979E /* riscix.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFE40E82C408008125DE /* riscix.c */; settings = {COMPILER_FLAGS = "-Wno-nested-externs"; }; };
 		61D2219C192D61C300FA979E /* rs6000-core.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFE50E82C408008125DE /* rs6000-core.c */; };
-		61D2219D192D61C300FA979E /* sco5-core.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFE60E82C408008125DE /* sco5-core.c */; settings = {COMPILER_FLAGS = "-Wfatal-errors"; }; };
 		61D2219E192D61C300FA979E /* section.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFE70E82C408008125DE /* section.c */; };
 		61D2219F192D61C300FA979E /* simple.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFE80E82C408008125DE /* simple.c */; };
 		61D221A0192D61C300FA979E /* som.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFE90E82C408008125DE /* som.c */; };
@@ -376,6 +368,7 @@
 		61D81AE7193186DC00E440C0 /* aout-encap.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE5B0E82C407008125DE /* aout-encap.c */; };
 		A51B3F191A493694002170CE /* plugin.c in Sources */ = {isa = PBXBuildFile; fileRef = A51B3F171A493694002170CE /* plugin.c */; };
 		A51B3F1A1A493694002170CE /* plugin.h in Headers */ = {isa = PBXBuildFile; fileRef = A51B3F181A493694002170CE /* plugin.h */; };
+		A51DEE731AA273B300DA3F76 /* cf-m68klynx.c in Sources */ = {isa = PBXBuildFile; fileRef = A51DEE721AA273B300DA3F76 /* cf-m68klynx.c */; };
 		A53ABD8D1A38C88F002F20B2 /* link.h in Headers */ = {isa = PBXBuildFile; fileRef = A53ABD8C1A38C88F002F20B2 /* link.h */; };
 		A589CB5B1A30F16700E717B9 /* cpcg.c in Sources */ = {isa = PBXBuildFile; fileRef = A589CB4F1A30EF6400E717B9 /* cpcg.c */; };
 		A589CB5C1A30F16700E717B9 /* cpfork.c in Sources */ = {isa = PBXBuildFile; fileRef = A589CB501A30EF6400E717B9 /* cpfork.c */; };
@@ -2982,6 +2975,7 @@
 		A5159C97198718A90079DD4F /* xdr_regs_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xdr_regs_old.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/vx-share/xdr_regs_old.h"; sourceTree = "<absolute>"; };
 		A51B3F171A493694002170CE /* plugin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = plugin.c; path = "/Users/ericgallager/apple-gdb-1824/src/bfd/plugin.c"; sourceTree = "<absolute>"; };
 		A51B3F181A493694002170CE /* plugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = plugin.h; path = "/Users/ericgallager/apple-gdb-1824/src/bfd/plugin.h"; sourceTree = "<absolute>"; };
+		A51DEE721AA273B300DA3F76 /* cf-m68klynx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "cf-m68klynx.c"; path = "/Users/ericgallager/apple-gdb-1824/src/bfd/cf-m68klynx.c"; sourceTree = "<absolute>"; };
 		A53353F5182F0DDC004811EE /* mac-gdb.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; name = "mac-gdb.r"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/mac-gdb.r"; sourceTree = "<absolute>"; };
 		A53ABD8C1A38C88F002F20B2 /* link.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = link.h; path = "/Users/ericgallager/apple-gdb-1824/src/bfd/link.h"; sourceTree = "<absolute>"; };
 		A53ABDB71A38E84F002F20B2 /* objdump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = objdump.h; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/objdump.h"; sourceTree = "<absolute>"; };
@@ -4888,6 +4882,7 @@
 				2609CE700E82C407008125DE /* bout.c */,
 				2609CE710E82C407008125DE /* cache.c */,
 				2609CE720E82C407008125DE /* cf-i386lynx.c */,
+				A51DEE721AA273B300DA3F76 /* cf-m68klynx.c */,
 				2609CE730E82C407008125DE /* cf-sparclynx.c */,
 				2609CE7C0E82C407008125DE /* cisco-core.c */,
 				2609CE7D0E82C407008125DE /* coff-a29k.c */,
@@ -10994,7 +10989,6 @@
 			files = (
 				61D2205D192D610A00FA979E /* aix386-core.c in Sources */,
 				61D2205E192D610A00FA979E /* aix5ppc-core.c in Sources */,
-				61D2205F192D610A00FA979E /* aout-adobe.c in Sources */,
 				61D22060192D610A00FA979E /* aout-arm.c in Sources */,
 				61D22061192D610A00FA979E /* aout-cris.c in Sources */,
 				61D81AE7193186DC00E440C0 /* aout-encap.c in Sources */,
@@ -11012,7 +11006,6 @@
 				61D22070192D613F00FA979E /* bfdio.c in Sources */,
 				61D22071192D613F00FA979E /* bfdwin.c in Sources */,
 				61D22072192D613F00FA979E /* binary.c in Sources */,
-				61D22073192D613F00FA979E /* bout.c in Sources */,
 				61D22074192D613F00FA979E /* cache.c in Sources */,
 				61D22075192D613F00FA979E /* cf-i386lynx.c in Sources */,
 				61D22076192D613F00FA979E /* cf-sparclynx.c in Sources */,
@@ -11198,7 +11191,6 @@
 				61D22145192D61C300FA979E /* hp300bsd.c in Sources */,
 				61D22146192D61C300FA979E /* hp300hpux.c in Sources */,
 				61D22147192D61C300FA979E /* hppabsd-core.c in Sources */,
-				61D22148192D61C300FA979E /* hpux-core.c in Sources */,
 				61D22149192D61C300FA979E /* i386aout.c in Sources */,
 				61D2214A192D61C300FA979E /* i386bsd.c in Sources */,
 				61D2214B192D61C300FA979E /* i386dynix.c in Sources */,
@@ -11206,9 +11198,7 @@
 				61D2214D192D61C300FA979E /* i386linux.c in Sources */,
 				61D2214E192D61C300FA979E /* i386lynx.c in Sources */,
 				61D2214F192D61C300FA979E /* i386mach3.c in Sources */,
-				61D22150192D61C300FA979E /* i386msdos.c in Sources */,
 				61D22151192D61C300FA979E /* i386netbsd.c in Sources */,
-				61D22152192D61C300FA979E /* i386os9k.c in Sources */,
 				61D22153192D61C300FA979E /* ieee.c in Sources */,
 				61D22154192D61C300FA979E /* ihex.c in Sources */,
 				61D22155192D61C300FA979E /* init.c in Sources */,
@@ -11225,7 +11215,6 @@
 				61D2216F192D61C300FA979E /* merge.c in Sources */,
 				61D22170192D61C300FA979E /* mipsbsd.c in Sources */,
 				61D22171192D61C300FA979E /* mmo.c in Sources */,
-				61D22172192D61C300FA979E /* netbsd-core.c in Sources */,
 				61D22174192D61C300FA979E /* newsos3.c in Sources */,
 				61D22176192D61C300FA979E /* nlm.c in Sources */,
 				61D22177192D61C300FA979E /* nlm32-alpha.c in Sources */,
@@ -11237,7 +11226,6 @@
 				61D22180192D61C300FA979E /* ns32knetbsd.c in Sources */,
 				61D22181192D61C300FA979E /* oasys.c in Sources */,
 				61D22182192D61C300FA979E /* opncls.c in Sources */,
-				61D22183192D61C300FA979E /* osf-core.c in Sources */,
 				61D22184192D61C300FA979E /* pc532-mach.c in Sources */,
 				61D22185192D61C300FA979E /* pdp11.c in Sources */,
 				61D22186192D61C300FA979E /* pe-arm.c in Sources */,
@@ -11260,7 +11248,6 @@
 				61D2219A192D61C300FA979E /* reloc16.c in Sources */,
 				61D2219B192D61C300FA979E /* riscix.c in Sources */,
 				61D2219C192D61C300FA979E /* rs6000-core.c in Sources */,
-				61D2219D192D61C300FA979E /* sco5-core.c in Sources */,
 				61D2219E192D61C300FA979E /* section.c in Sources */,
 				61D2219F192D61C300FA979E /* simple.c in Sources */,
 				61D221A0192D61C300FA979E /* som.c in Sources */,
@@ -11289,6 +11276,7 @@
 				61D221BE192D61C300FA979E /* xtensa-isa.c in Sources */,
 				61D221BF192D61C300FA979E /* xtensa-modules.c in Sources */,
 				A51B3F191A493694002170CE /* plugin.c in Sources */,
+				A51DEE731AA273B300DA3F76 /* cf-m68klynx.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -11532,6 +11520,12 @@
 					_DARWIN_UNLIMITED_STREAMS,
 					"_FORTIFY_SOURCE=2",
 					DEBUG_HASH,
+					HAVE_mach_o_le_vec,
+					HAVE_mach_o_be_vec,
+					HAVE_mach_o_fat_vec,
+					HAVE_pef_vec,
+					HAVE_pef_xlib_vec,
+					HAVE_sym_vec,
 				);
 				GCC_STRICT_ALIASING = YES;
 				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = YES;
@@ -11628,6 +11622,13 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"HAVE_CONFIG_H=1",
 					_DARWIN_UNLIMITED_STREAMS,
+					NDEBUG,
+					HAVE_mach_o_le_vec,
+					HAVE_mach_o_be_vec,
+					HAVE_mach_o_fat_vec,
+					HAVE_pef_vec,
+					HAVE_pef_xlib_vec,
+					HAVE_sym_vec,
 				);
 				GCC_STRICT_ALIASING = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;

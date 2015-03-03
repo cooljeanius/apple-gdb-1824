@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St. - 5th Floor, Boston, MA 02110-1301, USA.
+ * Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA
  */
 
 #ifndef __A_OUT_64_H__
@@ -65,7 +65,9 @@ struct external_exec
 # define OMAGIC 0407 /* Object file or impure executable.  */
 # define NMAGIC 0410 /* Code indicating pure executable.  */
 # define ZMAGIC 0413 /* Code indicating demand-paged executable.  */
-# define BMAGIC 0415 /* Used by a b.out object.  */
+# ifndef BMAGIC
+#  define BMAGIC 0415 /* Used by a b.out object.  */
+# endif /* !BMAGIC */
 
 /* This indicates a demand-paged executable with the header in the text.
  * It is used by 386BSD (and variants) and Linux, at least.  */

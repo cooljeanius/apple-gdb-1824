@@ -1,4 +1,4 @@
-/* Morpho Technologies MS1 specific support for 32-bit ELF
+/* elf32-ms1.c: Morpho Technologies MS1 specific support for 32-bit ELF
    Copyright 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -16,7 +16,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   Foundation, 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA */
 
 #include "bfd.h"
 #include "sysdep.h"

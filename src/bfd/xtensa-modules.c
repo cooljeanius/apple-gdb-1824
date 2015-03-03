@@ -1207,7 +1207,7 @@ Implicit_Field_ar12_get(const xtensa_insnbuf insn ATTRIBUTE_UNUSED)
 
 /* Functional units: */
 static xtensa_funcUnit_internal funcUnits[] = {
-
+  { "", 0 }
 };
 
 
@@ -1219,7 +1219,7 @@ static xtensa_regfile_internal regfiles[] = {
 
 /* Interfaces: */
 static xtensa_interface_internal interfaces[] = {
-
+  { "", 0, 0U, 0, 'i' }
 };
 
 
