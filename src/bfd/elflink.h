@@ -110,13 +110,16 @@ static int sort_symbol(const void *arg1, const void *arg2)
 # endif /* NAME */
 #endif /* !Elf_External_Dyn || !elf_swap_dyn_in || !Elf_External_Sym */
 
+typedef bfd_boolean (*add_symhook_t)(bfd *, struct bfd_link_info *,
+                                     const Elf_Internal_Sym *,
+                                     const char **, flagword *,
+                                     asection **, bfd_vma *);
+
 /* Add symbols from an ELF object file to the linker hash table: */
 static bfd_boolean
 elf_link_add_object_symbols(bfd *abfd, struct bfd_link_info *info)
 {
-  bfd_boolean (*add_symbol_hook)
-    (bfd *, struct bfd_link_info *, const Elf_Internal_Sym *,
-     const char **, flagword *, asection **, bfd_vma *);
+  add_symhook_t add_symbol_hook;
   bfd_boolean (*check_relocs)
     (bfd *, struct bfd_link_info *, asection *, const Elf_Internal_Rela *);
   bfd_boolean collect;
@@ -142,7 +145,7 @@ elf_link_add_object_symbols(bfd *abfd, struct bfd_link_info *info)
   hash_table = elf_hash_table(info);
 
   bed = get_elf_backend_data(abfd);
-  add_symbol_hook = bed->elf_add_symbol_hook;
+  add_symbol_hook = (add_symhook_t)bed->elf_add_symbol_hook;
   collect = bed->collect;
 
   if ((abfd->flags & DYNAMIC) == 0)
@@ -712,18 +715,18 @@ elf_link_add_object_symbols(bfd *abfd, struct bfd_link_info *info)
 
 		  if (isym->st_shndx != SHN_UNDEF)
 		    {
-		      if (vernum > elf_tdata (abfd)->dynverdef_hdr.sh_info)
+		      if (vernum > elf_tdata(abfd)->dynverdef_hdr.sh_info)
 			{
 			  (*_bfd_error_handler)
 			    (_("%s: %s: invalid version %u (max %d)"),
-			     bfd_archive_filename (abfd), name, vernum,
-			     elf_tdata (abfd)->dynverdef_hdr.sh_info);
-			  bfd_set_error (bfd_error_bad_value);
+			     bfd_archive_filename(abfd), name, vernum,
+			     elf_tdata(abfd)->dynverdef_hdr.sh_info);
+			  bfd_set_error(bfd_error_bad_value);
 			  goto error_free_vers;
 			}
 		      else if (vernum > 1)
 			verstr =
-			  elf_tdata (abfd)->verdef[vernum - 1].vd_nodename;
+			  elf_tdata(abfd)->verdef[vernum - 1].vd_nodename;
 		      else
 			verstr = "";
 		    }
@@ -803,9 +806,9 @@ elf_link_add_object_symbols(bfd *abfd, struct bfd_link_info *info)
 	    definition = FALSE;
 
 	  h = *sym_hash;
-	  while (h->root.type == bfd_link_hash_indirect
-		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	  while ((h->root.type == bfd_link_hash_indirect)
+		 || (h->root.type == bfd_link_hash_warning))
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 
 	  /* Remember the old alignment if this is a common symbol, so
 	     that we don't reduce the alignment later on.  We can't
@@ -1431,22 +1434,21 @@ elf_link_add_object_symbols(bfd *abfd, struct bfd_link_info *info)
 	}
     }
 
-  if (! info->relocatable
-      && ! dynamic
-      && is_elf_hash_table (hash_table))
+  if (! info->relocatable && ! dynamic
+      && is_elf_hash_table(hash_table))
     {
       asection *s;
 
       for (s = abfd->sections; s != NULL; s = s->next)
-	if ((s->flags & SEC_MERGE) != 0
-	    && !bfd_is_abs_section (s->output_section))
+	if (((s->flags & SEC_MERGE) != 0)
+	    && !bfd_is_abs_section(s->output_section))
 	  {
 	    struct bfd_elf_section_data *secdata;
 
-	    secdata = elf_section_data (s);
-	    if (! _bfd_merge_section (abfd,
-				      & hash_table->merge_info,
-				      s, &secdata->sec_info))
+	    secdata = elf_section_data(s);
+	    if (! _bfd_merge_section(abfd,
+				     &hash_table->merge_info,
+				     s, &secdata->sec_info))
 	      goto error_return;
 	    else if (secdata->sec_info)
 	      s->sec_info_type = ELF_INFO_TYPE_MERGE;
@@ -5578,104 +5580,105 @@ elf_gc_smash_unused_vtentry_relocs (struct elf_link_hash_entry *h, void *okp)
   return TRUE;
 }
 
-/* Do mark and sweep of unused sections.  */
-
+extern bfd_boolean elf_gc_sections(bfd *, struct bfd_link_info *);
+/* Do mark and sweep of unused sections: */
 bfd_boolean
-elf_gc_sections (bfd *abfd, struct bfd_link_info *info)
+elf_gc_sections(bfd *abfd, struct bfd_link_info *info)
 {
   bfd_boolean ok = TRUE;
   bfd *sub;
-  asection * (*gc_mark_hook)
+  asection *(*gc_mark_hook)
     (asection *, struct bfd_link_info *, Elf_Internal_Rela *,
      struct elf_link_hash_entry *h, Elf_Internal_Sym *);
 
-  if (!get_elf_backend_data (abfd)->can_gc_sections
+  if (!get_elf_backend_data(abfd)->can_gc_sections
       || info->relocatable
       || info->emitrelocations
-      || !is_elf_hash_table (info->hash)
-      || elf_hash_table (info)->dynamic_sections_created)
+      || !is_elf_hash_table(info->hash)
+      || elf_hash_table(info)->dynamic_sections_created)
     {
       (*_bfd_error_handler)(_("Warning: gc-sections option ignored"));
       return TRUE;
     }
 
-  /* Apply transitive closure to the vtable entry usage info.  */
-  elf_link_hash_traverse (elf_hash_table (info),
-			  elf_gc_propagate_vtable_entries_used,
-			  &ok);
+  /* Apply transitive closure to the vtable entry usage info: */
+  elf_link_hash_traverse(elf_hash_table(info),
+			 elf_gc_propagate_vtable_entries_used,
+			 &ok);
   if (!ok)
     return FALSE;
 
-  /* Kill the vtable relocations that were not used.  */
-  elf_link_hash_traverse (elf_hash_table (info),
-			  elf_gc_smash_unused_vtentry_relocs,
-			  &ok);
+  /* Kill the vtable relocations that were not used: */
+  elf_link_hash_traverse(elf_hash_table(info),
+			 elf_gc_smash_unused_vtentry_relocs,
+			 &ok);
   if (!ok)
     return FALSE;
 
   /* Grovel through relocs to find out who stays ...  */
 
-  gc_mark_hook = get_elf_backend_data (abfd)->gc_mark_hook;
+  gc_mark_hook = get_elf_backend_data(abfd)->gc_mark_hook;
   for (sub = info->input_bfds; sub != NULL; sub = sub->link_next)
     {
       asection *o;
 
-      if (bfd_get_flavour (sub) != bfd_target_elf_flavour)
+      if (bfd_get_flavour(sub) != bfd_target_elf_flavour)
 	continue;
 
       for (o = sub->sections; o != NULL; o = o->next)
 	{
 	  if (o->flags & SEC_KEEP)
-	    if (!elf_gc_mark (info, o, gc_mark_hook))
+	    if (!elf_gc_mark(info, o, gc_mark_hook))
 	      return FALSE;
 	}
     }
 
-  /* ... and mark SEC_EXCLUDE for those that go.  */
-  if (!elf_gc_sweep (info, get_elf_backend_data (abfd)->gc_sweep_hook))
+  /* ... and mark SEC_EXCLUDE for those that go: */
+  if (!elf_gc_sweep(info, get_elf_backend_data(abfd)->gc_sweep_hook))
     return FALSE;
 
   return TRUE;
 }
 
-/* Called from check_relocs to record the existence of a VTINHERIT reloc.  */
-
+/* prototype: */
+extern bfd_boolean
+elf_gc_record_vtinherit(bfd *, asection *, struct elf_link_hash_entry *,
+                        bfd_vma);
+/* Called from check_relocs to record the existence of a VTINHERIT reloc: */
 bfd_boolean
-elf_gc_record_vtinherit (bfd *abfd,
-			 asection *sec,
-			 struct elf_link_hash_entry *h,
-			 bfd_vma offset)
+elf_gc_record_vtinherit(bfd *abfd, asection *sec,
+                        struct elf_link_hash_entry *h, bfd_vma offset)
 {
   struct elf_link_hash_entry **sym_hashes, **sym_hashes_end;
   struct elf_link_hash_entry **search, *child;
   bfd_size_type extsymcount;
 
   /* The sh_info field of the symtab header tells us where the
-     external symbols start.  We don't care about the local symbols at
+     external symbols start.  We do NOT care about the local symbols at
      this point.  */
-  extsymcount = elf_tdata (abfd)->symtab_hdr.sh_size/sizeof (Elf_External_Sym);
-  if (!elf_bad_symtab (abfd))
-    extsymcount -= elf_tdata (abfd)->symtab_hdr.sh_info;
+  extsymcount = (elf_tdata(abfd)->symtab_hdr.sh_size / sizeof(Elf_External_Sym));
+  if (!elf_bad_symtab(abfd))
+    extsymcount -= elf_tdata(abfd)->symtab_hdr.sh_info;
 
-  sym_hashes = elf_sym_hashes (abfd);
-  sym_hashes_end = sym_hashes + extsymcount;
+  sym_hashes = elf_sym_hashes(abfd);
+  sym_hashes_end = (sym_hashes + extsymcount);
 
   /* Hunt down the child symbol, which is in this section at the same
      offset as the relocation.  */
   for (search = sym_hashes; search != sym_hashes_end; ++search)
     {
-      if ((child = *search) != NULL
-	  && (child->root.type == bfd_link_hash_defined
-	      || child->root.type == bfd_link_hash_defweak)
-	  && child->root.u.def.section == sec
-	  && child->root.u.def.value == offset)
+      if (((child = *search) != NULL)
+	  && ((child->root.type == bfd_link_hash_defined)
+	      || (child->root.type == bfd_link_hash_defweak))
+	  && (child->root.u.def.section == sec)
+	  && (child->root.u.def.value == offset))
 	goto win;
     }
 
-  (*_bfd_error_handler) ("%s: %s+%lu: No symbol found for INHERIT",
-			 bfd_archive_filename (abfd), sec->name,
-			 (unsigned long) offset);
-  bfd_set_error (bfd_error_invalid_operation);
+  (*_bfd_error_handler)("%s: %s+%lu: No symbol found for INHERIT",
+                        bfd_archive_filename(abfd), sec->name,
+                        (unsigned long)offset);
+  bfd_set_error(bfd_error_invalid_operation);
   return FALSE;
 
  win:
@@ -5683,10 +5686,9 @@ elf_gc_record_vtinherit (bfd *abfd,
     {
       /* This *should* only be the absolute section.  It could potentially
 	 be that someone has defined a non-global vtable though, which
-	 would be bad.  It isn't worth paging in the local symbols to be
+	 would be bad.  It is NOT worth paging in the local symbols to be
 	 sure though; that case should simply be handled by the assembler.  */
-
-      child->vtable_parent = (struct elf_link_hash_entry *) -1;
+      child->vtable_parent = (struct elf_link_hash_entry *)-1;
     }
   else
     child->vtable_parent = h;
@@ -5694,15 +5696,17 @@ elf_gc_record_vtinherit (bfd *abfd,
   return TRUE;
 }
 
-/* Called from check_relocs to record the existence of a VTENTRY reloc.  */
-
+/* prototype: */
+extern bfd_boolean
+elf_gc_record_vtentry(bfd *, asection *, struct elf_link_hash_entry *,
+                      bfd_vma);
+/* Called from check_relocs to record the existence of a VTENTRY reloc: */
 bfd_boolean
-elf_gc_record_vtentry (bfd *abfd ATTRIBUTE_UNUSED,
-		       asection *sec ATTRIBUTE_UNUSED,
-		       struct elf_link_hash_entry *h,
-		       bfd_vma addend)
+elf_gc_record_vtentry(bfd *abfd ATTRIBUTE_UNUSED,
+                      asection *sec ATTRIBUTE_UNUSED,
+		      struct elf_link_hash_entry *h, bfd_vma addend)
 {
-  const struct elf_backend_data *bed = get_elf_backend_data (abfd);
+  const struct elf_backend_data *bed = get_elf_backend_data(abfd);
   unsigned int log_file_align = bed->s->log_file_align;
 
   if (addend >= h->vtable_entries_size)
@@ -5760,18 +5764,19 @@ elf_gc_record_vtentry (bfd *abfd ATTRIBUTE_UNUSED,
   return TRUE;
 }
 
+/* prototype: */
+extern bfd_boolean
+elf_gc_common_finalize_got_offsets(bfd *, struct bfd_link_info *);
 /* And an accompanying bit to work out final got entry offsets once
-   we're done.  Should be called from final_link.  */
-
+ * we are done.  Should be called from final_link: */
 bfd_boolean
-elf_gc_common_finalize_got_offsets (bfd *abfd,
-				    struct bfd_link_info *info)
+elf_gc_common_finalize_got_offsets(bfd *abfd, struct bfd_link_info *info)
 {
   bfd *i;
-  const struct elf_backend_data *bed = get_elf_backend_data (abfd);
+  const struct elf_backend_data *bed = get_elf_backend_data(abfd);
   bfd_vma gotoff;
 
-  if (! is_elf_hash_table (info->hash))
+  if (! is_elf_hash_table(info->hash))
     return FALSE;
 
   /* The GOT offset is relative to the .got section, but the GOT header is
@@ -5843,13 +5848,14 @@ elf_gc_allocate_got_offsets(struct elf_link_hash_entry *h, void *offarg)
   return TRUE;
 }
 
+/* prototype: */
+extern bfd_boolean elf_gc_common_final_link(bfd *, struct bfd_link_info *);
 /* Many folk need no more in the way of final link than this, once
-   got entry reference counting is enabled.  */
-
+ * got entry reference counting is enabled: */
 bfd_boolean
-elf_gc_common_final_link (bfd *abfd, struct bfd_link_info *info)
+elf_gc_common_final_link(bfd *abfd, struct bfd_link_info *info)
 {
-  if (!elf_gc_common_finalize_got_offsets (abfd, info))
+  if (!elf_gc_common_finalize_got_offsets(abfd, info))
     return FALSE;
 
   /* Invoke the regular ELF backend linker to do all the work.  */
@@ -5901,10 +5907,13 @@ elf_collect_hash_codes(struct elf_link_hash_entry *h, void *data)
   return TRUE;
 }
 
+/* put prototype here, because why not: */
+extern bfd_boolean elf_reloc_symbol_deleted_p(bfd_vma, void *);
+/* actual function: */
 bfd_boolean
-elf_reloc_symbol_deleted_p (bfd_vma offset, void *cookie)
+elf_reloc_symbol_deleted_p(bfd_vma offset, void *cookie)
 {
-  struct elf_reloc_cookie *rcookie = cookie;
+  struct elf_reloc_cookie *rcookie = (struct elf_reloc_cookie *)cookie;
 
   if (rcookie->bad_symtab)
     rcookie->rel = rcookie->rels;
@@ -5949,12 +5958,12 @@ elf_reloc_symbol_deleted_p (bfd_vma offset, void *cookie)
 	  asection *isec;
 	  Elf_Internal_Sym *isym;
 
-	  /* Need to: get the symbol; get the section.  */
+	  /* Need to: get the symbol; get the section: */
 	  isym = &rcookie->locsyms[r_symndx];
-	  if (isym->st_shndx < SHN_LORESERVE || isym->st_shndx > SHN_HIRESERVE)
+	  if ((isym->st_shndx < SHN_LORESERVE) || (isym->st_shndx > SHN_HIRESERVE))
 	    {
-	      isec = section_from_elf_index (rcookie->abfd, isym->st_shndx);
-	      if (isec != NULL && elf_discarded_section (isec))
+	      isec = section_from_elf_index(rcookie->abfd, isym->st_shndx);
+	      if ((isec != NULL) && elf_discarded_section(isec))
 		return TRUE;
 	    }
 	}
@@ -5964,12 +5973,12 @@ elf_reloc_symbol_deleted_p (bfd_vma offset, void *cookie)
 }
 
 /* Discard unneeded references to discarded sections.
-   Returns TRUE if any section's size was changed.  */
+ * Returns TRUE if any section's size was changed: */
+extern bfd_boolean elf_bfd_discard_info(bfd *, struct bfd_link_info *);
 /* This function assumes that the relocations are in sorted order,
-   which is true for all known assemblers.  */
-
+ * which is true for all known assemblers: */
 bfd_boolean
-elf_bfd_discard_info (bfd *output_bfd, struct bfd_link_info *info)
+elf_bfd_discard_info(bfd *output_bfd, struct bfd_link_info *info)
 {
   struct elf_reloc_cookie cookie;
   asection *stab, *eh;

@@ -123,8 +123,8 @@
 #endif
 
 #ifndef elf_backend_can_gc_sections
-#define elf_backend_can_gc_sections 0
-#endif
+# define elf_backend_can_gc_sections 0
+#endif /* !elf_backend_can_gc_sections */
 #ifndef elf_backend_can_refcount
 #define elf_backend_can_refcount 0
 #endif
@@ -647,12 +647,12 @@ static const struct elf_backend_data elfNN_bed =
   elf_backend_want_dynbss,
   elf_backend_want_p_paddr_set_to_zero
 };
-#endif
+#endif /* !INCLUDED_TARGET_FILE */
 
-/* Forward declaration for use when initialising alternative_target field.  */
+/* Forward declaration for use when initialising alternative_target field: */
 #ifdef TARGET_LITTLE_SYM
 extern const bfd_target TARGET_LITTLE_SYM;
-#endif
+#endif /* TARGET_LITTLE_SYM */
 
 #ifdef TARGET_BIG_SYM
 const bfd_target TARGET_BIG_SYM =
@@ -724,31 +724,31 @@ const bfd_target TARGET_BIG_SYM =
     bfd_elfNN_write_corefile_contents,
   },
 
-  BFD_JUMP_TABLE_GENERIC (bfd_elfNN),
-  BFD_JUMP_TABLE_COPY (bfd_elfNN),
-  BFD_JUMP_TABLE_CORE (bfd_elfNN),
+  BFD_JUMP_TABLE_GENERIC(bfd_elfNN),
+  BFD_JUMP_TABLE_COPY(bfd_elfNN),
+  BFD_JUMP_TABLE_CORE(bfd_elfNN),
 #ifdef bfd_elfNN_archive_functions
-  BFD_JUMP_TABLE_ARCHIVE (bfd_elfNN_archive),
+  BFD_JUMP_TABLE_ARCHIVE(bfd_elfNN_archive),
 #else
-  BFD_JUMP_TABLE_ARCHIVE (_bfd_archive_coff),
-#endif
-  BFD_JUMP_TABLE_SYMBOLS (bfd_elfNN),
-  BFD_JUMP_TABLE_RELOCS (bfd_elfNN),
-  BFD_JUMP_TABLE_WRITE (bfd_elfNN),
-  BFD_JUMP_TABLE_LINK (bfd_elfNN),
-  BFD_JUMP_TABLE_DYNAMIC (bfd_elfNN),
+  BFD_JUMP_TABLE_ARCHIVE(_bfd_archive_coff),
+#endif /* bfd_elfNN_archive_functions */
+  BFD_JUMP_TABLE_SYMBOLS(bfd_elfNN),
+  BFD_JUMP_TABLE_RELOCS(bfd_elfNN),
+  BFD_JUMP_TABLE_WRITE(bfd_elfNN),
+  BFD_JUMP_TABLE_LINK(bfd_elfNN),
+  BFD_JUMP_TABLE_DYNAMIC(bfd_elfNN),
 
-  /* Alternative endian target.  */
+  /* Alternative endian target: */
 #ifdef TARGET_LITTLE_SYM
   & TARGET_LITTLE_SYM,
 #else
   NULL,
-#endif
+#endif /* TARGET_LITTLE_SYM */
 
   /* backend_data: */
   &elfNN_bed
 };
-#endif
+#endif /* TARGET_BIG_SYM */
 
 #ifdef TARGET_LITTLE_SYM
 const bfd_target TARGET_LITTLE_SYM =
@@ -820,30 +820,34 @@ const bfd_target TARGET_LITTLE_SYM =
     bfd_elfNN_write_corefile_contents,
   },
 
-  BFD_JUMP_TABLE_GENERIC (bfd_elfNN),
-  BFD_JUMP_TABLE_COPY (bfd_elfNN),
-  BFD_JUMP_TABLE_CORE (bfd_elfNN),
+  BFD_JUMP_TABLE_GENERIC(bfd_elfNN),
+  BFD_JUMP_TABLE_COPY(bfd_elfNN),
+  BFD_JUMP_TABLE_CORE(bfd_elfNN),
 #ifdef bfd_elfNN_archive_functions
-  BFD_JUMP_TABLE_ARCHIVE (bfd_elfNN_archive),
+  BFD_JUMP_TABLE_ARCHIVE(bfd_elfNN_archive),
 #else
-  BFD_JUMP_TABLE_ARCHIVE (_bfd_archive_coff),
-#endif
-  BFD_JUMP_TABLE_SYMBOLS (bfd_elfNN),
-  BFD_JUMP_TABLE_RELOCS (bfd_elfNN),
-  BFD_JUMP_TABLE_WRITE (bfd_elfNN),
-  BFD_JUMP_TABLE_LINK (bfd_elfNN),
-  BFD_JUMP_TABLE_DYNAMIC (bfd_elfNN),
+  BFD_JUMP_TABLE_ARCHIVE(_bfd_archive_coff),
+#endif /* bfd_elfNN_archive_functions */
+  BFD_JUMP_TABLE_SYMBOLS(bfd_elfNN),
+  BFD_JUMP_TABLE_RELOCS(bfd_elfNN),
+  BFD_JUMP_TABLE_WRITE(bfd_elfNN),
+  BFD_JUMP_TABLE_LINK(bfd_elfNN),
+  BFD_JUMP_TABLE_DYNAMIC(bfd_elfNN),
 
-  /* Alternative endian target.  */
+  /* Alternative endian target: */
 #ifdef TARGET_BIG_SYM
   & TARGET_BIG_SYM,
 #else
   NULL,
-#endif
+#endif /* TARGET_BIG_SYM */
 
   /* backend_data: */
   &elfNN_bed
 };
-#endif
+#endif /* TARGET_LITTLE_SYM */
+
+#ifdef elf_backend_can_gc_sections
+# undef elf_backend_can_gc_sections
+#endif /* elf_backend_can_gc_sections */
 
 /* EOF */

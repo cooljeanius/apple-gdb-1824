@@ -96,7 +96,7 @@ static char sum_block[256];
   (d)[1] = digs[(x) & 0xf]; \
   (d)[0] = digs[((x)>>4)&0xf];
 
-/* Here's an example
+/* Here is an example:
    %3A6C6480004E56FFFC4E717063B0AEFFFC6D0652AEFFFC60F24E5E4E75
    %1B3709T_SEGMENT1108FFFFFFFF
    %2B3AB9T_SEGMENT7Dgcc_compiled$1087hello$c10
@@ -202,7 +202,7 @@ static char sum_block[256];
    ...  */
 
 static void
-tekhex_init (void)
+tekhex_init(void)
 {
   unsigned int i;
   static bfd_boolean inited = FALSE;
@@ -211,20 +211,20 @@ tekhex_init (void)
   if (! inited)
     {
       inited = TRUE;
-      hex_init ();
+      hex_init();
       val = 0;
       for (i = 0; i < 10; i++)
-	sum_block[i + '0'] = val++;
+	sum_block[i + '0'] = (char)val++;
 
       for (i = 'A'; i <= 'Z'; i++)
-	sum_block[i] = val++;
+	sum_block[i] = (char)val++;
 
-      sum_block['$'] = val++;
-      sum_block['%'] = val++;
-      sum_block['.'] = val++;
-      sum_block['_'] = val++;
+      sum_block['$'] = (char)val++;
+      sum_block['%'] = (char)val++;
+      sum_block['.'] = (char)val++;
+      sum_block['_'] = (char)val++;
       for (i = 'a'; i <= 'z'; i++)
-	sum_block[i] = val++;
+	sum_block[i] = (char)val++;
     }
 }
 
@@ -268,23 +268,23 @@ typedef struct tekhex_data_struct
 #endif /* !enda */
 
 static bfd_boolean
-getvalue (char **srcp, bfd_vma *valuep)
+getvalue(char **srcp, bfd_vma *valuep)
 {
   char *src = *srcp;
-  bfd_vma value = 0;
+  bfd_vma value = 0UL;
   unsigned int len;
 
-  if (!ISHEX (*src))
+  if (!ISHEX(*src))
     return FALSE;
 
-  len = hex_value (*src++);
+  len = hex_value(*src++);
   if (len == 0)
     len = 16;
   while (len--)
     {
-      if (!ISHEX (*src))
+      if (!ISHEX(*src))
 	return FALSE;
-      value = value << 4 | hex_value (*src++);
+      value = (value << 4 | hex_value(*src++));
     }
 
   *srcp = src;
@@ -293,22 +293,22 @@ getvalue (char **srcp, bfd_vma *valuep)
 }
 
 static bfd_boolean
-getsym (char *dstp, char **srcp, unsigned int *lenp)
+getsym(char *dstp, char **srcp, unsigned int *lenp)
 {
   char *src = *srcp;
   unsigned int i;
   unsigned int len;
 
-  if (!ISHEX (*src))
+  if (!ISHEX(*src))
     return FALSE;
 
-  len = hex_value (*src++);
+  len = hex_value(*src++);
   if (len == 0)
     len = 16;
   for (i = 0; i < len; i++)
     dstp[i] = src[i];
   dstp[i] = 0;
-  *srcp = src + i;
+  *srcp = (src + i);
   *lenp = len;
   return TRUE;
 }
@@ -318,7 +318,7 @@ find_chunk(bfd *abfd, bfd_vma vma)
 {
   struct data_struct *d = abfd->tdata.tekhex_data->data;
 
-  vma &= ~CHUNK_MASK;
+  vma &= (bfd_vma)~CHUNK_MASK;
   while (d && ((d->vma) != vma))
     d = d->next;
 
@@ -343,7 +343,7 @@ insert_byte(bfd *abfd, int value, bfd_vma addr)
   /* Find the chunk that this byte needs and put it in: */
   struct data_struct *d = find_chunk(abfd, addr);
 
-  d->chunk_data[addr & CHUNK_MASK] = value;
+  d->chunk_data[addr & CHUNK_MASK] = (char)value;
   d->chunk_init[addr & CHUNK_MASK] = 1;
 }
 
@@ -466,48 +466,48 @@ first_phase (bfd *abfd, int type, char *src)
    record.  */
 
 static bfd_boolean
-pass_over (bfd *abfd, bfd_boolean (*func) (bfd *, int, char *))
+pass_over(bfd *abfd, bfd_boolean (*func)(bfd *, int, char *))
 {
   unsigned int chars_on_line;
   bfd_boolean eof = FALSE;
 
-  /* To the front of the file.  */
-  if (bfd_seek (abfd, (file_ptr) 0, SEEK_SET) != 0)
-    abort ();
+  /* To the front of the file: */
+  if (bfd_seek(abfd, (file_ptr)0L, SEEK_SET) != 0)
+    abort();
   while (! eof)
     {
       char buffer[MAXCHUNK];
       char *src = buffer;
       char type;
 
-      /* Find first '%'.  */
-      eof = (bfd_boolean) (bfd_bread (src, (bfd_size_type) 1, abfd) != 1);
+      /* Find first '%': */
+      eof = (bfd_boolean)(bfd_bread(src, (bfd_size_type)1UL, abfd) != 1);
       while (*src != '%' && !eof)
-	eof = (bfd_boolean) (bfd_bread (src, (bfd_size_type) 1, abfd) != 1);
+	eof = (bfd_boolean)(bfd_bread(src, (bfd_size_type)1UL, abfd) != 1);
 
       if (eof)
 	break;
       src++;
 
-      /* Fetch the type and the length and the checksum.  */
-      if (bfd_bread (src, (bfd_size_type) 5, abfd) != 5)
-	abort (); /* FIXME.  */
+      /* Fetch the type and the length and the checksum: */
+      if (bfd_bread(src, (bfd_size_type)5UL, abfd) != 5)
+	abort(); /* FIXME.  */
 
       type = src[2];
 
-      if (!ISHEX (src[0]) || !ISHEX (src[1]))
+      if (!ISHEX(src[0]) || !ISHEX(src[1]))
 	break;
 
-      /* Already read five char.  */
-      chars_on_line = HEX (src) - 5;
+      /* Already read five char: */
+      chars_on_line = (HEX(src) - 5);
 
-      if (bfd_bread (src, (bfd_size_type) chars_on_line, abfd) != chars_on_line)
-	abort (); /* FIXME.  */
+      if (bfd_bread(src, (bfd_size_type)chars_on_line, abfd) != chars_on_line)
+	abort(); /* FIXME.  */
 
-      /* Put a null at the end.  */
+      /* Put a null at the end: */
       src[chars_on_line] = 0;
 
-      if (!func (abfd, type, src))
+      if (!func(abfd, type, src))
 	return FALSE;
     }
 
@@ -515,10 +515,10 @@ pass_over (bfd *abfd, bfd_boolean (*func) (bfd *, int, char *))
 }
 
 static long
-tekhex_canonicalize_symtab (bfd *abfd, asymbol **table)
+tekhex_canonicalize_symtab(bfd *abfd, asymbol **table)
 {
   tekhex_symbol_type *p = abfd->tdata.tekhex_data->symbols;
-  unsigned int c = bfd_get_symcount (abfd);
+  unsigned int c = bfd_get_symcount(abfd);
 
   table[c] = 0;
   while (p)
@@ -527,14 +527,13 @@ tekhex_canonicalize_symtab (bfd *abfd, asymbol **table)
       p = p->prev;
     }
 
-  return bfd_get_symcount (abfd);
+  return (long)bfd_get_symcount(abfd);
 }
 
 static long
 tekhex_get_symtab_upper_bound(bfd *abfd)
 {
-  return (abfd->symcount + 1) * (sizeof(struct tekhex_asymbol_struct *));
-
+  return (long)((abfd->symcount + 1L) * sizeof(struct tekhex_asymbol_struct *));
 }
 
 static bfd_boolean
@@ -673,8 +672,8 @@ tekhex_set_section_contents (bfd *abfd,
 
   if (section->flags & (SEC_LOAD | SEC_ALLOC))
     {
-      move_section_contents (abfd, section, locationp, offset, bytes_to_do,
-			     FALSE);
+      move_section_contents(abfd, section, locationp, offset, bytes_to_do,
+			    FALSE);
       return TRUE;
     }
 
@@ -682,7 +681,7 @@ tekhex_set_section_contents (bfd *abfd,
 }
 
 static void
-writevalue (char **dst, bfd_vma value)
+writevalue(char **dst, bfd_vma value)
 {
   char *p = *dst;
   int len;
@@ -692,7 +691,7 @@ writevalue (char **dst, bfd_vma value)
     {
       if ((value >> shift) & 0xf)
 	{
-	  *p++ = len + '0';
+	  *p++ = (char)(len + '0');
 	  while (len)
 	    {
 	      *p++ = digs[(value >> shift) & 0xf];
@@ -739,7 +738,7 @@ writesym(char **dst, const char *sym)
 }
 
 static void
-out (bfd *abfd, int type, char *start, char *end)
+out(bfd *abfd, int type, char *start, char *end)
 {
   int sum = 0;
   char *s;
@@ -747,26 +746,26 @@ out (bfd *abfd, int type, char *start, char *end)
   bfd_size_type wrlen;
 
   front[0] = '%';
-  TOHEX (front + 1, end - start + 5);
-  front[3] = type;
+  TOHEX((front + 1), (end - start + 5));
+  front[3] = (char)type;
 
   for (s = start; s < end; s++)
-    sum += sum_block[(unsigned char) *s];
+    sum += sum_block[(unsigned char)*s];
 
-  sum += sum_block[(unsigned char) front[1]];	/* Length.  */
-  sum += sum_block[(unsigned char) front[2]];
-  sum += sum_block[(unsigned char) front[3]];	/* Type.  */
-  TOHEX (front + 4, sum);
-  if (bfd_bwrite (front, (bfd_size_type) 6, abfd) != 6)
-    abort ();
+  sum += sum_block[(unsigned char)front[1]];	/* Length.  */
+  sum += sum_block[(unsigned char)front[2]];
+  sum += sum_block[(unsigned char)front[3]];	/* Type.  */
+  TOHEX(front + 4, sum);
+  if (bfd_bwrite(front, (bfd_size_type)6UL, abfd) != 6)
+    abort();
   end[0] = '\n';
-  wrlen = end - start + 1;
-  if (bfd_bwrite (start, wrlen, abfd) != wrlen)
-    abort ();
+  wrlen = (bfd_size_type)(end - (bfd_size_type)start + 1UL);
+  if (bfd_bwrite(start, wrlen, abfd) != wrlen)
+    abort();
 }
 
 static bfd_boolean
-tekhex_write_object_contents (bfd *abfd)
+tekhex_write_object_contents(bfd *abfd)
 {
   int bytes_written;
   char buffer[100];
@@ -778,7 +777,7 @@ tekhex_write_object_contents (bfd *abfd)
 
   bytes_written = 0;
 
-  /* And the raw data.  */
+  /* And the raw data: */
   for (d = abfd->tdata.tekhex_data->data;
        d != NULL;
        d = d->next)
@@ -794,7 +793,7 @@ tekhex_write_object_contents (bfd *abfd)
 	  int need = 0;
 
 	  /* Check to see if necessary: */
-	  for (low = 0; !need && low < span; low++)
+	  for (low = 0; !need && (low < span); low++)
 	    if (d->chunk_init[addr + low])
 	      need = 1;
 
@@ -802,7 +801,7 @@ tekhex_write_object_contents (bfd *abfd)
 	    {
 	      char *dst = buffer;
 
-	      writevalue (&dst, addr + d->vma);
+	      writevalue(&dst, ((bfd_vma)addr + d->vma));
 	      for (low = 0; low < span; low++)
 		{
 		  TOHEX(dst, d->chunk_data[addr + low]);

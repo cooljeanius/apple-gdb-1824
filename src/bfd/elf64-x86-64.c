@@ -413,8 +413,8 @@ link_hash_newfunc (struct bfd_hash_entry *entry, struct bfd_hash_table *table,
      subclass.  */
   if (entry == NULL)
     {
-      entry = bfd_hash_allocate (table,
-				 sizeof (struct elf64_x86_64_link_hash_entry));
+      entry = bfd_hash_allocate(table,
+                                sizeof(struct elf64_x86_64_link_hash_entry));
       if (entry == NULL)
 	return entry;
     }
@@ -2954,12 +2954,12 @@ elf64_x86_64_add_symbol_hook (bfd *abfd,
    index.  */
 
 static bfd_boolean
-elf64_x86_64_elf_section_from_bfd_section (bfd *abfd ATTRIBUTE_UNUSED,
-					   asection *sec, int *index)
+elf64_x86_64_elf_section_from_bfd_section(bfd *abfd ATTRIBUTE_UNUSED,
+					  asection *sec, int *i_index)
 {
   if (sec == &_bfd_elf_large_com_section)
     {
-      *index = SHN_X86_64_LCOMMON;
+      *i_index = SHN_X86_64_LCOMMON;
       return TRUE;
     }
   return FALSE;

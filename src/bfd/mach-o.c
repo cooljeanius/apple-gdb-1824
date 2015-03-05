@@ -411,31 +411,31 @@ static long
 bfd_mach_o_count_symbols(bfd *abfd)
 {
   bfd_mach_o_data_struct *mdata = NULL;
-  long nsyms = 0;
+  long nsyms = 0L;
   unsigned long i;
 
-  BFD_ASSERT (bfd_mach_o_valid (abfd));
+  BFD_ASSERT(bfd_mach_o_valid(abfd));
   mdata = abfd->tdata.mach_o_data;
 
-  for (i = 0; i < mdata->header.ncmds; i++)
+  for (i = 0UL; i < mdata->header.ncmds; i++)
     if (mdata->commands[i].type == BFD_MACH_O_LC_SYMTAB)
       {
 	bfd_mach_o_symtab_command *sym = &mdata->commands[i].command.symtab;
-	nsyms += sym->nsyms;
+	nsyms += (long)sym->nsyms;
       }
 
   return nsyms;
 }
 
 static long
-bfd_mach_o_get_symtab_upper_bound (bfd *abfd)
+bfd_mach_o_get_symtab_upper_bound(bfd *abfd)
 {
-  long nsyms = bfd_mach_o_count_symbols (abfd);
+  long nsyms = bfd_mach_o_count_symbols(abfd);
 
   if (nsyms < 0)
     return nsyms;
 
-  return ((nsyms + 1) * sizeof (asymbol *));
+  return (long)((size_t)(nsyms + 1L) * sizeof(asymbol *));
 }
 
 static long
@@ -1172,6 +1172,22 @@ bfd_mach_o_write_contents(bfd *abfd)
 	case BFD_MACH_O_LC_MAIN:
 	  break;
         case BFD_MACH_O_LC_SUB_UMBRELLA: /* fall through (for now): */
+        case BFD_MACH_O_LC_SUB_CLIENT: /* fall through (for now): */
+        case BFD_MACH_O_LC_SUB_LIBRARY: /* fall through (for now): */
+        case BFD_MACH_O_LC_TWOLEVEL_HINTS: /* fall through (for now): */
+        case BFD_MACH_O_LC_PREBIND_CKSUM: /* fall through (for now): */
+        case BFD_MACH_O_LC_ROUTINES_64: /* fall through (for now): */
+        case BFD_MACH_O_LC_DYLIB_CODE_SIGN_DRS: /* fall through for now: */
+        case BFD_MACH_O_LC_UUID: /* fall through (for now): */
+        case BFD_MACH_O_LC_RPATH: /* fall through (for now): */
+        case BFD_MACH_O_LC_CODE_SIGNATURE: /* fall through (for now): */
+        case BFD_MACH_O_LC_SEGMENT_SPLIT_INFO: /* fall through, for now: */
+        case BFD_MACH_O_LC_VERSION_MIN_MACOSX: /* fall through, for now: */
+        case BFD_MACH_O_LC_VERSION_MIN_IPHONEOS: /* fall through to: */
+        case BFD_MACH_O_LC_FUNCTION_STARTS: /* fall through (for now): */
+        case BFD_MACH_O_LC_DYLD_ENVIRONMENT: /* fall through (for now): */
+        case BFD_MACH_O_LC_DATA_IN_CODE: /* fall through (for now): */
+        case BFD_MACH_O_LC_SOURCE_VERSION: /* fall through (for now) to: */
 	default:
 	  fprintf(stderr,
                   "unable to write unknown load command 0x%lx\n",
@@ -2361,27 +2377,27 @@ bfd_mach_o_scan_read_command(bfd *abfd, bfd_mach_o_load_command *command)
   switch (command->type)
     {
     case BFD_MACH_O_LC_SEGMENT:
-      if (bfd_mach_o_scan_read_segment_32 (abfd, command) != 0)
+      if (bfd_mach_o_scan_read_segment_32(abfd, command) != 0)
 	return -1;
       break;
     case BFD_MACH_O_LC_SEGMENT_64:
-      if (bfd_mach_o_scan_read_segment_64 (abfd, command) != 0)
+      if (bfd_mach_o_scan_read_segment_64(abfd, command) != 0)
 	return -1;
       break;
     case BFD_MACH_O_LC_SYMTAB:
-      if (bfd_mach_o_scan_read_symtab (abfd, command) != 0)
+      if (bfd_mach_o_scan_read_symtab(abfd, command) != 0)
 	return -1;
       break;
     case BFD_MACH_O_LC_SYMSEG:
       break;
     case BFD_MACH_O_LC_THREAD:
     case BFD_MACH_O_LC_UNIXTHREAD:
-      if (bfd_mach_o_scan_read_thread (abfd, command) != 0)
+      if (bfd_mach_o_scan_read_thread(abfd, command) != 0)
 	return -1;
       break;
     case BFD_MACH_O_LC_LOAD_DYLINKER:
     case BFD_MACH_O_LC_ID_DYLINKER:
-      if (bfd_mach_o_scan_read_dylinker (abfd, command) != 0)
+      if (bfd_mach_o_scan_read_dylinker(abfd, command) != 0)
 	return -1;
       break;
     case BFD_MACH_O_LC_LOAD_DYLIB:
@@ -2389,11 +2405,11 @@ bfd_mach_o_scan_read_command(bfd *abfd, bfd_mach_o_load_command *command)
     case BFD_MACH_O_LC_ID_DYLIB:
     case BFD_MACH_O_LC_LOAD_WEAK_DYLIB:
     case BFD_MACH_O_LC_REEXPORT_DYLIB:
-      if (bfd_mach_o_scan_read_dylib (abfd, command) != 0)
+      if (bfd_mach_o_scan_read_dylib(abfd, command) != 0)
 	return -1;
       break;
     case BFD_MACH_O_LC_PREBOUND_DYLIB:
-      if (bfd_mach_o_scan_read_prebound_dylib (abfd, command) != 0)
+      if (bfd_mach_o_scan_read_prebound_dylib(abfd, command) != 0)
 	return -1;
       break;
     case BFD_MACH_O_LC_LOADFVMLIB:
@@ -2405,7 +2421,7 @@ bfd_mach_o_scan_read_command(bfd *abfd, bfd_mach_o_load_command *command)
     case BFD_MACH_O_LC_SUB_FRAMEWORK:
       break;
     case BFD_MACH_O_LC_DYSYMTAB:
-      if (bfd_mach_o_scan_read_dysymtab (abfd, command) != 0)
+      if (bfd_mach_o_scan_read_dysymtab(abfd, command) != 0)
 	return -1;
       break;
     case BFD_MACH_O_LC_UUID:
@@ -2445,7 +2461,13 @@ bfd_mach_o_scan_read_command(bfd *abfd, bfd_mach_o_load_command *command)
 	abfd->tdata.mach_o_data->encrypted = (int)(bfd_h_get_32(abfd, cryptid_buf));
       }
       break;
-    case BFD_MACH_O_LC_VERSION_MIN_MACOSX: /* fall through (for now) */
+    case BFD_MACH_O_LC_VERSION_MIN_MACOSX: /* fall through (for now): */
+    case BFD_MACH_O_LC_VERSION_MIN_IPHONEOS: /* fall through (for now): */
+    case BFD_MACH_O_LC_FUNCTION_STARTS: /* fall through (for now): */
+    case BFD_MACH_O_LC_DYLD_ENVIRONMENT: /* fall through (for now): */
+    case BFD_MACH_O_LC_DATA_IN_CODE: /* fall through (for now): */
+    case BFD_MACH_O_LC_SOURCE_VERSION: /* fall through (for now): */
+    case BFD_MACH_O_LC_DYLIB_CODE_SIGN_DRS: /* fall through (for now): */
     default:
       /* The LC_REQ_DYLD flag is intended for dyld but let us assume that
        * anything not critical for dyld to launch the process is probably

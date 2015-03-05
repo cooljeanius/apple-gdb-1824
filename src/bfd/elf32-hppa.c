@@ -446,18 +446,18 @@ elf32_hppa_link_hash_table_free (struct bfd_link_hash_table *btab)
 /* Build a name for an entry in the stub hash table.  */
 
 static char *
-hppa_stub_name (const asection *input_section,
-		const asection *sym_sec,
-		const struct elf32_hppa_link_hash_entry *hh,
-		const Elf_Internal_Rela *rela)
+hppa_stub_name(const asection *input_section,
+               const asection *sym_sec,
+               const struct elf32_hppa_link_hash_entry *hh,
+               const Elf_Internal_Rela *rela)
 {
   char *stub_name;
   bfd_size_type len;
 
   if (hh)
     {
-      len = 8 + 1 + strlen (hh->eh.root.root.string) + 1 + 8 + 1;
-      stub_name = bfd_malloc (len);
+      len = (8UL + 1UL + strlen(hh->eh.root.root.string) + 1UL + 8UL + 1U);
+      stub_name = (char *)bfd_malloc(len);
       if (stub_name != NULL)
 	{
 	  sprintf (stub_name, "%08x_%s+%x",

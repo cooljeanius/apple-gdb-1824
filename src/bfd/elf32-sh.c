@@ -3551,13 +3551,14 @@ struct elf_sh_link_hash_table
     } tls_ldm_got;
 };
 
-/* Traverse an sh ELF linker hash table.  */
-
-#define sh_elf_link_hash_traverse(table, func, info)			\
-  (elf_link_hash_traverse						\
-   (&(table)->root,							\
-    (bfd_boolean (*) (struct elf_link_hash_entry *, void *)) (func), \
-    (info)))
+/* Traverse an sh ELF linker hash table: */
+#ifndef sh_elf_link_hash_traverse
+# define sh_elf_link_hash_traverse(table, func, info)			\
+   (elf_link_hash_traverse						\
+    (&(table)->root,							\
+     (bfd_boolean (*)(struct elf_link_hash_entry *, void *))(func), \
+     (info)))
+#endif /* !sh_elf_link_hash_traverse */
 
 /* Get the sh ELF linker hash table from a link_info structure.  */
 
@@ -7307,8 +7308,10 @@ sh_elf_plt_sym_val (bfd_vma i, const asection *plt,
 					sh_elf_get_relocated_section_contents
 #define bfd_elf32_mkobject		sh_elf_mkobject
 #define elf_backend_object_p		sh_elf_object_p
-#define bfd_elf32_bfd_set_private_bfd_flags \
+#ifndef bfd_elf32_bfd_set_private_bfd_flags
+# define bfd_elf32_bfd_set_private_bfd_flags \
 					sh_elf_set_private_flags
+#endif /* !bfd_elf32_bfd_set_private_bfd_flags */
 #define bfd_elf32_bfd_copy_private_bfd_data \
 					sh_elf_copy_private_data
 #define bfd_elf32_bfd_merge_private_bfd_data \
@@ -7383,4 +7386,13 @@ sh_elf_plt_sym_val (bfd_vma i, const asection *plt,
 
 #include "elf32-target.h"
 
+#ifdef sh_elf_link_hash_traverse
+# undef sh_elf_link_hash_traverse
+#endif /* sh_elf_link_hash_traverse */
+#ifdef bfd_elf32_bfd_set_private_bfd_flags
+# undef bfd_elf32_bfd_set_private_bfd_flags
+#endif /* bfd_elf32_bfd_set_private_bfd_flags */
+
 #endif /* neither INCLUDE_SHMEDIA nor SH_TARGET_ALREADY_DEFINED */
+
+/* EOF */

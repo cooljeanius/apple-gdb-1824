@@ -1,4 +1,4 @@
-/* M16C/M32C specific support for 32-bit ELF.
+/* elf32-m32c.c: M16C/M32C specific support for 32-bit ELF.
    Copyright (C) 2005
    Free Software Foundation, Inc.
 
@@ -16,7 +16,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   Foundation, 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -28,9 +28,9 @@
 /* Forward declarations.  */
 static reloc_howto_type * m32c_reloc_type_lookup
   (bfd *, bfd_reloc_code_real_type);
-static void m32c_info_to_howto_rela 
+static void m32c_info_to_howto_rela
   (bfd *, arelent *, Elf_Internal_Rela *);
-static bfd_boolean m32c_elf_relocate_section 
+static bfd_boolean m32c_elf_relocate_section
   (bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *, Elf_Internal_Rela *, Elf_Internal_Sym *, asection **);
 static bfd_boolean m32c_elf_gc_sweep_hook
   (bfd *, struct bfd_link_info *, asection *, const Elf_Internal_Rela *);
@@ -222,7 +222,7 @@ m32c_reloc_type_lookup
   for (i = ARRAY_SIZE (m32c_reloc_map); --i;)
     if (m32c_reloc_map [i].bfd_reloc_val == code)
       return & m32c_elf_howto_table [m32c_reloc_map[i].m32c_reloc_val];
-  
+
   return NULL;
 }
 
@@ -314,9 +314,9 @@ m32c_elf_relocate_section
       bfd_reloc_status_type        r;
       const char *                 name = NULL;
       int                          r_type;
-      
+
       r_type = ELF32_R_TYPE (rel->r_info);
-      
+
       r_symndx = ELF32_R_SYM (rel->r_info);
 
       if (info->relocatable)
@@ -328,7 +328,7 @@ m32c_elf_relocate_section
 	  if (r_symndx < symtab_hdr->sh_info)
 	    {
 	      sym = local_syms + r_symndx;
-	      
+
 	      if (ELF_ST_TYPE (sym->st_info) == STT_SECTION)
 		{
 		  sec = local_sections [r_symndx];
@@ -344,7 +344,7 @@ m32c_elf_relocate_section
       h      = NULL;
       sym    = NULL;
       sec    = NULL;
-      
+
       if (r_symndx < symtab_hdr->sh_info)
 	{
 	  sym = local_syms + r_symndx;
@@ -352,7 +352,7 @@ m32c_elf_relocate_section
 	  relocation = (sec->output_section->vma
 			+ sec->output_offset
 			+ sym->st_value);
-	  
+
 	  name = bfd_elf_string_from_elf_section
 	    (input_bfd, symtab_hdr->sh_link, sym->st_name);
 	  name = (name == NULL) ? bfd_section_name (input_bfd, sec) : name;
@@ -360,13 +360,13 @@ m32c_elf_relocate_section
       else
 	{
 	  h = sym_hashes [r_symndx - symtab_hdr->sh_info];
-	  
+
 	  while (h->root.type == bfd_link_hash_indirect
 		 || h->root.type == bfd_link_hash_warning)
 	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
 
 	  name = h->root.root.string;
-	  
+
 	  if (h->root.type == bfd_link_hash_defined
 	      || h->root.type == bfd_link_hash_defweak)
 	    {
@@ -381,15 +381,15 @@ m32c_elf_relocate_section
 	    }
 	  else
 	    {
-	      if (! ((*info->callbacks->undefined_symbol)
-		     (info, h->root.root.string, input_bfd,
-		      input_section, rel->r_offset, TRUE)))
+	      if (!((*info->callbacks->undefined_symbol)
+		    (info, h->root.root.string, input_bfd,
+		     input_section, rel->r_offset, TRUE)))
 		return FALSE;
 	      relocation = 0;
 	    }
 	}
 
-      switch (ELF32_R_TYPE (rel->r_info))
+      switch (ELF32_R_TYPE(rel->r_info))
 	{
 	case R_M32C_16:
 	  {
@@ -398,36 +398,39 @@ m32c_elf_relocate_section
 	    if (h != NULL)
 	      plt_offset = &h->plt.offset;
 	    else
-	      plt_offset = elf_local_got_offsets (input_bfd) + r_symndx;
+	      plt_offset = elf_local_got_offsets(input_bfd) + r_symndx;
 
-	    /*	    printf("%s: rel %x plt %d\n", h ? h->root.root.string : "(none)",
-		    relocation, *plt_offset);*/
+#if defined(DEBUG) || defined(_DEBUG)
+	    printf("%s: rel %x plt %d\n",
+                   (h ? h->root.root.string : "(none)"),
+                   relocation, *plt_offset);
+#endif /* DEBUG || _DEBUG */
 	    if (relocation <= 0xffff)
 	      {
 	        /* If the symbol is in range for a 16-bit address, we should
 		   have deallocated the plt entry in relax_section.  */
-	        BFD_ASSERT (*plt_offset == (bfd_vma) -1);
+	        BFD_ASSERT(*plt_offset == (bfd_vma)-1L);
 	      }
 	    else
 	      {
 		/* If the symbol is out of range for a 16-bit address,
 		   we must have allocated a plt entry.  */
-		BFD_ASSERT (*plt_offset != (bfd_vma) -1);
+		BFD_ASSERT(*plt_offset != (bfd_vma)-1L);
 
-		/* If this is the first time we've processed this symbol,
+		/* If this is the first time we have processed this symbol,
 		   fill in the plt entry with the correct symbol address.  */
 		if ((*plt_offset & 1) == 0)
 		  {
 		    unsigned int x;
 
 		    x = 0x000000fc;  /* jmpf */
-		    x |= (relocation << 8) & 0xffffff00;
-		    bfd_put_32 (input_bfd, x, splt->contents + *plt_offset);
+		    x |= ((relocation << 8) & 0xffffff00);
+		    bfd_put_32(input_bfd, x, splt->contents + *plt_offset);
 		    *plt_offset |= 1;
 		  }
 
 		relocation = (splt->output_section->vma
-			      + splt->output_offset
+                              + splt->output_offset
 			      + (*plt_offset & -2));
 	      }
 	  }
@@ -437,15 +440,18 @@ m32c_elf_relocate_section
 	case R_M32C_HI16:
 	  relocation >>= 16;
 	  break;
+
+        default:
+          break;
 	}
 
-      r = _bfd_final_link_relocate (howto, input_bfd, input_section,
-                                    contents, rel->r_offset, relocation,
-                                    rel->r_addend);
+      r = _bfd_final_link_relocate(howto, input_bfd, input_section,
+                                   contents, rel->r_offset, relocation,
+                                   rel->r_addend);
 
       if (r != bfd_reloc_ok)
 	{
-	  const char * msg = (const char *) NULL;
+	  const char *msg = (const char *)NULL;
 
 	  switch (r)
 	    {
@@ -454,13 +460,13 @@ m32c_elf_relocate_section
 		(info, (h ? &h->root : NULL), name, howto->name, (bfd_vma) 0,
 		 input_bfd, input_section, rel->r_offset);
 	      break;
-	      
+
 	    case bfd_reloc_undefined:
 	      r = info->callbacks->undefined_symbol
 		(info, name, input_bfd, input_section, rel->r_offset,
 		 TRUE);
 	      break;
-	      
+
 	    case bfd_reloc_outofrange:
 	      msg = _("internal error: out of range error");
 	      break;
@@ -548,7 +554,7 @@ m32c_elf_gc_sweep_hook
 
 /* We support 16-bit pointers to code above 64k by generating a thunk
    below 64k containing a JMP instruction to the final address.  */
- 
+
 static bfd_boolean
 m32c_elf_check_relocs
     (bfd *                     abfd,
@@ -564,10 +570,10 @@ m32c_elf_check_relocs
   bfd_vma *local_plt_offsets;
   asection *splt;
   bfd *dynobj;
- 
+
   if (info->relocatable)
     return TRUE;
- 
+
   symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
   sym_hashes = elf_sym_hashes (abfd);
   local_plt_offsets = elf_local_got_offsets (abfd);
@@ -577,49 +583,48 @@ m32c_elf_check_relocs
   sym_hashes_end = sym_hashes + symtab_hdr->sh_size/sizeof (Elf32_External_Sym);
   if (!elf_bad_symtab (abfd))
     sym_hashes_end -= symtab_hdr->sh_info;
- 
+
   rel_end = relocs + sec->reloc_count;
   for (rel = relocs; rel < rel_end; rel++)
     {
       struct elf_link_hash_entry *h;
       unsigned long r_symndx;
       bfd_vma *offset;
- 
+
       r_symndx = ELF32_R_SYM (rel->r_info);
       if (r_symndx < symtab_hdr->sh_info)
         h = NULL;
       else
 	{
 	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
-	  while (h->root.type == bfd_link_hash_indirect
-		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	  while ((h->root.type == bfd_link_hash_indirect)
+		 || (h->root.type == bfd_link_hash_warning))
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 	}
- 
-      switch (ELF32_R_TYPE (rel->r_info))
+
+      switch (ELF32_R_TYPE(rel->r_info))
         {
 	  /* This relocation describes a 16-bit pointer to a function.
 	     We may need to allocate a thunk in low memory; reserve memory
 	     for it now.  */
 	case R_M32C_16:
 	  if (dynobj == NULL)
-	    elf_hash_table (info)->dynobj = dynobj = abfd;
+	    elf_hash_table(info)->dynobj = dynobj = abfd;
 	  if (splt == NULL)
 	    {
-	      splt = bfd_get_section_by_name (dynobj, ".plt");
+	      splt = bfd_get_section_by_name(dynobj, ".plt");
 	      if (splt == NULL)
 		{
-		  splt = bfd_make_section (dynobj, ".plt");
-		  if (splt == NULL
-		      || ! bfd_set_section_flags (dynobj, splt,
-						  (SEC_ALLOC
-						   | SEC_LOAD
-						   | SEC_HAS_CONTENTS
-						   | SEC_IN_MEMORY
-						   | SEC_LINKER_CREATED
-						   | SEC_READONLY
-						   | SEC_CODE))
-		      || ! bfd_set_section_alignment (dynobj, splt, 1))
+		  splt = bfd_make_section(dynobj, ".plt");
+		  if ((splt == NULL)
+		      || ! bfd_set_section_flags(dynobj, splt,
+						 (SEC_ALLOC | SEC_LOAD
+                                                  | SEC_HAS_CONTENTS
+                                                  | SEC_IN_MEMORY
+                                                  | SEC_LINKER_CREATED
+						  | SEC_READONLY
+                                                  | SEC_CODE))
+		      || ! bfd_set_section_alignment(dynobj, splt, 1))
 		    return FALSE;
 		}
 	    }
@@ -633,35 +638,37 @@ m32c_elf_check_relocs
 		  size_t size;
 		  unsigned int i;
 
-		  size = symtab_hdr->sh_info * sizeof (bfd_vma);
-		  local_plt_offsets = (bfd_vma *) bfd_alloc (abfd, size);
+		  size = (symtab_hdr->sh_info * sizeof(bfd_vma));
+		  local_plt_offsets = (bfd_vma *)bfd_alloc(abfd, size);
 		  if (local_plt_offsets == NULL)
 		    return FALSE;
-		  elf_local_got_offsets (abfd) = local_plt_offsets;
+		  elf_local_got_offsets(abfd) = local_plt_offsets;
 
 		  for (i = 0; i < symtab_hdr->sh_info; i++)
-		    local_plt_offsets[i] = (bfd_vma) -1;
+		    local_plt_offsets[i] = (bfd_vma)-1L;
 		}
 	      offset = &local_plt_offsets[r_symndx];
 	    }
 
-	  if (*offset == (bfd_vma) -1)
+	  if (*offset == (bfd_vma)-1L)
 	    {
 	      *offset = splt->size;
 	      splt->size += 4;
 	    }
 	  break;
+
+        default:
+          break;
         }
     }
- 
+
   return TRUE;
 }
 
-/* This must exist if dynobj is ever set.  */
-
+/* This must exist if dynobj is ever set: */
 static bfd_boolean
-m32c_elf_finish_dynamic_sections (bfd *abfd ATTRIBUTE_UNUSED,
-                                  struct bfd_link_info *info)
+m32c_elf_finish_dynamic_sections(bfd *abfd ATTRIBUTE_UNUSED,
+                                 struct bfd_link_info *info)
 {
   bfd *dynobj;
   asection *splt;
@@ -776,7 +783,7 @@ m32c_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
 	    case EF_M32C_CPU_M32C:  strcat (old_opt, " -m32c");  break;
 	    }
 	}
-      
+
       /* Print out any mismatches from above.  */
       if (new_opt[0])
 	{
@@ -807,56 +814,56 @@ m32c_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
 
 
 static bfd_boolean
-m32c_elf_print_private_bfd_data (bfd *abfd, PTR ptr)
+m32c_elf_print_private_bfd_data(bfd *abfd, PTR ptr)
 {
-  FILE *file = (FILE *) ptr;
+  FILE *file = (FILE *)ptr;
   flagword flags;
 
-  BFD_ASSERT (abfd != NULL && ptr != NULL);
+  BFD_ASSERT((abfd != NULL) && (ptr != NULL));
 
-  /* Print normal ELF private data.  */
-  _bfd_elf_print_private_bfd_data (abfd, ptr);
+  /* Print normal ELF private data: */
+  _bfd_elf_print_private_bfd_data(abfd, ptr);
 
-  flags = elf_elfheader (abfd)->e_flags;
-  fprintf (file, _("private flags = 0x%lx:"), (long)flags);
+  flags = elf_elfheader(abfd)->e_flags;
+  fprintf(file, _("private flags = 0x%lx:"), (long)flags);
 
   switch (flags & EF_M32C_CPU_MASK)
     {
-    default:							break;
-    case EF_M32C_CPU_M16C:	fprintf (file, " -m16c");	break;
-    case EF_M32C_CPU_M32C:  fprintf (file, " -m32c");	break;
+    default: break;
+    case EF_M32C_CPU_M16C: fprintf(file, " -m16c"); break;
+    case EF_M32C_CPU_M32C: fprintf(file, " -m32c"); break;
     }
 
-  fputc ('\n', file);
+  fputc('\n', file);
   return TRUE;
 }
 
-/* Return the MACH for an e_flags value.  */
-
+/* Return the MACH for an e_flags value: */
 static int
-elf32_m32c_machine (bfd *abfd)
+elf32_m32c_machine(bfd *abfd)
 {
-  switch (elf_elfheader (abfd)->e_flags & EF_M32C_CPU_MASK)
+  switch (elf_elfheader(abfd)->e_flags & EF_M32C_CPU_MASK)
     {
-    case EF_M32C_CPU_M16C:	return bfd_mach_m16c;
-    case EF_M32C_CPU_M32C:  	return bfd_mach_m32c;
+    case EF_M32C_CPU_M16C: return bfd_mach_m16c;
+    case EF_M32C_CPU_M32C: return bfd_mach_m32c;
+    default: break;
     }
 
   return bfd_mach_m16c;
 }
 
 static bfd_boolean
-m32c_elf_object_p (bfd *abfd)
+m32c_elf_object_p(bfd *abfd)
 {
-  bfd_default_set_arch_mach (abfd, bfd_arch_m32c,
-			     elf32_m32c_machine (abfd));
+  bfd_default_set_arch_mach(abfd, bfd_arch_m32c,
+			    elf32_m32c_machine(abfd));
   return TRUE;
 }
  
 
 #ifdef DEBUG
 static void
-dump_symtab (bfd * abfd, void *internal_syms, void *external_syms)
+dump_symtab(bfd * abfd, void *internal_syms, void *external_syms)
 {
   size_t locsymcount;
   Elf_Internal_Sym *isymbuf;
@@ -871,28 +878,28 @@ dump_symtab (bfd * abfd, void *internal_syms, void *external_syms)
 
   if (! internal_syms)
     {
-      internal_syms = bfd_malloc (1000);
+      internal_syms = bfd_malloc(1000);
       free_internal = 1;
     }
   if (! external_syms)
     {
-      external_syms = bfd_malloc (1000);
+      external_syms = bfd_malloc(1000);
       free_external = 1;
     }
-  
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  locsymcount = symtab_hdr->sh_size / get_elf_backend_data(abfd)->s->sizeof_sym;
+
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  locsymcount = (symtab_hdr->sh_size / get_elf_backend_data(abfd)->s->sizeof_sym);
   if (free_internal)
-    isymbuf = bfd_elf_get_elf_syms (abfd, symtab_hdr,
-				    symtab_hdr->sh_info, 0,
-				    internal_syms, external_syms, NULL);
+    isymbuf = bfd_elf_get_elf_syms(abfd, symtab_hdr,
+				   symtab_hdr->sh_info, 0,
+				   internal_syms, external_syms, NULL);
   else
     isymbuf = internal_syms;
-  isymend = isymbuf + locsymcount;
+  isymend = (isymbuf + locsymcount);
 
-  for (isym = isymbuf ; isym < isymend ; isym++)
+  for (isym = isymbuf; isym < isymend; isym++)
     {
-      switch (ELF_ST_TYPE (isym->st_info))
+      switch (ELF_ST_TYPE(isym->st_info))
 	{
 	case STT_FUNC: st_info_str = "STT_FUNC";
 	case STT_SECTION: st_info_str = "STT_SECTION";
@@ -922,10 +929,10 @@ dump_symtab (bfd * abfd, void *internal_syms, void *external_syms)
 	case SHN_UNDEF: st_shndx_str = "SHN_UNDEF";
 	default: st_shndx_str = "";
 	}
-      
+
       printf ("isym = %p st_value = %lx st_size = %lx st_name = (%lu) %s "
 	      "st_info = (%d) %s %s st_other = (%d) %s st_shndx = (%d) %s\n",
-	      isym, 
+	      isym,
 	      (unsigned long) isym->st_value,
 	      (unsigned long) isym->st_size,
 	      isym->st_name,
@@ -1620,7 +1627,7 @@ m32c_elf_relax_delete_bytes
   struct elf_link_hash_entry ** sym_hashes;
   struct elf_link_hash_entry ** end_hashes;
   unsigned int                  symcount;
- 
+
   symtab_hdr = & elf_tdata (abfd)->symtab_hdr;
   extsyms = (Elf32_External_Sym *) symtab_hdr->contents;
   shndx_hdr  = & elf_tdata (abfd)->symtab_shndx_hdr;
@@ -1699,21 +1706,26 @@ m32c_elf_relax_delete_bytes
 #define ELF_MAXPAGESIZE		0x1000
 
 #if 0
-#define TARGET_BIG_SYM		bfd_elf32_m32c_vec
-#define TARGET_BIG_NAME		"elf32-m32c"
+# define TARGET_BIG_SYM		bfd_elf32_m32c_vec
+# define TARGET_BIG_NAME	"elf32-m32c"
 #else
-#define TARGET_LITTLE_SYM		bfd_elf32_m32c_vec
-#define TARGET_LITTLE_NAME		"elf32-m32c"
-#endif
+# define TARGET_LITTLE_SYM		bfd_elf32_m32c_vec
+# define TARGET_LITTLE_NAME		"elf32-m32c"
+#endif /* 0 */
 
 #define elf_info_to_howto_rel			NULL
 #define elf_info_to_howto			m32c_info_to_howto_rela
-#define elf_backend_object_p			m32c_elf_object_p
+#ifndef elf_backend_object_p
+# define elf_backend_object_p			m32c_elf_object_p
+#endif /* !elf_backend_object_p */
 #define elf_backend_relocate_section		m32c_elf_relocate_section
 #define elf_backend_gc_mark_hook		m32c_elf_gc_mark_hook
 #define elf_backend_gc_sweep_hook		m32c_elf_gc_sweep_hook
 #define elf_backend_check_relocs                m32c_elf_check_relocs
-#define elf_backend_object_p			m32c_elf_object_p
+/* FIXME: we just did this above: */
+#ifndef elf_backend_object_p
+# define elf_backend_object_p			m32c_elf_object_p
+#endif /* !elf_backend_object_p */
 #define elf_symbol_leading_char                 ('_')
 #define elf_backend_always_size_sections \
   m32c_elf_always_size_sections

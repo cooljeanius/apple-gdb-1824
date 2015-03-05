@@ -967,6 +967,8 @@ sparc_elf_tls_transition (struct bfd_link_info *info, bfd *abfd,
       return R_SPARC_TLS_LE_HIX22;
     case R_SPARC_TLS_LDM_LO10:
       return R_SPARC_TLS_LE_LOX10;
+    default:
+      break;
     }
 
   return r_type;
@@ -1033,31 +1035,33 @@ _bfd_sparc_elf_check_relocs (bfd *abfd, struct bfd_link_info *info,
 
       /* Compatibility with old R_SPARC_REV32 reloc conflicting
 	 with R_SPARC_TLS_GD_HI22.  */
-      if (! ABI_64_P (abfd) && ! checked_tlsgd)
+      if (! ABI_64_P(abfd) && ! checked_tlsgd)
 	switch (r_type)
 	  {
 	  case R_SPARC_TLS_GD_HI22:
 	    {
 	      const Elf_Internal_Rela *relt;
 
-	      for (relt = rel + 1; relt < rel_end; relt++)
-		if (ELF32_R_TYPE (relt->r_info) == R_SPARC_TLS_GD_LO10
-		    || ELF32_R_TYPE (relt->r_info) == R_SPARC_TLS_GD_ADD
-		    || ELF32_R_TYPE (relt->r_info) == R_SPARC_TLS_GD_CALL)
+	      for (relt = (rel + 1); relt < rel_end; relt++)
+		if ((ELF32_R_TYPE(relt->r_info) == R_SPARC_TLS_GD_LO10)
+		    || (ELF32_R_TYPE(relt->r_info) == R_SPARC_TLS_GD_ADD)
+		    || (ELF32_R_TYPE(relt->r_info) == R_SPARC_TLS_GD_CALL))
 		  break;
 	      checked_tlsgd = TRUE;
-	      _bfd_sparc_elf_tdata (abfd)->has_tlsgd = relt < rel_end;
+	      _bfd_sparc_elf_tdata(abfd)->has_tlsgd = (relt < rel_end);
 	    }
 	    break;
 	  case R_SPARC_TLS_GD_LO10:
 	  case R_SPARC_TLS_GD_ADD:
 	  case R_SPARC_TLS_GD_CALL:
 	    checked_tlsgd = TRUE;
-	    _bfd_sparc_elf_tdata (abfd)->has_tlsgd = TRUE;
+	    _bfd_sparc_elf_tdata(abfd)->has_tlsgd = TRUE;
 	    break;
+          default:
+            break;
 	  }
 
-      r_type = sparc_elf_tls_transition (info, abfd, r_type, h == NULL);
+      r_type = sparc_elf_tls_transition(info, abfd, r_type, h == NULL);
       switch (r_type)
 	{
 	case R_SPARC_TLS_LDM_HI22:
@@ -2728,6 +2732,8 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 		  if (h->dynindx == -1)
 		    skip = TRUE, relocate = TRUE;
 		  break;
+                default:
+                  break;
 		}
 
 	      if (skip)
@@ -2840,20 +2846,22 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	      case R_SPARC_TLS_GD_LO10:
 		r_type = R_SPARC_TLS_IE_LO10;
 		break;
+              default:
+                break;
 	      }
 
 	  if (r_type == R_SPARC_TLS_LE_HIX22)
 	    {
-	      relocation = tpoff (info, relocation);
+	      relocation = tpoff(info, relocation);
 	      break;
 	    }
 	  if (r_type == R_SPARC_TLS_LE_LOX10)
 	    {
 	      /* Change add into xor.  */
-	      relocation = tpoff (info, relocation);
-	      bfd_put_32 (output_bfd, (bfd_get_32 (input_bfd,
-						   contents + rel->r_offset)
-				       | 0x80182000), contents + rel->r_offset);
+	      relocation = tpoff(info, relocation);
+	      bfd_put_32(output_bfd,
+                         (bfd_get_32(input_bfd, (contents + rel->r_offset))
+                          | 0x80182000), (contents + rel->r_offset));
 	      break;
 	    }
 

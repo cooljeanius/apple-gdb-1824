@@ -6384,7 +6384,7 @@ error_return_verref:
       contents = NULL;
     }
 
-  if (elf_dynverdef (abfd) != 0)
+  if (elf_dynverdef(abfd) != 0)
     {
       Elf_Internal_Shdr *hdr;
       Elf_External_Verdef *everdef;
@@ -6395,43 +6395,43 @@ error_return_verref:
       unsigned int maxidx;
       bfd_byte *contents_end_def, *contents_end_aux;
 
-      hdr = &elf_tdata (abfd)->dynverdef_hdr;
+      hdr = &elf_tdata(abfd)->dynverdef_hdr;
 
-      contents = bfd_malloc (hdr->sh_size);
+      contents = (bfd_byte *)bfd_malloc(hdr->sh_size);
       if (contents == NULL)
 	goto error_return;
-      if (bfd_seek (abfd, hdr->sh_offset, SEEK_SET) != 0
-	  || bfd_bread (contents, hdr->sh_size, abfd) != hdr->sh_size)
+      if ((bfd_seek(abfd, hdr->sh_offset, SEEK_SET) != 0)
+	  || (bfd_bread(contents, hdr->sh_size, abfd) != hdr->sh_size))
 	goto error_return;
 
-      if (hdr->sh_info && hdr->sh_size < sizeof (Elf_External_Verdef))
+      if (hdr->sh_info && (hdr->sh_size < sizeof(Elf_External_Verdef)))
 	goto error_return;
 
-      BFD_ASSERT (sizeof (Elf_External_Verdef)
-		  >= sizeof (Elf_External_Verdaux));
-      contents_end_def = contents + hdr->sh_size
-			 - sizeof (Elf_External_Verdef);
-      contents_end_aux = contents + hdr->sh_size
-			 - sizeof (Elf_External_Verdaux);
+      BFD_ASSERT(sizeof(Elf_External_Verdef)
+		 >= sizeof(Elf_External_Verdaux));
+      contents_end_def = (contents + hdr->sh_size
+                          - sizeof(Elf_External_Verdef));
+      contents_end_aux = (contents + hdr->sh_size
+                          - sizeof(Elf_External_Verdaux));
 
       /* We know the number of entries in the section but not the maximum
 	 index.  Therefore we have to run through all entries and find
 	 the maximum.  */
-      everdef = (Elf_External_Verdef *) contents;
+      everdef = (Elf_External_Verdef *)contents;
       maxidx = 0;
       for (i = 0; i < hdr->sh_info; ++i)
 	{
-	  _bfd_elf_swap_verdef_in (abfd, everdef, &iverdefmem);
+	  _bfd_elf_swap_verdef_in(abfd, everdef, &iverdefmem);
 
-	  if ((iverdefmem.vd_ndx & ((unsigned) VERSYM_VERSION)) > maxidx)
-	    maxidx = iverdefmem.vd_ndx & ((unsigned) VERSYM_VERSION);
+	  if ((iverdefmem.vd_ndx & ((unsigned)VERSYM_VERSION)) > maxidx)
+	    maxidx = iverdefmem.vd_ndx & ((unsigned)VERSYM_VERSION);
 
 	  if (iverdefmem.vd_next
-	      > (size_t) (contents_end_def - (bfd_byte *) everdef))
+	      > (size_t)(contents_end_def - (bfd_byte *)everdef))
 	    goto error_return;
 
 	  everdef = ((Elf_External_Verdef *)
-		     ((bfd_byte *) everdef + iverdefmem.vd_next));
+		     ((bfd_byte *)everdef + iverdefmem.vd_next));
 	}
 
       if (default_imported_symver)

@@ -878,30 +878,31 @@ space consuming.  For each target:
      =   R R R R R R R R R R  put into bfd_put<size>
      */
 
-#define DOIT(x) \
-  x = ((x & ~howto->dst_mask) | (((x & howto->src_mask) + relocation) & howto->dst_mask))
+#define DOIT(x, type) \
+  x = (type)((bfd_vma)(x & (type)~howto->dst_mask) \
+             | (((bfd_vma)(x & (type)howto->src_mask) + relocation) & howto->dst_mask))
 
   switch (howto->size)
     {
     case 0:
       {
 	char x = (char)bfd_get_8(abfd, (char *)data + octets);
-	DOIT(x);
-	bfd_put_8(abfd, x, (unsigned char *)data + octets);
+	DOIT(x, char);
+	bfd_put_8(abfd, (unsigned char)x, (unsigned char *)data + octets);
       }
       break;
 
     case 1:
       {
 	short x = (short)bfd_get_16(abfd, (bfd_byte *)data + octets);
-	DOIT(x);
+	DOIT(x, short);
 	bfd_put_16(abfd, (bfd_vma)x, (unsigned char *)data + octets);
       }
       break;
     case 2:
       {
 	long x = (long)bfd_get_32(abfd, (bfd_byte *)data + octets);
-	DOIT(x);
+	DOIT(x, long);
 	bfd_put_32(abfd, (bfd_vma)x, (bfd_byte *)data + octets);
       }
       break;
@@ -909,7 +910,7 @@ space consuming.  For each target:
       {
 	long x = (long)bfd_get_32(abfd, (bfd_byte *)data + octets);
 	relocation = -relocation;
-	DOIT(x);
+	DOIT(x, long);
 	bfd_put_32(abfd, (bfd_vma)x, (bfd_byte *)data + octets);
       }
       break;
@@ -918,7 +919,7 @@ space consuming.  For each target:
       {
 	long x = (long)bfd_get_16(abfd, (bfd_byte *)data + octets);
 	relocation = -relocation;
-	DOIT(x);
+	DOIT(x, long);
 	bfd_put_16(abfd, (bfd_vma)x, (bfd_byte *)data + octets);
       }
       break;
@@ -931,7 +932,7 @@ space consuming.  For each target:
 #ifdef BFD64
       {
 	bfd_vma x = bfd_get_64(abfd, (bfd_byte *)data + octets);
-	DOIT(x);
+	DOIT(x, bfd_vma);
 	bfd_put_64(abfd, x, (bfd_byte *)data + octets);
       }
 #else
@@ -1254,32 +1255,33 @@ space consuming.  For each target:
      =   R R R R R R R R R R  put into bfd_put<size>
      */
 
-#define DOIT(x) \
-  x = ((x & ~howto->dst_mask) | (((x & howto->src_mask) +  relocation) & howto->dst_mask))
+#define DOIT(x, type) \
+  x = (type)((bfd_vma)(x & (type)~howto->dst_mask) \
+             | (((bfd_vma)(x & (type)howto->src_mask) + relocation) & howto->dst_mask))
 
-  data = (bfd_byte *)data_start + (octets - data_start_offset);
+  data = ((bfd_byte *)data_start + (octets - data_start_offset));
 
   switch (howto->size)
     {
     case 0:
       {
 	char x = (char)bfd_get_8(abfd, data);
-	DOIT(x);
-	bfd_put_8(abfd, x, data);
+	DOIT(x, char);
+	bfd_put_8(abfd, (unsigned char)x, data);
       }
       break;
 
     case 1:
       {
 	short x = (short)bfd_get_16(abfd, data);
-	DOIT(x);
+	DOIT(x, short);
 	bfd_put_16(abfd, (bfd_vma)x, data);
       }
       break;
     case 2:
       {
 	long x = (long)bfd_get_32(abfd, data);
-	DOIT (x);
+	DOIT(x, long);
 	bfd_put_32(abfd, (bfd_vma)x, data);
       }
       break;
@@ -1287,7 +1289,7 @@ space consuming.  For each target:
       {
 	long x = (long)bfd_get_32(abfd, data);
 	relocation = -relocation;
-	DOIT(x);
+	DOIT(x, long);
 	bfd_put_32(abfd, (bfd_vma)x, data);
       }
       break;
@@ -1298,14 +1300,16 @@ space consuming.  For each target:
 
     case 4:
       {
-	bfd_vma x = bfd_get_64 (abfd, data);
-	DOIT (x);
-	bfd_put_64 (abfd, x, data);
+	bfd_vma x = bfd_get_64(abfd, data);
+	DOIT(x, bfd_vma);
+	bfd_put_64(abfd, x, data);
       }
       break;
     default:
       return bfd_reloc_other;
     }
+
+#undef DOIT
 
   return flag;
 }
@@ -1333,25 +1337,21 @@ space consuming.  For each target:
    ADDEND is the addend of the reloc.  */
 
 bfd_reloc_status_type
-_bfd_final_link_relocate (reloc_howto_type *howto,
-			  bfd *input_bfd,
-			  asection *input_section,
-			  bfd_byte *contents,
-			  bfd_vma address,
-			  bfd_vma value,
-			  bfd_vma addend)
+_bfd_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
+			 asection *input_section, bfd_byte *contents,
+			 bfd_vma address, bfd_vma value, bfd_vma addend)
 {
   bfd_vma relocation;
 
-  /* Sanity check the address.  */
-  if (address > bfd_get_section_limit (input_bfd, input_section))
+  /* Sanity check the address: */
+  if (address > bfd_get_section_limit(input_bfd, input_section))
     return bfd_reloc_outofrange;
 
   /* This function assumes that we are dealing with a basic relocation
      against a symbol.  We want to compute the value of the symbol to
      relocate to.  This is just VALUE, the value of the symbol, plus
      ADDEND, any addend associated with the reloc.  */
-  relocation = value + addend;
+  relocation = (value + addend);
 
   /* If the relocation is PC relative, we want to set RELOCATION to
      the distance between the symbol (currently in RELOCATION) and the
@@ -1371,51 +1371,48 @@ _bfd_final_link_relocate (reloc_howto_type *howto,
 	relocation -= address;
     }
 
-  return _bfd_relocate_contents (howto, input_bfd, relocation,
-				 contents + address);
+  return _bfd_relocate_contents(howto, input_bfd, relocation,
+                                (contents + address));
 }
 
-/* Relocate a given location using a given value and howto.  */
-
+/* Relocate a given location using a given value and howto: */
 bfd_reloc_status_type
-_bfd_relocate_contents (reloc_howto_type *howto,
-			bfd *input_bfd,
-			bfd_vma relocation,
-			bfd_byte *location)
+_bfd_relocate_contents(reloc_howto_type *howto, bfd *input_bfd,
+                       bfd_vma relocation, bfd_byte *location)
 {
-  int size;
-  bfd_vma x = 0;
+  size_t size;
+  bfd_vma x = 0L;
   bfd_reloc_status_type flag;
   unsigned int rightshift = howto->rightshift;
   unsigned int bitpos = howto->bitpos;
 
-  /* If the size is negative, negate RELOCATION.  This isn't very
+  /* If the size is negative, negate RELOCATION.  This is NOT very
      general.  */
   if (howto->size < 0)
     relocation = -relocation;
 
-  /* Get the value we are going to relocate.  */
-  size = bfd_get_reloc_size (howto);
+  /* Get the value we are going to relocate: */
+  size = bfd_get_reloc_size(howto);
   switch (size)
     {
     default:
     case 0:
-      abort ();
+      abort();
     case 1:
-      x = bfd_get_8 (input_bfd, location);
+      x = bfd_get_8(input_bfd, location);
       break;
     case 2:
-      x = bfd_get_16 (input_bfd, location);
+      x = bfd_get_16(input_bfd, location);
       break;
     case 4:
-      x = bfd_get_32 (input_bfd, location);
+      x = bfd_get_32(input_bfd, location);
       break;
     case 8:
 #ifdef BFD64
-      x = bfd_get_64 (input_bfd, location);
+      x = bfd_get_64(input_bfd, location);
 #else
-      abort ();
-#endif
+      abort();
+#endif /* BFD64 */
       break;
     }
 

@@ -450,36 +450,32 @@ add_file_shuffle (ainfo, head, tail, input_bfd, offset, size)
   return TRUE;
 }
 
-/* Add a memory entry to a shuffle list.  */
-
+/* Add a memory entry to a shuffle list: */
 static bfd_boolean add_memory_shuffle
-  PARAMS ((struct accumulate *, struct shuffle **head, struct shuffle **tail,
-	   bfd_byte *data, unsigned long size));
+  PARAMS((struct accumulate *, struct shuffle **head,
+          struct shuffle **tail, bfd_byte *data, unsigned long size));
 
 static bfd_boolean
-add_memory_shuffle (ainfo, head, tail, data, size)
-     struct accumulate *ainfo;
-     struct shuffle **head;
-     struct shuffle **tail;
-     bfd_byte *data;
-     unsigned long size;
+add_memory_shuffle(struct accumulate *ainfo, struct shuffle **head,
+                   struct shuffle **tail, bfd_byte *data,
+                   unsigned long size)
 {
   struct shuffle *n;
 
-  n = (struct shuffle *) objalloc_alloc (ainfo->memory,
-					 sizeof (struct shuffle));
+  n = (struct shuffle *)objalloc_alloc(ainfo->memory,
+                                       sizeof(struct shuffle));
   if (!n)
     {
-      bfd_set_error (bfd_error_no_memory);
+      bfd_set_error(bfd_error_no_memory);
       return FALSE;
     }
   n->next = NULL;
   n->size = size;
   n->filep = FALSE;
   n->u.memory = (PTR) data;
-  if (*head == (struct shuffle *) NULL)
+  if (*head == (struct shuffle *)NULL)
     *head = n;
-  if (*tail != (struct shuffle *) NULL)
+  if (*tail != (struct shuffle *)NULL)
     (*tail)->next = n;
   *tail = n;
   return TRUE;
@@ -489,20 +485,19 @@ add_memory_shuffle (ainfo, head, tail, data, size)
    passed in to bfd_ecoff_debug_accumulate, et. al.  */
 
 PTR
-bfd_ecoff_debug_init (output_bfd, output_debug, output_swap, info)
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     struct ecoff_debug_info *output_debug;
-     const struct ecoff_debug_swap *output_swap ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info;
+bfd_ecoff_debug_init(bfd *output_bfd ATTRIBUTE_UNUSED,
+                     struct ecoff_debug_info *output_debug,
+                     const struct ecoff_debug_swap *output_swap ATTRIBUTE_UNUSED,
+                     struct bfd_link_info *info)
 {
   struct accumulate *ainfo;
-  bfd_size_type amt = sizeof (struct accumulate);
+  bfd_size_type amt = sizeof(struct accumulate);
 
-  ainfo = (struct accumulate *) bfd_malloc (amt);
+  ainfo = (struct accumulate *)bfd_malloc(amt);
   if (!ainfo)
     return NULL;
-  if (! bfd_hash_table_init_n (&ainfo->fdr_hash.table, string_hash_newfunc,
-			       1021))
+  if (! bfd_hash_table_init_n(&ainfo->fdr_hash.table, string_hash_newfunc,
+			      1021))
     return NULL;
 
   ainfo->line = NULL;
@@ -1065,16 +1060,13 @@ bfd_ecoff_debug_accumulate (handle, output_bfd, output_debug, output_swap,
    Return the offset from the fdr string base.  */
 
 static long ecoff_add_string
-  PARAMS ((struct accumulate *, struct bfd_link_info *,
-	   struct ecoff_debug_info *, FDR *fdr, const char *string));
+  PARAMS((struct accumulate *, struct bfd_link_info *,
+	  struct ecoff_debug_info *, FDR *fdr, const char *string));
 
 static long
-ecoff_add_string (ainfo, info, debug, fdr, string)
-     struct accumulate *ainfo;
-     struct bfd_link_info *info;
-     struct ecoff_debug_info *debug;
-     FDR *fdr;
-     const char *string;
+ecoff_add_string(struct accumulate *ainfo, struct bfd_link_info *info,
+                 struct ecoff_debug_info *debug, FDR *fdr,
+                 const char *string)
 {
   HDRR *symhdr;
   size_t len;
@@ -1085,7 +1077,7 @@ ecoff_add_string (ainfo, info, debug, fdr, string)
   if (info->relocatable)
     {
       if (!add_memory_shuffle(ainfo, &ainfo->ss, &ainfo->ss_end,
-                              (PTR)string, (len + 1)))
+                              (bfd_byte *)(PTR)string, (len + 1)))
 	return -1;
       ret = symhdr->issMax;
       symhdr->issMax += (len + 1);
@@ -1207,7 +1199,7 @@ bfd_ecoff_debug_accumulate_other (handle, output_bfd, output_debug,
 	}
       (*swap_sym_out)(output_bfd, &internal_sym, external_sym);
       add_memory_shuffle(ainfo, &ainfo->sym, &ainfo->sym_end,
-                         external_sym,
+                         (bfd_byte *)external_sym,
                          (unsigned long)output_swap->external_sym_size);
       ++fdr.csym;
       ++output_symhdr->isymMax;
@@ -1228,7 +1220,7 @@ bfd_ecoff_debug_accumulate_other (handle, output_bfd, output_debug,
     }
   (*output_swap->swap_fdr_out)(output_bfd, &fdr, external_fdr);
   add_memory_shuffle(ainfo, &ainfo->fdr, &ainfo->fdr_end,
-                     external_fdr,
+                     (bfd_byte *)external_fdr,
                      (unsigned long)output_swap->external_fdr_size);
 
   ++output_symhdr->ifdMax;

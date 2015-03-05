@@ -16,7 +16,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -27,8 +27,13 @@
 #include "safe-ctype.h"
 #include "libiberty.h"
 
+/* one local prototype needs to be up here for now: */
+extern bfd_boolean
+elf_link_add_archive_symbols(bfd *, struct bfd_link_info *);
+
+/* now straight into actual functions: */
 bfd_boolean
-_bfd_elf_create_got_section (bfd *abfd, struct bfd_link_info *info)
+_bfd_elf_create_got_section(bfd *abfd, struct bfd_link_info *info)
 {
   flagword flags;
   asection *s;

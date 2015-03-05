@@ -4578,20 +4578,20 @@ _bfd_mn10300_elf_finish_dynamic_sections(bfd *output_bfd,
 	}
     }
 
-  /* Fill in the first three entries in the global offset table.  */
+  /* Fill in the first three entries in the global offset table: */
   if (sgot->size > 0)
     {
       if (sdyn == NULL)
-	bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents);
+	bfd_put_32(output_bfd, (bfd_vma)0UL, sgot->contents);
       else
-	bfd_put_32 (output_bfd,
-		    sdyn->output_section->vma + sdyn->output_offset,
-		    sgot->contents);
-      bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + 4);
-      bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + 8);
+	bfd_put_32(output_bfd,
+		   (sdyn->output_section->vma + sdyn->output_offset),
+		   sgot->contents);
+      bfd_put_32(output_bfd, (bfd_vma)0UL, (sgot->contents + 4));
+      bfd_put_32(output_bfd, (bfd_vma)0UL, (sgot->contents + 8));
     }
 
-  elf_section_data (sgot->output_section)->this_hdr.sh_entsize = 4;
+  elf_section_data(sgot->output_section)->this_hdr.sh_entsize = 4;
 
   return TRUE;
 }
@@ -4600,9 +4600,9 @@ _bfd_mn10300_elf_finish_dynamic_sections(bfd *output_bfd,
    properly.  */
 
 static enum elf_reloc_type_class
-_bfd_mn10300_elf_reloc_type_class (const Elf_Internal_Rela *rela)
+_bfd_mn10300_elf_reloc_type_class(const Elf_Internal_Rela *rela)
 {
-  switch ((int) ELF32_R_TYPE (rela->r_info))
+  switch ((int)ELF32_R_TYPE(rela->r_info))
     {
     case R_MN10300_RELATIVE:
       return reloc_class_relative;
@@ -4616,17 +4616,19 @@ _bfd_mn10300_elf_reloc_type_class (const Elf_Internal_Rela *rela)
 }
 
 #ifndef ELF_ARCH
-#define TARGET_LITTLE_SYM	bfd_elf32_mn10300_vec
-#define TARGET_LITTLE_NAME	"elf32-mn10300"
-#define ELF_ARCH		bfd_arch_mn10300
-#define ELF_MACHINE_CODE	EM_MN10300
-#define ELF_MACHINE_ALT1	EM_CYGNUS_MN10300
-#define ELF_MAXPAGESIZE		0x1000
-#endif
+# define TARGET_LITTLE_SYM	bfd_elf32_mn10300_vec
+# define TARGET_LITTLE_NAME	"elf32-mn10300"
+# define ELF_ARCH		bfd_arch_mn10300
+# define ELF_MACHINE_CODE	EM_MN10300
+# define ELF_MACHINE_ALT1	EM_CYGNUS_MN10300
+# define ELF_MAXPAGESIZE	0x1000
+#endif /* !ELF_ARCH */
 
 #define elf_info_to_howto		mn10300_info_to_howto
 #define elf_info_to_howto_rel		0
-#define elf_backend_can_gc_sections	1
+#ifndef elf_backend_can_gc_sections
+# define elf_backend_can_gc_sections	1
+#endif /* !elf_backend_can_gc_sections */
 #define elf_backend_rela_normal		1
 #define elf_backend_check_relocs	mn10300_elf_check_relocs
 #define elf_backend_gc_mark_hook	mn10300_elf_gc_mark_hook
@@ -4640,18 +4642,20 @@ _bfd_mn10300_elf_reloc_type_class (const Elf_Internal_Rela *rela)
 				elf32_mn10300_link_hash_table_free
 
 #ifndef elf_symbol_leading_char
-#define elf_symbol_leading_char '_'
-#endif
+# define elf_symbol_leading_char '_'
+#endif /* !elf_symbol_leading_char */
 
-/* So we can set bits in e_flags.  */
+/* So we can set bits in e_flags: */
 #define elf_backend_final_write_processing \
-					_bfd_mn10300_elf_final_write_processing
-#define elf_backend_object_p		_bfd_mn10300_elf_object_p
+                                  _bfd_mn10300_elf_final_write_processing
+#define elf_backend_object_p	  _bfd_mn10300_elf_object_p
 
 #define bfd_elf32_bfd_merge_private_bfd_data \
-					_bfd_mn10300_elf_merge_private_bfd_data
-
-#define elf_backend_can_gc_sections	1
+                                  _bfd_mn10300_elf_merge_private_bfd_data
+/* FIXME: we already did this just above: */
+#ifndef elf_backend_can_gc_sections
+# define elf_backend_can_gc_sections	1
+#endif /* !elf_backend_can_gc_sections */
 #define elf_backend_create_dynamic_sections \
   _bfd_mn10300_elf_create_dynamic_sections
 #define elf_backend_adjust_dynamic_symbol \
@@ -4671,4 +4675,14 @@ _bfd_mn10300_elf_reloc_type_class (const Elf_Internal_Rela *rela)
 #define elf_backend_want_plt_sym	0
 #define elf_backend_got_header_size	12
 
+#ifdef elf_backend_can_gc_sections
+# undef elf_backend_can_gc_sections
+#endif /* elf_backend_can_gc_sections */
+
 #include "elf32-target.h"
+
+#ifdef elf_backend_can_gc_sections
+# undef elf_backend_can_gc_sections
+#endif /* elf_backend_can_gc_sections */
+
+/* EOF */

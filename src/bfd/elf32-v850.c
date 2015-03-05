@@ -1,4 +1,4 @@
-/* V850-specific support for 32-bit ELF
+/* elf32-v850.c: V850-specific support for 32-bit ELF
    Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -230,31 +230,31 @@ typedef struct hi16s_location
 }
 hi16s_location;
 
-static hi16s_location * previous_hi16s;
-static hi16s_location * free_hi16s;
-static unsigned long    hi16s_counter;
+static hi16s_location *previous_hi16s;
+static hi16s_location *free_hi16s;
+static unsigned long hi16s_counter;
 
 static void
-remember_hi16s_reloc (bfd *abfd, bfd_vma addend, bfd_byte *address)
+remember_hi16s_reloc(bfd *abfd, bfd_vma addend, bfd_byte *address)
 {
-  hi16s_location * entry = NULL;
-  bfd_size_type amt = sizeof (* free_hi16s);
+  hi16s_location *entry = (hi16s_location *)NULL;
+  bfd_size_type amt = sizeof(* free_hi16s);
 
-  /* Find a free structure.  */
+  /* Find a free structure: */
   if (free_hi16s == NULL)
-    free_hi16s = bfd_zalloc (abfd, amt);
+    free_hi16s = (hi16s_location *)bfd_zalloc(abfd, amt);
 
-  entry      = free_hi16s;
+  entry = free_hi16s;
   free_hi16s = free_hi16s->next;
 
-  entry->addend  = addend;
+  entry->addend = addend;
   entry->address = address;
   entry->counter = hi16s_counter ++;
-  entry->found   = FALSE;
-  entry->next    = previous_hi16s;
+  entry->found = FALSE;
+  entry->next = previous_hi16s;
   previous_hi16s = entry;
 
-  /* Cope with wrap around of our counter.  */
+  /* Cope with wrap around of our counter: */
   if (hi16s_counter == 0)
     {
       /* XXX: Assume that all counter entries differ only in their low 16 bits.  */
@@ -1978,55 +1978,58 @@ v850_elf_symbol_processing (bfd *abfd, asymbol *asym)
     case SHN_V850_SCOMMON:
       if (v850_elf_scom_section.name == NULL)
 	{
-	  /* Initialize the small common section.  */
-	  v850_elf_scom_section.name           = ".scommon";
-	  v850_elf_scom_section.flags          = SEC_IS_COMMON | SEC_ALLOC | SEC_DATA;
-	  v850_elf_scom_section.output_section = & v850_elf_scom_section;
-	  v850_elf_scom_section.symbol         = & v850_elf_scom_symbol;
-	  v850_elf_scom_section.symbol_ptr_ptr = & v850_elf_scom_symbol_ptr;
-	  v850_elf_scom_symbol.name            = ".scommon";
-	  v850_elf_scom_symbol.flags           = BSF_SECTION_SYM;
-	  v850_elf_scom_symbol.section         = & v850_elf_scom_section;
-	  v850_elf_scom_symbol_ptr             = & v850_elf_scom_symbol;
+	  /* Initialize the small common section: */
+	  v850_elf_scom_section.name = ".scommon";
+	  v850_elf_scom_section.flags = (SEC_IS_COMMON | SEC_ALLOC | SEC_DATA);
+	  v850_elf_scom_section.output_section = &v850_elf_scom_section;
+	  v850_elf_scom_section.symbol = &v850_elf_scom_symbol;
+	  v850_elf_scom_section.symbol_ptr_ptr = &v850_elf_scom_symbol_ptr;
+	  v850_elf_scom_symbol.name = ".scommon";
+	  v850_elf_scom_symbol.flags = BSF_SECTION_SYM;
+	  v850_elf_scom_symbol.section = &v850_elf_scom_section;
+	  v850_elf_scom_symbol_ptr = &v850_elf_scom_symbol;
 	}
-      asym->section = & v850_elf_scom_section;
+      asym->section = &v850_elf_scom_section;
       asym->value = elfsym->internal_elf_sym.st_size;
       break;
 
     case SHN_V850_TCOMMON:
       if (v850_elf_tcom_section.name == NULL)
 	{
-	  /* Initialize the tcommon section.  */
-	  v850_elf_tcom_section.name           = ".tcommon";
-	  v850_elf_tcom_section.flags          = SEC_IS_COMMON;
-	  v850_elf_tcom_section.output_section = & v850_elf_tcom_section;
-	  v850_elf_tcom_section.symbol         = & v850_elf_tcom_symbol;
-	  v850_elf_tcom_section.symbol_ptr_ptr = & v850_elf_tcom_symbol_ptr;
-	  v850_elf_tcom_symbol.name            = ".tcommon";
-	  v850_elf_tcom_symbol.flags           = BSF_SECTION_SYM;
-	  v850_elf_tcom_symbol.section         = & v850_elf_tcom_section;
-	  v850_elf_tcom_symbol_ptr             = & v850_elf_tcom_symbol;
+	  /* Initialize the tcommon section: */
+	  v850_elf_tcom_section.name = ".tcommon";
+	  v850_elf_tcom_section.flags = SEC_IS_COMMON;
+	  v850_elf_tcom_section.output_section = &v850_elf_tcom_section;
+	  v850_elf_tcom_section.symbol = &v850_elf_tcom_symbol;
+	  v850_elf_tcom_section.symbol_ptr_ptr = &v850_elf_tcom_symbol_ptr;
+	  v850_elf_tcom_symbol.name = ".tcommon";
+	  v850_elf_tcom_symbol.flags = BSF_SECTION_SYM;
+	  v850_elf_tcom_symbol.section = &v850_elf_tcom_section;
+	  v850_elf_tcom_symbol_ptr = &v850_elf_tcom_symbol;
 	}
-      asym->section = & v850_elf_tcom_section;
+      asym->section = &v850_elf_tcom_section;
       asym->value = elfsym->internal_elf_sym.st_size;
       break;
 
     case SHN_V850_ZCOMMON:
       if (v850_elf_zcom_section.name == NULL)
 	{
-	  /* Initialize the zcommon section.  */
-	  v850_elf_zcom_section.name           = ".zcommon";
-	  v850_elf_zcom_section.flags          = SEC_IS_COMMON;
-	  v850_elf_zcom_section.output_section = & v850_elf_zcom_section;
-	  v850_elf_zcom_section.symbol         = & v850_elf_zcom_symbol;
-	  v850_elf_zcom_section.symbol_ptr_ptr = & v850_elf_zcom_symbol_ptr;
-	  v850_elf_zcom_symbol.name            = ".zcommon";
-	  v850_elf_zcom_symbol.flags           = BSF_SECTION_SYM;
-	  v850_elf_zcom_symbol.section         = & v850_elf_zcom_section;
-	  v850_elf_zcom_symbol_ptr             = & v850_elf_zcom_symbol;
+	  /* Initialize the zcommon section: */
+	  v850_elf_zcom_section.name = ".zcommon";
+	  v850_elf_zcom_section.flags = SEC_IS_COMMON;
+	  v850_elf_zcom_section.output_section = &v850_elf_zcom_section;
+	  v850_elf_zcom_section.symbol = &v850_elf_zcom_symbol;
+	  v850_elf_zcom_section.symbol_ptr_ptr = &v850_elf_zcom_symbol_ptr;
+	  v850_elf_zcom_symbol.name = ".zcommon";
+	  v850_elf_zcom_symbol.flags = BSF_SECTION_SYM;
+	  v850_elf_zcom_symbol.section = &v850_elf_zcom_section;
+	  v850_elf_zcom_symbol_ptr = &v850_elf_zcom_symbol;
 	}
       asym->section = & v850_elf_zcom_section;
       asym->value = elfsym->internal_elf_sym.st_size;
+      break;
+
+    default:
       break;
     }
 }
@@ -2035,13 +2038,12 @@ v850_elf_symbol_processing (bfd *abfd, asymbol *asym)
    file.  We must handle the special v850 section numbers here.  */
 
 static bfd_boolean
-v850_elf_add_symbol_hook (bfd *abfd,
-			  struct bfd_link_info *info ATTRIBUTE_UNUSED,
-			  Elf_Internal_Sym *sym,
-			  const char **namep ATTRIBUTE_UNUSED,
-			  flagword *flagsp ATTRIBUTE_UNUSED,
-			  asection **secp,
-			  bfd_vma *valp)
+v850_elf_add_symbol_hook(bfd *abfd,
+                         struct bfd_link_info *info ATTRIBUTE_UNUSED,
+			 Elf_Internal_Sym *sym,
+			 const char **namep ATTRIBUTE_UNUSED,
+			 flagword *flagsp ATTRIBUTE_UNUSED,
+			 asection **secp, bfd_vma *valp)
 {
   unsigned int indx = sym->st_shndx;
 
@@ -2073,21 +2075,24 @@ v850_elf_add_symbol_hook (bfd *abfd,
   switch (indx)
     {
     case SHN_V850_SCOMMON:
-      *secp = bfd_make_section_old_way (abfd, ".scommon");
+      *secp = bfd_make_section_old_way(abfd, ".scommon");
       (*secp)->flags |= SEC_IS_COMMON;
       *valp = sym->st_size;
       break;
 
     case SHN_V850_TCOMMON:
-      *secp = bfd_make_section_old_way (abfd, ".tcommon");
+      *secp = bfd_make_section_old_way(abfd, ".tcommon");
       (*secp)->flags |= SEC_IS_COMMON;
       *valp = sym->st_size;
       break;
 
     case SHN_V850_ZCOMMON:
-      *secp = bfd_make_section_old_way (abfd, ".zcommon");
+      *secp = bfd_make_section_old_way(abfd, ".zcommon");
       (*secp)->flags |= SEC_IS_COMMON;
       *valp = sym->st_size;
+      break;
+
+    default:
       break;
     }
 
@@ -2125,10 +2130,10 @@ v850_elf_section_from_shdr (bfd *abfd,
 			    int shindex)
 {
   /* There ought to be a place to keep ELF backend specific flags, but
-     at the moment there isn't one.  We just keep track of the
+     at the moment there is NOT one.  We just keep track of the
      sections by their name, instead.  */
 
-  if (! _bfd_elf_make_section_from_shdr (abfd, hdr, name, shindex))
+  if (! _bfd_elf_make_section_from_shdr(abfd, hdr, name, shindex))
     return FALSE;
 
   switch (hdr->sh_type)
@@ -2136,11 +2141,13 @@ v850_elf_section_from_shdr (bfd *abfd,
     case SHT_V850_SCOMMON:
     case SHT_V850_TCOMMON:
     case SHT_V850_ZCOMMON:
-      if (! bfd_set_section_flags (abfd, hdr->bfd_section,
-				   (bfd_get_section_flags (abfd,
-							   hdr->bfd_section)
-				    | SEC_IS_COMMON)))
+      if (! bfd_set_section_flags(abfd, hdr->bfd_section,
+				  (bfd_get_section_flags(abfd,
+                                                         hdr->bfd_section)
+				   | SEC_IS_COMMON)))
 	return FALSE;
+    default:
+      break;
     }
 
   return TRUE;
@@ -3090,3 +3097,5 @@ static const struct bfd_elf_special_section v850_elf_special_sections[] =
 #define elf_symbol_leading_char			'_'
 
 #include "elf32-target.h"
+
+/* EOF */

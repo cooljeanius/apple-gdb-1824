@@ -2940,12 +2940,12 @@ const bfd_target aix5coff64_vec =
 
     /* Copy */
     _bfd_xcoff_copy_private_bfd_data,
-    ((bfd_boolean (*) (bfd *, bfd *)) bfd_true),
-    ((bfd_boolean (*) (bfd *, asection *, bfd *, asection *)) bfd_true),
-    ((bfd_boolean (*) (bfd *, asymbol *, bfd *, asymbol *)) bfd_true),
-    ((bfd_boolean (*) (bfd *, bfd *)) bfd_true),
-    ((bfd_boolean (*) (bfd *, flagword)) bfd_true),
-    ((bfd_boolean (*) (bfd *, void * )) bfd_true),
+    ((bfd_boolean (*)(bfd *, bfd *))bfd_true),
+    ((bfd_boolean (*)(bfd *, asection *, bfd *, asection *))bfd_true),
+    ((bfd_boolean (*)(bfd *, asymbol *, bfd *, asymbol *))bfd_true),
+    ((bfd_boolean (*)(bfd *, bfd *))bfd_true),
+    ((bfd_boolean (*)(bfd *, flagword))bfd_true),
+    ((bfd_boolean (*)(bfd *, void *))bfd_true),
 
     /* Core */
     xcoff64_core_file_failing_command,

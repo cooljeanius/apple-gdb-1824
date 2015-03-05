@@ -404,55 +404,53 @@ ip2k_is_switch_table_128(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
           jmp     $nnnN  */
 
 static int
-ip2k_is_switch_table_256 (bfd *abfd ATTRIBUTE_UNUSED,
-			  asection *sec,
-			  bfd_vma addr,
-			  bfd_byte *contents)
+ip2k_is_switch_table_256(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
+			 bfd_vma addr, bfd_byte *contents)
 {
   bfd_byte code[16];
-  int index = 0;
+  int i_index = 0;
 
-  /* Check current page-jmp.  */
-  if (addr + 4 > sec->size)
+  /* Check current page-jmp: */
+  if ((addr + 4) > sec->size)
     return -1;
 
-  ip2k_get_mem (abfd, contents + addr, 4, code);
-  if ((! IS_PAGE_OPCODE (code + 0))
-      || (! IS_JMP_OPCODE (code + 2)))
+  ip2k_get_mem(abfd, contents + addr, 4, code);
+  if ((! IS_PAGE_OPCODE(code + 0))
+      || (! IS_JMP_OPCODE(code + 2)))
     return -1;
 
-  /* Search back.  */
+  /* Search back: */
   while (1)
     {
       if (addr < 16)
 	return -1;
 
-      /* Check previous 8 instructions.  */
-      ip2k_get_mem (abfd, contents + addr - 16, 16, code);
-      if ((IS_ADD_W_WREG_OPCODE (code + 0))
-	  && (IS_SNC_OPCODE (code + 2))
-	  && (IS_INC_1SP_OPCODE (code + 4))
-	  && (IS_ADD_2SP_W_OPCODE (code + 6))
-	  && (IS_SNC_OPCODE (code + 8))
-	  && (IS_INC_1SP_OPCODE (code + 10))
-	  && (IS_PAGE_OPCODE (code + 12))
-	  && (IS_JMP_OPCODE (code + 14)))
-	return index;
+      /* Check previous 8 instructions: */
+      ip2k_get_mem(abfd, contents + addr - 16, 16, code);
+      if ((IS_ADD_W_WREG_OPCODE(code + 0))
+	  && (IS_SNC_OPCODE(code + 2))
+	  && (IS_INC_1SP_OPCODE(code + 4))
+	  && (IS_ADD_2SP_W_OPCODE(code + 6))
+	  && (IS_SNC_OPCODE(code + 8))
+	  && (IS_INC_1SP_OPCODE(code + 10))
+	  && (IS_PAGE_OPCODE(code + 12))
+	  && (IS_JMP_OPCODE(code + 14)))
+	return i_index;
 
-      if ((IS_ADD_W_WREG_OPCODE (code + 2))
-	  && (IS_SNC_OPCODE (code + 4))
-	  && (IS_INC_1SP_OPCODE (code + 6))
-	  && (IS_ADD_2SP_W_OPCODE (code + 8))
-	  && (IS_SNC_OPCODE (code + 10))
-	  && (IS_INC_1SP_OPCODE (code + 12))
-	  && (IS_JMP_OPCODE (code + 14)))
-	return index;
+      if ((IS_ADD_W_WREG_OPCODE(code + 2))
+	  && (IS_SNC_OPCODE(code + 4))
+	  && (IS_INC_1SP_OPCODE(code + 6))
+	  && (IS_ADD_2SP_W_OPCODE(code + 8))
+	  && (IS_SNC_OPCODE(code + 10))
+	  && (IS_INC_1SP_OPCODE(code + 12))
+	  && (IS_JMP_OPCODE(code + 14)))
+	return i_index;
 
-      if ((! IS_PAGE_OPCODE (code + 0))
-	  || (! IS_JMP_OPCODE (code + 2)))
+      if ((! IS_PAGE_OPCODE(code + 0))
+	  || (! IS_JMP_OPCODE(code + 2)))
 	return -1;
 
-      index++;
+      i_index++;
       addr -= 4;
     }
 }

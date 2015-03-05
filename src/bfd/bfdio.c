@@ -193,33 +193,33 @@ bfd_bwrite(const void *ptr, bfd_size_type size, bfd *abfd)
 }
 
 file_ptr
-bfd_tell (bfd *abfd)
+bfd_tell(bfd *abfd)
 {
-  file_ptr ptr = 0;
+  file_ptr ptr = 0L;
   bfd *cur = abfd;
 
   while (cur->my_archive) {
-    ptr -= cur->origin;
+    ptr -= (file_ptr)cur->origin;
     cur = cur->my_archive;
   }
 
   if ((cur->flags & BFD_IN_MEMORY) != 0)
     {
-      ptr += abfd->where;
+      ptr += (file_ptr)abfd->where;
     }
   else if (cur->iovec)
     {
       cur->where = (ufile_ptr)abfd->iovec->btell(abfd);
-      ptr += cur->where;
+      ptr += (file_ptr)cur->where;
     }
   else
-    ptr += 0;
+    ptr += 0L;
 
   return ptr;
 }
 
 int
-bfd_flush (bfd *abfd)
+bfd_flush(bfd *abfd)
 {
   while (abfd->my_archive)
     abfd = abfd->my_archive;
@@ -237,7 +237,7 @@ bfd_flush (bfd *abfd)
 /* Returns 0 for success, negative value for failure (in which case
    bfd_get_error can retrieve the error code).  */
 int
-bfd_stat (bfd *abfd, struct stat *statbuf)
+bfd_stat(bfd *abfd, struct stat *statbuf)
 {
   int result;
 
@@ -246,18 +246,18 @@ bfd_stat (bfd *abfd, struct stat *statbuf)
 
   if ((abfd->flags & BFD_IN_MEMORY) != 0)
     {
-      struct bfd_in_memory *b = (struct bfd_in_memory *) abfd->iostream;
-      memset (statbuf, 0, sizeof (struct stat));
+      struct bfd_in_memory *b = (struct bfd_in_memory *)abfd->iostream;
+      memset(statbuf, 0, sizeof(struct stat));
       statbuf->st_size = b->size;
       return 0;
     }
   else if (abfd->iovec)
-    result = abfd->iovec->bstat (abfd, statbuf);
+    result = abfd->iovec->bstat(abfd, statbuf);
   else
     result = -1;
 
   if (result < 0)
-    bfd_set_error (bfd_error_system_call);
+    bfd_set_error(bfd_error_system_call);
   return result;
 }
 
@@ -280,7 +280,7 @@ bfd_seek(bfd *abfd, file_ptr position, int direction)
   while (abfd->my_archive != NULL)
     {
       if (direction == SEEK_SET)
-	position += abfd->origin;
+	position += (file_ptr)abfd->origin;
       abfd = abfd->my_archive;
     }
 
@@ -297,8 +297,8 @@ bfd_seek(bfd *abfd, file_ptr position, int direction)
 
       if (abfd->where > bim->size)
 	{
-	  if ((abfd->direction == write_direction) ||
-	      (abfd->direction == both_direction))
+	  if ((abfd->direction == write_direction)
+              || (abfd->direction == both_direction))
 	    {
 	      bfd_size_type newsize, oldsize;
 

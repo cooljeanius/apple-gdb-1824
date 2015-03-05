@@ -1022,10 +1022,9 @@ bfd_scan_vma(const char *string, const char **end, int base)
   if ((base < 2) || (base > 36))
     base = 10;
 
-  if ((base == 16)
-      && (string[0] == '0')
+  if ((base == 16) && (string[0] == '0')
       && ((string[1] == 'x') || (string[1] == 'X'))
-      && ISXDIGIT (string[2]))
+      && ISXDIGIT(string[2]))
     {
       string += 2;
     }
@@ -1042,7 +1041,7 @@ bfd_scan_vma(const char *string, const char **end, int base)
       if (ISDIGIT(digit))
 	digit = (digit - '0');
       else if (ISALPHA(digit))
-	digit = (TOUPPER(digit) - 'A' + 10);
+	digit = (unsigned int)(TOUPPER(digit) - 'A' + 10);
       else
 	break;
       if (digit >= (unsigned int)base)
@@ -1271,6 +1270,14 @@ bfd_get_relocated_section_contents(bfd *abfd,
   return (*fn)(abfd, link_info, link_order, data, relocatable, symbols);
 }
 
+/* bitfields break this (see comment inside function for more): */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wconversion"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* Record information about an ELF program header: */
 bfd_boolean
 bfd_record_phdr(bfd *abfd, unsigned long type, bfd_boolean flags_valid,
@@ -1294,13 +1301,14 @@ bfd_record_phdr(bfd *abfd, unsigned long type, bfd_boolean flags_valid,
   m->p_type = type;
   m->p_flags = flags;
   m->p_paddr = at;
-  m->p_flags_valid = (unsigned int)flags_valid;
-  m->p_paddr_valid = (unsigned int)at_valid;
-  m->includes_filehdr = (unsigned int)includes_filehdr;
-  m->includes_phdrs = (unsigned int)includes_phdrs;
+  /* FIXME: these fields are all bitfields; the casts might be wrong: */
+  m->p_flags_valid = (unsigned char)flags_valid;
+  m->p_paddr_valid = (unsigned char)at_valid;
+  m->includes_filehdr = (unsigned char)includes_filehdr;
+  m->includes_phdrs = (unsigned char)includes_phdrs;
   m->count = count;
   if (count > 0)
-    memcpy(m->sections, secs, count * sizeof(asection *));
+    memcpy(m->sections, secs, (count * sizeof(asection *)));
 
   for (pm = &elf_tdata(abfd)->segment_map; *pm != NULL; pm = &(*pm)->next)
     ;
@@ -1309,8 +1317,15 @@ bfd_record_phdr(bfd *abfd, unsigned long type, bfd_boolean flags_valid,
   return TRUE;
 }
 
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 void
-bfd_sprintf_vma (bfd *abfd, char *buf, bfd_vma value)
+bfd_sprintf_vma(bfd *abfd, char *buf, bfd_vma value)
 {
   if (bfd_get_flavour(abfd) == bfd_target_elf_flavour)
     get_elf_backend_data(abfd)->elf_backend_sprintf_vma(abfd, buf, value);
@@ -1324,7 +1339,7 @@ bfd_fprintf_vma(bfd *abfd, void *stream, bfd_vma value)
   if (bfd_get_flavour(abfd) == bfd_target_elf_flavour)
     get_elf_backend_data(abfd)->elf_backend_fprintf_vma(abfd, stream, value);
   else
-    fprintf_vma((FILE *) stream, value);
+    fprintf_vma((FILE *)stream, value);
 }
 
 /*

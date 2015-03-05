@@ -466,13 +466,13 @@ record_section(struct sec_merge_info *sinfo,
 	  p += entry->len;
 	  if (sec->entsize == 1)
 	    {
-	      while (p < end && *p == 0)
+	      while ((p < end) && (*p == 0))
 		{
-		  if (!nul && !((p - secinfo->contents) & mask))
+		  if (!nul && !((bfd_vma)(p - secinfo->contents) & mask))
 		    {
 		      nul = TRUE;
-		      entry = sec_merge_add (sinfo->htab, "",
-					     (unsigned) mask + 1, secinfo);
+		      entry = sec_merge_add(sinfo->htab, "",
+					    (unsigned)mask + 1U, secinfo);
 		      if (! entry)
 			goto error_return;
 		    }
@@ -488,11 +488,11 @@ record_section(struct sec_merge_info *sinfo,
 		      break;
 		  if (i != sec->entsize)
 		    break;
-		  if (!nul && !((p - secinfo->contents) & mask))
+		  if (!nul && !((bfd_vma)(p - secinfo->contents) & mask))
 		    {
 		      nul = TRUE;
-		      entry = sec_merge_add (sinfo->htab, (char *) p,
-					     (unsigned) mask + 1, secinfo);
+		      entry = sec_merge_add(sinfo->htab, (char *)p,
+					    (unsigned)mask + 1U, secinfo);
 		      if (! entry)
 			goto error_return;
 		    }
@@ -505,7 +505,7 @@ record_section(struct sec_merge_info *sinfo,
     {
       for (p = secinfo->contents; p < end; p += sec->entsize)
 	{
-	  entry = sec_merge_add (sinfo->htab, (char *) p, 1, secinfo);
+	  entry = sec_merge_add(sinfo->htab, (char *)p, 1, secinfo);
 	  if (! entry)
 	    goto error_return;
 	}
@@ -553,7 +553,7 @@ strrevcmp_align(const void *a, const void *b)
   const unsigned char *s = ((const unsigned char *)A->root.string + lenA - 1U);
   const unsigned char *t = ((const unsigned char *)B->root.string + lenB - 1U);
   int l = (int)((lenA < lenB) ? lenA : lenB);
-  int tail_align = (int)(lenA & (A->alignment - 1)) - (lenB & (A->alignment - 1));
+  int tail_align = (int)((lenA & (A->alignment - 1)) - (lenB & (A->alignment - 1)));
 
   if (tail_align != 0)
     return tail_align;
@@ -613,7 +613,7 @@ merge_strings (struct sec_merge_info *sinfo)
 	  }
       }
 
-  sinfo->htab->size = (a - array);
+  sinfo->htab->size = (bfd_size_type)(a - array);
   if (sinfo->htab->size != 0)
     {
       qsort(array, (size_t)sinfo->htab->size,
@@ -780,7 +780,7 @@ _bfd_write_merged_section(bfd *output_bfd, asection *sec, void *psecinfo)
   if (secinfo->first_str == NULL)
     return TRUE;
 
-  pos = (file_ptr)(sec->output_section->filepos + sec->output_offset);
+  pos = (file_ptr)(sec->output_section->filepos + (file_ptr)sec->output_offset);
   if (bfd_seek(output_bfd, pos, SEEK_SET) != 0)
     return FALSE;
 
@@ -863,7 +863,7 @@ _bfd_merged_section_offset(bfd *output_bfd ATTRIBUTE_UNUSED, asection **psec,
     }
 
   *psec = entry->secinfo->sec;
-  return (entry->u.index + (secinfo->contents + offset - p));
+  return (entry->u.index + (bfd_size_type)(secinfo->contents + offset - p));
 }
 
 /* EOF */

@@ -507,9 +507,13 @@ parse_expression (ieee_data_type *ieee,
   ieee_value_type *sp = stack;
   asection *dummy;
 
-#define POS sp[1]
+#ifndef POS
+# define POS sp[1]
+#endif /* !POS */
 #define TOS sp[0]
-#define NOS sp[-1]
+#ifndef NOS
+# define NOS sp[-1]
+#endif /* !NOS */
 #define INC sp++;
 #define DEC sp--;
 
@@ -517,9 +521,9 @@ parse_expression (ieee_data_type *ieee,
 #define PUSH(x,y,z) TOS.symbol = x; TOS.section = y; TOS.value = z; INC;
 #define POP(x,y,z)  DEC; x = TOS.symbol; y = TOS.section; z = TOS.value;
 
-  while (loop && ieee->h.input_p < ieee->h.last_byte)
+  while (loop && (ieee->h.input_p < ieee->h.last_byte))
     {
-      switch (this_byte (&(ieee->h)))
+      switch (this_byte(&(ieee->h)))
 	{
 	case ieee_variable_P_enum:
 	  /* P variable, current program counter for section n.  */
@@ -622,33 +626,31 @@ parse_expression (ieee_data_type *ieee,
     }
 
   /* As far as I can see there is a bug in the Microtec IEEE output
-     which I'm using to scan, whereby the comma operator is omitted
+     which I am using to scan, whereby the comma operator is omitted
      sometimes in an expression, giving expressions with too many
      terms.  We can tell if that's the case by ensuring that
      sp == stack here.  If not, then we've pushed something too far,
      so we keep adding.  */
-  while (sp != stack + 1)
+  while (sp != (stack + 1))
     {
       asection *section1;
       ieee_symbol_index_type sy1;
 
-      POP (sy1, section1, *extra);
+      POP(sy1, section1, *extra);
     }
 
-  POP (*symbol, dummy, *value);
+  POP(*symbol, dummy, *value);
   if (section)
     *section = dummy;
 }
 
 
 #define ieee_seek(ieee, offset) \
-  do								\
-    {								\
+  do {								\
       ieee->h.input_p = ieee->h.first_byte + offset;		\
       ieee->h.last_byte = (ieee->h.first_byte			\
-			   + ieee_part_after (ieee, offset));	\
-    }								\
-  while (0)
+			   + ieee_part_after(ieee, offset));	\
+  } while (0)
 
 #define ieee_pos(ieee) \
   (ieee->h.input_p - ieee->h.first_byte)
@@ -3800,31 +3802,31 @@ const bfd_target ieee_vec =
 
   /* ieee_close_and_cleanup, ieee_bfd_free_cached_info, ieee_new_section_hook,
      ieee_get_section_contents, ieee_get_section_contents_in_window.  */
-  BFD_JUMP_TABLE_GENERIC (ieee),
+  BFD_JUMP_TABLE_GENERIC(ieee),
 
-  BFD_JUMP_TABLE_COPY (_bfd_generic),
-  BFD_JUMP_TABLE_CORE (_bfd_nocore),
+  BFD_JUMP_TABLE_COPY(_bfd_generic),
+  BFD_JUMP_TABLE_CORE(_bfd_nocore),
 
   /* ieee_slurp_armap, ieee_slurp_extended_name_table,
      ieee_construct_extended_name_table, ieee_truncate_arname,
      ieee_write_armap, ieee_read_ar_hdr, ieee_openr_next_archived_file,
      ieee_get_elt_at_index, ieee_generic_stat_arch_elt,
      ieee_update_armap_timestamp.  */
-  BFD_JUMP_TABLE_ARCHIVE (ieee),
+  BFD_JUMP_TABLE_ARCHIVE(ieee),
 
   /* ieee_get_symtab_upper_bound, ieee_canonicalize_symtab,
      ieee_make_empty_symbol, ieee_print_symbol, ieee_get_symbol_info,
      ieee_bfd_is_local_label_name, ieee_get_lineno,
      ieee_find_nearest_line, ieee_bfd_make_debug_symbol,
      ieee_read_minisymbols, ieee_minisymbol_to_symbol.  */
-  BFD_JUMP_TABLE_SYMBOLS (ieee),
+  BFD_JUMP_TABLE_SYMBOLS(ieee),
 
   /* ieee_get_reloc_upper_bound, ieee_canonicalize_reloc,
      ieee_bfd_reloc_type_lookup.   */
-  BFD_JUMP_TABLE_RELOCS (ieee),
+  BFD_JUMP_TABLE_RELOCS(ieee),
 
   /* ieee_set_arch_mach, ieee_set_section_contents.  */
-  BFD_JUMP_TABLE_WRITE (ieee),
+  BFD_JUMP_TABLE_WRITE(ieee),
 
   /* ieee_sizeof_headers, ieee_bfd_get_relocated_section_contents,
      ieee_bfd_relax_section, ieee_bfd_link_hash_table_create,
@@ -3832,11 +3834,20 @@ const bfd_target ieee_vec =
      ieee_bfd_link_add_symbols, ieee_bfd_final_link,
      ieee_bfd_link_split_section, ieee_bfd_gc_sections,
      ieee_bfd_merge_sections.  */
-  BFD_JUMP_TABLE_LINK (ieee),
+  BFD_JUMP_TABLE_LINK(ieee),
 
-  BFD_JUMP_TABLE_DYNAMIC (_bfd_nodynamic),
+  BFD_JUMP_TABLE_DYNAMIC(_bfd_nodynamic),
 
   NULL,
 
   NULL
 };
+
+#ifdef POS
+# undef POS
+#endif /* POS */
+#ifdef NOS
+# undef NOS
+#endif /* NOS */
+
+/* EOF */

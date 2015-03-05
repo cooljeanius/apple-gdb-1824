@@ -135,11 +135,12 @@ struct linenumber
    then attached into the 'stash' at 'stash->lastUnit'.  */
 
 static struct dwarf1_unit*
-alloc_dwarf1_unit (struct dwarf1_debug* stash)
+alloc_dwarf1_unit(struct dwarf1_debug* stash)
 {
-  bfd_size_type amt = sizeof (struct dwarf1_unit);
+  bfd_size_type amt = sizeof(struct dwarf1_unit);
 
-  struct dwarf1_unit* x = bfd_zalloc (stash->abfd, amt);
+  struct dwarf1_unit *x = (struct dwarf1_unit *)bfd_zalloc(stash->abfd,
+                                                           amt);
   x->prev = stash->lastUnit;
   stash->lastUnit = x;
 
@@ -150,11 +151,12 @@ alloc_dwarf1_unit (struct dwarf1_debug* stash)
    attached into 'aUnit' at 'aUnit->func_list'.  */
 
 static struct dwarf1_func *
-alloc_dwarf1_func (struct dwarf1_debug* stash, struct dwarf1_unit* aUnit)
+alloc_dwarf1_func(struct dwarf1_debug* stash, struct dwarf1_unit* aUnit)
 {
-  bfd_size_type amt = sizeof (struct dwarf1_func);
+  bfd_size_type amt = sizeof(struct dwarf1_func);
 
-  struct dwarf1_func* x = bfd_zalloc (stash->abfd, amt);
+  struct dwarf1_func *x = (struct dwarf1_func *)bfd_zalloc(stash->abfd,
+                                                           amt);
   x->prev = aUnit->func_list;
   aUnit->func_list = x;
 
@@ -442,15 +444,13 @@ dwarf1_unit_find_nearest_line (struct dwarf1_debug* stash,
    Return TRUE if the line is found without error.  */
 
 bfd_boolean
-_bfd_dwarf1_find_nearest_line (bfd *abfd,
-			       asection *section,
-			       asymbol **symbols ATTRIBUTE_UNUSED,
-			       bfd_vma offset,
-			       const char **filename_ptr,
-			       const char **functionname_ptr,
-			       unsigned int *linenumber_ptr)
+_bfd_dwarf1_find_nearest_line(bfd *abfd, asection *section,
+			      asymbol **symbols ATTRIBUTE_UNUSED,
+			      bfd_vma offset, const char **filename_ptr,
+			      const char **functionname_ptr,
+			      unsigned int *linenumber_ptr)
 {
-  struct dwarf1_debug *stash = elf_tdata (abfd)->dwarf1_find_line_info;
+  struct dwarf1_debug *stash = elf_tdata(abfd)->dwarf1_find_line_info;
 
   struct dwarf1_unit* eachUnit;
 
@@ -464,10 +464,10 @@ _bfd_dwarf1_find_nearest_line (bfd *abfd,
   if (! stash)
     {
       asection *msec;
-      bfd_size_type size = sizeof (struct dwarf1_debug);
+      bfd_size_type size = sizeof(struct dwarf1_debug);
 
-      stash = elf_tdata (abfd)->dwarf1_find_line_info
-	= bfd_zalloc (abfd, size);
+      stash = elf_tdata(abfd)->dwarf1_find_line_info
+	= (struct dwarf1_debug *)bfd_zalloc(abfd, size);
 
       if (! stash)
 	return FALSE;
