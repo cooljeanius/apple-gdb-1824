@@ -2801,7 +2801,7 @@ fi
 #  * -Wswitch-bool
 #  * -Wshift-count-negative
 #  * -Wshift-count-overflow
-#  * -Wbitfield-conversion
+#  * -Wbitfield-conversion (if it makes it in on time)
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)

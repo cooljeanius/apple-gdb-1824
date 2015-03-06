@@ -156,7 +156,7 @@ sh64_address_in_cranges(asection *cranges, bfd_vma addr,
   if (found_rangep)
     {
       enum sh64_elf_cr_type cr_type
-	= ((enum sh64_elf_cr_type cr_type)
+	= ((enum sh64_elf_cr_type)
            bfd_get_16(cranges->owner,
                       (SH64_CRANGE_CR_TYPE_OFFSET + found_rangep)));
       bfd_vma cr_addr

@@ -330,7 +330,7 @@ compare_ent_fullname(const void *ebuf1, const void *ebuf2)
 {
   ENT **e1 = (ENT **)ebuf1;
   ENT **e2 = (ENT **)ebuf2;
-  int r = strncmp((*e1)->full_name, (*e2)->full_name, 14);
+  int r = strncmp((*e1)->full_name, (*e2)->full_name, 14UL);
   if (r == 0)
     r = strcmp((*e1)->path, (*e2)->path);
   if (r == 0)
@@ -449,7 +449,7 @@ display_problems(void)
   first_err = 1;
   for (i = 0UL; i < (ecount - 1); i++)
     {
-      if ((strncmp(elist[i]->full_name, elist[i + 1]->full_name, 14) == 0)
+      if ((strncmp(elist[i]->full_name, elist[i + 1]->full_name, 14L) == 0)
           && (strcmp(elist[i]->path, elist[i + 1]->path) == 0))
 	{
 	  if (first_err)

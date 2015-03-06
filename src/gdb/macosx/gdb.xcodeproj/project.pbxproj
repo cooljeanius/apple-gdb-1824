@@ -11520,6 +11520,7 @@
 					_DARWIN_UNLIMITED_STREAMS,
 					"_FORTIFY_SOURCE=2",
 					DEBUG_HASH,
+					DEBUG_GEN_RELOC,
 					BFD_TRACK_OPEN_CLOSE,
 					HAVE_mach_o_le_vec,
 					HAVE_mach_o_be_vec,

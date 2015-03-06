@@ -325,12 +325,12 @@ static reloc_howto_type elf_howto_table[] =
 	 FALSE, 0x00000000, 0x00000000, TRUE)
 };
 
-#if DEBUG_GEN_RELOC
-#define TRACE(str) \
-  fprintf (stderr, "Xtensa bfd reloc lookup %d (%s)\n", code, str)
+#if defined(DEBUG_GEN_RELOC) && DEBUG_GEN_RELOC
+# define TRACE(str) \
+   fprintf(stderr, "Xtensa bfd reloc lookup %d (%s)\n", code, str)
 #else
-#define TRACE(str)
-#endif
+# define TRACE(str)
+#endif /* DEBUG_GEN_RELOC */
 
 static reloc_howto_type *
 elf_xtensa_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,

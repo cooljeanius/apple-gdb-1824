@@ -1224,64 +1224,64 @@ aout_get_external_symbols (bfd *abfd)
       count = exec_hdr (abfd)->a_syms / EXTERNAL_NLIST_SIZE;
 
 #ifdef USE_MMAP
-      if (! bfd_get_file_window (abfd, obj_sym_filepos (abfd),
-				 exec_hdr (abfd)->a_syms,
-				 &obj_aout_sym_window (abfd), TRUE))
+      if (! bfd_get_file_window(abfd, obj_sym_filepos(abfd),
+                                exec_hdr(abfd)->a_syms,
+                                &obj_aout_sym_window(abfd), TRUE))
 	return FALSE;
-      syms = (struct external_nlist *) obj_aout_sym_window (abfd).data;
+      syms = (struct external_nlist *)obj_aout_sym_window(abfd).data;
 #else
       /* We allocate using malloc to make the values easy to free
 	 later on.  If we put them on the objalloc it might not be
 	 possible to free them.  */
-      syms = bfd_malloc (count * EXTERNAL_NLIST_SIZE);
-      if (syms == NULL && count != 0)
+      syms = (struct external_nlist *)bfd_malloc(count * EXTERNAL_NLIST_SIZE);
+      if ((syms == NULL) && (count != 0))
 	return FALSE;
 
-      if (bfd_seek (abfd, obj_sym_filepos (abfd), SEEK_SET) != 0
-	  || (bfd_bread (syms, exec_hdr (abfd)->a_syms, abfd)
-	      != exec_hdr (abfd)->a_syms))
+      if ((bfd_seek(abfd, obj_sym_filepos(abfd), SEEK_SET) != 0)
+	  || (bfd_bread(syms, exec_hdr(abfd)->a_syms, abfd)
+	      != exec_hdr(abfd)->a_syms))
 	{
-	  free (syms);
+	  free(syms);
 	  return FALSE;
 	}
-#endif
+#endif /* USE_MMAP */
 
-      obj_aout_external_syms (abfd) = syms;
-      obj_aout_external_sym_count (abfd) = count;
+      obj_aout_external_syms(abfd) = syms;
+      obj_aout_external_sym_count(abfd) = count;
     }
 
-  if (obj_aout_external_strings (abfd) == NULL
-      && exec_hdr (abfd)->a_syms != 0)
+  if ((obj_aout_external_strings(abfd) == NULL)
+      && (exec_hdr(abfd)->a_syms != 0))
     {
       unsigned char string_chars[BYTES_IN_LONG];
       bfd_size_type stringsize;
       char *strings;
 
-      /* Get the size of the strings.  */
-      if (bfd_seek (abfd, obj_str_filepos (abfd), SEEK_SET) != 0
-	  || (bfd_bread ((void *) string_chars, (bfd_size_type) BYTES_IN_LONG,
-			abfd) != BYTES_IN_LONG))
+      /* Get the size of the strings: */
+      if ((bfd_seek(abfd, obj_str_filepos(abfd), SEEK_SET) != 0)
+	  || (bfd_bread((void *)string_chars, (bfd_size_type)BYTES_IN_LONG,
+                        abfd) != BYTES_IN_LONG))
 	return FALSE;
-      stringsize = H_GET_32 (abfd, string_chars);
+      stringsize = H_GET_32(abfd, string_chars);
 
 #ifdef USE_MMAP
-      if (! bfd_get_file_window (abfd, obj_str_filepos (abfd), stringsize,
-				 &obj_aout_string_window (abfd), TRUE))
+      if (! bfd_get_file_window(abfd, obj_str_filepos(abfd), stringsize,
+                                &obj_aout_string_window(abfd), TRUE))
 	return FALSE;
-      strings = (char *) obj_aout_string_window (abfd).data;
+      strings = (char *)obj_aout_string_window(abfd).data;
 #else
-      strings = bfd_malloc (stringsize + 1);
+      strings = (char *)bfd_malloc(stringsize + 1);
       if (strings == NULL)
 	return FALSE;
 
       /* Skip space for the string count in the buffer for convenience
 	 when using indexes.  */
-      if (bfd_bread (strings + 4, stringsize - 4, abfd) != stringsize - 4)
+      if (bfd_bread(strings + 4, stringsize - 4, abfd) != (stringsize - 4))
 	{
-	  free (strings);
+	  free(strings);
 	  return FALSE;
 	}
-#endif
+#endif /* USE_MMAP */
       /* Ensure that a zero index yields an empty string.  */
       strings[0] = '\0';
 

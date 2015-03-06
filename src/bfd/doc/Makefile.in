@@ -143,6 +143,9 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+chew_am_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(chew_am_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -362,6 +365,7 @@ LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
+LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MAKE_BIN = @MAKE_BIN@
@@ -565,6 +569,7 @@ bfd_TEXINFOS = $(DOCFILES) bfdsumm.texi
 MKDOC = chew$(EXEEXT_FOR_BUILD)
 src_MKDOC = $(srcdir)/$(MKDOC)
 chew_am_SOURCES = $(srcdir)/chew.c
+chew_am_LDFLAGS = -L$(srcdir_high)/intl -L../../intl $(LDFLAGS_FOR_BUILD)
 PATH_TO_MOVEIFCHANGE = $(srcdir_high)/move-if-change
 RUN_MOVEIFCHANGE = $(SHELL) $(PATH_TO_MOVEIFCHANGE)
 AM_CPPFLAGS = -I.. -I$(srcdir)/.. -I$(srcdir_high)/include \
@@ -675,7 +680,7 @@ $(srcdir)/chew.$(OBJEXT): $(srcdir)/$(am__dirstamp)
 
 chew_am$(EXEEXT): $(chew_am_OBJECTS) $(chew_am_DEPENDENCIES) $(EXTRA_chew_am_DEPENDENCIES) 
 	@rm -f chew_am$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(chew_am_OBJECTS) $(chew_am_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(chew_am_LINK) $(chew_am_OBJECTS) $(chew_am_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

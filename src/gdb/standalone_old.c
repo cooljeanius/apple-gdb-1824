@@ -1,7 +1,7 @@
 /* standalone.c
-   Interface to bare machine for GDB running as kernel debugger.
-   Copyright (C) 1986, 1989, 1991 Free Software Foundation, Inc.
-
+ * Interface to bare machine for GDB running as kernel debugger.
+ * Copyright (C) 1986, 1989, 1991 Free Software Foundation, Inc.  */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -30,12 +30,16 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #endif /* SIGTSTP and SIGIO defined (must be 4.2) */
 
 #include "defs.h"
-#include "param.h"
+#include "param_old.h" /* renamed from "param.h" */
 #include "signals.h"
 #include "symtab.h"
 #include "frame.h"
 #include "inferior.h"
-#include "wait.h"
+#include "wait_old.h" /* renamed from "wait.h" */
+
+#if defined(__STDC_HOSTED__) && (__STDC_HOSTED__ == 1)
+ # error "please compile standalone.c with -ffreestanding"
+#endif /* __STDC_HOSTED__ */
 
 
 /* Random system calls, mostly no-ops to prevent link problems  */

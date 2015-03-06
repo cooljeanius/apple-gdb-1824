@@ -625,6 +625,7 @@ ac_subst_vars='LTLIBOBJS
 LIBOBJS
 NETLIBS
 PROGS
+LD_ARCHFLAGS
 target_os
 target_vendor
 target_cpu
@@ -640,6 +641,8 @@ build
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
+TARGET_ARCHITECTURE
+HOST_ARCHITECTURE
 EGREP
 GREP
 CPP
@@ -3742,6 +3745,14 @@ if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 fi
+   ## set these for use by the Makefile:
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+    ## TODO: might also want to do likewise with the build arch...
+fi
 
 ac_aux_dir=
 for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
@@ -4017,7 +4028,44 @@ program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
 
 
 # Checks for libraries.
-#FIXME: verify that libraries are the correct architecture; like other dirs
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for linker flag to verify linked libraries have the correct architecture" >&5
+$as_echo_n "checking for linker flag to verify linked libraries have the correct architecture... " >&6; }
+# Make sure this is done here:
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+pre_saved_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-arch_errors_fatal"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  LD_ARCHFLAGS="${acl_cv_wl}-arch_errors_fatal"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LDFLAGS="${pre_saved_LDFLAGS}"
+if test "x${LD_ARCHFLAGS}" != "x"; then
+  test -n "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${LD_ARCHFLAGS}" >&5
+$as_echo "${LD_ARCHFLAGS}" >&6; }
+    ## that should be all we need to do with them for now...
+else
+  test -z "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: none" >&5
+$as_echo "none" >&6; }
+fi
+# check arch when "main()" is the only function for which we check:
+ARCHLESS_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lbfd" >&5
 $as_echo_n "checking for main in -lbfd... " >&6; }
 if ${ac_cv_lib_bfd_main+:} false; then :
@@ -4056,7 +4104,8 @@ _ACEOF
   LIBS="-lbfd $LIBS"
 
 fi
-
+  ## reset these:
+LDFLAGS="${ARCHLESS_LDFLAGS}"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing bfd_check_format" >&5
 $as_echo_n "checking for library containing bfd_check_format... " >&6; }
 if ${ac_cv_search_bfd_check_format+:} false; then :

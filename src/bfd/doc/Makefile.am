@@ -99,6 +99,7 @@ src_MKDOC = $(srcdir)/$(MKDOC)
 ## compiling C code for us, but rename it to try to avoid conflicts:
 noinst_PROGRAMS = chew_am
 chew_am_SOURCES = $(srcdir)/chew.c
+chew_am_LDFLAGS = -L$(srcdir_high)/intl -L../../intl $(LDFLAGS_FOR_BUILD)
 
 ## yes, I do mean to override this here, to avoid an error with libtool:
 LDFLAGS =

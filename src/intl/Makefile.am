@@ -1,4 +1,4 @@
-# Makefile for directory with message catalog handling in GNU NLS Utilities.
+# Makefile for directory with message catalog handling in GNU NLS Utilities
 # Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -53,6 +53,12 @@ CC = @CC@
 LIBTOOL = @LIBTOOL@
 RANLIB = @RANLIB@
 
+## extend the automake verbosity control:
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
+am__v_v_0 =
+am__v_v_1 = -v
+
 # architecture flags:
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 XC_ARCHFLAGS = -arch $(TARGET_ARCHITECTURE)
@@ -74,11 +80,11 @@ AM_ANSIFICATION_FLAGS = -Wstrict-prototypes -Wmissing-prototypes -Wconversion -W
 ## * -Wold-style-declaration
 ## * -Wmissing-parameter-type
 ## (should really check which warning flags are supported when configuring)
-AM_COMPILE_DEBUGFLAGS = -save-temps -fverbose-asm -ggdb
+AM_COMPILE_DEBUGFLAGS = -ggdb @MAINT@ -save-temps -fverbose-asm
 AM_WARNFLAGS = -Wall @MAINT@ $(AM_ANSIFICATION_FLAGS)
 AM_DEBUG_CFLAGS = $(AM_WARNFLAGS) @MAINT@ $(AM_COMPILE_DEBUGFLAGS)
 AM_LDFLAGS = -framework CoreFoundation
-AM_YFLAGS = -d -t -v @MAINT@@EXTRA_YFLAGS_SEP@ -k -Wall -Wyacc
+AM_YFLAGS = -d -t $(AM_V_v) @MAINT@@EXTRA_YFLAGS_SEP@ -k -Wall -Wyacc
 
 COMPILE = $(CC) -c $(DEFS) $(AM_CPPFLAGS) $(AM_DEBUG_CFLAGS) $(CPPFLAGS) $(CFLAGS) $(C_ARCHFLAGS) $(XCFLAGS) @MAINT@ $(INCLUDES)
 .PHONY: -c -m 644 
@@ -139,6 +145,7 @@ install-info-local:
 .PHONY: install-info-local
 
 libintl.h: @MAINT@ config.status
+	./config.status libintl_h_compat
 
 libintl.a: $(OBJECTS) $(LTOBJECTS)
 	rm -f $@
@@ -213,7 +220,7 @@ installcheck-local:
 uninstall-local:
 	dists="$(DISTFILES.common)"; \
 	for file in $${dists}; do \
-	  rm -fv $(gettextsrcdir)/$${file}; \
+	  rm -f $(AM_V_v) $(gettextsrcdir)/$${file}; \
 	done
 .PHONY: uninstall-local
 
@@ -270,19 +277,20 @@ ID-uppercase: $(HEADERS) $(SOURCES)
 .PHONY: ID-uppercase
 
 mostlyclean-local: @MAINT@ config.status
-	rm -fv *.a *.la *.o *.obj *.lo core core.* @MAINT@ libintl.h
+	rm -f $(AM_V_v) *.a *.la *.o *.obj *.lo core.* @MAINT@ libintl.h
+	-rm -f core
 .PHONY: mostlyclean-local
 
 clean-local: mostlyclean-local @MAINT@ config.status
-	rm -fv *.s *.i
+	rm -f $(AM_V_v) *.s *.i
 .PHONY: clean-local
 
 distclean-local: clean-local @MAINT@ config.status
 	rm -f po2msg.sed po2tbl.sed po/Makevars
 	rm -f config.log config.intl config.h @MAINT@ libintl.h
 	rm -f Makefile ID TAGS
-	rm -fv *.status *.output Makefile*orig *~ m4/*~ po/*~
-	rm -rfv autom4te.cache || rmdir autom4te.cache
+	rm -f $(AM_V_v) *.status *.output Makefile*orig *~ m4/*~ po/*~
+	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 	-rm -f .DS_Store
 .PHONY: distclean-local
 
@@ -303,7 +311,7 @@ dist_mydistdir: Makefile $(DISTFILES)
 	fi; \
 	for file in $(DISTFILES.common) $${additional}; do \
 	  ln $(srcdir)/$${file} $(mydistdir) 2>/dev/null \
-	    || cp -pv $(srcdir)/$${file} $(mydistdir); \
+	    || cp -p $(AM_V_v) $(srcdir)/$${file} $(mydistdir); \
 	done
 .PHONY: dist_mydistdir
 
