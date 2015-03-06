@@ -971,30 +971,29 @@ elf_hppa_fake_sections(bfd *abfd, Elf_Internal_Shdr *hdr, asection *sec)
 }
 
 static void
-elf_hppa_final_write_processing (bfd *abfd,
-				 bfd_boolean linker ATTRIBUTE_UNUSED)
+elf_hppa_final_write_processing(bfd *abfd,
+                                bfd_boolean linker ATTRIBUTE_UNUSED)
 {
-  int mach = bfd_get_mach (abfd);
+  int mach = (int)bfd_get_mach(abfd);
 
-  elf_elfheader (abfd)->e_flags &= ~(EF_PARISC_ARCH | EF_PARISC_TRAPNIL
-				     | EF_PARISC_EXT | EF_PARISC_LSB
-				     | EF_PARISC_WIDE | EF_PARISC_NO_KABP
-				     | EF_PARISC_LAZYSWAP);
+  elf_elfheader(abfd)->e_flags &= ~(EF_PARISC_ARCH | EF_PARISC_TRAPNIL
+                                    | EF_PARISC_EXT | EF_PARISC_LSB
+                                    | EF_PARISC_WIDE | EF_PARISC_NO_KABP
+                                    | EF_PARISC_LAZYSWAP);
 
   if (mach == 10)
-    elf_elfheader (abfd)->e_flags |= EFA_PARISC_1_0;
+    elf_elfheader(abfd)->e_flags |= EFA_PARISC_1_0;
   else if (mach == 11)
-    elf_elfheader (abfd)->e_flags |= EFA_PARISC_1_1;
+    elf_elfheader(abfd)->e_flags |= EFA_PARISC_1_1;
   else if (mach == 20)
-    elf_elfheader (abfd)->e_flags |= EFA_PARISC_2_0;
+    elf_elfheader(abfd)->e_flags |= EFA_PARISC_2_0;
   else if (mach == 25)
-    elf_elfheader (abfd)->e_flags |= (EF_PARISC_WIDE
-				      | EFA_PARISC_2_0
-				      /* The GNU tools have trapped without
-					 option since 1993, so need to take
-					 a step backwards with the ELF
-					 based toolchains.  */
-				      | EF_PARISC_TRAPNIL);
+    elf_elfheader(abfd)->e_flags |= (EF_PARISC_WIDE | EFA_PARISC_2_0
+                                     /* The GNU tools have trapped without
+                                        option since 1993, so need to take
+                                        a step backwards with the ELF
+                                        based toolchains.  */
+                                     | EF_PARISC_TRAPNIL);
 }
 
 /* Comparison function for qsort to sort unwind section during a final link. */
@@ -1346,18 +1345,18 @@ elf_hppa_relocate_section (bfd *output_bfd,
       bfd_reloc_status_type r;
       const char *dyn_name;
       char *dynh_buf = NULL;
-      size_t dynh_buflen = 0;
+      size_t dynh_buflen = 0UL;
       struct elf64_hppa_dyn_hash_entry *dyn_h = NULL;
 
-      r_type = ELF_R_TYPE (rel->r_info);
-      if (r_type < 0 || r_type >= (int) R_PARISC_UNIMPLEMENTED)
+      r_type = (int)ELF_R_TYPE(rel->r_info);
+      if ((r_type < 0) || (r_type >= (int)R_PARISC_UNIMPLEMENTED))
 	{
-	  bfd_set_error (bfd_error_bad_value);
+	  bfd_set_error(bfd_error_bad_value);
 	  return FALSE;
 	}
 
-      /* This is a final link.  */
-      r_symndx = ELF_R_SYM (rel->r_info);
+      /* This is a final link: */
+      r_symndx = ELF_R_SYM(rel->r_info);
       h = NULL;
       sym = NULL;
       sym_sec = NULL;
@@ -1478,7 +1477,7 @@ elf_hppa_relocate_section (bfd *output_bfd,
 	  switch (r)
 	    {
 	    default:
-	      abort ();
+	      abort();
 	    case bfd_reloc_overflow:
 	      {
 		const char *sym_name;
@@ -1487,18 +1486,18 @@ elf_hppa_relocate_section (bfd *output_bfd,
 		  sym_name = NULL;
 		else
 		  {
-		    sym_name = bfd_elf_string_from_elf_section (input_bfd,
-								symtab_hdr->sh_link,
-								sym->st_name);
+		    sym_name = bfd_elf_string_from_elf_section(input_bfd,
+                                                               symtab_hdr->sh_link,
+                                                               sym->st_name);
 		    if (sym_name == NULL)
 		      return FALSE;
 		    if (*sym_name == '\0')
-		      sym_name = bfd_section_name (input_bfd, sym_sec);
+		      sym_name = bfd_section_name(input_bfd, sym_sec);
 		  }
 
 		if (!((*info->callbacks->reloc_overflow)
 		      (info, (h ? &h->root : NULL), sym_name,
-		       howto->name, (bfd_vma) 0, input_bfd,
+		       howto->name, (bfd_vma)0UL, input_bfd,
 		       input_section, rel->r_offset)))
 		  return FALSE;
 	      }
@@ -1537,12 +1536,12 @@ elf_hppa_final_link_relocate (Elf_Internal_Rela *rel,
   int insn;
   bfd_vma offset = rel->r_offset;
   bfd_signed_vma addend = rel->r_addend;
-  reloc_howto_type *howto = elf_hppa_howto_table + ELF_R_TYPE (rel->r_info);
+  reloc_howto_type *howto = elf_hppa_howto_table + ELF_R_TYPE(rel->r_info);
   unsigned int r_type = howto->type;
-  bfd_byte *hit_data = contents + offset;
-  struct elf64_hppa_link_hash_table *hppa_info = elf64_hppa_hash_table (info);
+  bfd_byte *hit_data = (contents + offset);
+  struct elf64_hppa_link_hash_table *hppa_info = elf64_hppa_hash_table(info);
 
-  insn = bfd_get_32 (input_bfd, hit_data);
+  insn = (int)bfd_get_32(input_bfd, hit_data);
 
   switch (r_type)
     {

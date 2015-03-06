@@ -1,4 +1,5 @@
-#Copyright 1999 Free Software Foundation, Inc.
+# Makefile.in for wince utils
+# Copyright 1999 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -61,7 +62,8 @@ INCLUDE_CFLAGS = -I. -I${srcdir} -I$(srcdir)/../../include
 
 # CFLAGS is specifically reserved for setting from the command line
 # when running make.  I.E.  "make USER_CFLAGS=-Wmissing-prototypes".
-CFLAGS = -ggdb -Wall
+#FIXME: add archflags here
+CFLAGS = -ggdb -Wall -Wextra -Wstrict-prototypes -Wconversion -pedantic
 
 # INTERNAL_CFLAGS is the aggregate of all other *CFLAGS macros.
 INTERNAL_CFLAGS = $(CFLAGS) $(INCLUDE_CFLAGS) $(USER_CFLAGS) @DEFS@
@@ -109,6 +111,8 @@ distclean:	clean
 	rm -f config.log config.cache
 
 maintainer-clean realclean:	distclean
+
+check:
 
 Makefile: Makefile.in config.status
 	$(SHELL) config.status

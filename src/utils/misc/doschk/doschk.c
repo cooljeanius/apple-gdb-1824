@@ -1,4 +1,4 @@
-/*
+/* doschk.c
  * doschk - check filenames for DOS (and SYSV) compatibility
  *
  * Copyright (C) 1993 DJ Delorie
@@ -51,28 +51,38 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning doschk.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning doschk.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning doschk.c expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "doschk.c expects <stdio.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 #ifdef HAVE_CTYPE_H
 # include <ctype.h>
 #else
-# warning doschk.c expects <ctype.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "doschk.c expects <ctype.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CTYPE_H */
 #ifdef HAVE_STRING_H
 # include <string.h>
 #else
-# warning doschk.c expects <string.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "doschk.c expects <string.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STRING_H */
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning doschk.c expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "doschk.c expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
 #ifndef exit
@@ -82,10 +92,10 @@
 #  ifdef malloc
 #   undef malloc
 #  endif /* malloc */
-extern char *malloc ();
+extern char *malloc();
 # endif /* HAVE_STDLIB_H */
 #else
-extern char *malloc ();
+extern char *malloc();
 #endif /* !exit */
 
 typedef struct ENT
@@ -102,7 +112,7 @@ typedef struct ENT
  * Not all of these are problems on all MSLOSS systems, but most would not
  * work on most of them.
  */
-static char *dos_special_names[] =
+static const char *dos_special_names[] =
 {
   "NUL",
   "CON",
@@ -121,98 +131,107 @@ static char *dos_special_names[] =
   "SMARTAAR",
   "SETVERXX",
   NULL
-} ;
+};
 
 ENT *eroot = 0;
 
 int first_inv = 1;
 int first_msg = 1;
 
+/* prototypes for functions in this file: */
+extern void invalid_msg(void);
+extern char *xmalloc(size_t);
+extern ENT *alloc_ent(void);
+extern void fill_ent(ENT *, char *);
+extern int compare_ent_dosname(const void *, const void *);
+extern int compare_ent_fullname(const void *, const void *);
+extern char *mpath(ENT *);
+extern void add_ent(ENT *);
+extern void handle_input(char *);
+extern void display_problems(void);
+
 /****************************************************************\
  *  Utility routines						*
 \****************************************************************/
 
 void
-invalid_msg ()
+invalid_msg(void)
 {
   if (first_inv)
     {
       if (first_msg)
 	first_msg = 0;
       else
-	putchar ('\n');
-      printf ("The following files are not valid DOS file names:\n");
+	putchar('\n');
+      printf("The following files are not valid DOS file names:\n");
       first_inv = 0;
     }
 }
 
 char *
-xmalloc (size)
-     int size;
+xmalloc(size_t size)
 {
   char *s;
 
   if (size == 0)
     return NULL;
 
-  s = (char *) malloc (size);
+  s = (char *)malloc(size);
 
   if (s == NULL)
     {
-      fprintf (stderr, "Virtual memory exhausted.\n");
-      exit (1);
+      fprintf(stderr, "Virtual memory exhausted.\n");
+      exit(1);
     }
 
   return s;
 }
 
 ENT *
-alloc_ent ()
+alloc_ent(void)
 {
-  ENT *rv = (ENT *) xmalloc (sizeof (ENT));
-  memset (rv, 0, sizeof (ENT));
+  ENT *rv = (ENT *)xmalloc(sizeof(ENT));
+  memset(rv, 0, sizeof(ENT));
   return rv;
 }
 
 void
-fill_ent (ent, path)
-     ENT *ent;
-     char *path;
+fill_ent(ENT *ent, char *path)
 {
   char *first = path;
-  char *null = path + strlen (path);
-  char *last_slash = strrchr (path, '/');
+  char *null = (path + strlen(path));
+  char *last_slash = strrchr(path, '/');
   char *cp, *dp;
   int dots_seen, chars_seen;
 
-  if (last_slash + 1 == null)
+  if ((last_slash + 1) == null)
     {
       *--null = '\0';
-      last_slash = strrchr (path, '/');
+      last_slash = strrchr(path, '/');
     }
 
   if (!last_slash)
     {
-      last_slash = first - 1;
+      last_slash = (first - 1);
     }
 
-  if (null - last_slash < 13)
-    ent->dos_name = (char *) xmalloc (null - last_slash);
+  if ((null - last_slash) < 13)
+    ent->dos_name = (char *)xmalloc((size_t)(null - last_slash));
   else
-    ent->dos_name = (char *) xmalloc (13);
-  ent->full_name = (char *) xmalloc (null - last_slash);
-  ent->path = (char *) xmalloc (last_slash - first + 1);
+    ent->dos_name = (char *)xmalloc(13UL);
+  ent->full_name = (char *)xmalloc((size_t)(null - last_slash));
+  ent->path = (char *)xmalloc((size_t)(last_slash - first + 1));
 
-  strcpy (ent->full_name, last_slash + 1);
+  strcpy(ent->full_name, last_slash + 1);
   if (last_slash > first)
     {
-      strncpy (ent->path, first, last_slash - first);
+      strncpy(ent->path, first, (size_t)(last_slash - first));
       ent->path[last_slash - first] = '\0';
     }
   else
-    ent->path = "\0";
+    ent->path = (char *)"\0";
 
-  cp = last_slash + 1;
+  cp = (last_slash + 1);
   dp = ent->dos_name;
   dots_seen = 0;
   chars_seen = 0;
@@ -223,21 +242,21 @@ fill_ent (ent, path)
       switch (*cp)
 	{
 	case '.':
-	  if (cp == last_slash + 1 && strcmp (last_slash + 1, "."))
+	  if ((cp == (last_slash + 1)) && strcmp(last_slash + 1, "."))
 	    {
-	      invalid_msg ();
-	      printf ("%s - file name cannot start with dot\n", path);
+	      invalid_msg();
+	      printf("%s - file name cannot start with dot\n", path);
 	      *dp = 0;
 	      break;
 	    }
 	  if (dots_seen == 1)
 	    {
-              /* If trailing dot, it will be ignored by MSDOG, so do NOT */
-              /* actually complain. */
+              /* If trailing dot, it will be ignored by MSDOG, so do NOT
+               * actually complain: */
               if (*(cp + 1) != NULL)
                 {
-                  invalid_msg ();
-                  printf ("%s - too many dots\n", path);
+                  invalid_msg();
+                  printf("%s - too many dots\n", path);
                 }
 	      *dp = '\0';
 	      break;
@@ -260,8 +279,8 @@ fill_ent (ent, path)
 	case ']':
 	case '|':
         case ':':
-	  invalid_msg ();
-	  printf ("%s - invalid character `%c'\n", path, *cp);
+	  invalid_msg();
+	  printf("%s - invalid character `%c'\n", path, *cp);
 	  *dp++ = '?';
 	  chars_seen++;
 	  break;
@@ -275,14 +294,14 @@ fill_ent (ent, path)
 	    break;
 	  if ((*cp <= ' ') || (*cp >= 0x7f))
 	    {
-	      invalid_msg ();
-	      printf ("%s - invalid character `%c'\n", path, *cp);
+	      invalid_msg();
+	      printf("%s - invalid character `%c'\n", path, *cp);
 	      *dp++ = '?';
 	      chars_seen++;
 	      break;
 	    }
-	  if (islower (*cp))
-	    *dp++ = toupper (*cp);
+	  if (islower(*cp))
+	    *dp++ = (char)toupper(*cp);
 	  else
 	    *dp++ = *cp;
 	  chars_seen++;
@@ -294,41 +313,40 @@ fill_ent (ent, path)
 }
 
 int
-compare_ent_dosname (e1, e2)
-     ENT **e1;
-     ENT **e2;
+compare_ent_dosname(const void *ebuf1, const void *ebuf2)
 {
-  int r = strcmp ((*e1)->dos_name, (*e2)->dos_name);
+  ENT **e1 = (ENT **)ebuf1;
+  ENT **e2 = (ENT **)ebuf2;
+  int r = strcmp((*e1)->dos_name, (*e2)->dos_name);
   if (r == 0)
-    r = strcmp ((*e1)->path, (*e2)->path);
+    r = strcmp((*e1)->path, (*e2)->path);
   if (r == 0)
-    r = strcmp ((*e1)->full_name, (*e2)->full_name);
+    r = strcmp((*e1)->full_name, (*e2)->full_name);
   return r;
 }
 
 int
-compare_ent_fullname (e1, e2)
-     ENT **e1;
-     ENT **e2;
+compare_ent_fullname(const void *ebuf1, const void *ebuf2)
 {
-  int r = strncmp ((*e1)->full_name, (*e2)->full_name, 14);
+  ENT **e1 = (ENT **)ebuf1;
+  ENT **e2 = (ENT **)ebuf2;
+  int r = strncmp((*e1)->full_name, (*e2)->full_name, 14);
   if (r == 0)
-    r = strcmp ((*e1)->path, (*e2)->path);
+    r = strcmp((*e1)->path, (*e2)->path);
   if (r == 0)
-    r = strcmp ((*e1)->full_name, (*e2)->full_name);
+    r = strcmp((*e1)->full_name, (*e2)->full_name);
   return r;
 }
 
 char *
-mpath (ent)
-     ENT *ent;
+mpath(ENT *ent)
 {
   static char buf[1024];  /* fixed sizes for buffers are bad! */
-	if (ent->path && ent->path[0]) {
-		sprintf (buf, "%s/%s", ent->path, ent->full_name);
-	} else {
-		return ent->full_name;
-	}
+  if (ent->path && ent->path[0]) {
+    sprintf(buf, "%s/%s", ent->path, ent->full_name);
+  } else {
+    return ent->full_name;
+  }
   return buf;
 }
 
@@ -337,58 +355,57 @@ mpath (ent)
 \****************************************************************/
 
 void
-add_ent (ent)
-     ENT *ent;
+add_ent(ENT *ent)
 {
   ent->next = eroot;
   eroot = ent;
 }
 
 void
-handle_input (line)
-     char *line;
+handle_input(char *line)
 {
-  ENT *ent = alloc_ent ();
-  fill_ent (ent, line);
-  add_ent (ent);
+  ENT *ent = alloc_ent();
+  fill_ent(ent, line);
+  add_ent(ent);
 }
 
 void
-display_problems ()
+display_problems(void)
 {
   ENT **elist, *ent;
-  int ecount, i, first, first_err;
-  char **dos_dev_name;
+  size_t ecount, i;
+  int first, first_err;
+  const char **dos_dev_name;
 
-  for (ecount = 0, ent = eroot; ent; ent = ent->next, ecount++);
-  elist = (ENT **) xmalloc (sizeof (ENT *) * ecount);
-  for (ecount = 0, ent = eroot; ent; ent = ent->next, ecount++)
+  for (ecount = 0UL, ent = eroot; ent; ent = ent->next, ecount++);
+  elist = (ENT **)xmalloc(sizeof(ENT *) * ecount);
+  for (ecount = 0UL, ent = eroot; ent; ent = ent->next, ecount++)
     elist[ecount] = ent;
 
-  qsort (elist, ecount, sizeof (ENT *), compare_ent_dosname);
+  qsort(elist, ecount, sizeof(ENT *), compare_ent_dosname);
 
   first_err = 1;
-  for (i = 0; i < ecount; i++)
+  for (i = 0UL; i < ecount; i++)
     {
-      int elist_len = strlen (elist[i]->dos_name);
+      size_t elist_len = strlen(elist[i]->dos_name);
 
       dos_dev_name = dos_special_names;
-      while (*dos_dev_name)
+      while (*dos_dev_name && (elist[i]->dos_name != NULL))
         {
-          if ((strcmp (elist[i]->dos_name, *dos_dev_name) == 0)
+          if ((strcmp(elist[i]->dos_name, *dos_dev_name) == 0)
               || ((*(elist[i]->dos_name + elist_len - 1) == '.')
-                  && (strncmp (elist[i]->dos_name, *dos_dev_name, elist_len - 2) == 0)))
+                  && (strncmp(elist[i]->dos_name, *dos_dev_name, elist_len - 2) == 0)))
             {
               if (first_err)
                 {
                   if (first_msg)
                     first_msg = 0;
                   else
-                    putchar ('\n');
-                  printf ("The following resolve to special DOS device names:\n");
+                    putchar('\n');
+                  printf("The following resolve to special DOS device names:\n");
                   first_err = 0;
                 }
-              printf ("%-14s : %s\n", elist[i]->dos_name, mpath (elist[i]));
+              printf("%-14s : %s\n", elist[i]->dos_name, mpath(elist[i]));
               break;
             }
           dos_dev_name++;
@@ -397,60 +414,60 @@ display_problems ()
 
   first = 1;
   first_err = 1;
-  for (i = 0; i < ecount - 1; i++)
+  for (i = 0UL; i < (ecount - 1UL); i++)
     {
-      int elist1_len = strlen (elist[i + 1]->dos_name);
+      size_t elist1_len = strlen(elist[i + 1]->dos_name);
 
-      if (((strcmp (elist[i]->dos_name, elist[i + 1]->dos_name) == 0)
-           && (strcmp (elist[i]->path, elist[i + 1]->path) == 0))
+      if (((strcmp(elist[i]->dos_name, elist[i + 1]->dos_name) == 0)
+           && (strcmp(elist[i]->path, elist[i + 1]->path) == 0))
           || ((*(elist[i + 1]->dos_name + elist1_len - 1) == '.')
-              && (strncmp (elist[i]->dos_name, elist[i + 1]->dos_name, elist1_len - 2) == 0)))
+              && (strncmp(elist[i]->dos_name, elist[i + 1]->dos_name, elist1_len - 2) == 0)))
 	{
 	  if (first_err)
 	    {
 	      if (first_msg)
 		first_msg = 0;
 	      else
-		putchar ('\n');
-	      printf ("The following resolve to the same DOS file names:\n");
+		putchar('\n');
+	      printf("The following resolve to the same DOS file names:\n");
 	      first_err = 0;
 	    }
 	  if (first)
 	    {
-	      printf ("%-14s : %s\n", elist[i]->dos_name, mpath (elist[i]));
+	      printf("%-14s : %s\n", elist[i]->dos_name, mpath(elist[i]));
 	      first = 0;
 	    }
-	  printf ("\t\t %s\n", mpath (elist[i + 1]));
+	  printf("\t\t %s\n", mpath(elist[i + 1]));
 	}
       else
 	first = 1;
     }
 
-  qsort (elist, ecount, sizeof (ENT *), compare_ent_fullname);
+  qsort(elist, ecount, sizeof(ENT *), compare_ent_fullname);
 
   first = 1;
   first_err = 1;
-  for (i = 0; i < ecount - 1; i++)
+  for (i = 0UL; i < (ecount - 1); i++)
     {
-      if ((strncmp (elist[i]->full_name, elist[i + 1]->full_name, 14) == 0) &&
-	  (strcmp (elist[i]->path, elist[i + 1]->path) == 0))
+      if ((strncmp(elist[i]->full_name, elist[i + 1]->full_name, 14) == 0)
+          && (strcmp(elist[i]->path, elist[i + 1]->path) == 0))
 	{
 	  if (first_err)
 	    {
 	      if (first_msg)
 		first_msg = 0;
 	      else
-		putchar ('\n');
-	      printf ("The following resolve to the same SysV file names:\n");
+		putchar('\n');
+	      printf("The following resolve to the same SysV file names:\n");
 	      first_err = 0;
 	    }
 	  if (first)
 	    {
-	      printf ("%.14s : %s\n", elist[i]->full_name, mpath (elist[i]));
+	      printf("%.14s : %s\n", elist[i]->full_name, mpath(elist[i]));
 	      first = 0;
 	      elist[i]->tagged = 1;
 	    }
-	  printf ("\t\t %s\n", mpath (elist[i + 1]));
+	  printf("\t\t %s\n", mpath(elist[i + 1]));
 	  elist[i + 1]->tagged = 1;
 	}
       else
@@ -458,20 +475,20 @@ display_problems ()
     }
 
   first_err = 1;
-  for (i = 0; i < ecount; i++)
+  for (i = 0UL; i < ecount; i++)
     {
-      if ((strlen (elist[i]->full_name) > 14) && !elist[i]->tagged)
+      if ((strlen(elist[i]->full_name) > 14) && !elist[i]->tagged)
 	{
 	  if (first_err)
 	    {
 	      if (first_msg)
 		first_msg = 0;
 	      else
-		putchar ('\n');
-	      printf ("The following file names are too long for SysV:\n");
+		putchar('\n');
+	      printf("The following file names are too long for SysV:\n");
 	      first_err = 0;
 	    }
-	  printf ("%.14s : %s\n", elist[i]->full_name, mpath (elist[i]));
+	  printf("%.14s : %s\n", elist[i]->full_name, mpath(elist[i]));
 	}
     }
 }
@@ -480,34 +497,33 @@ display_problems ()
  *  Main entry point						*
 \****************************************************************/
 
-int main (argc, argv)
-     int argc;
-     char **argv;
+int
+main(int argc, char **argv)
 {
   FILE *input = stdin;
   if (argc > 1)
     {
-      input = fopen (argv[1], "r");
+      input = fopen(argv[1], "r");
       if (!input)
 	{
-	  perror (argv[1]);
-	  exit (1);
+	  perror(argv[1]);
+	  exit(1);
 	}
     }
   while (1)
     {
       char line[500];
       char *lp;
-      fgets (line, 500, input);
-      if (feof (input))
+      fgets(line, 500, input);
+      if (feof(input))
 	break;
-      lp = line + strlen (line);
+      lp = (line + strlen(line));
       while ((lp != line) && (*lp <= ' '))
 	lp--;
       lp[1] = 0;
-      handle_input (line);
+      handle_input(line);
     }
-  display_problems ();
+  display_problems();
   return 0;
 }
 

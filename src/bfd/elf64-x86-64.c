@@ -190,27 +190,27 @@ elf64_x86_64_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
 /* Given an x86_64 ELF reloc type, fill in an arelent structure.  */
 
 static void
-elf64_x86_64_info_to_howto (bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
-			    Elf_Internal_Rela *dst)
+elf64_x86_64_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+                           Elf_Internal_Rela *dst)
 {
-  unsigned r_type, i;
+  unsigned int r_type, i;
 
-  r_type = ELF64_R_TYPE (dst->r_info);
-  if (r_type < (unsigned int) R_X86_64_GNU_VTINHERIT
-      || r_type >= (unsigned int) R_X86_64_max)
+  r_type = (unsigned int)ELF64_R_TYPE(dst->r_info);
+  if ((r_type < (unsigned int)R_X86_64_GNU_VTINHERIT)
+      || (r_type >= (unsigned int)R_X86_64_max))
     {
-      if (r_type >= (unsigned int) R_X86_64_standard)
+      if (r_type >= (unsigned int)R_X86_64_standard)
 	{
-	  (*_bfd_error_handler) (_("%B: invalid relocation type %d"),
-				 abfd, (int) r_type);
+	  (*_bfd_error_handler)(_("%B: invalid relocation type %d"),
+                                abfd, (int)r_type);
 	  r_type = R_X86_64_NONE;
 	}
       i = r_type;
     }
   else
-    i = r_type - (unsigned int) R_X86_64_vt_offset;
+    i = (r_type - (unsigned int)R_X86_64_vt_offset);
   cache_ptr->howto = &x86_64_elf_howto_table[i];
-  BFD_ASSERT (r_type == cache_ptr->howto->type);
+  BFD_ASSERT(r_type == cache_ptr->howto->type);
 }
 
 /* Support for core dump NOTE sections.  */
@@ -611,7 +611,7 @@ elf64_x86_64_elf_object_p (bfd *abfd)
 }
 
 static int
-elf64_x86_64_tls_transition (struct bfd_link_info *info, int r_type, int is_local)
+elf64_x86_64_tls_transition(struct bfd_link_info *info, int r_type, int is_local)
 {
   if (info->shared)
     return r_type;
@@ -625,6 +625,8 @@ elf64_x86_64_tls_transition (struct bfd_link_info *info, int r_type, int is_loca
       return R_X86_64_GOTTPOFF;
     case R_X86_64_TLSLD:
       return R_X86_64_TPOFF32;
+    default:
+      break;
     }
 
    return r_type;

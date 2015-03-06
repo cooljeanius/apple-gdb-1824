@@ -1065,53 +1065,58 @@ mn10200_elf_relax_section (abfd, sec, link_info, again)
 		  irel->r_info = ELF32_R_INFO (ELF32_R_SYM (irel->r_info),
 					       R_MN10200_16);
 
-		  /* Delete one bytes of data.  */
-		  if (!mn10200_elf_relax_delete_bytes (abfd, sec,
-						       irel->r_offset + 2, 1))
+		  /* Delete one byte of data: */
+		  if (!mn10200_elf_relax_delete_bytes(abfd, sec,
+						      (irel->r_offset + 2),
+                                                      1))
 		    goto error_return;
 
 		  /* That will change things, so, we should relax again.
-		     Note that this is not required, and it may be slow.  */
+		     Note that this is not required, and it may be slow: */
 		  *again = TRUE;
 		  break;
 
 		/* movb (abs24),dn ->movbu (abs16),dn extxb bn */
 		case 0xc4:
-		  /* Note that we've changed the reldection contents, etc.  */
-		  elf_section_data (sec)->relocs = internal_relocs;
-		  elf_section_data (sec)->this_hdr.contents = contents;
-		  symtab_hdr->contents = (unsigned char *) isymbuf;
+		  /* Note that we have changed the reldection contents, etc.  */
+		  elf_section_data(sec)->relocs = internal_relocs;
+		  elf_section_data(sec)->this_hdr.contents = contents;
+		  symtab_hdr->contents = (unsigned char *)isymbuf;
 
-		  bfd_put_8 (abfd, 0xcc + (code & 0x03),
-			     contents + irel->r_offset - 2);
+		  bfd_put_8(abfd, 0xcc + (code & 0x03),
+			    contents + irel->r_offset - 2);
 
-		  bfd_put_8 (abfd, 0xb8 + (code & 0x03),
-			     contents + irel->r_offset - 1);
+		  bfd_put_8(abfd, 0xb8 + (code & 0x03),
+			    contents + irel->r_offset - 1);
 
-		  /* Fix the relocation's type.  */
-		  irel->r_info = ELF32_R_INFO (ELF32_R_SYM (irel->r_info),
-					       R_MN10200_16);
+		  /* Fix the relocation's type: */
+		  irel->r_info = ELF32_R_INFO(ELF32_R_SYM(irel->r_info),
+					      R_MN10200_16);
 
 		  /* The reloc will be applied one byte in front of its
 		     current location.  */
 		  irel->r_offset -= 1;
 
-		  /* Delete one bytes of data.  */
-		  if (!mn10200_elf_relax_delete_bytes (abfd, sec,
-						       irel->r_offset + 2, 1))
+		  /* Delete one byte of data: */
+		  if (!mn10200_elf_relax_delete_bytes(abfd, sec,
+						      (irel->r_offset + 2),
+                                                      1))
 		    goto error_return;
 
 		  /* That will change things, so, we should relax again.
-		     Note that this is not required, and it may be slow.  */
+		     Note that this is not required, and it may be slow: */
 		  *again = TRUE;
 		  break;
+
+                default:
+                  break;
 		}
 	    }
 	}
     }
 
-  if (isymbuf != NULL
-      && symtab_hdr->contents != (unsigned char *) isymbuf)
+  if ((isymbuf != NULL)
+      && (symtab_hdr->contents != (unsigned char *)isymbuf))
     {
       if (! link_info->keep_memory)
 	free (isymbuf);

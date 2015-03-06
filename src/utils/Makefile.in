@@ -72,8 +72,11 @@ install-info:
 clean-info:
 dvi:
 
+# This should run the testsuite for each subdirectory:
+check: check-amd-udi check-misc check-msdos check-spu check-sparclite check-wince 
+
 .PHONY: all install clean mostlyclean distclean maintainer-clean
-.PHONY: info install-info clean-info dvi
+.PHONY: info install-info clean-info dvi check
 .NOEXPORT:
 
 # Rules for regenerating this Makefile
@@ -86,7 +89,7 @@ $(srcdir)/Makefile.in: $(srcdir)/Makefile.tpl $(srcdir)/Makefile.def
 config.status: $(srcdir)/configure
 	./config.status --recheck
 
-$(srcdir)/configure: $(srcdir)/configure.in
+$(srcdir)/configure: $(srcdir)/configure.ac
 	cd $(srcdir) && autoconf
 
 # Miscellaneous variable setting
@@ -258,6 +261,32 @@ maintainer-clean-sparclite: configure-sparclite
 maintainer-clean-wince: configure-wince
 	-cd wince && $(MAKE)  maintainer-clean
 .PHONY: maintainer-clean-wince
+
+# Glue for check.
+
+check-amd-udi: configure-amd-udi
+	cd amd-udi && $(MAKE)  check
+.PHONY: check-amd-udi
+
+check-misc: configure-misc
+	cd misc && $(MAKE)  check
+.PHONY: check-misc
+
+check-msdos: configure-msdos
+	cd msdos && $(MAKE)  check
+.PHONY: check-msdos
+
+check-spu: configure-spu
+	cd spu && $(MAKE)  check
+.PHONY: check-spu
+
+check-sparclite: configure-sparclite
+	cd sparclite && $(MAKE)  check
+.PHONY: check-sparclite
+
+check-wince: configure-wince
+	cd wince && $(MAKE)  check
+.PHONY: check-wince
 
 # Glue for configure.
 

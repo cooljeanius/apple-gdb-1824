@@ -1,6 +1,6 @@
 /* Instruction opcode table for m32c.
 
-THIS FILE IS MACHINE GENERATED WITH CGEN.
+THIS FILE WAS ORIGINALLY MACHINE GENERATED WITH CGEN.
 
 Copyright 1996-2005 Free Software Foundation, Inc.
 
@@ -35,15 +35,15 @@ static unsigned int
 m32c_asm_hash (const char *mnem)
 {
   unsigned int h;
-  
+
   /* The length of the mnemonic for the Jcnd insns is 1.  Hash jsri.  */
   if (mnem[0] == 'j' && mnem[1] != 's')
     return 'j';
-  
+
   /* Don't hash scCND  */
   if (mnem[0] == 's' && mnem[1] == 'c')
     return 's';
-  
+
   for (h = 0; *mnem && *mnem != ' ' && *mnem != ':'; ++mnem)
     h += *mnem;
   return h % CGEN_ASM_HASH_SIZE;
@@ -7696,8 +7696,7 @@ static const CGEN_IFMT ifmt_stzx16_imm8_imm8_abs16 ATTRIBUTE_UNUSED = {
 #define MNEM CGEN_SYNTAX_MNEMONIC /* syntax value for mnemonic */
 #define OP(field) CGEN_SYNTAX_MAKE_FIELD (OPERAND (field))
 
-/* The instruction table.  */
-
+/* The instruction table: */
 static const CGEN_OPCODE m32c_cgen_insn_opcode_table[MAX_INSNS] =
 {
   /* Special null first entry.
@@ -79267,16 +79266,16 @@ static const CGEN_OPCODE m32c_cgen_insn_opcode_table[MAX_INSNS] =
 #define MNEM CGEN_SYNTAX_MNEMONIC /* syntax value for mnemonic */
 #define OP(field) CGEN_SYNTAX_MAKE_FIELD (OPERAND (field))
 
-/* The macro instruction table.  */
-
+/* The macro instruction table: */
 static const CGEN_IBASE m32c_cgen_macro_insn_table[] =
 {
+  { 0 }
 };
 
-/* The macro instruction opcode table.  */
-
+/* The macro instruction opcode table: */
 static const CGEN_OPCODE m32c_cgen_macro_insn_opcode_table[] =
 {
+  { 0 }
 };
 
 #undef A
@@ -79374,7 +79373,7 @@ m32c_cgen_init_opcode_table (CGEN_CPU_DESC cd)
   const CGEN_OPCODE *oc = & m32c_cgen_macro_insn_opcode_table[0];
   CGEN_INSN *insns = xmalloc (num_macros * sizeof (CGEN_INSN));
 
-  memset (insns, 0, num_macros * sizeof (CGEN_INSN));
+  memset (insns, 0, num_macros * sizeof(CGEN_INSN));
   for (i = 0; i < num_macros; ++i)
     {
       insns[i].base = &ib[i];
@@ -79382,7 +79381,7 @@ m32c_cgen_init_opcode_table (CGEN_CPU_DESC cd)
       m32c_cgen_build_insn_regex (& insns[i]);
     }
   cd->macro_insn_table.init_entries = insns;
-  cd->macro_insn_table.entry_size = sizeof (CGEN_IBASE);
+  cd->macro_insn_table.entry_size = sizeof(CGEN_IBASE);
   cd->macro_insn_table.num_init_entries = num_macros;
 
   oc = & m32c_cgen_insn_opcode_table[0];
@@ -79404,3 +79403,5 @@ m32c_cgen_init_opcode_table (CGEN_CPU_DESC cd)
   cd->dis_hash = dis_hash_insn;
   cd->dis_hash_size = CGEN_DIS_HASH_SIZE;
 }
+
+/* EOF */

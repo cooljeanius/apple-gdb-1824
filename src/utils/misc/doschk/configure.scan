@@ -3,13 +3,14 @@
 
 AC_PREREQ([2.69])
 AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
-AC_CONFIG_SRCDIR([config.h.in])
+AC_CONFIG_SRCDIR([config.h])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_LN_S
 AC_PROG_INSTALL
+AC_PROG_MKDIR_P
 
 # Checks for libraries.
 
@@ -17,6 +18,7 @@ AC_PROG_INSTALL
 AC_CHECK_HEADERS([stdlib.h string.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
+AC_TYPE_SIZE_T
 
 # Checks for library functions.
 AC_FUNC_MALLOC

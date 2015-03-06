@@ -5804,9 +5804,7 @@ _bfd_elf_copy_private_symbol_data (bfd *ibfd,
 /* Swap out the symbols.  */
 
 static bfd_boolean
-swap_out_syms (bfd *abfd,
-	       struct bfd_strtab_hash **sttp,
-	       int relocatable_p)
+swap_out_syms(bfd *abfd, struct bfd_strtab_hash **sttp, int relocatable_p)
 {
   const struct elf_backend_data *bed;
   int symcount;
@@ -5821,22 +5819,22 @@ swap_out_syms (bfd *abfd,
   bfd_size_type amt;
   bfd_boolean name_local_sections;
 
-  if (!elf_map_symbols (abfd))
+  if (!elf_map_symbols(abfd))
     return FALSE;
 
-  /* Dump out the symtabs.  */
-  stt = _bfd_elf_stringtab_init ();
+  /* Dump out the symtabs: */
+  stt = _bfd_elf_stringtab_init();
   if (stt == NULL)
     return FALSE;
 
-  bed = get_elf_backend_data (abfd);
-  symcount = bfd_get_symcount (abfd);
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
+  bed = get_elf_backend_data(abfd);
+  symcount = bfd_get_symcount(abfd);
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
   symtab_hdr->sh_type = SHT_SYMTAB;
   symtab_hdr->sh_entsize = bed->s->sizeof_sym;
-  symtab_hdr->sh_size = symtab_hdr->sh_entsize * (symcount + 1);
-  symtab_hdr->sh_info = elf_num_locals(abfd) + 1;
-  symtab_hdr->sh_addralign = 1 << bed->s->log_file_align;
+  symtab_hdr->sh_size = (symtab_hdr->sh_entsize * (symcount + 1));
+  symtab_hdr->sh_info = (elf_num_locals(abfd) + 1);
+  symtab_hdr->sh_addralign = (1 << bed->s->log_file_align);
 
   symstrtab_hdr = &elf_tdata(abfd)->strtab_hdr;
   symstrtab_hdr->sh_type = SHT_STRTAB;
@@ -5845,21 +5843,21 @@ swap_out_syms (bfd *abfd,
                                          bed->s->sizeof_sym);
   if (outbound_syms == NULL)
     {
-      _bfd_stringtab_free (stt);
+      _bfd_stringtab_free(stt);
       return FALSE;
     }
   symtab_hdr->contents = outbound_syms;
 
   outbound_shndx = NULL;
-  symtab_shndx_hdr = &elf_tdata (abfd)->symtab_shndx_hdr;
+  symtab_shndx_hdr = &elf_tdata(abfd)->symtab_shndx_hdr;
   if (symtab_shndx_hdr->sh_name != 0)
     {
-      amt = (bfd_size_type) (1 + symcount) * sizeof (Elf_External_Sym_Shndx);
-      outbound_shndx = bfd_zalloc2 (abfd, 1 + symcount,
-				    sizeof (Elf_External_Sym_Shndx));
+      amt = (bfd_size_type)(1 + symcount) * sizeof(Elf_External_Sym_Shndx);
+      outbound_shndx = (bfd_byte *)bfd_zalloc2(abfd, 1 + symcount,
+                                               sizeof(Elf_External_Sym_Shndx));
       if (outbound_shndx == NULL)
 	{
-	  _bfd_stringtab_free (stt);
+	  _bfd_stringtab_free(stt);
 	  return FALSE;
 	}
 
@@ -6281,33 +6279,33 @@ _bfd_elf_slurp_version_tables(bfd *abfd, bfd_boolean default_imported_symver)
 
       hdr = &elf_tdata(abfd)->dynverref_hdr;
 
-      elf_tdata (abfd)->verref = bfd_zalloc2 (abfd, hdr->sh_info,
-					      sizeof (Elf_Internal_Verneed));
-      if (elf_tdata (abfd)->verref == NULL)
+      elf_tdata(abfd)->verref = bfd_zalloc2(abfd, hdr->sh_info,
+                                            sizeof(Elf_Internal_Verneed));
+      if (elf_tdata(abfd)->verref == NULL)
 	goto error_return;
 
-      elf_tdata (abfd)->cverrefs = hdr->sh_info;
+      elf_tdata(abfd)->cverrefs = hdr->sh_info;
 
-      contents = bfd_malloc (hdr->sh_size);
+      contents = (bfd_byte *)bfd_malloc(hdr->sh_size);
       if (contents == NULL)
 	{
 error_return_verref:
-	  elf_tdata (abfd)->verref = NULL;
-	  elf_tdata (abfd)->cverrefs = 0;
+	  elf_tdata(abfd)->verref = NULL;
+	  elf_tdata(abfd)->cverrefs = 0;
 	  goto error_return;
 	}
-      if (bfd_seek (abfd, hdr->sh_offset, SEEK_SET) != 0
-	  || bfd_bread (contents, hdr->sh_size, abfd) != hdr->sh_size)
+      if ((bfd_seek(abfd, hdr->sh_offset, SEEK_SET) != 0)
+	  || (bfd_bread(contents, hdr->sh_size, abfd) != hdr->sh_size))
 	goto error_return_verref;
 
-      if (hdr->sh_info && hdr->sh_size < sizeof (Elf_External_Verneed))
+      if (hdr->sh_info && (hdr->sh_size < sizeof(Elf_External_Verneed)))
 	goto error_return_verref;
 
-      BFD_ASSERT (sizeof (Elf_External_Verneed)
-		  == sizeof (Elf_External_Vernaux));
-      contents_end = contents + hdr->sh_size - sizeof (Elf_External_Verneed);
-      everneed = (Elf_External_Verneed *) contents;
-      iverneed = elf_tdata (abfd)->verref;
+      BFD_ASSERT(sizeof(Elf_External_Verneed)
+                 == sizeof(Elf_External_Vernaux));
+      contents_end = (contents + hdr->sh_size - sizeof(Elf_External_Verneed));
+      everneed = (Elf_External_Verneed *)contents;
+      iverneed = elf_tdata(abfd)->verref;
       for (i = 0; i < hdr->sh_info; i++, iverneed++)
 	{
 	  Elf_External_Vernaux *evernaux;
@@ -7054,26 +7052,23 @@ elfcore_maybe_make_sect (bfd *abfd, char *name, asection *sect)
      PID is elfcore_make_pid (abfd).
    Both pseudosections have identical contents. */
 bfd_boolean
-_bfd_elfcore_make_pseudosection (bfd *abfd,
-				 char *name,
-				 size_t size,
-				 ufile_ptr filepos)
+_bfd_elfcore_make_pseudosection(bfd *abfd, char *name, size_t size,
+                                ufile_ptr filepos)
 {
   char buf[100];
   char *threaded_name;
   size_t len;
   asection *sect;
 
-  /* Build the section name.  */
-
-  sprintf (buf, "%s/%d", name, elfcore_make_pid (abfd));
-  len = strlen (buf) + 1;
-  threaded_name = bfd_alloc (abfd, len);
+  /* Build the section name: */
+  sprintf(buf, "%s/%d", name, elfcore_make_pid(abfd));
+  len = (strlen(buf) + 1UL);
+  threaded_name = (char *)bfd_alloc(abfd, len);
   if (threaded_name == NULL)
     return FALSE;
-  memcpy (threaded_name, buf, len);
+  memcpy(threaded_name, buf, len);
 
-  sect = bfd_make_section_anyway (abfd, threaded_name);
+  sect = bfd_make_section_anyway(abfd, threaded_name);
   if (sect == NULL)
     return FALSE;
   sect->size = size;

@@ -288,11 +288,13 @@ SCRIPT_MANPAGE_LIST = $(SCRIPTS_MANPAGES) end_of_list
 
 # flags to pass only to the C compiler (not to ld)
 # because STTY can include whitespace and quotes, pass STTY separately
-CPPFLAGS = -I. -I$(srcdir) $(TCLHDIRDASHI) $(TKHDIRDASHI) $(X11_CFLAGS) \
+CPPFLAGS = @CPPFLAGS@
+# as CPPFLAGS is supposed to be override-able, use a separate variable:
+XCPPFLAGS = -I. -I$(srcdir) $(TCLHDIRDASHI) $(TKHDIRDASHI) $(X11_CFLAGS) \
 		-DEXP_VERSION=\"$(VERSION)\" \
 		-DSCRIPTDIR=\"$(SCRIPTDIR)\" \
 		-DEXECSCRIPTDIR=\"$(EXECSCRIPTDIR)\" \
-		-DTCL_DEBUGGER
+		-DTCL_DEBUGGER $(CPPFLAGS)
 
 # Flags to pass to cc (i.e. add to the end of the CLDFLAGS line below).
 # Note that setting one will not set others automatically.  Set all that
@@ -320,7 +322,7 @@ CPPFLAGS = -I. -I$(srcdir) $(TCLHDIRDASHI) $(TKHDIRDASHI) $(X11_CFLAGS) \
 EXP_AND_TCL_LIBS = $(LDFLAGS) @EXP_AND_TCL_LIBS@
 EXP_AND_TK_LIBS = $(LDFLAGS) @EXP_AND_TK_LIBS@
 
-CFLAGS_INT = $(MH_CFLAGS) $(CPPFLAGS) $(XCFLAGS)
+CFLAGS_INT = $(MH_CFLAGS) $(XCPPFLAGS) $(XCFLAGS)
 
 LIB_INSTALL_DIR = $(tcl_libdir)
 LIB_RUNTIME_DIR = $(tcl_libdir)
@@ -634,7 +636,7 @@ LINTER = lint
 LINTFLAGS = -h -q -x 
 
 lint:
-	$(LINTER) $(LINTFLAGS) $(CPPFLAGS) $(STTY) $(CFILES) exp_main_exp.c $(TCLLINTLIB) | tee expect.lint
+	$(LINTER) $(LINTFLAGS) $(XCPPFLAGS) $(STTY) $(CFILES) exp_main_exp.c $(TCLLINTLIB) | tee expect.lint
 
 # after copying source directory, reestablish all links
 symlink:
@@ -659,20 +661,20 @@ SABERDEFINE = -D__sparc__
 # Following target builds expect under CodeCenter.
 # If using ObjectCenter, before loading, type: setopt primary_language C
 exp:	$(CFILES) exp_main_exp.c
-	#load $(CPPFLAGS) $(STTY) $(CFILES) exp_main_exp.c $(TCLLIB) $(GCCLIB) $(EXP_AND_TCL_LIBS)
+	#load $(XCPPFLAGS) $(STTY) $(CFILES) exp_main_exp.c $(TCLLIB) $(GCCLIB) $(EXP_AND_TCL_LIBS)
 
 # Following target builds expectk under CodeCenter.  Notes:
 # Because of explicit #includes of <X11/...> in tk.h, you need to create
 # a symlink from your X11 include directory to this directory
 tk:     $(CFILES) exp_main_tk.c
-	#load $(CPPFLAGS) $(STTY) $(CFILES) exp_main_tk.c $(TKLIB) $(TCLLIB) $(EXP_AND_TK_LIBS)
+	#load $(XCPPFLAGS) $(STTY) $(CFILES) exp_main_tk.c $(TKLIB) $(TCLLIB) $(EXP_AND_TK_LIBS)
 
 # Follow definitions are for building expect and expectk under ObjectCenter
 oexp:   $(CFILES) exp_main_exp.c
-	#load $(CPPFLAGS) $(STTY) -C $(CFILES) exp_main_exp.c $(TCLLIB)
+	#load $(XCPPFLAGS) $(STTY) -C $(CFILES) exp_main_exp.c $(TCLLIB)
 
 otk:    $(CFILES) exp_main_tk.c
-	#load $(CPPFLAGS) $(STTY) -C $(CFILES) exp_main_tk.c $(TKLIB) $(TCLLIB) $(EXP_AND_TK_LIBS)
+	#load $(XCPPFLAGS) $(STTY) -C $(CFILES) exp_main_tk.c $(TKLIB) $(TCLLIB) $(EXP_AND_TK_LIBS)
 ######################################
 # Targets for pushing out releases
 ######################################

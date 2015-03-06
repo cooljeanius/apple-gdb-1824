@@ -31,6 +31,7 @@ includedir = @includedir@
 srcdir = @srcdir@
 
 CC = @CC@
+CLANG_ANALYZER = @CLANG_ANALYZER@
 CFLAGS = @CFLAGS@
 
 man1dir = $(mandir)/man1
@@ -44,12 +45,15 @@ man8dir = $(mandir)/man8
 man9dir = $(mandir)/man9
 tooldir = $(libdir)/$(target_alias)
 
+builddir = @builddir@
+analysisdir = $(builddir)/clang_static_analysis
+
 INSTALL = @INSTALL@
 INSTALL_PROGRAM = $(INSTALL)
 INSTALL_DATA = $(INSTALL)
+MKDIR_P = @MKDIR_P@
 
 # Where is the "include" directory? Traditionally ../include or ./include
-
 INCLUDE_DIR = ${srcdir}/../../include
 
 # All the includes used for CFLAGS and for lint.
@@ -59,15 +63,27 @@ INCLUDE_DIR = ${srcdir}/../../include
 
 INCLUDE_CFLAGS = -I. -I${srcdir} -I${srcdir}/config -I$(INCLUDE_DIR)
 
-# ALL_CFLAGS is the aggregate of all other *CFLAGS macros.
-
+# ALL_CFLAGS is the aggregate of all other *CFLAGS macros:
 ALL_CFLAGS = @DEFS@ $(INCLUDE_CFLAGS) $(CFLAGS)
+
+# Simplify the analyzer command by aggregating variables into one:
+RUN_CLANG_ANALYZER = $(CLANG_ANALYZER) $(CPPFLAGS) $(ALL_CFLAGS) \
+	--analyze
 
 all: spu
 
 info:
 
 install:
+
+SUFFIXES = .c .o .plist
+
+.SUFFIXES:
+.SUFFIXES: .c .o .plist
+
+.c.plist:
+	@if test ! -d $(analysisdir); then $(MKDIR_P) $(analysisdir); fi
+	$(RUN_CLANG_ANALYZER) -o $(analysisdir)/$@ $<
 
 spu: spu.o
 	$(CC) $(CFLAGS) -o spu spu.o
@@ -87,6 +103,14 @@ distclean: clean
 	rm -fr autom4te.cache || rmdir autom4te.cache
 
 maintainer-clean realclean: distclean
+
+check: check-local
+## using dependencies for the plist could go wrong, so call it as part
+## of the rule instead:
+check-local: config.h @MAINT@ all
+	$(MKDIR_P) $(analysisdir)
+	$(MAKE) spu.plist
+.PHONY: check-local
 
 Makefile: $(srcdir)/Makefile.in config.status
 	./config.status

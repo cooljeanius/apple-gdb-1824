@@ -1,6 +1,6 @@
-/* Instruction opcode table for ms1.
+/* ms1-opc.c: Instruction opcode table for ms1.
 
-THIS FILE IS MACHINE GENERATED WITH CGEN.
+THIS FILE WAS ORIGINALLY MACHINE GENERATED WITH CGEN.
 
 Copyright 1996-2005 Free Software Foundation, Inc.
 
@@ -44,7 +44,7 @@ ms1_cgen_insn_supported (CGEN_CPU_DESC cd,
   /* No mach attribute?  Assume it's supported for all machs.  */
   if (machs == 0)
     return 1;
-  
+
   return ((machs & cd->machs) != 0);
 }
 
@@ -753,16 +753,16 @@ static const CGEN_OPCODE ms1_cgen_insn_opcode_table[MAX_INSNS] =
 #define MNEM CGEN_SYNTAX_MNEMONIC /* syntax value for mnemonic */
 #define OP(field) CGEN_SYNTAX_MAKE_FIELD (OPERAND (field))
 
-/* The macro instruction table.  */
-
+/* The macro instruction table: */
 static const CGEN_IBASE ms1_cgen_macro_insn_table[] =
 {
+  { 0 }
 };
 
-/* The macro instruction opcode table.  */
-
+/* The macro instruction opcode table: */
 static const CGEN_OPCODE ms1_cgen_macro_insn_opcode_table[] =
 {
+  { 0 }
 };
 
 #undef A

@@ -1769,10 +1769,10 @@ static reloc_howto_type sh_elf_howto_table[] =
 };
 
 static bfd_reloc_status_type
-sh_elf_reloc_loop (int r_type ATTRIBUTE_UNUSED, bfd *input_bfd,
-		   asection *input_section, bfd_byte *contents,
-		   bfd_vma addr, asection *symbol_section,
-		   bfd_vma start, bfd_vma end)
+sh_elf_reloc_loop(int r_type ATTRIBUTE_UNUSED, bfd *input_bfd,
+		  asection *input_section, bfd_byte *contents,
+		  bfd_vma addr, asection *symbol_section,
+		  bfd_vma start, bfd_vma end)
 {
   static bfd_vma last_addr;
   static asection *last_symbol_section;
@@ -1781,8 +1781,8 @@ sh_elf_reloc_loop (int r_type ATTRIBUTE_UNUSED, bfd *input_bfd,
   bfd_signed_vma x;
   int insn;
 
-  /* Sanity check the address.  */
-  if (addr > bfd_get_section_limit (input_bfd, input_section))
+  /* Sanity check the address: */
+  if (addr > bfd_get_section_limit(input_bfd, input_section))
     return bfd_reloc_outofrange;
 
   /* We require the start and end relocations to be processed consecutively -
@@ -1794,37 +1794,37 @@ sh_elf_reloc_loop (int r_type ATTRIBUTE_UNUSED, bfd *input_bfd,
       return bfd_reloc_ok;
     }
   if (last_addr != addr)
-    abort ();
+    abort();
   last_addr = 0;
 
-  if (! symbol_section || last_symbol_section != symbol_section || end < start)
+  if (! symbol_section || (last_symbol_section != symbol_section) || (end < start))
     return bfd_reloc_outofrange;
 
-  /* Get the symbol_section contents.  */
+  /* Get the symbol_section contents: */
   if (symbol_section != input_section)
     {
-      if (elf_section_data (symbol_section)->this_hdr.contents != NULL)
-	contents = elf_section_data (symbol_section)->this_hdr.contents;
+      if (elf_section_data(symbol_section)->this_hdr.contents != NULL)
+	contents = elf_section_data(symbol_section)->this_hdr.contents;
       else
 	{
-	  if (!bfd_malloc_and_get_section (input_bfd, symbol_section,
-					   &contents))
+	  if (!bfd_malloc_and_get_section(input_bfd, symbol_section,
+					  &contents))
 	    {
 	      if (contents != NULL)
-		free (contents);
+		free(contents);
 	      return bfd_reloc_outofrange;
 	    }
 	}
     }
-#define IS_PPI(PTR) ((bfd_get_16 (input_bfd, (PTR)) & 0xfc00) == 0xf800)
-  start_ptr = contents + start;
-  for (cum_diff = -6, ptr = contents + end; cum_diff < 0 && ptr > start_ptr;)
+#define IS_PPI(PTR) ((bfd_get_16(input_bfd, (PTR)) & 0xfc00) == 0xf800)
+  start_ptr = (contents + start);
+  for (cum_diff = -6, ptr = (contents + end); (cum_diff < 0) && (ptr > start_ptr);)
     {
-      for (last_ptr = ptr, ptr -= 4; ptr >= start_ptr && IS_PPI (ptr);)
+      for (last_ptr = ptr, ptr -= 4; (ptr >= start_ptr) && IS_PPI(ptr);)
 	ptr -= 2;
       ptr += 2;
-      diff = (last_ptr - ptr) >> 1;
-      cum_diff += diff & 1;
+      diff = (int)((last_ptr - ptr) >> 1);
+      cum_diff += (diff & 1);
       cum_diff += diff;
     }
   /* Calculate the start / end values to load into rs / re minus four -
@@ -1833,7 +1833,7 @@ sh_elf_reloc_loop (int r_type ATTRIBUTE_UNUSED, bfd *input_bfd,
   if (cum_diff >= 0)
     {
       start -= 4;
-      end = (ptr + cum_diff * 2) - contents;
+      end = ((ptr + cum_diff * 2) - contents);
     }
   else
     {

@@ -129,7 +129,7 @@ esac
 AC_PROG_CXX
 LT_INIT([disable-shared dlopen win32-dll])dnl
 LT_LANG([C])dnl
-LT_PREREQ([2.4.4])dnl
+LT_PREREQ([2.4.6])dnl
 
 AC_C_INLINE
 

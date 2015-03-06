@@ -1376,24 +1376,24 @@ _bfd_elf_add_default_symbol (bfd *abfd,
       BFD_ASSERT (hi != NULL);
       if (hi == h)
 	return TRUE;
-      while (hi->root.type == bfd_link_hash_indirect
-	     || hi->root.type == bfd_link_hash_warning)
+      while ((hi->root.type == bfd_link_hash_indirect)
+	     || (hi->root.type == bfd_link_hash_warning))
 	{
-	  hi = (struct elf_link_hash_entry *) hi->root.u.i.link;
+	  hi = (struct elf_link_hash_entry *)hi->root.u.i.link;
 	  if (hi == h)
 	    return TRUE;
 	}
     }
 
-  bed = get_elf_backend_data (abfd);
+  bed = get_elf_backend_data(abfd);
   collect = bed->collect;
   dynamic = (abfd->flags & DYNAMIC) != 0;
 
-  shortlen = p - name;
-  shortname = bfd_hash_allocate (&info->hash->table, shortlen + 1);
+  shortlen = (p - name);
+  shortname = (char *)bfd_hash_allocate(&info->hash->table, shortlen + 1);
   if (shortname == NULL)
     return FALSE;
-  memcpy (shortname, name, shortlen);
+  memcpy(shortname, name, shortlen);
   shortname[shortlen] = '\0';
 
   /* We are going to create a new symbol.  Merge it with any existing
@@ -1496,20 +1496,20 @@ _bfd_elf_add_default_symbol (bfd *abfd,
      of the symbol.  */
 
 nondefault:
-  len = strlen (name);
-  shortname = bfd_hash_allocate (&info->hash->table, len);
+  len = strlen(name);
+  shortname = (char *)bfd_hash_allocate(&info->hash->table, len);
   if (shortname == NULL)
     return FALSE;
-  memcpy (shortname, name, shortlen);
-  memcpy (shortname + shortlen, p + 1, len - shortlen);
+  memcpy(shortname, name, shortlen);
+  memcpy(shortname + shortlen, p + 1, len - shortlen);
 
-  /* Once again, merge with any existing symbol.  */
+  /* Once again, merge with any existing symbol: */
   type_change_ok = FALSE;
   size_change_ok = FALSE;
   sec = *psec;
-  if (!_bfd_elf_merge_symbol (abfd, info, shortname, sym, &sec, value,
-			      NULL, &hi, &skip, &override,
-			      &type_change_ok, &size_change_ok))
+  if (!_bfd_elf_merge_symbol(abfd, info, shortname, sym, &sec, value,
+			     NULL, &hi, &skip, &override,
+			     &type_change_ok, &size_change_ok))
     return FALSE;
 
   if (skip)
@@ -8107,32 +8107,32 @@ bfd_elf_final_link (bfd *abfd, struct bfd_link_info *info)
 
   if (max_internal_reloc_count != 0)
     {
-      amt = max_internal_reloc_count * bed->s->int_rels_per_ext_rel;
-      amt *= sizeof (Elf_Internal_Rela);
-      finfo.internal_relocs = bfd_malloc (amt);
+      amt = (max_internal_reloc_count * bed->s->int_rels_per_ext_rel);
+      amt *= sizeof(Elf_Internal_Rela);
+      finfo.internal_relocs = (Elf_Internal_Rela *)bfd_malloc(amt);
       if (finfo.internal_relocs == NULL)
 	goto error_return;
     }
 
   if (max_sym_count != 0)
     {
-      amt = max_sym_count * bed->s->sizeof_sym;
-      finfo.external_syms = bfd_malloc (amt);
+      amt = (max_sym_count * bed->s->sizeof_sym);
+      finfo.external_syms = (bfd_byte *)bfd_malloc(amt);
       if (finfo.external_syms == NULL)
 	goto error_return;
 
-      amt = max_sym_count * sizeof (Elf_Internal_Sym);
-      finfo.internal_syms = bfd_malloc (amt);
+      amt = (max_sym_count * sizeof(Elf_Internal_Sym));
+      finfo.internal_syms = (Elf_Internal_Sym *)bfd_malloc(amt);
       if (finfo.internal_syms == NULL)
 	goto error_return;
 
-      amt = max_sym_count * sizeof (long);
-      finfo.indices = bfd_malloc (amt);
+      amt = (max_sym_count * sizeof(long));
+      finfo.indices = (long *)bfd_malloc(amt);
       if (finfo.indices == NULL)
 	goto error_return;
 
-      amt = max_sym_count * sizeof (asection *);
-      finfo.sections = bfd_malloc (amt);
+      amt = (max_sym_count * sizeof(asection *));
+      finfo.sections = (asection **)bfd_malloc(amt);
       if (finfo.sections == NULL)
 	goto error_return;
     }
@@ -9159,23 +9159,23 @@ bfd_elf_gc_sections (bfd *abfd, struct bfd_link_info *info)
 	 difference of two symbols in separate sections.
 	 Don't keep code sections referenced by .eh_frame.  */
       for (o = sub->sections; o != NULL; o = o->next)
-	if (!o->gc_mark && o->gc_mark_from_eh && (o->flags & SEC_CODE) == 0)
+	if (!o->gc_mark && o->gc_mark_from_eh && ((o->flags & SEC_CODE) == 0))
 	  {
-	    if (strncmp (o->name, ".gcc_except_table.", 18) == 0)
+	    if (strncmp(o->name, ".gcc_except_table.", 18) == 0)
 	      {
 		unsigned long len;
 		char *fn_name;
 		asection *fn_text;
 
-		len = strlen (o->name + 18) + 1;
-		fn_name = bfd_malloc (len + 6);
+		len = (strlen(o->name + 18) + 1UL);
+		fn_name = (char *)bfd_malloc(len + 6);
 		if (fn_name == NULL)
 		  return FALSE;
-		memcpy (fn_name, ".text.", 6);
-		memcpy (fn_name + 6, o->name + 18, len);
-		fn_text = bfd_get_section_by_name (sub, fn_name);
-		free (fn_name);
-		if (fn_text == NULL || !fn_text->gc_mark)
+		memcpy(fn_name, ".text.", 6);
+		memcpy(fn_name + 6, o->name + 18, len);
+		fn_text = bfd_get_section_by_name(sub, fn_name);
+		free(fn_name);
+		if ((fn_text == NULL) || !fn_text->gc_mark)
 		  continue;
 	      }
 
@@ -9301,19 +9301,19 @@ bfd_elf_gc_record_vtentry (bfd *abfd ATTRIBUTE_UNUSED,
 
       if (ptr)
 	{
-	  ptr = bfd_realloc (ptr - 1, bytes);
+	  ptr = (bfd_boolean *)bfd_realloc(ptr - 1, bytes);
 
 	  if (ptr != NULL)
 	    {
 	      size_t oldbytes;
 
 	      oldbytes = (((h->vtable->size >> log_file_align) + 1)
-			  * sizeof (bfd_boolean));
-	      memset (((char *) ptr) + oldbytes, 0, bytes - oldbytes);
+			  * sizeof(bfd_boolean));
+	      memset(((char *)ptr) + oldbytes, 0, bytes - oldbytes);
 	    }
 	}
       else
-	ptr = bfd_zmalloc (bytes);
+	ptr = (bfd_boolean *)bfd_zmalloc(bytes);
 
       if (ptr == NULL)
 	return FALSE;

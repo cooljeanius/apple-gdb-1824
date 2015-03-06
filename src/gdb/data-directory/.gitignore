@@ -1,0 +1,5 @@
+syscalls/*
+stamp-*
+system-gdbinit/*
+guile/*
+python/*

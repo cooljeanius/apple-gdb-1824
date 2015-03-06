@@ -840,12 +840,11 @@ ecoff_swap_rpdr_out (bfd *abfd, const RPDR *in, struct rpdr_ext *ex)
   H_PUT_32 (abfd, in->irpss, ex->p_irpss);
 }
 
-/* Create a runtime procedure table from the .mdebug section.  */
-
+/* Create a runtime procedure table from the .mdebug section: */
 static bfd_boolean
-mips_elf_create_procedure_table (void *handle, bfd *abfd,
-				 struct bfd_link_info *info, asection *s,
-				 struct ecoff_debug_info *debug)
+mips_elf_create_procedure_table(void *handle, bfd *abfd,
+                                struct bfd_link_info *info, asection *s,
+                                struct ecoff_debug_info *debug)
 {
   const struct ecoff_debug_swap *swap;
   HDRR *hdr = &debug->symbolic_header;
@@ -870,49 +869,49 @@ mips_elf_create_procedure_table (void *handle, bfd *abfd,
   ss = NULL;
   sv = NULL;
 
-  swap = get_elf_backend_data (abfd)->elf_backend_ecoff_debug_swap;
+  swap = get_elf_backend_data(abfd)->elf_backend_ecoff_debug_swap;
 
-  sindex = strlen (no_name_func) + 1;
+  sindex = (strlen(no_name_func) + 1UL);
   count = hdr->ipdMax;
   if (count > 0)
     {
       size = swap->external_pdr_size;
 
-      epdr = bfd_malloc (size * count);
+      epdr = (struct pdr_ext *)bfd_malloc(size * count);
       if (epdr == NULL)
 	goto error_return;
 
-      if (! _bfd_ecoff_get_accumulated_pdr (handle, (bfd_byte *) epdr))
+      if (! _bfd_ecoff_get_accumulated_pdr(handle, (bfd_byte *)epdr))
 	goto error_return;
 
-      size = sizeof (RPDR);
-      rp = rpdr = bfd_malloc (size * count);
+      size = sizeof(RPDR);
+      rp = rpdr = (RPDR *)bfd_malloc(size * count);
       if (rpdr == NULL)
 	goto error_return;
 
-      size = sizeof (char *);
-      sv = bfd_malloc (size * count);
+      size = sizeof(char *);
+      sv = (char **)bfd_malloc(size * count);
       if (sv == NULL)
 	goto error_return;
 
       count = hdr->isymMax;
       size = swap->external_sym_size;
-      esym = bfd_malloc (size * count);
+      esym = (struct sym_ext *)bfd_malloc(size * count);
       if (esym == NULL)
 	goto error_return;
 
-      if (! _bfd_ecoff_get_accumulated_sym (handle, (bfd_byte *) esym))
+      if (! _bfd_ecoff_get_accumulated_sym(handle, (bfd_byte *)esym))
 	goto error_return;
 
       count = hdr->issMax;
-      ss = bfd_malloc (count);
+      ss = (char *)bfd_malloc(count);
       if (ss == NULL)
 	goto error_return;
-      if (! _bfd_ecoff_get_accumulated_ss (handle, (bfd_byte *) ss))
+      if (! _bfd_ecoff_get_accumulated_ss(handle, (bfd_byte *)ss))
 	goto error_return;
 
       count = hdr->ipdMax;
-      for (i = 0; i < (unsigned long) count; i++, rp++)
+      for (i = 0; i < (unsigned long)count; i++, rp++)
 	{
 	  (*swap->swap_pdr_in) (abfd, epdr + i, &pdr);
 	  (*swap->swap_sym_in) (abfd, &esym[pdr.isym], &sym);
@@ -949,44 +948,44 @@ mips_elf_create_procedure_table (void *handle, bfd *abfd,
   str += strlen (no_name_func) + 1;
   for (i = 0; i < count; i++)
     {
-      ecoff_swap_rpdr_out (abfd, rpdr + i, erp + i);
-      strcpy (str, sv[i]);
-      str += strlen (sv[i]) + 1;
+      ecoff_swap_rpdr_out(abfd, rpdr + i, erp + i);
+      strcpy(str, sv[i]);
+      str += (strlen(sv[i]) + 1UL);
     }
-  H_PUT_S32 (abfd, -1, (erp + count)->p_adr);
+  H_PUT_S32(abfd, -1, (erp + count)->p_adr);
 
   /* Set the size and contents of .rtproc section.  */
   s->size = size;
-  s->contents = rtproc;
+  s->contents = (unsigned char *)rtproc;
 
   /* Skip this section later on (I don't think this currently
      matters, but someday it might).  */
   s->map_head.link_order = NULL;
 
   if (epdr != NULL)
-    free (epdr);
+    free(epdr);
   if (rpdr != NULL)
-    free (rpdr);
+    free(rpdr);
   if (esym != NULL)
-    free (esym);
+    free(esym);
   if (ss != NULL)
-    free (ss);
+    free(ss);
   if (sv != NULL)
-    free (sv);
+    free(sv);
 
   return TRUE;
 
  error_return:
   if (epdr != NULL)
-    free (epdr);
+    free(epdr);
   if (rpdr != NULL)
-    free (rpdr);
+    free(rpdr);
   if (esym != NULL)
-    free (esym);
+    free(esym);
   if (ss != NULL)
-    free (ss);
+    free(ss);
   if (sv != NULL)
-    free (sv);
+    free(sv);
   return FALSE;
 }
 
@@ -1261,22 +1260,22 @@ static struct mips_hi16 *mips_hi16_list;
    simplies the relocation handling in gcc.  */
 
 bfd_reloc_status_type
-_bfd_mips_elf_hi16_reloc (bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
-			  asymbol *symbol ATTRIBUTE_UNUSED, void *data,
-			  asection *input_section, bfd *output_bfd,
-			  char **error_message ATTRIBUTE_UNUSED)
+_bfd_mips_elf_hi16_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
+                         asymbol *symbol ATTRIBUTE_UNUSED, void *data,
+                         asection *input_section, bfd *output_bfd,
+                         char **error_message ATTRIBUTE_UNUSED)
 {
   struct mips_hi16 *n;
 
-  if (reloc_entry->address > bfd_get_section_limit (abfd, input_section))
+  if (reloc_entry->address > bfd_get_section_limit(abfd, input_section))
     return bfd_reloc_outofrange;
 
-  n = bfd_malloc (sizeof *n);
+  n = (struct mips_hi16 *)bfd_malloc(sizeof *n);
   if (n == NULL)
     return bfd_reloc_outofrange;
 
   n->next = mips_hi16_list;
-  n->data = data;
+  n->data = (bfd_byte *)data;
   n->input_section = input_section;
   n->rel = *reloc_entry;
   mips_hi16_list = n;
@@ -5190,18 +5189,18 @@ _bfd_mips_elf_section_from_shdr (bfd *abfd,
     {
       bfd_byte *contents, *l, *lend;
 
-      contents = bfd_malloc (hdr->sh_size);
+      contents = (bfd_byte *)bfd_malloc(hdr->sh_size);
       if (contents == NULL)
 	return FALSE;
-      if (! bfd_get_section_contents (abfd, hdr->bfd_section, contents,
-				      0, hdr->sh_size))
+      if (! bfd_get_section_contents(abfd, hdr->bfd_section, contents,
+                                     0, hdr->sh_size))
 	{
-	  free (contents);
+	  free(contents);
 	  return FALSE;
 	}
       l = contents;
-      lend = contents + hdr->sh_size;
-      while (l + sizeof (Elf_External_Options) <= lend)
+      lend = (contents + hdr->sh_size);
+      while (l + sizeof(Elf_External_Options) <= lend)
 	{
 	  Elf_Internal_Options intopt;
 
@@ -6806,12 +6805,12 @@ _bfd_mips_elf_size_dynamic_sections (bfd *output_bfd,
 	     rtld to contain a pointer to the _r_debug structure.  */
 	  s->size += 4;
 	}
-      else if (SGI_COMPAT (output_bfd)
-	       && strncmp (name, ".compact_rel", 12) == 0)
-	s->size += mips_elf_hash_table (info)->compact_rel_size;
-      else if (strncmp (name, ".init", 5) != 0)
+      else if (SGI_COMPAT(output_bfd)
+	       && (strncmp(name, ".compact_rel", 12) == 0))
+	s->size += mips_elf_hash_table(info)->compact_rel_size;
+      else if (strncmp(name, ".init", 5) != 0)
 	{
-	  /* It's not one of our sections, so don't allocate space.  */
+	  /* It is not one of our sections, so do NOT allocate space: */
 	  continue;
 	}
 
@@ -6824,8 +6823,8 @@ _bfd_mips_elf_size_dynamic_sections (bfd *output_bfd,
       if ((s->flags & SEC_HAS_CONTENTS) == 0)
 	continue;
 
-      /* Allocate memory for the section contents.  */
-      s->contents = bfd_zalloc (dynobj, s->size);
+      /* Allocate memory for the section contents: */
+      s->contents = (unsigned char *)bfd_zalloc(dynobj, s->size);
       if (s->contents == NULL)
 	{
 	  bfd_set_error (bfd_error_no_memory);
@@ -8488,23 +8487,23 @@ _bfd_mips_elf_discard_info (bfd *abfd, struct elf_reloc_cookie *cookie,
   unsigned char *tdata;
   size_t i, skip;
 
-  o = bfd_get_section_by_name (abfd, ".pdr");
+  o = bfd_get_section_by_name(abfd, ".pdr");
   if (! o)
     return FALSE;
   if (o->size == 0)
     return FALSE;
   if (o->size % PDR_SIZE != 0)
     return FALSE;
-  if (o->output_section != NULL
-      && bfd_is_abs_section (o->output_section))
+  if ((o->output_section != NULL)
+      && bfd_is_abs_section(o->output_section))
     return FALSE;
 
-  tdata = bfd_zmalloc (o->size / PDR_SIZE);
+  tdata = (unsigned char*)bfd_zmalloc(o->size / PDR_SIZE);
   if (! tdata)
     return FALSE;
 
-  cookie->rels = _bfd_elf_link_read_relocs (abfd, o, NULL, NULL,
-					    info->keep_memory);
+  cookie->rels = _bfd_elf_link_read_relocs(abfd, o, NULL, NULL,
+                                           info->keep_memory);
   if (!cookie->rels)
     {
       free (tdata);
@@ -8629,22 +8628,22 @@ _bfd_mips_elf_find_nearest_line (bfd *abfd, asection *section,
 	  struct fdr *fdr_ptr;
 	  bfd_size_type amt = sizeof (struct mips_elf_find_line);
 
-	  fi = bfd_zalloc (abfd, amt);
+	  fi = bfd_zalloc(abfd, amt);
 	  if (fi == NULL)
 	    {
 	      msec->flags = origflags;
 	      return FALSE;
 	    }
 
-	  if (! _bfd_mips_elf_read_ecoff_info (abfd, msec, &fi->d))
+	  if (! _bfd_mips_elf_read_ecoff_info(abfd, msec, &fi->d))
 	    {
 	      msec->flags = origflags;
 	      return FALSE;
 	    }
 
-	  /* Swap in the FDR information.  */
-	  amt = fi->d.symbolic_header.ifdMax * sizeof (struct fdr);
-	  fi->d.fdr = bfd_alloc (abfd, amt);
+	  /* Swap in the FDR information: */
+	  amt = (fi->d.symbolic_header.ifdMax * sizeof(struct fdr));
+	  fi->d.fdr = (struct fdr *)bfd_alloc(abfd, amt);
 	  if (fi->d.fdr == NULL)
 	    {
 	      msec->flags = origflags;

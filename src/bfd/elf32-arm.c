@@ -1893,33 +1893,32 @@ elf32_arm_link_hash_table_create (bfd *abfd)
 /* Locate the Thumb encoded calling stub for NAME.  */
 
 static struct elf_link_hash_entry *
-find_thumb_glue (struct bfd_link_info *link_info,
-		 const char *name,
-		 bfd *input_bfd)
+find_thumb_glue(struct bfd_link_info *link_info, const char *name,
+                bfd *input_bfd)
 {
   char *tmp_name;
   struct elf_link_hash_entry *hash;
   struct elf32_arm_link_hash_table *hash_table;
 
-  /* We need a pointer to the armelf specific hash table.  */
-  hash_table = elf32_arm_hash_table (link_info);
+  /* We need a pointer to the armelf specific hash table: */
+  hash_table = elf32_arm_hash_table(link_info);
 
-  tmp_name = bfd_malloc ((bfd_size_type) strlen (name)
-			 + strlen (THUMB2ARM_GLUE_ENTRY_NAME) + 1);
+  tmp_name = (char *)bfd_malloc((bfd_size_type)strlen(name)
+                                + strlen(THUMB2ARM_GLUE_ENTRY_NAME) + 1UL);
 
-  BFD_ASSERT (tmp_name);
+  BFD_ASSERT(tmp_name);
 
-  sprintf (tmp_name, THUMB2ARM_GLUE_ENTRY_NAME, name);
+  sprintf(tmp_name, THUMB2ARM_GLUE_ENTRY_NAME, name);
 
-  hash = elf_link_hash_lookup
-    (&(hash_table)->root, tmp_name, FALSE, FALSE, TRUE);
+  hash = elf_link_hash_lookup(&(hash_table)->root, tmp_name,
+                              FALSE, FALSE, TRUE);
 
   if (hash == NULL)
     /* xgettext:c-format */
-    (*_bfd_error_handler) (_("%B: unable to find THUMB glue '%s' for `%s'"),
-			   input_bfd, tmp_name, name);
+    (*_bfd_error_handler)(_("%B: unable to find THUMB glue '%s' for `%s'"),
+                          input_bfd, tmp_name, name);
 
-  free (tmp_name);
+  free(tmp_name);
 
   return hash;
 }
@@ -2179,11 +2178,11 @@ record_thumb_to_arm_glue (struct bfd_link_info *link_info,
 
   bh = NULL;
   val = hash_table->thumb_glue_size + 4,
-  _bfd_generic_link_add_one_symbol (link_info, hash_table->bfd_of_glue_owner,
-				    tmp_name, BSF_LOCAL, s, val,
-				    NULL, TRUE, FALSE, &bh);
+  _bfd_generic_link_add_one_symbol(link_info, hash_table->bfd_of_glue_owner,
+				   tmp_name, BSF_LOCAL, s, val,
+				   NULL, TRUE, FALSE, &bh);
 
-  free (tmp_name);
+  free(tmp_name);
 
   hash_table->thumb_glue_size += THUMB2ARM_GLUE_SIZE;
 
@@ -7144,5 +7143,8 @@ elf32_arm_symbian_modify_segment_map (bfd *abfd,
 #ifdef ARM_ELF_OS_ABI_VERSION
 # undef ARM_ELF_OS_ABI_VERSION
 #endif /* ARM_ELF_OS_ABI_VERSION */
+#ifdef BACK_FROM_ARM
+# undef BACK_FROM_ARM
+#endif /* BACK_FROM_ARM */
 
 /* EOF */

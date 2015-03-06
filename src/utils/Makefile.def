@@ -35,6 +35,7 @@ targets = { target = "distclean";
             makeline_flag = "-"; };
 targets = { target = "maintainer-clean"; 
             makeline_flag = "-"; };
+targets = { target = "check"; };
 
 subdirs = { subdir = "amd-udi"; };
 subdirs = { subdir = "misc"; };

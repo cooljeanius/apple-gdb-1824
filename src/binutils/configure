@@ -3117,8 +3117,8 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   export TARGET_ARCHITECTURE="${target_cpu}"
 
 fi
-# expand $ac_aux_dir to an absolute path
-am_aux_dir=`cd $ac_aux_dir && pwd`
+# Expand $ac_aux_dir to an absolute path.
+am_aux_dir=`cd "$ac_aux_dir" && pwd`
 
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -4500,7 +4500,7 @@ if test -f ${srcdir}/config.status; then
 $as_echo "$as_me: config.status is already present, removing it." >&6;}
   rm -f ${srcdir}/config.status
 fi
-am__api_version='1.14'
+am__api_version='1.15'
 
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
@@ -4689,7 +4689,7 @@ else
 $as_echo "$as_me: WARNING: 'missing' script is too old or missing" >&2;}
 fi
 
-if test x"${install_sh}" != xset; then
+if test x"${install_sh+set}" != xset; then
   case $am_aux_dir in
   *\ * | *\	*)
     install_sh="\${SHELL} '$am_aux_dir/install-sh'" ;;
@@ -5080,8 +5080,8 @@ MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
 # <http://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
 mkdir_p='$(MKDIR_P)'
 
-# We need awk for the "check" target.  The system "awk" is bad on
-# some platforms.
+# We need awk for the "check" target (and possibly the TAP driver).  The
+# system "awk" is bad on some platforms.
 # Always define AMTAR for backward compatibility.  Yes, it's still used
 # in the wild :-(  We should find a proper way to deprecate it ...
 AMTAR='$${TAR-tar}'
@@ -5266,6 +5266,7 @@ END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
 fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether build environment is sane" >&5
 $as_echo_n "checking whether build environment is sane... " >&6; }
 # Reject unsafe characters in $srcdir or the absolute working directory
@@ -5807,8 +5808,8 @@ esac
 
 
 
-macro_version='2.4.4'
-macro_revision='2.4.4'
+macro_version='2.4.6'
+macro_revision='2.4.6'
 
 
 
@@ -17202,8 +17203,11 @@ _ACEOF
 WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wmissing-declarations -Wimplicit -Wparentheses -Wextra -Wc++-compat \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
--Wmissing-parameter-type -Wshadow -Wabi -Wmissing-include-dirs"
-WARN_DEFS="-D_FORTIFY_SOURCE=2"
+-Wmissing-parameter-type -Wshadow -Wabi -Wmissing-include-dirs \
+-Wconversion -Wfloat-conversion -Wsign-conversion -Wsign-compare \
+-Wshorten-64-to-32 -Wshadow"
+# "-Wconversion" and friends are because of a comment in libbfd.c
+WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint"
 WARN_LDFLAGS=""
 
 
@@ -17255,7 +17259,7 @@ if test "${enable_pedantic+set}" = set; then :
   enableval=$enable_pedantic; case "${enableval}" in
      yes | y) PEDANTIC_WARNINGS="yes" ;;
      no | n)  PEDANTIC_WARNINGS="no" ;;
-     *) as_fn_error $? "bad value ${enableval} for --enable-werror" "$LINENO" 5 ;;
+     *) as_fn_error $? "bad value ${enableval} for --enable-pedantic" "$LINENO" 5 ;;
    esac
 fi
 
@@ -17272,6 +17276,9 @@ fi
 
 if test "x${PEDANTIC_WARNINGS}" = "xyes"; then
     WARN_CFLAGS="${WARN_CFLAGS} -pedantic -Wdeclaration-after-statement"
+    ## fake the '-ansi' flag; actually using it has additional effects:
+    WARN_CFLAGS="${WARN_CFLAGS} -D__STRICT_ANSI__"
+    WARN_DEFS="${WARN_DEFS} -D__STRICT_ANSI__"
 fi
 
 # Check whether --enable-build-warnings was given.
@@ -17285,6 +17292,48 @@ if test "${enable_build_warnings+set}" = set; then :
         WARN_CFLAGS="${t} ${WARN_CFLAGS}";;
   *)    WARN_CFLAGS=`echo "${enableval}" | sed -e "s/,/ /g"`;;
 esac
+fi
+
+if test "x${WARN_DEFS}" != "x" -a "x${GCC}" = "xyes"
+then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking preprocessor definitons to use when warning" >&5
+$as_echo_n "checking preprocessor definitons to use when warning... " >&6; }
+    for w in ${WARN_DEFS}; do
+	case ${w} in
+	*) # Check its use with the preprocessor.
+	    saved_DEFS="${DEFS}"
+	    DEFS="${DEFS} ${w}"
+            # The above fails to actually get it into the compile command,
+            # so do this as well:
+	    saved_CFLAGS="${CFLAGS}"
+	    CFLAGS="${CFLAGS} -Wp,${w}"
+            # Actually that fails as well, so one more try:
+            saved_CPPFLAGS="${CPPFLAGS}"
+	    CPPFLAGS="${CPPFLAGS} ${w}"
+	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_cpp "$LINENO"; then :
+  MY_WARN_DEFS="${MY_WARN_DEFS} ${w}"
+fi
+rm -f conftest.err conftest.i conftest.$ac_ext
+	    DEFS="${saved_DEFS}"
+	    CFLAGS="${saved_CFLAGS}"
+	    CPPFLAGS="${saved_CPPFLAGS}"
+	esac
+    done
+    # Have to use second variable to avoid overwriting and/or duplicates:
+    WARN_DEFS="${MY_WARN_DEFS}"
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${WARN_DEFS}" >&5
+$as_echo "${WARN_DEFS}" >&6; }
 fi
 
 BAD_WARN_CFLAGS=""

@@ -57,7 +57,7 @@ AH_BOTTOM([
 
 if test -e ${srcdir}/development.sh; then
   # Set the 'development' global.
-  AC_MSG_NOTICE([sourcing ${srcdir}/development.sh])
+  AC_MSG_NOTICE([sourcing ${srcdir}/development.sh for gdb])
   . ${srcdir}/development.sh
 fi
 
@@ -804,7 +804,7 @@ AC_MSG_RESULT([ ])
 LT_INIT([disable-fast-install dlopen])dnl
 LT_LANG([C])dnl
 dnl# temporarily set this while I update everything libtool-related:
-LT_PREREQ([2.4.4])dnl
+LT_PREREQ([2.4.6])dnl
 dnl# even though gdb is written only in C, it has tests written
 dnl# for debugging the following languages, so check them, too:
 LT_LANG([C++])dnl

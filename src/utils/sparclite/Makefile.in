@@ -1,4 +1,5 @@
-#Copyright 1989, 1990, 1991, 1992, 1993, 1995 Free Software Foundation, Inc.
+# Makefile.in for sparclite utils
+# Copyright 1989-1993, 1995 Free Software Foundation, Inc.
 
 # This file is part of GDB.
 
@@ -71,7 +72,10 @@ INCLUDE_CFLAGS = -I. -I${srcdir} -I$(INCLUDE_DIR)
 
 # CFLAGS is specifically reserved for setting from the command line
 # when running make.  I.E.  "make USER_CFLAGS=-Wmissing-prototypes".
-CFLAGS = -ggdb -Wall
+#FIXME: add archflags here
+CWARNFLAGS = -Wall -Wextra -Wstrict-prototypes -Wconversion -Wundef \
+-pedantic -Wno-format -Wno-long-long
+CFLAGS = -ggdb $(CWARNFLAGS)
 
 # INTERNAL_CFLAGS is the aggregate of all other *CFLAGS macros.
 INTERNAL_CFLAGS = $(CFLAGS) -I$(BFD_DIR) $(INCLUDE_CFLAGS) $(USER_CFLAGS) @DEFS@
@@ -115,9 +119,9 @@ aload:	aload.o
 eload:	eload.o
 	$(CC) $(CFLAGS) -o eload eload.o $(CLIBS) @NETLIBS@
 
-aload.o: aload.c
+aload.o: aload.c config.h
 
-eload.o: eload.c
+eload.o: eload.c config.h
 
 mostlyclean:
 
@@ -128,6 +132,8 @@ distclean:	clean
 	rm -f config.log config.cache
 
 maintainer-clean realclean:	distclean
+
+check:
 
 Makefile: Makefile.in config.status
 	$(SHELL) config.status

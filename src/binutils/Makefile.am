@@ -30,8 +30,24 @@ CFLAGS_FOR_BUILD = @CFLAGS_FOR_BUILD@
 CXXFLAGS_FOR_BUILD = @CXXFLAGS_FOR_BUILD@
 LDFLAGS_FOR_BUILD = @LDFLAGS_FOR_BUILD@
 
+## extend the automake verbosity control:
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
+am__v_v_0 =
+am__v_v_1 = -v
+
+AM_V_redir = $(am__v_redir_@AM_V@)
+am__v_redir_ = $(am__v_redir_@AM_DEFAULT_V@)
+am__v_redir_0 = >
+am__v_redir_1 = | tee
+
+AM_V_redir_a = $(am__v_redir_a_@AM_V@)
+am__v_redir_a_ = $(am__v_redir_a_@AM_DEFAULT_V@)
+am__v_redir_a_0 = >>
+am__v_redir_a_1 = | tee -a
+
 YACC = `if [ -f ../bison/bison ]; then echo ../bison/bison -y -L$(srcdir)/../bison/; else echo @YACC@; fi`
-AM_YFLAGS = -d -t -v @MAINT@@EXTRA_YFLAGS_SEP@ -k -Wall -Wyacc
+AM_YFLAGS = -d -t $(AM_V_v) @MAINT@@EXTRA_YFLAGS_SEP@ -k -Wall -Wyacc
 LEX = `if [ -f ../flex/flex ]; then echo ../flex/flex; else echo @LEX@; fi`
 AM_LFLAGS = -d
 
@@ -273,7 +289,8 @@ READLINELIBS_DEP = $(READLINELIBS)
 POTFILES = $(CFILES) $(DEBUG_SRCS) $(HFILES)
 po/POTFILES.in: @MAINT@ Makefile
 	for f in $(POTFILES); do echo "$${f}"; done | \
-	  LC_COLLATE="" sort > tmp && mv -v tmp $(srcdir)/po/POTFILES.in
+	  LC_COLLATE="" sort > tmp && \
+	  mv $(AM_V_v) tmp $(srcdir)/po/POTFILES.in
 
 my_EXPECT = expect
 my_RUNTEST = runtest
@@ -353,7 +370,7 @@ objdump_DEPENDENCIES = $(OPCODES_DEP) $(BFD_DEP) $(LIBIBERTY_DEP) \
 objdump.@OBJEXT@:objdump.c
 if am__fastdepCC
 	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $(OBJDUMP_DEFS) $(srcdir)/objdump.c
-	mv -fv $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	mv -f $(AM_V_v) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 else
 if AMDEP
 	source='objdump.c' object='$@' libtool=no @AMDEPBACKSLASH@
@@ -399,8 +416,8 @@ ar_with_ranlib_uncommented: $(ADDL_DEPS) $(ar_and_ranlib_SHARED_OFILES)
 	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) \
 	  $(AM_LDFLAGS) -o $(AR_PROG) $(ar_and_ranlib_SHARED_OFILES) \
 	  $(ADDL_LIBS) $(EXTRALIBS)
-	-rm -fv $(RANLIB_PROG)
-	-ln -v $(AR_PROG) $(RANLIB_PROG)
+	-rm -f $(AM_V_v) $(RANLIB_PROG)
+	-ln $(AM_V_v) $(AR_PROG) $(RANLIB_PROG)
 .PHONY: ar_with_ranlib_uncommented
 
 objcopy_strip_SHARED_OFILES = objcopy.o rename.o maybe-strip.o \
@@ -412,8 +429,8 @@ objcopy_with_strip_uncommented: $(ADDL_DEPS) $(objcopy_strip_SHARED_OFILES)
 	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) \
 	  $(AM_LDFLAGS) -o $(OBJCOPY_PROG) $(objcopy_strip_SHARED_OFILES) \
 	  $(ADDL_LIBS) $(EXTRALIBS)
-	-rm -fv $(STRIP_PROG)
-	-ln -v $(OBJCOPY_PROG) $(STRIP_PROG)
+	-rm -f $(AM_V_v) $(STRIP_PROG)
+	-ln $(AM_V_v) $(OBJCOPY_PROG) $(STRIP_PROG)
 .PHONY: objcopy_with_strip_uncommented
 
 sysroff.c: sysinfo$(EXEEXT_FOR_BUILD) sysroff.info
@@ -478,7 +495,7 @@ sysinfo.c: sysinfo.y
 arparse.@OBJEXT@: arparse.c ../bfd/bfd.h bucomm.h arsup.h
 if am__fastdepCC
 	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `test -f arparse.c || echo $(srcdir)/`arparse.c $(NO_WERROR)
-	mv -fv $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	mv -f $(AM_V_v) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 else
 if AMDEP
 	source='arparse.c' object='$@' libtool=no @AMDEPBACKSLASH@
@@ -490,7 +507,7 @@ endif
 arlex.@OBJEXT@: arlex.c $(INCDIR)/ansidecl.h arparse.h
 if am__fastdepCC
 	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `test -f arlex.c || echo $(srcdir)/`arlex.c $(NO_WERROR)
-	mv -fv $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	mv -f $(AM_V_v) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 else
 if AMDEP
 	source='arlex.c' object='$@' libtool=no @AMDEPBACKSLASH@
@@ -502,7 +519,7 @@ endif
 sysroff.@OBJEXT@: sysroff.c
 if am__fastdepCC
 	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `test -f sysroff.c || echo $(srcdir)/`sysroff.c $(NO_WERROR)
-	mv -fv $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	mv -f $(AM_V_v) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 else
 if AMDEP
 	source='sysroff.c' object='$@' libtool=no @AMDEPBACKSLASH@
@@ -514,7 +531,7 @@ endif
 defparse.@OBJEXT@: defparse.c ../bfd/bfd.h bucomm.h dlltool.h
 if am__fastdepCC
 	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `test -f defparse.c || echo $(srcdir)/`defparse.c $(NO_WERROR)
-	mv -fv $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	mv -f $(AM_V_v) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 else
 if AMDEP
 	source='defparse.c' object='$@' libtool=no @AMDEPBACKSLASH@
@@ -526,7 +543,7 @@ endif
 deflex.@OBJEXT@: deflex.c $(INCDIR)/libiberty.h defparse.h dlltool.h
 if am__fastdepCC
 	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `test -f deflex.c || echo $(srcdir)/`deflex.c $(NO_WERROR)
-	mv -fv $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	mv -f $(AM_V_v) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 else
 if AMDEP
 	source='deflex.c' object='$@' libtool=no @AMDEPBACKSLASH@
@@ -538,7 +555,7 @@ endif
 nlmheader.@OBJEXT@: nlmheader.c nlmconv.h bucomm.h $(INCDIR)/ansidecl.h
 if am__fastdepCC
 	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `test -f nlmheader.c || echo $(srcdir)/`nlmheader.c $(NO_WERROR)
-	mv -fv $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	mv -f $(AM_V_v) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 else
 if AMDEP
 	source='nlmheader.c' object='$@' libtool=no @AMDEPBACKSLASH@
@@ -550,7 +567,7 @@ endif
 rcparse.@OBJEXT@: rcparse.c bucomm.h windres.h $(INCDIR)/libiberty.h
 if am__fastdepCC
 	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `test -f rcparse.c || echo $(srcdir)/`rcparse.c $(NO_WERROR)
-	mv -fv $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	mv -f $(AM_V_v) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 else
 if AMDEP
 	source='rcparse.c' object='$@' libtool=no @AMDEPBACKSLASH@
@@ -562,7 +579,7 @@ endif
 mcparse.@OBJEXT@: mcparse.c sysdep.h bucomm.h windmc.h $(INCDIR)/ansidecl.h
 if am__fastdepCC
 	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `test -f mcparse.c || echo $(srcdir)/`mcparse.c $(NO_WERROR)
-	mv -fv $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	mv -f $(AM_V_v) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 else
 if AMDEP
 	source='mcparse.c' object='$@' libtool=no @AMDEPBACKSLASH@
@@ -574,7 +591,7 @@ endif
 rclex.@OBJEXT@: rclex.c bucomm.h windres.h rcparse.h ../bfd/bfd.h
 if am__fastdepCC
 	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $(srcdir)/rclex.c $(NO_WERROR)
-	mv -fv $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	mv -f $(AM_V_v) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 else
 if AMDEP
 	source='rclex.c' object='$@' libtool=no @AMDEPBACKSLASH@
@@ -586,7 +603,7 @@ endif
 mclex.@OBJEXT@: mclex.c sysdep.h bucomm.h windmc.h mcparse.h ../bfd/bfd.h
 if am__fastdepCC
 	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $(srcdir)/mclex.c $(NO_WERROR)
-	mv -fv $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	mv -f $(AM_V_v) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 else
 if AMDEP
 	source='mclex.c' object='$@' libtool=no @AMDEPBACKSLASH@
@@ -609,7 +626,7 @@ dlltool_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP) @LEXLIB@ $(INTLDEP)
 dlltool.@OBJEXT@: dlltool.c dlltool.h bucomm.h ../bfd/bfd.h
 if am__fastdepCC
 	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@  $(DLLTOOL_DEFS) $(srcdir)/dlltool.c
-	mv -fv $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	mv -f $(AM_V_v) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 else
 if AMDEP
 	source='dlltool.c' object='$@' libtool=no @AMDEPBACKSLASH@
@@ -621,7 +638,7 @@ endif
 rescoff.@OBJEXT@: rescoff.c bucomm.h windres.h ../bfd/bfd.h
 if am__fastdepCC
 	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@  $(DLLTOOL_DEFS) $(srcdir)/rescoff.c
-	mv -fv $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	mv -f $(AM_V_v) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 else
 if AMDEP
 	source='rescoff.c' object='$@' libtool=no @AMDEPBACKSLASH@
@@ -646,7 +663,7 @@ if am__fastdepCC
 	ldname=`echo ld | $(SED) '$(transform)'`; \
 	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ \
 	  -DLD_NAME="\"$${ldname}\"" @NLMCONV_DEFS@ $(srcdir)/nlmconv.c
-	mv -fv $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	mv -f $(AM_V_v) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 else
 if AMDEP
 	source='nlmconv.c' object='$@' libtool=no @AMDEPBACKSLASH@
@@ -709,15 +726,15 @@ Makefile_depends: $(BFDDIR)/configure.ac config.status
 # Have to get rid of any pre-existing DEP1 here, so that "$?" later
 # includes all of $(CFILES).
 DEP: dep.sed $(CFILES) $(HFILES) $(GENERATED_CFILES) $(GENERATED_HFILES) config.h
-	rm -fv DEP1
+	rm -f $(AM_V_v) DEP1
 	$(MAKE) MKDEP="$(MKDEP)" DEP1
-	$(SED) -f dep.sed < DEP1 | uniq | tee DEPA
+	$(SED) -f dep.sed < DEP1 | uniq $(AM_V_redir) DEPA
 	echo '# IF YOU PUT ANYTHING HERE IT WILL GO AWAY' >> DEPA
 	if $(GREP) ' /' DEPA > /dev/null 2> /dev/null; then \
 	  echo 'make DEP failed; it produced bad directories!'>&2; \
 	  exit 1; \
 	else \
-	  mv -fv DEPA $@; \
+	  mv -f $(AM_V_v) DEPA $@; \
 	fi
 	touch $@
 # I also want to include a check for variables not being closed properly
@@ -730,8 +747,8 @@ DEP: dep.sed $(CFILES) $(HFILES) $(GENERATED_CFILES) $(GENERATED_HFILES) config.
 DEP1: $(CFILES) $(GENERATED_CFILES)
 	echo '# DO NOT DELETE THIS LINE -- mkdep uses it.' > DEP2
 	echo '# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.' >>DEP2
-	$(MKDEP) $(AM_CPPFLAGS) $(CFLAGS) $? | uniq | tee -a DEP2
-	mv -fv DEP2 $@
+	$(MKDEP) $(AM_CPPFLAGS) $(CFLAGS) $? | uniq $(AM_V_redir_a) DEP2
+	mv -f $(AM_V_v) DEP2 $@
 	touch $@
 
 #FIXME: this sed script is broken and hack-ish:
@@ -797,34 +814,34 @@ BINUTILS_OFILES = version.o
 BINUTILS_LIB = $(SYSTEM_FRAMEWORK)
 
 stamp-framework-headers-binutils:
-	$(RM) -fv stamp-framework-binutils stamp-framework-headers-binutils
-	$(RM) -rfv $(BINUTILS).framework
-	$(MKDIR_P) -v $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Headers
-	$(MKDIR_P) -v $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/PrivateHeaders
-	$(LN_S) -v Versions/Current/Headers $(BINUTILS).framework/Headers
-	$(LN_S) -v Versions/Current/PrivateHeaders $(BINUTILS).framework/PrivateHeaders
-	$(LN_S) -v A $(BINUTILS).framework/Versions/Current
-	cp -rpv $(srcdir)/../include/* $(BINUTILS).framework/Versions/Current/Headers/
-	cp -rpv $(srcdir)/../intl/*.h $(BINUTILS).framework/Versions/Current/Headers/
+	$(RM) -f $(AM_V_v) stamp-framework-binutils stamp-framework-headers-binutils
+	$(RM) -rf $(AM_V_v) $(BINUTILS).framework
+	$(MKDIR_P) $(AM_V_v) $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Headers
+	$(MKDIR_P) $(AM_V_v) $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/PrivateHeaders
+	$(LN_S) $(AM_V_v) Versions/Current/Headers $(BINUTILS).framework/Headers
+	$(LN_S) $(AM_V_v) Versions/Current/PrivateHeaders $(BINUTILS).framework/PrivateHeaders
+	$(LN_S) $(AM_V_v) A $(BINUTILS).framework/Versions/Current
+	cp -rp $(AM_V_v) $(srcdir)/../include/* $(BINUTILS).framework/Versions/Current/Headers/
+	cp -rp $(AM_V_v) $(srcdir)/../intl/*.h $(BINUTILS).framework/Versions/Current/Headers/
 	touch stamp-framework-headers-binutils
 
 stamp-framework-binutils: $(BINUTILS_OFILES)
-	$(RM) -fv stamp-framework-headers-binutils
+	$(RM) -f $(AM_V_v) stamp-framework-headers-binutils
 	$(MAKE) stamp-framework-headers-binutils
-	$(MKDIR_P) -v $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Resources
-	$(LN_S) -v Versions/Current/Resources $(BINUTILS).framework/Resources
-	$(MKDIR_P) -v $(BINUTILS).framework/Versions/Current/Resources/English.lproj
+	$(MKDIR_P) $(AM_V_v) $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Resources
+	$(LN_S) $(AM_V_v) Versions/Current/Resources $(BINUTILS).framework/Resources
+	$(MKDIR_P) $(AM_V_v) $(BINUTILS).framework/Versions/Current/Resources/English.lproj
 
 	set -ex; \
 	if [ "x$(BINUTILS_SUFFIX)" != "x" ]; then \
 	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(BINUTILS_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) -o $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS_OFILES) $(BINUTILS_LIB); \
-	    $(LN_S) -v $(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX); \
-	    $(LN_S) -v Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX); \
-	    $(LN_S) -v Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX); \
-	    $(LN_S) -v $(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX) $(BINUTILS).framework/$(BINUTILS); \
+	    $(LN_S) $(AM_V_v) $(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX); \
+	    $(LN_S) $(AM_V_v) $(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX) $(BINUTILS).framework/$(BINUTILS); \
 	else \
 	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(BINUTILS_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/$(BINUTILS_PREFIX)$(BINUTILS) -o $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS) $(BINUTILS_OFILES) $(BINUTILS_LIB); \
-	    $(LN_S) -v Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS); \
 	fi
 	touch stamp-framework-binutils
 ## APPLE LOCAL end framework building
@@ -850,15 +867,15 @@ mostlyclean-local:
 CLEANFILES = dep.sed DEP DEPA DEP1 DEP2 $(EXTRA_PROGRAMS) \
   $(PREPROC_GENERATED_CFILES) $(ASM_OF_GENERATED_CFILES) @MAINT@ lib*.a
 clean-local:
-	-rm -fv *.rsrc
-	-rm -rfv *.dSYM
+	-rm -f $(AM_V_v) *.rsrc
+	-rm -rf $(AM_V_v) *.dSYM
 
 ## DISTCLEANFILES is already set above, but add these to it here:
 DISTCLEANFILES += $(PREPROC_CFILES) stamp-framework-binutils \
   stamp-framework-headers-binutils $(ASM_OF_CFILES) @MAINT@ artest.a
 
 maintainer-clean-local:
-	-$(RM) -rfv $(BINUTILS).framework || rmdir $(BINUTILS).framework
+	-$(RM) -rf $(AM_V_v) $(BINUTILS).framework || rmdir $(BINUTILS).framework
 
 .PHONY: install-exec-local
 

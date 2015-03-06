@@ -1,5 +1,5 @@
-#
-# Makefile
+# Makefile.in turns into Makefile
+# Makefile for msdos utils
 #   Copyright (C) 1990, 1991, 1992, 1993 Free Software Foundation
 #
 # This file is free software; you can redistribute it and/or modify
@@ -62,37 +62,45 @@ FLAGS_TO_PASS = \
 
 all:
 	@for dir in ${SUBDIRS}; do \
-	if [ -d $$dir ]; then \
+	if [ -d $${dir} ]; then \
 	    (rootme=`pwd`/ ; export rootme ; \
 	    rootsrc=`cd $(srcdir); pwd`/ ; export rootsrc ; \
-	    cd $$dir; $(MAKE) $(FLAGS_TO_PASS)); \
+	    cd $${dir}; $(MAKE) $(FLAGS_TO_PASS)); \
 	    fi; \
 	done
 
 install:
 	@for dir in ${SUBDIRS}; do \
-	    echo "$$dir:"; \
-	    if [ -d $$dir ]; then \
-		(cd $$dir; $(MAKE) install); \
+	    echo "$${dir}:"; \
+	    if [ -d $${dir} ]; then \
+		(cd $${dir}; $(MAKE) install); \
 		fi; \
 	    done
 
 clean mostlyclean:
 	-rm -f *~ core *.o a.out 
 	@for dir in ${SUBDIRS}; do \
-	    echo "$$dir:"; \
-	    if [ -d $$dir ]; then \
-		(cd $$dir; $(MAKE) $@); \
+	    echo "$${dir}:"; \
+	    if [ -d $${dir} ]; then \
+		(cd $${dir}; $(MAKE) $@); \
 		fi; \
 	    done
 
 distclean maintainer-clean realclean: clean
 	@for dir in ${SUBDIRS}; do \
-	    echo "$$dir:"; \
-	    (cd $$dir; $(MAKE) $@); \
+	    echo "$${dir}:"; \
+	    (cd $${dir}; $(MAKE) $@); \
 	done
 	-rm -f *~ core
-	-rm -f Makefile config.status 
+	-rm -f Makefile config.status
+
+check:
+	@for dir in ${SUBDIRS}; do \
+	    echo "$${dir}:"; \
+	    if [ -d $${dir} ]; then \
+		(cd $${dir}; $(MAKE) check); \
+		fi; \
+	    done
 
 .PHONY: info install-info clean-info
 info:
@@ -101,6 +109,8 @@ clean-info:
 
 force:
 
-Makefile: Makefile.in configure.in $(host_makefile_frag) $(target_makefile_frag)
+both_makefile_frags = $(host_makefile_frag) $(target_makefile_frag)
+
+Makefile: Makefile.in configure.ac $(both_makefile_frags)
 	$(SHELL) config.status
 

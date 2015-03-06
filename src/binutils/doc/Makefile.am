@@ -50,121 +50,127 @@ AM_MAKEINFOFLAGS = -I "$(srcdir)" -I "$(top_srcdir)/../libiberty" \
 AM_TEXI2DVI = texi2dvi -I "$(srcdir)" -I "$(top_srcdir)/../libiberty" \
 		    -I "$(top_srcdir)/../bfd/doc" -I ../../bfd/doc
 
+## extend the automake verbosity control:
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
+am__v_v_0 =
+am__v_v_1 = -v
+
 # Man page generation from texinfo
 addr2line.1:	$(binutils_TEXI) $(binutils_TEXINFOS)
 	touch $@
 	-$(TEXI2POD) $(MANCONF) -Daddr2line < $(binutils_TEXI) > addr2line.pod
 	-($(POD2MAN) addr2line.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
 	rm -f addr2line.pod
 
 ar.1:	$(binutils_TEXI) $(binutils_TEXINFOS)
 	touch $@
 	-$(TEXI2POD) $(MANCONF) -Dar < $(binutils_TEXI) > ar.pod
 	-($(POD2MAN) ar.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
 	rm -f ar.pod
 
 dlltool.1:	$(binutils_TEXI) $(binutils_TEXINFOS)
 	touch $@
 	-$(TEXI2POD) $(MANCONF) -Ddlltool < $(binutils_TEXI) > dlltool.pod
 	-($(POD2MAN) dlltool.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
 	rm -f dlltool.pod
 
 nlmconv.1:	$(binutils_TEXI) $(binutils_TEXINFOS)
 	touch $@
 	-$(TEXI2POD) $(MANCONF) -Dnlmconv < $(binutils_TEXI) > nlmconv.pod
 	-($(POD2MAN) nlmconv.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
 	rm -f nlmconv.pod
 
 nm.1:	$(binutils_TEXI) $(binutils_TEXINFOS)
 	touch $@
 	-$(TEXI2POD) $(MANCONF) -Dnm < $(binutils_TEXI) > nm.pod
 	-($(POD2MAN) nm.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
 	rm -f nm.pod
 
 objcopy.1:	$(binutils_TEXI) $(binutils_TEXINFOS)
 	touch $@
 	-$(TEXI2POD) $(MANCONF) -Dobjcopy < $(binutils_TEXI) > objcopy.pod
 	-($(POD2MAN) objcopy.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
 	rm -f objcopy.pod
 
 objdump.1:	$(binutils_TEXI) $(binutils_TEXINFOS)
 	touch $@
 	-$(TEXI2POD) $(MANCONF) -Dobjdump < $(binutils_TEXI) > objdump.pod
 	-($(POD2MAN) objdump.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
 	rm -f objdump.pod
 
 ranlib.1:	$(binutils_TEXI) $(binutils_TEXINFOS)
 	touch $@
 	-$(TEXI2POD) $(MANCONF) -Dranlib < $(binutils_TEXI) > ranlib.pod
 	-($(POD2MAN) ranlib.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
 	rm -f ranlib.pod
 
 readelf.1:	$(binutils_TEXI) $(binutils_TEXINFOS)
 	touch $@
 	-$(TEXI2POD) $(MANCONF) -Dreadelf < $(binutils_TEXI) > readelf.pod
 	-($(POD2MAN) readelf.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
 	rm -f readelf.pod
 
 size.1:	$(binutils_TEXI) $(binutils_TEXINFOS)
 	touch $@
 	-$(TEXI2POD) $(MANCONF) -Dsize < $(binutils_TEXI) > size.pod
 	-($(POD2MAN) size.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
 	rm -f size.pod
 
 strings.1:	$(binutils_TEXI) $(binutils_TEXINFOS)
 	touch $@
 	-$(TEXI2POD) $(MANCONF) -Dstrings < $(binutils_TEXI) > strings.pod
 	-($(POD2MAN) strings.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
 	rm -f strings.pod
 
 strip.1:	$(binutils_TEXI) $(binutils_TEXINFOS)
 	touch $@
 	-$(TEXI2POD) $(MANCONF) -Dstrip < $(binutils_TEXI) > strip.pod
 	-($(POD2MAN) strip.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
 	rm -f strip.pod
 
 elfedit.1:	$(binutils_TEXI) $(binutils_TEXINFOS)
 	touch $@
 	-$(TEXI2POD) $(MANCONF) -Delfedit < $(binutils_TEXI) > elfedit.pod
 	-($(POD2MAN) elfedit.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
 	rm -f elfedit.pod
 
 windres.1:	$(binutils_TEXI) $(binutils_TEXINFOS)
 	touch $@
 	-$(TEXI2POD) $(MANCONF) -Dwindres < $(binutils_TEXI) > windres.pod
 	-($(POD2MAN) windres.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
 	rm -f windres.pod
 
 windmc.1:	$(binutils_TEXI) $(binutils_TEXINFOS)
 	touch $@
 	-$(TEXI2POD) $(MANCONF) -Dwindmc < $(binutils_TEXI) > windmc.pod
 	-($(POD2MAN) windmc.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
 	rm -f windmc.pod
 
 cxxfilt.man:	$(binutils_TEXI) $(binutils_TEXINFOS)
 	touch $@
 	-$(TEXI2POD) $(MANCONF) -Dcxxfilt < $(binutils_TEXI) > $(DEMANGLER_NAME).pod
 	-($(POD2MAN) $(DEMANGLER_NAME).pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $@.T$$$$ && exit 1)
 	rm -f $(DEMANGLER_NAME).pod
 
 MAINTAINERCLEANFILES = config.texi
-MOSTLYCLEANFILES     = $(DEMANGLER_NAME).1
+MOSTLYCLEANFILES = $(DEMANGLER_NAME).1
 
 $(DEMANGLER_NAME).1: cxxfilt.man Makefile
 	if test -f cxxfilt.man; then \

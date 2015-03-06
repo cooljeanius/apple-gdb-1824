@@ -1,5 +1,5 @@
-#                                               -*- Autoconf -*-
-# Process this file with autoconf to produce a configure script.
+dnl#                                               -*- Autoconf -*-
+dnl# Process this file with autoconf to produce a configure script.
 
 # Copyright 2002 Free Software Foundation, Inc.
 
@@ -22,27 +22,45 @@
 AC_PREREQ([2.69])
 AC_INIT([spu],[0.5],[/dev/null])
 AC_CONFIG_SRCDIR([spu.c])
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_HEADERS([config.h])dnl
+
+# Use maintainer mode from automake:
+AM_MAINTAINER_MODE
 
 # Checks for programs.
 AC_PROG_CC
+AC_ARG_VAR([CLANG_ANALYZER],[Path to the clang static analyzer])dnl
+AC_CACHE_CHECK([for the clang static analyzer],[ac_cv_path_CLANG_ANALYZER],
+  [AC_PATH_PROGS_FEATURE_CHECK([CLANG_ANALYZER],
+    [clang clang++ clang-mp-3.5 clang-mp-3.4 clang-mp-3.3 clang-mp-3.2],
+    [[${ac_path_CLANG_ANALYZER} --analyze /dev/null > /dev/null 2>&1 && \
+      ac_cv_path_CLANG_ANALYZER=${ac_path_CLANG_ANALYZER}
+      ac_path_CLANG_ANALYZER_found=:]],
+    [AC_MSG_WARN([we will not be able to do static analysis with clang])],
+    [${PATH}])dnl# end program check
+  ])dnl# end cache check
+  ## (need this extra line here)
+AC_SUBST([CLANG_ANALYZER],[${ac_cv_path_CLANG_ANALYZER}])dnl
 AC_PROG_INSTALL
+AC_PROG_MKDIR_P
 
 dnl# Checks for header files.
 dnl# The program does NOT actually handle failure.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
-  AC_REQUIRE([AC_HEADER_STDC])
-])
+  AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE_HEADER_STDC
-AC_CHECK_HEADERS([ctype.h stdio.h time.h])
+AC_CHECK_HEADERS([ctype.h stdio.h time.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
+AC_C_PROTOTYPES
 
 dnl# Checks for library functions.
 dnl# The program does NOT actually handle failure.
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([fprintf memset strcmp strcpy strlen strtol xmalloc])
+AC_CHECK_FUNCS([fprintf memset strcmp strcpy strlen strtol xmalloc])dnl
 
+# Output.
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

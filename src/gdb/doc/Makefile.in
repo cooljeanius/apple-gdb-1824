@@ -755,7 +755,9 @@ gdbinit.5: $(GDB_DOC_FILES)
 
 force:
 
-Makefile: Makefile.in $(host_makefile_frag) $(target_makefile_frag) config.status
+both_makefile_frags = $(host_makefile_frag) $(target_makefile_frag)
+
+Makefile: Makefile.in $(both_makefile_frags) config.status
 	$(SHELL) ./config.status
 
 
@@ -797,3 +799,5 @@ uninstall: uninstall-info uninstall-man
 pdf-local:
 	@echo "FIXME: pdfs are broken"
 .PHONY: pdf-local
+
+check:

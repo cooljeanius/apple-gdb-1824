@@ -2295,9 +2295,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 ac_config_headers="$ac_config_headers config.h"
 
-
 my_CC=${CC-cc}
-
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -3364,8 +3362,8 @@ program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
 
 PROGS='cesetup$(EXEEXT)'
 
-
 # Checks for libraries.
+#FIXME: verify that libraries are the correct architecture; like other dirs
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for printf in -lc" >&5
 $as_echo_n "checking for printf in -lc... " >&6; }
@@ -3411,7 +3409,6 @@ _ACEOF
   LIBS="-lc $LIBS"
 
 fi
-
 
 # Checks for header files.
 ac_header_dirent=no
@@ -3982,7 +3979,6 @@ fi
 
 done
 
-
 # Checks for typedefs, structures, and compiler characteristics.
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
 $as_echo_n "checking whether byte ordering is bigendian... " >&6; }
@@ -4298,7 +4294,6 @@ cat >>confdefs.h <<_ACEOF
 #define SIZEOF_INT $ac_cv_sizeof_int
 _ACEOF
 
-
 # The cast to long int works around a bug in the HP C Compiler,
 # see AC_CHECK_SIZEOF for more information.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of int" >&5
@@ -4332,7 +4327,6 @@ $as_echo "$ac_cv_alignof_int" >&6; }
 cat >>confdefs.h <<_ACEOF
 #define ALIGNOF_INT $ac_cv_alignof_int
 _ACEOF
-
 
 
 # Checks for library functions.
@@ -4403,6 +4397,114 @@ $as_echo "#define malloc rpl_malloc" >>confdefs.h
 fi
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether lstat correctly handles trailing slash" >&5
+$as_echo_n "checking whether lstat correctly handles trailing slash... " >&6; }
+if ${ac_cv_func_lstat_dereferences_slashed_symlink+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  rm -f conftest.sym conftest.file
+echo >conftest.file
+if test "$as_ln_s" = "ln -s" && ln -s conftest.file conftest.sym; then
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_lstat_dereferences_slashed_symlink=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+struct stat sbuf;
+     /* Linux will dereference the symlink and fail, as required by POSIX.
+	That is better in the sense that it means we will not
+	have to compile and use the lstat wrapper.  */
+     return lstat ("conftest.sym/", &sbuf) == 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_lstat_dereferences_slashed_symlink=yes
+else
+  ac_cv_func_lstat_dereferences_slashed_symlink=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+else
+  # If the `ln -s' command failed, then we probably don't even
+  # have an lstat function.
+  ac_cv_func_lstat_dereferences_slashed_symlink=no
+fi
+rm -f conftest.sym conftest.file
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_lstat_dereferences_slashed_symlink" >&5
+$as_echo "$ac_cv_func_lstat_dereferences_slashed_symlink" >&6; }
+
+test $ac_cv_func_lstat_dereferences_slashed_symlink = yes &&
+
+cat >>confdefs.h <<_ACEOF
+#define LSTAT_FOLLOWS_SLASHED_SYMLINK 1
+_ACEOF
+
+
+if test "x$ac_cv_func_lstat_dereferences_slashed_symlink" = xno; then
+  case " $LIBOBJS " in
+  *" lstat.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS lstat.$ac_objext"
+ ;;
+esac
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether stat accepts an empty string" >&5
+$as_echo_n "checking whether stat accepts an empty string... " >&6; }
+if ${ac_cv_func_stat_empty_string_bug+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_stat_empty_string_bug=yes
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+struct stat sbuf;
+  return stat ("", &sbuf) == 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_stat_empty_string_bug=no
+else
+  ac_cv_func_stat_empty_string_bug=yes
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_stat_empty_string_bug" >&5
+$as_echo "$ac_cv_func_stat_empty_string_bug" >&6; }
+if test $ac_cv_func_stat_empty_string_bug = yes; then
+  case " $LIBOBJS " in
+  *" stat.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS stat.$ac_objext"
+ ;;
+esac
+
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_STAT_EMPTY_STRING_BUG 1
+_ACEOF
+
+fi
+
 for ac_func in exit fclose fopen fprintf fputs isupper memcmp memset \
                 memcpy strcasecmp strchr strncasecmp strstr tolower
 do :
@@ -4416,7 +4518,7 @@ _ACEOF
 fi
 done
 
-
+# Output.
 ac_config_files="$ac_config_files Makefile"
 
 cat >confcache <<\_ACEOF

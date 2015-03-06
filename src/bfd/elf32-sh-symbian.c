@@ -105,68 +105,68 @@ typedef struct symbol_rename
 }
 symbol_rename;
 
-static symbol_rename * rename_list = NULL;
+static symbol_rename *rename_list = NULL;
 
-/* Accumulate a list of symbols to be renamed.  */
-
+/* Accumulate a list of symbols to be renamed: */
 static bfd_boolean
-sh_symbian_import_as (struct bfd_link_info *info, bfd * abfd,
-		      char * current_name, char * new_name)
+sh_symbian_import_as(struct bfd_link_info *info, bfd *abfd,
+		     char *current_name, char *new_name)
 {
-  struct elf_link_hash_entry * new_hash;
-  symbol_rename * node;
+  struct elf_link_hash_entry *new_hash;
+  symbol_rename *node;
 
   if (DEBUG)
-    fprintf (stderr, "IMPORT '%s' AS '%s'\n", current_name, new_name);
+    fprintf(stderr, "IMPORT '%s' AS '%s'\n", current_name, new_name);
 
   for (node = rename_list; node; node = node->next)
-    if (strcmp (node->current_name, current_name) == 0)
+    if (strcmp(node->current_name, current_name) == 0)
       {
-	if (strcmp (node->new_name, new_name) == 0)
-	  /* Already added to rename list.  */
+	if (strcmp(node->new_name, new_name) == 0)
+	  /* Already added to rename list: */
 	  return TRUE;
 
-	bfd_set_error (bfd_error_invalid_operation);
-	_bfd_error_handler (_("%B: IMPORT AS directive for %s conceals previous IMPORT AS"),
-			    abfd, current_name);
+	bfd_set_error(bfd_error_invalid_operation);
+	_bfd_error_handler(_("%B: IMPORT AS directive for %s conceals previous IMPORT AS"),
+			   abfd, current_name);
 	return FALSE;
       }
 
-  if ((node = bfd_malloc (sizeof * node)) == NULL)
+  if ((node = (symbol_rename *)bfd_malloc(sizeof(* node))) == NULL)
     {
       if (DEBUG)
-	fprintf (stderr, "IMPORT AS: No mem for new rename node\n");
+	fprintf(stderr, "IMPORT AS: No mem for new rename node\n");
       return FALSE;
     }
 
-  if ((node->current_name = bfd_malloc (strlen (current_name) + 1)) == NULL)
+  if ((node->current_name = (char *)bfd_malloc(strlen(current_name) + 1UL)) == NULL)
     {
       if (DEBUG)
-	fprintf (stderr, "IMPORT AS: No mem for current name field in rename node\n");
-      free (node);
+	fprintf(stderr, "IMPORT AS: No mem for current name field in rename node\n");
+      free(node);
       return FALSE;
     }
   else
-    strcpy (node->current_name, current_name);
+    strcpy(node->current_name, current_name);
 
-  if ((node->new_name = bfd_malloc (strlen (new_name) + 1)) == NULL)
+  if ((node->new_name = (char *)bfd_malloc(strlen(new_name) + 1)) == NULL)
     {
       if (DEBUG)
-	fprintf (stderr, "IMPORT AS: No mem for new name field in rename node\n");
-      free (node->current_name);
-      free (node);
+	fprintf(stderr, "IMPORT AS: No mem for new name field in rename node\n");
+      free(node->current_name);
+      free(node);
       return FALSE;
     }
   else
-    strcpy (node->new_name, new_name);
+    strcpy(node->new_name, new_name);
 
   node->next = rename_list;
   node->current_hash = NULL;
   node->new_symndx = 0;
   rename_list = node;
 
-  new_hash = elf_link_hash_lookup (elf_hash_table (info), node->new_name, TRUE, FALSE, TRUE);
-  bfd_elf_link_record_dynamic_symbol (info, new_hash);
+  new_hash = elf_link_hash_lookup(elf_hash_table(info), node->new_name,
+                                  TRUE, FALSE, TRUE);
+  bfd_elf_link_record_dynamic_symbol(info, new_hash);
   if (new_hash->root.type == bfd_link_hash_new)
     new_hash->root.type = bfd_link_hash_undefined;
 
@@ -175,10 +175,10 @@ sh_symbian_import_as (struct bfd_link_info *info, bfd * abfd,
 
 
 static bfd_boolean
-sh_symbian_import (bfd * abfd ATTRIBUTE_UNUSED, char * name)
+sh_symbian_import(bfd *abfd ATTRIBUTE_UNUSED, char *name)
 {
   if (DEBUG)
-    fprintf (stderr, "IMPORT '%s'\n", name);
+    fprintf(stderr, "IMPORT '%s'\n", name);
 
   /* XXX: Generate an import somehow ?  */
 
@@ -395,26 +395,26 @@ sh_symbian_process_embedded_commands (struct bfd_link_info *info, bfd * abfd,
 bfd_boolean bfd_elf32_sh_symbian_process_directives (struct bfd_link_info *info, bfd * abfd);
 
 bfd_boolean
-bfd_elf32_sh_symbian_process_directives (struct bfd_link_info *info, bfd * abfd)
+bfd_elf32_sh_symbian_process_directives(struct bfd_link_info *info, bfd * abfd)
 {
   bfd_boolean result = FALSE;
-  bfd_byte *  contents;
-  asection *  sec = bfd_get_section_by_name (abfd, ".directive");
+  bfd_byte *contents;
+  asection *sec = bfd_get_section_by_name(abfd, ".directive");
   bfd_size_type sz;
 
   if (!sec)
     return TRUE;
 
-  sz = sec->rawsize ? sec->rawsize : sec->size;
-  contents = bfd_malloc (sz);
+  sz = (sec->rawsize ? sec->rawsize : sec->size);
+  contents = (bfd_byte *)bfd_malloc(sz);
 
   if (!contents)
-    bfd_set_error (bfd_error_no_memory);
+    bfd_set_error(bfd_error_no_memory);
   else
     {
-      if (bfd_get_section_contents (abfd, sec, contents, 0, sz))
-	result = sh_symbian_process_embedded_commands (info, abfd, sec, contents);
-      free (contents);
+      if (bfd_get_section_contents(abfd, sec, contents, 0, sz))
+	result = sh_symbian_process_embedded_commands(info, abfd, sec, contents);
+      free(contents);
     }
 
   return result;
@@ -534,79 +534,81 @@ sh_symbian_relocate_section (bfd *                  output_bfd,
 	     include this extra symbol.  */
 	  if (h == sym_hashes_end)
 	    {
-	      struct elf_link_hash_entry **  new_sym_hashes;
+	      struct elf_link_hash_entry **new_sym_hashes;
 
-	      /* This is not very efficient, but it works.  */
-	      ++ num_global_syms;
-	      new_sym_hashes = bfd_alloc (input_bfd, num_global_syms * sizeof * sym_hashes);
+	      /* This is not very efficient, but it works: */
+	      ++num_global_syms;
+	      new_sym_hashes = ((struct elf_link_hash_entry **)
+                                bfd_alloc(input_bfd,
+                                          (num_global_syms * sizeof(* sym_hashes))));
 	      if (new_sym_hashes == NULL)
 		{
 		  if (DEBUG)
-		    fprintf (stderr, "Out of memory extending hash table\n");
+		    fprintf(stderr, "Out of memory extending hash table\n");
 		  continue;
 		}
-	      memcpy (new_sym_hashes, sym_hashes, (num_global_syms - 1) * sizeof * sym_hashes);
+	      memcpy(new_sym_hashes, sym_hashes, ((num_global_syms - 1) * sizeof(* sym_hashes)));
 	      new_sym_hashes[num_global_syms - 1] = new_hash;
 	      elf_sym_hashes (input_bfd) = sym_hashes = new_sym_hashes;
-	      sym_hashes_end = sym_hashes + num_global_syms;
-	      symtab_hdr->sh_size  = (num_global_syms + num_local_syms) * sizeof (Elf32_External_Sym);
+	      sym_hashes_end = (sym_hashes + num_global_syms);
+	      symtab_hdr->sh_size  = (num_global_syms + num_local_syms) * sizeof(Elf32_External_Sym);
 
-	      ptr->new_symndx = num_global_syms - 1 + num_local_syms;
+	      ptr->new_symndx = (num_global_syms - 1 + num_local_syms);
 
 	      if (DEBUG)
-		fprintf (stderr, "Extended symbol hash table to insert new symbol as index %ld\n",
-			 ptr->new_symndx);
+		fprintf(stderr, "Extended symbol hash table to insert new symbol as index %ld\n",
+                        ptr->new_symndx);
 	    }
 	}
 
       /* Walk the reloc list looking for references to renamed symbols.
 	 When we find one, we alter the index in the reloc to point to the new symbol.  */
-      for (rel = relocs, relend = relocs + input_section->reloc_count;
+      for (rel = relocs, relend = (relocs + input_section->reloc_count);
 	   rel < relend;
 	   rel ++)
 	{
-	  int                          r_type;
-	  unsigned long                r_symndx;
-	  struct elf_link_hash_entry * h;
+	  int r_type;
+	  unsigned long r_symndx;
+	  struct elf_link_hash_entry *h;
 
-	  r_symndx = ELF32_R_SYM (rel->r_info);
-	  r_type = ELF32_R_TYPE (rel->r_info);
+	  r_symndx = ELF32_R_SYM(rel->r_info);
+	  r_type = ELF32_R_TYPE(rel->r_info);
 
-	  /* Ignore unused relocs.  */
-	  if ((r_type >= (int) R_SH_GNU_VTINHERIT
-	       && r_type <= (int) R_SH_LABEL)
-	      || r_type == (int) R_SH_NONE
-	      || r_type < 0
-	      || r_type >= R_SH_max)
+	  /* Ignore unused relocs: */
+	  if (((r_type >= (int)R_SH_GNU_VTINHERIT)
+	       && (r_type <= (int)R_SH_LABEL))
+	      || (r_type == (int)R_SH_NONE)
+	      || (r_type < 0)
+	      || (r_type >= R_SH_max))
 	    continue;
 
-	  /* Ignore relocs against local symbols.  */
+	  /* Ignore relocs against local symbols: */
 	  if (r_symndx < num_local_syms)
 	    continue;
 
-	  BFD_ASSERT (r_symndx < (num_global_syms + num_local_syms));
+	  BFD_ASSERT(r_symndx < (num_global_syms + num_local_syms));
 	  h = sym_hashes[r_symndx - num_local_syms];
-	  BFD_ASSERT (h != NULL);
+	  BFD_ASSERT(h != NULL);
 
-	  while (   h->root.type == bfd_link_hash_indirect
-		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	  while ((h->root.type == bfd_link_hash_indirect)
+		 || (h->root.type == bfd_link_hash_warning))
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 
 	  /* If the symbol is defined there is no need to rename it.
 	     XXX - is this true ?  */
-	  if (   h->root.type == bfd_link_hash_defined
-	      || h->root.type == bfd_link_hash_defweak
-	      || h->root.type == bfd_link_hash_undefweak)
+	  if ((h->root.type == bfd_link_hash_defined)
+	      || (h->root.type == bfd_link_hash_defweak)
+	      || (h->root.type == bfd_link_hash_undefweak))
 	    continue;
 
 	  for (ptr = rename_list; ptr; ptr = ptr->next)
 	    if (h == ptr->current_hash)
 	      {
-		BFD_ASSERT (ptr->new_symndx);
+		BFD_ASSERT(ptr->new_symndx);
 		if (DEBUG)
-		  fprintf (stderr, "convert reloc %lx from using index %ld to using index %ld\n",
-			   (long) rel->r_info, (long) ELF32_R_SYM (rel->r_info), ptr->new_symndx);
-		rel->r_info = ELF32_R_INFO (ptr->new_symndx, r_type);
+		  fprintf(stderr, "convert reloc %lx from using index %ld to using index %ld\n",
+                          (long)rel->r_info, (long)ELF32_R_SYM(rel->r_info), ptr->new_symndx);
+		rel->r_info = ELF32_R_INFO(ptr->new_symndx, r_type);
 		break;
 	      }
 	}
