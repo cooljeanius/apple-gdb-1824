@@ -1,6 +1,6 @@
 /* cesetup.c - copy/edit/rename CE SDK files into GNU install area
-   Copyright 1999 Free Software Foundation, Inc.
-
+ * Copyright 1999 Free Software Foundation, Inc.  */
+/*
 This file is part of GNU Binutils.
 
 This program is free software; you can redistribute it and/or modify
@@ -20,34 +20,46 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning cesetup.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning cesetup.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #include "libiberty.h"
 #ifdef HAVE_CTYPE_H
 # include <ctype.h>
 #else
-# warning cesetup.c expects <ctype.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "cesetup.c expects <ctype.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CTYPE_H */
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning cesetup.c expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "cesetup.c expects <stdio.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning cesetup.c expects <stdlib.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "cesetup.c expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H */
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning cesetup.c expects <sys/types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "cesetup.c expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #else
-# warning cesetup.c expects <sys/stat.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "cesetup.c expects <sys/stat.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_STAT_H */
 #ifdef HAVE_STRING_H
 # include <string.h>
@@ -55,52 +67,56 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 # ifdef HAVE_STRINGS_H
 #  include <strings.h>
 # else
-#  warning cesetup.c expects either <string.h> or <strings.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "cesetup.c expects a string-related header to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_STRINGS_H */
 #endif /* HAVE_STRING_H */
 #ifdef HAVE_DIRENT_H
 # include <dirent.h>
 #else
-# warning cesetup.c expects <dirent.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "cesetup.c expects <dirent.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_DIRENT_H */
 
 static char *
-strlwr (char *s)
+strlwr(char *s)
 {
   char *in_s = s;
   while (*s)
     {
-      if (isupper (*s))
-	*s = tolower (*s);
+      if (isupper(*s))
+	*s = (char)tolower(*s);
       s++;
     }
   return in_s;
 }
 int
-copy_include (char *srcn, char *destn)
+copy_include(char *srcn, char *destn)
 {
   FILE *src, *dest;
   char line[4096], *q;
   int w;
 
-  src = fopen (srcn, "rb");
+  src = fopen(srcn, "rb");
   if (!src)
     {
-      perror (srcn);
+      perror(srcn);
       return 1;
     }
-  dest = fopen (destn, "wb");
+  dest = fopen(destn, "wb");
   if (!dest)
     {
-      fclose (src);
-      perror (destn);
+      fclose(src);
+      perror(destn);
       return 1;
     }
 
-  while (fgets (line, 4096, src))
+  while (fgets(line, 4096, src))
     {
-      char *last = line + strlen (line);
-      if (last[-1] == '\n' && last[-2] == '\r')
+      char *last = (line + strlen(line));
+      if ((last[-1] == '\n') && (last[-2] == '\r'))
 	{
 	  last[-2] = '\n';
 	  last[-1] = 0;
@@ -108,31 +124,31 @@ copy_include (char *srcn, char *destn)
 
       if (strstr(destn, "stdlib.h"))
 	{
-	  if (strstr (line, "typedef char *va_list"))
+	  if (strstr(line, "typedef char *va_list"))
 	    {
-	      fprintf (dest, "#include <stdarg.h>\n");
+	      fprintf(dest, "#include <stdarg.h>\n");
 	      continue;
 	    }
-	  if (strstr (line, "#define va_start"))
+	  if (strstr(line, "#define va_start"))
 	    continue;
-	  if (strstr (line, "#define va_arg"))
+	  if (strstr(line, "#define va_arg"))
 	    continue;
-	  if (strstr (line, "#define va_end"))
+	  if (strstr(line, "#define va_end"))
 	    continue;
-	  if (strstr (line, "#define _INTSIZEOF"))
+	  if (strstr(line, "#define _INTSIZEOF"))
 	    continue;
-	  if (strstr (line, "memcmp("))
+	  if (strstr(line, "memcmp("))
 	    continue;
-	  if (strstr (line, "memset("))
+	  if (strstr(line, "memset("))
 	    continue;
-	  if (strstr (line, "memcpy("))
+	  if (strstr(line, "memcpy("))
 	    continue;
-	  if (strstr (line, "matherr(struct"))
+	  if (strstr(line, "matherr(struct"))
 	    continue;
 	}
 
-	/* -Wparentheses said to add extra parentheses around the following: */
-      if ((q = strstr (line, "[];")))
+      /* '-Wparentheses' said to add extra parentheses around this: */
+      if ((q = strstr(line, "[];")))
 	{
 	  *q = 0;
 	  fprintf(dest, "%s[0%s", line, q+1);
@@ -140,70 +156,70 @@ copy_include (char *srcn, char *destn)
 	  continue;
 	}
 
-      if (strstr (line, "_VARIANT_BOOL"))
+      if (strstr(line, "_VARIANT_BOOL"))
 	continue;
 
-      if (strstr (line, "extern void __asm"))
+      if (strstr(line, "extern void __asm"))
 	continue;
 
-      if (strncmp (line, "#define DebugBreak () __asm (", 27) == 0)
+      if (strncmp(line, "#define DebugBreak () __asm (", 27) == 0)
 	{
-	  fprintf (dest, "#define DebugBreak () __asm__(%s", line+27);
+	  fprintf(dest, "#define DebugBreak () __asm__(%s", (line + 27));
 	  continue;
 	}
 
-      w = fputs (line, dest);
+      w = fputs(line, dest);
       if (w < 0)
 	{
-	  fclose (src);
-	  fclose (dest);
-	  fprintf (stderr, "%s: out of disk space!\n", destn);
-	  exit (1);
+	  fclose(src);
+	  fclose(dest);
+	  fprintf(stderr, "%s: out of disk space!\n", destn);
+	  exit(1);
 	}
     }
-  fclose (src);
-  fclose (dest);
+  fclose(src);
+  fclose(dest);
   return 0;
 }
 
 int
-copy_lib (char *srcn, char *destn)
+copy_lib(char *srcn, char *destn)
 {
   FILE *src, *dest;
   char buffer[4096];
-  int r, w;
+  size_t r, w;
 
-  src = fopen (srcn, "rb");
+  src = fopen(srcn, "rb");
   if (!src)
     {
-      perror (srcn);
+      perror(srcn);
       return 1;
     }
-  dest = fopen (destn, "wb");
+  dest = fopen(destn, "wb");
   if (!dest)
     {
-      fclose (src);
-      perror (destn);
+      fclose(src);
+      perror(destn);
       return 1;
     }
-  while ((r = fread (buffer, 1, 4096, src)) > 0)
+  while ((r = fread(buffer, 1UL, 4096UL, src)) > 0)
     {
-      w = fwrite (buffer, 1, r, dest);
+      w = fwrite(buffer, 1UL, r, dest);
       if (w < r)
 	{
-	  fclose (src);
-	  fclose (dest);
-	  fprintf (stderr, "%s: out of disk space!\n", destn);
-	  exit (1);
+	  fclose(src);
+	  fclose(dest);
+	  fprintf(stderr, "%s: out of disk space!\n", destn);
+	  exit(1);
 	}
     }
-  fclose (src);
-  fclose (dest);
+  fclose(src);
+  fclose(dest);
   return 0;
 }
 
 int
-main (int argc, char **argv)
+main(int argc, char **argv)
 {
   char *psdk_dir;
   char *gnu_dir;
@@ -217,49 +233,49 @@ main (int argc, char **argv)
 
   if (argc < 2)
     {
-      printf ("Type in the location of the CE Platform SDK : ");
-      fflush (stdout);
-      fgets (line, 1000, stdin);
-      while (line[0] && (line[strlen (line)-1] == '\r'
-			 || line[strlen (line)-1] == '\n'))
-	line[strlen (line)-1] = 0;
-      psdk_dir = (char *)malloc (strlen (line)+1);
-      strcpy (psdk_dir, line);
+      printf("Type in the location of the CE Platform SDK : ");
+      fflush(stdout);
+      fgets(line, 1000, stdin);
+      while (line[0] && ((line[strlen(line) - 1] == '\r')
+			 || (line[strlen(line) - 1] == '\n')))
+	line[strlen(line) - 1] = 0;
+      psdk_dir = (char *)malloc(strlen(line) + 1UL);
+      strcpy(psdk_dir, line);
     }
   else
     psdk_dir = argv[1];
 
-  sprintf (line, "%s/include/windows.h", psdk_dir);
-  rv = stat (line, &statbuf);
+  sprintf(line, "%s/include/windows.h", psdk_dir);
+  rv = stat(line, &statbuf);
   if (rv < 0)
     {
-      printf ("Error: could not find %s - verify the PSDK dir.\n", line);
-      exit (1);
+      printf("Error: could not find %s - verify the PSDK dir.\n", line);
+      exit(1);
     }
 
   if (argc < 3)
     {
-      printf ("Type in the location of the GNU CE Tools installation : ");
-      fflush (stdout);
-      fgets (line, 1000, stdin);
-      while (line[0] && (line[strlen (line)-1] == '\r'
-			 || line[strlen (line)-1] == '\n'))
-	line[strlen (line)-1] = 0;
-      gnu_dir = (char *)malloc (strlen (line)+1);
-      strcpy (gnu_dir, line);
+      printf("Type in the location of the GNU CE Tools installation : ");
+      fflush(stdout);
+      fgets(line, 1000, stdin);
+      while (line[0] && ((line[strlen(line) - 1] == '\r')
+			 || (line[strlen(line) - 1] == '\n')))
+	line[strlen(line) - 1] = 0;
+      gnu_dir = (char *)malloc(strlen(line) + 1UL);
+      strcpy(gnu_dir, line);
     }
   else
     gnu_dir = argv[2];
 
-  sprintf (line, "%s", gnu_dir);
-  dir = opendir (line);
+  sprintf(line, "%s", gnu_dir);
+  dir = opendir(line);
   if (!dir)
     {
-      printf ("Error: could not find %s - verify the GNU dir.\n", line);
-      exit (1);
+      printf("Error: could not find %s - verify the GNU dir.\n", line);
+      exit(1);
     }
 
-  while ((de = readdir (dir)) != 0)
+  while ((de = readdir(dir)) != 0)
     {
       char *platform;
       int rv;
@@ -267,73 +283,73 @@ main (int argc, char **argv)
       DIR *idir;
       struct dirent *ide;
 
-      if (strchr (de->d_name, '-') == 0)
+      if (strchr(de->d_name, '-') == 0)
 	continue;
 
-      sprintf (line, "%s/%s/include/.", gnu_dir, de->d_name);
-      rv = stat (line, &statbuf);
+      sprintf(line, "%s/%s/include/.", gnu_dir, de->d_name);
+      rv = stat(line, &statbuf);
       if (rv < 0)
 	continue;
 
-      if (strncasecmp (de->d_name, "sh", 2) == 0)
+      if (strncasecmp(de->d_name, "sh", 2) == 0)
 	platform = "sh3";
-      else if (strncasecmp (de->d_name, "mips", 4) == 0)
+      else if (strncasecmp(de->d_name, "mips", 4) == 0)
 	platform = "mips";
-      else if (strncasecmp (de->d_name, "arm", 3) == 0)
+      else if (strncasecmp(de->d_name, "arm", 3) == 0)
 	platform = "arm";
       else
 	continue;
 
-      printf ("Installing %s files into %s/%s\n", platform, gnu_dir, de->d_name);
+      printf("Installing %s files into %s/%s\n", platform, gnu_dir, de->d_name);
 
-      sprintf (line, "%s/include", psdk_dir);
-      idir = opendir (line);
+      sprintf(line, "%s/include", psdk_dir);
+      idir = opendir(line);
       if (!idir)
 	{
-	  printf ("Cannot read %s\n", line);
-	  exit (1);
+	  printf("Cannot read %s\n", line);
+	  exit(1);
 	}
       count = 0;
-      while ((ide = readdir (idir)) != 0)
+      while ((ide = readdir(idir)) != 0)
 	{
 	  if (ide->d_name[0] == '.')
 	    continue;
-	  sprintf (line, "%s/include/%s", psdk_dir, ide->d_name);
-	  sprintf (line2, "%s/%s/include/%s", gnu_dir, de->d_name, strlwr(ide->d_name));
+	  sprintf(line, "%s/include/%s", psdk_dir, ide->d_name);
+	  sprintf(line2, "%s/%s/include/%s", gnu_dir, de->d_name, strlwr(ide->d_name));
 
-	  copy_include (line, line2);
+	  copy_include(line, line2);
 	  count ++;
 	}
-      printf ("%d headers converted and copied\n", count);
+      printf("%d headers converted and copied\n", count);
 
-      sprintf (line, "%s/lib/%s", psdk_dir, platform);
-      idir = opendir (line);
+      sprintf(line, "%s/lib/%s", psdk_dir, platform);
+      idir = opendir(line);
       if (!idir)
 	{
-	  printf ("Cannot read %s\n", line);
-	  exit (1);
+	  printf("Cannot read %s\n", line);
+	  exit(1);
 	}
       count = 0;
-      while ((ide = readdir (idir)) != 0)
+      while ((ide = readdir(idir)) != 0)
 	{
 	  if (ide->d_name[0] == '.')
 	    continue;
 
-	  sprintf (line, "%s/lib/%s/%s", psdk_dir, platform, ide->d_name);
+	  sprintf(line, "%s/lib/%s/%s", psdk_dir, platform, ide->d_name);
 
-		if (strcasecmp (ide->d_name + strlen (ide->d_name) - 4, ".lib") == 0) {
-			strcpy (ide->d_name + strlen (ide->d_name) - 4, ".a");
-		}
-		if (strcasecmp (ide->d_name, "corelibc.a") == 0) {
-			strcpy (ide->d_name, "c.a");
-		}
+          if (strcasecmp(ide->d_name + strlen (ide->d_name) - 4, ".lib") == 0) {
+            strcpy(ide->d_name + strlen(ide->d_name) - 4, ".a");
+          }
+          if (strcasecmp(ide->d_name, "corelibc.a") == 0) {
+            strcpy(ide->d_name, "c.a");
+          }
 
-	  sprintf (line2, "%s/%s/lib/lib%s", gnu_dir, de->d_name, strlwr (ide->d_name));
+	  sprintf(line2, "%s/%s/lib/lib%s", gnu_dir, de->d_name, strlwr(ide->d_name));
 
-	  copy_lib (line, line2);
+	  copy_lib(line, line2);
 	  count++;
 	}
-      printf ("%d libraries copied and renamed\n", count);
+      printf("%d libraries copied and renamed\n", count);
     }
   return 0;
 }

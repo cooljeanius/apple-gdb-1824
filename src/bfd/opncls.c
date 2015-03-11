@@ -436,9 +436,9 @@ DESCRIPTION
 */
 
 bfd *
-bfd_openr (const char *filename, const char *target)
+bfd_openr(const char *filename, const char *target)
 {
-  return bfd_fopen (filename, target, FOPEN_RB, -1);
+  return bfd_fopen(filename, target, FOPEN_RB, -1);
 }
 
 /* Do NOT try to `optimize' this function:
@@ -475,7 +475,7 @@ DESCRIPTION
 */
 
 bfd *
-bfd_fdopenr (const char *filename, const char *target, int fd)
+bfd_fdopenr(const char *filename, const char *target, int fd)
 {
   const char *mode;
 #if defined(HAVE_FCNTL) && defined(F_GETFL)
@@ -485,10 +485,10 @@ bfd_fdopenr (const char *filename, const char *target, int fd)
 #if !defined(HAVE_FCNTL) || !defined(F_GETFL)
   mode = FOPEN_RUB; /* Assume full access.  */
 #else
-  fdflags = fcntl (fd, F_GETFL, NULL);
+  fdflags = fcntl(fd, F_GETFL, NULL);
   if (fdflags == -1)
     {
-      bfd_set_error (bfd_error_system_call);
+      bfd_set_error(bfd_error_system_call);
       return NULL;
     }
 
@@ -497,12 +497,12 @@ bfd_fdopenr (const char *filename, const char *target, int fd)
     {
     case O_RDONLY: mode = FOPEN_RB; break;
     case O_WRONLY: mode = FOPEN_RUB; break;
-    case O_RDWR:   mode = FOPEN_RUB; break;
-    default: abort ();
+    case O_RDWR: mode = FOPEN_RUB; break;
+    default: abort();
     }
 #endif /* !HAVE_FCNTL || !F_GETFL */
 
-  return bfd_fopen (filename, target, mode, fd);
+  return bfd_fopen(filename, target, mode, fd);
 }
 
 /*

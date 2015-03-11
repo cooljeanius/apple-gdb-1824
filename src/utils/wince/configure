@@ -626,7 +626,10 @@ LIBOBJS
 EGREP
 GREP
 CPP
+LD_ARCHFLAGS
 PROGS
+TARGET_ARCHITECTURE
+HOST_ARCHITECTURE
 target_os
 target_vendor
 target_cpu
@@ -1940,6 +1943,52 @@ $as_echo "$ac_res" >&6; }
   eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
 
 } # ac_fn_c_check_func
+
+# ac_fn_c_check_decl LINENO SYMBOL VAR INCLUDES
+# ---------------------------------------------
+# Tests whether SYMBOL is declared in INCLUDES, setting cache variable VAR
+# accordingly.
+ac_fn_c_check_decl ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  as_decl_name=`echo $2|sed 's/ *(.*//'`
+  as_decl_use=`echo $2|sed -e 's/(/((/' -e 's/)/) 0&/' -e 's/,/) 0& (/g'`
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $as_decl_name is declared" >&5
+$as_echo_n "checking whether $as_decl_name is declared... " >&6; }
+if eval \${$3+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+int
+main ()
+{
+#ifndef $as_decl_name
+#ifdef __cplusplus
+  (void) $as_decl_use;
+#else
+  (void) $as_decl_name;
+#endif
+#endif
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$3=yes"
+else
+  eval "$3=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+eval ac_res=\$$3
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+
+} # ac_fn_c_check_decl
 cat >config.log <<_ACEOF
 This file contains any messages produced by compilers while
 running configure, to aid debugging if configure makes a mistake.
@@ -3360,11 +3409,56 @@ ac_script='s/[\\$]/&&/g;s/;s,x,x,$//'
 program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
 
 
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+    ## TODO: might also want to do likewise with the build arch...
+fi
+
 PROGS='cesetup$(EXEEXT)'
 
 # Checks for libraries.
-#FIXME: verify that libraries are the correct architecture; like other dirs
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for linker flag to verify linked libraries have the correct architecture" >&5
+$as_echo_n "checking for linker flag to verify linked libraries have the correct architecture... " >&6; }
+# Make sure this is done here:
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+pre_saved_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-arch_errors_fatal"
 
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  LD_ARCHFLAGS="${acl_cv_wl}-arch_errors_fatal"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LDFLAGS="${pre_saved_LDFLAGS}"
+if test "x${LD_ARCHFLAGS}" != "x"; then
+  test -n "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${LD_ARCHFLAGS}" >&5
+$as_echo "${LD_ARCHFLAGS}" >&6; }
+    ## that should be all we need to do with them for now...
+else
+  test -z "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: none" >&5
+$as_echo "none" >&6; }
+fi
+# check arch when "main()" is the only function for which we check:
+ARCHLESS_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for printf in -lc" >&5
 $as_echo_n "checking for printf in -lc... " >&6; }
 if ${ac_cv_lib_c_printf+:} false; then :
@@ -3409,6 +3503,8 @@ _ACEOF
   LIBS="-lc $LIBS"
 
 fi
+  ## reset these:
+LDFLAGS="${ARCHLESS_LDFLAGS}"
 
 # Checks for header files.
 ac_header_dirent=no
@@ -4517,6 +4613,17 @@ _ACEOF
 
 fi
 done
+ac_fn_c_check_decl "$LINENO" "basename" "ac_cv_have_decl_basename" "$ac_includes_default"
+if test "x$ac_cv_have_decl_basename" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_BASENAME $ac_have_decl
+_ACEOF
+
 
 # Output.
 ac_config_files="$ac_config_files Makefile"

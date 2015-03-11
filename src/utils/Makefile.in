@@ -21,6 +21,12 @@
 
 SHELL = /bin/sh
 
+CC = @CC@
+CFLAGS = @CFLAGS@
+
+AR = @AR@
+AS = @CCAS@
+
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 bindir = @bindir@
@@ -65,7 +71,8 @@ maintainer-clean: maintainer-clean-amd-udi maintainer-clean-misc maintainer-clea
 clean mostlyclean:
 	-rm -f *~ core *.o a.out 
 maintainer-clean distclean:
-	-rm -f Makefile config.status config.log config.cache *~ core *.o a.out 
+	-rm -f Makefile config.status *.log config.cache *~ core *.o a.out
+	-find . -name .DS_Store -delete 
 
 info:
 install-info:

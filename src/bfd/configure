@@ -22770,10 +22770,10 @@ $as_echo "no" >&6; }
 fi
 
 
-for ac_func in btowc close exit fcntl fdopen feof ferror fileno fopen \
-                fprintf fread getgid getrlimit getuid islower isspace \
-                isupper mbsrtowcs memchr memmove mempcpy memset open \
-                pread qsort rpl_malloc rpl_realloc setitimer strcmp \
+for ac_func in btowc calloc close exit fcntl fdopen feof ferror fileno \
+                fopen fprintf fread getgid getrlimit getuid islower \
+                isspace isupper mbsrtowcs memchr memmove mempcpy memset \
+                open pread qsort rpl_malloc rpl_realloc setitimer strcmp \
                 strdup strncasecmp strrchr strspn strstr strtol strtoul \
                 strtoull sysconf system uname wmempcpy
 do :

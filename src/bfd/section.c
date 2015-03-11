@@ -1433,18 +1433,18 @@ bfd_get_section_contents(bfd *abfd, sec_ptr section, void *location,
 
   if ((section->flags & SEC_HAS_CONTENTS) == 0)
     {
-      memset (location, 0, (size_t) count);
+      memset(location, 0, (size_t)count);
       return TRUE;
     }
 
   if ((section->flags & SEC_IN_MEMORY) != 0)
     {
-      memcpy (location, section->contents + offset, (size_t) count);
+      memcpy(location, section->contents + offset, (size_t)count);
       return TRUE;
     }
 
-  return BFD_SEND (abfd, _bfd_get_section_contents,
-		   (abfd, section, location, offset, count));
+  return BFD_SEND(abfd, _bfd_get_section_contents,
+                  (abfd, section, location, offset, count));
 }
 
 /*

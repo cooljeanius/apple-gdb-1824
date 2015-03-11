@@ -634,10 +634,10 @@ AC_CHECK_MEMBERS([struct user.u_comm],[],[
 AC_MSG_CHECKING([functions])
 AC_MSG_RESULT([ ])
 AM_WITH_DMALLOC
-AC_CHECK_FUNCS([btowc close exit fcntl fdopen feof ferror fileno fopen \
-                fprintf fread getgid getrlimit getuid islower isspace \
-                isupper mbsrtowcs memchr memmove mempcpy memset open \
-                pread qsort rpl_malloc rpl_realloc setitimer strcmp \
+AC_CHECK_FUNCS([btowc calloc close exit fcntl fdopen feof ferror fileno \
+                fopen fprintf fread getgid getrlimit getuid islower \
+                isspace isupper mbsrtowcs memchr memmove mempcpy memset \
+                open pread qsort rpl_malloc rpl_realloc setitimer strcmp \
                 strdup strncasecmp strrchr strspn strstr strtol strtoul \
                 strtoull sysconf system uname wmempcpy])dnl
 AC_CHECK_FUNCS_ONCE([lt_dlinit])dnl

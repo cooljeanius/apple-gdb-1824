@@ -89,9 +89,9 @@ DESCRIPTION
 */
 
 bfd_boolean
-bfd_check_format (bfd *abfd, bfd_format format)
+bfd_check_format(bfd *abfd, bfd_format format)
 {
-  return bfd_check_format_matches (abfd, format, NULL);
+  return bfd_check_format_matches(abfd, format, NULL);
 }
 
 /*

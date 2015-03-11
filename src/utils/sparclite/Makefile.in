@@ -80,7 +80,7 @@ INCLUDE_CFLAGS = -I. -I${srcdir} -I$(INCLUDE_DIR)
 # CFLAGS is specifically reserved for setting from the command line
 # when running make.  I.E.  "make USER_CFLAGS=-Wmissing-prototypes".
 CWARNFLAGS = -Wall -Wextra -Wstrict-prototypes -Wconversion -Wundef \
--pedantic -Wno-format -Wno-long-long
+-Wimplicit -Wmissing-declarations -pedantic -Wno-format -Wno-long-long
 CFLAGS = -ggdb $(CWARNFLAGS) $(C_ARCHFLAGS)
 
 # INTERNAL_CFLAGS is the aggregate of all other *CFLAGS macros.
@@ -138,6 +138,8 @@ distclean:	clean
 	rm -f config.log config.cache
 
 maintainer-clean realclean:	distclean
+	rm -f *~ autoscan.log
+	rm -rf autom4te.cache || rmdir autom4te.cache
 
 check:
 

@@ -28,8 +28,12 @@ stmp-bin2-h
 stmp-lbfd-h
 stmp-lcoff-h
 *libs/*
+tofiles
 ofiles
+tlofiles
 lofiles
+tplistfiles
+plistfiles
 Makefile
 doc/Makefile
 config.h

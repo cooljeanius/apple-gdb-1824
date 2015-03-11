@@ -74,7 +74,7 @@ clean mostlyclean:
 
 distclean maintainer-clean realclean: clean
 	-rm -f *~ core
-	-rm -f Makefile config.status 
+	-rm -f Makefile config.status config.log autoscan.log
 
 .PHONY: info install-info clean-info
 info:

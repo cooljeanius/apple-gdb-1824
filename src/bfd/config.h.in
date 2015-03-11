@@ -67,6 +67,9 @@
 /* Define to 1 if you have the `btowc' function. */
 #undef HAVE_BTOWC
 
+/* Define to 1 if you have the `calloc' function. */
+#undef HAVE_CALLOC
+
 /* Define to 1 if you have the `close' function. */
 #undef HAVE_CLOSE
 

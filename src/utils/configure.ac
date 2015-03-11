@@ -1,7 +1,7 @@
-#                                               -*- Autoconf -*-
-# Process this file with autoconf to produce a configure script.
+dnl#                                               -*- Autoconf -*-
+dnl# Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.69])dnl
 
 AC_INIT([gdb-utils],[???],[/dev/null])
 AC_CONFIG_SRCDIR([Makefile.in])
@@ -12,20 +12,33 @@ AM_SANITY_CHECK
 AC_PROG_INSTALL
 AC_CANONICAL_TARGET
 AC_PROG_CC
+m4_ifdef([AM_PROG_AR],[
+  AM_PROG_AR
+],[
+  test -n "${AR}"
+  AC_SUBST([AR])dnl
+])dnl
+m4_ifdef([AM_PROG_AS],[
+  AM_PROG_AS
+],[
+  test -n "${CCAS}"
+  AC_SUBST([CCAS])dnl
+])dnl
 
 # Checks for header files.
-AC_CHECK_HEADERS([libc.h sys/param.h])
+AC_CHECK_HEADERS([libc.h sys/param.h])dnl
 
 # Checks for library functions.
 AC_FUNC_LSTAT dnl# also checks whether it "_FOLLOWS_SLASHED_SYMLINK"
 AC_CHECK_FUNCS([exit fopen fprintf getc getc_unlocked getwd getcwd \
                 perror printf putchar putchar_unlocked strcat strcpy \
-                unsetenv])
+                unsetenv])dnl
 
-# Autogen
+# Autogen stuff:
 sinclude(../config/autoopts.m4)
-AG_PATH_AUTOOPTS([5.17.4])
+AG_PATH_AUTOOPTS([5.17.4])dnl
 
+# Choose which subdirs to use:
 if test -d ${srcdir}/spu ; then
   configdirs="spu"
 fi
@@ -62,6 +75,7 @@ mostlyclean_subdirs=""
 clean_subdirs=""
 distclean_subdirs=""
 maintainer_clean_subdirs=""
+check_subdirs=""
 
 for dir in ${configdirs} ; do
     all_subdirs="${all_subdirs} all-${dir}"
@@ -70,14 +84,16 @@ for dir in ${configdirs} ; do
     clean_subdirs="${clean_subdirs} clean-${dir}"
     distclean_subdirs="${distclean_subdirs} distclean-${dir}"
     maintainer_clean_subdirs="${maintainer_clean_subdirs} maintainer-clean-${dir}"
+    check_subdirs="${check_subdirs} check-${dir}"
 done
 
-AC_SUBST([all_subdirs])
-AC_SUBST([install_subdirs])
-AC_SUBST([mostlyclean_subdirs])
-AC_SUBST([clean_subdirs])
-AC_SUBST([distclean_subdirs])
-AC_SUBST([maintainer_clean_subdirs])
+AC_SUBST([all_subdirs])dnl
+AC_SUBST([install_subdirs])dnl
+AC_SUBST([mostlyclean_subdirs])dnl
+AC_SUBST([clean_subdirs])dnl
+AC_SUBST([distclean_subdirs])dnl
+AC_SUBST([maintainer_clean_subdirs])dnl
+AC_SUBST([check_subdirs])dnl
 
 case "${srcdir}" in
   [[\\/]]* | ?:[[\\/]]* ) # Absolute
@@ -87,7 +103,7 @@ case "${srcdir}" in
     abs_srcdir="../${srcdir}"
     ;;
 esac
-AC_SUBST([abs_srcdir])
+AC_SUBST([abs_srcdir])dnl
 
 case "${cache_file}" in
   [[\\/]]* | ?:[[\\/]]* ) # Absolute
@@ -99,10 +115,11 @@ case "${cache_file}" in
 esac
 subconfigure_args=${ac_configure_args}
 subconfigure_args="${subconfigure_args} --disable-option-checking --cache-file=${abs_cache_file} --srcdir=${abs_srcdir}"
-AC_SUBST([subconfigure_args])
+AC_SUBST([subconfigure_args])dnl
 
+# Output.
 AC_CONFIG_FILES([Makefile \
                  decomment.tproj/Makefile \
-                 relpath.tproj/Makefile])
+                 relpath.tproj/Makefile])dnl
 AC_OUTPUT
 

@@ -957,6 +957,9 @@ nothing:
 LOFILES = $(BFD_BACKENDS) $(BFD_MACHINES) @COREFILE@ @bfd64_libs@
 # so need to transform to normal ones:
 OFILES = `echo $(LOFILES) | $(SED) -e 's/\.lo/\.o/g'`
+# We can use the same method to get a list of clang static analyzer plists
+# to make:
+PLISTFILES = `echo $(LOFILES) | $(SED) -e 's/\.lo/\.plist/g'`
 
 stamp-lofiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	rm -f $(AM_V_v) tlofiles
@@ -984,10 +987,25 @@ stamp-ofiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(RUN_MOVEIFCHANGE) tofiles ofiles
 	$(AM_V_at)touch stamp-ofiles
 
+stamp-plistfiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	rm -f $(AM_V_v) tplistfiles
+	f=""; \
+	for i in $(PLISTFILES); do \
+	  case " $${f} " in \
+	    *" $${i} "*) ;; \
+	    *) f="$${f} $${i}" ;; \
+	  esac; \
+	done; \
+	echo $${f} $(AM_V_redir) tplistfiles
+	$(RUN_MOVEIFCHANGE) tplistfiles plistfiles
+	$(AM_V_at)touch stamp-plistfiles
+
 lofiles: stamp-lofiles
 	@echo "this target, '$@', just makes its dependency, '$<'"
 ofiles: stamp-ofiles
-	@echo "this target, '$@', just makes its dep, '$<'"
+	@echo "this target, '$@', just makes its dependency, '$<'"
+plistfiles: stamp-plistfiles
+	@echo "this target, '$@', just makes its dependency, '$<'"
 
 # Since BFD64_LIBS is optional, and we cannot have substitution in
 # libbfd_la_SOURCES, we put BFD64_LIBS in OFILES instead.
@@ -1010,14 +1028,19 @@ LIBTOOL_SOVERSION = `cat libtool-soversion`
 # everything else starts using libtool. FIXME.
 
 noinst_LIBRARIES = libbfd.a
-libbfd_a_SOURCES = libbfd.h
+libbfd_a_SOURCES = libbfd.h $(BFD32_LIBS_CFILES) $(BFD64_LIBS_CFILES)
+MY_EXTRA_libbfd_a_SOURCES_COMMENTED_OUT = $(CFILES)
+EXTRA_libbfd_a_SOURCES = $(CFILES)
 libbfd_a_DEPENDENCIES = stamp-ofiles ofiles $(srcdir)/ofiles
 ## '$(OFILES)' does NOT work as a dependency here any more, now that
 ## it is actually a command, so use 'stamp-staticlib' for it instead:
 EXTRA_libbfd_a_DEPENDENCIES = stamp-staticlib @MAINT@ Makefile
 libbfd_a_LIBADD = `cat ofiles` @WIN32LIBADD@
+## see if this will cause automake to give its objfiles a different name:
+libbfd_a_CFLAGS = -fkeep-inline-functions $(AM_CFLAGS)
+libbfd_a_LDFLAGS = -static
 
-# FIXME: Even the hack fails now... (does it still?)
+# FIXME: Even the hack fails now... (does it still? I think we are okay...)
 stamp-lib: libbfd.la @MAINT@ ofiles $(PATH_TO_MOVEIFCHANGE) ltmain.sh
 	libtooldir=`$(LIBTOOL) --config | $(SED) -n -e 's/^objdir=//p'`; \
 	if test -z "$${libtooldir}"; then \
@@ -1030,7 +1053,12 @@ stamp-lib: libbfd.la @MAINT@ ofiles $(PATH_TO_MOVEIFCHANGE) ltmain.sh
 	  cp $(AM_V_v) $${libtooldir}/libbfd.a libbfd.tmp; \
 	  $(RANLIB) libbfd.tmp; \
 	  $(RUN_MOVEIFCHANGE) libbfd.tmp libbfd.a; \
-	else echo "$${libtooldir}/libbfd.a does not exist as a file"; fi
+	else \
+	  echo "$${libtooldir}/libbfd.a does not exist as a file"; \
+	  if [ -f libbfd.a ]; then \
+	    $(RANLIB) libbfd.a; \
+	  fi; \
+	fi
 	$(AM_V_at)touch stamp-lib
 
 # since OFILES no longer works as a dependency, have to make it explicitly
@@ -1038,7 +1066,15 @@ stamp-lib: libbfd.la @MAINT@ ofiles $(PATH_TO_MOVEIFCHANGE) ltmain.sh
 stamp-staticlib: stamp-ofiles @MAINT@ bfd.h
 	rm -f $(AM_V_v) stamp-staticlib
 	$(MAKE) $(OFILES)
+	if [ -f libbfd.a ]; then \
+	  $(RANLIB) libbfd.a; \
+	fi
 	$(AM_V_at)touch stamp-staticlib
+
+# likewise with making PLISTFILES when running `make check`:
+check-local: stamp-plistfiles @MAINT@ plistfiles
+	$(MAKE) $(PLISTFILES)
+.PHONY: check-local
 
 # stamp-staticlib just makes the OFILES that libbfd.a depends upon, need
 # to make the 'stamp-lib' target instead to actually make the static
@@ -1049,8 +1085,11 @@ libbfd_static_library: stamp-lib
 
 # hmmm...
 libbfd_la: libbfd.la
-	@echo "this target, '$@', just makes its dep, '$<'"
+	@echo "this target, '$@', just makes its dependency, '$<'"
 .PHONY: libbfd_la
+libbfd_a: libbfd.a
+	@echo "this target, '$@', just makes its dependency, '$<'"
+.PHONY: libbfd_a
 
 # This file holds an array associating configuration triplets and
 # vector names. It is built from config.bfd. It is not compiled by
@@ -1069,12 +1108,16 @@ targets.lo: targets.c @MAINT@ Makefile ltmain.sh
 	  $(LIBTOOLFLAGS) --mode=compile $(COMPILE) -c $(TDEFAULTS) \
 	  $(srcdir)/targets.c
 targets.o: targets.lo
+libbfd_a-targets.o: targets.c @MAINT@ Makefile
+	$(AM_V_CC)$(COMPILE) -c $(TDEFAULTS) $(srcdir)/targets.c -o $@
 
 archures.lo: archures.c @MAINT@ Makefile ltmain.sh
 	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	  $(LIBTOOLFLAGS) --mode=compile $(COMPILE) -c $(TDEFAULTS) \
 	  $(srcdir)/archures.c
 archures.o: archures.lo
+libbfd_a-archures.o: archures.c @MAINT@ Makefile
+	$(AM_V_CC)$(COMPILE) -c $(TDEFAULTS) $(srcdir)/archures.c -o $@
 
 dwarf2.lo: dwarf2.c @MAINT@ Makefile ltmain.sh
 if am__fastdepCC
@@ -1088,6 +1131,10 @@ if AMDEP
 endif
 	$(LTCOMPILE) -c -o $@ -DDEBUGDIR=\"$(DEBUGDIR)\" $(srcdir)/dwarf2.c
 endif
+dwarf2.o: dwarf2.lo
+libbfd_a-dwarf2.o: dwarf2.c @MAINT@ Makefile
+	$(AM_V_CC)$(COMPILE) -c -o $@ -DDEBUGDIR=\"$(DEBUGDIR)\" \
+	  $(srcdir)/dwarf2.c
 
 elf32-target.h : elfxx-target.h
 	rm -f $(AM_V_v) $@
@@ -1401,7 +1448,9 @@ stmp-lcoff-h: $(LIBCOFF_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(AM_V_at)touch $(srcdir)/libcoff.h
 	touch $@
 
-MOSTLYCLEANFILES = ofiles stamp-ofiles lofiles stamp-lofiles
+MOSTLYCLEANFILES = tofiles ofiles stamp-ofiles
+MOSTLYCLEANFILES += tlofiles lofiles stamp-lofiles
+MOSTLYCLEANFILES += tplistfiles plistfiles stamp-plistfiles 
 
 CLEANFILES = bfd.h dep.sed stmp-bfd-h DEP DEPA DEP1 DEP2 libbfd.a \
 	stamp-lib stamp-staticlib stmp-bin2-h stmp-lbfd-h stmp-lcoff-h
