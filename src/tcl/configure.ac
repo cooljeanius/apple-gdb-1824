@@ -10,6 +10,7 @@ AC_PREREQ([2.5])dnl
 # initialize autoconf:
 AC_INIT([Tcl],[8.4.1],[tromey@cygnus.com])
 AC_CONFIG_SRCDIR([generic/tcl.h])
+AC_CONFIG_MACRO_DIR([m4])dnl
 AC_CONFIG_HEADERS([config.h])dnl
 
 # and some automake bits:

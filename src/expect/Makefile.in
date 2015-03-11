@@ -542,7 +542,7 @@ config.status: $(srcdir)/configure
 	@echo "Rebuilding config.status..."
 	$(SHELL) ./config.status --recheck
 
-check:
+check: expect
 	@if [ -f testsuite/Makefile ]; then \
 	   cd testsuite && $(MAKE) $(FLAGS_TO_PASS) check; \
 	else echo "skipping testsuite"; fi

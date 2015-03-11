@@ -35,12 +35,12 @@ if test "x${ac_cv_os_lynx}" = "xyes" ; then
    * -X is for the old "cc" and "gcc" (based on 1.42).
    * -mposix is for the new gcc (at least 2.5.8).
    */
-  #if defined(__GNUC__) && __GNUC__ >= 2
+  #if defined(__GNUC__) && (__GNUC__ >= 2)
   choke me
   #endif /* __GNUC__ >= 2 */
   ]])],[ac_cv_c_posix_flag=" -mposix"],[ac_cv_c_posix_flag=" -X"])])
-  CC="$CC $ac_cv_c_posix_flag"
-  AC_MSG_RESULT([$ac_cv_c_posix_flag])
+  CC="${CC} ${ac_cv_c_posix_flag}"
+  AC_MSG_RESULT([${ac_cv_c_posix_flag}])
   else
   AC_MSG_RESULT([no])
 fi
@@ -53,8 +53,8 @@ dnl########################################################################
 # cache here because if somebody fixes their compiler install, we want this
 # to work.
 AC_DEFUN([CY_AC_C_WORKS],
-[# If we cannot compile and link a trivial program, we cannot expect
-# anything to work
+[# If we cannot compile and link a trivial program, then we cannot expect
+# anything to work:
 AC_MSG_CHECKING([whether the compiler (${CC}) actually works])
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[]],[[/* do NOT need anything here */]])],
         [c_compiles=yes],[c_compiles=no])
@@ -69,7 +69,7 @@ int main(void) {
         [c_links=yes],[c_links=no])dnl
 
 if test x"${c_compiles}" = x"no"; then
-  # error out
+  # error out:
   AC_MSG_ERROR([the native compiler is broken and will NOT compile.])
 fi
 

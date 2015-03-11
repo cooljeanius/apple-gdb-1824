@@ -5085,8 +5085,8 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-	# If we cannot compile and link a trivial program, we cannot expect
-# anything to work
+	# If we cannot compile and link a trivial program, then we cannot expect
+# anything to work:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the compiler (${CC}) actually works" >&5
 $as_echo_n "checking whether the compiler (${CC}) actually works... " >&6; }
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -5125,7 +5125,7 @@ fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 if test x"${c_compiles}" = x"no"; then
-  # error out
+  # error out:
   as_fn_error $? "the native compiler is broken and will NOT compile." "$LINENO" 5
 fi
 
@@ -5817,9 +5817,9 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 
-  CC="$CC $ac_cv_c_posix_flag"
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_posix_flag" >&5
-$as_echo "$ac_cv_c_posix_flag" >&6; }
+  CC="${CC} ${ac_cv_c_posix_flag}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${ac_cv_c_posix_flag}" >&5
+$as_echo "${ac_cv_c_posix_flag}" >&6; }
   else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }

@@ -2,6 +2,8 @@
 # subdir.
 # Tom Tromey <tromey@cygnus.com>
 
+ACLOCAL_AMFLAGS = -I m4 --install
+
 CONFIGDIR=@CONFIGDIR@
 CONFIGDIR2=@CONFIGDIR2@
 

@@ -90,13 +90,15 @@ C_ARCHFLAGS		= -arch $(HOST_ARCHITECTURE)
 # warning flags:
 CFLAGS_WARNING		= @CFLAGS_WARNING@
 
-# The default switches for optimization or debuggingL
+# The default switches for optimization or debugging:
 CFLAGS_DEBUG		= @CFLAGS_DEBUG@
 CFLAGS_OPTIMIZE		= @CFLAGS_OPTIMIZE@
 
 # To change compiler switches, for example to change from optimization to
 # debugging symbols, change the following line:
-CFLAGS			= @CFLAGS@ @CFLAGS_DEFAULT@ $(C_ARCHFLAGS)
+CFLAGS			= @CFLAGS@ @CFLAGS_DEFAULT@ 
+## CFLAGS should be override-able, so add a separate variable:
+ALL_CFLAGS 		= $(CFLAGS) $(C_ARCHFLAGS) $(CFLAGS_WARNING)
 
 # Flags to pass to the linker
 LDFLAGS_DEBUG		= @LDFLAGS_DEBUG@
@@ -270,19 +272,22 @@ DDD			= ddd
 
 CC_SWITCHES = ${CFLAGS} ${CFLAGS_WARNING} ${SHLIB_CFLAGS} \
 -I${GENERIC_DIR} -I${SRC_DIR} \
-${AC_FLAGS} ${MATH_FLAGS} ${GENERIC_FLAGS} ${PROTO_FLAGS} ${MEM_DEBUG_FLAGS} \
-${COMPILE_DEBUG_FLAGS} ${NO_DEPRECATED_FLAGS} ${ENV_FLAGS} \
+${AC_FLAGS} ${MATH_FLAGS} ${GENERIC_FLAGS} ${PROTO_FLAGS} \
+${MEM_DEBUG_FLAGS} ${COMPILE_DEBUG_FLAGS} ${NO_DEPRECATED_FLAGS} \
+${ENV_FLAGS} ${C_ARCHFLAGS} \
 -DTCL_SHLIB_EXT=\"${SHLIB_SUFFIX}\"
 
 STUB_CC_SWITCHES = ${CFLAGS} ${CFLAGS_WARNING} ${SHLIB_CFLAGS} \
 -I${GENERIC_DIR} -I${SRC_DIR} \
-${AC_FLAGS} ${MATH_FLAGS} ${GENERIC_FLAGS} ${PROTO_FLAGS} ${MEM_DEBUG_FLAGS} \
-${COMPILE_DEBUG_FLAGS} ${ENV_FLAGS} -DTCL_SHLIB_EXT=\"${SHLIB_SUFFIX}\"
+${AC_FLAGS} ${MATH_FLAGS} ${GENERIC_FLAGS} ${PROTO_FLAGS} \
+${MEM_DEBUG_FLAGS} ${COMPILE_DEBUG_FLAGS} \
+${ENV_FLAGS} ${C_ARCHFLAGS} \
+-DTCL_SHLIB_EXT=\"${SHLIB_SUFFIX}\"
 
 LIBS		= @DL_LIBS@ @LIBS@ $(MATH_LIBS)
 
 DEPEND_SWITCHES	= ${CFLAGS} -I${GENERIC_DIR} -I${SRC_DIR} \
-${AC_FLAGS} ${MATH_FLAGS} \
+${AC_FLAGS} ${MATH_FLAGS} ${C_ARCHFLAGS} \
 ${GENERIC_FLAGS} ${PROTO_FLAGS} ${MEM_DEBUG_FLAGS} \
 -DTCL_SHLIB_EXT=\"${SHLIB_SUFFIX}\"
 
@@ -465,8 +470,8 @@ objs: ${OBJS}
 
 
 tclsh: ${TCLSH_OBJS} ${TCL_LIB_FILE}
-	${CC} ${CFLAGS} ${LDFLAGS} ${TCLSH_OBJS} @TCL_BUILD_LIB_SPEC@ ${LIBS} \
-		${CC_SEARCH_FLAGS} -o tclsh
+	${CC} ${CFLAGS} ${LDFLAGS} ${TCLSH_OBJS} @TCL_BUILD_LIB_SPEC@ \
+	  ${LIBS} ${CC_SEARCH_FLAGS} ${C_ARCHFLAGS} -o tclsh
 
 # Resetting the LIB_RUNTIME_DIR below is required so that
 # the generated tcltest executable gets the build directory
@@ -478,7 +483,7 @@ tcltest: ${TCLTEST_OBJS} ${TCL_LIB_FILE} ${BUILD_DLTEST}
 
 tcltest-real:
 	${CC} ${LDFLAGS} ${TCLTEST_OBJS} @TCL_BUILD_LIB_SPEC@ ${LIBS} \
-		${CC_SEARCH_FLAGS} -o tcltest
+	  ${CC_SEARCH_FLAGS} ${C_ARCHFLAGS} -o tcltest
 
 # Note, in the target below TCL_LIBRARY needs to be set or else
 # "make test" will NOT work in the case where the compilation directory

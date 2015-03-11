@@ -645,6 +645,9 @@ TCL_LD_FLAGS
 SHLIB_SUFFIX
 TCL_SHLIB_LD
 TCL_DEFS
+TARGET_ARCHITECTURE
+HOST_ARCHITECTURE
+BUILD_ARCHITECTURE
 target_os
 target_vendor
 target_cpu
@@ -2123,7 +2126,6 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
 $as_echo_n "checking for a sed that does not truncate output... " >&6; }
 if ${ac_cv_path_SED+:} false; then :
@@ -2195,14 +2197,15 @@ $as_echo "$ac_cv_path_SED" >&6; }
 
 
 if test -e ./../config.cache; then
-	sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./../config.cache
-	sed -i "s|ac_cv_prog_CC|bad_CC|g" ./../config.cache
-	sed -i "s|ac_cv_prog_CPP|bad_CPP|g" ./../config.cache
-	sed -i "s|ac_cv_env_build_alias|bad_build_alias|g" ./../config.cache
-	sed -i "s|ac_cv_env_host_alias|bad_host_alias|g" ./../config.cache
-	sed -i "s|ac_cv_env_target_alias|bad_target_alias|g" ./../config.cache
+  sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./../config.cache
+  sed -i "s|ac_cv_prog_CC|bad_CC|g" ./../config.cache
+  sed -i "s|ac_cv_prog_CPP|bad_CPP|g" ./../config.cache
+  sed -i "s|ac_cv_env_build_alias|bad_build_alias|g" ./../config.cache
+  sed -i "s|ac_cv_env_host_alias|bad_host_alias|g" ./../config.cache
+  sed -i "s|ac_cv_env_target_alias|bad_target_alias|g" ./../config.cache
 fi
 
+# architecture stuff:
 ac_aux_dir=
 for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
   if test -f "$ac_dir/install-sh"; then
@@ -2342,6 +2345,18 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+
+fi
 
 
 #
@@ -2456,10 +2471,10 @@ CPPFLAGSOLD=${CPPFLAGS}
 unset CFLAGS
 unset CXXFLAGS
 unset CPPFLAGS
-# CC might already have been checked
+# CC might already have been checked...
 if test "x${CC}" = "x"; then
-	test -z "${CC}"
-	ac_ext=c
+  test -z "${CC}"
+  ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -3311,10 +3326,10 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 else
-	test ! -z "${CC}"
-	# The conditional is to try to avoid breakage
-	if test "x${ac_cv_c_compiler_gnu}" != "x:"; then
-		test ! -z "${GCC}"
+  test ! -z "${CC}"
+  # The conditional is to try to avoid breakage:
+  if test "x${ac_cv_c_compiler_gnu}" != "x:"; then
+    test ! -z "${GCC}"
 
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -3626,9 +3641,9 @@ $as_echo "$ac_cv_prog_gcc_traditional" >&6; }
   fi
 fi
 
-	fi
-	# Check preprocessor
-	ac_ext=c
+  fi
+  # Check preprocessor:
+  ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -3765,12 +3780,12 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-	# This is in a conditional because otherwise it might not work
-	if test "x${CYGNUS}" != "x"; then
-		test ! -z "${CYGNUS}"
-		# Check to make sure compiler actually works
-		# If we cannot compile and link a trivial program, we cannot expect
-# anything to work
+  # This is in a conditional because otherwise it might not work
+  if test "x${CYGNUS}" != "x"; then
+    test ! -z "${CYGNUS}"
+    # Check to make sure compiler actually works:
+    # If we cannot compile and link a trivial program, then we cannot expect
+# anything to work:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the compiler (${CC}) actually works" >&5
 $as_echo_n "checking whether the compiler (${CC}) actually works... " >&6; }
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -3809,7 +3824,7 @@ fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 if test x"${c_compiles}" = x"no"; then
-  # error out
+  # error out:
   as_fn_error $? "the native compiler is broken and will NOT compile." "$LINENO" 5
 fi
 
@@ -3825,14 +3840,14 @@ else
 $as_echo "yes" >&6; }
 fi
 
-	fi
+  fi
 fi
-# Now reset CFLAGS and friends
+# Now reset CFLAGS and friends:
 CFLAGS=${CFLAGSOLD}
 CXXFLAGS=${CXXFLAGSOLD}
 CPPFLAGS=${CPPFLAGSOLD}
 
-# Checks for functions
+# Checks for functions.
 for ac_func in memset
 do :
   ac_fn_c_check_func "$LINENO" "memset" "ac_cv_func_memset"
@@ -3844,14 +3859,13 @@ _ACEOF
 fi
 done
 
-
 # This is for LynxOS, which needs a flag to force true POSIX when
 # building. It is weirder than that, because the flag varies depending
 # how old the compiler is. So...
 # -X is for the old "cc" and "gcc" (based on 1.42)
 # -mposix is for the new gcc (at least 2.5.8)
-# This modifies the value of $CC to have the POSIX flag added
-# so it will configure correctly
+# This modifies the value of ${CC} to have the POSIX flag added
+# so it will configure correctly.
 # Do the actual checking for LynxOS now:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if running LynxOS" >&5
 $as_echo_n "checking if running LynxOS... " >&6; }
@@ -3902,16 +3916,16 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 
-  CC="$CC $ac_cv_c_posix_flag"
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_posix_flag" >&5
-$as_echo "$ac_cv_c_posix_flag" >&6; }
+  CC="${CC} ${ac_cv_c_posix_flag}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${ac_cv_c_posix_flag}" >&5
+$as_echo "${ac_cv_c_posix_flag}" >&6; }
   else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
 
 
-# Check for Tcl headers
+# Check for Tcl headers:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ANSI C header files" >&5
 $as_echo_n "checking for ANSI C header files... " >&6; }
 if ${ac_cv_header_stdc+:} false; then :
@@ -4164,12 +4178,8 @@ fi
 
 
 
-# Substitutions
 
-
-
-
-# Output
+# Output.
 ac_config_files="$ac_config_files Makefile"
 
 cat >confcache <<\_ACEOF

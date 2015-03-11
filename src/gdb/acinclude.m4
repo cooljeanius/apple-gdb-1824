@@ -31,6 +31,7 @@ AC_DEFUN([CY_AC_TCL_LYNX_POSIX],[
 AC_REQUIRE([AC_PROG_CC])dnl
 AC_REQUIRE([AC_PROG_CPP])dnl
 AC_REQUIRE([AC_PROG_EGREP])dnl
+# Do the actual checking for LynxOS now:
 AC_MSG_CHECKING([if running LynxOS])
 AC_CACHE_VAL([ac_cv_os_lynx],
 [AC_EGREP_CPP([yes_this_is_lynx],
@@ -81,6 +82,7 @@ AC_LINK_IFELSE([AC_LANG_SOURCE([[]],[[/* do NOT need anything here */]])],
         [c_links=yes],[c_links=no])
 
 if test x"${c_compiles}" = x"no"; then
+  # error out:
   AC_MSG_ERROR([the native compiler is broken and will NOT compile.])
 fi
 
