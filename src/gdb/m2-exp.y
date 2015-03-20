@@ -815,7 +815,7 @@ static int
 yylex(void)
 {
   int c;
-  int namelen;
+  size_t namelen;
   int i;
   char *tokstart;
   char quote;
@@ -986,7 +986,8 @@ yylex(void)
 
   /* Lookup special keywords: */
   for (i = 0 ; i < (int)(sizeof(keytab) / sizeof(keytab[0])); i++)
-     if ((namelen == strlen(keytab[i].keyw)) && DEPRECATED_STREQN(tokstart, keytab[i].keyw, namelen))
+     if ((namelen == strlen(keytab[i].keyw))
+         && DEPRECATED_STREQN(tokstart, keytab[i].keyw, namelen))
         return keytab[i].token;
 
   yylval.sval.ptr = tokstart;

@@ -1906,8 +1906,10 @@ po/$(PACKAGE).pot: force
 
 .SUFFIXES: .y .l
 .y.c: Makefile.in
-	touch $<
-	@echo YACC command is "$(YACC)"
+	$(AM_V_at)touch $<
+	@if [ "x$(AM_V_P)" != "xfalse" ]; then \
+	  echo YACC command is "$(YACC)"; \
+	fi
 	$(SHELL) $(YLWRAP) $< y.tab.c $@.tmp -- $(YACC) $(YFLAGS)
 	-$(SED) -e '/extern.*malloc/d' \
 	     -e '/extern.*realloc/d' \

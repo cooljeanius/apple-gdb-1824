@@ -46,7 +46,8 @@ static struct trad_frame_cache *
 tramp_frame_cache(struct frame_info *next_frame,
 		  void **this_cache)
 {
-  struct tramp_frame_cache *tramp_cache = (*this_cache);
+  struct tramp_frame_cache *tramp_cache;
+  tramp_cache = (struct tramp_frame_cache *)(*this_cache);
   if (tramp_cache->trad_cache == NULL)
     {
       tramp_cache->trad_cache = trad_frame_cache_zalloc(next_frame);

@@ -770,7 +770,7 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 
 struct token
 {
-  char *operator;
+  char *foperator;
   int token;
   enum exp_opcode opcode;
 };
@@ -799,7 +799,7 @@ static const struct token dot_ops[] =
   { ".GT.", GREATERTHAN, BINOP_END },
   { ".lt.", LESSTHAN, BINOP_END },
   { ".LT.", LESSTHAN, BINOP_END },
-  { NULL, 0, 0 }
+  { NULL, 0, (enum exp_opcode)0 }
 };
 
 struct f77_boolean_val
@@ -833,7 +833,7 @@ static const struct token f77_keywords[] =
   { "sizeof", SIZEOF, BINOP_END },
   { "real_8", REAL_S8_KEYWORD, BINOP_END },
   { "real", REAL_KEYWORD, BINOP_END },
-  { NULL, 0, 0 }
+  { NULL, 0, (enum exp_opcode)0 }
 };
 
 /* Implementation of a dynamically expandable buffer for processing input
@@ -941,19 +941,17 @@ yylex(void)
 	}
     }
 
-  /* See if it is a special .foo. operator.  */
-
-  for (i = 0; dot_ops[i].operator != NULL; i++)
-    if (strncmp (tokstart, dot_ops[i].operator, strlen (dot_ops[i].operator)) == 0)
+  /* See if it is a special .foo. operator: */
+  for (i = 0; dot_ops[i].foperator != NULL; i++)
+    if (strncmp (tokstart, dot_ops[i].foperator, strlen(dot_ops[i].foperator)) == 0)
       {
-	lexptr += strlen (dot_ops[i].operator);
+	lexptr += strlen(dot_ops[i].foperator);
 	yylval.opcode = dot_ops[i].opcode;
 	return dot_ops[i].token;
       }
 
-  /* See if it is an exponentiation operator.  */
-
-  if (strncmp (tokstart, "**", 2) == 0)
+  /* See if it is an exponentiation operator: */
+  if (strncmp(tokstart, "**", 2) == 0)
     {
       lexptr += 2;
       yylval.opcode = BINOP_EXP;
@@ -1107,13 +1105,14 @@ yylex(void)
 
   lexptr += namelen;
 
-  /* Catch specific keywords.  */
-
-  for (i = 0; f77_keywords[i].operator != NULL; i++)
-    if (strncmp (tokstart, f77_keywords[i].operator,
-		 strlen(f77_keywords[i].operator)) == 0)
+  /* Catch specific keywords: */
+  for (i = 0; f77_keywords[i].foperator != NULL; i++)
+    if (strncmp(tokstart, f77_keywords[i].foperator,
+                strlen(f77_keywords[i].foperator)) == 0)
       {
-	/* 	lexptr += strlen(f77_keywords[i].operator); */
+#if 0
+        lexptr += strlen(f77_keywords[i].foperator);
+#endif /* 0 */
 	yylval.opcode = f77_keywords[i].opcode;
 	return f77_keywords[i].token;
       }
@@ -1152,12 +1151,12 @@ yylex(void)
     if (yylval.tsym.type != NULL)
       return TYPENAME;
 
-    /* Input names that aren't symbols but ARE valid hex numbers,
+    /* Input names that are NOT symbols but ARE valid hex numbers,
        when the input radix permits them, can be names or numbers
        depending on the parse.  Note we support radixes > 16 here.  */
     if (!sym
-	&& ((tokstart[0] >= 'a' && tokstart[0] < 'a' + input_radix - 10)
-	    || (tokstart[0] >= 'A' && tokstart[0] < 'A' + input_radix - 10)))
+	&& (((tokstart[0] >= 'a') && (tokstart[0] < (char)('a' + input_radix - 10)))
+	    || ((tokstart[0] >= 'A') && (tokstart[0] < (char)('A' + input_radix - 10)))))
       {
  	YYSTYPE newlval;	/* Its value is ignored.  */
 	hextype = parse_number (tokstart, namelen, 0, &newlval);
@@ -1169,7 +1168,7 @@ yylex(void)
 	  }
       }
 
-    /* Any other kind of symbol */
+    /* Any other kind of symbol: */
     yylval.ssym.sym = sym;
     yylval.ssym.is_a_field_of_this = is_a_field_of_this;
     return NAME;

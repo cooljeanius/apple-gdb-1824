@@ -104,19 +104,19 @@ Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA */
 #define yycheck	 c_yycheck
 
 #ifndef YYDEBUG
-#define	YYDEBUG 1		/* Default to yydebug support */
-#endif
+# define YYDEBUG 1		/* Default to yydebug support */
+#endif /* !YYDEBUG */
 
 #define YYFPRINTF parser_fprintf
 
 /* APPLE LOCAL - Avoid calling lookup_objc_class unnecessarily.  */
 static int square_bracket_seen = 0;
 
-int yyparse (void);
+int yyparse(void);
 
-static int yylex (void);
+static int yylex(void);
 
-void yyerror (char *);
+void yyerror(char *);
 
 %}
 
@@ -145,7 +145,7 @@ void yyerror (char *);
     enum exp_opcode opcode;
     struct internalvar *ivar;
     /* APPLE LOCAL ObjC */
-    struct objc_class_str class;
+    struct objc_class_str class; /* FIXME: rename */
 
     struct type **tvec;
     int *ivec;
@@ -153,7 +153,7 @@ void yyerror (char *);
 
 %{
 /* YYSTYPE gets defined by %union */
-static int parse_number (char *, int, int, YYSTYPE *);
+static int parse_number(char *, int, int, YYSTYPE *);
 %}
 
 %type <voidval> exp exp1 type_exp start variable qualified_name lcurly
@@ -346,16 +346,16 @@ exp	:	exp '[' exp1 ']'
 
 exp	: 	'[' TYPENAME
 			{
-			  CORE_ADDR class;
+			  CORE_ADDR core_class;
 
-			  class = lookup_objc_class (copy_name ($2.stoken));
-			  if (class == 0)
-			    error ("%s is not an ObjC Class",
-				   copy_name ($2.stoken));
-			  write_exp_elt_opcode (OP_LONG);
-			  write_exp_elt_type (builtin_type_void_data_ptr);
-			  write_exp_elt_longcst ((LONGEST) class);
-			  write_exp_elt_opcode (OP_LONG);
+			  core_class = lookup_objc_class(copy_name($2.stoken));
+			  if (core_class == 0)
+			    error("%s is not an ObjC Class",
+				  copy_name($2.stoken));
+			  write_exp_elt_opcode(OP_LONG);
+			  write_exp_elt_type(builtin_type_void_data_ptr);
+			  write_exp_elt_longcst((LONGEST)core_class);
+			  write_exp_elt_opcode(OP_LONG);
 			  start_msglist();
 			}
 		msglist ']'
@@ -1352,21 +1352,21 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
   else if (long_p <= 1
 	   && (un >> (TARGET_LONG_BIT - 2)) == 0)
     {
-      high_bit = ((ULONGEST)1) << (TARGET_LONG_BIT-1);
-      unsigned_type = builtin_type (current_gdbarch)->builtin_unsigned_long;
-      signed_type = builtin_type (current_gdbarch)->builtin_long;
+      high_bit = ((ULONGEST)1UL) << (TARGET_LONG_BIT - 1);
+      unsigned_type = builtin_type(current_gdbarch)->builtin_unsigned_long;
+      signed_type = builtin_type(current_gdbarch)->builtin_long;
     }
   else
     {
       int shift;
-      if (sizeof (ULONGEST) * HOST_CHAR_BIT < TARGET_LONG_LONG_BIT)
-	/* A long long does not fit in a LONGEST.  */
-	shift = (sizeof (ULONGEST) * HOST_CHAR_BIT - 1);
+      if ((sizeof(ULONGEST) * HOST_CHAR_BIT) < (size_t)TARGET_LONG_LONG_BIT)
+	/* A long long does not fit in a LONGEST: */
+	shift = (sizeof(ULONGEST) * HOST_CHAR_BIT - 1);
       else
 	shift = (TARGET_LONG_LONG_BIT - 1);
-      high_bit = (ULONGEST) 1 << shift;
-      unsigned_type = builtin_type (current_gdbarch)->builtin_unsigned_long_long;
-      signed_type = builtin_type (current_gdbarch)->builtin_long_long;
+      high_bit = ((ULONGEST)1UL << shift);
+      unsigned_type = builtin_type(current_gdbarch)->builtin_unsigned_long_long;
+      signed_type = builtin_type(current_gdbarch)->builtin_long_long;
     }
 
    putithere->typed_val_int.val = n;
@@ -1388,7 +1388,7 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 
 struct token
 {
-  char *operator;
+  char *coperator;
   int token;
   enum exp_opcode opcode;
 };
@@ -1466,7 +1466,7 @@ yylex(void)
   tokstart = lexptr;
   /* See if it is a special token of length 3.  */
   for (i = 0; i < sizeof tokentab3 / sizeof tokentab3[0]; i++)
-    if (strncmp (tokstart, tokentab3[i].operator, 3) == 0)
+    if (strncmp (tokstart, tokentab3[i].coperator, 3) == 0)
       {
 	lexptr += 3;
 	yylval.opcode = tokentab3[i].opcode;
@@ -1475,7 +1475,7 @@ yylex(void)
 
   /* See if it is a special token of length 2.  */
   for (i = 0; i < sizeof tokentab2 / sizeof tokentab2[0]; i++)
-    if (strncmp (tokstart, tokentab2[i].operator, 2) == 0)
+    if (strncmp (tokstart, tokentab2[i].coperator, 2) == 0)
       {
 	lexptr += 2;
 	yylval.opcode = tokentab2[i].opcode;
@@ -2003,8 +2003,8 @@ yylex(void)
        when the input radix permits them, can be names or numbers
        depending on the parse.  Note we support radixes > 16 here.  */
     if (!sym &&
-        ((tokstart[0] >= 'a' && tokstart[0] < 'a' + input_radix - 10) ||
-         (tokstart[0] >= 'A' && tokstart[0] < 'A' + input_radix - 10)))
+        (((tokstart[0] >= 'a') && (tokstart[0] < (char)('a' + input_radix - 10)))
+         || ((tokstart[0] >= 'A') && (tokstart[0] < (char)('A' + input_radix - 10)))))
       {
  	YYSTYPE newlval;	/* Its value is ignored.  */
 	hextype = parse_number (tokstart, namelen, 0, &newlval);

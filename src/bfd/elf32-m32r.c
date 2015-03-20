@@ -81,24 +81,20 @@
 #define PLT_ENTRY_WORD4  0xff000000 /* bra  .plt0.                          */
 
 
-/* Utility to actually perform an R_M32R_10_PCREL reloc.  */
-
+/* Utility to actually perform an R_M32R_10_PCREL reloc: */
 static bfd_reloc_status_type
-m32r_elf_do_10_pcrel_reloc (bfd *abfd,
-			    reloc_howto_type *howto,
-			    asection *input_section,
-			    bfd_byte *data,
-			    bfd_vma offset,
-			    asection *symbol_section ATTRIBUTE_UNUSED,
-			    bfd_vma symbol_value,
-			    bfd_vma addend)
+m32r_elf_do_10_pcrel_reloc(bfd *abfd, reloc_howto_type *howto,
+                           asection *input_section, bfd_byte *data,
+			   bfd_vma offset,
+			   asection *symbol_section ATTRIBUTE_UNUSED,
+			   bfd_vma symbol_value, bfd_vma addend)
 {
   bfd_signed_vma relocation;
   unsigned long x;
   bfd_reloc_status_type status;
 
   /* Sanity check the address (offset in section).  */
-  if (offset > bfd_get_section_limit (abfd, input_section))
+  if (offset > bfd_get_section_limit(abfd, input_section))
     return bfd_reloc_outofrange;
 
   relocation = symbol_value + addend;
@@ -148,14 +144,14 @@ m32r_elf_10_pcrel_reloc (bfd * abfd,
     /* FIXME: See bfd_perform_relocation.  Is this right?  */
     return bfd_reloc_continue;
 
-  return m32r_elf_do_10_pcrel_reloc (abfd, reloc_entry->howto,
-				     input_section,
-				     data, reloc_entry->address,
-				     symbol->section,
-				     (symbol->value
-				      + symbol->section->output_section->vma
-				      + symbol->section->output_offset),
-				     reloc_entry->addend);
+  return m32r_elf_do_10_pcrel_reloc(abfd, reloc_entry->howto,
+				    input_section,
+				    (bfd_byte *)data, reloc_entry->address,
+				    symbol->section,
+				    (symbol->value
+				     + symbol->section->output_section->vma
+				     + symbol->section->output_offset),
+				    reloc_entry->addend);
 }
 
 /* Do generic partial_inplace relocation.
@@ -1694,20 +1690,20 @@ m32r_elf_create_dynamic_sections (bfd *abfd, struct bfd_link_info *info)
 
     for (sec = abfd->sections; sec; sec = sec->next)
       {
-        secflags = bfd_get_section_flags (abfd, sec);
+        secflags = bfd_get_section_flags(abfd, sec);
         if ((secflags & (SEC_DATA | SEC_LINKER_CREATED))
             || ((secflags & SEC_HAS_CONTENTS) != SEC_HAS_CONTENTS))
           continue;
-        secname = bfd_get_section_name (abfd, sec);
-        relname = bfd_malloc ((bfd_size_type) strlen (secname) + 6);
-        strcpy (relname, ".rela");
-        strcat (relname, secname);
-        if (bfd_get_section_by_name (abfd, secname))
+        secname = bfd_get_section_name(abfd, sec);
+        relname = (char *)bfd_malloc((bfd_size_type)strlen(secname) + 6UL);
+        strcpy(relname, ".rela");
+        strcat(relname, secname);
+        if (bfd_get_section_by_name(abfd, secname))
           continue;
-        s = bfd_make_section_with_flags (abfd, relname,
-					 flags | SEC_READONLY);
-        if (s == NULL
-            || ! bfd_set_section_alignment (abfd, s, ptralign))
+        s = bfd_make_section_with_flags(abfd, relname,
+                                        (flags | SEC_READONLY));
+        if ((s == NULL)
+            || ! bfd_set_section_alignment(abfd, s, ptralign))
           return FALSE;
       }
   }
@@ -2321,7 +2317,7 @@ m32r_elf_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
          section's contents are written out.  This should not happen,
          but this way if it does, we get a R_M32R_NONE reloc instead
          of garbage.  */
-      s->contents = bfd_zalloc (dynobj, s->size);
+      s->contents = (unsigned char *)bfd_zalloc(dynobj, s->size);
       if (s->contents == NULL)
         return FALSE;
     }
@@ -3847,17 +3843,18 @@ m32r_elf_check_relocs (bfd *abfd,
 
               /* This is a global offset table entry for a local
                  symbol.  */
-              local_got_refcounts = elf_local_got_refcounts (abfd);
+              local_got_refcounts = elf_local_got_refcounts(abfd);
               if (local_got_refcounts == NULL)
                 {
                   bfd_size_type size;
 
                   size = symtab_hdr->sh_info;
-                  size *= sizeof (bfd_signed_vma);
-                  local_got_refcounts = bfd_zalloc (abfd, size);
+                  size *= sizeof(bfd_signed_vma);
+                  local_got_refcounts = (bfd_signed_vma *)bfd_zalloc(abfd,
+                                                                     size);
                   if (local_got_refcounts == NULL)
                     return FALSE;
-                  elf_local_got_refcounts (abfd) = local_got_refcounts;
+                  elf_local_got_refcounts(abfd) = local_got_refcounts;
                 }
               local_got_refcounts[r_symndx] += 1;
             }

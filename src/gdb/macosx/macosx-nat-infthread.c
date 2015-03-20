@@ -576,7 +576,7 @@ struct dispatch_offsets_info {
 /* FIXME: '-Wl,-warn_commons' says it is using the common symbol of this
  * from /usr/lib/libc.dylib and ignoring our defintion here: */
 #if !defined(dispatch_queue_offsets_s) && !defined(dispatch_queue_offsets) && \
-    !defined(__DISPATCH_QUEUE_PRIVATE__)
+    !defined(__DISPATCH_QUEUE_PRIVATE__) && !defined(__cplusplus)
 const struct dispatch_queue_offsets_s {
   /* always add new fields at the end: */
   const uint16_t dqo_version;
@@ -593,7 +593,8 @@ const struct dispatch_queue_offsets_s {
 } dispatch_queue_offsets;
 /* FIXME: '-Wc++-compat' says to initialize the above struct, but the
  * version in the header I copied it from does no such thing... */
-#endif /* !dispatch_queue_offsets_s && !dispatch_queue_offsets && !__DISPATCH_QUEUE_PRIVATE__ */
+#endif /* !dispatch_queue_offsets_s && !dispatch_queue_offsets && \
+        * !__DISPATCH_QUEUE_PRIVATE__ && !__cplusplus */
 
 /* libdispatch has a structure (symbol name dispatch_queue_offsets) which
  * tells us where to find the name and flags for a work queue in the inferior.

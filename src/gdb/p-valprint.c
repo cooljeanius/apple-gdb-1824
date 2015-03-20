@@ -193,36 +193,38 @@ pascal_val_print (struct type *type, const gdb_byte *valaddr,
 	     as GDB does not recognize stabs pascal strings
 	     Pascal strings are mapped to records
 	     with lowercase names PM  */
-          if (is_pascal_string_type (elttype, &length_pos, &length_size,
-                                     &string_pos, &char_size, NULL)
-	      && addr != 0)
+          if (is_pascal_string_type(elttype, &length_pos, &length_size,
+                                    &string_pos, &char_size, NULL)
+	      && (addr != 0))
 	    {
 	      ULONGEST string_length;
               void *buffer;
-              buffer = xmalloc (length_size);
-              read_memory (addr + length_pos, buffer, length_size);
-	      string_length = extract_unsigned_integer (buffer, length_size);
-              xfree (buffer);
-              i = val_print_string (addr + string_pos, string_length, char_size, stream);
+              buffer = xmalloc(length_size);
+              read_memory((addr + length_pos), (gdb_byte *)buffer,
+                          length_size);
+	      string_length = extract_unsigned_integer((const gdb_byte *)buffer,
+                                                       length_size);
+              xfree(buffer);
+              i = val_print_string(addr + string_pos, string_length, char_size, stream);
 	    }
-	  else if (pascal_object_is_vtbl_member (type))
+	  else if (pascal_object_is_vtbl_member(type))
 	    {
 	      /* print vtbl's nicely */
-	      CORE_ADDR vt_address = unpack_pointer (type, valaddr + embedded_offset);
+	      CORE_ADDR vt_address = unpack_pointer(type, valaddr + embedded_offset);
 
 	      struct minimal_symbol *msymbol =
-	      lookup_minimal_symbol_by_pc (vt_address);
+                lookup_minimal_symbol_by_pc(vt_address);
 	      if ((msymbol != NULL)
-		  && (vt_address == SYMBOL_VALUE_ADDRESS (msymbol)))
+		  && (vt_address == SYMBOL_VALUE_ADDRESS(msymbol)))
 		{
-		  fputs_filtered (" <", stream);
-		  fputs_filtered (SYMBOL_PRINT_NAME (msymbol), stream);
-		  fputs_filtered (">", stream);
+		  fputs_filtered(" <", stream);
+		  fputs_filtered(SYMBOL_PRINT_NAME(msymbol), stream);
+		  fputs_filtered(">", stream);
 		}
 	      if (vt_address && vtblprint)
 		{
 		  struct value *vt_val;
-		  struct symbol *wsym = (struct symbol *) NULL;
+		  struct symbol *wsym = (struct symbol *)NULL;
 		  struct type *wtype;
 		  struct block *block = (struct block *) NULL;
 		  int is_this_fld;
@@ -694,12 +696,12 @@ const char pascal_vtbl_ptr_name[] =
    "pointer to virtual function".  */
 
 int
-pascal_object_is_vtbl_ptr_type (struct type *type)
+pascal_object_is_vtbl_ptr_type(struct type *type)
 {
-  char *typename = type_name_no_tag (type);
+  char *ptypename = type_name_no_tag(type);
 
-  return (typename != NULL
-	  && strcmp (typename, pascal_vtbl_ptr_name) == 0);
+  return ((ptypename != NULL)
+	  && (strcmp(ptypename, pascal_vtbl_ptr_name) == 0));
 }
 
 /* Return truth value for the assertion that TYPE is of the type

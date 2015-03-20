@@ -135,7 +135,7 @@ macosx_filename_in_bundle(const char *filename, int mainline)
 	{
 	  /* Length of the Info.plist directory without the NULL: */
 	  size_t info_plist_dir_len = (strlen(info_plist_filename)
-                                    - strlen("Info.plist"));
+                                       - strlen("Info.plist"));
 	  /* Length of our result including the NULL terminator: */
 	  size_t full_pathname_length = (info_plist_dir_len
                                          + strlen(bundle_exe_from_plist)
@@ -146,26 +146,26 @@ macosx_filename_in_bundle(const char *filename, int mainline)
 	    full_pathname_length += strlen("MacOS/");
 
 	  /* Allocate enough space for our resulting path: */
-	  full_pathname = xmalloc(full_pathname_length);
+	  full_pathname = (char *)xmalloc(full_pathname_length);
 
 	  if (full_pathname)
 	    {
-	      memcpy (full_pathname, info_plist_filename, info_plist_dir_len);
+	      memcpy(full_pathname, info_plist_filename, info_plist_dir_len);
 	      full_pathname[info_plist_dir_len] = '\0';
-	      /* Only append the "MacOS/" if we have a normal bundle.  */
+	      /* Only append the "MacOS/" if we have a normal bundle: */
 	      if (!shallow_bundle)
-		strcat (full_pathname, "MacOS/");
-	      /* Append the CFBundleExecutable value.  */
-	      strcat (full_pathname, bundle_exe_from_plist);
-	      gdb_assert ( strlen(full_pathname) + 1 == full_pathname_length );
+		strcat(full_pathname, "MacOS/");
+	      /* Append the CFBundleExecutable value: */
+	      strcat(full_pathname, bundle_exe_from_plist);
+	      gdb_assert((strlen(full_pathname) + 1UL) == full_pathname_length);
 	    }
-	  xfree ((char *) bundle_exe_from_plist);
+	  xfree((char *)bundle_exe_from_plist);
 	}
     }
 
 
   if (info_plist_filename)
-    xfree ((char *) info_plist_filename);
+    xfree((char *)info_plist_filename);
   return full_pathname;
 }
 
@@ -181,45 +181,45 @@ macosx_filename_in_bundle(const char *filename, int mainline)
    not been checked; this routine only does the string manipulation.  */
 
 static const char *
-make_info_plist_path (const char *bundle, const char *bundle_suffix,
-		      const char *plist_bundle_path)
+make_info_plist_path(const char *bundle, const char *bundle_suffix,
+		     const char *plist_bundle_path)
 {
   char plist_path[PATH_MAX];
   char plist_realpath[PATH_MAX];
   char *bundle_suffix_pos = NULL;
   char *t = NULL;
-  int bundle_suffix_len = strlen (bundle_suffix);
+  size_t bundle_suffix_len = strlen(bundle_suffix);
 
-  /* Find the last occurrence of the bundle_suffix.  */
-  for (t = strstr (bundle, bundle_suffix); t != NULL;
-       t = strstr (t+1, bundle_suffix))
+  /* Find the last occurrence of the bundle_suffix: */
+  for (t = strstr(bundle, bundle_suffix); t != NULL;
+       t = strstr(t + 1, bundle_suffix))
     bundle_suffix_pos = t;
 
-  if (bundle_suffix_pos != NULL && bundle_suffix_pos > bundle)
+  if ((bundle_suffix_pos != NULL) && (bundle_suffix_pos > bundle))
     {
       /* Length of the bundle directory name without the trailing directory
          delimiter.  */
-      int bundle_dir_len = (bundle_suffix_pos - bundle) + bundle_suffix_len;
+      size_t bundle_dir_len = ((bundle_suffix_pos - bundle) + bundle_suffix_len);
       /* Allocate enough memory for the bundle directory path with
 	 suffix, a directory delimiter, the relative plist bundle path,
 	 and a NULL terminator.  */
-      int info_plist_len = bundle_dir_len + 1 + strlen (plist_bundle_path) + 1;
+      size_t info_plist_len = (bundle_dir_len + 1UL + strlen(plist_bundle_path) + 1UL);
 
       if (info_plist_len < PATH_MAX)
 	{
-	  /* Copy the bundle directory name into the result.  */
-	  memcpy (plist_path, bundle, bundle_dir_len);
-	  /* Add a trailing directory delimiter and NULL terminate.  */
+	  /* Copy the bundle directory name into the result: */
+	  memcpy(plist_path, bundle, bundle_dir_len);
+	  /* Add a trailing directory delimiter and NULL terminate: */
 	  plist_path[bundle_dir_len] = '/';
-	  plist_path[bundle_dir_len+1] = '\0';
-	  /* Append the needed Info.plist path info.  */
-	  strcat (plist_path, plist_bundle_path);
-	  gdb_assert ( strlen(plist_path) + 1 == info_plist_len );
-	  /* Resolve the path that we return.  */
-	  if (realpath (plist_path, plist_realpath) == NULL)
-	    return xstrdup (plist_path);
+	  plist_path[bundle_dir_len + 1UL] = '\0';
+	  /* Append the needed Info.plist path info: */
+	  strcat(plist_path, plist_bundle_path);
+	  gdb_assert((strlen(plist_path) + 1UL) == info_plist_len);
+	  /* Resolve the path that we return: */
+	  if (realpath(plist_path, plist_realpath) == NULL)
+	    return xstrdup(plist_path);
 	  else
-	    return xstrdup (plist_realpath);
+	    return xstrdup(plist_realpath);
 	}
     }
 
@@ -237,53 +237,53 @@ make_info_plist_path (const char *bundle, const char *bundle_suffix,
    when the property list is no longer needed.  */
 
 const void *
-macosx_parse_plist (const char *path)
+macosx_parse_plist(const char *path)
 {
   CFPropertyListRef plist = NULL;
   const char url_header[] = "file://";
   char *url_text = NULL;
   CFURLRef url = NULL;
   CFAllocatorRef cf_alloc = kCFAllocatorDefault;
-  size_t url_text_len = (sizeof (url_header) - 1) + strlen (path) + 1;
-  url_text = xmalloc (url_text_len);
+  size_t url_text_len = ((sizeof(url_header) - 1UL) + strlen(path) + 1UL);
+  url_text = (char *)xmalloc(url_text_len);
 
-  /* Create URL text for the Info.plist file.  */
-  strcpy (url_text, url_header);
-  strcat (url_text, path);
+  /* Create URL text for the Info.plist file: */
+  strcpy(url_text, url_header);
+  strcat(url_text, path);
 
-  /* Generate a CoreFoundation URL from the URL text.  */
-  url = CFURLCreateWithBytes (cf_alloc, (const UInt8 *)url_text,
-			      url_text_len, kCFStringEncodingUTF8, NULL);
+  /* Generate a CoreFoundation URL from the URL text: */
+  url = CFURLCreateWithBytes(cf_alloc, (const UInt8 *)url_text,
+			     url_text_len, kCFStringEncodingUTF8, NULL);
   if (url)
     {
       /* Extract the contents of the file into a CoreFoundation data
 	 buffer.  */
       CFDataRef data = NULL;
-      if (CFURLCreateDataAndPropertiesFromResource (cf_alloc, url, &data,
-						    NULL, NULL,NULL)
-						    && data != NULL)
+      if (CFURLCreateDataAndPropertiesFromResource(cf_alloc, url, &data,
+						   NULL, NULL, NULL)
+          && (data != NULL))
 	{
 	  /* Create the property list from XML data or from the binary
 	     plist data.  */
-	  plist = CFPropertyListCreateFromXMLData (cf_alloc, data,
-						   kCFPropertyListImmutable,
-						   NULL);
-	  CFRelease (data);
+	  plist = CFPropertyListCreateFromXMLData(cf_alloc, data,
+						  kCFPropertyListImmutable,
+						  NULL);
+	  CFRelease(data);
 	  if (plist != NULL)
 	    {
-	      /* Make sure the property list was a CFDictionary, free it and
-		   * NULL the pointer if it was not as such.  */
-	      if (CFGetTypeID (plist) != CFDictionaryGetTypeID ())
+	      /* Make sure the property list was a CFDictionary, free it
+               * and NULL the pointer if it was not as such: */
+	      if (CFGetTypeID(plist) != CFDictionaryGetTypeID())
 		{
-		  CFRelease (plist);
+		  CFRelease(plist);
 		  plist = NULL;
 		}
 	    }
 	}
-      CFRelease (url);
+      CFRelease(url);
     }
 
-  xfree (url_text);
+  xfree(url_text);
   return plist;
 }
 
@@ -293,38 +293,42 @@ macosx_parse_plist (const char *path)
    in the the property list, if the value is not a string, or if there were
    errors extracting the value for KEY.  */
 const char *
-macosx_get_plist_posix_value (const void *plist, const char* key)
+macosx_get_plist_posix_value(const void *plist, const char* key)
 {
   char *value = NULL;
+  CFStringRef cf_key;
+  CFStringRef cf_value;
+
   if (plist == NULL)
     return NULL;
-  CFStringRef cf_key = CFStringCreateWithCString (kCFAllocatorDefault, key,
-						  kCFStringEncodingUTF8);
-  CFStringRef cf_value = CFDictionaryGetValue ((CFDictionaryRef) plist, cf_key);
-  if (cf_value != NULL && CFGetTypeID (cf_value) == CFStringGetTypeID ())
+  cf_key = (CFStringRef)CFStringCreateWithCString(kCFAllocatorDefault, key,
+                                                  kCFStringEncodingUTF8);
+  cf_value = (CFStringRef)CFDictionaryGetValue((CFDictionaryRef)plist,
+                                               cf_key);
+  if ((cf_value != NULL) && (CFGetTypeID(cf_value) == CFStringGetTypeID()))
     {
-      CFIndex max_value_len = CFStringGetMaximumSizeOfFileSystemRepresentation
-								(cf_value);
+      CFIndex max_value_len;
+      max_value_len = CFStringGetMaximumSizeOfFileSystemRepresentation(cf_value);
       if (max_value_len > 0)
 	{
-	  value = (char *) xmalloc (max_value_len + 1);
+	  value = (char *)xmalloc(max_value_len + 1);
 	  if (value)
 	    {
-	      if (!CFStringGetFileSystemRepresentation (cf_value, value,
-							max_value_len))
+	      if (!CFStringGetFileSystemRepresentation(cf_value, value,
+                                                       max_value_len))
 		{
 		  /* We failed to get a file system representation
 		     of the bundle executable, just free the buffer
 		     we malloc'ed.  */
-		  xfree (value);
+		  xfree(value);
 		  value = NULL;
 		}
 	    }
 	}
     }
-	if (cf_key) {
-		CFRelease (cf_key);
-	}
+  if (cf_key) {
+    CFRelease(cf_key);
+  }
   return value;
 }
 
@@ -334,26 +338,30 @@ macosx_get_plist_posix_value (const void *plist, const char* key)
    KEY does not have a valid value in the the property list, if the value
    is not a string, or if there were errors extracting the value for KEY.  */
 const char *
-macosx_get_plist_string_value (const void *plist, const char* key)
+macosx_get_plist_string_value(const void *plist, const char* key)
 {
   char *value = NULL;
+  CFStringRef cf_key;
+  CFStringRef cf_value;
+
   if (plist == NULL)
     return NULL;
-  CFStringRef cf_key = CFStringCreateWithCString (kCFAllocatorDefault, key,
-						  kCFStringEncodingUTF8);
-  CFStringRef cf_value = CFDictionaryGetValue ((CFDictionaryRef) plist, cf_key);
-  if (cf_value != NULL && CFGetTypeID (cf_value) == CFStringGetTypeID ())
+  cf_key = (CFStringRef)CFStringCreateWithCString(kCFAllocatorDefault, key,
+                                                  kCFStringEncodingUTF8);
+  cf_value = (CFStringRef)CFDictionaryGetValue((CFDictionaryRef)plist,
+                                               cf_key);
+  if ((cf_value != NULL) && (CFGetTypeID(cf_value) == CFStringGetTypeID()))
     {
-      CFIndex max_value_len = CFStringGetLength (cf_value);
-      max_value_len = CFStringGetMaximumSizeForEncoding (max_value_len,
-							 kCFStringEncodingUTF8);
+      CFIndex max_value_len = CFStringGetLength(cf_value);
+      max_value_len = CFStringGetMaximumSizeForEncoding(max_value_len,
+                                                        kCFStringEncodingUTF8);
       if (max_value_len > 0)
 	{
-	  value = xmalloc (max_value_len + 1);
+	  value = (char *)xmalloc(max_value_len + 1);
 	  if (value)
 	    {
-	      if (!CFStringGetCString (cf_value, value, max_value_len,
-				       kCFStringEncodingUTF8))
+	      if (!CFStringGetCString(cf_value, value, max_value_len,
+				      kCFStringEncodingUTF8))
 		{
 		  /* We failed to get a file system representation
 		     of the bundle executable, just free the buffer
@@ -372,42 +380,42 @@ macosx_get_plist_string_value (const void *plist, const char* key)
 /* Free a property list pointer that was obtained from a call to
    macosx_parse_plist.  */
 void
-macosx_free_plist (const void **plist)
+macosx_free_plist(const void **plist)
 {
   if (*plist != NULL)
     {
-      CFRelease ((CFPropertyListRef)*plist);
+      CFRelease((CFPropertyListRef)*plist);
       *plist = NULL;
     }
 }
 
 void
-macosx_print_extra_stop_info (int code, CORE_ADDR address)
+macosx_print_extra_stop_info(int code, CORE_ADDR address)
 {
-  ui_out_text (uiout, "Reason: ");
+  ui_out_text(uiout, "Reason: ");
   switch (code)
     {
     case KERN_PROTECTION_FAILURE:
-      ui_out_field_string (uiout, "access-reason", "KERN_PROTECTION_FAILURE");
+      ui_out_field_string(uiout, "access-reason", "KERN_PROTECTION_FAILURE");
       break;
     case KERN_INVALID_ADDRESS:
-      ui_out_field_string (uiout, "access-reason", "KERN_INVALID_ADDRESS");
+      ui_out_field_string(uiout, "access-reason", "KERN_INVALID_ADDRESS");
       break;
 #if defined (TARGET_ARM)
     case 0x101:
-      ui_out_field_string (uiout, "access-reason", "EXC_ARM_DA_ALIGN");
+      ui_out_field_string(uiout, "access-reason", "EXC_ARM_DA_ALIGN");
       break;
 
     case 0x102:
-      ui_out_field_string (uiout, "access-reason", "EXC_ARM_DA_DEBUG");
+      ui_out_field_string(uiout, "access-reason", "EXC_ARM_DA_DEBUG");
       break;
 #endif /* TARGET_ARM */
     default:
-      ui_out_field_int (uiout, "access-reason", code);
+      ui_out_field_int(uiout, "access-reason", code);
     }
-  ui_out_text (uiout, " at address: ");
-  ui_out_field_core_addr (uiout, "address", address);
-  ui_out_text (uiout, "\n");
+  ui_out_text(uiout, " at address: ");
+  ui_out_field_core_addr(uiout, "address", address);
+  ui_out_text(uiout, "\n");
 }
 
 
@@ -484,29 +492,29 @@ macosx_check_malloc_is_unsafe(void)
         {
           struct type *func_type;
           func_type = builtin_type_int;
-          func_type = lookup_function_type (func_type);
-          func_type = lookup_pointer_type (func_type);
-          malloc_check_fn = create_cached_function ("malloc_gdb_po_unsafe",
-						   func_type);
+          func_type = lookup_function_type(func_type);
+          func_type = lookup_pointer_type(func_type);
+          malloc_check_fn = create_cached_function("malloc_gdb_po_unsafe",
+                                                   func_type);
         }
       else
 	return -1;
     }
 
   if (debug_handcall_setup)
-    printf_unfiltered ("Overriding debugger mode to call malloc check function.\n");
+    printf_unfiltered("Overriding debugger mode to call malloc check function.\n");
 
-  scheduler_cleanup = make_cleanup_set_restore_scheduler_locking_mode
-    (scheduler_locking_on);
-  /* Suppress the objc runtime mode checking here.  */
-  make_cleanup_set_restore_debugger_mode (NULL, 0);
+  scheduler_cleanup =
+    make_cleanup_set_restore_scheduler_locking_mode(scheduler_locking_on);
+  /* Suppress the objc runtime mode checking here: */
+  make_cleanup_set_restore_debugger_mode(NULL, 0);
 
-  make_cleanup_set_restore_unwind_on_signal (1);
+  make_cleanup_set_restore_unwind_on_signal(1);
 
-  TRY_CATCH (e, RETURN_MASK_ALL)
+  TRY_CATCH(e, RETURN_MASK_ALL)
     {
-      tmp_value = call_function_by_hand (lookup_cached_function (malloc_check_fn),
-                                         0, NULL);
+      tmp_value = call_function_by_hand(lookup_cached_function(malloc_check_fn),
+                                        0, NULL);
     }
 
   do_cleanups (scheduler_cleanup);
@@ -514,19 +522,20 @@ macosx_check_malloc_is_unsafe(void)
   /* If we got an error calling the malloc_check_fn, assume it is not
      safe to call... */
 
-  if (e.reason != NO_ERROR)
+  if (e.reason != (int)NO_ERROR)
     return 1;
 
-  success = value_as_long (tmp_value);
-  if (success == 0 || success == 1)
+  success = value_as_long(tmp_value);
+  if ((success == 0) || (success == 1))
     {
       malloc_unsafe_flag = success;
-      make_hand_call_cleanup (do_reset_malloc_unsafe_flag, 0);
+      make_hand_call_cleanup(do_reset_malloc_unsafe_flag, 0);
       return success;
     }
   else
     {
-      warning ("Got unexpected value from malloc_gdb_po_unsafe: %d.", success);
+      warning("Got unexpected value from malloc_gdb_po_unsafe: %d.",
+              success);
       return 1;
     }
 

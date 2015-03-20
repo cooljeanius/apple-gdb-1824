@@ -2036,14 +2036,15 @@ bfd_elf32_arm_allocate_interworking_sections (struct bfd_link_info * info)
 
   if (globals->thumb_glue_size != 0)
     {
-      BFD_ASSERT (globals->bfd_of_glue_owner != NULL);
+      BFD_ASSERT(globals->bfd_of_glue_owner != NULL);
 
-      s = bfd_get_section_by_name
-	(globals->bfd_of_glue_owner, THUMB2ARM_GLUE_SECTION_NAME);
+      s = bfd_get_section_by_name(globals->bfd_of_glue_owner,
+                                  THUMB2ARM_GLUE_SECTION_NAME);
 
-      BFD_ASSERT (s != NULL);
+      BFD_ASSERT(s != NULL);
 
-      foo = bfd_alloc (globals->bfd_of_glue_owner, globals->thumb_glue_size);
+      foo = (bfd_byte *)bfd_alloc(globals->bfd_of_glue_owner,
+                                  globals->thumb_glue_size);
 
       s->size = globals->thumb_glue_size;
       s->contents = foo;
@@ -2053,35 +2054,35 @@ bfd_elf32_arm_allocate_interworking_sections (struct bfd_link_info * info)
 }
 
 static void
-record_arm_to_thumb_glue (struct bfd_link_info * link_info,
-			  struct elf_link_hash_entry * h)
+record_arm_to_thumb_glue(struct bfd_link_info * link_info,
+			 struct elf_link_hash_entry * h)
 {
-  const char * name = h->root.root.string;
-  asection * s;
-  char * tmp_name;
-  struct elf_link_hash_entry * myh;
-  struct bfd_link_hash_entry * bh;
-  struct elf32_arm_link_hash_table * globals;
+  const char *name = h->root.root.string;
+  asection *s;
+  char *tmp_name;
+  struct elf_link_hash_entry *myh;
+  struct bfd_link_hash_entry *bh;
+  struct elf32_arm_link_hash_table *globals;
   bfd_vma val;
 
-  globals = elf32_arm_hash_table (link_info);
+  globals = elf32_arm_hash_table(link_info);
 
-  BFD_ASSERT (globals != NULL);
-  BFD_ASSERT (globals->bfd_of_glue_owner != NULL);
+  BFD_ASSERT(globals != NULL);
+  BFD_ASSERT(globals->bfd_of_glue_owner != NULL);
 
-  s = bfd_get_section_by_name
-    (globals->bfd_of_glue_owner, ARM2THUMB_GLUE_SECTION_NAME);
+  s = bfd_get_section_by_name(globals->bfd_of_glue_owner,
+                              ARM2THUMB_GLUE_SECTION_NAME);
 
-  BFD_ASSERT (s != NULL);
+  BFD_ASSERT(s != NULL);
 
-  tmp_name = bfd_malloc ((bfd_size_type) strlen (name) + strlen (ARM2THUMB_GLUE_ENTRY_NAME) + 1);
+  tmp_name = (char *)bfd_malloc((bfd_size_type)strlen(name) + strlen(ARM2THUMB_GLUE_ENTRY_NAME) + 1UL);
 
-  BFD_ASSERT (tmp_name);
+  BFD_ASSERT(tmp_name);
 
-  sprintf (tmp_name, ARM2THUMB_GLUE_ENTRY_NAME, name);
+  sprintf(tmp_name, ARM2THUMB_GLUE_ENTRY_NAME, name);
 
-  myh = elf_link_hash_lookup
-    (&(globals)->root, tmp_name, FALSE, FALSE, TRUE);
+  myh = elf_link_hash_lookup(&(globals)->root, tmp_name,
+                             FALSE, FALSE, TRUE);
 
   if (myh != NULL)
     {
@@ -2127,23 +2128,23 @@ record_thumb_to_arm_glue (struct bfd_link_info *link_info,
 
   hash_table = elf32_arm_hash_table (link_info);
 
-  BFD_ASSERT (hash_table != NULL);
-  BFD_ASSERT (hash_table->bfd_of_glue_owner != NULL);
+  BFD_ASSERT(hash_table != NULL);
+  BFD_ASSERT(hash_table->bfd_of_glue_owner != NULL);
 
-  s = bfd_get_section_by_name
-    (hash_table->bfd_of_glue_owner, THUMB2ARM_GLUE_SECTION_NAME);
+  s = bfd_get_section_by_name(hash_table->bfd_of_glue_owner,
+                              THUMB2ARM_GLUE_SECTION_NAME);
 
-  BFD_ASSERT (s != NULL);
+  BFD_ASSERT(s != NULL);
 
-  tmp_name = bfd_malloc ((bfd_size_type) strlen (name)
-			 + strlen (THUMB2ARM_GLUE_ENTRY_NAME) + 1);
+  tmp_name = (char *)bfd_malloc((bfd_size_type)strlen(name)
+                                + strlen(THUMB2ARM_GLUE_ENTRY_NAME) + 1UL);
 
-  BFD_ASSERT (tmp_name);
+  BFD_ASSERT(tmp_name);
 
-  sprintf (tmp_name, THUMB2ARM_GLUE_ENTRY_NAME, name);
+  sprintf(tmp_name, THUMB2ARM_GLUE_ENTRY_NAME, name);
 
-  myh = elf_link_hash_lookup
-    (&(hash_table)->root, tmp_name, FALSE, FALSE, TRUE);
+  myh = elf_link_hash_lookup(&(hash_table)->root, tmp_name,
+                             FALSE, FALSE, TRUE);
 
   if (myh != NULL)
     {
@@ -2169,15 +2170,15 @@ record_thumb_to_arm_glue (struct bfd_link_info *link_info,
 #define BACK_FROM_ARM "__%s_back_from_arm"
 
   /* Allocate another symbol to mark where we switch to Arm mode.  */
-  tmp_name = bfd_malloc((bfd_size_type)strlen(name)
-                        + strlen(CHANGE_TO_ARM) + 1UL);
+  tmp_name = (char *)bfd_malloc((bfd_size_type)strlen(name)
+                                + strlen(CHANGE_TO_ARM) + 1UL);
 
   BFD_ASSERT(tmp_name);
 
   sprintf(tmp_name, CHANGE_TO_ARM, name);
 
   bh = NULL;
-  val = hash_table->thumb_glue_size + 4,
+  val = (hash_table->thumb_glue_size + 4),
   _bfd_generic_link_add_one_symbol(link_info, hash_table->bfd_of_glue_owner,
 				   tmp_name, BSF_LOCAL, s, val,
 				   NULL, TRUE, FALSE, &bh);
@@ -4949,23 +4950,23 @@ elf32_arm_check_relocs (bfd *abfd, struct bfd_link_info *info,
 		{
 		  bfd_signed_vma *local_got_refcounts;
 
-		  /* This is a global offset table entry for a local symbol.  */
-		  local_got_refcounts = elf_local_got_refcounts (abfd);
+		  /* This is a global offset table entry for a local symbol: */
+		  local_got_refcounts = elf_local_got_refcounts(abfd);
 		  if (local_got_refcounts == NULL)
 		    {
 		      bfd_size_type size;
 
 		      size = symtab_hdr->sh_info;
-		      size *= (sizeof (bfd_signed_vma) + sizeof(char));
-		      local_got_refcounts = bfd_zalloc (abfd, size);
+		      size *= (sizeof(bfd_signed_vma) + sizeof(char));
+		      local_got_refcounts = (bfd_signed_vma *)bfd_zalloc(abfd, size);
 		      if (local_got_refcounts == NULL)
 			return FALSE;
-		      elf_local_got_refcounts (abfd) = local_got_refcounts;
-		      elf32_arm_local_got_tls_type (abfd)
-			= (char *) (local_got_refcounts + symtab_hdr->sh_info);
+		      elf_local_got_refcounts(abfd) = local_got_refcounts;
+		      elf32_arm_local_got_tls_type(abfd)
+			= (char *)(local_got_refcounts + symtab_hdr->sh_info);
 		    }
 		  local_got_refcounts[r_symndx] += 1;
-		  old_tls_type = elf32_arm_local_got_tls_type (abfd) [r_symndx];
+		  old_tls_type = elf32_arm_local_got_tls_type(abfd)[r_symndx];
 		}
 
 	      /* We will already have issued an error message if there is a

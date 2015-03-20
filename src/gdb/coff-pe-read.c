@@ -21,7 +21,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 
-   Contributed by Raoul M. Gough (RaoulGough@yahoo.co.uk). */
+   Contributed by Raoul M. Gough <RaoulGough@yahoo.co.uk>. */
 
 #include "coff-pe-read.h"
 
@@ -34,14 +34,13 @@
 #include "symfile.h"
 #include "objfiles.h"
 
-/* Internal section information */
-
+/* Internal section information: */
 struct read_pe_section_data
 {
   CORE_ADDR vma_offset;		/* Offset to loaded address of section. */
   unsigned long rva_start;	/* Start offset within the pe. */
   unsigned long rva_end;	/* End offset within the pe. */
-  enum minimal_symbol_type ms_type;	/* Type to assign symbols in section. */
+  enum minimal_symbol_type ms_type; /* Type to assign symbols in section */
 };
 
 #define PE_SECTION_INDEX_TEXT     0
@@ -55,85 +54,79 @@ struct read_pe_section_data
    if passed an unrecognised section name. */
 
 static int
-read_pe_section_index (const char *section_name)
+read_pe_section_index(const char *section_name)
 {
-  if (strcmp (section_name, ".text") == 0)
+  if (strcmp(section_name, ".text") == 0)
     {
       return PE_SECTION_INDEX_TEXT;
     }
-
-  else if (strcmp (section_name, ".data") == 0)
+  else if (strcmp(section_name, ".data") == 0)
     {
       return PE_SECTION_INDEX_DATA;
     }
-
-  else if (strcmp (section_name, ".bss") == 0)
+  else if (strcmp(section_name, ".bss") == 0)
     {
       return PE_SECTION_INDEX_BSS;
     }
-
   else
     {
       return PE_SECTION_INDEX_INVALID;
     }
 }
 
-/* Record the virtual memory address of a section. */
-
+/* Record the virtual memory address of a section: */
 static void
-get_section_vmas (bfd *abfd, asection *sectp, void *context)
+get_section_vmas(bfd *abfd, asection *sectp, void *context)
 {
-  struct read_pe_section_data *sections = context;
-  int sectix = read_pe_section_index (sectp->name);
+  struct read_pe_section_data *sections;
+  int sectix;
+
+  sections = (struct read_pe_section_data *)context;
+  sectix = read_pe_section_index(sectp->name);
 
   if (sectix != PE_SECTION_INDEX_INVALID)
     {
       /* Data within the section start at rva_start in the pe and at
-         bfd_get_section_vma() within memory. Store the offset. */
-
+       * bfd_get_section_vma() within memory.  Store the offset: */
       sections[sectix].vma_offset
-	= bfd_get_section_vma (abfd, sectp) - sections[sectix].rva_start;
+	= (bfd_get_section_vma(abfd, sectp) - sections[sectix].rva_start);
     }
 }
 
-/* Create a minimal symbol entry for an exported symbol. */
-
+/* Create a minimal symbol entry for an exported symbol: */
 static void
-add_pe_exported_sym (char *sym_name,
-		     unsigned long func_rva,
-		     const struct read_pe_section_data *section_data,
-		     const char *dll_name, struct objfile *objfile)
+add_pe_exported_sym(char *sym_name, unsigned long func_rva,
+		    const struct read_pe_section_data *section_data,
+		    const char *dll_name, struct objfile *objfile)
 {
-  /* Add the stored offset to get the loaded address of the symbol. */
-
-  CORE_ADDR vma = func_rva + section_data->vma_offset;
+  /* Add the stored offset to get the loaded address of the symbol: */
+  CORE_ADDR vma = (func_rva + section_data->vma_offset);
 
   char *qualified_name = 0;
-  int dll_name_len = strlen (dll_name);
+  size_t dll_name_len = strlen(dll_name);
 
   /* Generate a (hopefully unique) qualified name using the first part
      of the dll name, e.g. KERNEL32!AddAtomA. This matches the style
      used by windbg from the "Microsoft Debugging Tools for Windows". */
 
-  qualified_name = xmalloc (dll_name_len + strlen (sym_name) + 2);
+  qualified_name = (char *)xmalloc(dll_name_len + strlen(sym_name) + 2UL);
 
-  strncpy (qualified_name, dll_name, dll_name_len);
+  strncpy(qualified_name, dll_name, dll_name_len);
   qualified_name[dll_name_len] = '!';
-  strcpy (qualified_name + dll_name_len + 1, sym_name);
+  strcpy(qualified_name + dll_name_len + 1, sym_name);
 
-  prim_record_minimal_symbol (qualified_name,
-			      vma, section_data->ms_type, objfile);
+  prim_record_minimal_symbol(qualified_name,
+			     vma, section_data->ms_type, objfile);
 
-  xfree (qualified_name);
+  xfree(qualified_name);
 
   /* Enter the plain name as well, which might not be unique. */
   prim_record_minimal_symbol (sym_name, vma, section_data->ms_type, objfile);
 }
 
-/* Truncate a dll_name at the first dot character. */
-
+/* Truncate a dll_name at the first dot character: */
 static void
-read_pe_truncate_name (char *dll_name)
+read_pe_truncate_name(char *dll_name)
 {
   while (*dll_name)
     {
@@ -141,7 +134,6 @@ read_pe_truncate_name (char *dll_name)
 	{
 	  *dll_name = '\0';	/* truncates and causes loop exit. */
 	}
-
       else
 	{
 	  ++dll_name;
@@ -151,31 +143,31 @@ read_pe_truncate_name (char *dll_name)
 
 /* Low-level support functions, direct from the ld module pe-dll.c. */
 static unsigned int
-pe_get16 (bfd *abfd, int where)
+pe_get16(bfd *abfd, int where)
 {
   unsigned char b[2];
 
-  bfd_seek (abfd, (file_ptr) where, SEEK_SET);
-  bfd_bread (b, (bfd_size_type) 2, abfd);
+  bfd_seek(abfd, (file_ptr)where, SEEK_SET);
+  bfd_bread(b, (bfd_size_type)2UL, abfd);
   return b[0] + (b[1] << 8);
 }
 
 static unsigned int
-pe_get32 (bfd *abfd, int where)
+pe_get32(bfd *abfd, int where)
 {
   unsigned char b[4];
 
-  bfd_seek (abfd, (file_ptr) where, SEEK_SET);
-  bfd_bread (b, (bfd_size_type) 4, abfd);
-  return b[0] + (b[1] << 8) + (b[2] << 16) + (b[3] << 24);
+  bfd_seek(abfd, (file_ptr)where, SEEK_SET);
+  bfd_bread(b, (bfd_size_type)4UL, abfd);
+  return (b[0] + (b[1] << 8) + (b[2] << 16) + (b[3] << 24));
 }
 
 static unsigned int
 pe_as32 (void *ptr)
 {
-  unsigned char *b = ptr;
+  unsigned char *b = (unsigned char *)ptr;
 
-  return b[0] + (b[1] << 8) + (b[2] << 16) + (b[3] << 24);
+  return (b[0] + (b[1] << 8) + (b[2] << 16) + (b[3] << 24));
 }
 
 /* Read the (non-debug) export symbol table from a portable
@@ -183,7 +175,7 @@ pe_as32 (void *ptr)
    pe_implied_import_dll in pe-dll.c. */
 
 void
-read_pe_exported_syms (struct objfile *objfile)
+read_pe_exported_syms(struct objfile *objfile)
 {
   bfd *dll = objfile->obfd;
   unsigned long pe_header_offset, opthdr_ofs, num_entries, i;
@@ -195,18 +187,18 @@ read_pe_exported_syms (struct objfile *objfile)
 
   /* Array elements are for text, data and bss in that order
      Initialization with start_rva > end_rva guarantees that
-     unused sections won't be matched. */
-  struct read_pe_section_data section_data[PE_SECTION_TABLE_SIZE]
-    = { {0, 1, 0, mst_text},
-  {0, 1, 0, mst_data},
-  {0, 1, 0, mst_bss}
+     unused sections will NOT be matched. */
+  struct read_pe_section_data section_data[PE_SECTION_TABLE_SIZE] = {
+    { 0, 1, 0, mst_text },
+    { 0, 1, 0, mst_data },
+    { 0, 1, 0, mst_bss }
   };
 
   struct cleanup *back_to = 0;
 
-  char const *target = bfd_get_target (objfile->obfd);
+  char const *target = bfd_get_target(objfile->obfd);
 
-  if ((strcmp (target, "pe-i386") != 0) && (strcmp (target, "pei-i386") != 0))
+  if ((strcmp(target, "pe-i386") != 0) && (strcmp(target, "pei-i386") != 0))
     {
       /* This is not an i386 format file. Abort now, because the code
          is untested on anything else. *FIXME* test on further
@@ -214,89 +206,89 @@ read_pe_exported_syms (struct objfile *objfile)
       return;
     }
 
-  /* Get pe_header, optional header and numbers of export entries.  */
-  pe_header_offset = pe_get32 (dll, 0x3c);
-  opthdr_ofs = pe_header_offset + 4 + 20;
-  num_entries = pe_get32 (dll, opthdr_ofs + 92);
+  /* Get pe_header, optional header and numbers of export entries: */
+  pe_header_offset = pe_get32(dll, 0x3c);
+  opthdr_ofs = (pe_header_offset + 4 + 20);
+  num_entries = pe_get32(dll, opthdr_ofs + 92);
 
   if (num_entries < 1)		/* No exports.  */
     {
       return;
     }
 
-  export_rva = pe_get32 (dll, opthdr_ofs + 96);
-  export_size = pe_get32 (dll, opthdr_ofs + 100);
-  nsections = pe_get16 (dll, pe_header_offset + 4 + 2);
+  export_rva = pe_get32(dll, opthdr_ofs + 96);
+  export_size = pe_get32(dll, opthdr_ofs + 100);
+  nsections = pe_get16(dll, pe_header_offset + 4 + 2);
   secptr = (pe_header_offset + 4 + 20 +
-	    pe_get16 (dll, pe_header_offset + 4 + 16));
+	    pe_get16(dll, pe_header_offset + 4 + 16));
   expptr = 0;
 
-  /* Get the rva and size of the export section.  */
+  /* Get the rva and size of the export section: */
   for (i = 0; i < nsections; i++)
     {
       char sname[8];
-      unsigned long secptr1 = secptr + 40 * i;
-      unsigned long vaddr = pe_get32 (dll, secptr1 + 12);
-      unsigned long vsize = pe_get32 (dll, secptr1 + 16);
-      unsigned long fptr = pe_get32 (dll, secptr1 + 20);
+      unsigned long secptr1 = (secptr + 40 * i);
+      unsigned long vaddr = pe_get32(dll, secptr1 + 12);
+      unsigned long vsize = pe_get32(dll, secptr1 + 16);
+      unsigned long fptr = pe_get32(dll, secptr1 + 20);
 
-      bfd_seek (dll, (file_ptr) secptr1, SEEK_SET);
-      bfd_bread (sname, (bfd_size_type) 8, dll);
+      bfd_seek(dll, (file_ptr)secptr1, SEEK_SET);
+      bfd_bread(sname, (bfd_size_type)8UL, dll);
 
-      if (vaddr <= export_rva && vaddr + vsize > export_rva)
+      if ((vaddr <= export_rva) && ((vaddr + vsize) > export_rva))
 	{
 	  expptr = fptr + (export_rva - vaddr);
-	  if (export_rva + export_size > vaddr + vsize)
-	    export_size = vsize - (export_rva - vaddr);
+	  if ((export_rva + export_size) > (vaddr + vsize))
+	    export_size = (vsize - (export_rva - vaddr));
 	  break;
 	}
     }
 
   if (export_size == 0)
     {
-      /* Empty export table. */
+      /* Empty export table: */
       return;
     }
 
-  /* Scan sections and store the base and size of the relevant sections. */
+  /* Scan sections and store the base and size of the relevant sections: */
   for (i = 0; i < nsections; i++)
     {
-      unsigned long secptr1 = secptr + 40 * i;
-      unsigned long vsize = pe_get32 (dll, secptr1 + 8);
-      unsigned long vaddr = pe_get32 (dll, secptr1 + 12);
+      unsigned long secptr1 = (secptr + 40 * i);
+      unsigned long vsize = pe_get32(dll, secptr1 + 8);
+      unsigned long vaddr = pe_get32(dll, secptr1 + 12);
       char sec_name[9];
       int sectix;
 
       sec_name[8] = '\0';
-      bfd_seek (dll, (file_ptr) secptr1 + 0, SEEK_SET);
-      bfd_bread (sec_name, (bfd_size_type) 8, dll);
+      bfd_seek(dll, ((file_ptr)secptr1 + 0L), SEEK_SET);
+      bfd_bread(sec_name, (bfd_size_type)8UL, dll);
 
       sectix = read_pe_section_index (sec_name);
 
       if (sectix != PE_SECTION_INDEX_INVALID)
 	{
 	  section_data[sectix].rva_start = vaddr;
-	  section_data[sectix].rva_end = vaddr + vsize;
+	  section_data[sectix].rva_end = (vaddr + vsize);
 	}
     }
 
-  expdata = (unsigned char *) xmalloc (export_size);
-  back_to = make_cleanup (xfree, expdata);
+  expdata = (unsigned char *)xmalloc(export_size);
+  back_to = make_cleanup(xfree, expdata);
 
-  bfd_seek (dll, (file_ptr) expptr, SEEK_SET);
-  bfd_bread (expdata, (bfd_size_type) export_size, dll);
-  erva = expdata - export_rva;
+  bfd_seek(dll, (file_ptr)expptr, SEEK_SET);
+  bfd_bread(expdata, (bfd_size_type)export_size, dll);
+  erva = (expdata - export_rva);
 
-  nexp = pe_as32 (expdata + 24);
-  name_rvas = pe_as32 (expdata + 32);
-  ordinals = pe_as32 (expdata + 36);
-  ordbase = pe_as32 (expdata + 16);
-  exp_funcbase = pe_as32 (expdata + 28);
+  nexp = pe_as32(expdata + 24);
+  name_rvas = pe_as32(expdata + 32);
+  ordinals = pe_as32(expdata + 36);
+  ordbase = pe_as32(expdata + 16);
+  exp_funcbase = pe_as32(expdata + 28);
 
-  /* Use internal dll name instead of full pathname. */
-  dll_name = pe_as32 (expdata + 12) + erva;
+  /* Use internal dll name instead of full pathname: */
+  dll_name = (char *)(pe_as32(expdata + 12) + erva);
 
-  bfd_map_over_sections (dll, get_section_vmas, section_data);
+  bfd_map_over_sections(dll, get_section_vmas, section_data);
 
   /* Adjust the vma_offsets in case this PE got relocated. This
      assumes that *all* sections share the same relocation offset
@@ -304,24 +296,24 @@ read_pe_exported_syms (struct objfile *objfile)
   for (i = 0; i < PE_SECTION_TABLE_SIZE; i++)
     {
       section_data[i].vma_offset
-	+= objfile_text_section_offset (objfile);
+	+= objfile_text_section_offset(objfile);
     }
 
-  printf_filtered (_("Minimal symbols from %s..."), dll_name);
-  wrap_here ("");
+  printf_filtered(_("Minimal symbols from %s..."), dll_name);
+  wrap_here("");
 
   /* Truncate name at first dot. Should maybe also convert to all
      lower case for convenience on Windows. */
-  read_pe_truncate_name (dll_name);
+  read_pe_truncate_name(dll_name);
 
   /* Iterate through the list of symbols.  */
   for (i = 0; i < nexp; i++)
     {
-      /* Pointer to the names vector.  */
-      unsigned long name_rva = pe_as32 (erva + name_rvas + i * 4);
+      /* Pointer to the names vector: */
+      unsigned long name_rva = pe_as32(erva + name_rvas + i * 4);
 
-      /* Pointer to the function address vector.  */
-      unsigned long func_rva = pe_as32 (erva + exp_funcbase + i * 4);
+      /* Pointer to the function address vector: */
+      unsigned long func_rva = pe_as32(erva + exp_funcbase + i * 4);
 
       /* Find this symbol's section in our own array. */
       int sectix = 0;

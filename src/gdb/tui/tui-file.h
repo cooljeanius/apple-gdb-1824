@@ -1,4 +1,4 @@
-/* UI_FILE - a generic STDIO like output stream.
+/* tui-file.h: UI_FILE - a generic STDIO like output stream.
    Copyright 1999, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.

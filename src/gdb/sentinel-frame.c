@@ -36,7 +36,7 @@ struct frame_unwind_cache
 void *
 sentinel_frame_cache (struct regcache *regcache)
 {
-  struct frame_unwind_cache *cache = 
+  struct frame_unwind_cache *cache =
     FRAME_OBSTACK_ZALLOC (struct frame_unwind_cache);
   cache->regcache = regcache;
   return cache;
@@ -51,12 +51,13 @@ sentinel_frame_prev_register (struct frame_info *next_frame,
 			      enum lval_type *lvalp, CORE_ADDR *addrp,
 			      int *realnum, gdb_byte *bufferp)
 {
-  struct frame_unwind_cache *cache = *this_prologue_cache;
+  struct frame_unwind_cache *cache;
+  cache = (struct frame_unwind_cache *)*this_prologue_cache;
   /* Describe the register's location.  A reg-frame maps all registers
      onto the corresponding hardware register.  */
-  *optimized = 0;
+  *optimized = (enum opt_state)0;
   *lvalp = lval_register;
-  *addrp = register_offset_hack (current_gdbarch, regnum);
+  *addrp = register_offset_hack(current_gdbarch, regnum);
   *realnum = regnum;
 
   /* If needed, find and return the value of the register.  */
@@ -66,27 +67,27 @@ sentinel_frame_prev_register (struct frame_info *next_frame,
       /* Use the regcache_cooked_read() method so that it, on the fly,
          constructs either a raw or pseudo register from the raw
          register cache.  */
-      regcache_cooked_read (cache->regcache, regnum, bufferp);
+      regcache_cooked_read(cache->regcache, regnum, bufferp);
     }
 }
 
 static void
-sentinel_frame_this_id (struct frame_info *next_frame,
-			void **this_prologue_cache,
-			struct frame_id *this_id)
+sentinel_frame_this_id(struct frame_info *next_frame,
+                       void **this_prologue_cache,
+                       struct frame_id *this_id)
 {
   /* The sentinel frame is used as a starting point for creating the
      previous (inner most) frame.  That frame's THIS_ID method will be
      called to determine the inner most frame's ID.  Not this one.  */
-  internal_error (__FILE__, __LINE__, _("sentinel_frame_this_id called"));
+  internal_error(__FILE__, __LINE__, _("sentinel_frame_this_id called"));
 }
 
 static CORE_ADDR
-sentinel_frame_prev_pc (struct frame_info *next_frame,
-			void **this_prologue_cache)
+sentinel_frame_prev_pc(struct frame_info *next_frame,
+                       void **this_prologue_cache)
 {
-  struct gdbarch *gdbarch = get_frame_arch (next_frame);
-  return gdbarch_unwind_pc (gdbarch, next_frame);
+  struct gdbarch *gdbarch = get_frame_arch(next_frame);
+  return gdbarch_unwind_pc(gdbarch, next_frame);
 }
 
 const struct frame_unwind sentinel_frame_unwinder =
@@ -100,3 +101,5 @@ const struct frame_unwind sentinel_frame_unwinder =
 };
 
 const struct frame_unwind *const sentinel_frame_unwind = &sentinel_frame_unwinder;
+
+/* EOF */

@@ -316,33 +316,31 @@ struct elf_m68k_link_hash_table
   struct sym_sec_cache sym_sec;
 };
 
-/* Get the m68k ELF linker hash table from a link_info structure.  */
-
+/* Get the m68k ELF linker hash table from a link_info structure: */
 #define elf_m68k_hash_table(p) \
-  ((struct elf_m68k_link_hash_table *) (p)->hash)
+  ((struct elf_m68k_link_hash_table *)(p)->hash)
 
-/* Create an entry in an m68k ELF linker hash table.  */
-
+/* Create an entry in an m68k ELF linker hash table: */
 static struct bfd_hash_entry *
-elf_m68k_link_hash_newfunc (entry, table, string)
-     struct bfd_hash_entry *entry;
-     struct bfd_hash_table *table;
-     const char *string;
+elf_m68k_link_hash_newfunc(struct bfd_hash_entry *entry,
+                           struct bfd_hash_table *table,
+                           const char *string)
 {
   struct bfd_hash_entry *ret = entry;
 
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
   if (ret == NULL)
-    ret = bfd_hash_allocate (table,
-			     sizeof (struct elf_m68k_link_hash_entry));
+    ret = ((struct bfd_hash_entry *)
+           bfd_hash_allocate(table,
+                             sizeof(struct elf_m68k_link_hash_entry)));
   if (ret == NULL)
     return ret;
 
-  /* Call the allocation method of the superclass.  */
-  ret = _bfd_elf_link_hash_newfunc (ret, table, string);
+  /* Call the allocation method of the superclass: */
+  ret = _bfd_elf_link_hash_newfunc(ret, table, string);
   if (ret != NULL)
-    elf_m68k_hash_entry (ret)->pcrel_relocs_copied = NULL;
+    elf_m68k_hash_entry(ret)->pcrel_relocs_copied = NULL;
 
   return ret;
 }

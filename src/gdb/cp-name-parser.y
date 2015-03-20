@@ -70,25 +70,29 @@ static struct demangle_component *global_result;
 /* Prototypes for helper functions used when constructing the parse
    tree.  */
 
-static struct demangle_component *d_qualify (struct demangle_component *, int,
-					     int);
+static struct demangle_component *d_qualify(struct demangle_component *,
+                                            int, int);
 
-static struct demangle_component *d_int_type (int);
+static struct demangle_component *d_int_type(int);
 
-static struct demangle_component *d_unary (const char *,
+static struct demangle_component *d_unary(const char *,
+					  struct demangle_component *);
+static struct demangle_component *d_binary(const char *,
+					   struct demangle_component *,
 					   struct demangle_component *);
-static struct demangle_component *d_binary (const char *,
-					    struct demangle_component *,
-					    struct demangle_component *);
 
-/* Flags passed to d_qualify.  */
+extern char *cp_comp_to_string(struct demangle_component *, int);
 
+extern struct demangle_component *cp_demangled_name_to_comp(const char *,
+                                                            void **,
+                                                            const char **);
+
+/* Flags passed to d_qualify: */
 #define QUAL_CONST 1
 #define QUAL_RESTRICT 2
 #define QUAL_VOLATILE 4
 
-/* Flags passed to d_int_type.  */
-
+/* Flags passed to d_int_type: */
 #define INT_CHAR	(1 << 0)
 #define INT_SHORT	(1 << 1)
 #define INT_LONG	(1 << 2)
@@ -398,13 +402,13 @@ function
 
 demangler_special
 		:	DEMANGLER_SPECIAL start
-			{ $$ = make_empty ($1);
+			{ $$ = make_empty((enum demangle_component_type)$1);
 			  d_left ($$) = $2;
 			  d_right ($$) = NULL; }
 		|	CONSTRUCTION_VTABLE start CONSTRUCTION_IN start
 			{ $$ = fill_comp (DEMANGLE_COMPONENT_CONSTRUCTION_VTABLE, $2, $4); }
 		|	GLOBAL
-			{ $$ = make_empty ($1.val);
+			{ $$ = make_empty((enum demangle_component_type)$1.val);
 			  d_left ($$) = $1.type;
 			  d_right ($$) = NULL; }
 		;
@@ -1928,12 +1932,13 @@ yyerror (char *msg)
    because the trees are temporary.  If we start keeping the trees for
    a longer lifetime we'll need to be cleverer.  */
 static struct demangle_info *
-allocate_info (int comps)
+allocate_info(int comps)
 {
   struct demangle_info *ret;
 
-  ret = malloc (sizeof (struct demangle_info)
-		+ sizeof (struct demangle_component) * (comps - 1));
+  ret = (struct demangle_info *)malloc(sizeof(struct demangle_info)
+                                       + sizeof(struct demangle_component)
+                                       * (comps - 1));
   ret->used = 0;
   return ret;
 }
@@ -1945,14 +1950,14 @@ allocate_info (int comps)
    and constructor labels.  */
 
 char *
-cp_comp_to_string (struct demangle_component *result, int estimated_len)
+cp_comp_to_string(struct demangle_component *result, int estimated_len)
 {
   char *str, *prefix = NULL, *buf;
   size_t err = 0UL;
 
   if (result->type == (enum demangle_component_type)GLOBAL_DESTRUCTORS)
     {
-      result = d_left (result);
+      result = d_left(result);
       prefix = "global destructors keyed to ";
     }
   else if (result->type == (enum demangle_component_type)GLOBAL_CONSTRUCTORS)
@@ -1982,15 +1987,15 @@ cp_comp_to_string (struct demangle_component *result, int estimated_len)
    set in *ERRMSG (which does not need to be freed).  */
 
 struct demangle_component *
-cp_demangled_name_to_comp (const char *demangled_name, void **memory,
-			   const char **errmsg)
+cp_demangled_name_to_comp(const char *demangled_name, void **memory,
+			  const char **errmsg)
 {
   static char errbuf[60];
   struct demangle_component *result;
 
-  int len = strlen(demangled_name);
+  size_t len = strlen(demangled_name);
 
-  len = (len + len / 8);
+  len = (len + len / 8UL);
   prev_lexptr = lexptr = demangled_name;
   error_lexptr = NULL;
   global_errmsg = NULL;

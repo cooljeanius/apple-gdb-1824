@@ -1,4 +1,4 @@
-/* TUI data manipulation routines.
+/* tui-data.h: TUI data manipulation routines.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2004 Free Software
    Foundation, Inc.
@@ -176,7 +176,7 @@ struct tui_source_element
 struct tui_data_element
 {
   const char *name;
-  int item_no;			/* the register number, or data display number */
+  int item_no;		/* the register number, or data display number */
   enum tui_data_type type;
   void *value;
   int highlight;
@@ -202,14 +202,14 @@ struct tui_locator_element
   CORE_ADDR addr;
 };
 
-/* Flags to tell what kind of breakpoint is at current line.  */
+/* Flags to tell what kind of breakpoint is at current line: */
 #define TUI_BP_ENABLED      0x01
 #define TUI_BP_DISABLED     0x02
 #define TUI_BP_HIT          0x04
 #define TUI_BP_CONDITIONAL  0x08
 #define TUI_BP_HARDWARE     0x10
 
-/* Position of breakpoint markers in the exec info string.  */
+/* Position of breakpoint markers in the exec info string: */
 #define TUI_BP_HIT_POS      0
 #define TUI_BP_BREAK_POS    1
 #define TUI_EXEC_POS        2
@@ -288,11 +288,11 @@ struct tui_win_info
   int is_highlighted;		/* Is this window highlighted? */
 };
 
-extern int tui_win_is_source_type (enum tui_win_type win_type);
-extern int tui_win_is_auxillary (enum tui_win_type win_type);
-extern int tui_win_has_locator (struct tui_win_info *win_info);
-extern void tui_set_win_highlight (struct tui_win_info *win_info,
-				   int highlight);
+extern int tui_win_is_source_type(enum tui_win_type win_type);
+extern int tui_win_is_auxillary(enum tui_win_type win_type);
+extern int tui_win_has_locator(struct tui_win_info *win_info);
+extern void tui_set_win_highlight(struct tui_win_info *win_info,
+                                  int highlight);
 
 
 /* Global Data */
@@ -304,48 +304,56 @@ extern struct tui_win_info *(tui_win_list[MAX_MAJOR_WINDOWS]);
 #define TUI_CMD_WIN            tui_win_list[CMD_WIN]
 
 /* Data Manipulation Functions */
-extern void tui_initialize_static_data (void);
-extern struct tui_gen_win_info *tui_alloc_generic_win_info (void);
-extern struct tui_win_info *tui_alloc_win_info (enum tui_win_type);
-extern void tui_init_generic_part (struct tui_gen_win_info *);
-extern void tui_init_win_info (struct tui_win_info *);
-extern tui_win_content tui_alloc_content (int, enum tui_win_type);
-extern int tui_add_content_elements (struct tui_gen_win_info *, int);
-extern void tui_init_content_element (struct tui_win_element *, enum tui_win_type);
-extern void tui_free_window (struct tui_win_info *);
-extern void tui_free_win_content (struct tui_gen_win_info *);
-extern void tui_free_data_content (tui_win_content, int);
-extern void tui_free_all_source_wins_content (void);
-extern void tui_del_window (struct tui_win_info *);
-extern void tui_del_data_windows (tui_win_content, int);
-extern struct tui_win_info *tui_partial_win_by_name (char *);
-extern char *tui_win_name (struct tui_gen_win_info *);
-extern enum tui_layout_type tui_current_layout (void);
-extern void tui_set_current_layout_to (enum tui_layout_type);
-extern int tui_term_height (void);
-extern void tui_set_term_height_to (int);
-extern int tui_term_width (void);
-extern void tui_set_term_width_to (int);
-extern void tui_set_gen_win_origin (struct tui_gen_win_info *, int, int);
-extern struct tui_gen_win_info *tui_locator_win_info_ptr (void);
-extern struct tui_gen_win_info *tui_source_exec_info_win_ptr (void);
-extern struct tui_gen_win_info *tui_disassem_exec_info_win_ptr (void);
-extern struct tui_list * tui_source_windows (void);
-extern void tui_clear_source_windows (void);
-extern void tui_clear_source_windows_detail (void);
-extern void tui_clear_win_detail (struct tui_win_info * win_info);
-extern void tui_add_to_source_windows (struct tui_win_info *);
-extern int tui_default_tab_len (void);
-extern void tui_set_default_tab_len (int);
-extern struct tui_win_info *tui_win_with_focus (void);
-extern void tui_set_win_with_focus (struct tui_win_info *);
-extern struct tui_layout_def * tui_layout_def (void);
-extern int tui_win_resized (void);
-extern void tui_set_win_resized_to (int);
+extern void tui_initialize_static_data(void);
+extern struct tui_gen_win_info *tui_alloc_generic_win_info(void);
+extern struct tui_win_info *tui_alloc_win_info(enum tui_win_type);
+extern void tui_init_generic_part(struct tui_gen_win_info *);
+extern void init_content_element(struct tui_win_element *,
+                                 enum tui_win_type);
+extern void init_win_info(struct tui_win_info *);
+extern void tui_init_win_info(struct tui_win_info *);
+extern tui_win_content tui_alloc_content(int, enum tui_win_type);
+extern int tui_add_content_elements(struct tui_gen_win_info *, int);
+extern void tui_init_content_element(struct tui_win_element *,
+                                     enum tui_win_type);
+extern void tui_free_window(struct tui_win_info *);
+extern void tui_free_win_content(struct tui_gen_win_info *);
+extern void tui_free_data_content(tui_win_content, int);
+extern void tui_free_all_source_wins_content(void);
+extern void tui_del_window(struct tui_win_info *);
+extern void tui_del_data_windows(tui_win_content, int);
+extern struct tui_win_info *tui_partial_win_by_name(char *);
+extern char *tui_win_name(struct tui_gen_win_info *);
+extern enum tui_layout_type tui_current_layout(void);
+extern void tui_set_current_layout_to(enum tui_layout_type);
+extern void set_gen_win_origin(struct tui_gen_win_info *win_info,
+                               int x, int y);
+extern int tui_term_height(void);
+extern void tui_set_term_height_to(int);
+extern int tui_term_width(void);
+extern void tui_set_term_width_to(int);
+extern void tui_set_gen_win_origin(struct tui_gen_win_info *, int, int);
+extern struct tui_gen_win_info *tui_locator_win_info_ptr(void);
+extern struct tui_gen_win_info *tui_source_exec_info_win_ptr(void);
+extern struct tui_gen_win_info *tui_disassem_exec_info_win_ptr(void);
+extern struct tui_list *tui_source_windows(void);
+extern void tui_clear_source_windows(void);
+extern void tui_clear_source_windows_detail(void);
+extern void tui_clear_win_detail(struct tui_win_info *win_info);
+extern void tui_add_to_source_windows(struct tui_win_info *);
+extern int tui_default_tab_len(void);
+extern void tui_set_default_tab_len(int);
+extern struct tui_win_info *tui_win_with_focus(void);
+extern void tui_set_win_with_focus(struct tui_win_info *);
+extern struct tui_layout_def *tui_layout_def(void);
+extern int tui_win_resized(void);
+extern void tui_set_win_resized_to(int);
 
-extern struct tui_win_info *tui_next_win (struct tui_win_info *);
-extern struct tui_win_info *tui_prev_win (struct tui_win_info *);
+extern struct tui_win_info *tui_next_win(struct tui_win_info *);
+extern struct tui_win_info *tui_prev_win(struct tui_win_info *);
 
-extern void tui_add_to_source_windows (struct tui_win_info * win_info);
+extern void tui_add_to_source_windows(struct tui_win_info *win_info);
 
 #endif /* TUI_DATA_H */
+
+/* EOF */

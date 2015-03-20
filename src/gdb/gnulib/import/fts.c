@@ -1079,9 +1079,6 @@ cd_dot_dot:
                 }
         } else if (p->fts_flags & FTS_SYMFOLLOW) {
                 if (FCHDIR(sp, p->fts_symfd)) {
-                        int saved_errno = errno;
-                        (void)close(p->fts_symfd);
-                        __set_errno (saved_errno);
                         p->fts_errno = errno;
                         SET(FTS_STOP);
                 }
@@ -1091,9 +1088,15 @@ cd_dot_dot:
                 p->fts_errno = errno;
                 SET(FTS_STOP);
         }
-        p->fts_info = p->fts_errno ? FTS_ERR : FTS_DP;
-        if (p->fts_errno == 0)
-                LEAVE_DIR (sp, p, "3");
+
+        /* If the directory causes a cycle, preserve the FTS_DC flag and keep
+           the corresponding dev/ino pair in the hash table.  It is going to be
+           removed when leaving the original directory.  */
+        if (p->fts_info != FTS_DC) {
+                p->fts_info = p->fts_errno ? FTS_ERR : FTS_DP;
+                if (p->fts_errno == 0)
+                        LEAVE_DIR (sp, p, "3");
+        }
         return ISSET(FTS_STOP) ? NULL : p;
 }
 

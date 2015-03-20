@@ -111,18 +111,18 @@ m68hc11_elf_bfd_link_hash_table_free (struct bfd_link_hash_table *hash)
 
 /* Assorted hash table functions.  */
 
-/* Initialize an entry in the stub hash table.  */
-
+/* Initialize an entry in the stub hash table: */
 static struct bfd_hash_entry *
-stub_hash_newfunc (struct bfd_hash_entry *entry, struct bfd_hash_table *table,
-                   const char *string)
+stub_hash_newfunc(struct bfd_hash_entry *entry,
+                  struct bfd_hash_table *table, const char *string)
 {
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
   if (entry == NULL)
     {
-      entry = bfd_hash_allocate (table,
-				 sizeof (struct elf32_m68hc11_stub_hash_entry));
+      entry = ((struct bfd_hash_entry *)
+               bfd_hash_allocate(table,
+                                 sizeof(struct elf32_m68hc11_stub_hash_entry)));
       if (entry == NULL)
 	return entry;
     }
@@ -549,7 +549,7 @@ elf32_m68hc11_size_stubs (bfd *output_bfd, bfd *stub_bfd,
 
 /* Export the trampoline addresses in the symbol table.  */
 static bfd_boolean
-m68hc11_elf_export_one_stub (struct bfd_hash_entry *gen_entry, void *in_arg)
+m68hc11_elf_export_one_stub(struct bfd_hash_entry *gen_entry, void *in_arg)
 {
   struct bfd_link_info *info;
   struct m68hc11_elf_link_hash_table *htab;
@@ -557,23 +557,23 @@ m68hc11_elf_export_one_stub (struct bfd_hash_entry *gen_entry, void *in_arg)
   char* name;
   bfd_boolean result;
 
-  info = (struct bfd_link_info *) in_arg;
-  htab = m68hc11_elf_hash_table (info);
+  info = (struct bfd_link_info *)in_arg;
+  htab = m68hc11_elf_hash_table(info);
 
-  /* Massage our args to the form they really have.  */
-  stub_entry = (struct elf32_m68hc11_stub_hash_entry *) gen_entry;
+  /* Massage our args to the form they really have: */
+  stub_entry = (struct elf32_m68hc11_stub_hash_entry *)gen_entry;
 
   /* Generate the trampoline according to HC11 or HC12.  */
-  result = (* htab->build_one_stub) (gen_entry, in_arg);
+  result = (* htab->build_one_stub)(gen_entry, in_arg);
 
-  /* Make a printable name that does not conflict with the real function.  */
-  name = alloca (strlen (stub_entry->root.string) + 16);
-  sprintf (name, "tramp.%s", stub_entry->root.string);
+  /* Make a printable name that does not conflict with the real func: */
+  name = (char *)alloca(strlen(stub_entry->root.string) + 16UL);
+  sprintf(name, "tramp.%s", stub_entry->root.string);
 
-  /* Export the symbol for debugging/disassembling.  */
-  m68hc11_elf_set_symbol (htab->stub_bfd, info, name,
-                          stub_entry->stub_offset,
-                          stub_entry->stub_sec);
+  /* Export the symbol for debugging/disassembling: */
+  m68hc11_elf_set_symbol(htab->stub_bfd, info, name,
+                         stub_entry->stub_offset,
+                         stub_entry->stub_sec);
   return result;
 }
 
@@ -1098,17 +1098,17 @@ elf32_m68hc11_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
           break;
 
         case R_M68HC11_16:
-          /* Get virtual address of instruction having the relocation.  */
+          /* Get virtual address of instruction having the relocation: */
           if (is_far)
             {
               const char* msg;
               char* buf;
               msg = _("Reference to the far symbol `%s' using a wrong "
                       "relocation may result in incorrect execution");
-              buf = alloca (strlen (msg) + strlen (name) + 10);
-              sprintf (buf, msg, name);
+              buf = (char *)alloca(strlen(msg) + strlen(name) + 10UL);
+              sprintf(buf, msg, name);
 
-              (* info->callbacks->warning)
+              (*info->callbacks->warning)
                 (info, buf, name, input_bfd, NULL, rel->r_offset);
             }
 
@@ -1129,7 +1129,7 @@ elf32_m68hc11_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
               msg = _("banked address [%lx:%04lx] (%lx) is not in the same bank "
                       "as current banked address [%lx:%04lx] (%lx)");
 
-              buf = alloca(strlen(msg) + 128);
+              buf = (char *)alloca(strlen(msg) + 128UL);
               sprintf(buf, msg, phys_page, phys_addr,
                       (long)(relocation + rel->r_addend),
                       insn_page, m68hc11_phys_addr(pinfo, insn_addr),
@@ -1148,7 +1148,7 @@ elf32_m68hc11_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
               msg = _("reference to a banked address [%lx:%04lx] in the "
                       "normal address space at %04lx");
 
-              buf = alloca(strlen(msg) + 128);
+              buf = (char *)alloca(strlen(msg) + 128UL);
               sprintf(buf, msg, phys_page, phys_addr, insn_addr);
               if (!((*info->callbacks->warning)
                     (info, buf, name, input_bfd, input_section,

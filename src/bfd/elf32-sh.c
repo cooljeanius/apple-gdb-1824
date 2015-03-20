@@ -1837,7 +1837,7 @@ sh_elf_reloc_loop(int r_type ATTRIBUTE_UNUSED, bfd *input_bfd,
     }
   else
     {
-      bfd_vma start0 = start - 4;
+      bfd_vma start0 = (start - 4UL);
 
       while (start0 && IS_PPI (contents + start0))
 	start0 -= 2;
@@ -1850,7 +1850,7 @@ sh_elf_reloc_loop(int r_type ATTRIBUTE_UNUSED, bfd *input_bfd,
       && elf_section_data (symbol_section)->this_hdr.contents != contents)
     free (contents);
 
-  insn = bfd_get_16 (input_bfd, contents + addr);
+  insn = (int)bfd_get_16(input_bfd, contents + addr);
 
   x = (insn & 0x200 ? end : start) - addr;
   if (input_section != symbol_section)
@@ -2074,22 +2074,21 @@ sh_elf_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
   return NULL;
 }
 
-/* Given an ELF reloc, fill in the howto field of a relent.  */
-
+/* Given an ELF reloc, fill in the howto field of a relent: */
 static void
-sh_elf_info_to_howto (bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
-		      Elf_Internal_Rela *dst)
+sh_elf_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+		     Elf_Internal_Rela *dst)
 {
   unsigned int r;
 
-  r = ELF32_R_TYPE (dst->r_info);
+  r = (unsigned int)ELF32_R_TYPE(dst->r_info);
 
-  BFD_ASSERT (r < (unsigned int) R_SH_max);
-  BFD_ASSERT (r < R_SH_FIRST_INVALID_RELOC || r > R_SH_LAST_INVALID_RELOC);
-  BFD_ASSERT (r < R_SH_FIRST_INVALID_RELOC_2 || r > R_SH_LAST_INVALID_RELOC_2);
-  BFD_ASSERT (r < R_SH_FIRST_INVALID_RELOC_3 || r > R_SH_LAST_INVALID_RELOC_3);
-  BFD_ASSERT (r < R_SH_FIRST_INVALID_RELOC_4 || r > R_SH_LAST_INVALID_RELOC_4);
-  BFD_ASSERT (r < R_SH_FIRST_INVALID_RELOC_5 || r > R_SH_LAST_INVALID_RELOC_5);
+  BFD_ASSERT(r < (unsigned int)R_SH_max);
+  BFD_ASSERT(r < R_SH_FIRST_INVALID_RELOC || r > R_SH_LAST_INVALID_RELOC);
+  BFD_ASSERT(r < R_SH_FIRST_INVALID_RELOC_2 || r > R_SH_LAST_INVALID_RELOC_2);
+  BFD_ASSERT(r < R_SH_FIRST_INVALID_RELOC_3 || r > R_SH_LAST_INVALID_RELOC_3);
+  BFD_ASSERT(r < R_SH_FIRST_INVALID_RELOC_4 || r > R_SH_LAST_INVALID_RELOC_4);
+  BFD_ASSERT(r < R_SH_FIRST_INVALID_RELOC_5 || r > R_SH_LAST_INVALID_RELOC_5);
 
   cache_ptr->howto = &sh_elf_howto_table[r];
 }
@@ -2467,8 +2466,8 @@ sh_elf_relax_section (bfd *abfd, asection *sec,
    in coff-sh.c.  */
 
 static bfd_boolean
-sh_elf_relax_delete_bytes (bfd *abfd, asection *sec, bfd_vma addr,
-			   int count)
+sh_elf_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr,
+			  int count)
 {
   Elf_Internal_Shdr *symtab_hdr;
   unsigned int sec_shndx;
@@ -2482,12 +2481,12 @@ sh_elf_relax_delete_bytes (bfd *abfd, asection *sec, bfd_vma addr,
   unsigned int symcount;
   asection *o;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  isymbuf = (Elf_Internal_Sym *) symtab_hdr->contents;
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  isymbuf = (Elf_Internal_Sym *)symtab_hdr->contents;
 
-  sec_shndx = _bfd_elf_section_from_bfd_section (abfd, sec);
+  sec_shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
 
-  contents = elf_section_data (sec)->this_hdr.contents;
+  contents = elf_section_data(sec)->this_hdr.contents;
 
   /* The deletion must stop at the next ALIGN reloc for an aligment
      power larger than the number of bytes we are deleting.  */
@@ -2495,13 +2494,13 @@ sh_elf_relax_delete_bytes (bfd *abfd, asection *sec, bfd_vma addr,
   irelalign = NULL;
   toaddr = sec->size;
 
-  irel = elf_section_data (sec)->relocs;
-  irelend = irel + sec->reloc_count;
+  irel = elf_section_data(sec)->relocs;
+  irelend = (irel + sec->reloc_count);
   for (; irel < irelend; irel++)
     {
-      if (ELF32_R_TYPE (irel->r_info) == (int) R_SH_ALIGN
-	  && irel->r_offset > addr
-	  && count < (1 << irel->r_addend))
+      if ((ELF32_R_TYPE(irel->r_info) == (int)R_SH_ALIGN)
+	  && (irel->r_offset > addr)
+	  && (count < (1 << irel->r_addend)))
 	{
 	  irelalign = irel;
 	  toaddr = irel->r_offset;
@@ -2509,9 +2508,9 @@ sh_elf_relax_delete_bytes (bfd *abfd, asection *sec, bfd_vma addr,
 	}
     }
 
-  /* Actually delete the bytes.  */
-  memmove (contents + addr, contents + addr + count,
-	   (size_t) (toaddr - addr - count));
+  /* Actually delete the bytes: */
+  memmove((contents + addr), (contents + addr + count),
+	  (size_t)(toaddr - addr - count));
   if (irelalign == NULL)
     sec->size -= count;
   else
@@ -2520,44 +2519,45 @@ sh_elf_relax_delete_bytes (bfd *abfd, asection *sec, bfd_vma addr,
 
 #define NOP_OPCODE (0x0009)
 
-      BFD_ASSERT ((count & 1) == 0);
+      BFD_ASSERT((count & 1) == 0);
       for (i = 0; i < count; i += 2)
-	bfd_put_16 (abfd, (bfd_vma) NOP_OPCODE, contents + toaddr - count + i);
+	bfd_put_16(abfd, (bfd_vma)NOP_OPCODE,
+                   (contents + toaddr - count + i));
     }
 
   /* Adjust all the relocs.  */
-  for (irel = elf_section_data (sec)->relocs; irel < irelend; irel++)
+  for (irel = elf_section_data(sec)->relocs; irel < irelend; irel++)
     {
       bfd_vma nraddr, stop;
-      bfd_vma start = 0;
+      bfd_vma start = 0UL;
       int insn = 0;
       int off, adjust, oinsn;
-      bfd_signed_vma voff = 0;
+      bfd_signed_vma voff = 0L;
       bfd_boolean overflow;
 
-      /* Get the new reloc address.  */
+      /* Get the new reloc address: */
       nraddr = irel->r_offset;
-      if ((irel->r_offset > addr
-	   && irel->r_offset < toaddr)
-	  || (ELF32_R_TYPE (irel->r_info) == (int) R_SH_ALIGN
-	      && irel->r_offset == toaddr))
+      if (((irel->r_offset > addr)
+	   && (irel->r_offset < toaddr))
+	  || ((ELF32_R_TYPE(irel->r_info) == (int)R_SH_ALIGN)
+	      && (irel->r_offset == toaddr)))
 	nraddr -= count;
 
       /* See if this reloc was for the bytes we have deleted, in which
 	 case we no longer care about it.  Don't delete relocs which
 	 represent addresses, though.  */
-      if (irel->r_offset >= addr
-	  && irel->r_offset < addr + count
-	  && ELF32_R_TYPE (irel->r_info) != (int) R_SH_ALIGN
-	  && ELF32_R_TYPE (irel->r_info) != (int) R_SH_CODE
-	  && ELF32_R_TYPE (irel->r_info) != (int) R_SH_DATA
-	  && ELF32_R_TYPE (irel->r_info) != (int) R_SH_LABEL)
-	irel->r_info = ELF32_R_INFO (ELF32_R_SYM (irel->r_info),
-				     (int) R_SH_NONE);
+      if ((irel->r_offset >= addr)
+	  && (irel->r_offset < (addr + count))
+	  && (ELF32_R_TYPE(irel->r_info) != (int)R_SH_ALIGN)
+	  && (ELF32_R_TYPE(irel->r_info) != (int)R_SH_CODE)
+	  && (ELF32_R_TYPE(irel->r_info) != (int)R_SH_DATA)
+	  && (ELF32_R_TYPE(irel->r_info) != (int)R_SH_LABEL))
+	irel->r_info = ELF32_R_INFO(ELF32_R_SYM(irel->r_info),
+				    (int)R_SH_NONE);
 
       /* If this is a PC relative reloc, see if the range it covers
 	 includes the bytes we have deleted.  */
-      switch ((enum elf_sh_reloc_type) ELF32_R_TYPE (irel->r_info))
+      switch ((enum elf_sh_reloc_type)ELF32_R_TYPE(irel->r_info))
 	{
 	default:
 	  break;
@@ -2567,11 +2567,11 @@ sh_elf_relax_delete_bytes (bfd *abfd, asection *sec, bfd_vma addr,
 	case R_SH_DIR8WPZ:
 	case R_SH_DIR8WPL:
 	  start = irel->r_offset;
-	  insn = bfd_get_16 (abfd, contents + nraddr);
+	  insn = (int)bfd_get_16(abfd, contents + nraddr);
 	  break;
 	}
 
-      switch ((enum elf_sh_reloc_type) ELF32_R_TYPE (irel->r_info))
+      switch ((enum elf_sh_reloc_type)ELF32_R_TYPE(irel->r_info))
 	{
 	default:
 	  start = stop = addr;
@@ -2896,17 +2896,18 @@ sh_elf_relax_delete_bytes (bfd *abfd, asection *sec, bfd_vma addr,
   isymend = isymbuf + symtab_hdr->sh_info;
   for (isym = isymbuf; isym < isymend; isym++)
     {
-      if (isym->st_shndx == sec_shndx
-	  && isym->st_value > addr
-	  && isym->st_value < toaddr)
+      if ((isym->st_shndx == sec_shndx)
+	  && (isym->st_value > addr)
+	  && (isym->st_value < toaddr))
 	isym->st_value -= count;
     }
 
-  /* Now adjust the global symbols defined in this section.  */
-  symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
-	      - symtab_hdr->sh_info);
-  sym_hashes = elf_sym_hashes (abfd);
-  end_hashes = sym_hashes + symcount;
+  /* Now adjust the global symbols defined in this section: */
+  symcount = (unsigned int)((symtab_hdr->sh_size
+                             / sizeof(Elf32_External_Sym))
+                            - symtab_hdr->sh_info);
+  sym_hashes = elf_sym_hashes(abfd);
+  end_hashes = (sym_hashes + symcount);
   for (; sym_hashes < end_hashes; sym_hashes++)
     {
       struct elf_link_hash_entry *sym_hash = *sym_hashes;
@@ -4455,14 +4456,13 @@ sh_elf_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
   return TRUE;
 }
 
-/* Relocate an SH ELF section.  */
-
+/* Relocate an SH ELF section: */
 static bfd_boolean
-sh_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
-			 bfd *input_bfd, asection *input_section,
-			 bfd_byte *contents, Elf_Internal_Rela *relocs,
-			 Elf_Internal_Sym *local_syms,
-			 asection **local_sections)
+sh_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+                        bfd *input_bfd, asection *input_section,
+                        bfd_byte *contents, Elf_Internal_Rela *relocs,
+                        Elf_Internal_Sym *local_syms,
+                        asection **local_sections)
 {
   struct elf_sh_link_hash_table *htab;
   Elf_Internal_Shdr *symtab_hdr;
@@ -4476,11 +4476,11 @@ sh_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
   asection *sreloc;
   asection *srelgot;
 
-  htab = sh_elf_hash_table (info);
-  symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (input_bfd);
+  htab = sh_elf_hash_table(info);
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(input_bfd);
   dynobj = htab->root.dynobj;
-  local_got_offsets = elf_local_got_offsets (input_bfd);
+  local_got_offsets = elf_local_got_offsets(input_bfd);
 
   sgot = htab->sgot;
   sgotplt = htab->sgotplt;
@@ -4489,7 +4489,7 @@ sh_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
   srelgot = NULL;
 
   rel = relocs;
-  relend = relocs + input_section->reloc_count;
+  relend = (relocs + input_section->reloc_count);
   for (; rel < relend; rel++)
     {
       int r_type;
@@ -4499,22 +4499,22 @@ sh_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
       asection *sec;
       struct elf_link_hash_entry *h;
       bfd_vma relocation;
-      bfd_vma addend = (bfd_vma) 0;
+      bfd_vma addend = (bfd_vma)0UL;
       bfd_reloc_status_type r;
       int seen_stt_datalabel = 0;
       bfd_vma off;
       int tls_type;
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
 
-      r_type = ELF32_R_TYPE (rel->r_info);
+      r_type = (int)ELF32_R_TYPE(rel->r_info);
 
       /* Many of the relocs are only used for relaxing, and are
 	 handled entirely by the relaxation code.  */
-      if (r_type >= (int) R_SH_GNU_VTINHERIT
-	  && r_type <= (int) R_SH_LABEL)
+      if ((r_type >= (int)R_SH_GNU_VTINHERIT)
+          && (r_type <= (int)R_SH_LABEL))
 	continue;
-      if (r_type == (int) R_SH_NONE)
+      if (r_type == (int)R_SH_NONE)
 	continue;
 
       if (r_type < 0
@@ -4760,13 +4760,13 @@ sh_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	     is here only to assist in relaxing.  If the reloc is not
 	     against the start of this section, then it's against an
 	     external symbol and we must deal with it ourselves.  */
-	  if (input_section->output_section->vma + input_section->output_offset
+	  if ((input_section->output_section->vma + input_section->output_offset)
 	      != relocation)
 	    {
-	      int disp = (relocation
-			  - input_section->output_section->vma
-			  - input_section->output_offset
-			  - rel->r_offset);
+	      int disp = (int)(relocation
+                               - input_section->output_section->vma
+                               - input_section->output_offset
+                               - rel->r_offset);
 	      int mask = 0;
 	      switch (r_type)
 		{

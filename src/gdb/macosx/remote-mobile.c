@@ -48,8 +48,10 @@ static struct target_ops remote_mobile_ops;
 
 static char *remote_mobile_shortname = "remote-mobile";
 static char *remote_mobile_longname = "Remote connection to a mobile device using gdb-specific protocol";
-static char *remote_mobile_doc =     "Connect to a remote mobile device, using a gdb-specific protocol.\n\
+static char *remote_mobile_doc = "Connect to a remote mobile device, using a gdb-specific protocol.\n\
 Specify the port which we should connect to to receive the filedescriptor for remote connections.";
+
+extern void _initialize_remote_mobile(void);
 
 /* This is standard socket code to open an unnamed UNIX domain socket,
    and connect it to another UNIX domain socket whose name is given in
@@ -251,9 +253,12 @@ filedesc_close(struct serial *sb)
   close(sb->fd);
 }
 
-void _initialize_remote_mobile(void)
+/* remember, function name must start in column 0 for init.c to work: */
+void
+_initialize_remote_mobile(void)
 {
-  struct serial_ops *ops = xmalloc(sizeof(struct serial_ops));
+  struct serial_ops *ops;
+  ops = (struct serial_ops *)xmalloc(sizeof(struct serial_ops));
 
   init_remote_mobile_ops();
   add_target(&remote_mobile_ops);

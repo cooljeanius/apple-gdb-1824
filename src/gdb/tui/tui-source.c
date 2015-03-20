@@ -1,4 +1,4 @@
-/* TUI display source window.
+/* tui-source.c: TUI display source window.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -140,77 +140,76 @@ tui_set_source_content (struct symtab *s, int line_no, int noerror)
 		      element->which_element.source.line_or_addr.line_no =
 			cur_line_no;
 		      element->which_element.source.is_exec_point =
-			(strcmp (((struct tui_win_element *)
+			(strcmp(((struct tui_win_element *)
 			locator->content[0])->which_element.locator.file_name,
 				 s->filename) == 0
 			 && cur_line_no == ((struct tui_win_element *)
 			 locator->content[0])->which_element.locator.line_no);
 		      if (c != EOF)
 			{
-			  i = strlen (src_line) - 1;
-			  do
-			    {
-			      if ((c != '\n') &&
-				  (c != '\r') && (++i < threshold))
-				{
-				  if (c < 040 && c != '\t')
-				    {
-				      src_line[i++] = '^';
-				      src_line[i] = c + 0100;
-				    }
-				  else if (c == 0177)
-				    {
-				      src_line[i++] = '^';
-				      src_line[i] = '?';
-				    }
-				  else
-				    {	/* Store the charcter in the line
-					   buffer.  If it is a tab, then
-					   translate to the correct number of
-					   chars so we don't overwrite our
-					   buffer.  */
-				      if (c == '\t')
-					{
-					  int j, max_tab_len = tui_default_tab_len ();
+			  i = (strlen(src_line) - 1);
+			  do {
+                            if ((c != '\n') && (c != '\r')
+                                && (++i < threshold))
+                              {
+                                if (c < 040 && c != '\t')
+                                  {
+                                    src_line[i++] = '^';
+                                    src_line[i] = c + 0100;
+                                  }
+                                else if (c == 0177)
+                                  {
+                                    src_line[i++] = '^';
+                                    src_line[i] = '?';
+                                  }
+                                else
+                                  { /* Store the charcter in the line
+                                     * buffer.  If it is a tab, then
+                                     * translate to the correct number of
+                                     * chars so we do NOT overwrite our
+                                     * buffer.  */
+                                    if (c == '\t')
+                                      {
+                                        int j;
+                                        int max_tab_len = tui_default_tab_len();
 
-					  for (j = i - (
-					       (i / max_tab_len) * max_tab_len);
-					       ((j < max_tab_len) &&
-						i < threshold);
-					       i++, j++)
-					    src_line[i] = ' ';
-					  i--;
-					}
-				      else
-					src_line[i] = c;
-				    }
-				  src_line[i + 1] = 0;
-				}
-			      else
-				{	/* If we have not reached EOL, then eat
-                                           chars until we do  */
-				  while (c != EOF && c != '\n' && c != '\r')
-				    c = fgetc (stream);
-				}
-			    }
-			  while (c != EOF && c != '\n' && c != '\r' &&
-				 i < threshold && (c = fgetc (stream)));
+                                        for (j = (i - ((i / max_tab_len) * max_tab_len));
+                                             ((j < max_tab_len) &&
+                                              (i < threshold));
+                                             i++, j++)
+                                          src_line[i] = ' ';
+                                        i--;
+                                      }
+                                    else
+                                      src_line[i] = c;
+                                  }
+                                src_line[i + 1] = 0;
+                              }
+                            else
+                              {  /* If we have not reached EOL, then eat
+                                  * chars until we do:  */
+                                while ((c != EOF) && (c != '\n')
+                                       && (c != '\r'))
+                                  c = fgetc(stream);
+                              }
+                          } while ((c != EOF) && (c != '\n') && (c != '\r')
+                                   && (i < threshold)
+                                   && (c = fgetc(stream)));
 			}
 		      /* Now copy the line taking the offset into account */
-		      if (strlen (src_line) > offset)
-			strcpy (((struct tui_win_element *) TUI_SRC_WIN->generic.content[
-					cur_line])->which_element.source.line,
+		      if (strlen(src_line) > (size_t)offset)
+			strcpy(((struct tui_win_element *)
+                                TUI_SRC_WIN->generic.content[cur_line])->which_element.source.line,
 				&src_line[offset]);
 		      else
 			((struct tui_win_element *)
-			 TUI_SRC_WIN->generic.content[
-			  cur_line])->which_element.source.line[0] = (char) 0;
+			 TUI_SRC_WIN->generic.content[cur_line])->which_element.source.line[0] = (char)0;
 		      cur_line++;
 		      cur_line_no++;
 		    }
 		  if (offset > 0)
-		    xfree (src_line);
-		  fclose (stream);
+		    xfree(src_line);
+		  fclose(stream);
 		  TUI_SRC_WIN->generic.content_size = nlines;
 		  ret = TUI_SUCCESS;
 		}

@@ -3,3 +3,4 @@ Makefile
 *libs/*
 *.lo
 confdefs.h
+site.bak

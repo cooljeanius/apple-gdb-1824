@@ -88,7 +88,9 @@ memory_page_dictionary;
 static memory_page_t *get_dictionary_entry_of_page(int pid,
                                                    CORE_ADDR page_start);
 
-static void remove_dictionary_entry_of_page(int pid, memory_page_t * page);
+static void remove_dictionary_entry_of_page(int pid, memory_page_t *page);
+
+extern void _initialize_macosx_nat_watchpoint(void);
 
 static void
 require_memory_page_dictionary(void)
@@ -472,7 +474,8 @@ macosx_insert_watchpoint(CORE_ADDR addr, size_t len, int type)
 int
 macosx_remove_watchpoint(CORE_ADDR addr, size_t len, int type)
 {
-  return hppa_remove_hw_watchpoint(PIDGET(inferior_ptid), addr, len, type);
+  return hppa_remove_hw_watchpoint(PIDGET(inferior_ptid), addr, len,
+                                   (enum bptype)type);
 }
 
 int

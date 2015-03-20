@@ -292,73 +292,58 @@ _bfd_xcoff64_swap_lineno_in(bfd *abfd, PTR ext1, PTR in1)
 }
 
 static unsigned int
-_bfd_xcoff64_swap_lineno_out (abfd, inp, outp)
-     bfd *abfd;
-     PTR inp;
-     PTR outp;
+_bfd_xcoff64_swap_lineno_out(bfd *abfd, PTR inp, PTR outp)
 {
-  struct internal_lineno *in = (struct internal_lineno *) inp;
-  struct external_lineno *ext = (struct external_lineno *) outp;
+  struct internal_lineno *in = (struct internal_lineno *)inp;
+  struct external_lineno *ext = (struct external_lineno *)outp;
 
-  H_PUT_32 (abfd, in->l_addr.l_symndx, ext->l_addr.l_symndx);
-  H_PUT_32 (abfd, in->l_lnno, (ext->l_lnno));
+  H_PUT_32(abfd, in->l_addr.l_symndx, ext->l_addr.l_symndx);
+  H_PUT_32(abfd, in->l_lnno, (ext->l_lnno));
 
   if (in->l_lnno == 0)
-    H_PUT_32 (abfd, in->l_addr.l_symndx, ext->l_addr.l_symndx);
+    H_PUT_32(abfd, in->l_addr.l_symndx, ext->l_addr.l_symndx);
   else
-    H_PUT_64 (abfd, in->l_addr.l_paddr, ext->l_addr.l_paddr);
+    H_PUT_64(abfd, in->l_addr.l_paddr, ext->l_addr.l_paddr);
 
-  return bfd_coff_linesz (abfd);
+  return bfd_coff_linesz(abfd);
 }
 
 static void
-_bfd_xcoff64_swap_sym_in (abfd, ext1, in1)
-     bfd *abfd;
-     PTR ext1;
-     PTR in1;
+_bfd_xcoff64_swap_sym_in(bfd *abfd, PTR ext1, PTR in1)
 {
-  struct external_syment *ext = (struct external_syment *) ext1;
-  struct internal_syment *in = (struct internal_syment *) in1;
+  struct external_syment *ext = (struct external_syment *)ext1;
+  struct internal_syment *in = (struct internal_syment *)in1;
 
   in->_n._n_n._n_zeroes = 0;
-  in->_n._n_n._n_offset = H_GET_32 (abfd, ext->e_offset);
-  in->n_value = H_GET_64 (abfd, ext->e_value);
-  in->n_scnum = H_GET_16 (abfd, ext->e_scnum);
-  in->n_type = H_GET_16 (abfd, ext->e_type);
-  in->n_sclass = H_GET_8 (abfd, ext->e_sclass);
-  in->n_numaux = H_GET_8 (abfd, ext->e_numaux);
+  in->_n._n_n._n_offset = H_GET_32(abfd, ext->e_offset);
+  in->n_value = H_GET_64(abfd, ext->e_value);
+  in->n_scnum = H_GET_16(abfd, ext->e_scnum);
+  in->n_type = H_GET_16(abfd, ext->e_type);
+  in->n_sclass = H_GET_8(abfd, ext->e_sclass);
+  in->n_numaux = H_GET_8(abfd, ext->e_numaux);
 }
 
 static unsigned int
-_bfd_xcoff64_swap_sym_out (abfd, inp, extp)
-     bfd *abfd;
-     PTR inp;
-     PTR extp;
+_bfd_xcoff64_swap_sym_out(bfd *abfd, PTR inp, PTR extp)
 {
-  struct internal_syment *in = (struct internal_syment *) inp;
-  struct external_syment *ext = (struct external_syment *) extp;
+  struct internal_syment *in = (struct internal_syment *)inp;
+  struct external_syment *ext = (struct external_syment *)extp;
 
-  H_PUT_32 (abfd, in->_n._n_n._n_offset, ext->e_offset);
-  H_PUT_64 (abfd, in->n_value, ext->e_value);
-  H_PUT_16 (abfd, in->n_scnum, ext->e_scnum);
-  H_PUT_16 (abfd, in->n_type, ext->e_type);
-  H_PUT_8 (abfd, in->n_sclass, ext->e_sclass);
-  H_PUT_8 (abfd, in->n_numaux, ext->e_numaux);
-  return bfd_coff_symesz (abfd);
+  H_PUT_32(abfd, in->_n._n_n._n_offset, ext->e_offset);
+  H_PUT_64(abfd, in->n_value, ext->e_value);
+  H_PUT_16(abfd, in->n_scnum, ext->e_scnum);
+  H_PUT_16(abfd, in->n_type, ext->e_type);
+  H_PUT_8(abfd, in->n_sclass, ext->e_sclass);
+  H_PUT_8(abfd, in->n_numaux, ext->e_numaux);
+  return bfd_coff_symesz(abfd);
 }
 
 static void
-_bfd_xcoff64_swap_aux_in (abfd, ext1, type, class, indx, numaux, in1)
-     bfd *abfd;
-     PTR ext1;
-     int type;
-     int class;
-     int indx;
-     int numaux;
-     PTR in1;
+_bfd_xcoff64_swap_aux_in(bfd *abfd, PTR ext1, int type, int class,
+                         int indx, int numaux, PTR in1)
 {
-  union external_auxent *ext = (union external_auxent *) ext1;
-  union internal_auxent *in = (union internal_auxent *) in1;
+  union external_auxent *ext = (union external_auxent *)ext1;
+  union internal_auxent *in = (union internal_auxent *)in1;
 
   switch (class)
     {
@@ -366,34 +351,34 @@ _bfd_xcoff64_swap_aux_in (abfd, ext1, type, class, indx, numaux, in1)
       if (ext->x_file.x_n.x_zeroes[0] == 0)
 	{
 	  in->x_file.x_n.x_zeroes = 0;
-	  in->x_file.x_n.x_offset = H_GET_32 (abfd, ext->x_file.x_n.x_offset);
+	  in->x_file.x_n.x_offset = H_GET_32(abfd, ext->x_file.x_n.x_offset);
 	}
       else
 	{
-	  memcpy (in->x_file.x_fname, ext->x_file.x_fname, FILNMLEN);
+	  memcpy(in->x_file.x_fname, ext->x_file.x_fname, FILNMLEN);
 	}
       goto end;
 
       /* RS/6000 "csect" auxents */
     case C_EXT:
     case C_HIDEXT:
-      if (indx + 1 == numaux)
+      if ((indx + 1) == numaux)
 	{
-	  bfd_signed_vma h = 0;
-	  bfd_vma l = 0;
+	  bfd_signed_vma h = 0L;
+	  bfd_vma l = 0UL;
 
-	  h = H_GET_S32 (abfd, ext->x_csect.x_scnlen_hi);
-	  l = H_GET_32 (abfd, ext->x_csect.x_scnlen_lo);
+	  h = H_GET_S32(abfd, ext->x_csect.x_scnlen_hi);
+	  l = H_GET_32(abfd, ext->x_csect.x_scnlen_lo);
 
-	  in->x_csect.x_scnlen.l = h << 32 | (l & 0xffffffff);
+	  in->x_csect.x_scnlen.l = (h << 32 | (l & 0xffffffff));
 
-	  in->x_csect.x_parmhash = H_GET_32 (abfd, ext->x_csect.x_parmhash);
-	  in->x_csect.x_snhash = H_GET_16 (abfd, ext->x_csect.x_snhash);
-	  /* We don't have to hack bitfields in x_smtyp because it's
+	  in->x_csect.x_parmhash = H_GET_32(abfd, ext->x_csect.x_parmhash);
+	  in->x_csect.x_snhash = H_GET_16(abfd, ext->x_csect.x_snhash);
+	  /* We do NOT have to hack bitfields in x_smtyp because it's
 	     defined by shifts-and-ands, which are equivalent on all
 	     byte orders.  */
-	  in->x_csect.x_smtyp = H_GET_8 (abfd, ext->x_csect.x_smtyp);
-	  in->x_csect.x_smclas = H_GET_8 (abfd, ext->x_csect.x_smclas);
+	  in->x_csect.x_smtyp = H_GET_8(abfd, ext->x_csect.x_smtyp);
+	  in->x_csect.x_smclas = H_GET_8(abfd, ext->x_csect.x_smclas);
 	  goto end;
 	}
       break;
@@ -412,64 +397,61 @@ _bfd_xcoff64_swap_aux_in (abfd, ext1, type, class, indx, numaux, in1)
 	  goto end;
 	}
       break;
+    default:
+      break;
     }
 
-  if (class == C_BLOCK || class == C_FCN || ISFCN (type) || ISTAG (class))
+  if ((class == C_BLOCK) || (class == C_FCN) || ISFCN(type) || ISTAG(class))
     {
       in->x_sym.x_fcnary.x_fcn.x_lnnoptr
-	= H_GET_64 (abfd, ext->x_sym.x_fcnary.x_fcn.x_lnnoptr);
+	= H_GET_64(abfd, ext->x_sym.x_fcnary.x_fcn.x_lnnoptr);
       in->x_sym.x_fcnary.x_fcn.x_endndx.l
-	= H_GET_32 (abfd, ext->x_sym.x_fcnary.x_fcn.x_endndx);
+	= H_GET_32(abfd, ext->x_sym.x_fcnary.x_fcn.x_endndx);
     }
-  if (ISFCN (type))
+  if (ISFCN(type))
     {
       in->x_sym.x_misc.x_fsize
-	= H_GET_32 (abfd, ext->x_sym.x_fcnary.x_fcn.x_fsize);
+	= H_GET_32(abfd, ext->x_sym.x_fcnary.x_fcn.x_fsize);
     }
   else
     {
       in->x_sym.x_misc.x_lnsz.x_lnno
-	= H_GET_32 (abfd, ext->x_sym.x_fcnary.x_lnsz.x_lnno);
+	= H_GET_32(abfd, ext->x_sym.x_fcnary.x_lnsz.x_lnno);
       in->x_sym.x_misc.x_lnsz.x_size
-	= H_GET_16 (abfd, ext->x_sym.x_fcnary.x_lnsz.x_size);
+	= H_GET_16(abfd, ext->x_sym.x_fcnary.x_lnsz.x_size);
     }
 
  end: ;
 }
 
 static unsigned int
-_bfd_xcoff64_swap_aux_out (abfd, inp, type, class, indx, numaux, extp)
-     bfd *abfd;
-     PTR inp;
-     int type;
-     int class;
-     int indx ATTRIBUTE_UNUSED;
-     int numaux ATTRIBUTE_UNUSED;
-     PTR extp;
+_bfd_xcoff64_swap_aux_out(bfd *abfd, PTR inp, int type, int class,
+                          int indx ATTRIBUTE_UNUSED,
+                          int numaux ATTRIBUTE_UNUSED, PTR extp)
 {
-  union internal_auxent *in = (union internal_auxent *) inp;
-  union external_auxent *ext = (union external_auxent *) extp;
+  union internal_auxent *in = (union internal_auxent *)inp;
+  union external_auxent *ext = (union external_auxent *)extp;
 
-  memset ((PTR) ext, 0, bfd_coff_auxesz (abfd));
+  memset((PTR)ext, 0, bfd_coff_auxesz(abfd));
   switch (class)
     {
     case C_FILE:
       if (in->x_file.x_n.x_zeroes == 0)
 	{
-	  H_PUT_32 (abfd, 0, ext->x_file.x_n.x_zeroes);
-	  H_PUT_32 (abfd, in->x_file.x_n.x_offset, ext->x_file.x_n.x_offset);
+	  H_PUT_32(abfd, 0, ext->x_file.x_n.x_zeroes);
+	  H_PUT_32(abfd, in->x_file.x_n.x_offset, ext->x_file.x_n.x_offset);
 	}
       else
 	{
-	  memcpy (ext->x_file.x_fname, in->x_file.x_fname, FILNMLEN);
+	  memcpy(ext->x_file.x_fname, in->x_file.x_fname, FILNMLEN);
 	}
-      H_PUT_8 (abfd, _AUX_FILE, ext->x_auxtype.x_auxtype);
+      H_PUT_8(abfd, _AUX_FILE, ext->x_auxtype.x_auxtype);
       goto end;
 
       /* RS/6000 "csect" auxents */
     case C_EXT:
     case C_HIDEXT:
-      if (indx + 1 == numaux)
+      if ((indx + 1) == numaux)
 	{
 	  bfd_vma temp;
 
@@ -497,41 +479,39 @@ _bfd_xcoff64_swap_aux_out (abfd, inp, type, class, indx, numaux, extp)
 	  goto end;
 	}
       break;
+    default:
+      break;
     }
 
-  if (class == C_BLOCK || class == C_FCN || ISFCN (type) || ISTAG (class))
+  if ((class == C_BLOCK) || (class == C_FCN) || ISFCN(type) || ISTAG(class))
     {
-      H_PUT_64 (abfd, in->x_sym.x_fcnary.x_fcn.x_lnnoptr,
+      H_PUT_64(abfd, in->x_sym.x_fcnary.x_fcn.x_lnnoptr,
 	       ext->x_sym.x_fcnary.x_fcn.x_lnnoptr);
-      H_PUT_8 (abfd, _AUX_FCN,
-	       ext->x_auxtype.x_auxtype);
-      H_PUT_32 (abfd, in->x_sym.x_fcnary.x_fcn.x_endndx.l,
+      H_PUT_8(abfd, _AUX_FCN, ext->x_auxtype.x_auxtype);
+      H_PUT_32(abfd, in->x_sym.x_fcnary.x_fcn.x_endndx.l,
 	       ext->x_sym.x_fcnary.x_fcn.x_endndx);
     }
-  if (ISFCN (type))
+  if (ISFCN(type))
     {
-      H_PUT_32 (abfd, in->x_sym.x_misc.x_fsize,
+      H_PUT_32(abfd, in->x_sym.x_misc.x_fsize,
 	       ext->x_sym.x_fcnary.x_fcn.x_fsize);
     }
   else
     {
-      H_PUT_32 (abfd, in->x_sym.x_misc.x_lnsz.x_lnno,
+      H_PUT_32(abfd, in->x_sym.x_misc.x_lnsz.x_lnno,
 	       ext->x_sym.x_fcnary.x_lnsz.x_lnno);
-      H_PUT_16 (abfd, in->x_sym.x_misc.x_lnsz.x_size,
+      H_PUT_16(abfd, in->x_sym.x_misc.x_lnsz.x_size,
 	       ext->x_sym.x_fcnary.x_lnsz.x_size);
     }
 
  end:
 
-  return bfd_coff_auxesz (abfd);
+  return bfd_coff_auxesz(abfd);
 }
 
 static bfd_boolean
-_bfd_xcoff64_put_symbol_name (abfd, strtab, sym, name)
-     bfd *abfd;
-     struct bfd_strtab_hash *strtab;
-     struct internal_syment *sym;
-     const char *name;
+_bfd_xcoff64_put_symbol_name(bfd *abfd, struct bfd_strtab_hash *strtab,
+                             struct internal_syment *sym, const char *name)
 {
   bfd_boolean hash;
   bfd_size_type indx;
@@ -541,9 +521,9 @@ _bfd_xcoff64_put_symbol_name (abfd, strtab, sym, name)
   if ((abfd->flags & BFD_TRADITIONAL_FORMAT) != 0)
     hash = FALSE;
 
-  indx = _bfd_stringtab_add (strtab, name, hash, FALSE);
+  indx = _bfd_stringtab_add(strtab, name, hash, FALSE);
 
-  if (indx == (bfd_size_type) -1)
+  if (indx == (bfd_size_type)-1L)
     return FALSE;
 
   sym->_n._n_n._n_zeroes = 0;

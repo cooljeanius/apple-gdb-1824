@@ -1,4 +1,4 @@
-/* TUI support I/O functions.
+/* tui-io.c: TUI support I/O functions.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -215,7 +215,7 @@ tui_redisplay_readline (void)
     prompt = "";
   else
     prompt = tui_rl_saved_prompt;
-  
+
   c_pos = -1;
   c_line = -1;
   w = TUI_CMD_WIN->generic.handle;
@@ -234,7 +234,7 @@ tui_redisplay_readline (void)
   for (in = 0; in < rl_end; in++)
     {
       unsigned char c;
-      
+
       c = (unsigned char) rl_line_buffer[in];
       if (in == rl_point)
 	{
@@ -371,21 +371,21 @@ print_filename (char *to_print, char *full_pathname)
 /* The user must press "y" or "n".  Non-zero return means "y" pressed.
    Comes from readline/complete.c  */
 static int
-get_y_or_n (void)
+get_y_or_n(void)
 {
-  extern int _rl_abort_internal ();
+  extern int _rl_abort_internal(void);
   int c;
 
   for (;;)
     {
-      c = rl_read_key ();
-      if (c == 'y' || c == 'Y' || c == ' ')
+      c = rl_read_key();
+      if ((c == 'y') || (c == 'Y') || (c == ' '))
 	return (1);
-      if (c == 'n' || c == 'N' || c == RUBOUT)
+      if ((c == 'n') || (c == 'N') || (c == RUBOUT))
 	return (0);
       if (c == ABORT_CHAR)
-	_rl_abort_internal ();
-      beep ();
+	_rl_abort_internal();
+      beep();
     }
 }
 
@@ -397,17 +397,17 @@ get_y_or_n (void)
    Comes from readline/complete.c and modified to write in
    the TUI command window using tui_putc/tui_puts.  */
 static void
-tui_rl_display_match_list (char **matches, int len, int max)
+tui_rl_display_match_list(char **matches, int len, int max)
 {
-  typedef int QSFUNC (const void *, const void *);
-  extern int _rl_qsort_string_compare (const void*, const void*);
+  typedef int QSFUNC(const void *, const void *);
+  extern int _rl_qsort_string_compare(const void*, const void*);
   extern int _rl_print_completions_horizontally;
-  
+
   int count, limit, printed_len;
   int i, j, k, l;
   char *temp;
 
-  /* Screen dimension correspond to the TUI command window.  */
+  /* Screen dimension correspond to the TUI command window: */
   int screenwidth = TUI_CMD_WIN->generic.width;
 
   /* If there are many items, then ask the user if she really wants to
@@ -416,19 +416,19 @@ tui_rl_display_match_list (char **matches, int len, int max)
     {
       char msg[256];
 
-      sprintf (msg, "\nDisplay all %d possibilities? (y or n)", len);
-      tui_puts (msg);
-      if (get_y_or_n () == 0)
+      sprintf(msg, "\nDisplay all %d possibilities? (y or n)", len);
+      tui_puts(msg);
+      if (get_y_or_n() == 0)
 	{
-	  tui_puts ("\n");
+	  tui_puts("\n");
 	  return;
 	}
     }
 
   /* How many items of MAX length can we fit in the screen window? */
   max += 2;
-  limit = screenwidth / max;
-  if (limit != 1 && (limit * max == screenwidth))
+  limit = (screenwidth / max);
+  if ((limit != 1) && ((limit * max) == screenwidth))
     limit--;
 
   /* Avoid a possible floating exception.  If max > screenwidth,
@@ -437,7 +437,7 @@ tui_rl_display_match_list (char **matches, int len, int max)
     limit = 1;
 
   /* How many iterations of the printing loop? */
-  count = (len + (limit - 1)) / limit;
+  count = ((len + (limit - 1)) / limit); /* FIXME: sanity-check result */
 
   /* Watch out for special case.  If LEN is less than LIMIT, then
      just do the inner printing loop.
@@ -445,10 +445,10 @@ tui_rl_display_match_list (char **matches, int len, int max)
 
   /* Sort the items if they are not already sorted. */
   if (rl_ignore_completion_duplicates == 0)
-    qsort (matches + 1, len, sizeof (char *),
-           (QSFUNC *)_rl_qsort_string_compare);
+    qsort(matches + 1, len, sizeof(char *),
+          (QSFUNC *)_rl_qsort_string_compare);
 
-  tui_putc ('\n');
+  tui_putc('\n');
 
   if (_rl_print_completions_horizontally == 0)
     {
@@ -457,20 +457,20 @@ tui_rl_display_match_list (char **matches, int len, int max)
 	{
 	  for (j = 0, l = i; j < limit; j++)
 	    {
-	      if (l > len || matches[l] == 0)
+	      if ((l > len) || (matches[l] == 0))
 		break;
 	      else
 		{
-		  temp = printable_part (matches[l]);
-		  printed_len = print_filename (temp, matches[l]);
+		  temp = printable_part(matches[l]);
+		  printed_len = print_filename(temp, matches[l]);
 
-		  if (j + 1 < limit)
-		    for (k = 0; k < max - printed_len; k++)
-		      tui_putc (' ');
+		  if ((j + 1) < limit)
+		    for (k = 0; k < (max - printed_len); k++)
+		      tui_putc(' ');
 		}
 	      l += count;
 	    }
-	  tui_putc ('\n');
+	  tui_putc('\n');
 	}
     }
   else
@@ -478,19 +478,19 @@ tui_rl_display_match_list (char **matches, int len, int max)
       /* Print the sorted items, across alphabetically, like ls -x. */
       for (i = 1; matches[i]; i++)
 	{
-	  temp = printable_part (matches[i]);
-	  printed_len = print_filename (temp, matches[i]);
+	  temp = printable_part(matches[i]);
+	  printed_len = print_filename(temp, matches[i]);
 	  /* Have we reached the end of this line? */
-	  if (matches[i+1])
+	  if (matches[i + 1])
 	    {
-	      if (i && (limit > 1) && (i % limit) == 0)
-		tui_putc ('\n');
+	      if (i && (limit > 1) && ((i % limit) == 0))
+		tui_putc('\n');
 	      else
 		for (k = 0; k < max - printed_len; k++)
-		  tui_putc (' ');
+		  tui_putc(' ');
 	    }
 	}
-      tui_putc ('\n');
+      tui_putc('\n');
     }
 }
 
@@ -503,13 +503,13 @@ tui_rl_display_match_list (char **matches, int len, int max)
    so that readline asks for its input to the curses command window
    with wgetch().  */
 void
-tui_setup_io (int mode)
+tui_setup_io(int mode)
 {
   extern int readline_echoing_p;
- 
+
   if (mode)
     {
-      /* Redirect readline to TUI.  */
+      /* Redirect readline to TUI: */
       tui_old_rl_redisplay_function = rl_redisplay_function;
       tui_old_rl_deprep_terminal = rl_deprep_term_function;
       tui_old_rl_prep_terminal = rl_prep_term_function;
@@ -526,31 +526,31 @@ tui_setup_io (int mode)
       rl_completion_display_matches_hook = tui_rl_display_match_list;
       rl_already_prompted = 0;
 
-      /* Keep track of previous gdb output.  */
+      /* Keep track of previous gdb output: */
       tui_old_stdout = gdb_stdout;
       tui_old_stderr = gdb_stderr;
       tui_old_uiout = uiout;
 
-      /* Reconfigure gdb output.  */
+      /* Reconfigure gdb output: */
       gdb_stdout = tui_stdout;
       gdb_stderr = tui_stderr;
-      gdb_stdlog = gdb_stdout;	/* for moment */
+      gdb_stdlog = gdb_stdout;/* for moment */
       gdb_stdtarg = gdb_stderr;	/* for moment */
       uiout = tui_out;
 
-      /* Save tty for SIGCONT.  */
-      savetty ();
+      /* Save tty for SIGCONT: */
+      savetty();
     }
   else
     {
-      /* Restore gdb output.  */
+      /* Restore gdb output: */
       gdb_stdout = tui_old_stdout;
       gdb_stderr = tui_old_stderr;
-      gdb_stdlog = gdb_stdout;	/* for moment */
+      gdb_stdlog = gdb_stdout; /* for moment */
       gdb_stdtarg = gdb_stderr;	/* for moment */
       uiout = tui_old_uiout;
 
-      /* Restore readline.  */
+      /* Restore readline: */
       rl_redisplay_function = tui_old_rl_redisplay_function;
       rl_deprep_term_function = tui_old_rl_deprep_terminal;
       rl_prep_term_function = tui_old_rl_prep_terminal;
@@ -560,8 +560,8 @@ tui_setup_io (int mode)
       readline_echoing_p = tui_old_readline_echoing_p;
       rl_already_prompted = 0;
 
-      /* Save tty for SIGCONT.  */
-      savetty ();
+      /* Save tty for SIGCONT: */
+      savetty();
     }
 }
 
@@ -679,17 +679,17 @@ tui_getc (FILE *fp)
           waddch (w, ch);
         }
     }
-  
+
   if (key_is_command_char (ch))
     {				/* Handle prev/next/up/down here */
       ch = tui_dispatch_ctrl_char (ch);
     }
-  
+
   if (ch == '\n' || ch == '\r' || ch == '\f')
     TUI_CMD_WIN->detail.command_info.curch = 0;
   if (ch == KEY_BACKSPACE)
     return '\b';
-  
+
   return ch;
 }
 
@@ -697,15 +697,17 @@ tui_getc (FILE *fp)
 /* Cleanup when a resize has occured.
    Returns the character that must be processed.  */
 static unsigned int
-tui_handle_resize_during_io (unsigned int original_ch)
+tui_handle_resize_during_io(unsigned int original_ch)
 {
-  if (tui_win_resized ())
+  if (tui_win_resized())
     {
-      tui_refresh_all_win ();
-      dont_repeat ();
-      tui_set_win_resized_to (FALSE);
+      tui_refresh_all_win();
+      dont_repeat();
+      tui_set_win_resized_to(FALSE);
       return '\n';
     }
   else
     return original_ch;
 }
+
+/* EOF */

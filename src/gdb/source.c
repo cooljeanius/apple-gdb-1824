@@ -686,9 +686,8 @@ is_regular_file (const char *name)
 /*  >>>> This should only allow files of certain types,
     >>>>  eg executable, non-directory */
 int
-openp (const char *path, int opts, const char *string,
-       int mode, int prot,
-       char **filename_opened)
+openp(const char *path, int opts, const char *string,
+      int mode, int prot, char **filename_opened)
 {
   int fd;
   char *filename;
@@ -702,15 +701,15 @@ openp (const char *path, int opts, const char *string,
 
   mode |= O_BINARY;
 
-  if ((opts & OPF_TRY_CWD_FIRST) || IS_ABSOLUTE_PATH (string))
+  if ((opts & OPF_TRY_CWD_FIRST) || IS_ABSOLUTE_PATH(string))
     {
       int i;
 
-      if (is_regular_file (string))
+      if (is_regular_file(string))
 	{
-	  filename = alloca (strlen (string) + 1);
-	  strcpy (filename, string);
-	  fd = open (filename, mode, prot);
+	  filename = (char *)alloca(strlen(string) + 1);
+	  strcpy(filename, string);
+	  fd = open(filename, mode, prot);
 	  if (fd >= 0)
 	    goto done;
 
@@ -739,53 +738,53 @@ openp (const char *path, int opts, const char *string,
     string++;
 
   /* ./foo => foo */
-  while (string[0] == '.' && IS_DIR_SEPARATOR (string[1]))
+  while ((string[0] == '.') && IS_DIR_SEPARATOR(string[1]))
     string += 2;
 
-  alloclen = strlen (path) + strlen (string) + 2;
-  filename = alloca (alloclen);
+  alloclen = strlen(path) + strlen(string) + 2UL;
+  filename = (char *)alloca(alloclen);
   fd = -1;
   for (p = path; p; p = p1 ? p1 + 1 : 0)
     {
-      p1 = strchr (p, DIRNAME_SEPARATOR);
+      p1 = strchr(p, DIRNAME_SEPARATOR);
       if (p1)
-	len = p1 - p;
+	len = (p1 - p);
       else
-	len = strlen (p);
+	len = strlen(p);
 
-      if (len == 4 && p[0] == '$' && p[1] == 'c'
-	  && p[2] == 'w' && p[3] == 'd')
+      if ((len == 4) && (p[0] == '$') && (p[1] == 'c')
+	  && (p[2] == 'w') && (p[3] == 'd'))
 	{
 	  /* Name is $cwd -- insert current directory name instead.  */
 	  int newlen;
 
 	  /* First, realloc the filename buffer if too short. */
-	  len = strlen (current_directory);
-	  newlen = len + strlen (string) + 2;
+	  len = strlen(current_directory);
+	  newlen = (len + strlen(string) + 2UL);
 	  if (newlen > alloclen)
 	    {
 	      alloclen = newlen;
-	      filename = alloca (alloclen);
+	      filename = (char *)alloca(alloclen);
 	    }
-	  strcpy (filename, current_directory);
+	  strcpy(filename, current_directory);
 	}
       else
 	{
 	  /* Normal file name in path -- just use it.  */
-	  strncpy (filename, p, len);
+	  strncpy(filename, p, len);
 	  filename[len] = 0;
 	}
 
-      /* Remove trailing slashes */
-      while (len > 0 && IS_DIR_SEPARATOR (filename[len - 1]))
+      /* Remove trailing slashes: */
+      while ((len > 0) && IS_DIR_SEPARATOR(filename[len - 1]))
 	filename[--len] = 0;
 
-      strcat (filename + len, SLASH_STRING);
-      strcat (filename, string);
+      strcat((filename + len), SLASH_STRING);
+      strcat(filename, string);
 
-      if (is_regular_file (filename))
+      if (is_regular_file(filename))
 	{
-	  fd = open (filename, mode);
+	  fd = open(filename, mode);
 	  if (fd >= 0)
 	    break;
 	}
@@ -850,8 +849,8 @@ source_full_path_of (char *filename, char **full_pathname)
 
 /* APPLE LOCAL begin set pathname-substitutions */
 int
-open_source_file_fullpath (const char *dirname, const char *filename,
-                           char **fullname)
+open_source_file_fullpath(const char *dirname, const char *filename,
+                          char **fullname)
 {
   char *path = NULL;
   char *ss = NULL;
@@ -969,34 +968,34 @@ set_pathname_substitution (char *args, int from_tty, struct cmd_list_element * c
 }
 
 void
-add_one_pathname_substitution (const char *old, const char *new)
+add_one_pathname_substitution(const char *oldpath, const char *newpath)
 {
   int arrsize = 0;
 
  if (pathname_substitutions_argv == NULL)
    {
-     pathname_substitutions_argv = (char **) xmalloc (sizeof (char *) * 3);
-     pathname_substitutions_argv[0] = xstrdup (old);
-     pathname_substitutions_argv[1] = xstrdup (new);
+     pathname_substitutions_argv = (char **)xmalloc(sizeof(char *) * 3UL);
+     pathname_substitutions_argv[0] = xstrdup(oldpath);
+     pathname_substitutions_argv[1] = xstrdup(newpath);
      pathname_substitutions_argv[2] = NULL;
      return;
    }
 
   while (pathname_substitutions_argv[arrsize] != NULL)
     {
-      if (arrsize % 2 == 0)
-        if (strcmp (pathname_substitutions_argv[arrsize], old) == 0)
+      if ((arrsize % 2) == 0)
+        if (strcmp(pathname_substitutions_argv[arrsize], oldpath) == 0)
           return;
       arrsize++;
     }
   arrsize++;
 
-  pathname_substitutions_argv = (char **) xrealloc
-                                          (pathname_substitutions_argv,
-                                          sizeof (char *) * (arrsize + 2));
+  pathname_substitutions_argv = ((char **)
+                                 xrealloc(pathname_substitutions_argv,
+                                          sizeof(char *) * (arrsize + 2)));
 
-  pathname_substitutions_argv[arrsize - 1] = xstrdup (old);
-  pathname_substitutions_argv[arrsize] = xstrdup (new);
+  pathname_substitutions_argv[arrsize - 1] = xstrdup(oldpath);
+  pathname_substitutions_argv[arrsize] = xstrdup(newpath);
   pathname_substitutions_argv[arrsize + 1] = NULL;
 }
 
@@ -1716,10 +1715,9 @@ void convert_sal (struct symtab_and_line *sal)
 }
 /* END APPLE LOCAL */
 
-/* Commands to search the source file for a regexp.  */
-
+/* Commands to search the source file for a regexp: */
 static void
-forward_search_command (char *regex, int from_tty)
+forward_search_command(char *regex, int from_tty)
 {
   int c;
   int desc;
@@ -1727,36 +1725,36 @@ forward_search_command (char *regex, int from_tty)
   int line;
   char *msg;
 
-  line = last_line_listed + 1;
+  line = (last_line_listed + 1);
 
-  msg = (char *) re_comp (regex);
+  msg = (char *)re_comp(regex);
   if (msg)
-    error (("%s"), msg);
+    error(("%s"), msg);
 
   if (current_source_symtab == 0)
-    select_source_symtab (0);
+    select_source_symtab(0);
 
-  desc = open_source_file (current_source_symtab);
+  desc = open_source_file(current_source_symtab);
   if (desc < 0)
-    perror_with_name (current_source_symtab->filename);
+    perror_with_name(current_source_symtab->filename);
 
   if (current_source_symtab->line_charpos == 0)
-    find_source_lines (current_source_symtab, desc);
+    find_source_lines(current_source_symtab, desc);
 
-  if (line < 1 || line > current_source_symtab->nlines)
+  if ((line < 1) || (line > current_source_symtab->nlines))
     {
-      close (desc);
-      error (_("Expression not found"));
+      close(desc);
+      error(_("Expression not found"));
     }
 
-  if (lseek (desc, current_source_symtab->line_charpos[line - 1], 0) < 0)
+  if (lseek(desc, current_source_symtab->line_charpos[line - 1], 0) < 0)
     {
-      close (desc);
-      perror_with_name (current_source_symtab->filename);
+      close(desc);
+      perror_with_name(current_source_symtab->filename);
     }
 
-  stream = fdopen (desc, FDOPEN_MODE);
-  clearerr (stream);
+  stream = fdopen(desc, FDOPEN_MODE);
+  clearerr(stream);
   while (1)
     {
       static char *buf = NULL;
@@ -1764,28 +1762,26 @@ forward_search_command (char *regex, int from_tty)
       int cursize, newsize;
 
       cursize = 256;
-      buf = xmalloc (cursize);
+      buf = (char *)xmalloc(cursize);
       p = buf;
 
-      c = getc (stream);
+      c = getc(stream);
       if (c == EOF)
 	break;
-      do
-	{
-	  *p++ = c;
-	  if (p - buf == cursize)
-	    {
-	      newsize = cursize + cursize / 2;
-	      buf = xrealloc (buf, newsize);
-	      p = buf + cursize;
-	      cursize = newsize;
-	    }
-	}
-      while (c != '\n' && (c = getc (stream)) >= 0);
+      do {
+        *p++ = c;
+        if ((p - buf) == cursize)
+          {
+            newsize = (cursize + cursize / 2);
+            buf = (char *)xrealloc(buf, newsize);
+            p = (buf + cursize);
+            cursize = newsize;
+          }
+      } while ((c != '\n') && ((c = getc(stream)) >= 0));
 
       /* Remove the \r, if any, at the end of the line, otherwise
          regular expressions that end with $ or \n won't work.  */
-      if (p - buf > 1 && p[-2] == '\r')
+      if (((p - buf) > 1) && (p[-2] == '\r'))
 	{
 	  p--;
 	  p[-1] = '\n';
@@ -1793,27 +1789,27 @@ forward_search_command (char *regex, int from_tty)
 
       /* we now have a source line in buf, null terminate and match */
       *p = 0;
-      if (re_exec (buf) > 0)
+      if (re_exec(buf) > 0)
 	{
 	  /* Match! */
-	  fclose (stream);
+	  fclose(stream);
 	  /* APPLE LOCAL nlines instead of stopline */
-	  print_source_lines (current_source_symtab, line, 1, 0);
-	  set_internalvar (lookup_internalvar ("_"),
-			   value_from_longest (builtin_type_int,
-					       (LONGEST) line));
-	  current_source_line = max (line - lines_to_list / 2, 1);
+	  print_source_lines(current_source_symtab, line, 1, 0);
+	  set_internalvar(lookup_internalvar("_"),
+			  value_from_longest(builtin_type_int,
+                                             (LONGEST)line));
+	  current_source_line = max((line - lines_to_list / 2), 1);
 	  return;
 	}
       line++;
     }
 
-  printf_filtered (_("Expression not found\n"));
-  fclose (stream);
+  printf_filtered(_("Expression not found\n"));
+  fclose(stream);
 }
 
 static void
-reverse_search_command (char *regex, int from_tty)
+reverse_search_command(char *regex, int from_tty)
 {
   int c;
   int desc;

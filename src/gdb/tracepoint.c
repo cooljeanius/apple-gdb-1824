@@ -822,7 +822,7 @@ trace_actions_command (char *args, int from_tty)
 
 /* worker function */
 static void
-read_actions (struct tracepoint *t)
+read_actions(struct tracepoint *t)
 {
   char *line;
   char *prompt1 = "> ", *prompt2 = "  > ";
@@ -839,40 +839,40 @@ read_actions (struct tracepoint *t)
      STOP_SIGNAL is never defined.  So this code has been left out, at
      least for quite a while now.  Replacing STOP_SIGNAL with SIGTSTP
      leads to compilation failures since the variable job_control
-     isn't declared.  Leave this alone for now.  */
+     is NOT declared.  Leave this alone for now.  */
 #ifdef STOP_SIGNAL
   if (job_control)
-    signal (STOP_SIGNAL, handle_stop_sig);
-#endif
-  old_chain = make_cleanup_free_actions (t);
+    signal(STOP_SIGNAL, handle_stop_sig);
+#endif /* STOP_SIGNAL */
+  old_chain = make_cleanup_free_actions(t);
   while (1)
     {
       /* Make sure that all output has been output.  Some machines may
          let you get away with leaving out some of the gdb_flush, but
          not all.  */
-      wrap_here ("");
-      gdb_flush (gdb_stdout);
-      gdb_flush (gdb_stderr);
+      wrap_here("");
+      gdb_flush(gdb_stdout);
+      gdb_flush(gdb_stderr);
 
       if (deprecated_readline_hook && instream == NULL)
-	line = (*deprecated_readline_hook) (prompt);
-      else if (instream == stdin && ISATTY (instream))
+	line = (*deprecated_readline_hook)(prompt);
+      else if ((instream == stdin) && ISATTY(instream))
 	{
-	  line = gdb_readline_wrapper (prompt);
+	  line = gdb_readline_wrapper(prompt);
 	  if (line && *line)	/* add it to command history */
-	    add_history (line);
+	    add_history(line);
 	}
       else
-	line = gdb_readline (0);
+	line = gdb_readline(0);
 
       if (!line)
 	line = "end";
 
-      linetype = validate_actionline (&line, t);
+      linetype = validate_actionline(&line, t);
       if (linetype == BADLINE)
-	continue;		/* already warned -- collect another line */
+	continue;	/* already warned -- collect another line */
 
-      temp = xmalloc (sizeof (struct action_line));
+      temp = (struct action_line *)xmalloc(sizeof(struct action_line));
       temp->next = NULL;
       temp->action = line;
 
@@ -888,7 +888,7 @@ read_actions (struct tracepoint *t)
 	{
 	  if (prompt == prompt2)
 	    {
-	      warning (_("Already processing 'while-stepping'"));
+	      warning(_("Already processing 'while-stepping'"));
 	      continue;
 	    }
 	  else
@@ -907,7 +907,7 @@ read_actions (struct tracepoint *t)
 		  /* An "end" all by itself with no other actions
 		     means this tracepoint has no actions.
 		     Discard empty list.  */
-		  free_actions (t);
+		  free_actions(t);
 		}
 	      break;
 	    }
@@ -915,10 +915,10 @@ read_actions (struct tracepoint *t)
     }
 #ifdef STOP_SIGNAL
   if (job_control)
-    signal (STOP_SIGNAL, SIG_DFL);
-#endif
+    signal(STOP_SIGNAL, SIG_DFL);
+#endif /* STOP_SIGNAL */
   immediate_quit--;
-  discard_cleanups (old_chain);
+  discard_cleanups(old_chain);
 }
 
 /* worker function */
@@ -1045,9 +1045,9 @@ validate_actionline (char **line, struct tracepoint *t)
     }
 }
 
-/* worker function */
+/* worker function: */
 void
-free_actions (struct tracepoint *t)
+free_actions(struct tracepoint *t)
 {
   struct action_line *line, *next;
 
@@ -1055,27 +1055,27 @@ free_actions (struct tracepoint *t)
     {
       next = line->next;
       if (line->action)
-	xfree (line->action);
-      xfree (line);
+	xfree(line->action);
+      xfree(line);
     }
   t->actions = NULL;
 }
 
 static void
-do_free_actions_cleanup (void *t)
+do_free_actions_cleanup(void *t)
 {
-  free_actions (t);
+  free_actions((struct tracepoint *)t);
 }
 
 static struct cleanup *
-make_cleanup_free_actions (struct tracepoint *t)
+make_cleanup_free_actions(struct tracepoint *t)
 {
-  return make_cleanup (do_free_actions_cleanup, t);
+  return make_cleanup(do_free_actions_cleanup, t);
 }
 
 struct memrange
 {
-  int type;		/* 0 for absolute memory range, else basereg number */
+  int type;	/* 0 for absolute memory range, else basereg number */
   bfd_signed_vma start;
   bfd_signed_vma end;
 };
@@ -1089,19 +1089,18 @@ struct collection_list
     long aexpr_listsize;	/* size of array pointed to by expr_list elt */
     long next_aexpr_elt;
     struct agent_expr **aexpr_list;
-
   }
 tracepoint_list, stepping_list;
 
 /* MEMRANGE functions: */
+static int memrange_cmp(const void *, const void *);
 
-static int memrange_cmp (const void *, const void *);
-
-/* compare memranges for qsort */
+/* compare memranges for qsort: */
 static int
-memrange_cmp (const void *va, const void *vb)
+memrange_cmp(const void *va, const void *vb)
 {
-  const struct memrange *a = va, *b = vb;
+  const struct memrange *a = (const struct memrange *)va;
+  const struct memrange *b = (const struct memrange *)vb;
 
   if (a->type < b->type)
     return -1;
@@ -1109,9 +1108,9 @@ memrange_cmp (const void *va, const void *vb)
     return 1;
   if (a->type == 0)
     {
-      if ((bfd_vma) a->start < (bfd_vma) b->start)
+      if ((bfd_vma)a->start < (bfd_vma)b->start)
 	return -1;
-      if ((bfd_vma) a->start > (bfd_vma) b->start)
+      if ((bfd_vma)a->start > (bfd_vma)b->start)
 	return 1;
     }
   else
@@ -1124,14 +1123,14 @@ memrange_cmp (const void *va, const void *vb)
   return 0;
 }
 
-/* Sort the memrange list using qsort, and merge adjacent memranges.  */
+/* Sort the memrange list using qsort, and merge adjacent memranges: */
 static void
-memrange_sortmerge (struct collection_list *memranges)
+memrange_sortmerge(struct collection_list *memranges)
 {
   int a, b;
 
-  qsort (memranges->list, memranges->next_memrange,
-	 sizeof (struct memrange), memrange_cmp);
+  qsort(memranges->list, memranges->next_memrange,
+        sizeof(struct memrange), memrange_cmp);
   if (memranges->next_memrange > 0)
     {
       for (a = 0, b = 1; b < memranges->next_memrange; b++)
@@ -1168,33 +1167,33 @@ add_register (struct collection_list *collection, unsigned int regno)
 
 /* Add a memrange to a collection list */
 static void
-add_memrange (struct collection_list *memranges,
-	      int type, bfd_signed_vma base,
-	      unsigned long len)
+add_memrange(struct collection_list *memranges,
+	     int type, bfd_signed_vma base,
+	     unsigned long len)
 {
   if (info_verbose)
     {
-      printf_filtered ("(%d,", type);
-      printf_vma (base);
-      printf_filtered (",%ld)\n", len);
+      printf_filtered("(%d,", type);
+      printf_vma(base);
+      printf_filtered(",%ld)\n", len);
     }
 
   /* type: -1 == memory, n == basereg */
   memranges->list[memranges->next_memrange].type = type;
-  /* base: addr if memory, offset if reg relative.  */
+  /* base: addr if memory, offset if reg relative: */
   memranges->list[memranges->next_memrange].start = base;
-  /* len: we actually save end (base + len) for convenience */
-  memranges->list[memranges->next_memrange].end = base + len;
+  /* len: we actually save end (base + len) for convenience: */
+  memranges->list[memranges->next_memrange].end = (base + len);
   memranges->next_memrange++;
   if (memranges->next_memrange >= memranges->listsize)
     {
       memranges->listsize *= 2;
-      memranges->list = xrealloc (memranges->list,
-				  memranges->listsize);
+      memranges->list = (struct memrange *)xrealloc(memranges->list,
+                                                    memranges->listsize);
     }
 
   if (type != -1)		/* Better collect the base register!  */
-    add_register (memranges, type);
+    add_register(memranges, type);
 }
 
 /* Add a symbol to a collection list: */
@@ -1470,7 +1469,7 @@ stringify_collection_list (struct collection_list *list, char *string)
 
   if (count != 0)
     {
-      (*str_list)[ndx] = savestring (temp_buf, count);
+      (*str_list)[ndx] = savestring(temp_buf, count);
       ndx++;
       count = 0;
       end = temp_buf;
@@ -1484,13 +1483,13 @@ stringify_collection_list (struct collection_list *list, char *string)
 }
 
 static void
-free_actions_list_cleanup_wrapper (void *al)
+free_actions_list_cleanup_wrapper(void *al)
 {
-  free_actions_list (al);
+  free_actions_list((char **)al);
 }
 
 static void
-free_actions_list (char **actions_list)
+free_actions_list(char **actions_list)
 {
   int ndx;
 
@@ -1655,11 +1654,11 @@ encode_actions (struct tracepoint *t, char ***tdp_actions,
 	    }
 	  while (action_exp && *action_exp++ == ',');
 	}			/* if */
-      else if (cmd_cfunc_eq (cmd, while_stepping_pseudocommand))
+      else if (cmd_cfunc_eq(cmd, while_stepping_pseudocommand))
 	{
 	  collect = &stepping_list;
 	}
-      else if (cmd_cfunc_eq (cmd, end_actions_pseudocommand))
+      else if (cmd_cfunc_eq(cmd, end_actions_pseudocommand))
 	{
 	  if (collect == &stepping_list)	/* end stepping actions */
 	    collect = &tracepoint_list;
@@ -1667,23 +1666,22 @@ encode_actions (struct tracepoint *t, char ***tdp_actions,
 	    break;		/* end tracepoint actions */
 	}
     }				/* for */
-  memrange_sortmerge (&tracepoint_list);
-  memrange_sortmerge (&stepping_list);
+  memrange_sortmerge(&tracepoint_list);
+  memrange_sortmerge(&stepping_list);
 
-  *tdp_actions = stringify_collection_list (&tracepoint_list,
-					    tdp_buff);
-  *stepping_actions = stringify_collection_list (&stepping_list,
-						 step_buff);
+  *tdp_actions = stringify_collection_list(&tracepoint_list, tdp_buff);
+  *stepping_actions = stringify_collection_list(&stepping_list, step_buff);
 }
 
 static void
-add_aexpr (struct collection_list *collect, struct agent_expr *aexpr)
+add_aexpr(struct collection_list *collect, struct agent_expr *aexpr)
 {
   if (collect->next_aexpr_elt >= collect->aexpr_listsize)
     {
       collect->aexpr_list =
-	xrealloc (collect->aexpr_list,
-		2 * collect->aexpr_listsize * sizeof (struct agent_expr *));
+	((struct agent_expr **)
+         xrealloc(collect->aexpr_list,
+                  (2UL * collect->aexpr_listsize * sizeof(struct agent_expr *))));
       collect->aexpr_listsize *= 2;
     }
   collect->aexpr_list[collect->next_aexpr_elt] = aexpr;
@@ -2529,9 +2527,9 @@ scope_info (char *args, int from_tty)
 
 /* worker function (cleanup) */
 static void
-replace_comma (void *data)
+replace_comma(void *data)
 {
-  char *comma = data;
+  char *comma = (char *)data;
   *comma = ',';
 }
 
@@ -2656,7 +2654,7 @@ trace_dump_command (char *args, int from_tty)
 static const char hexchars[] = "0123456789abcdef";
 
 static char *
-mem2hex (gdb_byte *mem, char *buf, int count)
+mem2hex(gdb_byte *mem, char *buf, int count)
 {
   gdb_byte ch;
 
@@ -2674,15 +2672,15 @@ mem2hex (gdb_byte *mem, char *buf, int count)
 }
 
 int
-get_traceframe_number (void)
+get_traceframe_number(void)
 {
   return traceframe_number;
 }
 
 
-/* module initialization */
+/* module initialization: */
 void
-_initialize_tracepoint (void)
+_initialize_tracepoint(void)
 {
   struct cmd_list_element *c;
 
@@ -2691,128 +2689,132 @@ _initialize_tracepoint (void)
   traceframe_number = -1;
   tracepoint_number = -1;
 
-  set_internalvar (lookup_internalvar ("tpnum"),
-		   value_from_longest (builtin_type_int, (LONGEST) 0));
-  set_internalvar (lookup_internalvar ("trace_frame"),
-		   value_from_longest (builtin_type_int, (LONGEST) - 1));
+  set_internalvar(lookup_internalvar("tpnum"),
+		  value_from_longest(builtin_type_int, (LONGEST)0L));
+  set_internalvar(lookup_internalvar("trace_frame"),
+		  value_from_longest(builtin_type_int, (LONGEST)-1L));
 
   if (tracepoint_list.list == NULL)
     {
       tracepoint_list.listsize = 128;
-      tracepoint_list.list = xmalloc
-	(tracepoint_list.listsize * sizeof (struct memrange));
+      tracepoint_list.list =
+        ((struct memrange *)
+         xmalloc(tracepoint_list.listsize * sizeof(struct memrange)));
     }
   if (tracepoint_list.aexpr_list == NULL)
     {
       tracepoint_list.aexpr_listsize = 128;
-      tracepoint_list.aexpr_list = xmalloc
-	(tracepoint_list.aexpr_listsize * sizeof (struct agent_expr *));
+      tracepoint_list.aexpr_list =
+        ((struct agent_expr **)
+         xmalloc(tracepoint_list.aexpr_listsize * sizeof(struct agent_expr *)));
     }
 
   if (stepping_list.list == NULL)
     {
       stepping_list.listsize = 128;
-      stepping_list.list = xmalloc
-	(stepping_list.listsize * sizeof (struct memrange));
+      stepping_list.list =
+        ((struct memrange *)
+         xmalloc(stepping_list.listsize * sizeof(struct memrange)));
     }
 
   if (stepping_list.aexpr_list == NULL)
     {
       stepping_list.aexpr_listsize = 128;
-      stepping_list.aexpr_list = xmalloc
-	(stepping_list.aexpr_listsize * sizeof (struct agent_expr *));
+      stepping_list.aexpr_list =
+        ((struct agent_expr **)
+         xmalloc(stepping_list.aexpr_listsize * sizeof(struct agent_expr *)));
     }
 
-  add_info ("scope", scope_info,
-	    _("List the variables local to a scope"));
+  add_info("scope", scope_info,
+	   _("List the variables local to a scope"));
 
-  add_cmd ("tracepoints", class_trace, NULL,
-	   _("Tracing of program execution without stopping the program."),
-	   &cmdlist);
+  add_cmd("tracepoints", class_trace, NULL,
+	  _("Tracing of program execution without stopping the program."),
+	  &cmdlist);
 
-  add_info ("tracepoints", tracepoints_info, _("\
+  add_info("tracepoints", tracepoints_info, _("\
 Status of tracepoints, or tracepoint number NUMBER.\n\
 Convenience variable \"$tpnum\" contains the number of the\n\
 last tracepoint set."));
 
-  add_info_alias ("tp", "tracepoints", 1);
+  add_info_alias("tp", "tracepoints", 1);
 
-  c = add_com ("save-tracepoints", class_trace, tracepoint_save_command, _("\
+  c = add_com("save-tracepoints", class_trace, tracepoint_save_command, _("\
 Save current tracepoint definitions as a script.\n\
 Use the 'source' command in another debug session to restore them."));
-  set_cmd_completer (c, filename_completer);
+  set_cmd_completer(c, filename_completer);
 
-  add_com ("tdump", class_trace, trace_dump_command,
-	   _("Print everything collected at the current tracepoint."));
+  add_com("tdump", class_trace, trace_dump_command,
+	  _("Print everything collected at the current tracepoint."));
 
-  add_prefix_cmd ("tfind", class_trace, trace_find_command, _("\
+  add_prefix_cmd("tfind", class_trace, trace_find_command, _("\
 Select a trace frame;\n\
 No argument means forward by one frame; '-' means backward by one frame."),
-		  &tfindlist, "tfind ", 1, &cmdlist);
+                 &tfindlist, "tfind ", 1, &cmdlist);
 
-  add_cmd ("outside", class_trace, trace_find_outside_command, _("\
+  add_cmd("outside", class_trace, trace_find_outside_command, _("\
 Select a trace frame whose PC is outside the given range.\n\
 Usage: tfind outside addr1, addr2"),
-	   &tfindlist);
+          &tfindlist);
 
-  add_cmd ("range", class_trace, trace_find_range_command, _("\
+  add_cmd("range", class_trace, trace_find_range_command, _("\
 Select a trace frame whose PC is in the given range.\n\
 Usage: tfind range addr1,addr2"),
-	   &tfindlist);
+	  &tfindlist);
 
-  add_cmd ("line", class_trace, trace_find_line_command, _("\
+  add_cmd("line", class_trace, trace_find_line_command, _("\
 Select a trace frame by source line.\n\
 Argument can be a line number (with optional source file), \n\
 a function name, or '*' followed by an address.\n\
 Default argument is 'the next source line that was traced'."),
-	   &tfindlist);
+	  &tfindlist);
 
-  add_cmd ("tracepoint", class_trace, trace_find_tracepoint_command, _("\
+  add_cmd("tracepoint", class_trace, trace_find_tracepoint_command, _("\
 Select a trace frame by tracepoint number.\n\
 Default is the tracepoint for the current trace frame."),
-	   &tfindlist);
+          &tfindlist);
 
-  add_cmd ("pc", class_trace, trace_find_pc_command, _("\
+  add_cmd("pc", class_trace, trace_find_pc_command, _("\
 Select a trace frame by PC.\n\
 Default is the current PC, or the PC of the current trace frame."),
-	   &tfindlist);
+          &tfindlist);
 
-  add_cmd ("end", class_trace, trace_find_end_command, _("\
+  add_cmd("end", class_trace, trace_find_end_command, _("\
 Synonym for 'none'.\n\
 De-select any trace frame and resume 'live' debugging."),
-	   &tfindlist);
+          &tfindlist);
 
-  add_cmd ("none", class_trace, trace_find_none_command,
-	   _("De-select any trace frame and resume 'live' debugging."),
-	   &tfindlist);
+  add_cmd("none", class_trace, trace_find_none_command,
+	  _("De-select any trace frame and resume 'live' debugging."),
+	  &tfindlist);
 
-  add_cmd ("start", class_trace, trace_find_start_command,
-	   _("Select the first trace frame in the trace buffer."),
-	   &tfindlist);
+  add_cmd("start", class_trace, trace_find_start_command,
+	  _("Select the first trace frame in the trace buffer."),
+	  &tfindlist);
 
-  add_com ("tstatus", class_trace, trace_status_command,
-	   _("Display the status of the current trace data collection."));
+  add_com("tstatus", class_trace, trace_status_command,
+	  _("Display the status of the current trace data collection."));
 
-  add_com ("tstop", class_trace, trace_stop_command,
-	   _("Stop trace data collection."));
+  add_com("tstop", class_trace, trace_stop_command,
+	  _("Stop trace data collection."));
 
-  add_com ("tstart", class_trace, trace_start_command,
-	   _("Start trace data collection."));
+  add_com("tstart", class_trace, trace_start_command,
+	  _("Start trace data collection."));
 
-  add_com ("passcount", class_trace, trace_pass_command, _("\
+  add_com("passcount", class_trace, trace_pass_command, _("\
 Set the passcount for a tracepoint.\n\
 The trace will end when the tracepoint has been passed 'count' times.\n\
 Usage: passcount COUNT TPNUM, where TPNUM may also be \"all\";\n\
 if TPNUM is omitted, passcount refers to the last tracepoint defined."));
 
-  add_com ("end", class_trace, end_actions_pseudocommand, _("\
+  add_com("end", class_trace, end_actions_pseudocommand, _("\
 Ends a list of commands or actions.\n\
 Several GDB commands allow you to enter a list of commands or actions.\n\
 Entering \"end\" on a line by itself is the normal way to terminate\n\
 such a list.\n\n\
 Note: the \"end\" command cannot be used at the gdb prompt."));
 
-  add_com ("while-stepping", class_trace, while_stepping_pseudocommand, _("\
+  add_com("while-stepping", class_trace, while_stepping_pseudocommand, _("\
 Specify single-stepping behavior at a tracepoint.\n\
 Argument is number of instructions to trace in single-step mode\n\
 following the tracepoint.  This command is normally followed by\n\
@@ -2820,10 +2822,10 @@ one or more \"collect\" commands, to specify what to collect\n\
 while single-stepping.\n\n\
 Note: this command can only be used in a tracepoint \"actions\" list."));
 
-  add_com_alias ("ws", "while-stepping", class_alias, 0);
-  add_com_alias ("stepping", "while-stepping", class_alias, 0);
+  add_com_alias("ws", "while-stepping", class_alias, 0);
+  add_com_alias("stepping", "while-stepping", class_alias, 0);
 
-  add_com ("collect", class_trace, collect_pseudocommand, _("\
+  add_com("collect", class_trace, collect_pseudocommand, _("\
 Specify one or more data items to be collected at a tracepoint.\n\
 Accepts a comma-separated list of (one or more) expressions.  GDB will\n\
 collect all data (variables, registers) referenced by that expression.\n\
@@ -2833,40 +2835,42 @@ Also accepts the following special arguments:\n\
     $locals -- all variables local to the block/function scope.\n\
 Note: this command can only be used in a tracepoint \"actions\" list."));
 
-  add_com ("actions", class_trace, trace_actions_command, _("\
+  add_com("actions", class_trace, trace_actions_command, _("\
 Specify the actions to be taken at a tracepoint.\n\
 Tracepoint actions may include collecting of specified data, \n\
 single-stepping, or enabling/disabling other tracepoints, \n\
 depending on target's capabilities."));
 
-  add_cmd ("tracepoints", class_trace, delete_trace_command, _("\
+  add_cmd("tracepoints", class_trace, delete_trace_command, _("\
 Delete specified tracepoints.\n\
 Arguments are tracepoint numbers, separated by spaces.\n\
 No argument means delete all tracepoints."),
-	   &deletelist);
+          &deletelist);
 
-  add_cmd ("tracepoints", class_trace, disable_trace_command, _("\
+  add_cmd("tracepoints", class_trace, disable_trace_command, _("\
 Disable specified tracepoints.\n\
 Arguments are tracepoint numbers, separated by spaces.\n\
 No argument means disable all tracepoints."),
-	   &disablelist);
+          &disablelist);
 
-  add_cmd ("tracepoints", class_trace, enable_trace_command, _("\
+  add_cmd("tracepoints", class_trace, enable_trace_command, _("\
 Enable specified tracepoints.\n\
 Arguments are tracepoint numbers, separated by spaces.\n\
 No argument means enable all tracepoints."),
-	   &enablelist);
+          &enablelist);
 
-  c = add_com ("trace", class_trace, trace_command, _("\
+  c = add_com("trace", class_trace, trace_command, _("\
 Set a tracepoint at a specified line or function or address.\n\
 Argument may be a line number, function name, or '*' plus an address.\n\
 For a line number or function, trace at the start of its code.\n\
 If an address is specified, trace at that exact address.\n\n\
 Do \"help tracepoints\" for info on other tracepoint commands."));
-  set_cmd_completer (c, location_completer);
+  set_cmd_completer(c, location_completer);
 
-  add_com_alias ("tp", "trace", class_alias, 0);
-  add_com_alias ("tr", "trace", class_alias, 1);
-  add_com_alias ("tra", "trace", class_alias, 1);
-  add_com_alias ("trac", "trace", class_alias, 1);
+  add_com_alias("tp", "trace", class_alias, 0);
+  add_com_alias("tr", "trace", class_alias, 1);
+  add_com_alias("tra", "trace", class_alias, 1);
+  add_com_alias("trac", "trace", class_alias, 1);
 }
+
+/* EOF */

@@ -8200,12 +8200,12 @@ ppc_build_one_stub (struct bfd_hash_entry *gen_entry, void *in_arg)
 	  return FALSE;
 	}
 
-      p = build_plt_stub (htab->stub_bfd, loc, off);
-      size = p - loc;
+      p = build_plt_stub(htab->stub_bfd, loc, off);
+      size = (p - loc);
       break;
 
     default:
-      BFD_FAIL ();
+      BFD_FAIL();
       return FALSE;
     }
 
@@ -8222,15 +8222,15 @@ ppc_build_one_stub (struct bfd_hash_entry *gen_entry, void *in_arg)
 				       "plt_branch_r2off",
 				       "plt_call" };
 
-      len1 = strlen (stub_str[stub_entry->stub_type - 1]);
-      len2 = strlen (stub_entry->root.string);
-      name = bfd_malloc (len1 + len2 + 2);
+      len1 = strlen(stub_str[stub_entry->stub_type - 1]);
+      len2 = strlen(stub_entry->root.string);
+      name = (char *)bfd_malloc(len1 + len2 + 2);
       if (name == NULL)
 	return FALSE;
-      memcpy (name, stub_entry->root.string, 9);
-      memcpy (name + 9, stub_str[stub_entry->stub_type - 1], len1);
-      memcpy (name + len1 + 9, stub_entry->root.string + 8, len2 - 8 + 1);
-      h = elf_link_hash_lookup (&htab->elf, name, TRUE, FALSE, FALSE);
+      memcpy(name, stub_entry->root.string, 9);
+      memcpy(name + 9, stub_str[stub_entry->stub_type - 1], len1);
+      memcpy(name + len1 + 9, stub_entry->root.string + 8, len2 - 8 + 1);
+      h = elf_link_hash_lookup(&htab->elf, name, TRUE, FALSE, FALSE);
       if (h == NULL)
 	return FALSE;
       if (h->root.type == bfd_link_hash_new)
@@ -9221,14 +9221,15 @@ ppc64_elf_build_stubs (bfd_boolean emit_stub_syms,
 
   htab->emit_stub_syms = emit_stub_syms;
 
-  /* Allocate memory to hold the linker stubs.  */
+  /* Allocate memory to hold the linker stubs: */
   for (stub_sec = htab->stub_bfd->sections;
        stub_sec != NULL;
        stub_sec = stub_sec->next)
-    if ((stub_sec->flags & SEC_LINKER_CREATED) == 0
-	&& stub_sec->size != 0)
+    if (((stub_sec->flags & SEC_LINKER_CREATED) == 0)
+	&& (stub_sec->size != 0))
       {
-	stub_sec->contents = bfd_zalloc (htab->stub_bfd, stub_sec->size);
+	stub_sec->contents = (unsigned char *)bfd_zalloc(htab->stub_bfd,
+                                                         stub_sec->size);
 	if (stub_sec->contents == NULL)
 	  return FALSE;
 	/* We want to check that built size is the same as calculated
@@ -9333,15 +9334,15 @@ ppc64_elf_build_stubs (bfd_boolean emit_stub_syms,
 
   if (htab->brlt->size != 0)
     {
-      htab->brlt->contents = bfd_zalloc (htab->brlt->owner,
-					 htab->brlt->size);
+      htab->brlt->contents = (unsigned char *)bfd_zalloc(htab->brlt->owner,
+                                                         htab->brlt->size);
       if (htab->brlt->contents == NULL)
 	return FALSE;
     }
-  if (htab->relbrlt != NULL && htab->relbrlt->size != 0)
+  if ((htab->relbrlt != NULL) && (htab->relbrlt->size != 0))
     {
-      htab->relbrlt->contents = bfd_zalloc (htab->relbrlt->owner,
-					    htab->relbrlt->size);
+      htab->relbrlt->contents = (unsigned char *)bfd_zalloc(htab->relbrlt->owner,
+                                                            htab->relbrlt->size);
       if (htab->relbrlt->contents == NULL)
 	return FALSE;
     }
@@ -9371,31 +9372,30 @@ ppc64_elf_build_stubs (bfd_boolean emit_stub_syms,
 
   if (stats != NULL)
     {
-      *stats = bfd_malloc (500);
+      *stats = (char *)bfd_malloc(500UL); /* should be big enough */
       if (*stats == NULL)
 	return FALSE;
 
-      sprintf (*stats, _("linker stubs in %u group%s\n"
-			 "  branch       %lu\n"
-			 "  toc adjust   %lu\n"
-			 "  long branch  %lu\n"
-			 "  long toc adj %lu\n"
-			 "  plt call     %lu"),
-	       stub_sec_count,
-	       stub_sec_count == 1 ? "" : "s",
-	       htab->stub_count[ppc_stub_long_branch - 1],
-	       htab->stub_count[ppc_stub_long_branch_r2off - 1],
-	       htab->stub_count[ppc_stub_plt_branch - 1],
-	       htab->stub_count[ppc_stub_plt_branch_r2off - 1],
-	       htab->stub_count[ppc_stub_plt_call - 1]);
+      sprintf(*stats, _("linker stubs in %u group%s\n"
+                        "  branch       %lu\n"
+                        "  toc adjust   %lu\n"
+                        "  long branch  %lu\n"
+                        "  long toc adj %lu\n"
+                        "  plt call     %lu"),
+	      stub_sec_count,
+	      ((stub_sec_count == 1) ? "" : "s"),
+	      htab->stub_count[ppc_stub_long_branch - 1],
+	      htab->stub_count[ppc_stub_long_branch_r2off - 1],
+	      htab->stub_count[ppc_stub_plt_branch - 1],
+	      htab->stub_count[ppc_stub_plt_branch_r2off - 1],
+	      htab->stub_count[ppc_stub_plt_call - 1]);
     }
   return TRUE;
 }
 
-/* This function undoes the changes made by add_symbol_adjust.  */
-
+/* This function undoes the changes made by add_symbol_adjust: */
 static bfd_boolean
-undo_symbol_twiddle (struct elf_link_hash_entry *h, void *inf ATTRIBUTE_UNUSED)
+undo_symbol_twiddle(struct elf_link_hash_entry *h, void *inf ATTRIBUTE_UNUSED)
 {
   struct ppc_link_hash_entry *eh;
 

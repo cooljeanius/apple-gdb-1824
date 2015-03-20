@@ -802,14 +802,18 @@ struct section_offsets
   (sizeof (struct section_offsets) \
    + sizeof (((struct section_offsets *) 0)->offsets) * ((n)-1))
 
+/* un-nested from the symtab struct, for '-Wc++-compat': */
+enum free_codes
+{
+  free_nothing, free_contents, free_linetable
+};
+
 /* Each source file or header is represented by a struct symtab.
    These objects are chained through the `next' field.  */
 
 struct symtab
 {
-
-  /* Chain of all existing symtabs.  */
-
+  /* Chain of all existing symtabs: */
   struct symtab *next;
 
   /* List of all symbol scope blocks for this symtab.  May be shared
@@ -854,11 +858,7 @@ struct symtab
      free_linetable => free just the linetable.  FIXME: Is this redundant
      with the primary field?  */
 
-  enum free_code
-  {
-    free_nothing, free_contents, free_linetable
-  }
-  free_code;
+  enum free_codes free_code;
 
   /* A function to call to free space, if necessary.  This is IN
      ADDITION to the action indicated by free_code.  */

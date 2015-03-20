@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <stdint.h>
 
+#include "kdp-protocol.h"
 #include "kdp-udp.h"
 
 #include "defs.h"
@@ -862,395 +863,404 @@ kdp_marshal (kdp_connection *c,
 }
 
 kdp_return_t
-kdp_unmarshal (kdp_connection *c,
-               kdp_pkt_t * p, const unsigned char *s, size_t rlen)
+kdp_unmarshal(kdp_connection *c,
+              kdp_pkt_t *p, const unsigned char *s, size_t rlen)
 {
 #define CHECK_PLEN_RLEN(plen, rlen) \
   if (plen != rlen) { \
-    c->logger (KDP_LOG_ERROR, \
-               "kdp_unmarshal: length contained in packet (%lu) " \
-               "does not match length read from socket (%lu)\n", \
-               (unsigned long) plen, (unsigned long) rlen); \
+    c->logger(KDP_LOG_ERROR, \
+              "kdp_unmarshal: length contained in packet (%lu) " \
+              "does not match length read from socket (%lu)\n", \
+              (unsigned long)plen, (unsigned long)rlen); \
     return RR_IP_ERROR; \
   }
 
 #define CHECK_PLEN_LEN(plen, len) \
   if (plen != len) { \
-    c->logger (KDP_LOG_ERROR, \
-               "kdp_unmarshal: length contained in packet (%lu) " \
-               "does not match expected length of packet (%lu)\n", \
-               (unsigned long) plen, (unsigned long) len); \
+    c->logger(KDP_LOG_ERROR, \
+              "kdp_unmarshal: length contained in packet (%lu) " \
+              "does not match expected length of packet (%lu)\n", \
+              (unsigned long)plen, (unsigned long)len); \
     return RR_IP_ERROR; \
   }
 
 #define CHECK_PLEN_MINLEN(plen, len) \
   if (plen < len) { \
-    c->logger (KDP_LOG_ERROR, \
-               "kdp_unmarshal: length contained in packet (%lu) " \
-               "is smaller than expected minimum packet length (%lu)\n", \
-               (unsigned long) plen, (unsigned long) len); \
+    c->logger(KDP_LOG_ERROR, \
+              "kdp_unmarshal: length contained in packet (%lu) " \
+              "is smaller than expected minimum packet length (%lu)\n", \
+              (unsigned long)plen, (unsigned long)len); \
     return RR_IP_ERROR; \
   }
 
-  size_t plen = 0;
+  size_t plen = 0UL;
 
-  CHECK_FATAL (c->logger != NULL);
+  CHECK_FATAL(c->logger != NULL);
 
   if (rlen < 8)
     {
-      c->logger (KDP_LOG_ERROR,
-                 "data length (%lu) is too small (less than %d)\n", rlen, 8);
+      c->logger(KDP_LOG_ERROR,
+                "data length (%lu) is too small (less than %d)\n",
+                rlen, 8);
       return RR_IP_ERROR;
     }
   if (rlen > KDP_MAX_PACKET_SIZE)
     {
-      c->logger (KDP_LOG_ERROR,
-                 "data length (%lu) is too large (greater than %d)\n", rlen,
-                 KDP_MAX_PACKET_SIZE);
+      c->logger(KDP_LOG_ERROR,
+                "data length (%lu) is too large (greater than %d)\n", rlen,
+                KDP_MAX_PACKET_SIZE);
       return RR_IP_ERROR;
     }
 
   if (c->bigendian)
     {
-      p->hdr.is_reply = s[0] >> 7;
-      p->hdr.request = s[0] & 0x7f;
+      p->hdr.is_reply = (s[0] >> 7);
+      p->hdr.request = (kdp_req_t)(s[0] & 0x7f);
     }
   else
     {
-      p->hdr.request = s[0] >> 1;
-      p->hdr.is_reply = s[0] & 0x1;
+      p->hdr.request = (kdp_req_t)(s[0] >> 1);
+      p->hdr.is_reply = (s[0] & 0x1);
     }
 
   p->hdr.seq = s[1];
-  plen = read16u (s + 2, c->bigendian);
-  p->hdr.key = read32u (s + 4, c->bigendian);
+  plen = read16u(s + 2, c->bigendian);
+  p->hdr.key = read32u(s + 4, c->bigendian);
 
   if (p->hdr.is_reply)
     {
-
       switch (p->hdr.request)
         {
         case KDP_CONNECT:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 12);
-          p->connect_reply.error = read32u (s + 8, c->bigendian);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 12);
+          p->connect_reply.error = (kdp_error_t)read32u((s + 8),
+                                                        c->bigendian);
           break;
         case KDP_DISCONNECT:
         case KDP_REATTACH:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 8);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 8);
           break;
         case KDP_HOSTINFO:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 20);
-          p->hostinfo_reply.cpu_mask = read32u (s + 8, c->bigendian);
-          p->hostinfo_reply.cpu_type = read32u (s + 12, c->bigendian);
-          p->hostinfo_reply.cpu_subtype = read32u (s + 16, c->bigendian);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 20);
+          p->hostinfo_reply.cpu_mask = read32u(s + 8, c->bigendian);
+          p->hostinfo_reply.cpu_type = read32u(s + 12, c->bigendian);
+          p->hostinfo_reply.cpu_subtype = read32u(s + 16, c->bigendian);
           break;
         case KDP_VERSION:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 24);
-          p->version_reply.version = read32u (s + 8, c->bigendian);
-          p->version_reply.feature = read32u (s + 12, c->bigendian);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 24);
+          p->version_reply.version = read32u(s + 8, c->bigendian);
+          p->version_reply.feature = read32u(s + 12, c->bigendian);
           break;
         case KDP_KERNELVERSION:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_MINLEN (plen, 8);
-          memcpy (p->kernelversion_reply.version, s + 8, plen - 8);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_MINLEN(plen, 8);
+          memcpy(p->kernelversion_reply.version, s + 8, plen - 8);
           break;
         case KDP_REGIONS:
           {
-            const unsigned int REGION_SIZE = 12;
+            const unsigned int REGION_SIZE = 12U;
             unsigned int i;
             CHECK_PLEN_RLEN (plen, rlen);
             CHECK_PLEN_MINLEN (plen, 12);
-            p->regions_reply.nregions = read32u (s + 8, c->bigendian);
-            CHECK_PLEN_LEN (plen,
-                            ((p->regions_reply.nregions * REGION_SIZE) + 12));
+            p->regions_reply.nregions = read32u(s + 8, c->bigendian);
+            CHECK_PLEN_LEN(plen,
+                           ((p->regions_reply.nregions * REGION_SIZE) + 12));
             for (i = 0; i < p->regions_reply.nregions; i++)
               {
-                unsigned int offset = 12 + (i * REGION_SIZE);
+                unsigned int offset = (12U + (i * REGION_SIZE));
                 p->regions_reply.regions[i].address =
-                  read32u (s + offset, c->bigendian);
+                  read32u(s + offset, c->bigendian);
                 p->regions_reply.regions[i].nbytes =
-                  read32u (s + offset + 4, c->bigendian);
+                  read32u(s + offset + 4, c->bigendian);
                 p->regions_reply.regions[i].protection =
-                  read32u (s + offset + 8, c->bigendian);
+                  read32u(s + offset + 8, c->bigendian);
               }
             break;
           }
         case KDP_MAXBYTES:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 12);
-          p->maxbytes_reply.max_bytes = read32u (s + 8, c->bigendian);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 12);
+          p->maxbytes_reply.max_bytes = read32u(s + 8, c->bigendian);
           break;
         case KDP_READMEM:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_MINLEN (plen, 12);
-          p->readmem_reply.error = read32u (s + 8, c->bigendian);
-          p->readmem_reply.nbytes = plen - 12;
-          memcpy (p->readmem_reply.data, s + 12, plen - 12);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_MINLEN(plen, 12);
+          p->readmem_reply.error = (kdp_error_t)read32u((s + 8),
+                                                        c->bigendian);
+          p->readmem_reply.nbytes = (plen - 12);
+          memcpy(p->readmem_reply.data, s + 12, plen - 12);
           break;
         case KDP_READMEM64:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_MINLEN (plen, 12);
-          p->readmem64_reply.error = read32u (s + 8, c->bigendian);
-          p->readmem64_reply.nbytes = plen - 12;
-          memcpy (p->readmem64_reply.data, s + 12, plen - 12);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_MINLEN(plen, 12);
+          p->readmem64_reply.error = (kdp_error_t)read32u((s + 8),
+                                                          c->bigendian);
+          p->readmem64_reply.nbytes = (plen - 12);
+          memcpy(p->readmem64_reply.data, s + 12, plen - 12);
           break;
         case KDP_WRITEMEM:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 12);
-          p->writemem_reply.error = read32u (s + 8, c->bigendian);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 12);
+          p->writemem_reply.error = (kdp_error_t)read32u((s + 8),
+                                                         c->bigendian);
           break;
         case KDP_WRITEMEM64:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 12);
-          p->writemem64_reply.error = read32u (s + 8, c->bigendian);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 12);
+          p->writemem64_reply.error = (kdp_error_t)read32u((s + 8),
+                                                           c->bigendian);
           break;
         case KDP_BREAKPOINT_SET:
         case KDP_BREAKPOINT_REMOVE:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 12);
-          p->breakpoint_reply.error = read32u (s + 8, c->bigendian);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 12);
+          p->breakpoint_reply.error = (kdp_error_t)read32u((s + 8),
+                                                           c->bigendian);
           break;
         case KDP_BREAKPOINT64_SET:
         case KDP_BREAKPOINT64_REMOVE:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 12);
-          p->breakpoint_reply.error = read32u (s + 8, c->bigendian);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 12);
+          p->breakpoint_reply.error = (kdp_error_t)read32u((s + 8),
+                                                           c->bigendian);
           break;
         case KDP_READREGS:
           {
-            const unsigned int KDP_REGISTER_SIZE = 4;
+            const unsigned int KDP_REGISTER_SIZE = 4U;
             unsigned int i;
-            unsigned int reglen = plen - 12;
-            CHECK_PLEN_RLEN (plen, rlen);
-            CHECK_PLEN_MINLEN (plen, 12);
-            p->readregs_reply.error = read32u (s + 8, c->bigendian);
+            unsigned int reglen = (plen - 12U);
+            CHECK_PLEN_RLEN(plen, rlen);
+            CHECK_PLEN_MINLEN(plen, 12);
+            p->readregs_reply.error = (kdp_error_t)read32u((s + 8),
+                                                           c->bigendian);
             if ((reglen % KDP_REGISTER_SIZE) != 0)
               {
-                c->logger (KDP_LOG_ERROR,
-                           "length of register data (%u) is not an integer multiple of KDP_REGISTER_SIZE (%u)\n",
-                           reglen, KDP_REGISTER_SIZE);
+                c->logger(KDP_LOG_ERROR,
+                          "length of register data (%u) is not an integer multiple of KDP_REGISTER_SIZE (%u)\n",
+                          reglen, KDP_REGISTER_SIZE);
                 return RR_IP_ERROR;
               }
             p->readregs_reply.nbytes = reglen;
             for (i = 0; i < (reglen / KDP_REGISTER_SIZE); i++)
               {
-                ((uint32_t *) p->readregs_reply.data)[i] =
-                  read32u (s + 12 + (i * KDP_REGISTER_SIZE), c->bigendian);
+                ((uint32_t *)p->readregs_reply.data)[i] =
+                  read32u(s + 12 + (i * KDP_REGISTER_SIZE), c->bigendian);
               }
             break;
           }
         case KDP_WRITEREGS:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 12);
-          p->writeregs_reply.error = read32u (s + 8, c->bigendian);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 12);
+          p->writeregs_reply.error = (kdp_error_t)read32u((s + 8),
+                                                          c->bigendian);
           break;
         case KDP_LOAD:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 12);
-          p->load_reply.error = read32u (s + 8, c->bigendian);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 12);
+          p->load_reply.error = (kdp_error_t)read32u((s + 8),
+                                                     c->bigendian);
           break;
         case KDP_IMAGEPATH:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_MINLEN (plen, 8);
-          memcpy (p->imagepath_reply.path, s + 8, plen - 8);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_MINLEN(plen, 8);
+          memcpy(p->imagepath_reply.path, s + 8, plen - 8);
           break;
         case KDP_SUSPEND:
         case KDP_RESUMECPUS:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 8);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 8);
           break;
         case KDP_EXCEPTION:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_MINLEN (plen, 8);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_MINLEN(plen, 8);
           break;
         case KDP_TERMINATION:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 8);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 8);
           break;
         default:
-          c->logger (KDP_LOG_ERROR,
-                     "kdp_unmarshal: unknown packet type 0x%x\n",
-                     p->hdr.request);
+          c->logger(KDP_LOG_ERROR,
+                    "kdp_unmarshal: unknown packet type 0x%x\n",
+                    p->hdr.request);
           return RR_IP_ERROR;
         }
-
     }
   else
     {
-
       switch (p->hdr.request)
         {
         case KDP_CONNECT:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_MINLEN (plen, 12 + 1);
-          /* port numbers are always sent little-endian */
-          p->connect_req.req_reply_port = read16u (s + 8, 0);
-          p->connect_req.exc_note_port = read16u (s + 10, 0);
-          memcpy (p->connect_req.greeting, s + 12, plen - 12);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_MINLEN(plen, 12 + 1);
+          /* port numbers are always sent little-endian: */
+          p->connect_req.req_reply_port = read16u(s + 8, 0);
+          p->connect_req.exc_note_port = read16u(s + 10, 0);
+          memcpy(p->connect_req.greeting, s + 12, plen - 12);
           break;
         case KDP_REATTACH:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 10);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 10);
           break;
         case KDP_DISCONNECT:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 8);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 8);
           break;
         case KDP_HOSTREBOOT:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 8);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 8);
           break;
         case KDP_HOSTINFO:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 8);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 8);
           break;
         case KDP_VERSION:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 8);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 8);
           break;
         case KDP_KERNELVERSION:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_MINLEN (plen, 8);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_MINLEN(plen, 8);
           break;
         case KDP_REGIONS:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 8);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 8);
           break;
         case KDP_MAXBYTES:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 8);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 8);
           break;
         case KDP_READMEM:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_MINLEN (plen, 16);
-          p->readmem_req.address = read32u (s + 8, c->bigendian);
-          p->readmem_req.nbytes = read32u (s + 12, c->bigendian);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_MINLEN(plen, 16);
+          p->readmem_req.address = read32u(s + 8, c->bigendian);
+          p->readmem_req.nbytes = read32u(s + 12, c->bigendian);
           break;
         case KDP_READMEM64:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_MINLEN (plen, 20);
-          p->readmem64_req.address = read64u (s + 8, c->bigendian);
-          p->readmem64_req.nbytes = read32u (s + 16, c->bigendian);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_MINLEN(plen, 20);
+          p->readmem64_req.address = read64u(s + 8, c->bigendian);
+          p->readmem64_req.nbytes = read32u(s + 16, c->bigendian);
           break;
         case KDP_WRITEMEM:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_MINLEN (plen, 16);
-          p->writemem_req.address = read32u (s + 8, c->bigendian);
-          p->writemem_req.nbytes = read32u (s + 12, c->bigendian);
-          CHECK_PLEN_LEN (plen, p->writemem_req.nbytes + 16);
-          memcpy (p->writemem_req.data, s + 16, plen - 16);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_MINLEN(plen, 16);
+          p->writemem_req.address = read32u(s + 8, c->bigendian);
+          p->writemem_req.nbytes = read32u(s + 12, c->bigendian);
+          CHECK_PLEN_LEN(plen, p->writemem_req.nbytes + 16);
+          memcpy(p->writemem_req.data, s + 16, plen - 16);
           break;
         case KDP_WRITEMEM64:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_MINLEN (plen, 20);
-          p->writemem64_req.address = read64u (s + 8, c->bigendian);
-          p->writemem64_req.nbytes = read32u (s + 16, c->bigendian);
-          CHECK_PLEN_LEN (plen, p->writemem64_req.nbytes + 20);
-          memcpy (p->writemem64_req.data, s + 20, plen - 20);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_MINLEN(plen, 20);
+          p->writemem64_req.address = read64u(s + 8, c->bigendian);
+          p->writemem64_req.nbytes = read32u(s + 16, c->bigendian);
+          CHECK_PLEN_LEN(plen, p->writemem64_req.nbytes + 20);
+          memcpy(p->writemem64_req.data, s + 20, plen - 20);
           break;
         case KDP_READREGS:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_MINLEN (plen, 16);
-          p->readregs_req.cpu = read32u (s + 8, c->bigendian);
-          p->readregs_req.flavor = read32u (s + 12, c->bigendian);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_MINLEN(plen, 16);
+          p->readregs_req.cpu = read32u(s + 8, c->bigendian);
+          p->readregs_req.flavor = read32u(s + 12, c->bigendian);
           break;
         case KDP_WRITEREGS:
           {
-            const unsigned int KDP_REGISTER_SIZE = 4;
+            const unsigned int KDP_REGISTER_SIZE = 4U;
             unsigned int i;
-            unsigned int reglen = plen - 16;
-            CHECK_PLEN_RLEN (plen, rlen);
-            CHECK_PLEN_MINLEN (plen, 16);
-            p->writeregs_req.cpu = read32u (s + 8, c->bigendian);
-            p->writeregs_req.flavor = read32u (s + 12, c->bigendian);
+            unsigned int reglen = (plen - 16U);
+            CHECK_PLEN_RLEN(plen, rlen);
+            CHECK_PLEN_MINLEN(plen, 16);
+            p->writeregs_req.cpu = read32u(s + 8, c->bigendian);
+            p->writeregs_req.flavor = read32u(s + 12, c->bigendian);
             if ((reglen % KDP_REGISTER_SIZE) != 0)
               {
-                c->logger (KDP_LOG_ERROR,
-                           "length of register data (%u) is not an integer multiple of KDP_REGISTER_SIZE (%u)\n",
-                           reglen, KDP_REGISTER_SIZE);
+                c->logger(KDP_LOG_ERROR,
+                          "length of register data (%u) is not an integer multiple of KDP_REGISTER_SIZE (%u)\n",
+                          reglen, KDP_REGISTER_SIZE);
                 return RR_IP_ERROR;
               }
             p->writeregs_req.nbytes = reglen;
             for (i = 0; i < (reglen / KDP_REGISTER_SIZE); i++)
               {
-                ((uint32_t *) p->writeregs_req.data)[i] =
-                  read32u (s + 16 + (i * KDP_REGISTER_SIZE), c->bigendian);
+                ((uint32_t *)p->writeregs_req.data)[i] =
+                  read32u(s + 16 + (i * KDP_REGISTER_SIZE), c->bigendian);
               }
             break;
           }
         case KDP_LOAD:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_MINLEN (plen, 8 + 1);
-          memcpy (p->load_req.file_args, c + 8, plen - 8);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_MINLEN(plen, 8 + 1);
+          memcpy(p->load_req.file_args, c + 8, plen - 8);
           break;
         case KDP_IMAGEPATH:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_MINLEN (plen, 8);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_MINLEN(plen, 8);
           break;
         case KDP_SUSPEND:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 8);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 8);
           break;
         case KDP_RESUMECPUS:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 12);
-          p->resumecpus_req.cpu_mask = read32u (s + 8, c->bigendian);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 12);
+          p->resumecpus_req.cpu_mask = read32u(s + 8, c->bigendian);
           break;
         case KDP_BREAKPOINT_SET:
         case KDP_BREAKPOINT_REMOVE:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 12);
-          p->breakpoint_req.address = read32u (s + 8, c->bigendian);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 12);
+          p->breakpoint_req.address = read32u(s + 8, c->bigendian);
           break;
         case KDP_BREAKPOINT64_SET:
         case KDP_BREAKPOINT64_REMOVE:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 16);
-          p->breakpoint64_req.address = read64u (s + 8, c->bigendian);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 16);
+          p->breakpoint64_req.address = read64u(s + 8, c->bigendian);
           break;
         case KDP_EXCEPTION:
           {
-            const unsigned int EXCEPTION_SIZE = 16;
+            const unsigned int EXCEPTION_SIZE = 16U;
             unsigned int i;
-            CHECK_PLEN_RLEN (plen, rlen);
-            CHECK_PLEN_MINLEN (plen, 12);
-            p->exception.n_exc_info = read32u (s + 8, c->bigendian);
+            CHECK_PLEN_RLEN(plen, rlen);
+            CHECK_PLEN_MINLEN(plen, 12);
+            p->exception.n_exc_info = read32u(s + 8, c->bigendian);
             /* bug in KDP on NextStep <= 4.2, Rhapsody Developer */
             if ((plen == 44) && (p->exception.n_exc_info == 1))
               {
                 plen = 28;
               }
-            CHECK_PLEN_LEN (plen,
-                            ((p->exception.n_exc_info * EXCEPTION_SIZE) +
-                             12));
+            CHECK_PLEN_LEN(plen,
+                           ((p->exception.n_exc_info * EXCEPTION_SIZE)
+                            + 12));
             for (i = 0; i < p->exception.n_exc_info; i++)
               {
-                unsigned int offset = 12 + (i * EXCEPTION_SIZE);
+                unsigned int offset = (12U + (i * EXCEPTION_SIZE));
                 p->exception.exc_info[i].cpu =
-                  read32u (s + offset, c->bigendian);
+                  read32u(s + offset, c->bigendian);
                 p->exception.exc_info[i].exception =
-                  read32u (s + offset + 4, c->bigendian);
+                  read32u(s + offset + 4, c->bigendian);
                 p->exception.exc_info[i].code =
-                  read32u (s + offset + 8, c->bigendian);
+                  read32u(s + offset + 8, c->bigendian);
                 p->exception.exc_info[i].subcode =
-                  read32u (s + offset + 12, c->bigendian);
+                  read32u(s + offset + 12, c->bigendian);
               }
             break;
           }
         case KDP_TERMINATION:
-          CHECK_PLEN_RLEN (plen, rlen);
-          CHECK_PLEN_LEN (plen, 16);
-          p->termination.term_code = read32u (s + 8, c->bigendian);
-          p->termination.exit_code = read32u (s + 12, c->bigendian);
+          CHECK_PLEN_RLEN(plen, rlen);
+          CHECK_PLEN_LEN(plen, 16);
+          p->termination.term_code = ((kdp_termination_code_t)
+                                      read32u(s + 8, c->bigendian));
+          p->termination.exit_code = read32u(s + 12, c->bigendian);
           break;
         default:
-          c->logger (KDP_LOG_ERROR,
-                     "kdp_unmarshal: unknown packet type 0x%x\n",
-                     p->hdr.request);
+          c->logger(KDP_LOG_ERROR,
+                    "kdp_unmarshal: unknown packet type 0x%x\n",
+                    p->hdr.request);
           return RR_IP_ERROR;
         }
     }

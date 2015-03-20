@@ -1570,37 +1570,39 @@ bfd_mips_elf_swap_options_out (bfd *abfd, const Elf_Internal_Options *in,
    entries by increasing r_symndx value.  */
 
 static int
-sort_dynamic_relocs (const void *arg1, const void *arg2)
+sort_dynamic_relocs(const void *arg1, const void *arg2)
 {
   Elf_Internal_Rela int_reloc1;
   Elf_Internal_Rela int_reloc2;
 
-  bfd_elf32_swap_reloc_in (reldyn_sorting_bfd, arg1, &int_reloc1);
-  bfd_elf32_swap_reloc_in (reldyn_sorting_bfd, arg2, &int_reloc2);
+  bfd_elf32_swap_reloc_in(reldyn_sorting_bfd, (const bfd_byte *)arg1,
+                          &int_reloc1);
+  bfd_elf32_swap_reloc_in(reldyn_sorting_bfd, (const bfd_byte *)arg2,
+                          &int_reloc2);
 
-  return ELF32_R_SYM (int_reloc1.r_info) - ELF32_R_SYM (int_reloc2.r_info);
+  return (ELF32_R_SYM(int_reloc1.r_info) - ELF32_R_SYM(int_reloc2.r_info));
 }
 
 /* Like sort_dynamic_relocs, but used for elf64 relocations.  */
 
 static int
-sort_dynamic_relocs_64 (const void *arg1 ATTRIBUTE_UNUSED,
-			const void *arg2 ATTRIBUTE_UNUSED)
+sort_dynamic_relocs_64(const void *arg1 ATTRIBUTE_UNUSED,
+                       const void *arg2 ATTRIBUTE_UNUSED)
 {
 #ifdef BFD64
   Elf_Internal_Rela int_reloc1[3];
   Elf_Internal_Rela int_reloc2[3];
 
-  (*get_elf_backend_data (reldyn_sorting_bfd)->s->swap_reloc_in)
-    (reldyn_sorting_bfd, arg1, int_reloc1);
-  (*get_elf_backend_data (reldyn_sorting_bfd)->s->swap_reloc_in)
-    (reldyn_sorting_bfd, arg2, int_reloc2);
+  (*get_elf_backend_data(reldyn_sorting_bfd)->s->swap_reloc_in)
+    (reldyn_sorting_bfd, (const bfd_byte *)arg1, int_reloc1);
+  (*get_elf_backend_data(reldyn_sorting_bfd)->s->swap_reloc_in)
+    (reldyn_sorting_bfd, (const bfd_byte *)arg2, int_reloc2);
 
-  return (ELF64_R_SYM (int_reloc1[0].r_info)
-	  - ELF64_R_SYM (int_reloc2[0].r_info));
+  return (ELF64_R_SYM(int_reloc1[0].r_info)
+	  - ELF64_R_SYM(int_reloc2[0].r_info));
 #else
-  abort ();
-#endif
+  abort();
+#endif /* BFD64 */
 }
 
 
@@ -5442,19 +5444,19 @@ _bfd_mips_elf_add_symbol_hook (bfd *abfd, struct bfd_link_info *info,
       break;
 
     case SHN_MIPS_TEXT:
-      /* This section is used in a shared object.  */
-      if (elf_tdata (abfd)->elf_text_section == NULL)
+      /* This section is used in a shared object: */
+      if (elf_tdata(abfd)->elf_text_section == NULL)
 	{
 	  asymbol *elf_text_symbol;
 	  asection *elf_text_section;
-	  bfd_size_type amt = sizeof (asection);
+	  bfd_size_type amt = sizeof(asection);
 
-	  elf_text_section = bfd_zalloc (abfd, amt);
+	  elf_text_section = (asection *)bfd_zalloc(abfd, amt);
 	  if (elf_text_section == NULL)
 	    return FALSE;
 
-	  amt = sizeof (asymbol);
-	  elf_text_symbol = bfd_zalloc (abfd, amt);
+	  amt = sizeof(asymbol);
+	  elf_text_symbol = (asymbol *)bfd_zalloc(abfd, amt);
 	  if (elf_text_symbol == NULL)
 	    return FALSE;
 
@@ -5483,29 +5485,28 @@ _bfd_mips_elf_add_symbol_hook (bfd *abfd, struct bfd_link_info *info,
     case SHN_MIPS_ACOMMON:
       /* Fall through. XXX Can we treat this as allocated data?  */
     case SHN_MIPS_DATA:
-      /* This section is used in a shared object.  */
+      /* This section is used in a shared object: */
       if (elf_tdata (abfd)->elf_data_section == NULL)
 	{
 	  asymbol *elf_data_symbol;
 	  asection *elf_data_section;
-	  bfd_size_type amt = sizeof (asection);
+	  bfd_size_type amt = sizeof(asection);
 
-	  elf_data_section = bfd_zalloc (abfd, amt);
+	  elf_data_section = (asection *)bfd_zalloc(abfd, amt);
 	  if (elf_data_section == NULL)
 	    return FALSE;
 
-	  amt = sizeof (asymbol);
-	  elf_data_symbol = bfd_zalloc (abfd, amt);
+	  amt = sizeof(asymbol);
+	  elf_data_symbol = (asymbol *)bfd_zalloc(abfd, amt);
 	  if (elf_data_symbol == NULL)
 	    return FALSE;
 
-	  /* Initialize the section.  */
-
-	  elf_tdata (abfd)->elf_data_section = elf_data_section;
-	  elf_tdata (abfd)->elf_data_symbol = elf_data_symbol;
+	  /* Initialize the section: */
+	  elf_tdata(abfd)->elf_data_section = elf_data_section;
+	  elf_tdata(abfd)->elf_data_symbol = elf_data_symbol;
 
 	  elf_data_section->symbol = elf_data_symbol;
-	  elf_data_section->symbol_ptr_ptr = &elf_tdata (abfd)->elf_data_symbol;
+	  elf_data_section->symbol_ptr_ptr = &elf_tdata(abfd)->elf_data_symbol;
 
 	  elf_data_section->name = ".data";
 	  elf_data_section->flags = SEC_NO_FLAGS;
@@ -5837,18 +5838,18 @@ _bfd_mips_elf_check_relocs (bfd *abfd, struct bfd_link_info *info,
 	      asection **n;
 	      bfd_size_type amt;
 
-	      if (elf_bad_symtab (abfd))
-		symcount = NUM_SHDR_ENTRIES (symtab_hdr);
+	      if (elf_bad_symtab(abfd))
+		symcount = NUM_SHDR_ENTRIES(symtab_hdr);
 	      else
 		symcount = symtab_hdr->sh_info;
-	      amt = symcount * sizeof (asection *);
-	      n = bfd_zalloc (abfd, amt);
+	      amt = (symcount * sizeof(asection *));
+	      n = (asection **)bfd_zalloc(abfd, amt);
 	      if (n == NULL)
 		return FALSE;
-	      elf_tdata (abfd)->local_stubs = n;
+	      elf_tdata(abfd)->local_stubs = n;
 	    }
 
-	  elf_tdata (abfd)->local_stubs[r_symndx] = sec;
+	  elf_tdata(abfd)->local_stubs[r_symndx] = sec;
 
 	  /* We don't need to set mips16_stubs_seen in this case.
              That flag is used to see whether we need to look through
@@ -8752,26 +8753,24 @@ _bfd_elf_mips_get_relocated_section_contents
   asection *input_section = link_order->u.indirect.section;
   bfd_size_type sz;
 
-  long reloc_size = bfd_get_reloc_upper_bound (input_bfd, input_section);
+  long reloc_size = bfd_get_reloc_upper_bound(input_bfd, input_section);
   arelent **reloc_vector = NULL;
   long reloc_count;
 
   if (reloc_size < 0)
     goto error_return;
 
-  reloc_vector = bfd_malloc (reloc_size);
-  if (reloc_vector == NULL && reloc_size != 0)
+  reloc_vector = (arelent **)bfd_malloc(reloc_size);
+  if ((reloc_vector == NULL) && (reloc_size != 0))
     goto error_return;
 
   /* read in the section */
   sz = input_section->rawsize ? input_section->rawsize : input_section->size;
-  if (!bfd_get_section_contents (input_bfd, input_section, data, 0, sz))
+  if (!bfd_get_section_contents(input_bfd, input_section, data, 0, sz))
     goto error_return;
 
-  reloc_count = bfd_canonicalize_reloc (input_bfd,
-					input_section,
-					reloc_vector,
-					symbols);
+  reloc_count = bfd_canonicalize_reloc(input_bfd, input_section,
+                                       reloc_vector, symbols);
   if (reloc_count < 0)
     goto error_return;
 

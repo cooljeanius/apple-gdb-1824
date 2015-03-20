@@ -44,11 +44,11 @@ static void generic_ext(struct agent_expr *x, enum agent_op op, int n);
 struct agent_expr *
 new_agent_expr(CORE_ADDR scope)
 {
-  struct agent_expr *x = xmalloc(sizeof(*x));
+  struct agent_expr *x = (struct agent_expr *)xmalloc(sizeof(*x));
   x->len = 0;
   x->size = 1;			/* Change this to a larger value once
 				 * reallocation code is tested.  */
-  x->buf = xmalloc(x->size);
+  x->buf = (unsigned char *)xmalloc(x->size);
   x->scope = scope;
 
   return x;
@@ -65,7 +65,7 @@ free_agent_expr(struct agent_expr *x)
 static void
 do_free_agent_expr_cleanup(void *x)
 {
-  free_agent_expr(x);
+  free_agent_expr((struct agent_expr *)x);
 }
 
 struct cleanup *
@@ -85,7 +85,7 @@ grow_expr(struct agent_expr *x, int n)
       x->size *= 2;
       if (x->size < (x->len + n))
 	x->size = (x->len + n + 10);
-      x->buf = xrealloc(x->buf, x->size);
+      x->buf = (unsigned char *)xrealloc(x->buf, x->size);
     }
 }
 
@@ -332,45 +332,45 @@ struct aop_map aop_map[] =
 
 /* Disassemble the expression EXPR, writing to F.  */
 void
-ax_print (struct ui_file *f, struct agent_expr *x)
+ax_print(struct ui_file *f, struct agent_expr *x)
 {
   int i;
   int is_float = 0;
 
   /* Check the size of the name array against the number of entries in
-     the enum, to catch additions that people didn't sync.  */
-  if ((sizeof (aop_map) / sizeof (aop_map[0]))
+   * the enum, to catch additions that people did NOT sync: */
+  if ((sizeof(aop_map) / sizeof(aop_map[0]))
       != aop_last)
-    error (_("GDB bug: ax-general.c (ax_print): opcode map out of sync"));
+    error(_("GDB bug: ax-general.c (ax_print): opcode map out of sync"));
 
   for (i = 0; i < x->len;)
     {
-      enum agent_op op = x->buf[i];
+      enum agent_op op = (enum agent_op)x->buf[i];
 
-      if (op >= (sizeof (aop_map) / sizeof (aop_map[0]))
+      if ((op >= (sizeof(aop_map) / sizeof(aop_map[0])))
 	  || !aop_map[op].name)
 	{
-	  fprintf_filtered (f, _("%3d  <bad opcode %02x>\n"), i, op);
+	  fprintf_filtered(f, _("%3d  <bad opcode %02x>\n"), i, op);
 	  i++;
 	  continue;
 	}
-      if (i + 1 + aop_map[op].op_size > x->len)
+      if ((i + 1 + aop_map[op].op_size) > x->len)
 	{
-	  fprintf_filtered (f, _("%3d  <incomplete opcode %s>\n"),
-			    i, aop_map[op].name);
+	  fprintf_filtered(f, _("%3d  <incomplete opcode %s>\n"),
+			   i, aop_map[op].name);
 	  break;
 	}
 
-      fprintf_filtered (f, "%3d  %s", i, aop_map[op].name);
+      fprintf_filtered(f, "%3d  %s", i, aop_map[op].name);
       if (aop_map[op].op_size > 0)
 	{
-	  fputs_filtered (" ", f);
+	  fputs_filtered(" ", f);
 
-	  print_longest (f, 'd', 0,
-			 read_const (x, i + 1, aop_map[op].op_size));
+	  print_longest(f, 'd', 0,
+                        read_const(x, i + 1, aop_map[op].op_size));
 	}
-      fprintf_filtered (f, "\n");
-      i += 1 + aop_map[op].op_size;
+      fprintf_filtered(f, "\n");
+      i += (1 + aop_map[op].op_size);
 
       is_float = (op == aop_float);
     }
@@ -380,45 +380,45 @@ ax_print (struct ui_file *f, struct agent_expr *x)
 /* Given an agent expression AX, fill in an agent_reqs structure REQS
    describing it.  */
 void
-ax_reqs (struct agent_expr *ax, struct agent_reqs *reqs)
+ax_reqs(struct agent_expr *ax, struct agent_reqs *reqs)
 {
   int i;
   int height;
 
-  /* Bit vector for registers used.  */
+  /* Bit vector for registers used: */
   int reg_mask_len = 1;
-  unsigned char *reg_mask = xmalloc (reg_mask_len * sizeof (reg_mask[0]));
+  unsigned char *reg_mask = (unsigned char *)xmalloc(reg_mask_len * sizeof(reg_mask[0]));
 
   /* Jump target table.  targets[i] is non-zero iff there is a jump to
      offset i.  */
-  char *targets = (char *) alloca (ax->len * sizeof (targets[0]));
+  char *targets = (char *)alloca(ax->len * sizeof(targets[0]));
 
   /* Instruction boundary table.  boundary[i] is non-zero iff an
      instruction starts at offset i.  */
-  char *boundary = (char *) alloca (ax->len * sizeof (boundary[0]));
+  char *boundary = (char *)alloca(ax->len * sizeof(boundary[0]));
 
   /* Stack height record.  iff either targets[i] or boundary[i] is
      non-zero, heights[i] is the height the stack should have before
      executing the bytecode at that point.  */
-  int *heights = (int *) alloca (ax->len * sizeof (heights[0]));
+  int *heights = (int *)alloca(ax->len * sizeof(heights[0]));
 
-  /* Pointer to a description of the present op.  */
+  /* Pointer to a description of the present op: */
   struct aop_map *op;
 
-  memset (reg_mask, 0, reg_mask_len * sizeof (reg_mask[0]));
-  memset (targets, 0, ax->len * sizeof (targets[0]));
-  memset (boundary, 0, ax->len * sizeof (boundary[0]));
+  memset(reg_mask, 0, reg_mask_len * sizeof(reg_mask[0]));
+  memset(targets, 0, ax->len * sizeof(targets[0]));
+  memset(boundary, 0, ax->len * sizeof(boundary[0]));
 
   reqs->max_height = reqs->min_height = height = 0;
   reqs->flaw = agent_flaw_none;
   reqs->max_data_size = 0;
 
-  for (i = 0; i < ax->len; i += 1 + op->op_size)
+  for (i = 0; i < ax->len; i += (1 + op->op_size))
     {
-      if (ax->buf[i] > (sizeof (aop_map) / sizeof (aop_map[0])))
+      if (ax->buf[i] > (sizeof(aop_map) / sizeof(aop_map[0])))
 	{
 	  reqs->flaw = agent_flaw_bad_instruction;
-	  xfree (reg_mask);
+	  xfree(reg_mask);
 	  return;
 	}
 
@@ -431,10 +431,10 @@ ax_reqs (struct agent_expr *ax, struct agent_reqs *reqs)
 	  return;
 	}
 
-      if (i + 1 + op->op_size > ax->len)
+      if ((i + 1 + op->op_size) > ax->len)
 	{
 	  reqs->flaw = agent_flaw_incomplete_instruction;
-	  xfree (reg_mask);
+	  xfree(reg_mask);
 	  return;
 	}
 
@@ -443,7 +443,7 @@ ax_reqs (struct agent_expr *ax, struct agent_reqs *reqs)
       if (targets[i] && (heights[i] != height))
 	{
 	  reqs->flaw = agent_flaw_height_mismatch;
-	  xfree (reg_mask);
+	  xfree(reg_mask);
 	  return;
 	}
 
@@ -463,14 +463,13 @@ ax_reqs (struct agent_expr *ax, struct agent_reqs *reqs)
       /* For jump instructions, check that the target is a valid
          offset.  If it is, record the fact that that location is a
          jump target, and record the height we expect there.  */
-      if (aop_goto == op - aop_map
-	  || aop_if_goto == op - aop_map)
+      if ((aop_goto == (op - aop_map)) || (aop_if_goto == (op - aop_map)))
 	{
-	  int target = read_const (ax, i + 1, 2);
-	  if (target < 0 || target >= ax->len)
+	  int target = read_const(ax, i + 1, 2);
+	  if ((target < 0) || (target >= ax->len))
 	    {
 	      reqs->flaw = agent_flaw_bad_jump;
-	      xfree (reg_mask);
+	      xfree(reg_mask);
 	      return;
 	    }
 	  /* Have we already found other jumps to the same location?  */
@@ -479,7 +478,7 @@ ax_reqs (struct agent_expr *ax, struct agent_reqs *reqs)
 	      if (heights[i] != height)
 		{
 		  reqs->flaw = agent_flaw_height_mismatch;
-		  xfree (reg_mask);
+		  xfree(reg_mask);
 		  return;
 		}
 	    }
@@ -492,48 +491,47 @@ ax_reqs (struct agent_expr *ax, struct agent_reqs *reqs)
 
       /* For unconditional jumps with a successor, check that the
          successor is a target, and pick up its stack height.  */
-      if (aop_goto == op - aop_map
-	  && i + 3 < ax->len)
+      if ((aop_goto == (op - aop_map)) && ((i + 3) < ax->len))
 	{
 	  if (!targets[i + 3])
 	    {
 	      reqs->flaw = agent_flaw_hole;
-	      xfree (reg_mask);
+	      xfree(reg_mask);
 	      return;
 	    }
 
 	  height = heights[i + 3];
 	}
 
-      /* For reg instructions, record the register in the bit mask.  */
-      if (aop_reg == op - aop_map)
+      /* For reg instructions, record the register in the bit mask: */
+      if (aop_reg == (op - aop_map))
 	{
-	  int reg = read_const (ax, i + 1, 2);
-	  int byte = reg / 8;
+	  int reg = read_const(ax, i + 1, 2);
+	  int byte = (reg / 8);
 
-	  /* Grow the bit mask if necessary.  */
+	  /* Grow the bit mask if necessary: */
 	  if (byte >= reg_mask_len)
 	    {
-	      /* It's not appropriate to double here.  This isn't a
+	      /* It is not appropriate to double here.  This is NOT a
 	         string buffer.  */
-	      int new_len = byte + 1;
-	      reg_mask = xrealloc (reg_mask,
-				   new_len * sizeof (reg_mask[0]));
-	      memset (reg_mask + reg_mask_len, 0,
-		      (new_len - reg_mask_len) * sizeof (reg_mask[0]));
+	      int new_len = (byte + 1);
+	      reg_mask = (unsigned char *)xrealloc(reg_mask,
+                                                   (new_len * sizeof(reg_mask[0])));
+	      memset(reg_mask + reg_mask_len, 0,
+		     (new_len - reg_mask_len) * sizeof(reg_mask[0]));
 	      reg_mask_len = new_len;
 	    }
 
-	  reg_mask[byte] |= 1 << (reg % 8);
+	  reg_mask[byte] |= (1 << (reg % 8));
 	}
     }
 
-  /* Check that all the targets are on boundaries.  */
+  /* Check that all the targets are on boundaries: */
   for (i = 0; i < ax->len; i++)
     if (targets[i] && !boundary[i])
       {
 	reqs->flaw = agent_flaw_bad_jump;
-	xfree (reg_mask);
+	xfree(reg_mask);
 	return;
       }
 
@@ -541,3 +539,5 @@ ax_reqs (struct agent_expr *ax, struct agent_reqs *reqs)
   reqs->reg_mask_len = reg_mask_len;
   reqs->reg_mask = reg_mask;
 }
+
+/* EOF */

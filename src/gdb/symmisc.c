@@ -226,11 +226,11 @@ print_objfile_statistics (void)
           blockvectors++;
       }
     printf_filtered (_("  Number of symbol tables: %d\n"), i);
-    printf_filtered (_("  Number of symbol tables with line tables: %d\n"), 
+    printf_filtered (_("  Number of symbol tables with line tables: %d\n"),
                      linetables);
-    printf_filtered (_("  Number of symbol tables with blockvectors: %d\n"), 
+    printf_filtered (_("  Number of symbol tables with blockvectors: %d\n"),
                      blockvectors);
-    
+
     if (OBJSTAT (objfile, sz_strtab) > 0)
       printf_filtered (_("  Space used by a.out string tables: %d\n"),
 		       OBJSTAT (objfile, sz_strtab));
@@ -677,25 +677,25 @@ print_symbol (void *args)
 	  fprintf_filtered (outfile, "; ");
 	}
       else
-	fprintf_filtered (outfile, "%s ", SYMBOL_PRINT_NAME (symbol));
+	fprintf_filtered(outfile, "%s ", SYMBOL_PRINT_NAME(symbol));
 
-      switch (SYMBOL_CLASS (symbol))
+      switch (SYMBOL_CLASS(symbol))
 	{
 	case LOC_CONST:
-	  fprintf_filtered (outfile, "const %d (0x%s)",
-			    SYMBOL_VALUE (symbol),
-			    paddr_nz (SYMBOL_VALUE (symbol)));
+	  fprintf_filtered(outfile, "const %d (0x%s)",
+			   SYMBOL_VALUE(symbol),
+			   paddr_nz(SYMBOL_VALUE(symbol)));
 	  break;
 
 	case LOC_CONST_BYTES:
 	  {
-	    unsigned i;
-	    struct type *type = check_typedef (SYMBOL_TYPE (symbol));
-	    fprintf_filtered (outfile, "const %u hex bytes:",
-			      TYPE_LENGTH (type));
-	    for (i = 0; i < TYPE_LENGTH (type); i++)
-	      fprintf_filtered (outfile, " %02x",
-				(unsigned) SYMBOL_VALUE_BYTES (symbol)[i]);
+	    unsigned int i;
+	    struct type *the_type = check_typedef(SYMBOL_TYPE(symbol));
+	    fprintf_filtered(outfile, "const %u hex bytes:",
+			     TYPE_LENGTH(the_type));
+	    for (i = 0U; i < (size_t)TYPE_LENGTH(the_type); i++)
+	      fprintf_filtered(outfile, " %02x",
+                               (unsigned)SYMBOL_VALUE_BYTES(symbol)[i]);
 	  }
 	  break;
 
@@ -730,7 +730,7 @@ print_symbol (void *args)
 	  break;
 
 	case LOC_REF_ARG:
-	  fprintf_filtered (outfile, "reference arg at 0x%s", 
+	  fprintf_filtered (outfile, "reference arg at 0x%s",
                             paddr_nz (SYMBOL_VALUE (symbol)));
 	  break;
 
@@ -791,7 +791,7 @@ print_symbol (void *args)
 	      else
 		{
 		  int j;
-		  for (j =0; 
+		  for (j =0;
 		       j < BLOCK_RANGES (SYMBOL_BLOCK_VALUE (symbol))->nelts; j++)
 		    {
 		      if (j > 0)
@@ -1064,7 +1064,7 @@ maintenance_info_symtabs (char *regexp, int from_tty)
   ALL_OBJFILES (objfile)
     {
       struct symtab *symtab;
-      
+
       /* We don't want to print anything for this objfile until we
          actually find a symtab whose name matches.  */
       int printed_objfile_start = 0;
@@ -1258,8 +1258,8 @@ maintenance_check_symtabs (char *ignore, int from_tty)
     if (ps->texthigh == 0)
       continue;
     /* APPLE LOCAL begin address ranges  */
-    if (!block_contains_pc (b, ps->textlow) 
-	|| !block_contains_pc (b, ps->texthigh)) 
+    if (!block_contains_pc (b, ps->textlow)
+	|| !block_contains_pc (b, ps->texthigh))
       {
  	printf_filtered ("Psymtab ");
 	puts_filtered (ps->filename);
@@ -1341,7 +1341,7 @@ extend_psymbol_list (struct psymbol_allocation_list *listp,
 /* APPLE LOCAL: This is the machinery to deal with the way Darwin does
    versioned symbols in libSystem.  I copied the hash table from Klee's
    hash for selectors.  Might be nice to formalize this at some
-   point.  
+   point.
    FIXME: We could probably use this for ELF versioned symbols as well,
    but I didn't make the parts that find equivalent symbols generic.  */
 
@@ -1354,15 +1354,15 @@ struct equivalence_entry
   struct equivalence_entry *next;
 };
 
-static void 
+static void
 equivalence_table_initialize (struct objfile *ofile)
 {
-  ofile->equivalence_table 
-    = (void *) xcalloc (EQUIVALENCE_HASH_SIZE, 
+  ofile->equivalence_table
+    = (void *) xcalloc (EQUIVALENCE_HASH_SIZE,
 			sizeof (struct equivalence_table *));
 }
 
-void 
+void
 equivalence_table_delete (struct objfile *ofile)
 {
   struct equivalence_entry *entry;
@@ -1390,41 +1390,41 @@ equivalence_table_delete (struct objfile *ofile)
    whose name is the substring of NAME that starts at NAME and ends
    with NAME_END in the objfile OBJFILE.  */
 
-void 
-equivalence_table_add (struct objfile *ofile, const char *name, 
+void
+equivalence_table_add (struct objfile *ofile, const char *name,
 		       const char *name_end, struct minimal_symbol *msymbol)
 {
   struct equivalence_entry *new_entry;
   struct equivalence_entry **table;
   int hash;
   int len = name_end - name;
-  
+
   gdb_assert (ofile->equivalence_table != NULL);
   table = (struct equivalence_entry **) ofile->equivalence_table;
 
-  new_entry = (struct equivalence_entry *) 
+  new_entry = (struct equivalence_entry *)
     xmalloc (sizeof (struct equivalence_entry));
   new_entry->name = (char *) xmalloc (len + 1);
   memcpy (new_entry->name, name, len);
   new_entry->name[len] = '\0';
-  
+
   new_entry->msymbol = msymbol;
-  
+
   hash = msymbol_hash (new_entry->name) % EQUIVALENCE_HASH_SIZE;
   new_entry->next = table[hash];
   table[hash] = new_entry;
 }
 
   /* APPLE LOCAL: We build a table of correspondence for symbols that are the
-     Posix compatiblity variants of symbols that exist in the library.  These 
-     are supposed to be always of the form <original symbol>$BUNCH_OF_JUNK.  
+     Posix compatiblity variants of symbols that exist in the library.  These
+     are supposed to be always of the form <original symbol>$BUNCH_OF_JUNK.
      BUT, versions of the symbol with an _ in front are actually alternate
-     entry points, so we don't look at those.  
+     entry points, so we don't look at those.
      Also, don't add the stub table entries...  */
   /* FIXME: There should really be some host specific method that we call
      out to to test for equivalence.  Should clean this up if we ever want
      to submit this stuff back.  */
-void 
+void
 equivalence_table_build (struct objfile *ofile)
 {
   struct equivalence_entry **table;
@@ -1439,7 +1439,7 @@ equivalence_table_build (struct objfile *ofile)
 
   if (! ofile->check_for_equivalence)
     return;
-  
+
   equivalence_table_initialize (ofile);
 
   table = (struct equivalence_entry **) ofile->equivalence_table;
@@ -1447,7 +1447,7 @@ equivalence_table_build (struct objfile *ofile)
   ALL_OBJFILE_MSYMBOLS (ofile, msymbol)
     {
       name = SYMBOL_LINKAGE_NAME (msymbol);
-      
+
       if (name[0] == '_')
 	continue;
 
@@ -1456,8 +1456,8 @@ equivalence_table_build (struct objfile *ofile)
 	continue;
 
       /* Only treat symbols as equivalent if they are of the form:
-	     name$[0-9A-Z].  
-	 dyld uses things like $stub and so forth, and we synthesize 
+	     name$[0-9A-Z].
+	 dyld uses things like $stub and so forth, and we synthesize
 	 symbols of the form:
 	     name$dyld_stub
          and we don't want to collide with these.  */
@@ -1483,11 +1483,11 @@ find_equivalent_msymbol (struct minimal_symbol *msymbol)
   struct minimal_symbol **msymbol_list;
   int nsyms = 0, max_nsyms = 5;
   char *name = SYMBOL_LINKAGE_NAME (msymbol);
-  
+
   if (name == NULL)
     return NULL;
 
-  osect = find_pc_sect_section (SYMBOL_VALUE_ADDRESS (msymbol), 
+  osect = find_pc_sect_section (SYMBOL_VALUE_ADDRESS (msymbol),
 				SYMBOL_BFD_SECTION (msymbol));
   if (osect == NULL)
     return NULL;
@@ -1503,7 +1503,7 @@ find_equivalent_msymbol (struct minimal_symbol *msymbol)
   if (table[hash] == NULL)
     return NULL;
 
-  msymbol_list = (struct minimal_symbol **) 
+  msymbol_list = (struct minimal_symbol **)
     xcalloc (max_nsyms + 1, sizeof (struct minimal_symbol *));
 
   for (entry = table[hash]; entry != NULL; entry = entry->next)
@@ -1515,7 +1515,7 @@ find_equivalent_msymbol (struct minimal_symbol *msymbol)
 	      int i;
 	      struct minimal_symbol **new_list;
 	      max_nsyms = max_nsyms * 2;
-	      new_list = (struct minimal_symbol **) 
+	      new_list = (struct minimal_symbol **)
 		xcalloc (max_nsyms + 1, sizeof (struct minimal_symbol *));
 
 	      for (i = 0; i < nsyms; i++)

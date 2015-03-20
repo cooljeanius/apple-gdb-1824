@@ -1,4 +1,4 @@
-/* Top level stuff for GDB, the GNU debugger.
+/* main.c: Top level stuff for GDB, the GNU debugger.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
@@ -117,7 +117,7 @@ captured_main (void *data)
 {
   /* If you add initializations here, you also need to add then to the
      proc do_steps_and_nexts in selftest.exp.  */
-  struct captured_main_args *context = data;
+  struct captured_main_args *context = (struct captured_main_args *)data;
   int argc = context->argc;
   char **argv = context->argv;
   int count;

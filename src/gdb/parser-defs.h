@@ -1,4 +1,4 @@
-/* Parser definitions for GDB.
+/* parser-defs.h: Parser definitions for GDB.
 
    Copyright 1986, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996,
    1997, 1998, 1999, 2000, 2002 Free Software Foundation, Inc.
@@ -23,7 +23,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (PARSER_DEFS_H)
+#if !defined(PARSER_DEFS_H)
 #define PARSER_DEFS_H 1
 
 #include "doublest.h"
@@ -81,6 +81,15 @@ struct symtoken
     int is_a_field_of_this;
   };
 
+/* temporary, until I am ready to deal with all of the fallout that would
+ * result from fixing these warnings in this header: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 struct objc_class_str
   {
     struct stoken stoken;
@@ -88,18 +97,25 @@ struct objc_class_str
     CORE_ADDR class;
   };
 
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 
 /* For parsing of complicated types.
    An array should be preceded in the list by the size of the array.  */
 enum type_pieces
   {
-    tp_end = -1, 
-    tp_pointer, 
-    tp_reference, 
-    tp_array, 
-    tp_function, 
-    tp_const, 
-    tp_volatile, 
+    tp_end = -1,
+    tp_pointer,
+    tp_reference,
+    tp_array,
+    tp_function,
+    tp_const,
+    tp_volatile,
     tp_space_identifier
   };
 /* The stack can contain either an enum type_pieces or an int.  */
@@ -111,75 +127,75 @@ union type_stack_elt
 extern union type_stack_elt *type_stack;
 extern int type_stack_depth, type_stack_size;
 
-extern void write_exp_elt (union exp_element);
+extern void write_exp_elt(union exp_element);
 
-extern void write_exp_elt_opcode (enum exp_opcode);
+extern void write_exp_elt_opcode(enum exp_opcode);
 
-extern void write_exp_elt_sym (struct symbol *);
+extern void write_exp_elt_sym(struct symbol *);
 
-extern void write_exp_elt_longcst (LONGEST);
+extern void write_exp_elt_longcst(LONGEST);
 
-extern void write_exp_elt_dblcst (DOUBLEST);
+extern void write_exp_elt_dblcst(DOUBLEST);
 
-extern void write_exp_elt_type (struct type *);
+extern void write_exp_elt_type(struct type *);
 
-extern void write_exp_elt_intern (struct internalvar *);
+extern void write_exp_elt_intern(struct internalvar *);
 
-extern void write_exp_string (struct stoken);
+extern void write_exp_string(struct stoken);
 
-extern void write_exp_bitstring (struct stoken);
+extern void write_exp_bitstring(struct stoken);
 
-extern void write_exp_elt_block (struct block *);
+extern void write_exp_elt_block(struct block *);
 
-extern void write_exp_msymbol (struct minimal_symbol *,
-			       struct type *, struct type *);
+extern void write_exp_msymbol(struct minimal_symbol *,
+                              struct type *, struct type *);
 
-extern void write_dollar_variable (struct stoken str);
+extern void write_dollar_variable(struct stoken str);
 
-extern struct symbol *parse_nested_classes_for_hpacc (char *, int, char **,
-						      int *, char **);
+extern struct symbol *parse_nested_classes_for_hpacc(char *, int, char **,
+						     int *, char **);
 
-extern char *find_template_name_end (char *);
+extern char *find_template_name_end(char *);
 
-extern void start_arglist (void);
+extern void start_arglist(void);
 
-extern int end_arglist (void);
+extern int end_arglist(void);
 
-extern char *copy_name (struct stoken);
+extern char *copy_name(struct stoken);
 
-extern void push_type (enum type_pieces);
+extern void push_type(enum type_pieces);
 
-extern void push_type_int (int);
+extern void push_type_int(int);
 
-extern void push_type_address_space (char *);
+extern void push_type_address_space(char *);
 
-extern enum type_pieces pop_type (void);
+extern enum type_pieces pop_type(void);
 
-extern int pop_type_int (void);
+extern int pop_type_int(void);
 
-extern int length_of_subexp (struct expression *, int);
+extern int length_of_subexp(struct expression *, int);
 
-extern int dump_subexp (struct expression *, struct ui_file *, int);
+extern int dump_subexp(struct expression *, struct ui_file *, int);
 
-extern int dump_subexp_body_standard (struct expression *, 
-				      struct ui_file *, int);
+extern int dump_subexp_body_standard(struct expression *,
+				     struct ui_file *, int);
 
-extern void operator_length (struct expression *, int, int *, int *);
+extern void operator_length(struct expression *, int, int *, int *);
 
-extern void operator_length_standard (struct expression *, int, int *, int *);
+extern void operator_length_standard(struct expression *, int, int *, int *);
 
-extern char *op_name_standard (enum exp_opcode);
+extern char *op_name_standard(enum exp_opcode);
 
-extern struct type *follow_types (struct type *);
+extern struct type *follow_types(struct type *);
 
-extern void null_post_parser (struct expression **, int);
+extern void null_post_parser(struct expression **, int);
 
 /* During parsing of a C expression, the pointer to the next character
    is in this variable.  */
 
 extern char *lexptr;
 
-/* After a token has been recognized, this variable points to it.  
+/* After a token has been recognized, this variable points to it.
    Currently used only for error reporting.  */
 extern char *prev_lexptr;
 
@@ -194,12 +210,10 @@ extern char *prev_lexptr;
 
 extern char *namecopy;
 
-/* Current depth in parentheses within the expression.  */
-
+/* Current depth in parentheses within the expression: */
 extern int paren_depth;
 
-/* Nonzero means stop parsing on first comma (if not within parentheses).  */
-
+/* Nonzero means stop parsing on 1st comma (if not within parentheses): */
 extern int comma_terminates;
 
 /* These codes indicate operator precedences for expression printing,
@@ -233,30 +247,30 @@ struct op_print
     int right_assoc;
   };
 
-/* Information needed to print, prefixify, and evaluate expressions for 
+/* Information needed to print, prefixify, and evaluate expressions for
    a given language.  */
 
 struct exp_descriptor
   {
-    /* Print subexpression.  */
-    void (*print_subexp) (struct expression *, int *, struct ui_file *,
-			  enum precedence);
+    /* Print subexpression: */
+    void (*print_subexp)(struct expression *, int *, struct ui_file *,
+			 enum precedence);
 
     /* Returns number of exp_elements needed to represent an operator and
        the number of subexpressions it takes.  */
-    void (*operator_length) (struct expression*, int, int*, int *);
+    void (*operator_length)(struct expression*, int, int*, int *);
 
-    /* Name of this operator for dumping purposes.  */
-    char *(*op_name) (enum exp_opcode);
+    /* Name of this operator for dumping purposes: */
+    char *(*op_name)(enum exp_opcode);
 
     /* Dump the rest of this (prefix) expression after the operator
        itself has been printed.  See dump_subexp_body_standard in
        (expprint.c).  */
-    int (*dump_subexp_body) (struct expression *, struct ui_file *, int);
+    int (*dump_subexp_body)(struct expression *, struct ui_file *, int);
 
-    /* Evaluate an expression.  */
-    struct value *(*evaluate_exp) (struct type *, struct expression *,
-				   int *, enum noside);
+    /* Evaluate an expression: */
+    struct value *(*evaluate_exp)(struct type *, struct expression *,
+				  int *, enum noside);
   };
 
 
@@ -267,20 +281,22 @@ extern const struct exp_descriptor exp_descriptor_standard;
 /* Functions used by language-specific extended operators to (recursively)
    print/dump subexpressions.  */
 
-extern void print_subexp (struct expression *, int *, struct ui_file *,
-			  enum precedence);
+extern void print_subexp(struct expression *, int *, struct ui_file *,
+			 enum precedence);
 
-extern void print_subexp_standard (struct expression *, int *, 
-				   struct ui_file *, enum precedence);
+extern void print_subexp_standard(struct expression *, int *,
+				  struct ui_file *, enum precedence);
 
 /* Function used to avoid direct calls to fprintf
    in the code generated by the bison parser.  */
 
-extern void parser_fprintf (FILE *, const char *, ...) ATTR_FORMAT (printf, 2 ,3);
+extern void parser_fprintf(FILE *, const char *, ...) ATTR_FORMAT(printf, 2 ,3);
 
-/* for parsing Objective C */
-extern void start_msglist (void);
-extern void add_msglist (struct stoken *str, int addcolon);
-extern int end_msglist (void);
+/* for parsing Objective C: */
+extern void start_msglist(void);
+extern void add_msglist(struct stoken *str, int addcolon);
+extern int end_msglist(void);
 
 #endif /* PARSER_DEFS_H */
+
+/* EOF */

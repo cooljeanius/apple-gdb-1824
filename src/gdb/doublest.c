@@ -35,9 +35,9 @@
 #include "gdbtypes.h"
 #include <math.h>		/* ldexp */
 
-/* The odds that CHAR_BIT will be anything but 8 are low enough that I'm not
-   going to bother with trying to muck around with whether it is defined in
-   a system header, what we do if not, etc.  */
+/* The odds that CHAR_BIT will be anything but 8 are low enough that I am
+ * not going to bother with trying to muck around with whether it is
+ * defined in a system header, what we do if not, etc.  */
 #define FLOATFORMAT_CHAR_BIT 8
 
 /* The number of bytes that the largest floating-point type that we
@@ -47,12 +47,13 @@
 /* Extract a field which starts at START and is LEN bytes long.  DATA and
    TOTAL_LEN are the thing we are extracting it from, in byteorder ORDER.  */
 static unsigned long
-get_field (const bfd_byte *data, enum floatformat_byteorders order,
-	   unsigned int total_len, unsigned int start, unsigned int len)
+get_field(const bfd_byte *data, enum floatformat_byteorders order,
+	  unsigned int total_len, unsigned int start, unsigned int len)
 {
   unsigned long result;
   unsigned int cur_byte;
-  int cur_bitshift;
+  unsigned int cur_bitshift;
+  size_t llen;
 
   /* Caller must byte-swap words before calling this routine: */
   gdb_assert((order == floatformat_little) || (order == floatformat_big));
@@ -67,20 +68,21 @@ get_field (const bfd_byte *data, enum floatformat_byteorders order,
 	 not evenly divisible by 8.  So we compute ``excess'' which
 	 represents the number of bits from the end of our starting
 	 byte needed to get to bit 0. */
-      int excess = FLOATFORMAT_CHAR_BIT - (total_len % FLOATFORMAT_CHAR_BIT);
-      cur_byte = (total_len / FLOATFORMAT_CHAR_BIT)
-                 - ((start + len + excess) / FLOATFORMAT_CHAR_BIT);
-      cur_bitshift = ((start + len + excess) % FLOATFORMAT_CHAR_BIT)
-                     - FLOATFORMAT_CHAR_BIT;
+      int excess;
+      excess = (FLOATFORMAT_CHAR_BIT - (total_len % FLOATFORMAT_CHAR_BIT));
+      cur_byte = ((total_len / FLOATFORMAT_CHAR_BIT)
+                  - ((start + len + excess) / FLOATFORMAT_CHAR_BIT));
+      cur_bitshift = (((start + len + excess) % FLOATFORMAT_CHAR_BIT)
+                      - FLOATFORMAT_CHAR_BIT);
     }
   else
     {
-      cur_byte = (start + len) / FLOATFORMAT_CHAR_BIT;
+      cur_byte = ((start + len) / FLOATFORMAT_CHAR_BIT);
       cur_bitshift =
-	((start + len) % FLOATFORMAT_CHAR_BIT) - FLOATFORMAT_CHAR_BIT;
+	(((start + len) % FLOATFORMAT_CHAR_BIT) - FLOATFORMAT_CHAR_BIT);
     }
-  if (cur_bitshift > -FLOATFORMAT_CHAR_BIT)
-    result = *(data + cur_byte) >> (-cur_bitshift);
+  if ((int)cur_bitshift > -FLOATFORMAT_CHAR_BIT)
+    result = (*(data + cur_byte) >> (-cur_bitshift));
   else
     result = 0;
   cur_bitshift += FLOATFORMAT_CHAR_BIT;
@@ -89,10 +91,12 @@ get_field (const bfd_byte *data, enum floatformat_byteorders order,
   else
     --cur_byte;
 
-  /* Move towards the most significant part of the field.  */
-  while (cur_bitshift < len)
+  llen = (size_t)len;
+
+  /* Move towards the most significant part of the field: */
+  while (cur_bitshift < llen)
     {
-      result |= (unsigned long)*(data + cur_byte) << cur_bitshift;
+      result |= ((unsigned long)*(data + cur_byte) << cur_bitshift);
       cur_bitshift += FLOATFORMAT_CHAR_BIT;
       switch (order)
 	{
@@ -107,9 +111,9 @@ get_field (const bfd_byte *data, enum floatformat_byteorders order,
           break;
 	}
     }
-  if (len < sizeof(result) * FLOATFORMAT_CHAR_BIT)
-    /* Mask out bits which are not part of the field */
-    result &= ((1UL << len) - 1);
+  if (llen < (sizeof(result) * FLOATFORMAT_CHAR_BIT))
+    /* Mask out bits which are not part of the field: */
+    result &= ((1UL << llen) - 1UL);
   return result;
 }
 
@@ -152,39 +156,38 @@ floatformat_normalize_byteorder (const struct floatformat *fmt,
    Store the DOUBLEST in *TO.  */
 
 static void
-convert_floatformat_to_doublest (const struct floatformat *fmt,
-				 const void *from,
-				 DOUBLEST *to)
+convert_floatformat_to_doublest(const struct floatformat *fmt,
+                                const void *from, DOUBLEST *to)
 {
-  unsigned char *ufrom = (unsigned char *) from;
+  unsigned char *ufrom = (unsigned char *)from;
   DOUBLEST dto;
   long exponent;
   unsigned long mant;
   unsigned int mant_bits, mant_off;
   int mant_bits_left;
-  int special_exponent;		/* It's a NaN, denorm or zero */
+  int special_exponent;		/* It is a NaN, denorm, or zero */
   enum floatformat_byteorders order;
   unsigned char newfrom[FLOATFORMAT_LARGEST_BYTES];
 
-  gdb_assert (fmt->totalsize
-	      <= FLOATFORMAT_LARGEST_BYTES * FLOATFORMAT_CHAR_BIT);
+  gdb_assert(fmt->totalsize
+	     <= (FLOATFORMAT_LARGEST_BYTES * FLOATFORMAT_CHAR_BIT));
 
-  order = floatformat_normalize_byteorder (fmt, ufrom, newfrom);
+  order = floatformat_normalize_byteorder(fmt, ufrom, newfrom);
 
   if (order != fmt->byteorder)
     ufrom = newfrom;
 
-  exponent = get_field (ufrom, order, fmt->totalsize, fmt->exp_start,
-			fmt->exp_len);
+  exponent = get_field(ufrom, order, fmt->totalsize, fmt->exp_start,
+                       fmt->exp_len);
   /* Note that if exponent indicates a NaN, we can't really do anything useful
      (not knowing if the host has NaN's, or how to build one).  So it will
      end up as an infinity or something close; that is OK.  */
 
   mant_bits_left = fmt->man_len;
   mant_off = fmt->man_start;
-  dto = 0.0;
+  dto = (DOUBLEST)0.0f;
 
-  special_exponent = exponent == 0 || exponent == fmt->exp_nan;
+  special_exponent = ((exponent == 0) || (exponent == (long)fmt->exp_nan));
 
   /* Don't bias NaNs. Use minimum exponent for denorms. For simplicity,
      we don't check for zero as the exponent doesn't matter.  Note the cast
@@ -192,8 +195,8 @@ convert_floatformat_to_doublest (const struct floatformat *fmt,
      operation is done in signed arithmetic.  */
   if (!special_exponent)
     exponent -= fmt->exp_bias;
-  else if (exponent == 0)
-    exponent = 1 - fmt->exp_bias;
+  else if (exponent == 0L)
+    exponent = (1L - fmt->exp_bias);
 
   /* Build the result algebraically.  Might go infinite, underflow, etc;
      who cares. */
@@ -204,25 +207,25 @@ convert_floatformat_to_doublest (const struct floatformat *fmt,
   if (!special_exponent)
     {
       if (fmt->intbit == floatformat_intbit_no)
-	dto = ldexp (1.0, exponent);
+	dto = ldexp((double)1.0f, exponent);
       else
 	exponent++;
     }
 
   while (mant_bits_left > 0)
     {
-      mant_bits = min (mant_bits_left, 32);
+      mant_bits = min(mant_bits_left, 32);
 
-      mant = get_field (ufrom, order, fmt->totalsize, mant_off, mant_bits);
+      mant = get_field(ufrom, order, fmt->totalsize, mant_off, mant_bits);
 
-      dto += ldexp ((double) mant, exponent - mant_bits);
+      dto += ldexp((double)mant, (exponent - mant_bits));
       exponent -= mant_bits;
       mant_off += mant_bits;
       mant_bits_left -= mant_bits;
     }
 
-  /* Negate it if negative.  */
-  if (get_field (ufrom, order, fmt->totalsize, fmt->sign_start, 1))
+  /* Negate it if negative: */
+  if (get_field(ufrom, order, fmt->totalsize, fmt->sign_start, 1))
     dto = -dto;
   *to = dto;
 }
@@ -239,27 +242,29 @@ put_field (unsigned char *data, enum floatformat_byteorders order,
 	   unsigned long stuff_to_put)
 {
   unsigned int cur_byte;
-  int cur_bitshift;
+  unsigned int cur_bitshift;
+  size_t llen;
 
-  /* Caller must byte-swap words before calling this routine.  */
-  gdb_assert (order == floatformat_little || order == floatformat_big);
+  /* Caller must byte-swap words before calling this routine: */
+  gdb_assert((order == floatformat_little) || (order == floatformat_big));
 
   /* Start at the least significant part of the field.  */
   if (order == floatformat_little)
     {
-      int excess = FLOATFORMAT_CHAR_BIT - (total_len % FLOATFORMAT_CHAR_BIT);
-      cur_byte = (total_len / FLOATFORMAT_CHAR_BIT)
-                 - ((start + len + excess) / FLOATFORMAT_CHAR_BIT);
-      cur_bitshift = ((start + len + excess) % FLOATFORMAT_CHAR_BIT)
-                     - FLOATFORMAT_CHAR_BIT;
+      int excess;
+      excess = (FLOATFORMAT_CHAR_BIT - (total_len % FLOATFORMAT_CHAR_BIT));
+      cur_byte = ((total_len / FLOATFORMAT_CHAR_BIT)
+                  - ((start + len + excess) / FLOATFORMAT_CHAR_BIT));
+      cur_bitshift = (((start + len + excess) % FLOATFORMAT_CHAR_BIT)
+                      - FLOATFORMAT_CHAR_BIT);
     }
   else
     {
-      cur_byte = (start + len) / FLOATFORMAT_CHAR_BIT;
+      cur_byte = ((start + len) / FLOATFORMAT_CHAR_BIT);
       cur_bitshift =
-	((start + len) % FLOATFORMAT_CHAR_BIT) - FLOATFORMAT_CHAR_BIT;
+	(((start + len) % FLOATFORMAT_CHAR_BIT) - FLOATFORMAT_CHAR_BIT);
     }
-  if (cur_bitshift > -FLOATFORMAT_CHAR_BIT)
+  if ((int)cur_bitshift > -FLOATFORMAT_CHAR_BIT)
     {
       *(data + cur_byte) &=
 	~(((1 << ((start + len) % FLOATFORMAT_CHAR_BIT)) - 1)
@@ -273,14 +278,16 @@ put_field (unsigned char *data, enum floatformat_byteorders order,
   else
     --cur_byte;
 
-  /* Move towards the most significant part of the field.  */
-  while (cur_bitshift < len)
+  llen = (size_t)len;
+
+  /* Move towards the most significant part of the field: */
+  while (cur_bitshift < llen)
     {
-      if (len - cur_bitshift < FLOATFORMAT_CHAR_BIT)
+      if ((llen - cur_bitshift) < FLOATFORMAT_CHAR_BIT)
 	{
-	  /* This is the last byte.  */
+	  /* This is the last byte: */
 	  *(data + cur_byte) &=
-	    ~((1 << (len - cur_bitshift)) - 1);
+	    ~((1 << (llen - cur_bitshift)) - 1);
 	  *(data + cur_byte) |= (stuff_to_put >> cur_bitshift);
 	}
       else
@@ -299,10 +306,10 @@ put_field (unsigned char *data, enum floatformat_byteorders order,
    The range of the returned value is >= 0.5 and < 1.0.  This is equivalent to
    frexp, but operates on the long double data type.  */
 
-static long double ldfrexp (long double value, int *eptr);
+static long double ldfrexp(long double value, int *eptr);
 
 static long double
-ldfrexp (long double value, int *eptr)
+ldfrexp(long double value, int *eptr)
 {
   long double tmp;
   int exp;
@@ -335,7 +342,7 @@ ldfrexp (long double value, int *eptr)
     }
 
   *eptr = exp;
-  return value / tmp;
+  return (value / tmp);
 }
 #endif /* HAVE_LONG_DOUBLE */
 
@@ -345,81 +352,81 @@ ldfrexp (long double value, int *eptr)
    restrictions.  */
 
 static void
-convert_doublest_to_floatformat (CONST struct floatformat *fmt,
-				 const DOUBLEST *from,
-				 void *to)
+convert_doublest_to_floatformat(CONST struct floatformat *fmt,
+                                const DOUBLEST *from, void *to)
 {
   DOUBLEST dfrom;
   int exponent;
   DOUBLEST mant;
   unsigned int mant_bits, mant_off;
   int mant_bits_left;
-  unsigned char *uto = (unsigned char *) to;
+  unsigned char *uto = (unsigned char *)to;
   enum floatformat_byteorders order = fmt->byteorder;
 
   if (order == floatformat_littlebyte_bigword)
     order = floatformat_big;
 
-  memcpy (&dfrom, from, sizeof (dfrom));
-  memset (uto, 0, (fmt->totalsize + FLOATFORMAT_CHAR_BIT - 1)
-                    / FLOATFORMAT_CHAR_BIT);
+  memcpy(&dfrom, from, sizeof (dfrom));
+  memset(uto, 0, ((fmt->totalsize + FLOATFORMAT_CHAR_BIT - 1)
+                  / FLOATFORMAT_CHAR_BIT));
   if (dfrom == 0)
     return;			/* Result is zero */
   if (dfrom != dfrom)		/* Result is NaN */
     {
-      /* From is NaN */
-      put_field (uto, order, fmt->totalsize, fmt->exp_start,
-		 fmt->exp_len, fmt->exp_nan);
-      /* Be sure it's not infinity, but NaN value is irrel */
-      put_field (uto, order, fmt->totalsize, fmt->man_start,
-		 32, 1);
+      /* From is NaN: */
+      put_field(uto, order, fmt->totalsize, fmt->exp_start,
+                fmt->exp_len, fmt->exp_nan);
+      /* Be sure it is not infinity, but NaN value is irrel: */
+      put_field(uto, order, fmt->totalsize, fmt->man_start,
+                32, 1);
       goto finalize_byteorder;
     }
 
-  /* If negative, set the sign bit.  */
+  /* If negative, set the sign bit: */
   if (dfrom < 0)
     {
-      put_field (uto, order, fmt->totalsize, fmt->sign_start, 1, 1);
+      put_field(uto, order, fmt->totalsize, fmt->sign_start, 1, 1);
       dfrom = -dfrom;
     }
 
-  if (dfrom + dfrom == dfrom && dfrom != 0.0)	/* Result is Infinity */
+  /* Result is Infinity: */
+  if (((dfrom + dfrom) == dfrom) && (dfrom != (DOUBLEST)0.0f))
     {
-      /* Infinity exponent is same as NaN's.  */
-      put_field (uto, order, fmt->totalsize, fmt->exp_start,
-		 fmt->exp_len, fmt->exp_nan);
-      /* Infinity mantissa is all zeroes.  */
-      put_field (uto, order, fmt->totalsize, fmt->man_start,
-		 fmt->man_len, 0);
+      /* Infinity exponent is same as NaN's: */
+      put_field(uto, order, fmt->totalsize, fmt->exp_start,
+                fmt->exp_len, fmt->exp_nan);
+      /* Infinity mantissa is all zeroes: */
+      put_field(uto, order, fmt->totalsize, fmt->man_start,
+                fmt->man_len, 0);
       goto finalize_byteorder;
     }
 
 #ifdef HAVE_LONG_DOUBLE
-  mant = ldfrexp (dfrom, &exponent);
+  mant = ldfrexp(dfrom, &exponent);
 #else
-  mant = frexp (dfrom, &exponent);
-#endif
+  mant = frexp(dfrom, &exponent);
+#endif /* HAVE_LONG_DOUBLE */
 
-  put_field (uto, order, fmt->totalsize, fmt->exp_start, fmt->exp_len,
-	     exponent + fmt->exp_bias - 1);
+  put_field(uto, order, fmt->totalsize, fmt->exp_start, fmt->exp_len,
+	    (exponent + fmt->exp_bias - 1));
 
   mant_bits_left = fmt->man_len;
   mant_off = fmt->man_start;
   while (mant_bits_left > 0)
     {
       unsigned long mant_long;
-      mant_bits = mant_bits_left < 32 ? mant_bits_left : 32;
+      mant_bits = ((mant_bits_left < 32) ? mant_bits_left : 32);
 
-      mant *= 4294967296.0;
-      mant_long = ((unsigned long) mant) & 0xffffffffL;
+      mant *= (DOUBLEST)4294967296.0f;
+      mant_long = (((unsigned long)mant) & 0xffffffffL);
       mant -= mant_long;
 
       /* If the integer bit is implicit, then we need to discard it.
          If we are discarding a zero, we should be (but are not) creating
          a denormalized number which means adjusting the exponent
          (I think).  */
-      if (mant_bits_left == fmt->man_len
-	  && fmt->intbit == floatformat_intbit_no)
+      if ((mant_bits_left == (int)fmt->man_len)
+	  && (fmt->intbit == floatformat_intbit_no))
 	{
 	  mant_long <<= 1;
 	  mant_long &= 0xffffffffL;
@@ -438,11 +445,11 @@ convert_doublest_to_floatformat (CONST struct floatformat *fmt,
 	{
 	  /* The bits we want are in the most significant MANT_BITS bits of
 	     mant_long.  Move them to the least significant.  */
-	  mant_long >>= 32 - mant_bits;
+	  mant_long >>= (32 - mant_bits);
 	}
 
-      put_field (uto, order, fmt->totalsize,
-		 mant_off, mant_bits, mant_long);
+      put_field(uto, order, fmt->totalsize,
+                mant_off, mant_bits, mant_long);
       mant_off += mant_bits;
       mant_bits_left -= mant_bits;
     }
@@ -455,7 +462,7 @@ convert_doublest_to_floatformat (CONST struct floatformat *fmt,
       unsigned char *curword = uto;
       unsigned char tmp;
 
-      words = fmt->totalsize / FLOATFORMAT_CHAR_BIT;
+      words = (fmt->totalsize / FLOATFORMAT_CHAR_BIT);
       words >>= 2;
       while (words-- > 0)
 	{
@@ -495,8 +502,8 @@ floatformat_is_negative (const struct floatformat *fmt,
 /* Check if VAL is "not a number" (NaN) for FMT.  */
 
 int
-floatformat_is_nan (const struct floatformat *fmt,
-		    const bfd_byte *uval)
+floatformat_is_nan(const struct floatformat *fmt,
+		   const bfd_byte *uval)
 {
   long exponent;
   unsigned long mant;
@@ -505,11 +512,11 @@ floatformat_is_nan (const struct floatformat *fmt,
   enum floatformat_byteorders order;
   unsigned char newfrom[FLOATFORMAT_LARGEST_BYTES];
 
-  gdb_assert (fmt != NULL);
-  gdb_assert (fmt->totalsize
-	      <= FLOATFORMAT_LARGEST_BYTES * FLOATFORMAT_CHAR_BIT);
+  gdb_assert(fmt != NULL);
+  gdb_assert(fmt->totalsize
+	     <= (FLOATFORMAT_LARGEST_BYTES * FLOATFORMAT_CHAR_BIT));
 
-  order = floatformat_normalize_byteorder (fmt, uval, newfrom);
+  order = floatformat_normalize_byteorder(fmt, uval, newfrom);
 
   if (order != fmt->byteorder)
     uval = newfrom;
@@ -517,10 +524,10 @@ floatformat_is_nan (const struct floatformat *fmt,
   if (! fmt->exp_nan)
     return 0;
 
-  exponent = get_field (uval, order, fmt->totalsize, fmt->exp_start,
-			fmt->exp_len);
+  exponent = get_field(uval, order, fmt->totalsize, fmt->exp_start,
+                       fmt->exp_len);
 
-  if (exponent != fmt->exp_nan)
+  if (exponent != (long)fmt->exp_nan)
     return 0;
 
   mant_bits_left = fmt->man_len;
@@ -528,13 +535,13 @@ floatformat_is_nan (const struct floatformat *fmt,
 
   while (mant_bits_left > 0)
     {
-      mant_bits = min (mant_bits_left, 32);
+      mant_bits = min(mant_bits_left, 32);
 
-      mant = get_field (uval, order, fmt->totalsize, mant_off, mant_bits);
+      mant = get_field(uval, order, fmt->totalsize, mant_off, mant_bits);
 
-      /* If there is an explicit integer bit, mask it off.  */
-      if (mant_off == fmt->man_start
-	  && fmt->intbit == floatformat_intbit_yes)
+      /* If there is an explicit integer bit, then mask it off: */
+      if ((mant_off == fmt->man_start)
+	  && (fmt->intbit == floatformat_intbit_yes))
 	mant &= ~(1 << (mant_bits - 1));
 
       if (mant)
@@ -764,21 +771,21 @@ floatformat_from_doublest(const struct floatformat *fmt,
    but not passed on by GDB.  This should be fixed.  */
 
 static const struct floatformat *
-floatformat_from_length (int len)
+floatformat_from_length(int len)
 {
   const struct floatformat *format;
-  if (len * TARGET_CHAR_BIT == TARGET_FLOAT_BIT)
+  if ((len * TARGET_CHAR_BIT) == TARGET_FLOAT_BIT)
     format = TARGET_FLOAT_FORMAT;
-  else if (len * TARGET_CHAR_BIT == TARGET_DOUBLE_BIT)
+  else if ((len * TARGET_CHAR_BIT) == TARGET_DOUBLE_BIT)
     format = TARGET_DOUBLE_FORMAT;
-  else if (len * TARGET_CHAR_BIT == TARGET_LONG_DOUBLE_BIT)
+  else if ((len * TARGET_CHAR_BIT) == TARGET_LONG_DOUBLE_BIT)
     format = TARGET_LONG_DOUBLE_FORMAT;
   /* On i386 the 'long double' type takes 96 bits,
      while the real number of used bits is only 80,
      both in processor and in memory.
      The code below accepts the real bit size.  */
   else if ((TARGET_LONG_DOUBLE_FORMAT != NULL)
-	   && ((len * TARGET_CHAR_BIT) ==
+	   && ((size_t)(len * TARGET_CHAR_BIT) ==
                TARGET_LONG_DOUBLE_FORMAT->totalsize))
     format = TARGET_LONG_DOUBLE_FORMAT;
   else

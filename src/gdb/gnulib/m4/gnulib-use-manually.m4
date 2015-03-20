@@ -238,6 +238,14 @@ if test ${HAVE_MEMPCPY} = 0; then
   gl_PREREQ_MEMPCPY
 fi
 gl_STRING_MODULE_INDICATOR([mempcpy])dnl
+dnl# from gnulib module memrchr
+AC_REQUIRE([gl_FUNC_MEMRCHR])dnl
+  ## set up libobj if needed:
+if test "x${ac_cv_func_memrchr}" = "xno"; then
+  AC_LIBOBJ([memrchr])dnl
+  gl_PREREQ_MEMRCHR
+fi
+gl_STRING_MODULE_INDICATOR([memrchr])dnl
 dnl# from gnulib module multiarch:
 AC_REQUIRE([gl_MULTIARCH])dnl
 dnl# from gnulib module no-c++:

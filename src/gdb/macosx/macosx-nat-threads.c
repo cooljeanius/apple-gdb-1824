@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-nat-threads.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -36,57 +36,60 @@
 
 #include "macosx-nat-inferior.h"
 #include "macosx-nat-mutils.h"
+#include "macosx-nat-threads.h"
 
 #include <mach/machine/thread_status.h>
 
 void
-gdb_pthread_kill (pthread_t pthread)
+gdb_pthread_kill(pthread_t pthread)
 {
   int ret;
 
-  ret = pthread_cancel (pthread);
+  ret = pthread_cancel(pthread);
 
-  ret = pthread_join (pthread, NULL);
+  ret = pthread_join(pthread, NULL);
   if (ret != 0)
     {
-      warning ("Unable to join to canceled thread: %s (%d)", strerror (errno),
-               errno);
+      warning("Unable to join to canceled thread: %s (%d)",
+              strerror(errno), errno);
     }
 }
 
 pthread_t
-gdb_pthread_fork (pthread_fn_t function, void *arg)
+gdb_pthread_fork(pthread_fn_t function, void *arg)
 {
   int result;
   pthread_t pthread = NULL;
   pthread_attr_t attr;
 
-  result = pthread_attr_init (&attr);
+  result = pthread_attr_init(&attr);
   if (result != 0)
     {
-      error ("Unable to initialize thread attributes: %s (%d)",
-             strerror (errno), errno);
+      error("Unable to initialize thread attributes: %s (%d)",
+            strerror(errno), errno);
     }
 
-  result = pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_JOINABLE);
+  result = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
   if (result != 0)
     {
-      error ("Unable to initialize thread attributes: %s (%d)",
-             strerror (errno), errno);
+      error("Unable to initialize thread attributes: %s (%d)",
+            strerror(errno), errno);
     }
 
-  result = pthread_create (&pthread, &attr, function, arg);
+  result = pthread_create(&pthread, &attr, function, arg);
   if (result != 0)
     {
-      error ("Unable to create thread: %s (%d)", strerror (errno), errno);
+      error("Unable to create thread: %s (%d)", strerror(errno), errno);
     }
 
-  result = pthread_attr_destroy (&attr);
+  result = pthread_attr_destroy(&attr);
   if (result != 0)
     {
-      warning ("Unable to deallocate thread attributes: %s (%d)",
-               strerror (errno), errno);
+      warning("Unable to deallocate thread attributes: %s (%d)",
+              strerror(errno), errno);
     }
 
   return pthread;
 }
+
+/* EOF */

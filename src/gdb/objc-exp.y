@@ -1252,21 +1252,21 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
   else if (long_p <= 1
 	   && (un >> (TARGET_LONG_BIT - 2)) == 0)
     {
-      high_bit = ((ULONGEST)1) << (TARGET_LONG_BIT-1);
-      unsigned_type = builtin_type (current_gdbarch)->builtin_unsigned_long;
-      signed_type = builtin_type (current_gdbarch)->builtin_long;
+      high_bit = (((ULONGEST)1UL) << (TARGET_LONG_BIT - 1));
+      unsigned_type = builtin_type(current_gdbarch)->builtin_unsigned_long;
+      signed_type = builtin_type(current_gdbarch)->builtin_long;
     }
   else
     {
       int shift;
-      if (sizeof (ULONGEST) * HOST_CHAR_BIT < TARGET_LONG_LONG_BIT)
+      if ((sizeof(ULONGEST) * HOST_CHAR_BIT) < (size_t)TARGET_LONG_LONG_BIT)
 	/* A long long does not fit in a LONGEST.  */
-	shift = (sizeof (ULONGEST) * HOST_CHAR_BIT - 1);
+	shift = (sizeof(ULONGEST) * HOST_CHAR_BIT - 1);
       else
 	shift = (TARGET_LONG_LONG_BIT - 1);
-      high_bit = (ULONGEST) 1 << shift;
-      unsigned_type = builtin_type (current_gdbarch)->builtin_unsigned_long_long;
-      signed_type = builtin_type (current_gdbarch)->builtin_long_long;
+      high_bit = ((ULONGEST)1UL << shift);
+      unsigned_type = builtin_type(current_gdbarch)->builtin_unsigned_long_long;
+      signed_type = builtin_type(current_gdbarch)->builtin_long_long;
     }
 
    putithere->typed_val_int.val = n;
@@ -1288,7 +1288,7 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 
 struct token
 {
-  char *operator;
+  char *ooperator;
   int token;
   enum exp_opcode opcode;
 };
@@ -1346,8 +1346,8 @@ yylex(void)
 
   tokstart = lexptr;
   /* See if it is a special token of length 3.  */
-  for (i = 0; i < sizeof tokentab3 / sizeof tokentab3[0]; i++)
-    if (DEPRECATED_STREQN (tokstart, tokentab3[i].operator, 3))
+  for (i = 0; i < (sizeof(tokentab3) / sizeof(tokentab3[0])); i++)
+    if (DEPRECATED_STREQN(tokstart, tokentab3[i].ooperator, 3))
       {
 	lexptr += 3;
 	yylval.opcode = tokentab3[i].opcode;
@@ -1355,8 +1355,8 @@ yylex(void)
       }
 
   /* See if it is a special token of length 2.  */
-  for (i = 0; i < sizeof tokentab2 / sizeof tokentab2[0]; i++)
-    if (DEPRECATED_STREQN (tokstart, tokentab2[i].operator, 2))
+  for (i = 0; i < (sizeof(tokentab2) / sizeof(tokentab2[0])); i++)
+    if (DEPRECATED_STREQN(tokstart, tokentab2[i].ooperator, 2))
       {
 	lexptr += 2;
 	yylval.opcode = tokentab2[i].opcode;
@@ -1902,8 +1902,8 @@ yylex(void)
        when the input radix permits them, can be names or numbers
        depending on the parse.  Note we support radixes > 16 here.  */
     if (!sym &&
-        ((tokstart[0] >= 'a' && tokstart[0] < 'a' + input_radix - 10) ||
-         (tokstart[0] >= 'A' && tokstart[0] < 'A' + input_radix - 10)))
+        (((tokstart[0] >= 'a') && (tokstart[0] < (char)('a' + input_radix - 10)))
+         || ((tokstart[0] >= 'A') && (tokstart[0] < (char)('A' + input_radix - 10)))))
       {
  	YYSTYPE newlval;	/* Its value is ignored.  */
 	hextype = parse_number (tokstart, namelen, 0, &newlval);

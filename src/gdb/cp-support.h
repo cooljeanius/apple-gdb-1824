@@ -1,4 +1,4 @@
-/* Helper routines for C++ support in GDB.
+/* cp-support.h: Helper routines for C++ support in GDB.
    Copyright 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
    Contributed by MontaVista Software.
@@ -77,7 +77,7 @@ extern unsigned char processing_has_namespace_info;
 
 extern const char *processing_current_prefix;
 
-extern int cp_is_anonymous (const char *namespace);
+extern int cp_is_anonymous (const char *the_namespace);
 
 extern void cp_add_using_directive (const char *name,
 				    unsigned int outer_length,
@@ -92,7 +92,7 @@ extern void cp_set_block_scope (const struct symbol *symbol,
 				struct block *block,
 				struct obstack *obstack);
 
-extern void cp_scan_for_anonymous_namespaces (const struct symbol *symbol);
+extern void cp_scan_for_anonymous_namespaces(const struct symbol *symbol);
 
 extern struct symbol *cp_lookup_symbol_nonlocal (const char *name,
 						 const char *linkage_name,
@@ -100,12 +100,12 @@ extern struct symbol *cp_lookup_symbol_nonlocal (const char *name,
 						 const domain_enum domain,
 						 struct symtab **symtab);
 
-extern struct symbol *cp_lookup_symbol_namespace (const char *namespace,
-						  const char *name,
-						  const char *linkage_name,
-						  const struct block *block,
-						  const domain_enum domain,
-						  struct symtab **symtab);
+extern struct symbol *cp_lookup_symbol_namespace(const char *thenamespace,
+						 const char *name,
+						 const char *linkage_name,
+						 const struct block *block,
+						 const domain_enum domain,
+						 struct symtab **symtab);
 
 extern struct type *cp_lookup_nested_type (struct type *parent_type,
 					   const char *nested_name,
@@ -124,16 +124,15 @@ extern struct demangle_component *cp_demangled_name_to_comp
 extern char *cp_comp_to_string (struct demangle_component *result,
 				int estimated_len);
 
-/* The list of "maint cplus" commands.  */
-
+/* The list of "maint cplus" commands: */
 extern struct cmd_list_element *maint_cplus_cmd_list;
 
 /* Pointer to member function.  Depends on compiler implementation.  */
 
 #if 0 /* should junk this */
-#define METHOD_PTR_IS_VIRTUAL(ADDR)  ((ADDR) & 0x80000000)
-#define METHOD_PTR_FROM_VOFFSET(OFFSET) (0x80000000 + (OFFSET))
-#define METHOD_PTR_TO_VOFFSET(ADDR) (~0x80000000 & (ADDR))
-#endif
+# define METHOD_PTR_IS_VIRTUAL(ADDR)  ((ADDR) & 0x80000000)
+# define METHOD_PTR_FROM_VOFFSET(OFFSET) (0x80000000 + (OFFSET))
+# define METHOD_PTR_TO_VOFFSET(ADDR) (~0x80000000 & (ADDR))
+#endif /* 0 */
 
 #endif /* CP_SUPPORT_H */

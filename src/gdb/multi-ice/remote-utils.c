@@ -414,6 +414,14 @@ getpkt(char *buf, int *buf_len)
   return (bp - buf);
 }
 
+#if !defined(REGISTER_BYTE)
+# if defined(DEPRECATED_REGISTER_BYTE)
+#  define REGISTER_BYTE(reg_nr) DEPRECATED_REGISTER_BYTE(reg_nr)
+# else
+#  define REGISTER_BYTE(reg_nr) (gdbarch_deprecated_register_byte(current_gdbarch, reg_nr))
+# endif /* DEPRECATED_REGISTER_BYTE */
+#endif /* !REGISTER_BYTE */
+
 static char *
 outreg(int regno, char *buf)
 {

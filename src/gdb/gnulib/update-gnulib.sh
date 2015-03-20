@@ -42,7 +42,7 @@ IMPORTED_GNULIB_MODULES="\
     largefile ldd localcharset lstat \
     malloc-gnu malloc-posix manywarnings math mbrtowc mbsinit mbsrtowcs \
     memchr memcmp memmem memmem-simple \
-    mempcpy mkdtemp multiarch \
+    mempcpy memrchr mkdtemp multiarch \
     nextafter no-c++ nocrash \
     obstack openmp \
     pathmax \
@@ -61,7 +61,7 @@ IMPORTED_GNULIB_MODULES="\
 # any conflicts...)
 
 # The gnulib commit ID to use for the update.
-GNULIB_COMMIT_SHA1="d5e367c52d465a36650d0f4e2d370d1719750ab1"
+GNULIB_COMMIT_SHA1="0f4fa16dfd89eece82848858e327d6320c27e4bf"
 # (feel free to update if you know that your version works and is newer)
 
 # The expected version number for the various auto tools we will

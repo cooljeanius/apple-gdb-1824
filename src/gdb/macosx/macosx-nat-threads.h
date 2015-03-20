@@ -5,10 +5,10 @@
 
 #include <pthread.h>
 
-typedef void *(*pthread_fn_t) (void *arg);
+typedef void *(*pthread_fn_t)(void *arg);
 
-void gdb_pthread_kill (pthread_t pthread);
-pthread_t gdb_pthread_fork (pthread_fn_t function, void *arg);
+void gdb_pthread_kill(pthread_t pthread);
+pthread_t gdb_pthread_fork(pthread_fn_t function, void *arg);
 
 #define gdb_thread_exit pthread_exit
 #define gdb_thread_fork gdb_pthread_fork
@@ -30,3 +30,5 @@ typedef pthread_cond_t gdb_cond_t;
 #define gdb_cond_signal(c) pthread_cond_signal(c)
 
 #endif /* __GDB_MACOSX_NAT_THREADS_H__ */
+
+/* EOF */

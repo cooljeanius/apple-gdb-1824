@@ -317,57 +317,58 @@ int low_open_target(char *target_port, char *byte_sex, int query)
   handle = (HINSTANCE)LoadLibrary("Multi-ICE.dll");
   if (handle == NULL)
     {
-      output_error ("Could not load the Multi-ICE DLL\n");
+      output_error("Could not load the Multi-ICE DLL\n");
       return 0;
     }
 
-  winRDI_GetVersion = WinRDI_GetProcAddress (handle, GetVersion);
+  winRDI_GetVersion = WinRDI_GetProcAddress(handle, GetVersion);
   if (winRDI_GetVersion == NULL)
     {
-      output_error ("Could not get GetVersion from the Multi-ICE DLL\n");
+      output_error("Could not get GetVersion from the Multi-ICE DLL\n");
       return 0;
     }
 
-  winRDI_Valid_RDI_DLL = WinRDI_GetProcAddress (handle, Valid_RDI_DLL);
+  winRDI_Valid_RDI_DLL = WinRDI_GetProcAddress(handle, Valid_RDI_DLL);
   if (winRDI_Valid_RDI_DLL == NULL)
     {
-      output_error ("Could not get Valid_RDI_DLL from the Multi-ICE DLL\n");
+      output_error("Could not get Valid_RDI_DLL from the Multi-ICE DLL\n");
       return 0;
     }
 
-  winRDI_Get_DLL_Description = WinRDI_GetProcAddress (handle,
-						      Get_DLL_Description);
+  winRDI_Get_DLL_Description = WinRDI_GetProcAddress(handle,
+						     Get_DLL_Description);
   if (winRDI_Get_DLL_Description == NULL)
     {
-      output_error ("Could not get Get_DLL_Description from the Multi-ICE DLL\n");
+      output_error("Could not get Get_DLL_Description from the Multi-ICE DLL\n");
       return 0;
     }
 
-  winRDI_Config = WinRDI_GetProcAddress (handle, Config);
+  winRDI_Config = WinRDI_GetProcAddress(handle, Config);
   if (winRDI_Config == NULL)
     {
-      output_error ("Could not get Config from the Multi-ICE DLL\n");
+      output_error("Could not get Config from the Multi-ICE DLL\n");
       return 0;
     }
 
-  winRDI_Initialise = WinRDI_GetProcAddress (handle, Initialise);
+  winRDI_Initialise = WinRDI_GetProcAddress(handle, Initialise);
   if (winRDI_Initialise == NULL)
     {
-      output_error ("Could not get Initialise from the Multi-ICE DLL\n");
+      output_error("Could not get Initialise from the Multi-ICE DLL\n");
       return 0;
     }
 
-  winRDI_GetRDIProcVec = WinRDI_GetProcAddress (handle, GetRDIProcVec);
+  winRDI_GetRDIProcVec = WinRDI_GetProcAddress(handle, GetRDIProcVec);
   if (winRDI_GetRDIProcVec == NULL)
     {
-      output_error ("Could not get GetRDIProcVec from the Multi-ICE DLL\n");
+      output_error("Could not get GetRDIProcVec from the Multi-ICE DLL\n");
       return 0;
     }
 
-  winRDI_Register_Yield_Callback = WinRDI_GetProcAddress (handle, Register_Yield_Callback);
+  winRDI_Register_Yield_Callback = WinRDI_GetProcAddress(handle,
+                                                         Register_Yield_Callback);
   if (winRDI_Register_Yield_Callback == NULL)
     {
-      output_error ("Could not get Register_Yield_Callback from the Multi-ICE DLL\n");
+      output_error("Could not get Register_Yield_Callback from the Multi-ICE DLL\n");
       return 0;
     }
 
@@ -380,26 +381,26 @@ int low_open_target(char *target_port, char *byte_sex, int query)
    * connection to the target.
    */
 
-  valid = winRDI_Valid_RDI_DLL ();
+  valid = winRDI_Valid_RDI_DLL();
 
   if (!valid)
     {
-      output_error ("RDI DLL says it is not valid\n");
+      output_error("RDI DLL says it is not valid\n");
       return 0;
     }
 
-  vers = winRDI_GetVersion ();
-  if (vers < 150 || vers >= 200)
+  vers = winRDI_GetVersion();
+  if ((vers < 150) || (vers >= 200))
     {
-      output_error ("RDI version mismatch, expected 150 <> 200, got %d\n",
-		    vers);
+      output_error("RDI version mismatch, expected 150 <> 200, got %d\n",
+		   vers);
       return 0;
     }
 
-  rdi_proc_vec = winRDI_GetRDIProcVec ();
+  rdi_proc_vec = winRDI_GetRDIProcVec();
   if (rdi_proc_vec == NULL)
     {
-      output_error ("Got null proc vector from GetRDIProcVec\n");
+      output_error("Got null proc vector from GetRDIProcVec\n");
       return 0;
     }
 
@@ -410,21 +411,21 @@ int low_open_target(char *target_port, char *byte_sex, int query)
    * the 1.4 version of the DLL.
    */
 
-  gdb_config = ToolConf_New (30);
+  gdb_config = ToolConf_New(30);
   for (i = 0; cfnArray[i] != NULL; i++)
     {
-      ToolConf_Add (gdb_config, cfnArray[i]);
+      ToolConf_Add(gdb_config, cfnArray[i]);
     }
 
   if (target_port != NULL)
     {
       char buffer[256];
-      /* This is the Multi-ICE DLL < 1.3 version. */
-      sprintf (buffer, "MICESERVER=%s", target_port);
-      ToolConf_Update (gdb_config, buffer);
-      /* This is the Multi-ICE DLL >= 1.3 version. */
-      sprintf (buffer, "Multi-ICE_Server_Location=%s", target_port);
-      ToolConf_Update (gdb_config, buffer);
+      /* This is the Multi-ICE DLL < 1.3 version: */
+      sprintf(buffer, "MICESERVER=%s", target_port);
+      ToolConf_Update(gdb_config, buffer);
+      /* This is the Multi-ICE DLL >= 1.3 version: */
+      sprintf(buffer, "Multi-ICE_Server_Location=%s", target_port);
+      ToolConf_Update(gdb_config, buffer);
   }
 
   if (byte_sex != NULL)
@@ -1647,6 +1648,14 @@ char *rdi_error_message(int err)
     output("rdi error = %d\n", err);
     return msg;
 }
+
+#if !defined(REGISTER_BYTE)
+# if defined(DEPRECATED_REGISTER_BYTE)
+#  define REGISTER_BYTE(reg_nr) DEPRECATED_REGISTER_BYTE(reg_nr)
+# else
+#  define REGISTER_BYTE(reg_nr) (gdbarch_deprecated_register_byte(current_gdbarch, reg_nr))
+# endif /* DEPRECATED_REGISTER_BYTE */
+#endif /* !REGISTER_BYTE */
 
 /*
  * record_register

@@ -25,6 +25,8 @@
 #include "target.h"
 #include "event-loop.h"
 
+#include "macosx-nat-inferior-stubs.h"
+
 /* The following functions are defined for the benefit of inftarg.c;
    they should never be called */
 

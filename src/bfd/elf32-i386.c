@@ -983,23 +983,23 @@ elf_i386_check_relocs (bfd *abfd,
 	      {
 		bfd_signed_vma *local_got_refcounts;
 
-		/* This is a global offset table entry for a local symbol.  */
-		local_got_refcounts = elf_local_got_refcounts (abfd);
+		/* This is a global offset table entry for a local symbol: */
+		local_got_refcounts = elf_local_got_refcounts(abfd);
 		if (local_got_refcounts == NULL)
 		  {
 		    bfd_size_type size;
 
 		    size = symtab_hdr->sh_info;
-		    size *= (sizeof (bfd_signed_vma) + sizeof(char));
-		    local_got_refcounts = bfd_zalloc (abfd, size);
+		    size *= (sizeof(bfd_signed_vma) + sizeof(char));
+		    local_got_refcounts = (bfd_signed_vma *)bfd_zalloc(abfd, size);
 		    if (local_got_refcounts == NULL)
 		      return FALSE;
-		    elf_local_got_refcounts (abfd) = local_got_refcounts;
-		    elf_i386_local_got_tls_type (abfd)
-		      = (char *) (local_got_refcounts + symtab_hdr->sh_info);
+		    elf_local_got_refcounts(abfd) = local_got_refcounts;
+		    elf_i386_local_got_tls_type(abfd)
+		      = (char *)(local_got_refcounts + symtab_hdr->sh_info);
 		  }
 		local_got_refcounts[r_symndx] += 1;
-		old_tls_type = elf_i386_local_got_tls_type (abfd) [r_symndx];
+		old_tls_type = elf_i386_local_got_tls_type(abfd)[r_symndx];
 	      }
 
 	    if ((old_tls_type & GOT_TLS_IE) && (tls_type & GOT_TLS_IE))
@@ -1972,7 +1972,7 @@ elf_i386_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 	 section's contents are written out.  This should not happen,
 	 but this way if it does, we get a R_386_NONE reloc instead
 	 of garbage.  */
-      s->contents = bfd_zalloc (dynobj, s->size);
+      s->contents = (unsigned char *)bfd_zalloc(dynobj, s->size);
       if (s->contents == NULL)
 	return FALSE;
     }

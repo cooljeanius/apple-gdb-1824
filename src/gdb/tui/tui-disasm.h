@@ -1,8 +1,8 @@
-/* Disassembly display.
+/* tui-disasm.h: Disassembly display.
 
    Copyright 1998, 1999, 2000, 2001, 2004 Free Software Foundation,
    Inc.
-   
+
    Contributed by Hewlett-Packard Company.
 
    This file is part of GDB.

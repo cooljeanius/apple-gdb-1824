@@ -1664,10 +1664,11 @@ sh_elf64_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
       dropped = 0;
       switch ((int)r_type)
 	{
-	case R_SH_PT_16:     dropped = disp & 2; break;
-	case R_SH_DIR10SW: dropped = disp & 1; break;
-	case R_SH_DIR10SL: dropped = disp & 3; break;
-	case R_SH_DIR10SQ: dropped = disp & 7; break;
+	case R_SH_PT_16: dropped = (disp & 2); break;
+	case R_SH_DIR10SW: dropped = (disp & 1); break;
+	case R_SH_DIR10SL: dropped = (disp & 3); break;
+	case R_SH_DIR10SQ: dropped = (disp & 7); break;
+        default: break;
 	}
       if (dropped != 0)
 	{

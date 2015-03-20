@@ -398,23 +398,22 @@ struct elf64_x86_64_link_hash_table
   struct sym_sec_cache sym_sec;
 };
 
-/* Get the x86-64 ELF linker hash table from a link_info structure.  */
-
+/* Get the x86-64 ELF linker hash table from a link_info structure: */
 #define elf64_x86_64_hash_table(p) \
-  ((struct elf64_x86_64_link_hash_table *) ((p)->hash))
+  ((struct elf64_x86_64_link_hash_table *)((p)->hash))
 
-/* Create an entry in an x86-64 ELF linker hash table.	*/
-
+/* Create an entry in an x86-64 ELF linker hash table:*/
 static struct bfd_hash_entry *
-link_hash_newfunc (struct bfd_hash_entry *entry, struct bfd_hash_table *table,
-		   const char *string)
+link_hash_newfunc(struct bfd_hash_entry *entry,
+                  struct bfd_hash_table *table, const char *string)
 {
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
   if (entry == NULL)
     {
-      entry = bfd_hash_allocate(table,
-                                sizeof(struct elf64_x86_64_link_hash_entry));
+      entry = ((struct bfd_hash_entry *)
+               bfd_hash_allocate(table,
+                                 sizeof(struct elf64_x86_64_link_hash_entry)));
       if (entry == NULL)
 	return entry;
     }

@@ -1311,14 +1311,11 @@ elf_hppa_final_link (bfd *abfd, struct bfd_link_info *info)
 /* Relocate an HPPA ELF section.  */
 
 static bfd_boolean
-elf_hppa_relocate_section (bfd *output_bfd,
-			   struct bfd_link_info *info,
-			   bfd *input_bfd,
-			   asection *input_section,
-			   bfd_byte *contents,
-			   Elf_Internal_Rela *relocs,
-			   Elf_Internal_Sym *local_syms,
-			   asection **local_sections)
+elf_hppa_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+			  bfd *input_bfd, asection *input_section,
+			  bfd_byte *contents, Elf_Internal_Rela *relocs,
+			  Elf_Internal_Sym *local_syms,
+                          asection **local_sections)
 {
   Elf_Internal_Shdr *symtab_hdr;
   Elf_Internal_Rela *rel;
@@ -1328,15 +1325,15 @@ elf_hppa_relocate_section (bfd *output_bfd,
   if (info->relocatable)
     return TRUE;
 
-  hppa_info = elf64_hppa_hash_table (info);
-  symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
+  hppa_info = elf64_hppa_hash_table(info);
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
 
   rel = relocs;
-  relend = relocs + input_section->reloc_count;
+  relend = (relocs + input_section->reloc_count);
   for (; rel < relend; rel++)
     {
       int r_type;
-      reloc_howto_type *howto = elf_hppa_howto_table + ELF_R_TYPE (rel->r_info);
+      reloc_howto_type *howto = (elf_hppa_howto_table + ELF_R_TYPE(rel->r_info));
       unsigned long r_symndx;
       struct elf_link_hash_entry *h;
       Elf_Internal_Sym *sym;
@@ -1377,14 +1374,14 @@ elf_hppa_relocate_section (bfd *output_bfd,
 	}
       else
 	{
-	  /* This is not a local symbol.  */
+	  /* This is not a local symbol: */
 	  long indx;
 
-	  indx = r_symndx - symtab_hdr->sh_info;
-	  h = elf_sym_hashes (input_bfd)[indx];
+	  indx = (r_symndx - symtab_hdr->sh_info);
+	  h = elf_sym_hashes(input_bfd)[indx];
 	  while (h->root.type == bfd_link_hash_indirect
 		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 	  if (h->root.type == bfd_link_hash_defined
 	      || h->root.type == bfd_link_hash_defweak)
 	    {
@@ -1467,10 +1464,10 @@ elf_hppa_relocate_section (bfd *output_bfd,
 	    }
 	}
 
-      r = elf_hppa_final_link_relocate (rel, input_bfd, output_bfd,
-					input_section, contents,
-					relocation, info, sym_sec,
-					h, dyn_h);
+      r = elf_hppa_final_link_relocate(rel, input_bfd, output_bfd,
+                                       input_section, contents,
+                                       relocation, info, sym_sec,
+                                       h, dyn_h);
 
       if (r != bfd_reloc_ok)
 	{
@@ -1486,9 +1483,10 @@ elf_hppa_relocate_section (bfd *output_bfd,
 		  sym_name = NULL;
 		else
 		  {
-		    sym_name = bfd_elf_string_from_elf_section(input_bfd,
-                                                               symtab_hdr->sh_link,
-                                                               sym->st_name);
+		    sym_name =
+                      bfd_elf_string_from_elf_section(input_bfd,
+                                                      (unsigned int)symtab_hdr->sh_link,
+                                                      (unsigned int)sym->st_name);
 		    if (sym_name == NULL)
 		      return FALSE;
 		    if (*sym_name == '\0')

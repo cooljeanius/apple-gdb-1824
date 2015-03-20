@@ -609,34 +609,34 @@ linux_finish_dynamic_link(bfd *output_bfd, struct bfd_link_info *info)
   int section_offset;
   unsigned int fixups_written;
 
-  if (linux_hash_table (info)->dynobj == NULL)
+  if (linux_hash_table(info)->dynobj == NULL)
     return TRUE;
 
-  s = bfd_get_section_by_name (linux_hash_table (info)->dynobj,
-			       ".linux-dynamic");
-  BFD_ASSERT (s != NULL);
+  s = bfd_get_section_by_name(linux_hash_table(info)->dynobj,
+			      ".linux-dynamic");
+  BFD_ASSERT(s != NULL);
   os = s->output_section;
   fixups_written = 0;
 
 #ifdef LINUX_LINK_DEBUG
-  printf ("Fixup table file offset: %x  VMA: %x\n",
-	  os->filepos + s->output_offset,
-	  os->vma + s->output_offset);
-#endif
+  printf("Fixup table file offset: %lx  VMA: %lx\n",
+	 (os->filepos + s->output_offset),
+	 (os->vma + s->output_offset));
+#endif /* LINUX_LINK_DEBUG */
 
   fixup_table = s->contents;
-  bfd_put_32 (output_bfd,
-	      (bfd_vma) linux_hash_table (info)->fixup_count, fixup_table);
+  bfd_put_32(output_bfd,
+	     (bfd_vma)linux_hash_table(info)->fixup_count, fixup_table);
   fixup_table += 4;
 
-  /* Fill in fixup table.  */
-  for (f = linux_hash_table (info)->fixup_list; f != NULL; f = f->next)
+  /* Fill in fixup table: */
+  for (f = linux_hash_table(info)->fixup_list; f != NULL; f = f->next)
     {
       if (f->builtin)
 	continue;
 
-      if (f->h->root.root.type != bfd_link_hash_defined
-	  && f->h->root.root.type != bfd_link_hash_defweak)
+      if ((f->h->root.root.type != bfd_link_hash_defined)
+	  && (f->h->root.root.type != bfd_link_hash_defweak))
 	{
 	  (*_bfd_error_handler)
 	    (_("Symbol %s not defined for fixups\n"),
@@ -645,48 +645,48 @@ linux_finish_dynamic_link(bfd *output_bfd, struct bfd_link_info *info)
 	}
 
       is = f->h->root.root.u.def.section;
-      section_offset = is->output_section->vma + is->output_offset;
-      new_addr = f->h->root.root.u.def.value + section_offset;
+      section_offset = (is->output_section->vma + is->output_offset);
+      new_addr = (f->h->root.root.u.def.value + section_offset);
 
-#ifdef LINUX_LINK_DEBUG
-      printf ("Fixup(%d) %s: %x %x\n",f->jump, f->h->root.root.string,
-	      new_addr, f->value);
-#endif
+#if defined(LINUX_LINK_DEBUG) && 0
+      printf("Fixup(%d) %s: %x %lx\n", f->jump, f->h->root.root.string,
+	     new_addr, f->value);
+#endif /* LINUX_LINK_DEBUG && 0 */
 
       if (f->jump)
 	{
 	  /* Relative address */
-	  new_addr = new_addr - (f->value + 5);
-	  bfd_put_32 (output_bfd, (bfd_vma) new_addr, fixup_table);
+	  new_addr = (new_addr - (f->value + 5));
+	  bfd_put_32(output_bfd, (bfd_vma)new_addr, fixup_table);
 	  fixup_table += 4;
-	  bfd_put_32 (output_bfd, f->value + 1, fixup_table);
+	  bfd_put_32(output_bfd, (f->value + 1), fixup_table);
 	  fixup_table += 4;
 	}
       else
 	{
-	  bfd_put_32 (output_bfd, (bfd_vma) new_addr, fixup_table);
+	  bfd_put_32(output_bfd, (bfd_vma)new_addr, fixup_table);
 	  fixup_table += 4;
-	  bfd_put_32 (output_bfd, f->value, fixup_table);
+	  bfd_put_32(output_bfd, f->value, fixup_table);
 	  fixup_table += 4;
 	}
       ++fixups_written;
     }
 
-  if (linux_hash_table (info)->local_builtins != 0)
+  if (linux_hash_table(info)->local_builtins != 0)
     {
-      /* Special marker so we know to switch to the other type of fixup */
-      bfd_put_32 (output_bfd, (bfd_vma) 0, fixup_table);
+      /* Special marker so we know to switch to the other type of fixup: */
+      bfd_put_32(output_bfd, (bfd_vma)0UL, fixup_table);
       fixup_table += 4;
-      bfd_put_32 (output_bfd, (bfd_vma) 0, fixup_table);
+      bfd_put_32(output_bfd, (bfd_vma)0UL, fixup_table);
       fixup_table += 4;
       ++fixups_written;
-      for (f = linux_hash_table (info)->fixup_list; f != NULL; f = f->next)
+      for (f = linux_hash_table(info)->fixup_list; f != NULL; f = f->next)
 	{
 	  if (! f->builtin)
 	    continue;
 
-	  if (f->h->root.root.type != bfd_link_hash_defined
-	      && f->h->root.root.type != bfd_link_hash_defweak)
+	  if ((f->h->root.root.type != bfd_link_hash_defined)
+	      && (f->h->root.root.type != bfd_link_hash_defweak))
 	    {
 	      (*_bfd_error_handler)
 		(_("Symbol %s not defined for fixups\n"),
@@ -695,61 +695,61 @@ linux_finish_dynamic_link(bfd *output_bfd, struct bfd_link_info *info)
 	    }
 
 	  is = f->h->root.root.u.def.section;
-	  section_offset = is->output_section->vma + is->output_offset;
-	  new_addr = f->h->root.root.u.def.value + section_offset;
+	  section_offset = (is->output_section->vma + is->output_offset);
+	  new_addr = (f->h->root.root.u.def.value + section_offset);
 
-#ifdef LINUX_LINK_DEBUG
-	  printf ("Fixup(B) %s: %x %x\n", f->h->root.root.string,
-		  new_addr, f->value);
-#endif
+#if defined(LINUX_LINK_DEBUG) && 0
+	  printf("Fixup(B) %s: %x %lx\n", f->h->root.root.string,
+		 new_addr, f->value);
+#endif /* LINUX_LINK_DEBUG && 0 */
 
-	  bfd_put_32 (output_bfd, (bfd_vma) new_addr, fixup_table);
+	  bfd_put_32(output_bfd, (bfd_vma)new_addr, fixup_table);
 	  fixup_table += 4;
-	  bfd_put_32 (output_bfd, f->value, fixup_table);
+	  bfd_put_32(output_bfd, f->value, fixup_table);
 	  fixup_table += 4;
 	  ++fixups_written;
 	}
     }
 
-  if (linux_hash_table (info)->fixup_count != fixups_written)
+  if (linux_hash_table(info)->fixup_count != fixups_written)
     {
-      (*_bfd_error_handler) (_("Warning: fixup count mismatch\n"));
-      while (linux_hash_table (info)->fixup_count > fixups_written)
+      (*_bfd_error_handler)(_("Warning: fixup count mismatch\n"));
+      while (linux_hash_table(info)->fixup_count > fixups_written)
 	{
-	  bfd_put_32 (output_bfd, (bfd_vma) 0, fixup_table);
+	  bfd_put_32(output_bfd, (bfd_vma)0UL, fixup_table);
 	  fixup_table += 4;
-	  bfd_put_32 (output_bfd, (bfd_vma) 0, fixup_table);
+	  bfd_put_32(output_bfd, (bfd_vma)0UL, fixup_table);
 	  fixup_table += 4;
 	  ++fixups_written;
 	}
     }
 
-  h = linux_link_hash_lookup (linux_hash_table (info),
-			      "__BUILTIN_FIXUPS__",
-			      FALSE, FALSE, FALSE);
+  h = linux_link_hash_lookup(linux_hash_table(info),
+			     "__BUILTIN_FIXUPS__",
+			     FALSE, FALSE, FALSE);
 
-  if (h != NULL
-      && (h->root.root.type == bfd_link_hash_defined
-	  || h->root.root.type == bfd_link_hash_defweak))
+  if ((h != NULL)
+      && ((h->root.root.type == bfd_link_hash_defined)
+	  || (h->root.root.type == bfd_link_hash_defweak)))
     {
       is = h->root.root.u.def.section;
-      section_offset = is->output_section->vma + is->output_offset;
-      new_addr = h->root.root.u.def.value + section_offset;
+      section_offset = (is->output_section->vma + is->output_offset);
+      new_addr = (h->root.root.u.def.value + section_offset);
 
 #ifdef LINUX_LINK_DEBUG
-      printf ("Builtin fixup table at %x\n", new_addr);
-#endif
+      printf("Builtin fixup table at %x\n", new_addr);
+#endif /* LINUX_LINK_DEBUG */
 
-      bfd_put_32 (output_bfd, (bfd_vma) new_addr, fixup_table);
+      bfd_put_32(output_bfd, (bfd_vma)new_addr, fixup_table);
     }
   else
-    bfd_put_32 (output_bfd, (bfd_vma) 0, fixup_table);
+    bfd_put_32(output_bfd, (bfd_vma)0UL, fixup_table);
 
-  if (bfd_seek (output_bfd, (file_ptr) (os->filepos + s->output_offset),
-		SEEK_SET) != 0)
+  if (bfd_seek(output_bfd, (file_ptr)(os->filepos + s->output_offset),
+               SEEK_SET) != 0)
     return FALSE;
 
-  if (bfd_bwrite ((PTR) s->contents, s->size, output_bfd) != s->size)
+  if (bfd_bwrite((PTR)s->contents, s->size, output_bfd) != s->size)
     return FALSE;
 
   return TRUE;
@@ -762,3 +762,5 @@ linux_finish_dynamic_link(bfd *output_bfd, struct bfd_link_info *info)
 #define MY_zmagic_contiguous 1
 
 #include "aout-target.h"
+
+/* EOF */

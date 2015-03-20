@@ -201,11 +201,11 @@ const char hpacc_vtbl_ptr_type_name[] = "__vftyp";
    "pointer to virtual function".  */
 
 int
-cp_is_vtbl_ptr_type (struct type *type)
+cp_is_vtbl_ptr_type(struct type *the_type)
 {
-  char *typename = type_name_no_tag (type);
+  char *cp_typename = type_name_no_tag(the_type);
 
-  return (typename != NULL && !strcmp (typename, vtbl_ptr_name));
+  return ((cp_typename != NULL) && !strcmp(cp_typename, vtbl_ptr_name));
 }
 
 /* Return truth value for the assertion that TYPE is of the type
@@ -252,7 +252,7 @@ cp_is_vtbl_member (struct type *type)
    same meanings as in cp_print_value and c_val_print.
 
    2nd argument REAL_TYPE is used to carry over the type of the derived
-   class across the recursion to base classes. 
+   class across the recursion to base classes.
 
    DONT_PRINT is an array of baseclass types that we
    should not print, or zero if called from top level.  */
@@ -386,7 +386,7 @@ cp_print_value_fields (struct type *type, struct type *real_type,
 	      else
 		{
 		  v = value_from_longest
-		    (TYPE_FIELD_TYPE (type, i), 
+		    (TYPE_FIELD_TYPE (type, i),
 		     unpack_field_as_long (type, valaddr + offset, i));
 
 		  common_val_print (v, stream, format, 0, recurse + 1, pretty);
@@ -697,7 +697,7 @@ cp_print_static_field (struct type *type,
 			     stream, format, recurse, pretty, NULL, 1);
       return;
     }
-  val_print (type, value_contents_all (val), 
+  val_print (type, value_contents_all (val),
 	     value_embedded_offset (val), VALUE_ADDRESS (val),
 	     stream, format, 0, recurse, pretty);
 }

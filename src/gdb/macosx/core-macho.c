@@ -87,9 +87,9 @@ lookup_section(bfd *abfd, unsigned int n)
 }
 
 static void
-check_thread (bfd *abfd, asection *asect, unsigned int num)
+check_thread(bfd *abfd, asection *asect, unsigned int num)
 {
-  const char *sname = bfd_section_name (abfd, asect);
+  const char *sname = bfd_section_name(abfd, asect);
   unsigned int i;
   const char *expected = NULL;
 #if defined (TARGET_POWERPC)
@@ -113,24 +113,24 @@ check_thread (bfd *abfd, asection *asect, unsigned int num)
 #else
 # error "unsupported architecture"
 #endif /* TARGET_foo */
-  const int num_names = sizeof (names)/sizeof (const char*);
+  const size_t num_names = (sizeof(names) / sizeof(const char *));
 
-  /* Check all possible thread state names for a possible match.  */
-  for (i = 0; i < num_names; i++)
+  /* Check all possible thread state names for a possible match: */
+  for (i = 0U; i < num_names; i++)
     {
-      if (strncmp (sname, names[i], strlen (names[i])) == 0)
+      if (strncmp(sname, names[i], strlen(names[i])) == 0)
 	{
 	  expected = names[i];
 	  break;
 	}
     }
 
-  /* Make sure we found a matching thread state name.  */
+  /* Make sure we found a matching thread state name: */
   if (expected == NULL) {
     return; /* We did NOT find a match.  */
   }
 
-  /* Extract the thread index.  */
+  /* Extract the thread index: */
   i = strtol(sname + strlen(expected), NULL, 0);
 
   add_thread(ptid_build(1, i, num));
@@ -141,7 +141,7 @@ check_thread (bfd *abfd, asection *asect, unsigned int num)
 }
 
 static void
-core_close_1 (void *arg)
+core_close_1(void *arg)
 {
   char *name;
 
@@ -150,36 +150,36 @@ core_close_1 (void *arg)
       return;
     }
 
-  name = bfd_get_filename (core_bfd);
-  if (!bfd_close (core_bfd))
+  name = bfd_get_filename(core_bfd);
+  if (!bfd_close(core_bfd))
     {
-      warning ("Unable to close \"%s\": %s", name,
-               bfd_errmsg (bfd_get_error ()));
+      warning("Unable to close \"%s\": %s", name,
+              bfd_errmsg(bfd_get_error()));
     }
 
   core_bfd = NULL;
   inferior_ptid = null_ptid;
 
 #ifdef CLEAR_SOLIB
-  CLEAR_SOLIB ();
+  CLEAR_SOLIB();
 #endif /* CLEAR_SOLIB */
 
   if (macho_core_ops.to_sections)
     {
-      xfree (macho_core_ops.to_sections);
+      xfree(macho_core_ops.to_sections);
       macho_core_ops.to_sections = NULL;
       macho_core_ops.to_sections_end = NULL;
     }
 }
 
 static void
-core_close (int quitting)
+core_close(int quitting)
 {
-  core_close_1 (NULL);
+  core_close_1(NULL);
 }
 
 static void
-core_open (char *filename, int from_tty)
+core_open(char *filename, int from_tty)
 {
   const char *p;
   int siggy;
@@ -191,111 +191,119 @@ core_open (char *filename, int from_tty)
   struct bfd_section *sect;
   unsigned int i;
 
-  target_preopen (from_tty);
+  target_preopen(from_tty);
   if (!filename)
     {
-      error (core_bfd ?
-             "No core file specified.  (Use `detach' to stop debugging a core file.)"
-             : "No core file specified.");
+      error(core_bfd ?
+            "No core file specified.  (Use `detach' to stop debugging a core file.)"
+            : "No core file specified.");
     }
 
-  filename = tilde_expand (filename);
+  filename = tilde_expand(filename);
   if (filename[0] != '/')
     {
-      temp = concat (current_directory, "/", filename, NULL);
-      xfree (filename);
+      temp = concat(current_directory, "/", filename, NULL);
+      xfree(filename);
       filename = temp;
     }
 
-  old_chain = make_cleanup (free, filename);
+  old_chain = make_cleanup(free, filename);
 
-  scratch_chan = open (filename, write_files ? O_RDWR : O_RDONLY, 0);
+  scratch_chan = open(filename, (write_files ? O_RDWR : O_RDONLY), 0);
   if (scratch_chan < 0)
-    perror_with_name (filename);
+    perror_with_name(filename);
 
-  temp_bfd = bfd_fdopenr (filename, gnutarget, scratch_chan);
+  temp_bfd = bfd_fdopenr(filename, gnutarget, scratch_chan);
   if (temp_bfd == NULL)
-    perror_with_name (filename);
+    perror_with_name(filename);
 
-  if (bfd_check_format (temp_bfd, bfd_core) == 0)
+  if (bfd_check_format(temp_bfd, bfd_core) == 0)
     {
       /* Do it after the err msg */
-      /* FIXME: should be checking for errors from bfd_close (for one thing,
+      /* FIXME: should be checking for errors from bfd_close (for 1 thing,
          on error it does not free all the storage associated with the
          bfd).  */
-      make_cleanup_bfd_close (temp_bfd);
-      error ("\"%s\" is not a core dump: %s",
-             filename, bfd_errmsg (bfd_get_error ()));
+      make_cleanup_bfd_close(temp_bfd);
+      error("\"%s\" is not a core dump: %s",
+            filename, bfd_errmsg(bfd_get_error()));
     }
 
-  /* Looks semi-reasonable. Toss the old core file and work on the new.  */
-
-  discard_cleanups (old_chain); /* Do NOT free filename any more */
-  unpush_target (&macho_core_ops);
+  /* Looks semi-reasonable; toss the old core file and work on the new: */
+  discard_cleanups(old_chain); /* Do NOT free filename any more */
+  unpush_target(&macho_core_ops);
   core_bfd = temp_bfd;
-  old_chain = make_cleanup (core_close_1, core_bfd);
+  old_chain = make_cleanup(core_close_1, core_bfd);
 
-  validate_files ();
+  validate_files();
 
-  /* Find the data section */
-  if (build_section_table (core_bfd, &macho_core_ops.to_sections,
-                           &macho_core_ops.to_sections_end))
-    error ("\"%s\": Cannot find sections: %s",
-           bfd_get_filename (core_bfd), bfd_errmsg (bfd_get_error ()));
+  /* Find the data section: */
+  if (build_section_table(core_bfd, &macho_core_ops.to_sections,
+                          &macho_core_ops.to_sections_end))
+    error("\"%s\": Cannot find sections: %s",
+          bfd_get_filename(core_bfd), bfd_errmsg(bfd_get_error()));
 
-  ontop = !push_target (&macho_core_ops);
-  discard_cleanups (old_chain);
+  ontop = !push_target(&macho_core_ops);
+  discard_cleanups(old_chain);
 
-  p = bfd_core_file_failing_command (core_bfd);
+  p = bfd_core_file_failing_command(core_bfd);
   if (p)
-    printf_filtered ("Core was generated by `%s'.\n", p);
+    printf_filtered("Core was generated by `%s'.\n", p);
 
-  siggy = bfd_core_file_failing_signal (core_bfd);
+  siggy = bfd_core_file_failing_signal(core_bfd);
   if (siggy > 0)
-    printf_filtered ("Program terminated with signal %d, %s.\n", siggy,
-                     target_signal_to_string (target_signal_from_host
-                                              (siggy)));
+    printf_filtered("Program terminated with signal %d, %s.\n", siggy,
+                    target_signal_to_string(target_signal_from_host(siggy)));
 
-  /* Build up thread list from BFD sections. */
-
-  init_thread_list ();
+  /* Build up thread list from BFD sections: */
+  init_thread_list();
 
   inferior_ptid = null_ptid;
   i = 0;
 
   for (sect = core_bfd->sections; sect != NULL; i++, sect = sect->next)
-    check_thread (core_bfd, sect, i);
+    check_thread(core_bfd, sect, i);
 
-  CHECK_FATAL (i == core_bfd->section_count);
+  CHECK_FATAL(i == core_bfd->section_count);
 
-  if (ptid_equal (inferior_ptid, null_ptid))
+  if (ptid_equal(inferior_ptid, null_ptid))
     {
-      error ("Core file contained no thread-specific data\n");
+      error("Core file contained no thread-specific data\n");
     }
 
   /* If the symbol file specified is a kernel image, or we have no
      symbol file specified at all, check to see if this is a kernel
      coredump that may have slid due to kaslr.  */
 
-  if (symfile_objfile == NULL || symfile_objfile->obfd == NULL ||  bfd_mach_o_kernel_image (symfile_objfile->obfd))
+  if ((symfile_objfile == NULL) || (symfile_objfile->obfd == NULL)
+      || bfd_mach_o_kernel_image(symfile_objfile->obfd))
     {
-      /* The address of the kernel Mach-O header is at this address in the low globals page.  */
+      /* The address of the kernel Mach-O header is at this address in the
+       * low globals page: */
       ULONGEST possible_kernel_address = INVALID_ADDRESS;
-      struct cleanup *uiclean = make_cleanup_ui_out_suppress_output (uiout);
+      struct cleanup *uiclean = make_cleanup_ui_out_suppress_output(uiout);
       struct ui_file *prev_stderr = gdb_stderr;
+      int found_kernel;
+      int mem_read_ret;
       gdb_stderr = gdb_null;
 
-      int found_kernel = 0;
-      int mem_read_ret = safe_read_memory_unsigned_integer (0xffffff8000002010ULL, 8, &possible_kernel_address);
+      found_kernel = 0;
+      mem_read_ret = safe_read_memory_unsigned_integer(0xffffff8000002010ULL,
+                                                       8, &possible_kernel_address);
       gdb_stderr = prev_stderr;
-      do_cleanups (uiclean);
-      if (mem_read_ret && possible_kernel_address != INVALID_ADDRESS && possible_kernel_address != 0)
+      do_cleanups(uiclean);
+      if (mem_read_ret && (possible_kernel_address != INVALID_ADDRESS)
+          && (possible_kernel_address != 0))
         {
           CORE_ADDR in_memory_addr;
           uuid_t in_memory_uuid;
           enum gdb_osabi in_memory_osabi = GDB_OSABI_UNKNOWN;
           int got_info;
-          got_info = get_information_about_macho (NULL, possible_kernel_address, NULL, 1, 1, &in_memory_uuid, &in_memory_osabi, NULL, NULL, NULL, NULL);
+          got_info = get_information_about_macho(NULL,
+                                                 possible_kernel_address,
+                                                 NULL, 1, 1,
+                                                 &in_memory_uuid,
+                                                 &in_memory_osabi, NULL,
+                                                 NULL, NULL, NULL);
           if (got_info)
             {
               in_memory_addr = possible_kernel_address;
@@ -303,17 +311,23 @@ core_open (char *filename, int from_tty)
             }
           else
             {
-              // We had to guess at how many bytes to read above - try 8 bytes.  As a backup, try
-              // again with 4.
-              uiclean = make_cleanup_ui_out_suppress_output (uiout);
+              /* We had to guess how many bytes to read above; try 8 bytes.
+               * As a backup, try again with 4: */
+              uiclean = make_cleanup_ui_out_suppress_output(uiout);
               prev_stderr = gdb_stderr;
               gdb_stderr = gdb_null;
-              mem_read_ret = safe_read_memory_unsigned_integer (0xffffff8000002010ULL, 4, &possible_kernel_address);
+              mem_read_ret = safe_read_memory_unsigned_integer(0xffffff8000002010ULL,
+                                                               4, &possible_kernel_address);
               gdb_stderr = prev_stderr;
               do_cleanups (uiclean);
 
               if (mem_read_ret
-                  && get_information_about_macho (NULL, possible_kernel_address, NULL, 1, 1, &in_memory_uuid, &in_memory_osabi, NULL, NULL, NULL, NULL))
+                  && get_information_about_macho(NULL,
+                                                 possible_kernel_address,
+                                                 NULL, 1, 1,
+                                                 &in_memory_uuid,
+                                                 &in_memory_osabi,
+                                                 NULL, NULL, NULL, NULL))
                 {
                   got_info = found_kernel = 1;
                   in_memory_addr = possible_kernel_address;
@@ -339,41 +353,58 @@ core_open (char *filename, int from_tty)
             }
         }
 
-      /* Retry with the K32 address location if we have NOT found a kernel yet. */
+      /* Retry with the K32 address location if we have NOT found a kernel yet: */
       if (found_kernel == 0)
         {
           possible_kernel_address = INVALID_ADDRESS;
-          uiclean = make_cleanup_ui_out_suppress_output (uiout);
+          uiclean = make_cleanup_ui_out_suppress_output(uiout);
           prev_stderr = gdb_stderr;
           gdb_stderr = gdb_null;
-          mem_read_ret = safe_read_memory_unsigned_integer (0xffff0110, 4, &possible_kernel_address);
+          mem_read_ret = safe_read_memory_unsigned_integer(0xffff0110, 4, &possible_kernel_address);
           gdb_stderr = prev_stderr;
           do_cleanups (uiclean);
-          if (mem_read_ret && possible_kernel_address != INVALID_ADDRESS && possible_kernel_address != 0)
+          if (mem_read_ret && (possible_kernel_address != INVALID_ADDRESS)
+              && (possible_kernel_address != 0))
             {
               CORE_ADDR in_memory_addr;
               uuid_t in_memory_uuid;
               enum gdb_osabi in_memory_osabi = GDB_OSABI_UNKNOWN;
               int got_info;
-              got_info = get_information_about_macho (NULL, possible_kernel_address, NULL, 1, 1, &in_memory_uuid, &in_memory_osabi, NULL, NULL, NULL, NULL);
+              got_info = get_information_about_macho(NULL, possible_kernel_address,
+                                                     NULL, 1, 1,
+                                                     &in_memory_uuid,
+                                                     &in_memory_osabi,
+                                                     NULL, NULL, NULL,
+                                                     NULL);
               if (got_info)
                 {
+                  CORE_ADDR file_load_addr;
                   in_memory_addr = possible_kernel_address;
 
-              /* OK we found a Mach-O kernel in the core file memory. If the user specified a kernel file
-                 on startup, slide it to the correct address. If no kernel was specified, see if we cannot
-                 find one via DBGShellCommand. In any case, print a message about the load address and
-                 UUID of the kernel we found in memory.  */
-
-                  CORE_ADDR file_load_addr = INVALID_ADDRESS;
+                  /* OK, we found a Mach-O kernel in the core file memory.
+                   * If the user specified a kernel file on startup, then
+                   * slide it to the correct address.  If no kernel was
+                   * specified, see if we cannot find one via
+                   * DBGShellCommand.  In any case, print a message about
+                   * the load address and UUID of the kernel that we found
+                   * in memory: */
+                  file_load_addr = INVALID_ADDRESS;
                   if (symfile_objfile
-                      && get_information_about_macho (NULL, INVALID_ADDRESS, symfile_objfile->obfd, 1, 0, NULL, NULL, NULL, &file_load_addr, NULL, NULL))
+                      && get_information_about_macho(NULL, INVALID_ADDRESS,
+                                                     symfile_objfile->obfd,
+                                                     1, 0, NULL, NULL,
+                                                     NULL, &file_load_addr,
+                                                     NULL, NULL))
                     {
-                      slide_kernel_objfile (symfile_objfile, in_memory_addr, in_memory_uuid, in_memory_osabi);
+                      slide_kernel_objfile(symfile_objfile, in_memory_addr,
+                                           in_memory_uuid,
+                                           in_memory_osabi);
                     }
                   else
                     {
-                      try_to_find_and_load_kernel_via_uuid (in_memory_addr, in_memory_uuid, in_memory_osabi);
+                      try_to_find_and_load_kernel_via_uuid(in_memory_addr,
+                                                           in_memory_uuid,
+                                                           in_memory_osabi);
                     }
                 }
             }
@@ -390,7 +421,7 @@ core_open (char *filename, int from_tty)
          program that did NOT use dyld.  */
       if (!exec_bfd || bfd_mach_o_uses_dylinker(exec_bfd))
 	{
-	  macosx_init_dyld_from_core ();
+	  macosx_init_dyld_from_core();
 	}
 #endif /* MACOSX_DYLD */
       /* Fetch all registers from core file.  */
@@ -857,9 +888,9 @@ core_fetch_registers (int regno)
      when reading and writing registers.  */
   if (thrd_info->private == NULL || thrd_info->private->core_thread_state == NULL)
     {
-      for (tid = ptid_get_tid (inferior_ptid);
-	   tid < bfd_count_sections (abfd)
-	   && (sec = lookup_section (abfd, tid)) != NULL;
+      for (tid = ptid_get_tid(inferior_ptid);
+	   (tid < (long)bfd_count_sections(abfd))
+	   && ((sec = lookup_section(abfd, tid)) != NULL);
 	   tid++)
 	{
 	  const char *sname = bfd_section_name (abfd, sec);
@@ -867,9 +898,10 @@ core_fetch_registers (int regno)
 	  /* See if the section names starts with "LC_THREAD.".  */
 	  if (strstr (sname, "LC_THREAD.") == sname)
 	    {
-	      /* Extract the flavour into a temp string.  */
-	      strncpy (flavour_str, sname + 10, sizeof(flavour_str)-1);
-	      char *dot = strchr (flavour_str, '.');
+              char *dot;
+	      /* Extract the flavour into a temp string: */
+	      strncpy(flavour_str, sname + 10, sizeof(flavour_str) - 1);
+	      dot = strchr(flavour_str, '.');
 	      if (dot)
 		{
 		  /* Set the thread index string it it has NOT arlready been set

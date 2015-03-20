@@ -457,23 +457,21 @@ DESCRIPTION
 */
 
 void
-NAME (aout,swap_exec_header_in) (abfd, raw_bytes, execp)
-     bfd *abfd;
-     struct external_exec *raw_bytes;
-     struct internal_exec *execp;
+NAME (aout,swap_exec_header_in)(bfd *abfd, struct external_exec *raw_bytes,
+                                struct internal_exec *execp)
 {
-  struct external_exec *bytes = (struct external_exec *) raw_bytes;
+  struct external_exec *bytes = (struct external_exec *)raw_bytes;
 
   /* The internal_exec structure has some fields that are unused in this
      configuration (IE for i960), so ensure that all such uninitialized
      fields are zero'd out.  There are places where two of these structs
      are memcmp'd, and thus the contents do matter. */
-  memset (execp, 0, sizeof (struct internal_exec));
+  memset(execp, 0, sizeof(struct internal_exec));
   /* Now fill in fields in the execp, from the bytes in the raw data.  */
-  execp->a_info = H_GET_32 (abfd, bytes->e_info);
-  execp->a_text = GET_WORD (abfd, bytes->e_text);
-  execp->a_data = GET_WORD (abfd, bytes->e_data);
-  execp->a_bss = GET_WORD (abfd, bytes->e_bss);
+  execp->a_info = H_GET_32(abfd, bytes->e_info);
+  execp->a_text = GET_WORD(abfd, bytes->e_text);
+  execp->a_data = GET_WORD(abfd, bytes->e_data);
+  execp->a_bss = GET_WORD(abfd, bytes->e_bss);
   execp->a_syms = GET_WORD (abfd, bytes->e_syms);
   execp->a_entry = GET_WORD (abfd, bytes->e_entry);
   execp->a_trsize = GET_WORD (abfd, bytes->e_trsize);
@@ -541,8 +539,7 @@ NAME (aout,swap_exec_header_in) (abfd, raw_bytes, execp)
 */
 
 bfd_boolean
-MY (slurp_symbol_table) (abfd)
-     bfd *abfd;
+MY(slurp_symbol_table)(bfd *abfd)
 {
   bfd_size_type symbol_bytes;
   struct external_nlist *syms;
@@ -641,18 +638,15 @@ MY (slurp_symbol_table) (abfd)
       }
   }
 
-  obj_aout_symbols (abfd) = cached;
+  obj_aout_symbols(abfd) = cached;
 
   return TRUE;
 }
 
 void
-MY (swap_std_reloc_in) (abfd, bytes, cache_ptr, symbols, symcount)
-     bfd *abfd;
-     struct hp300hpux_reloc *bytes;
-     arelent *cache_ptr;
-     asymbol **symbols;
-     bfd_size_type symcount ATTRIBUTE_UNUSED;
+MY (swap_std_reloc_in)(bfd *abfd, struct hp300hpux_reloc *bytes,
+                       arelent *cache_ptr, asymbol **symbols,
+                       bfd_size_type symcount ATTRIBUTE_UNUSED)
 {
   int r_index;
   int r_extern = 0;
@@ -660,8 +654,8 @@ MY (swap_std_reloc_in) (abfd, bytes, cache_ptr, symbols, symcount)
   int r_pcrel = 0;
   struct aoutdata *su = &(abfd->tdata.aout_data->a);
 
-  cache_ptr->address = H_GET_32 (abfd, bytes->r_address);
-  r_index = H_GET_16 (abfd, bytes->r_index);
+  cache_ptr->address = H_GET_32(abfd, bytes->r_address);
+  r_index = H_GET_16(abfd, bytes->r_index);
 
   switch (bytes->r_type[0])
     {
@@ -717,19 +711,16 @@ MY (swap_std_reloc_in) (abfd, bytes, cache_ptr, symbols, symcount)
       /* The GNU linker assumes any offset from beginning of section */
       /* is already incorporated into the image while the HP linker  */
       /* adds this in later.  Add it in now...                       */
-      MOVE_ADDRESS (-cache_ptr->address);
+      MOVE_ADDRESS(-cache_ptr->address);
     }
   else
     {
-      MOVE_ADDRESS (0);
+      MOVE_ADDRESS(0);
     }
 }
 
 bfd_boolean
-MY (slurp_reloc_table) (abfd, asect, symbols)
-     bfd *abfd;
-     sec_ptr asect;
-     asymbol **symbols;
+MY (slurp_reloc_table)(bfd *abfd, sec_ptr asect, asymbol **symbols)
 {
   bfd_size_type count;
   bfd_size_type reloc_size;
@@ -809,58 +800,52 @@ doit:
 /************************************************************************/
 
 long aout_32_canonicalize_symtab
-  PARAMS ((bfd * abfd, asymbol ** location));
+  PARAMS((bfd * abfd, asymbol ** location));
 long aout_32_get_symtab_upper_bound
-  PARAMS ((bfd * abfd));
+  PARAMS((bfd * abfd));
 long aout_32_canonicalize_reloc
-  PARAMS ((bfd * abfd, sec_ptr section, arelent ** relptr,
-	   asymbol ** symbols));
+  PARAMS((bfd * abfd, sec_ptr section, arelent ** relptr,
+	  asymbol ** symbols));
 
 long
-MY (canonicalize_symtab) (abfd, location)
-     bfd *abfd;
-     asymbol **location;
+MY(canonicalize_symtab)(bfd *abfd, asymbol **location)
 {
-  unsigned int counter = 0;
+  unsigned int counter = 0U;
   aout_symbol_type *symbase;
 
-  if (obj_aout_subformat (abfd) == gnu_encap_format)
-    return aout_32_canonicalize_symtab (abfd, location);
+  if (obj_aout_subformat(abfd) == gnu_encap_format)
+    return aout_32_canonicalize_symtab(abfd, location);
 
-  if (!MY (slurp_symbol_table) (abfd))
+  if (!MY(slurp_symbol_table)(abfd))
     return -1;
 
-  for (symbase = obj_aout_symbols (abfd); counter++ < bfd_get_symcount (abfd);)
-    *(location++) = (asymbol *) (symbase++);
+  for (symbase = obj_aout_symbols(abfd); counter++ < bfd_get_symcount(abfd);)
+    *(location++) = (asymbol *)(symbase++);
   *location++ = 0;
-  return bfd_get_symcount (abfd);
+  return bfd_get_symcount(abfd);
 }
 
 long
-MY (get_symtab_upper_bound) (abfd)
-     bfd *abfd;
+MY(get_symtab_upper_bound)(bfd *abfd)
 {
-  if (obj_aout_subformat (abfd) == gnu_encap_format)
-    return aout_32_get_symtab_upper_bound (abfd);
-  if (!MY (slurp_symbol_table) (abfd))
+  if (obj_aout_subformat(abfd) == gnu_encap_format)
+    return aout_32_get_symtab_upper_bound(abfd);
+  if (!MY(slurp_symbol_table)(abfd))
     return -1;
 
-  return (bfd_get_symcount (abfd) + 1) * (sizeof (aout_symbol_type *));
+  return (bfd_get_symcount(abfd) + 1) * (sizeof(aout_symbol_type *));
 }
 
 long
-MY (canonicalize_reloc) (abfd, section, relptr, symbols)
-     bfd *abfd;
-     sec_ptr section;
-     arelent **relptr;
-     asymbol **symbols;
+MY(canonicalize_reloc)(bfd *abfd, sec_ptr section, arelent **relptr,
+                       asymbol **symbols)
 {
   arelent *tblptr = section->relocation;
   unsigned int count;
-  if (obj_aout_subformat (abfd) == gnu_encap_format)
-    return aout_32_canonicalize_reloc (abfd, section, relptr, symbols);
+  if (obj_aout_subformat(abfd) == gnu_encap_format)
+    return aout_32_canonicalize_reloc(abfd, section, relptr, symbols);
 
-  if (!(tblptr || MY (slurp_reloc_table) (abfd, section, symbols)))
+  if (!(tblptr || MY(slurp_reloc_table)(abfd, section, symbols)))
     return -1;
 
   if (section->flags & SEC_CONSTRUCTOR)

@@ -2877,27 +2877,25 @@ elf_create_pointer_linker_section (bfd *abfd,
 }
 
 static bfd_boolean
-update_local_sym_info (bfd *abfd,
-		       Elf_Internal_Shdr *symtab_hdr,
-		       unsigned long r_symndx,
-		       int tls_type)
+update_local_sym_info(bfd *abfd, Elf_Internal_Shdr *symtab_hdr,
+		      unsigned long r_symndx, int tls_type)
 {
-  bfd_signed_vma *local_got_refcounts = elf_local_got_refcounts (abfd);
+  bfd_signed_vma *local_got_refcounts = elf_local_got_refcounts(abfd);
   char *local_got_tls_masks;
 
   if (local_got_refcounts == NULL)
     {
       bfd_size_type size = symtab_hdr->sh_info;
 
-      size *= sizeof (*local_got_refcounts) + sizeof (*local_got_tls_masks);
-      local_got_refcounts = bfd_zalloc (abfd, size);
+      size *= sizeof(*local_got_refcounts) + sizeof(*local_got_tls_masks);
+      local_got_refcounts = (bfd_signed_vma *)bfd_zalloc(abfd, size);
       if (local_got_refcounts == NULL)
 	return FALSE;
-      elf_local_got_refcounts (abfd) = local_got_refcounts;
+      elf_local_got_refcounts(abfd) = local_got_refcounts;
     }
 
   local_got_refcounts[r_symndx] += 1;
-  local_got_tls_masks = (char *) (local_got_refcounts + symtab_hdr->sh_info);
+  local_got_tls_masks = (char *)(local_got_refcounts + symtab_hdr->sh_info);
   local_got_tls_masks[r_symndx] |= tls_type;
   return TRUE;
 }
@@ -4815,8 +4813,8 @@ ppc_elf_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
       if ((s->flags & SEC_HAS_CONTENTS) == 0)
 	continue;
 
-      /* Allocate memory for the section contents.  */
-      s->contents = bfd_zalloc (htab->elf.dynobj, s->size);
+      /* Allocate memory for the section contents: */
+      s->contents = (unsigned char *)bfd_zalloc(htab->elf.dynobj, s->size);
       if (s->contents == NULL)
 	return FALSE;
     }
@@ -5218,15 +5216,13 @@ ppc_elf_relax_section (bfd *abfd,
       bfd_vma val;
       int i, size;
 
-      do
-	{
-	  struct one_fixup *f = fixups;
-	  fixups = fixups->next;
-	  free (f);
-	}
-      while (fixups);
+      do {
+        struct one_fixup *f = fixups;
+        fixups = fixups->next;
+        free(f);
+      } while (fixups);
 
-      contents = bfd_realloc (contents, trampoff);
+      contents = (bfd_byte *)bfd_realloc(contents, trampoff);
       if (contents == NULL)
 	goto error_return;
 

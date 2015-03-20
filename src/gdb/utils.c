@@ -1469,7 +1469,7 @@ xsnprintf(char *str, size_t size, const char *format, ...)
 
   va_start(args, format);
   ret = vsnprintf(str, size, format, args);
-  gdb_assert(ret < size);
+  gdb_assert((size_t)ret < size);
   va_end(args);
 
   return ret;
@@ -2249,10 +2249,10 @@ wrap_here (char *indent)
    command, which currently doesn't tabulate very well */
 
 void
-puts_filtered_tabular (char *string, int width, int right)
+puts_filtered_tabular(char *string, int width, int right)
 {
   int spaces = 0;
-  int stringlen;
+  size_t stringlen;
   char *spacebuf;
 
   gdb_assert(chars_per_line > 0);
@@ -2266,7 +2266,7 @@ puts_filtered_tabular (char *string, int width, int right)
   if ((((chars_printed - 1) / width + 2) * width) >= chars_per_line)
     fputs_filtered("\n", gdb_stdout);
 
-  if (width >= chars_per_line)
+  if ((size_t)width >= chars_per_line)
     width = (chars_per_line - 1);
 
   stringlen = strlen(string);
@@ -3007,7 +3007,7 @@ paddr_nz (CORE_ADDR addr)
 }
 
 const char *
-paddress (CORE_ADDR addr)
+paddress(CORE_ADDR addr)
 {
   /* Truncate address to the size of a target address, avoiding shifts
      larger or equal than the width of a CORE_ADDR.  The local
@@ -3020,28 +3020,26 @@ paddress (CORE_ADDR addr)
 
   int addr_bit = TARGET_ADDR_BIT;
 
-  if (addr_bit < (sizeof (CORE_ADDR) * HOST_CHAR_BIT))
-    addr &= ((CORE_ADDR) 1 << addr_bit) - 1;
-  return hex_string (addr);
+  if (addr_bit < (int)(sizeof(CORE_ADDR) * HOST_CHAR_BIT))
+    addr &= (((CORE_ADDR)1 << addr_bit) - 1);
+  return hex_string(addr);
 }
 
 static char *
-decimal2str (char *sign, ULONGEST addr, int width)
+decimal2str(char *sign, ULONGEST addr, int width)
 {
   /* Steal code from valprint.c:print_decimal().  Should this worry
      about the real size of addr as the above does? */
   unsigned long temp[3];
-  char *str = get_cell ();
+  char *str = get_cell();
 
-  int i = 0;
-  do
-    {
-      temp[i] = addr % (1000 * 1000 * 1000);
-      addr /= (1000 * 1000 * 1000);
-      i++;
-      width -= 9;
-    }
-  while (addr != 0 && i < (sizeof (temp) / sizeof (temp[0])));
+  size_t i = 0UL;
+  do {
+    temp[i] = (addr % (1000 * 1000 * 1000));
+    addr /= (1000 * 1000 * 1000);
+    i++;
+    width -= 9;
+  } while ((addr != 0) && (i < (sizeof(temp) / sizeof(temp[0]))));
 
   width += 9;
   if (width < 0)
@@ -3050,39 +3048,37 @@ decimal2str (char *sign, ULONGEST addr, int width)
   switch (i)
     {
     case 1:
-      xsnprintf (str, CELLSIZE, "%s%0*lu", sign, width, temp[0]);
+      xsnprintf(str, CELLSIZE, "%s%0*lu", sign, width, temp[0]);
       break;
     case 2:
-      xsnprintf (str, CELLSIZE, "%s%0*lu%09lu", sign, width,
-		 temp[1], temp[0]);
+      xsnprintf(str, CELLSIZE, "%s%0*lu%09lu", sign, width,
+                temp[1], temp[0]);
       break;
     case 3:
-      xsnprintf (str, CELLSIZE, "%s%0*lu%09lu%09lu", sign, width,
-		 temp[2], temp[1], temp[0]);
+      xsnprintf(str, CELLSIZE, "%s%0*lu%09lu%09lu", sign, width,
+                temp[2], temp[1], temp[0]);
       break;
     default:
-      internal_error (__FILE__, __LINE__,
-		      _("failed internal consistency check"));
+      internal_error(__FILE__, __LINE__,
+		     _("failed internal consistency check"));
     }
 
   return str;
 }
 
 static char *
-octal2str (ULONGEST addr, int width)
+octal2str(ULONGEST addr, int width)
 {
   unsigned long temp[3];
-  char *str = get_cell ();
+  char *str = get_cell();
 
-  int i = 0;
-  do
-    {
-      temp[i] = addr % (0100000 * 0100000);
-      addr /= (0100000 * 0100000);
-      i++;
-      width -= 10;
-    }
-  while (addr != 0 && i < (sizeof (temp) / sizeof (temp[0])));
+  size_t i = 0UL;
+  do {
+    temp[i] = (addr % (0100000 * 0100000));
+    addr /= (0100000 * 0100000);
+    i++;
+    width -= 10;
+  } while ((addr != 0) && (i < (sizeof(temp) / sizeof(temp[0]))));
 
   width += 10;
   if (width < 0)

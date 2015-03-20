@@ -550,15 +550,15 @@ hppa_add_stub (const char *stub_name,
 	  bfd_size_type len;
 	  char *s_name;
 
-	  namelen = strlen (link_sec->name);
-	  len = namelen + sizeof (STUB_SUFFIX);
-	  s_name = bfd_alloc (htab->stub_bfd, len);
+	  namelen = strlen(link_sec->name);
+	  len = (namelen + sizeof(STUB_SUFFIX));
+	  s_name = (char *)bfd_alloc(htab->stub_bfd, len);
 	  if (s_name == NULL)
 	    return NULL;
 
-	  memcpy (s_name, link_sec->name, namelen);
-	  memcpy (s_name + namelen, STUB_SUFFIX, sizeof (STUB_SUFFIX));
-	  stub_sec = (*htab->add_stub_section) (s_name, link_sec);
+	  memcpy(s_name, link_sec->name, namelen);
+	  memcpy(s_name + namelen, STUB_SUFFIX, sizeof(STUB_SUFFIX));
+	  stub_sec = (*htab->add_stub_section)(s_name, link_sec);
 	  if (stub_sec == NULL)
 	    return NULL;
 	  htab->stub_group[link_sec->id].stub_sec = stub_sec;
@@ -2322,7 +2322,7 @@ elf32_hppa_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 
       /* Allocate memory for the section contents.  Zero it, because
 	 we may not fill in all the reloc sections.  */
-      sec->contents = bfd_zalloc (dynobj, sec->size);
+      sec->contents = (unsigned char *)bfd_zalloc(dynobj, sec->size);
       if (sec->contents == NULL)
 	return FALSE;
     }
@@ -2415,14 +2415,14 @@ elf32_hppa_setup_section_lists (bfd *output_bfd, struct bfd_link_info *info)
     }
   htab->bfd_count = bfd_count;
 
-  amt = sizeof (struct map_stub) * (top_id + 1);
-  htab->stub_group = bfd_zmalloc (amt);
+  amt = (sizeof(struct map_stub) * (top_id + 1));
+  htab->stub_group = (struct map_stub *)bfd_zmalloc(amt);
   if (htab->stub_group == NULL)
     return -1;
 
-  /* We can't use output_bfd->section_count here to find the top output
+  /* We cannot use output_bfd->section_count here to find the top output
      section index as some sections may have been removed, and
-     strip_excluded_output_sections doesn't renumber the indices.  */
+     strip_excluded_output_sections does NOT renumber the indices.  */
   for (section = output_bfd->sections, top_index = 0;
        section != NULL;
        section = section->next)
@@ -2432,18 +2432,18 @@ elf32_hppa_setup_section_lists (bfd *output_bfd, struct bfd_link_info *info)
     }
 
   htab->top_index = top_index;
-  amt = sizeof (asection *) * (top_index + 1);
-  input_list = bfd_malloc (amt);
+  amt = (sizeof(asection *) * (top_index + 1));
+  input_list = (asection **)bfd_malloc(amt);
   htab->input_list = input_list;
   if (input_list == NULL)
     return -1;
 
-  /* For sections we aren't interested in, mark their entries with a
+  /* For sections we are NOT interested in, mark their entries with a
      value we can check later.  */
-  list = input_list + top_index;
-  do
+  list = (input_list + top_index);
+  do {
     *list = bfd_abs_section_ptr;
-  while (list-- != input_list);
+  } while (list-- != input_list);
 
   for (section = output_bfd->sections;
        section != NULL;
@@ -3064,7 +3064,7 @@ elf32_hppa_build_stubs (struct bfd_link_info *info)
   struct bfd_hash_table *table;
   struct elf32_hppa_link_hash_table *htab;
 
-  htab = hppa_link_hash_table (info);
+  htab = hppa_link_hash_table(info);
 
   for (stub_sec = htab->stub_bfd->sections;
        stub_sec != NULL;
@@ -3072,10 +3072,11 @@ elf32_hppa_build_stubs (struct bfd_link_info *info)
     {
       bfd_size_type size;
 
-      /* Allocate memory to hold the linker stubs.  */
+      /* Allocate memory to hold the linker stubs: */
       size = stub_sec->size;
-      stub_sec->contents = bfd_zalloc (htab->stub_bfd, size);
-      if (stub_sec->contents == NULL && size != 0)
+      stub_sec->contents = (unsigned char *)bfd_zalloc(htab->stub_bfd,
+                                                       size);
+      if ((stub_sec->contents == NULL) && (size != 0))
 	return FALSE;
       stub_sec->size = 0;
     }

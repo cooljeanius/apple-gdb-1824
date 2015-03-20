@@ -1292,7 +1292,7 @@ if test "x${ac_cv_header_sys_wait_h}" = "x"; then
   AC_CHECK_HEADERS([sys/wait.h])
 fi
 AC_CHECK_HEADERS([wait.h])dnl
-AC_CHECK_HEADERS([termios.h termio.h sgtty.h])dnl
+AC_CHECK_HEADERS([termios.h termio.h sgtty.h sys/termios.h])dnl
 AC_HEADER_TIOCGWINSZ
 AC_SYS_POSIX_TERMIOS
 

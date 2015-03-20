@@ -648,6 +648,14 @@ handle_write_registers (char *input_buffer)
   return 1;
 }
 
+#if !defined(REGISTER_BYTE)
+# if defined(DEPRECATED_REGISTER_BYTE)
+#  define REGISTER_BYTE(reg_nr) DEPRECATED_REGISTER_BYTE(reg_nr)
+# else
+#  define REGISTER_BYTE(reg_nr) (gdbarch_deprecated_register_byte(current_gdbarch, reg_nr))
+# endif /* DEPRECATED_REGISTER_BYTE */
+#endif /* !REGISTER_BYTE */
+
 /*
  * handle_write_a_register
  *
@@ -656,42 +664,43 @@ handle_write_registers (char *input_buffer)
  */
 
 int
-handle_write_a_register (char *input_buffer)
+handle_write_a_register(char *input_buffer)
 {
   char *val_ptr;
   int regno;
 
-  if (!low_update_registers ())
+  if (!low_update_registers())
     {
-      putpkt ("ENN");
+      putpkt("ENN");
       return 0;
     }
 
-  val_ptr = (char *) strchr (input_buffer, '=');
+  val_ptr = (char *)strchr(input_buffer, '=');
   if (val_ptr == NULL)
     {
       if (debug_on)
 	{
-	  output_error ("Malformed P request - no \"=\": %s\n", input_buffer);
+	  output_error("Malformed P request - no \"=\": %s\n",
+                       input_buffer);
 	}
-      putpkt ("ENN");
+      putpkt("ENN");
       return 0;
     }
 
   *val_ptr = '\0';
-  sscanf (input_buffer, "%x", &regno);
+  sscanf(input_buffer, "%x", &regno);
   /* FIXME - Check that regno is a valid register */
 
   val_ptr++;
-  if (strlen (val_ptr) != (REGISTER_RAW_SIZE (regno) * 2))
+  if (strlen(val_ptr) != (REGISTER_RAW_SIZE(regno) * 2))
     {
-      output_error ("Malformed register value for register %d ", regno);
-      output_error ("- wrong size: %s\n", val_ptr);
+      output_error("Malformed register value for register %d ", regno);
+      output_error("- wrong size: %s\n", val_ptr);
       return 0;
     }
 
-  convert_ascii_to_bytes (val_ptr, &aregisters[REGISTER_BYTE (regno)],
-			  REGISTER_RAW_SIZE (regno), 0);
+  convert_ascii_to_bytes(val_ptr, &aregisters[REGISTER_BYTE(regno)],
+                         REGISTER_RAW_SIZE(regno), 0);
   registers_are_dirty = 1;
 
   /* For now, I am always flushing the changes so I can test the

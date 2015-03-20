@@ -1,4 +1,4 @@
-/* TUI display source/assembly window.
+/* tui-winsource.c: TUI display source/assembly window.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -106,7 +106,7 @@ tui_update_source_window_as_is (struct tui_win_info * win_info, struct symtab *s
       if (win_info->generic.type == SRC_WIN)
 	{
 	  struct symtab_and_line sal;
-	  
+
 	  sal.line = line_or_addr.line_no +
 	    (win_info->generic.content_size - 2);
 	  sal.symtab = s;
@@ -135,7 +135,7 @@ tui_update_source_windows_with_addr (CORE_ADDR addr)
     {
       struct symtab_and_line sal;
       union tui_line_or_address l;
-      
+
       switch (tui_current_layout ())
 	{
 	case DISASSEM_COMMAND:
@@ -173,7 +173,7 @@ tui_update_source_windows_with_line (struct symtab *s, int line)
 {
   CORE_ADDR pc;
   union tui_line_or_address l;
-  
+
   switch (tui_current_layout ())
     {
     case DISASSEM_COMMAND:
@@ -216,15 +216,15 @@ tui_clear_source_content (struct tui_win_info * win_info, int display_prompt)
 
 
 void
-tui_erase_source_content (struct tui_win_info * win_info, int display_prompt)
+tui_erase_source_content(struct tui_win_info *win_info, int display_prompt)
 {
   int x_pos;
-  int half_width = (win_info->generic.width - 2) / 2;
+  size_t half_width = ((win_info->generic.width - 2UL) / 2UL);
 
-  if (win_info->generic.handle != (WINDOW *) NULL)
+  if (win_info->generic.handle != (WINDOW *)NULL)
     {
-      werase (win_info->generic.handle);
-      tui_check_and_display_highlight_if_needed (win_info);
+      werase(win_info->generic.handle);
+      tui_check_and_display_highlight_if_needed(win_info);
       if (display_prompt == EMPTY_SOURCE_PROMPT)
 	{
 	  char *no_src_str;
@@ -233,23 +233,22 @@ tui_erase_source_content (struct tui_win_info * win_info, int display_prompt)
 	    no_src_str = NO_SRC_STRING;
 	  else
 	    no_src_str = NO_DISASSEM_STRING;
-	  if (strlen (no_src_str) >= half_width)
+	  if (strlen(no_src_str) >= half_width)
 	    x_pos = 1;
 	  else
-	    x_pos = half_width - strlen (no_src_str);
-	  mvwaddstr (win_info->generic.handle,
-		     (win_info->generic.height / 2),
-		     x_pos,
-		     no_src_str);
+	    x_pos = (half_width - strlen(no_src_str));
+	  mvwaddstr(win_info->generic.handle,
+		    (win_info->generic.height / 2),
+		    x_pos, no_src_str);
 
 	  /* elz: added this function call to set the real contents of
 	     the window to what is on the  screen, so that later calls
 	     to refresh, do display
 	     the correct stuff, and not the old image */
 
-	  tui_set_source_content_nil (win_info, no_src_str);
+	  tui_set_source_content_nil(win_info, no_src_str);
 	}
-      tui_refresh_win (&win_info->generic);
+      tui_refresh_win(&win_info->generic);
     }
 }
 

@@ -1,4 +1,4 @@
-/* Trace file support in GDB.
+/* tracefile.c: Trace file support in GDB.
 
    Copyright (C) 1997-2014 Free Software Foundation, Inc.
 

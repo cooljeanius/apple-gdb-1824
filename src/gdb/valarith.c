@@ -1,4 +1,4 @@
-/* Perform arithmetic and other operations on values, for GDB.
+/* valarith.c: Perform arithmetic and other operations on values, for GDB.
 
    Copyright 1986, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
    1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free
@@ -49,7 +49,7 @@ void _initialize_valarith (void);
 /* Given a pointer, return the size of its target.
    If the pointer type is void *, then return 1.
    If the target type is incomplete, then error out.
-   This isn't a general purpose function, but just a 
+   This isn't a general purpose function, but just a
    helper for value_sub & value_add.
 */
 
@@ -69,7 +69,7 @@ find_size_for_pointer_math (struct type *ptr_type)
       else
 	{
 	  char *name;
-	  
+
 	  name = TYPE_NAME (ptr_target);
 	  if (name == NULL)
 	    name = TYPE_TAG_NAME (ptr_target);
@@ -209,7 +209,7 @@ value_subscript (struct value *array, struct value *idx)
 	}
 
        array = value_coerce_array (array);
- 
+
        /* APPLE LOCAL: Support reverse-indexing of arrays using the
 	  'stride' attribute off of the range type of the array. */
 
@@ -231,7 +231,7 @@ value_subscript (struct value *array, struct value *idx)
 	 }
        else
 	 internal_error (__FILE__, __LINE__, _("unsupported stride %ld"), stride);
- 	  
+
        return value_ind (value_add (array, idx));
     }
 
@@ -295,12 +295,12 @@ value_subscripted_rvalue (struct value *array, struct value *idx)
     error (_("no such vector element"));
 
   if (stride == 1)
-    elt_offs = elt_size * longest_to_int (index - lowerbound);  
+    elt_offs = elt_size * longest_to_int (index - lowerbound);
   else if (stride == -1)
     elt_offs = elt_size * longest_to_int (upperbound - index);
   else
     internal_error (__FILE__, __LINE__, _("unsupported vector stride %ld"), stride);
-   
+
   if (elt_offs >= TYPE_LENGTH (array_type))
     error (_("invalid array offset"));
 
@@ -323,7 +323,7 @@ value_subscripted_rvalue (struct value *array, struct value *idx)
 }
 
 /* Check to see if either argument is a structure.  This is called so
-   we know whether to go ahead with the normal binop or look for a 
+   we know whether to go ahead with the normal binop or look for a
    user defined function instead.
 
    For now, we do not overload the `=' operator.  */
@@ -345,7 +345,7 @@ binop_user_defined_p (enum exp_opcode op, struct value *arg1, struct value *arg2
 }
 
 /* Check to see if argument is a structure.  This is called so
-   we know whether to go ahead with the normal unop or look for a 
+   we know whether to go ahead with the normal unop or look for a
    user defined function instead.
 
    For now, we do not overload the `&' operator.  */
@@ -369,7 +369,7 @@ unop_user_defined_p (enum exp_opcode op, struct value *arg1)
 }
 
 /* We know either arg1 or arg2 is a structure, so try to find the right
-   user defined function.  Create an argument vector that calls 
+   user defined function.  Create an argument vector that calls
    arg1.operator @ (arg1,arg2) and return that value (where '@' is any
    binary operator which is legal for GNU C++).
 
@@ -535,7 +535,7 @@ value_x_binop (struct value *arg1, struct value *arg2, enum exp_opcode op,
 }
 
 /* We know that arg1 is a structure, so try to find a unary user
-   defined operator that matches the operator in question.  
+   defined operator that matches the operator in question.
    Create an argument vector that calls arg1.operator @ (arg1)
    and return that value (where '@' is (almost) any unary operator which
    is legal for GNU C++).  */
@@ -668,7 +668,7 @@ value_concat (struct value *arg1, struct value *arg2)
   /* First figure out if we are dealing with two values to be concatenated
      or a repeat count and a value to be repeated.  INVAL1 is set to the
      first of two concatenated values, or the repeat count.  INVAL2 is set
-     to the second of the two concatenated values or the value to be 
+     to the second of the two concatenated values or the value to be
      repeated. */
 
   if (TYPE_CODE (type2) == TYPE_CODE_INT)
@@ -785,15 +785,15 @@ value_concat (struct value *arg1, struct value *arg2)
    use value_add or value_sub if you want to handle those possibilities.  */
 
 struct value *
-value_binop (struct value *arg1, struct value *arg2, enum exp_opcode op)
+value_binop(struct value *arg1, struct value *arg2, enum exp_opcode op)
 {
   struct value *val = NULL;
   struct type *type1, *type2;
 
-  arg1 = coerce_ref (arg1);
-  arg2 = coerce_ref (arg2);
-  type1 = check_typedef (value_type (arg1));
-  type2 = check_typedef (value_type (arg2));
+  arg1 = coerce_ref(arg1);
+  arg2 = coerce_ref(arg2);
+  type1 = check_typedef(value_type(arg1));
+  type2 = check_typedef(value_type(arg2));
 
   if ((TYPE_CODE (type1) != TYPE_CODE_FLT && !is_integral_type (type1))
       ||
@@ -871,11 +871,11 @@ value_binop (struct value *arg1, struct value *arg2, enum exp_opcode op)
 	case BINOP_BITWISE_XOR:
 	  v = v1 ^ v2;
           break;
-              
+
         case BINOP_EQUAL:
           v = v1 == v2;
           break;
-          
+
         case BINOP_NOTEQUAL:
           v = v1 != v2;
 	  break;
@@ -895,11 +895,11 @@ value_binop (struct value *arg1, struct value *arg2, enum exp_opcode op)
     /* FIXME: This implements ANSI C rules (also correct for C++).
        What about FORTRAN and (the deleted) chill ?  */
     {
-      unsigned int promoted_len1 = TYPE_LENGTH (type1);
-      unsigned int promoted_len2 = TYPE_LENGTH (type2);
-      int is_unsigned1 = TYPE_UNSIGNED (type1);
-      int is_unsigned2 = TYPE_UNSIGNED (type2);
-      unsigned int result_len;
+      unsigned int promoted_len1 = TYPE_LENGTH(type1);
+      unsigned int promoted_len2 = TYPE_LENGTH(type2);
+      int is_unsigned1 = TYPE_UNSIGNED(type1);
+      int is_unsigned2 = TYPE_UNSIGNED(type2);
+      size_t result_len;
       int unsigned_operation;
 
       /* Determine type length and signedness after promotion for
@@ -949,8 +949,8 @@ value_binop (struct value *arg1, struct value *arg2, enum exp_opcode op)
 	{
 	  if (result_len != TYPE_LENGTH (builtin_type_uint128))
 	    {
-	      error (_("value_binop(v1, v2, %s) not supported for %u byte integers"), 
-		     op_name_standard (op), 
+	      error (_("value_binop(v1, v2, %s) not supported for %u byte integers"),
+		     op_name_standard (op),
 		     result_len);
 	    }
 	  else
@@ -975,14 +975,14 @@ value_binop (struct value *arg1, struct value *arg2, enum exp_opcode op)
 		case BINOP_MIN:
 		case BINOP_MAX:
 		case BINOP_LESS:
-		  error (_("value_binop(v1, v2, %s) not supported for %u byte integers"), 
-			 op_name_standard (op), 
+		  error (_("value_binop(v1, v2, %s) not supported for %u byte integers"),
+			 op_name_standard (op),
 			 result_len);
 		  break;
 
 		case BINOP_BITWISE_AND:
 		  {
-		    val = allocate_value (unsigned_operation ? 
+		    val = allocate_value (unsigned_operation ?
 					  builtin_type_uint128 :
 					  builtin_type_int128);
 
@@ -1001,7 +1001,7 @@ value_binop (struct value *arg1, struct value *arg2, enum exp_opcode op)
 
 		case BINOP_BITWISE_IOR:
 		  {
-		    val = allocate_value (unsigned_operation ? 
+		    val = allocate_value (unsigned_operation ?
 					  builtin_type_uint128 :
 					  builtin_type_int128);
 
@@ -1024,7 +1024,7 @@ value_binop (struct value *arg1, struct value *arg2, enum exp_opcode op)
 
 		case BINOP_BITWISE_XOR:
 		  {
-		    val = allocate_value (unsigned_operation ? 
+		    val = allocate_value (unsigned_operation ?
 					  builtin_type_uint128 :
 					  builtin_type_int128);
 
@@ -1054,7 +1054,7 @@ value_binop (struct value *arg1, struct value *arg2, enum exp_opcode op)
 
 		    for (i=0; i<arg2_len && !arg2_not_zero; i++)
 		      arg2_not_zero = arg2_bytes[i] != 0;
-		    
+
 		    val = allocate_value (builtin_type_unsigned_long);
 		    store_unsigned_integer (value_contents_raw (val),
 					    TYPE_LENGTH (value_type (val)),
@@ -1072,7 +1072,7 @@ value_binop (struct value *arg1, struct value *arg2, enum exp_opcode op)
 		    if (arg1_not_zero == 0)
 		      for (i=0; i<arg2_len && !arg2_not_zero; i++)
 			arg2_not_zero = arg2_bytes[i] != 0;
-		    
+
 		    val = allocate_value (builtin_type_unsigned_long);
 		    store_unsigned_integer (value_contents_raw (val),
 					    TYPE_LENGTH (value_type (val)),
@@ -1217,62 +1217,62 @@ value_binop (struct value *arg1, struct value *arg2, enum exp_opcode op)
 	      error (_("Invalid binary operation on numbers."));
 	    }
 
-	  /* This is a kludge to get around the fact that we don't
+	  /* This is a kludge to get around the fact that we do NOT
 	     know how to determine the result type from the types of
-	     the operands.  (I'm not really sure how much we feel the
+	     the operands.  (I am not really sure how much we feel the
 	     need to duplicate the exact rules of the current
 	     language.  They can get really hairy.  But not to do so
 	     makes it hard to document just what we *do* do).  */
 
-	  /* Can't just call init_type because we wouldn't know what
+	  /* Cannot just call init_type because we would NOT know what
 	     name to give the type.  */
-	  val = allocate_value
-	    (result_len > TARGET_LONG_BIT / HOST_CHAR_BIT
-	     ? builtin_type_unsigned_long_long
-	     : builtin_type_unsigned_long);
-	  store_unsigned_integer (value_contents_raw (val),
-				  TYPE_LENGTH (value_type (val)),
-				  v);
+	  val = allocate_value((result_len > (TARGET_LONG_BIT
+                                              / HOST_CHAR_BIT))
+                               ? builtin_type_unsigned_long_long
+                               : builtin_type_unsigned_long);
+	  store_unsigned_integer(value_contents_raw(val),
+				 TYPE_LENGTH(value_type(val)), v);
 	}
       else
 	{
-	  LONGEST v1, v2, v = 0;
-	  v1 = value_as_long (arg1);
-	  v2 = value_as_long (arg2);
+	  LONGEST v1, v2, v = 0L;
+	  v1 = value_as_long(arg1);
+	  v2 = value_as_long(arg2);
 
 	  switch (op)
 	    {
 	    case BINOP_ADD:
-	      v = v1 + v2;
+	      v = (v1 + v2);
 	      break;
 
 	    case BINOP_SUB:
-	      v = v1 - v2;
+	      v = (v1 - v2);
 	      break;
 
 	    case BINOP_MUL:
-	      v = v1 * v2;
+	      v = (v1 * v2);
 	      break;
 
 	    case BINOP_DIV:
 	      if (v2 != 0)
-		v = v1 / v2;
+		v = (v1 / v2);
 	      else
-		error (_("Division by zero"));
+		error(_("Division by zero"));
               break;
 
 	    case BINOP_EXP:
 	      errno = 0;
-	      v = pow (v1, v2);
+	      v = pow((double)v1, (double)v2);
 	      if (errno)
-		error (_("Cannot perform exponentiation: %s"), safe_strerror (errno));
+		error(_("Cannot perform exponentiation: %s"),
+                      safe_strerror(errno));
 	      break;
 
 	    case BINOP_REM:
 	      if (v2 != 0)
-		v = v1 % v2;
+		v = (v1 % v2);
 	      else
-		error (_("Division by zero"));
+		error(_("Division by zero"));
 	      break;
 
 	    case BINOP_MOD:
@@ -1284,69 +1284,69 @@ value_binop (struct value *arg1, struct value *arg2, enum exp_opcode op)
 		}
 	      else
 		{
-		  v = v1 / v2;
+		  v = (v1 / v2);
 		  /* Compute floor. */
 		  if (TRUNCATION_TOWARDS_ZERO && (v < 0) && ((v1 % v2) != 0))
 		    {
 		      v--;
 		    }
-		  v = v1 - (v2 * v);
+		  v = (v1 - (v2 * v));
 		}
 	      break;
 
 	    case BINOP_LSH:
-	      v = v1 << v2;
+	      v = (v1 << v2);
 	      break;
 
 	    case BINOP_RSH:
-	      v = v1 >> v2;
+	      v = (v1 >> v2);
 	      break;
 
 	    case BINOP_BITWISE_AND:
-	      v = v1 & v2;
+	      v = (v1 & v2);
 	      break;
 
 	    case BINOP_BITWISE_IOR:
-	      v = v1 | v2;
+	      v = (v1 | v2);
 	      break;
 
 	    case BINOP_BITWISE_XOR:
-	      v = v1 ^ v2;
+	      v = (v1 ^ v2);
 	      break;
 
 	    case BINOP_LOGICAL_AND:
-	      v = v1 && v2;
+	      v = (v1 && v2);
 	      break;
 
 	    case BINOP_LOGICAL_OR:
-	      v = v1 || v2;
+	      v = (v1 || v2);
 	      break;
 
 	    case BINOP_MIN:
-	      v = v1 < v2 ? v1 : v2;
+	      v = ((v1 < v2) ? v1 : v2);
 	      break;
 
 	    case BINOP_MAX:
-	      v = v1 > v2 ? v1 : v2;
+	      v = ((v1 > v2) ? v1 : v2);
 	      break;
 
 	    case BINOP_EQUAL:
-	      v = v1 == v2;
+	      v = (v1 == v2);
 	      break;
-	      
-	      /* APPLE LOCAL: This BINOP_NOTEQUAL was missing
-		 here.  I don't know if we ever reach this
-		 case, but for completeness...  */
+
+	    /* APPLE LOCAL: This BINOP_NOTEQUAL was missing here.
+             * I do NOT know if we ever reach this case, but for
+             * completeness...  */
             case BINOP_NOTEQUAL:
-              v = v1 != v2;
+              v = (v1 != v2);
               break;
 
 	    case BINOP_LESS:
-	      v = v1 < v2;
+	      v = (v1 < v2);
 	      break;
 
 	    default:
-	      error (_("Invalid binary operation on numbers."));
+	      error(_("Invalid binary operation on numbers."));
 	    }
 
 	  /* This is a kludge to get around the fact that we don't
@@ -1356,15 +1356,14 @@ value_binop (struct value *arg1, struct value *arg2, enum exp_opcode op)
 	     language.  They can get really hairy.  But not to do so
 	     makes it hard to document just what we *do* do).  */
 
-	  /* Can't just call init_type because we wouldn't know what
+	  /* Cannot just call init_type because we would NOT know what
 	     name to give the type.  */
-	  val = allocate_value
-	    (result_len > TARGET_LONG_BIT / HOST_CHAR_BIT
-	     ? builtin_type_long_long
-	     : builtin_type_long);
-	  store_signed_integer (value_contents_raw (val),
-				TYPE_LENGTH (value_type (val)),
-				v);
+	  val = allocate_value((result_len > (size_t)(TARGET_LONG_BIT
+                                                      / HOST_CHAR_BIT))
+                               ? builtin_type_long_long
+                               : builtin_type_long);
+	  store_signed_integer(value_contents_raw(val),
+                               TYPE_LENGTH(value_type(val)), v);
 	}
     }
 
@@ -1651,15 +1650,18 @@ value_in (struct value *element, struct value *set)
       && TYPE_CODE (eltype) != TYPE_CODE_CHAR
       && TYPE_CODE (eltype) != TYPE_CODE_ENUM
       && TYPE_CODE (eltype) != TYPE_CODE_BOOL)
-    error (_("First argument of 'IN' has wrong type"));
-  member = value_bit_index (settype, value_contents (set),
-			    value_as_long (element));
+    error(_("First argument of 'IN' has wrong type"));
+  member = value_bit_index(settype, value_contents(set),
+			   value_as_long(element));
   if (member < 0)
-    error (_("First argument of 'IN' not in range"));
-  return value_from_longest (LA_BOOL_TYPE, member);
+    error(_("First argument of 'IN' not in range"));
+  return value_from_longest(LA_BOOL_TYPE, member);
 }
 
 void
-_initialize_valarith (void)
+_initialize_valarith(void)
 {
+  return;
 }
+
+/* EOF */

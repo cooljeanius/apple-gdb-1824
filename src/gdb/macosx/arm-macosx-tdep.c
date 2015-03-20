@@ -32,13 +32,17 @@
 #ifndef GDB_TM_FILE
 # define GDB_TM_FILE "config/arm/tm-arm-macosx.h"
 #else
-# warning "GDB_TM_FILE already defined."
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "GDB_TM_FILE already defined."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* !GDB_TM_FILE */
 
 #ifndef DEFAULT_BFD_ARCH
 # define DEFAULT_BFD_ARCH bfd_arm_arch
 #else
-# warning "DEFAULT_BFD_ARCH already defined."
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "DEFAULT_BFD_ARCH already defined."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* !DEFAULT_BFD_ARCH */
 
 #ifdef HAVE_CONFIG_H
@@ -104,7 +108,9 @@
 # ifdef HAVE_MALLOC_MALLOC_H
 #  include <malloc/malloc.h>
 # else
-#  warning "arm-macosx-tdep.c wants to include a malloc-related header."
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "arm-macosx-tdep.c wants to include a malloc-related header."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_MALLOC_MALLOC_H */
 #endif /* HAVE_MALLOC_H */
 
@@ -113,14 +119,14 @@
 /* A boolean indicating if we must use software single stepping. Some
  * targets may not support using IMVA mismatching for a variety of reasons,
  * and some remote targets may not implement the "s" packet.  */
-static enum gdb_osabi arm_mach_o_osabi_sniffer_use_dyld_hint (bfd *abfd);
-static void arm_macosx_init_abi (struct gdbarch_info info,
-                                 struct gdbarch *gdbarch);
+static enum gdb_osabi arm_mach_o_osabi_sniffer_use_dyld_hint(bfd *abfd);
+static void arm_macosx_init_abi(struct gdbarch_info info,
+                                struct gdbarch *gdbarch);
 
-static void arm_macosx_init_abi_v6 (struct gdbarch_info info,
-                                    struct gdbarch *gdbarch);
+static void arm_macosx_init_abi_v6(struct gdbarch_info info,
+                                   struct gdbarch *gdbarch);
 
-/* Built in type for displaying ARM PSR and FPSCR register contents.  */
+/* Built in type for displaying ARM PSR and FPSCR register contents: */
 struct type *builtin_type_arm_psr = NULL;
 struct type *builtin_type_arm_fpscr = NULL;
 

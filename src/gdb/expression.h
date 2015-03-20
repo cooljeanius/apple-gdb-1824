@@ -183,17 +183,17 @@ enum exp_opcode
        making three exp_elements.  */
     OP_FUNCALL,
 
-    /* OP_OBJC_MSGCALL is followed by a string in the next exp_element and 
-       then an integer.  The string is the selector string.  The integer is 
-       the number of arguments to the message call.  That many plus one values 
-       are used, the first one being the object pointer.  This is an 
+    /* OP_OBJC_MSGCALL is followed by a string in the next exp_element and
+       then an integer.  The string is the selector string.  The integer is
+       the number of arguments to the message call.  That many plus one values
+       are used, the first one being the object pointer.  This is an
        Objective-C message.  */
     OP_OBJC_MSGCALL,
 
-    /* This is EXACTLY like OP_FUNCALL but is semantically different.  
+    /* This is EXACTLY like OP_FUNCALL but is semantically different.
        In F77, array subscript expressions, substring expressions
-       and function calls are  all exactly the same syntactically. They may 
-       only be disambiguated at runtime.  Thus this operator, which 
+       and function calls are  all exactly the same syntactically. They may
+       only be disambiguated at runtime.  Thus this operator, which
        indicates that we have found something of the form <name> ( <stuff> ) */
     OP_F77_UNDETERMINED_ARGLIST,
 
@@ -299,14 +299,14 @@ enum exp_opcode
     OP_SCOPE,
 
     /* Used to represent named structure field values in brace
-       initializers (or tuples as they are called in (the deleted)
+       initializers (or tuples as they were called in (the deleted)
        Chill).
 
-       The gcc C syntax is NAME:VALUE or .NAME=VALUE, the (the
+       The gcc C syntax is NAME:VALUE or .NAME=VALUE, while (the
        deleted) Chill syntax is .NAME:VALUE.  Multiple labels (as in
-       the (the deleted) Chill syntax .NAME1,.NAME2:VALUE) is
+       the syntax of (the deleted) Chill .NAME1,.NAME2:VALUE) is
        represented as if it were .NAME1:(.NAME2:VALUE) (though that is
-       not valid (the deleted) Chill syntax).
+       not valid syntax for (the deleted) Chill).
 
        The NAME is represented as for STRUCTOP_STRUCT;  VALUE follows. */
     OP_LABELED,
@@ -326,8 +326,8 @@ enum exp_opcode
     OP_OBJC_NSSTRING,
 
      /* First extension operator.  Individual language modules define
-        extra operators they need as constants with values 
-        OP_LANGUAGE_SPECIFIC0 + k, for k >= 0, using a separate 
+        extra operators they need as constants with values
+        OP_LANGUAGE_SPECIFIC0 + k, for k >= 0, using a separate
         enumerated type definition:
            enum foo_extension_operator {
              BINOP_MOGRIFY = OP_EXTENDED0,
@@ -335,11 +335,11 @@ enum exp_opcode
  	     ...
            };      */
     OP_EXTENDED0,
-  
+
     /* Last possible extension operator.  Defined to provide an
        explicit and finite number of extended operators. */
     OP_EXTENDED_LAST = 0xff
-    /* NOTE: Eventually, we expect to convert to an object-oriented 
+    /* NOTE: Eventually, we expect to convert to an object-oriented
        formulation for expression operators that does away with the
        need for these extension operators, and indeed for this
        entire enumeration type.  Therefore, consider the OP_EXTENDED

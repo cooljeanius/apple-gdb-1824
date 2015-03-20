@@ -949,21 +949,23 @@ command_line_input (char *prompt_arg, int repeat, char *annotation_suffix)
   if (command_line_input_hook && (instream == stdin))
     {
       char *ret_val;
-      ret_val = command_line_input_hook (prompt_arg, repeat, annotation_suffix);
+      ret_val = command_line_input_hook(prompt_arg, repeat,
+                                        annotation_suffix);
       return ret_val;
     }
 
-  if (annotation_level > 1 && instream == stdin)
+  if ((annotation_level > 1) && (instream == stdin))
     {
-      local_prompt = alloca ((prompt_arg == NULL ? 0 : strlen (prompt_arg))
-			     + strlen (annotation_suffix) + 40);
+      local_prompt = (char *)alloca(((prompt_arg == NULL)
+                                     ? 0UL : strlen(prompt_arg))
+                                    + strlen(annotation_suffix) + 40UL);
       if (prompt_arg == NULL)
 	local_prompt[0] = '\0';
       else
-	strcpy (local_prompt, prompt_arg);
-      strcat (local_prompt, "\n\032\032");
-      strcat (local_prompt, annotation_suffix);
-      strcat (local_prompt, "\n");
+	strcpy(local_prompt, prompt_arg);
+      strcat(local_prompt, "\n\032\032");
+      strcat(local_prompt, annotation_suffix);
+      strcat(local_prompt, "\n");
     }
 
   if (linebuffer == 0)
@@ -1045,13 +1047,13 @@ command_line_input (char *prompt_arg, int repeat, char *annotation_suffix)
 	break;
 
       p--;			/* Put on top of '\'.  */
-      local_prompt = (char *) 0;
+      local_prompt = (char *)0;
     }
 
 #ifdef STOP_SIGNAL
   if (job_control)
-    signal (STOP_SIGNAL, SIG_DFL);
-#endif
+    signal(STOP_SIGNAL, SIG_DFL);
+#endif /* STOP_SIGNAL */
   immediate_quit--;
 
   if (got_eof)
@@ -1059,8 +1061,8 @@ command_line_input (char *prompt_arg, int repeat, char *annotation_suffix)
 
 #define SERVER_COMMAND_LENGTH 7
   server_command =
-    (p - linebuffer > SERVER_COMMAND_LENGTH)
-    && strncmp (linebuffer, "server ", SERVER_COMMAND_LENGTH) == 0;
+    (((p - linebuffer) > SERVER_COMMAND_LENGTH)
+     && (strncmp(linebuffer, "server ", SERVER_COMMAND_LENGTH) == 0));
   if (server_command)
     {
       /* Note that we don't set `line'.  Between this and the check in
@@ -1395,28 +1397,29 @@ show_commands (char *args, int from_tty)
 
 /* Called by do_setshow_command.  */
 static void
-set_history_size_command (char *args, int from_tty, struct cmd_list_element *c)
+set_history_size_command(char *args, int from_tty, struct cmd_list_element *c)
 {
   if (history_size == INT_MAX)
-    unstifle_history ();
+    unstifle_history();
   else if (history_size >= 0)
-    stifle_history (history_size);
+    stifle_history(history_size);
   else
     {
       history_size = INT_MAX;
-      error (_("History size must be non-negative"));
+      error(_("History size must be non-negative"));
     }
 }
 
 void
-set_history (char *args, int from_tty)
+set_history(char *args, int from_tty)
 {
-  printf_unfiltered (_("\"set history\" must be followed by the name of a history subcommand.\n"));
-  help_list (sethistlist, "set history ", -1, gdb_stdout);
+  printf_unfiltered(_("\"set history\" must be followed by the name of a history subcommand.\n"));
+  help_list(sethistlist, "set history ", (enum command_class)-1,
+            gdb_stdout);
 }
 
 void
-show_history (char *args, int from_tty)
+show_history(char *args, int from_tty)
 {
   cmd_show_list (showhistlist, from_tty, "");
 }

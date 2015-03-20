@@ -1,4 +1,4 @@
-/* TUI display locator.
+/* tui-stack.c: TUI display locator.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -44,101 +44,105 @@
 /* Get a printable name for the function at the address.
    The symbol name is demangled if demangling is turned on.
    Returns a pointer to a static area holding the result.  */
-static char* tui_get_function_from_frame (struct frame_info *fi);
+static char* tui_get_function_from_frame(struct frame_info *fi);
 
-/* Set the filename portion of the locator.  */
-static void tui_set_locator_filename (const char *filename);
+/* Set the filename portion of the locator: */
+static void tui_set_locator_filename(const char *filename);
 
-/* Update the locator, with the provided arguments.  */
-static void tui_set_locator_info (const char *filename, const char *procname,
-                                  int lineno, CORE_ADDR addr);
+/* Update the locator, with the provided arguments: */
+static void tui_set_locator_info(const char *filename,
+                                 const char *procname, int lineno,
+                                 CORE_ADDR addr);
 
-static void tui_update_command (char *, int);
+static void tui_update_command(char *, int);
+
+extern void _initialize_tui_stack(void);
 
 
 /* Create the status line to display as much information as we
    can on this single line: target name, process number, current
    function, current line, current PC, SingleKey mode.  */
 static char*
-tui_make_status_line (struct tui_locator_element* loc)
+tui_make_status_line(struct tui_locator_element* loc)
 {
-  char* string;
+  char *string;
   char line_buf[50], *pname;
-  char* buf;
-  int status_size;
-  int i, proc_width;
-  const char* pid_name;
-  const char* pc_buf;
-  int target_width;
-  int pid_width;
-  int line_width;
-  int pc_width;
+  char *buf;
+  size_t status_size;
+  size_t i;
+  size_t proc_width;
+  const char *pid_name;
+  const char *pc_buf;
+  size_t target_width;
+  size_t pid_width;
+  size_t line_width;
+  size_t pc_width;
   struct ui_file *pc_out;
 
-  if (ptid_equal (inferior_ptid, null_ptid))
+  if (ptid_equal(inferior_ptid, null_ptid))
     pid_name = "No process";
   else
-    pid_name = target_pid_to_str (inferior_ptid);
+    pid_name = target_pid_to_str(inferior_ptid);
 
-  target_width = strlen (target_shortname);
+  target_width = strlen(target_shortname);
   if (target_width > MAX_TARGET_WIDTH)
     target_width = MAX_TARGET_WIDTH;
 
-  pid_width = strlen (pid_name);
+  pid_width = strlen(pid_name);
   if (pid_width > MAX_PID_WIDTH)
     pid_width = MAX_PID_WIDTH;
 
-  status_size = tui_term_width ();
-  string = (char *) xmalloc (status_size + 1);
-  buf = (char*) alloca (status_size + 1);
+  status_size = tui_term_width();
+  string = (char *)xmalloc(status_size + 1UL);
+  buf = (char*)alloca(status_size + 1UL);
 
-  /* Translate line number and obtain its size.  */
+  /* Translate line number and obtain its size: */
   if (loc->line_no > 0)
-    sprintf (line_buf, "%d", loc->line_no);
+    sprintf(line_buf, "%d", loc->line_no);
   else
-    strcpy (line_buf, "??");
-  line_width = strlen (line_buf);
+    strcpy(line_buf, "??");
+  line_width = strlen(line_buf);
   if (line_width < MIN_LINE_WIDTH)
     line_width = MIN_LINE_WIDTH;
 
-  /* Translate PC address.  */
-  pc_out = tui_sfileopen (128);
-  deprecated_print_address_numeric (loc->addr, 1, pc_out);
-  pc_buf = tui_file_get_strbuf (pc_out);
-  pc_width = strlen (pc_buf);
-  
+  /* Translate PC address: */
+  pc_out = tui_sfileopen(128);
+  deprecated_print_address_numeric(loc->addr, 1, pc_out);
+  pc_buf = tui_file_get_strbuf(pc_out);
+  pc_width = strlen(pc_buf);
+
   /* First determine the amount of proc name width we have available.
      The +1 are for a space separator between fields.
      The -1 are to take into account the \0 counted by sizeof.  */
   proc_width = (status_size
-                - (target_width + 1)
-                - (pid_width + 1)
-                - (sizeof (PROC_PREFIX) - 1 + 1)
-                - (sizeof (LINE_PREFIX) - 1 + line_width + 1)
-                - (sizeof (PC_PREFIX) - 1 + pc_width + 1)
-                - (tui_current_key_mode == TUI_SINGLE_KEY_MODE
-                   ? (sizeof (SINGLE_KEY) - 1 + 1)
-                   : 0));
+                - (target_width + 1UL)
+                - (pid_width + 1UL)
+                - (sizeof(PROC_PREFIX) - 1UL + 1UL)
+                - (sizeof(LINE_PREFIX) - 1UL + line_width + 1UL)
+                - (sizeof(PC_PREFIX) - 1UL + pc_width + 1UL)
+                - ((tui_current_key_mode == TUI_SINGLE_KEY_MODE)
+                   ? (sizeof(SINGLE_KEY) - 1UL + 1UL)
+                   : 0UL));
 
   /* If there is no room to print the function name, try by removing
      some fields.  */
   if (proc_width < MIN_PROC_WIDTH)
     {
-      proc_width += target_width + 1;
+      proc_width += (target_width + 1UL);
       target_width = 0;
       if (proc_width < MIN_PROC_WIDTH)
         {
-          proc_width += pid_width + 1;
+          proc_width += (pid_width + 1UL);
           pid_width = 0;
           if (proc_width <= MIN_PROC_WIDTH)
             {
-              proc_width += pc_width + sizeof (PC_PREFIX) - 1 + 1;
-              pc_width = 0;
-              if (proc_width < 0)
+              proc_width += (pc_width + sizeof(PC_PREFIX) - 1UL + 1UL);
+              pc_width = 0UL;
+              if (proc_width < 0UL)
                 {
-                  proc_width += line_width + sizeof (LINE_PREFIX) - 1 + 1;
-                  line_width = 0;
-                  if (proc_width < 0)
+                  proc_width += (line_width + sizeof(LINE_PREFIX) - 1 + 1);
+                  line_width = 0UL;
+                  if (proc_width < 0UL)
                     proc_width = 0;
                 }
             }
@@ -150,60 +154,60 @@ tui_make_status_line (struct tui_locator_element* loc)
 
   /* Now create the locator line from the string version
      of the elements.  We could use sprintf() here but
-     that wouldn't ensure that we don't overrun the size
+     that would NOT ensure that we do NOT overrun the size
      of the allocated buffer.  strcat_to_buf() will.  */
-  *string = (char) 0;
+  *string = (char)0;
 
-  if (target_width > 0)
+  if (target_width > 0UL)
     {
-      sprintf (buf, "%*.*s ",
-               -target_width, target_width, target_shortname);
-      strcat_to_buf (string, status_size, buf);
+      sprintf(buf, "%*.*s ",
+              -target_width, target_width, target_shortname);
+      strcat_to_buf(string, status_size, buf);
     }
-  if (pid_width > 0)
+  if (pid_width > 0UL)
     {
-      sprintf (buf, "%*.*s ",
-               -pid_width, pid_width, pid_name);
-      strcat_to_buf (string, status_size, buf);
+      sprintf(buf, "%*.*s ",
+              -pid_width, pid_width, pid_name);
+      strcat_to_buf(string, status_size, buf);
     }
-  
-  /* Show whether we are in SingleKey mode.  */
+
+  /* Show whether we are in SingleKey mode: */
   if (tui_current_key_mode == TUI_SINGLE_KEY_MODE)
     {
-      strcat_to_buf (string, status_size, SINGLE_KEY);
-      strcat_to_buf (string, status_size, " ");
+      strcat_to_buf(string, status_size, SINGLE_KEY);
+      strcat_to_buf(string, status_size, " ");
     }
 
-  /* procedure/class name */
-  if (proc_width > 0)
+  /* procedure/class name: */
+  if (proc_width > 0UL)
     {
-      if (strlen (pname) > proc_width)
-        sprintf (buf, "%s%*.*s* ", PROC_PREFIX,
-                 1 - proc_width, proc_width - 1, pname);
+      if (strlen(pname) > proc_width)
+        sprintf(buf, "%s%*.*s* ", PROC_PREFIX,
+                1 - proc_width, proc_width - 1, pname);
       else
-        sprintf (buf, "%s%*.*s ", PROC_PREFIX,
-                 -proc_width, proc_width, pname);
-      strcat_to_buf (string, status_size, buf);
+        sprintf(buf, "%s%*.*s ", PROC_PREFIX,
+                -proc_width, proc_width, pname);
+      strcat_to_buf(string, status_size, buf);
     }
 
-  if (line_width > 0)
+  if (line_width > 0UL)
     {
-      sprintf (buf, "%s%*.*s ", LINE_PREFIX,
-               -line_width, line_width, line_buf);
-      strcat_to_buf (string, status_size, buf);
+      sprintf(buf, "%s%*.*s ", LINE_PREFIX,
+              -line_width, line_width, line_buf);
+      strcat_to_buf(string, status_size, buf);
     }
-  if (pc_width > 0)
+  if (pc_width > 0UL)
     {
-      strcat_to_buf (string, status_size, PC_PREFIX);
-      strcat_to_buf (string, status_size, pc_buf);
+      strcat_to_buf(string, status_size, PC_PREFIX);
+      strcat_to_buf(string, status_size, pc_buf);
     }
-  
-  
-  for (i = strlen (string); i < status_size; i++)
+
+
+  for (i = strlen(string); i < status_size; i++)
     string[i] = ' ';
-  string[status_size] = (char) 0;
+  string[status_size] = (char)0;
 
-  ui_file_delete (pc_out);
+  ui_file_delete(pc_out);
   return string;
 }
 
@@ -355,13 +359,12 @@ tui_show_frame_info (struct frame_info *fi)
 	    }
 	  else
 	    {
-	      if (find_pc_partial_function_no_inlined (get_frame_pc (fi), 
-						      (char **) NULL,
-						      &low, 
-						      (CORE_ADDR) NULL) == 0)
-		error (_("No function contains program counter for selected frame."));
+	      if (find_pc_partial_function_no_inlined(get_frame_pc(fi),
+						     (char **)NULL, &low,
+						     (CORE_ADDR *)NULL) == 0)
+		error(_("No function contains program counter for selected frame."));
 	      else
-		low = tui_get_low_disassembly_address (low, get_frame_pc (fi));
+		low = tui_get_low_disassembly_address(low, get_frame_pc(fi));
 	    }
 
 	  if (win_info == TUI_SRC_WIN)
@@ -411,9 +414,9 @@ tui_show_frame_info (struct frame_info *fi)
 /* Function to initialize gdb commands, for tui window stack
    manipulation.  */
 void
-_initialize_tui_stack (void)
+_initialize_tui_stack(void)
 {
-  add_com ("update", class_tui, tui_update_command, _("\
+  add_com("update", class_tui, tui_update_command, _("\
 Update the source window and locator to display the current execution point.\n"));
 }
 

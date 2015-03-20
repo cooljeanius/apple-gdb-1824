@@ -1,4 +1,4 @@
-/* Data/register window display.
+/* tui-windata.c: Data/register window display.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -25,6 +25,7 @@
 #include "defs.h"
 #include "tui/tui.h"
 #include "tui/tui-data.h"
+#include "tui/tui-windata.h"
 #include "tui/tui-wingeneral.h"
 #include "tui/tui-regs.h"
 
@@ -106,25 +107,24 @@ tui_delete_data_content_windows (void)
 
 
 void
-tui_erase_data_content (char *prompt)
+tui_erase_data_content(char *prompt)
 {
   werase (TUI_DATA_WIN->generic.handle);
-  tui_check_and_display_highlight_if_needed (TUI_DATA_WIN);
-  if (prompt != (char *) NULL)
+  tui_check_and_display_highlight_if_needed(TUI_DATA_WIN);
+  if (prompt != (char *)NULL)
     {
-      int half_width = (TUI_DATA_WIN->generic.width - 2) / 2;
+      size_t half_width = ((TUI_DATA_WIN->generic.width - 2UL) / 2UL);
       int x_pos;
 
-      if (strlen (prompt) >= half_width)
+      if (strlen(prompt) >= half_width)
 	x_pos = 1;
       else
-	x_pos = half_width - strlen (prompt);
-      mvwaddstr (TUI_DATA_WIN->generic.handle,
-		 (TUI_DATA_WIN->generic.height / 2),
-		 x_pos,
-		 prompt);
+	x_pos = (half_width - strlen(prompt));
+      mvwaddstr(TUI_DATA_WIN->generic.handle,
+                (TUI_DATA_WIN->generic.height / 2),
+                x_pos, prompt);
     }
-  wrefresh (TUI_DATA_WIN->generic.handle);
+  wrefresh(TUI_DATA_WIN->generic.handle);
 }
 
 
@@ -268,20 +268,21 @@ tui_check_data_values (struct frame_info *frame)
 }
 
 
-/* Scroll the data window vertically forward or backward.   */
+/* Scroll the data window vertically forward or backward: */
 void
-tui_vertical_data_scroll (enum tui_scroll_direction scroll_direction, int num_to_scroll)
+tui_vertical_data_scroll(enum tui_scroll_direction scroll_direction,
+                         int num_to_scroll)
 {
   int first_element_no;
   int first_line = (-1);
 
-  first_element_no = tui_first_data_item_displayed ();
+  first_element_no = tui_first_data_item_displayed();
   if (first_element_no < TUI_DATA_WIN->detail.data_display_info.regs_content_count)
-    first_line = tui_line_from_reg_element_no (first_element_no);
+    first_line = tui_line_from_reg_element_no(first_element_no);
   else
-    {				/* calculate the first line from the element number which is in
-				   ** the general data content
-				 */
+    { /* calculate the first line from the element number which is in
+       * the general data content: */
+      ; /* TODO */
     }
 
   if (first_line >= 0)
@@ -292,9 +293,9 @@ tui_vertical_data_scroll (enum tui_scroll_direction scroll_direction, int num_to
 	first_line += num_to_scroll;
       else
 	first_line -= num_to_scroll;
-      tui_erase_data_content ((char *) NULL);
-      tui_delete_data_content_windows ();
-      tui_display_data_from_line (first_line);
+      tui_erase_data_content((char *)NULL);
+      tui_delete_data_content_windows();
+      tui_display_data_from_line(first_line);
     }
 }
 

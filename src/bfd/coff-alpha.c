@@ -561,21 +561,18 @@ alpha_ecoff_swap_reloc_in(bfd *abfd, PTR ext_ptr,
     }
 }
 
-/* Swap a reloc out.  */
-
+/* Swap a reloc out: */
 static void
-alpha_ecoff_swap_reloc_out (abfd, intern, dst)
-     bfd *abfd;
-     const struct internal_reloc *intern;
-     PTR dst;
+alpha_ecoff_swap_reloc_out(bfd *abfd, const struct internal_reloc *intern,
+                           PTR dst)
 {
-  RELOC *ext = (RELOC *) dst;
+  RELOC *ext = (RELOC *)dst;
   long symndx;
   unsigned char size;
 
-  /* Undo the hackery done in swap_reloc_in.  */
-  if (intern->r_type == ALPHA_R_LITUSE
-      || intern->r_type == ALPHA_R_GPDISP)
+  /* Undo the hackery done in swap_reloc_in: */
+  if ((intern->r_type == ALPHA_R_LITUSE)
+      || (intern->r_type == ALPHA_R_GPDISP))
     {
       symndx = intern->r_size;
       size = 0;
@@ -619,17 +616,15 @@ alpha_ecoff_swap_reloc_out (abfd, intern, dst)
    this backend routine.  It must fill in the howto field.  */
 
 static void
-alpha_adjust_reloc_in (abfd, intern, rptr)
-     bfd *abfd;
-     const struct internal_reloc *intern;
-     arelent *rptr;
+alpha_adjust_reloc_in(bfd *abfd, const struct internal_reloc *intern,
+                      arelent *rptr)
 {
   if (intern->r_type > ALPHA_R_GPVALUE)
     {
       (*_bfd_error_handler)
 	(_("%B: unknown/unsupported relocation type %d"),
 	 abfd, intern->r_type);
-      bfd_set_error (bfd_error_bad_value);
+      bfd_set_error(bfd_error_bad_value);
       rptr->addend = 0;
       rptr->howto  = NULL;
       return;
@@ -711,10 +706,8 @@ alpha_adjust_reloc_in (abfd, intern, rptr)
    not need to undo.  */
 
 static void
-alpha_adjust_reloc_out (abfd, rel, intern)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     const arelent *rel;
-     struct internal_reloc *intern;
+alpha_adjust_reloc_out(bfd *abfd ATTRIBUTE_UNUSED, const arelent *rel,
+                       struct internal_reloc *intern)
 {
   switch (intern->r_type)
     {
@@ -724,8 +717,8 @@ alpha_adjust_reloc_out (abfd, rel, intern)
       break;
 
     case ALPHA_R_OP_STORE:
-      intern->r_size = rel->addend & 0xff;
-      intern->r_offset = (rel->addend >> 8) & 0xff;
+      intern->r_size = (rel->addend & 0xff);
+      intern->r_offset = ((rel->addend >> 8) & 0xff);
       break;
 
     case ALPHA_R_OP_PUSH:
@@ -1174,12 +1167,10 @@ alpha_ecoff_get_relocated_section_contents (abfd, link_info, link_order,
   return NULL;
 }
 
-/* Get the howto structure for a generic reloc type.  */
-
+/* Get the howto structure for a generic reloc type: */
 static reloc_howto_type *
-alpha_bfd_reloc_type_lookup (abfd, code)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+alpha_bfd_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                            bfd_reloc_code_real_type code)
 {
   int alpha_type;
 

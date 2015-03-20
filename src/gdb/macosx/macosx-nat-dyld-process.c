@@ -121,7 +121,10 @@ struct bfd_memory_footprint_group {
   int length;    /* Length in buckets */
 };
 
-static void mark_buckets_as_used(struct pre_run_memory_map *map, int i, struct bfd_memory_footprint *fp);
+static void mark_buckets_as_used(struct pre_run_memory_map *map, int i,
+                                 struct bfd_memory_footprint *fp);
+
+extern void _initialize_macosx_nat_dyld_process(void);
 
 static int
 dyld_print_status(void)
@@ -1111,20 +1114,21 @@ slide_bfd_in_pre_run_memory_map (struct bfd *abfd,
 }
 
 void
-dyld_load_library_from_file (const struct dyld_path_info *d,
-			     struct dyld_objfile_entry *e,
-			     int print_errors)
+dyld_load_library_from_file(const struct dyld_path_info *d,
+			    struct dyld_objfile_entry *e,
+			    int print_errors)
 {
   const char *name = NULL;
+  struct ui_file *prev_stderr;
 
-  name = dyld_entry_filename (e, d, DYLD_ENTRY_FILENAME_LOADED);
+  name = dyld_entry_filename(e, d, DYLD_ENTRY_FILENAME_LOADED);
   if (name == NULL)
     {
       if (print_errors)
 	{
-	  char *s = dyld_entry_string (e, 1);
-	  warning ("No image filename available for %s.", s);
-	  xfree (s);
+	  char *s = dyld_entry_string(e, 1);
+	  warning("No image filename available for %s.", s);
+	  xfree(s);
 	}
       return;
     }
@@ -1135,28 +1139,26 @@ dyld_load_library_from_file (const struct dyld_path_info *d,
      exists, and avoid printing a warning if a weak file is not
      found.  */
 
-  if (!file_exists_p (name))
+  if (!file_exists_p(name))
     {
       int issue_warning = 0;
 
-		if (print_errors) {
-			issue_warning = 1;
-		}
+      if (print_errors) {
+        issue_warning = 1;
+      }
 
       /* Do NOT warn about missing libraries if they are only linked
-       * against weakly.
-	   */
-		if (e->reason & dyld_reason_weak_mask) {
-			issue_warning = 0;
-		}
+       * against weakly: */
+      if (e->reason & dyld_reason_weak_mask) {
+        issue_warning = 0;
+      }
 
       /* An MH_BUNDLE with file mod time 0 (cannot check that here) with the
        * name cl_kernels is something we should NOT warn about not finding on
        * disk; it is just noise to the developer and there will be many of them
-       * with certain programs, e.g. Mail.app on Lion and later.
-	   */
-      if (e->mem_header.filetype == MH_BUNDLE
-          && strcmp (name, "cl_kernels") == 0)
+       * with certain programs, e.g. Mail.app on Lion and later. */
+      if ((e->mem_header.filetype == MH_BUNDLE)
+          && (strcmp(name, "cl_kernels") == 0))
         {
           issue_warning = 0;
         }
@@ -1164,66 +1166,68 @@ dyld_load_library_from_file (const struct dyld_path_info *d,
       /* Running natively on the phone we read everything from the
          shared cached and need not worry about when we are NOT able to read
          files from disk.  */
-#if defined (TARGET_ARM) && defined (NM_NEXTSTEP)
+#if defined(TARGET_ARM) && defined(NM_NEXTSTEP)
        issue_warning = 0;
 #endif /* TARGET_ARM && NM_NEXTSTEP */
 
       /* OpenCL jitted dylibs will not have a backing file; do NOT
          warn about them.  */
-      if (strstr (name, "com.apple.opencl/clprogram") != NULL)
+      if (strstr(name, "com.apple.opencl/clprogram") != NULL)
         issue_warning = 0;
 
       if (issue_warning)
-        warning ("Unable to read symbols for %s (file not found).", name);
+        warning("Unable to read symbols for %s (file not found).", name);
 
       return;
     }
 
-  struct ui_file *prev_stderr = gdb_stderr;
+  prev_stderr = gdb_stderr;
 
   gdb_stderr = gdb_null;
-  CHECK_FATAL (e->abfd == NULL);
+  CHECK_FATAL(e->abfd == NULL);
 
-  e->abfd = symfile_bfd_open_safe (name, 0, GDB_OSABI_UNKNOWN);
+  e->abfd = symfile_bfd_open_safe(name, 0, GDB_OSABI_UNKNOWN);
 
   gdb_stderr = prev_stderr;
 
   if (e->abfd == NULL)
     {
-      xfree (name);
+      xfree((void *)name);
       return;
     }
 
-  e->loaded_name = bfd_get_filename (e->abfd);
+  e->loaded_name = bfd_get_filename(e->abfd);
   e->loaded_from_memory = 0;
   e->loaded_error = 0;
 }
 
 void
-dyld_load_library_from_memory (const struct dyld_path_info *d,
-			       struct dyld_objfile_entry *e,
-			       int print_errors)
+dyld_load_library_from_memory(const struct dyld_path_info *d,
+			      struct dyld_objfile_entry *e,
+			      int print_errors)
 {
   const char *name = NULL;
+  CORE_ADDR slide;
+  CORE_ADDR length;
 
   if (!e->dyld_valid && !core_bfd)
     {
       if (print_errors)
 	{
-#if !(defined (TARGET_ARM) && defined (NM_NEXTSTEP))
-	  char *s = dyld_entry_string (e, dyld_print_basenames_flag);
-	  warning ("Unable to read symbols from %s (not yet mapped into memory).", s);
-	  xfree (s);
+#if !(defined(TARGET_ARM) && defined(NM_NEXTSTEP))
+	  char *s = dyld_entry_string(e, dyld_print_basenames_flag);
+	  warning("Unable to read symbols from %s (not yet mapped into memory).", s);
+	  xfree(s);
 #endif /* !(TARGET_ARM && NM_NEXTSTEP */
 	}
       return;
     }
 
-  name = dyld_entry_filename (e, d, DYLD_ENTRY_FILENAME_LOADED);
+  name = dyld_entry_filename(e, d, DYLD_ENTRY_FILENAME_LOADED);
 
-  CHECK_FATAL (e->abfd == NULL);
-  CORE_ADDR slide = e->dyld_slide;
-  CORE_ADDR length = e->dyld_length;
+  CHECK_FATAL(e->abfd == NULL);
+  slide = e->dyld_slide;
+  length = e->dyld_length;
   if (core_bfd)
     {
       /* If we are reading an image from core memory, pass in an invalid
@@ -1256,19 +1260,19 @@ dyld_load_library_from_memory (const struct dyld_path_info *d,
    sets some state in E.  */
 
 void
-dyld_load_library (const struct dyld_path_info *d,
-                   struct dyld_objfile_entry *e)
+dyld_load_library(const struct dyld_path_info *d,
+                  struct dyld_objfile_entry *e)
 {
   int read_from_memory = 0;
   int print_errors = 1;
 
-  CHECK_FATAL (e->allocated);
+  CHECK_FATAL(e->allocated);
 
   if ((e->abfd != NULL) || (e->objfile != NULL))
     return;
 
   if (e->reason & dyld_reason_executable_mask)
-    CHECK_FATAL (e->objfile == symfile_objfile);
+    CHECK_FATAL(e->objfile == symfile_objfile);
 
  try_again_please:
   /* For now, we only print any error messages the first time we try
@@ -1289,24 +1293,25 @@ dyld_load_library (const struct dyld_path_info *d,
   if (dyld_always_read_from_memory_flag)
     read_from_memory = 1;
 
-  /* Always read from memory when we are using a core file.  */
+  /* Always read from memory when we are using a core file: */
   if (core_bfd)
     read_from_memory = 1;
 
   if (read_from_memory)
-    dyld_load_library_from_memory (d, e, print_errors);
+    dyld_load_library_from_memory(d, e, print_errors);
   else if (e->abfd == NULL)
     {
-      dyld_load_library_from_file (d, e, print_errors);
+      dyld_load_library_from_file(d, e, print_errors);
       if (e->abfd == NULL)
 	{
 	  read_from_memory = 1;
 	  /* If the target is "remote" we want to lower the load level
 	     on libraries that we are going to have to read out of memory.  */
-	  if (target_is_remote ())
+	  if (target_is_remote())
 	    {
+              const char *n;
 	      e->load_flag = OBJF_SYM_CONTAINER;
-              const char *n = NULL;
+              n = (const char *)NULL;
               if (e->dyld_name)
                 n = e->dyld_name;
               else if (e->image_name)
@@ -1318,14 +1323,14 @@ dyld_load_library (const struct dyld_path_info *d,
               if (n)
                 {
                   const char *m;
-                  m = bundle_basename (n);
-                  if (m && m != n)
+                  m = bundle_basename(n);
+                  if (m && (m != n))
                     {
                       n = m;
                     }
                   else
                     {
-                      m = lbasename (n);
+                      m = lbasename(n);
                       if (m)
                         n = m;
                     }
@@ -1340,17 +1345,17 @@ dyld_load_library (const struct dyld_path_info *d,
                  over the wire which is slow... but ignoring them altogether would
                  be a drag if we crash in one or if one of the OpenCL folks are
                  trying to debug a problem with one.  */
-              if (strncmp (n, "com.apple.opencl/clprogram", strlen ("com.apple.opencl/clprogram")) != 0)
-                warning ("No copy of %s found locally, reading from memory on remote device.  This may slow down the debug session.", n);
+              if (strncmp(n, "com.apple.opencl/clprogram", strlen("com.apple.opencl/clprogram")) != 0)
+                warning("No copy of %s found locally, reading from memory on remote device.  This may slow down the debug session.", n);
 	    }
 	  goto try_again_please;
 	}
-      else if (bfd_mach_o_stub_library (e->abfd) || bfd_mach_o_encrypted_binary (e->abfd))
+      else if (bfd_mach_o_stub_library(e->abfd) || bfd_mach_o_encrypted_binary(e->abfd))
 	{
 	  /* If we find a stub library as the backing file,
 	     then switch to reading from memory.  */
-	  e->load_flag = OBJF_SYM_CONTAINER | OBJF_SYM_DONT_CHANGE;
-	  bfd_close (e->abfd);
+	  e->load_flag = (OBJF_SYM_CONTAINER | OBJF_SYM_DONT_CHANGE);
+	  bfd_close(e->abfd);
 	  e->abfd = NULL;
 	  e->loaded_name = NULL;
 	  read_from_memory = 1;
@@ -1369,66 +1374,68 @@ dyld_load_library (const struct dyld_path_info *d,
 	     have an in memory copy yet.  */
 
 	  struct mach_o_data_struct *mdata = NULL;
-	  int i;
-	  volatile bfd_vma uuid_addr = (bfd_vma)-1;
+	  unsigned long i;
+	  volatile bfd_vma uuid_addr = (bfd_vma)-1L;
 	  unsigned char mem_uuid[16];
 	  volatile int matches = 0;
 	  unsigned char file_uuid[16];
 
-	  CHECK_FATAL (bfd_mach_o_valid (e->abfd));
+	  CHECK_FATAL(bfd_mach_o_valid(e->abfd));
 	  mdata = e->abfd->tdata.mach_o_data;
-	  for (i = 0; i < mdata->header.ncmds; i++)
+	  for (i = 0UL; i < mdata->header.ncmds; i++)
 	    {
 	      /* Find the UUID command in the on disk copy of the
 		 binary.  */
 	      if (mdata->commands[i].type == BFD_MACH_O_LC_UUID)
 		{
 		  uuid_addr = mdata->commands[i].offset;
-		  bfd_mach_o_get_uuid (e->abfd, file_uuid, sizeof (file_uuid));
+		  bfd_mach_o_get_uuid(e->abfd, file_uuid, sizeof(file_uuid));
 		  break;
 		}
 	    }
 
 	  /* If there is no UUID command, we obviously cannot do any checking.  */
-	  if (uuid_addr != (bfd_vma) -1)
+	  if (uuid_addr != (bfd_vma)-1L)
 	    {
 	      struct gdb_exception exc;
 	      int error = 0;
 	      int found_uuid = 0;
 
 	      uuid_addr += e->dyld_addr;
-	      TRY_CATCH (exc, RETURN_MASK_ALL)
+	      TRY_CATCH(exc, RETURN_MASK_ALL)
 		{
-		  error = target_read_uuid (uuid_addr, mem_uuid);
+		  error = target_read_uuid(uuid_addr, mem_uuid);
 		}
 
-	      /* Do the check with the UUID we found in the spot where it would be
-		   * if the binaries were the same. If that works, we are done. Otherwise
-		   * look through the in memory version directly for the LC_UUID.  */
-	      if (exc.reason == NO_ERROR && error == 0)
-		matches = (memcmp(mem_uuid, file_uuid, sizeof (file_uuid)) == 0);
+	      /* Do the check with the UUID we found in the spot where it
+               * would be if the binaries were the same.  If that works,
+               * then we are done.  Otherwise, look through the in-memory
+               * version directly for the LC_UUID.  */
+	      if ((exc.reason == NO_ERROR) && (error == 0))
+		matches = (memcmp(mem_uuid, file_uuid, sizeof(file_uuid)) == 0);
 
 	      if (!matches)
 		{
 		  struct mach_header header;
 		  bfd_vma curpos;
 		  struct load_command cmd;
-		  target_read_mach_header (e->dyld_addr, &header);
-		  curpos = e->dyld_addr + target_get_mach_header_size (&header);
+		  target_read_mach_header(e->dyld_addr, &header);
+		  curpos = (e->dyld_addr
+                            + target_get_mach_header_size(&header));
 
 		  for (i = 0; i < header.ncmds; i++)
 		    {
-		      if (target_read_load_command (curpos, &cmd) != 0)
+		      if (target_read_load_command(curpos, &cmd) != 0)
 			break;
 		      if (cmd.cmd == BFD_MACH_O_LC_UUID)
 			{
-			  if (target_read_uuid (curpos, mem_uuid) == 0)
+			  if (target_read_uuid(curpos, mem_uuid) == 0)
 			    found_uuid = 1;
 			  break;
 			}
 		      curpos += cmd.cmdsize;
 		    }
-		  matches = (memcmp (mem_uuid, file_uuid, sizeof (file_uuid)) == 0);
+		  matches = (memcmp(mem_uuid, file_uuid, sizeof(file_uuid)) == 0);
 		}
 
 	      if (!matches)
@@ -1525,28 +1532,28 @@ dyld_symfile_loaded_hook (struct objfile *o)
      this will NOT get re-initialized if you originally saw
      /usr/lib/libobjc.A.dylib, THEN set DYLD_LIBRARY_PATH to point to an
      independent copy, and THEN reran...  */
-  if (o == find_libobjc_objfile ())
+  if (o == find_libobjc_objfile())
     {
-      objc_init_trampoline_observer ();
-      objc_init_runtime_version ();
+      objc_init_trampoline_observer();
+      objc_init_runtime_version();
     }
 }
 
 static void
-dyld_load_symfile_internal (struct dyld_objfile_entry *e,
-                            int preserving_objfile_p)
+dyld_load_symfile_internal(struct dyld_objfile_entry *e,
+                           int preserving_objfile_p)
 {
   struct section_addr_info *addrs;
-  int i;
+  size_t i;
   volatile int using_orig_objfile = 0;
 
   if (e->loaded_error)
     return;
 
-  CHECK_FATAL (e->allocated);
+  CHECK_FATAL(e->allocated);
 
   if (e->reason & dyld_reason_executable_mask)
-    CHECK_FATAL (e->objfile == symfile_objfile);
+    CHECK_FATAL(e->objfile == symfile_objfile);
 
   if (e->dyld_valid)
     {
@@ -1577,15 +1584,17 @@ dyld_load_symfile_internal (struct dyld_objfile_entry *e,
      to work when we end up deleting an objfile AND its commpage
      objfile simultaneously.  */
 
-  if (e->objfile != NULL && !preserving_objfile_p)
+  if ((e->objfile != NULL) && !preserving_objfile_p)
     {
-      slide_objfile (e->objfile, e->dyld_slide, e->dyld_section_offsets);
+      slide_objfile(e->objfile, e->dyld_slide, e->dyld_section_offsets);
     }
   else
     {
       volatile struct gdb_exception exc;
+      const char *segname;
+      asection *commsec;
 
-      CHECK_FATAL (e->abfd != NULL);
+      CHECK_FATAL(e->abfd != NULL);
 
       /* Is this in the shared cache?  If so, and we do NOT already
          have section offsets, we need to call a special routine to
@@ -1593,24 +1602,25 @@ dyld_load_symfile_internal (struct dyld_objfile_entry *e,
          different slide values for different sections.  */
 
       if (dyld_objfile_entry_in_shared_cache(e)
-	  && e->dyld_section_offsets == NULL
+	  && (e->dyld_section_offsets == NULL)
           && e->dyld_valid)
         e->dyld_section_offsets =
-                  get_sectoffs_for_shared_cache_dylib (e, e->loaded_addr);
+                  get_sectoffs_for_shared_cache_dylib(e, e->loaded_addr);
 
       /* If we just have a slide then that means that the whole objfile is
-	   * sliding by the same amount.  So we make up a section_addr_info
-	   * struct, and fill each element with the slide value.  Otherwise, we
-	   * use the dyld_section_offsets.  */
+       * sliding by the same amount.  So we make up a section_addr_info
+       * struct, and fill each element with the slide value.  Otherwise, we
+       * use the dyld_section_offsets.  */
 
       if (e->dyld_section_offsets == NULL)
 	{
-	  addrs = alloc_section_addr_info (bfd_count_sections (e->abfd));
+	  addrs = alloc_section_addr_info(bfd_count_sections(e->abfd));
 
-	  for (i = 0; i < addrs->num_sections; i++)
+	  for (i = 0UL; i < addrs->num_sections; i++)
 	    {
 	      addrs->other[i].name = NULL;
-              if (e->dyld_valid == 0 && e->pre_run_slide_addr_valid == 1)
+              if ((e->dyld_valid == 0)
+                  && (e->pre_run_slide_addr_valid == 1))
 	        addrs->other[i].addr = e->pre_run_slide_addr;
               else
 	        addrs->other[i].addr = e->dyld_slide;
@@ -1631,29 +1641,30 @@ dyld_load_symfile_internal (struct dyld_objfile_entry *e,
 	}
       else
 	{
-	  using_orig_objfile = 1;
-	  int i;
+          size_t i;
           volatile int num_offsets;
 	  struct bfd_section *this_sect;
 
-          /* bfd sections are not the same as objfile sections.  */
+	  using_orig_objfile = 1;
+
+          /* bfd sections are not the same as objfile sections: */
 	  num_offsets = 0;
 	  if (e->dyld_section_offsets != NULL)
 	    {
 	      this_sect = e->abfd->sections;
-	      for (i = 0;
-                   i < bfd_count_sections (e->abfd);
+	      for (i = 0UL;
+                   i < bfd_count_sections(e->abfd);
                    i++, this_sect = this_sect->next)
 		{
-		  if (objfile_keeps_section (e->abfd, this_sect))
+		  if (objfile_keeps_section(e->abfd, this_sect))
 		    num_offsets++;
 		}
 	    }
 
-	  TRY_CATCH (exc, RETURN_MASK_ALL)
+	  TRY_CATCH(exc, RETURN_MASK_ALL)
 	    {
 	      e->objfile =
-		symbol_file_add_with_addrs_or_offsets_using_objfile (e->objfile,
+		symbol_file_add_with_addrs_or_offsets_using_objfile(e->objfile,
 						   e->abfd,
 						   0,
 						   addrs,
@@ -1676,7 +1687,9 @@ dyld_load_symfile_internal (struct dyld_objfile_entry *e,
         }
 
       e->loaded_name = e->objfile->name;
-      /* CHECK_FATAL (e->objfile->obfd == e->abfd); */
+#if defined(CHECK_FATAL) && (defined(DEBUG) || defined(_DEBUG))
+      CHECK_FATAL(e->objfile->obfd == e->abfd);
+#endif /* CHECK_FATAL && (DEBUG || _DEBUG) */
 
 
       /* If we are loading the library for the first time, check to see
@@ -1686,31 +1699,31 @@ dyld_load_symfile_internal (struct dyld_objfile_entry *e,
          library, which is appropriate since the commpage never moves in
          memory. */
 
-      const char *segname = "LC_SEGMENT.__DATA.__commpage";
-      asection *commsec;
+      segname = "LC_SEGMENT.__DATA.__commpage";
 
-      commsec = bfd_get_section_by_name (e->objfile->obfd, segname);
+      commsec = bfd_get_section_by_name(e->objfile->obfd, segname);
       if (commsec != NULL)
         {
           char *buf;
           bfd_size_type len;
           char *bfdname;
 
-          len = bfd_section_size (e->objfile->obfd, commsec);
-          buf = xmalloc (len * sizeof (char));
-          bfdname = xmalloc (strlen (e->objfile->obfd->filename) + 128);
+          len = bfd_section_size(e->objfile->obfd, commsec);
+          buf = (char *)xmalloc(len * sizeof (char));
+          bfdname = (char *)xmalloc(strlen(e->objfile->obfd->filename)
+                                    + 128UL);
 
-          sprintf (bfdname, "%s[%s]", e->objfile->obfd->filename, segname);
+          sprintf(bfdname, "%s[%s]", e->objfile->obfd->filename, segname);
 
-          if (bfd_get_section_contents
-              (e->objfile->obfd, commsec, buf, 0, len) != TRUE)
-            warning ("unable to read commpage data");
+          if (bfd_get_section_contents(e->objfile->obfd, commsec, buf,
+                                       0, len) != TRUE)
+            warning("unable to read commpage data");
 
-          e->commpage_bfd = bfd_memopenr (bfdname, NULL, (bfd_byte *) buf, len);
+          e->commpage_bfd = bfd_memopenr(bfdname, NULL, (bfd_byte *)buf, len);
 
-          if (!bfd_check_format (e->commpage_bfd, bfd_object))
+          if (!bfd_check_format(e->commpage_bfd, bfd_object))
             {
-              bfd_close (e->commpage_bfd);
+              bfd_close(e->commpage_bfd);
               e->commpage_bfd = NULL;
             }
 
@@ -1954,14 +1967,14 @@ remove_objfile_from_dyld_records (struct objfile *obj)
 extern int inferior_auto_start_dyld_flag;
 
 int
-dyld_is_objfile_loaded (struct objfile *obj)
+dyld_is_objfile_loaded(struct objfile *obj)
 {
-  if (inferior_auto_start_dyld_flag == 0)
-    return 1;
-
   struct dyld_objfile_entry *e;
   int i;
   struct macosx_dyld_thread_status *status = &macosx_dyld_status;
+
+  if (inferior_auto_start_dyld_flag == 0)
+    return 1;
 
   if (obj == NULL)
     return 0;
@@ -2468,75 +2481,74 @@ dyld_merge_shlib (const struct macosx_dyld_thread_status *s,
  * point we want to toss the pre-execution speculative dyld_objfile_entry
  * and standardize on the actually-seen image file.
  *
- * That is one instance where we will be using this function. */
-
+ * That is one instance where we will be using this function: */
 void
-dyld_prune_shlib (struct dyld_path_info *d,
-		  struct dyld_objfile_info *obj_info,
-                  struct dyld_objfile_entry *new)
+dyld_prune_shlib(struct dyld_path_info *d,
+		 struct dyld_objfile_info *obj_info,
+                 struct dyld_objfile_entry *newobj)
 {
   struct dyld_objfile_entry *o;
   int i;
 
-  DYLD_ALL_OBJFILE_INFO_ENTRIES (obj_info, o, i)
+  DYLD_ALL_OBJFILE_INFO_ENTRIES(obj_info, o, i)
     {
       if ((o->reason & dyld_reason_executable_mask)
-          && (new->reason & dyld_reason_executable_mask))
+          && (newobj->reason & dyld_reason_executable_mask))
         {
-          if (o->objfile != NULL && o->objfile != new->objfile)
+          if ((o->objfile != NULL) && (o->objfile != newobj->objfile))
             {
-              tell_breakpoints_objfile_changed (o->objfile);
-              tell_objc_msgsend_cacher_objfile_changed (o->objfile);
+              tell_breakpoints_objfile_changed(o->objfile);
+              tell_objc_msgsend_cacher_objfile_changed(o->objfile);
             }
-          dyld_objfile_entry_clear (o);
+          dyld_objfile_entry_clear(o);
           continue;
         }
 
-      if (dyld_libraries_similar (d, o, new))
+      if (dyld_libraries_similar(d, o, newobj))
         {
           if (o->objfile != NULL)
             {
-              tell_breakpoints_objfile_changed (o->objfile);
-              tell_objc_msgsend_cacher_objfile_changed (o->objfile);
+              tell_breakpoints_objfile_changed(o->objfile);
+              tell_objc_msgsend_cacher_objfile_changed(o->objfile);
             }
-          dyld_remove_objfile (o);
-          dyld_objfile_entry_clear (o);
+          dyld_remove_objfile(o);
+          dyld_objfile_entry_clear(o);
         }
     }
 }
 
 void
-dyld_merge_shlibs (const struct macosx_dyld_thread_status *s,
-                   struct dyld_path_info *d,
-                   struct dyld_objfile_info *old,
-                   struct dyld_objfile_info *new)
+dyld_merge_shlibs(const struct macosx_dyld_thread_status *s,
+                  struct dyld_path_info *d,
+                  struct dyld_objfile_info *oldobj,
+                  struct dyld_objfile_info *newobj)
 {
   struct dyld_objfile_entry *n = NULL;
   struct dyld_objfile_entry *o = NULL;
   int i;
 
-  CHECK_FATAL (old != NULL);
-  CHECK_FATAL (new != NULL);
-  CHECK_FATAL (old != new);
+  CHECK_FATAL(oldobj != NULL);
+  CHECK_FATAL(newobj != NULL);
+  CHECK_FATAL(oldobj != newobj);
 
-  dyld_resolve_filenames (s, new);
+  dyld_resolve_filenames(s, newobj);
 
-  DYLD_ALL_OBJFILE_INFO_ENTRIES (new, n, i)
+  DYLD_ALL_OBJFILE_INFO_ENTRIES(newobj, n, i)
     if (n->objfile == NULL)
-      dyld_merge_shlib (s, d, old, n);
+      dyld_merge_shlib(s, d, oldobj, n);
 
-  DYLD_ALL_OBJFILE_INFO_ENTRIES (new, n, i)
-    dyld_prune_shlib (d, old, n);
+  DYLD_ALL_OBJFILE_INFO_ENTRIES(newobj, n, i)
+    dyld_prune_shlib(d, oldobj, n);
 
-  DYLD_ALL_OBJFILE_INFO_ENTRIES (old, o, i)
+  DYLD_ALL_OBJFILE_INFO_ENTRIES(oldobj, o, i)
     {
       struct dyld_objfile_entry *e = NULL;
-      e = dyld_objfile_entry_alloc (new);
+      e = dyld_objfile_entry_alloc(newobj);
       *e = *o;
 
-      e->reason |= dyld_reason_cached_mask;
+      e->reason |= (enum dyld_objfile_reason)dyld_reason_cached_mask;
 
-      dyld_objfile_entry_clear (o);
+      dyld_objfile_entry_clear(o);
     }
 }
 

@@ -3616,15 +3616,15 @@ map_sections_to_segments (bfd *abfd)
   asection *dynsec, *eh_frame_hdr;
   bfd_size_type amt;
 
-  if (elf_tdata (abfd)->segment_map != NULL)
+  if (elf_tdata(abfd)->segment_map != NULL)
     return TRUE;
 
-  if (bfd_count_sections (abfd) == 0)
+  if (bfd_count_sections(abfd) == 0)
     return TRUE;
 
-  /* Select the allocated sections, and sort them.  */
-
-  sections = bfd_malloc2 (bfd_count_sections (abfd), sizeof (asection *));
+  /* Select the allocated sections, and sort them: */
+  sections = (asection **)bfd_malloc2(bfd_count_sections(abfd),
+                                      sizeof(asection *));
   if (sections == NULL)
     goto error_return;
 
@@ -5416,12 +5416,17 @@ copy_private_bfd_data (bfd *ibfd, bfd *obfd)
 	 pointers that we are interested in.  As these sections get assigned
 	 to a segment, they are removed from this array.  */
 
-      /* Gcc 2.96 miscompiles this code on mips. Do NOT do casting here
-	   * to work around this long long bug.  */
-      sections = bfd_malloc2 (section_count, sizeof (asection *));
-		if (sections == NULL) {
-			return FALSE;
-		}
+      /* Gcc 2.96 miscompiles this code on mips.  Do NOT do casting here
+       * to work around this long long bug.  */
+#if defined(__cplusplus) || !defined(__mips__)
+      sections = (asection **)bfd_malloc2(section_count,
+                                          sizeof(asection *));
+#else
+      sections = bfd_malloc2(section_count, sizeof(asection *));
+#endif /* __cplusplus || !__mips__ */
+      if (sections == NULL) {
+        return FALSE;
+      }
 
       /* Step One: Scan for segment vs section LMA conflicts.
 	   * Also add the sections to the section array allocated above.
@@ -7184,21 +7189,21 @@ elfcore_grok_prfpreg (bfd *abfd, Elf_Internal_Note *note)
    literally.  */
 
 static bfd_boolean
-elfcore_grok_prxfpreg (bfd *abfd, Elf_Internal_Note *note)
+elfcore_grok_prxfpreg(bfd *abfd, Elf_Internal_Note *note)
 {
-  return elfcore_make_note_pseudosection (abfd, ".reg-xfp", note);
+  return elfcore_make_note_pseudosection(abfd, ".reg-xfp", note);
 }
 
-#if defined (HAVE_PRPSINFO_T) && defined prpsinfo_t
-typedef prpsinfo_t   elfcore_psinfo_t;
-# if defined (HAVE_PRPSINFO32_T) && defined prpsinfo32_t /* Sparc64 cross Sparc32 */
+#if defined(HAVE_PRPSINFO_T) && defined prpsinfo_t
+typedef prpsinfo_t elfcore_psinfo_t;
+# if defined(HAVE_PRPSINFO32_T) && defined prpsinfo32_t /* Sparc64 cross Sparc32 */
 typedef prpsinfo32_t elfcore_psinfo32_t;
 # endif /* HAVE_PRPSINFO32_T && prpsinfo32_t */
 #endif /* HAVE_PRPSINFO_T && prpsinfo_t */
 
-#if defined (HAVE_PSINFO_T) && defined psinfo_t
-typedef psinfo_t   elfcore_psinfo_t;
-# if defined (HAVE_PSINFO32_T) && defined psinfo32_t /* Sparc64 cross Sparc32 */
+#if defined(HAVE_PSINFO_T) && defined psinfo_t
+typedef psinfo_t elfcore_psinfo_t;
+# if defined(HAVE_PSINFO32_T) && defined psinfo32_t /* Sparc64 cross Sparc32 */
 typedef psinfo32_t elfcore_psinfo32_t;
 # endif /* HAVE_PSINFO32_T && psinfo32_t */
 #endif /* HAVE_PSINFO_T && psinfo_t */
@@ -7208,69 +7213,69 @@ typedef psinfo32_t elfcore_psinfo32_t;
    the copy will always have a terminating '\0'.  */
 
 char *
-_bfd_elfcore_strndup (bfd *abfd, char *start, size_t max)
+_bfd_elfcore_strndup(bfd *abfd, char *start, size_t max)
 {
   char *dups;
-  char *end = memchr (start, '\0', max);
+  char *end = (char *)memchr(start, '\0', max);
   size_t len;
 
-	if (end == NULL) {
-		len = max;
-	} else {
-		len = end - start;
-	}
+  if (end == NULL) {
+    len = max;
+  } else {
+    len = (end - start);
+  }
 
-  dups = bfd_alloc (abfd, len + 1);
-	if (dups == NULL) {
-		return NULL;
-	}
+  dups = (char *)bfd_alloc(abfd, (len + 1UL));
+  if (dups == NULL) {
+    return NULL;
+  }
 
-  memcpy (dups, start, len);
+  memcpy(dups, start, len);
   dups[len] = '\0';
 
   return dups;
 }
 
-#if (defined (HAVE_PRPSINFO_T) && defined prpsinfo_t) || (defined (HAVE_PSINFO_T) && defined psinfo_t)
+#if (defined(HAVE_PRPSINFO_T) && defined prpsinfo_t) || (defined(HAVE_PSINFO_T) && defined psinfo_t)
 static bfd_boolean
-elfcore_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
+elfcore_grok_psinfo(bfd *abfd, Elf_Internal_Note *note)
 {
-  if (note->descsz == sizeof (elfcore_psinfo_t))
+  if (note->descsz == sizeof(elfcore_psinfo_t))
     {
       elfcore_psinfo_t psinfo;
 
-      memcpy (&psinfo, note->descdata, sizeof (psinfo));
+      memcpy(&psinfo, note->descdata, sizeof(psinfo));
 
-      elf_tdata (abfd)->core_program
-	= _bfd_elfcore_strndup (abfd, psinfo.pr_fname,
-				sizeof (psinfo.pr_fname));
+      elf_tdata(abfd)->core_program
+	= _bfd_elfcore_strndup(abfd, psinfo.pr_fname,
+                               sizeof(psinfo.pr_fname));
 
-      elf_tdata (abfd)->core_command
-	= _bfd_elfcore_strndup (abfd, psinfo.pr_psargs,
-				sizeof (psinfo.pr_psargs));
+      elf_tdata(abfd)->core_command
+	= _bfd_elfcore_strndup(abfd, psinfo.pr_psargs,
+                               sizeof(psinfo.pr_psargs));
     }
-# if (defined (HAVE_PRPSINFO32_T) && defined prpsinfo32_t) || (defined (HAVE_PSINFO32_T) && defined psinfo32_t)
-  else if (note->descsz == sizeof (elfcore_psinfo32_t))
+# if (defined(HAVE_PRPSINFO32_T) && defined prpsinfo32_t) || (defined(HAVE_PSINFO32_T) && defined psinfo32_t)
+  else if (note->descsz == sizeof(elfcore_psinfo32_t))
     {
-      /* 64-bit host, 32-bit corefile */
+      /* 64-bit host, 32-bit corefile: */
       elfcore_psinfo32_t psinfo;
 
-      memcpy (&psinfo, note->descdata, sizeof (psinfo));
+      memcpy(&psinfo, note->descdata, sizeof(psinfo));
 
       elf_tdata (abfd)->core_program
-	= _bfd_elfcore_strndup (abfd, psinfo.pr_fname,
-				sizeof (psinfo.pr_fname));
+	= _bfd_elfcore_strndup(abfd, psinfo.pr_fname,
+                               sizeof(psinfo.pr_fname));
 
-      elf_tdata (abfd)->core_command
-	= _bfd_elfcore_strndup (abfd, psinfo.pr_psargs,
-				sizeof (psinfo.pr_psargs));
+      elf_tdata(abfd)->core_command
+	= _bfd_elfcore_strndup(abfd, psinfo.pr_psargs,
+                               sizeof(psinfo.pr_psargs));
     }
 # endif /* (HAVE_PRPSINFO32_T && prpsinfo32_t) || (HAVE_PSINFO32_T && psinfo32_t) */
 
   else
     {
       /* Fail - we do NOT know how to handle any other
-	   * note size (ie. data object type).  */
+       * note size (ie. data object type).  */
       return TRUE;
     }
 
@@ -7279,43 +7284,43 @@ elfcore_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
      implementations, so strip it off if it exists.  */
 
   {
-    char *command = elf_tdata (abfd)->core_command;
-    int n = strlen (command);
+    char *command = elf_tdata(abfd)->core_command;
+    size_t n = strlen(command);
 
-	  if (0 < n && command[n - 1] == ' ') {
-		  command[n - 1] = '\0';
-	  }
+    if ((0UL < n) && (command[n - 1] == ' ')) {
+      command[n - 1] = '\0';
+    }
   }
 
   return TRUE;
 }
-#endif /* (defined (HAVE_PRPSINFO32_T) && defined prpsinfo32_t) || (defined (HAVE_PSINFO32_T) && defined psinfo32_t) */
+#endif /* (defined(HAVE_PRPSINFO32_T) && defined prpsinfo32_t) || (defined(HAVE_PSINFO32_T) && defined psinfo32_t) */
 
-#if defined (HAVE_PSTATUS_T) && defined pstatus_t
+#if defined(HAVE_PSTATUS_T) && defined pstatus_t
 static bfd_boolean
-elfcore_grok_pstatus (bfd *abfd, Elf_Internal_Note *note)
+elfcore_grok_pstatus(bfd *abfd, Elf_Internal_Note *note)
 {
-  if (note->descsz == sizeof (pstatus_t)
-# if defined (HAVE_PXSTATUS_T) && defined pxstatus_t
-      || note->descsz == sizeof (pxstatus_t)
+  if ((note->descsz == sizeof(pstatus_t))
+# if defined(HAVE_PXSTATUS_T) && defined pxstatus_t
+      || (note->descsz == sizeof(pxstatus_t))
 # endif /* HAVE_PXSTATUS_T && pxstatus_t */
       )
     {
       pstatus_t pstat;
 
-      memcpy (&pstat, note->descdata, sizeof (pstat));
+      memcpy(&pstat, note->descdata, sizeof(pstat));
 
-      elf_tdata (abfd)->core_pid = pstat.pr_pid;
+      elf_tdata(abfd)->core_pid = pstat.pr_pid;
     }
-# if defined (HAVE_PSTATUS32_T) && defined pstatus32_t
-  else if (note->descsz == sizeof (pstatus32_t))
+# if defined(HAVE_PSTATUS32_T) && defined pstatus32_t
+  else if (note->descsz == sizeof(pstatus32_t))
     {
       /* 64-bit host, 32-bit corefile */
       pstatus32_t pstat;
 
-      memcpy (&pstat, note->descdata, sizeof (pstat));
+      memcpy(&pstat, note->descdata, sizeof(pstat));
 
-      elf_tdata (abfd)->core_pid = pstat.pr_pid;
+      elf_tdata(abfd)->core_pid = pstat.pr_pid;
     }
 # endif /* HAVE_PSTATUS32_T && pstatus32_t */
   /* Could grab some more details from the "representative"
@@ -7324,11 +7329,11 @@ elfcore_grok_pstatus (bfd *abfd, Elf_Internal_Note *note)
 
   return TRUE;
 }
-#endif /* defined (HAVE_PSTATUS_T) && defined pstatus_t */
+#endif /* defined(HAVE_PSTATUS_T) && defined pstatus_t */
 
-#if defined (HAVE_LWPSTATUS_T) && defined lwpstatus_t
+#if defined(HAVE_LWPSTATUS_T) && defined lwpstatus_t
 static bfd_boolean
-elfcore_grok_lwpstatus (bfd *abfd, Elf_Internal_Note *note)
+elfcore_grok_lwpstatus(bfd *abfd, Elf_Internal_Note *note)
 {
   lwpstatus_t lwpstat;
   char buf[100];
@@ -7336,87 +7341,85 @@ elfcore_grok_lwpstatus (bfd *abfd, Elf_Internal_Note *note)
   size_t len;
   asection *sect;
 
-  if (note->descsz != sizeof (lwpstat)
-# if defined (HAVE_LWPXSTATUS_T) && defined lwpxstatus_t
-      && note->descsz != sizeof (lwpxstatus_t)
+  if ((note->descsz != sizeof(lwpstat))
+# if defined(HAVE_LWPXSTATUS_T) && defined lwpxstatus_t
+      && (note->descsz != sizeof(lwpxstatus_t))
 # endif /* HAVE_LWPXSTATUS_T && lwpxstatus_t */
       )
     return TRUE;
 
-  memcpy (&lwpstat, note->descdata, sizeof (lwpstat));
+  memcpy(&lwpstat, note->descdata, sizeof(lwpstat));
 
-  elf_tdata (abfd)->core_lwpid = lwpstat.pr_lwpid;
-  elf_tdata (abfd)->core_signal = lwpstat.pr_cursig;
+  elf_tdata(abfd)->core_lwpid = lwpstat.pr_lwpid;
+  elf_tdata(abfd)->core_signal = lwpstat.pr_cursig;
 
-  /* Make a ".reg/999" section.  */
+  /* Make a ".reg/999" section: */
+  sprintf(buf, ".reg/%d", elfcore_make_pid(abfd));
+  len = (strlen(buf) + 1UL);
+  name = bfd_alloc(abfd, len);
+  if (name == NULL) {
+    return FALSE;
+  }
+  memcpy(name, buf, len);
 
-  sprintf (buf, ".reg/%d", elfcore_make_pid (abfd));
-  len = strlen (buf) + 1;
-  name = bfd_alloc (abfd, len);
-	if (name == NULL) {
-		return FALSE;
-	}
-  memcpy (name, buf, len);
+  sect = bfd_make_section_anyway(abfd, name);
+  if (sect == NULL) {
+    return FALSE;
+  }
 
-  sect = bfd_make_section_anyway (abfd, name);
-	if (sect == NULL) {
-		return FALSE;
-	}
-
-# if defined (HAVE_LWPSTATUS_T_PR_CONTEXT)
-  sect->size = sizeof (lwpstat.pr_context.uc_mcontext.gregs);
-  sect->filepos = note->descpos
-    + offsetof (lwpstatus_t, pr_context.uc_mcontext.gregs);
+# if defined(HAVE_LWPSTATUS_T_PR_CONTEXT)
+  sect->size = sizeof(lwpstat.pr_context.uc_mcontext.gregs);
+  sect->filepos = (note->descpos
+                   + offsetof(lwpstatus_t, pr_context.uc_mcontext.gregs));
 # endif /* HAVE_LWPSTATUS_T_PR_CONTEXT */
 
-# if defined (HAVE_LWPSTATUS_T_PR_REG)
-  sect->size = sizeof (lwpstat.pr_reg);
-  sect->filepos = note->descpos + offsetof (lwpstatus_t, pr_reg);
+# if defined(HAVE_LWPSTATUS_T_PR_REG)
+  sect->size = sizeof(lwpstat.pr_reg);
+  sect->filepos = (note->descpos + offsetof(lwpstatus_t, pr_reg));
 # endif /* HAVE_LWPSTATUS_T_PR_REG */
 
   sect->flags = SEC_HAS_CONTENTS;
   sect->alignment_power = 2;
 
-	if (!elfcore_maybe_make_sect (abfd, ".reg", sect)) {
-		return FALSE;
-	}
+  if (!elfcore_maybe_make_sect(abfd, ".reg", sect)) {
+    return FALSE;
+  }
 
-  /* Make a ".reg2/999" section */
+  /* Make a ".reg2/999" section: */
+  sprintf(buf, ".reg2/%d", elfcore_make_pid(abfd));
+  len = (strlen(buf) + 1UL);
+  name = bfd_alloc(abfd, len);
+  if (name == NULL) {
+    return FALSE;
+  }
+  memcpy(name, buf, len);
 
-  sprintf (buf, ".reg2/%d", elfcore_make_pid (abfd));
-  len = strlen (buf) + 1;
-  name = bfd_alloc (abfd, len);
-	if (name == NULL) {
-		return FALSE;
-	}
-  memcpy (name, buf, len);
+  sect = bfd_make_section_anyway(abfd, name);
+  if (sect == NULL) {
+    return FALSE;
+  }
 
-  sect = bfd_make_section_anyway (abfd, name);
-	if (sect == NULL) {
-		return FALSE;
-	}
-
-# if defined (HAVE_LWPSTATUS_T_PR_CONTEXT)
-  sect->size = sizeof (lwpstat.pr_context.uc_mcontext.fpregs);
-  sect->filepos = note->descpos
-    + offsetof (lwpstatus_t, pr_context.uc_mcontext.fpregs);
+# if defined(HAVE_LWPSTATUS_T_PR_CONTEXT)
+  sect->size = sizeof(lwpstat.pr_context.uc_mcontext.fpregs);
+  sect->filepos = (note->descpos
+                   + offsetof(lwpstatus_t, pr_context.uc_mcontext.fpregs));
 # endif /* HAVE_LWPSTATUS_T_PR_CONTEXT */
 
-# if defined (HAVE_LWPSTATUS_T_PR_FPREG)
-  sect->size = sizeof (lwpstat.pr_fpreg);
-  sect->filepos = note->descpos + offsetof (lwpstatus_t, pr_fpreg);
+# if defined(HAVE_LWPSTATUS_T_PR_FPREG)
+  sect->size = sizeof(lwpstat.pr_fpreg);
+  sect->filepos = (note->descpos + offsetof(lwpstatus_t, pr_fpreg));
 # endif /* HAVE_LWPSTATUS_T_PR_FPREG */
 
   sect->flags = SEC_HAS_CONTENTS;
   sect->alignment_power = 2;
 
-  return elfcore_maybe_make_sect (abfd, ".reg2", sect);
+  return elfcore_maybe_make_sect(abfd, ".reg2", sect);
 }
-#endif /* defined (HAVE_LWPSTATUS_T) && defined lwpstatus_t */
+#endif /* defined(HAVE_LWPSTATUS_T) && defined lwpstatus_t */
 
-#if defined (HAVE_WIN32_PSTATUS_T) && defined win32_pstatus_t
+#if defined(HAVE_WIN32_PSTATUS_T) && defined win32_pstatus_t
 static bfd_boolean
-elfcore_grok_win32pstatus (bfd *abfd, Elf_Internal_Note *note)
+elfcore_grok_win32pstatus(bfd *abfd, Elf_Internal_Note *note)
 {
   char buf[30];
   char *name;
@@ -7424,69 +7427,69 @@ elfcore_grok_win32pstatus (bfd *abfd, Elf_Internal_Note *note)
   asection *sect;
   win32_pstatus_t pstatus;
 
-	if (note->descsz < sizeof (pstatus)) {
-		return TRUE;
-	}
+  if (note->descsz < sizeof(pstatus)) {
+    return TRUE;
+  }
 
-  memcpy (&pstatus, note->descdata, sizeof (pstatus));
+  memcpy(&pstatus, note->descdata, sizeof(pstatus));
 
   switch (pstatus.data_type)
     {
     case NOTE_INFO_PROCESS:
       /* FIXME: need to add ->core_command.  */
-      elf_tdata (abfd)->core_signal = pstatus.data.process_info.signal;
-      elf_tdata (abfd)->core_pid = pstatus.data.process_info.pid;
+      elf_tdata(abfd)->core_signal = pstatus.data.process_info.signal;
+      elf_tdata(abfd)->core_pid = pstatus.data.process_info.pid;
       break;
 
     case NOTE_INFO_THREAD:
       /* Make a ".reg/999" section.  */
-      sprintf (buf, ".reg/%ld", (long) pstatus.data.thread_info.tid);
+      sprintf(buf, ".reg/%ld", (long)pstatus.data.thread_info.tid);
 
-      len = strlen (buf) + 1;
-      name = bfd_alloc (abfd, len);
-			if (name == NULL) {
-				return FALSE;
-			}
+      len = (strlen(buf) + 1UL);
+      name = bfd_alloc(abfd, len);
+      if (name == NULL) {
+        return FALSE;
+      }
 
-      memcpy (name, buf, len);
+      memcpy(name, buf, len);
 
-      sect = bfd_make_section_anyway (abfd, name);
-			if (sect == NULL) {
-				return FALSE;
-			}
+      sect = bfd_make_section_anyway(abfd, name);
+      if (sect == NULL) {
+        return FALSE;
+      }
 
-      sect->size = sizeof (pstatus.data.thread_info.thread_context);
+      sect->size = sizeof(pstatus.data.thread_info.thread_context);
       sect->filepos = (note->descpos
-		       + offsetof (struct win32_pstatus,
-				   data.thread_info.thread_context));
+		       + offsetof(struct win32_pstatus,
+				  data.thread_info.thread_context));
       sect->flags = SEC_HAS_CONTENTS;
       sect->alignment_power = 2;
 
-			if (pstatus.data.thread_info.is_active_thread) {
-				if (! elfcore_maybe_make_sect (abfd, ".reg", sect)) {
-					return FALSE;
-				}
-				break;
-			}
+      if (pstatus.data.thread_info.is_active_thread) {
+        if (! elfcore_maybe_make_sect(abfd, ".reg", sect)) {
+          return FALSE;
+        }
+        break;
+      }
 
     case NOTE_INFO_MODULE:
-      /* Make a ".module/xxxxxxxx" section.  */
-      sprintf (buf, ".module/%08lx",
-	       (long) pstatus.data.module_info.base_address);
+      /* Make a ".module/xxxxxxxx" section: */
+      sprintf(buf, ".module/%08lx",
+	      (long)pstatus.data.module_info.base_address);
 
-      len = strlen (buf) + 1;
-      name = bfd_alloc (abfd, len);
-			if (name == NULL) {
-				return FALSE;
-			}
+      len = (strlen(buf) + 1UL);
+      name = bfd_alloc(abfd, len);
+      if (name == NULL) {
+        return FALSE;
+      }
 
-      memcpy (name, buf, len);
+      memcpy(name, buf, len);
 
-      sect = bfd_make_section_anyway (abfd, name);
+      sect = bfd_make_section_anyway(abfd, name);
 
-			if (sect == NULL) {
-				return FALSE;
-			}
+      if (sect == NULL) {
+        return FALSE;
+      }
 
       sect->size = note->descsz;
       sect->filepos = note->descpos;
@@ -7503,9 +7506,9 @@ elfcore_grok_win32pstatus (bfd *abfd, Elf_Internal_Note *note)
 #endif /* HAVE_WIN32_PSTATUS_T && win32_pstatus_t */
 
 static bfd_boolean
-elfcore_grok_note (bfd *abfd, Elf_Internal_Note *note)
+elfcore_grok_note(bfd *abfd, Elf_Internal_Note *note)
 {
-  const struct elf_backend_data *bed = get_elf_backend_data (abfd);
+  const struct elf_backend_data *bed = get_elf_backend_data(abfd);
 
   switch (note->type)
     {
@@ -7514,63 +7517,63 @@ elfcore_grok_note (bfd *abfd, Elf_Internal_Note *note)
 
     case NT_PRSTATUS:
       if (bed->elf_backend_grok_prstatus)
-	if ((*bed->elf_backend_grok_prstatus) (abfd, note))
+	if ((*bed->elf_backend_grok_prstatus)(abfd, note))
 	  return TRUE;
-#if defined (HAVE_PRSTATUS_T) && defined prstatus_t
-      return elfcore_grok_prstatus (abfd, note);
+#if defined(HAVE_PRSTATUS_T) && defined prstatus_t
+      return elfcore_grok_prstatus(abfd, note);
 #else
       return TRUE;
 #endif /* HAVE_PRSTATUS_T && prstatus_t */
 
-#if defined (HAVE_PSTATUS_T) && defined pstatus_t
+#if defined(HAVE_PSTATUS_T) && defined pstatus_t
     case NT_PSTATUS:
       return elfcore_grok_pstatus (abfd, note);
 #endif /* HAVE_PSTATUS_T && pstatus_t */
 
-#if defined (HAVE_LWPSTATUS_T) && defined lwpstatus_t
+#if defined(HAVE_LWPSTATUS_T) && defined lwpstatus_t
     case NT_LWPSTATUS:
-      return elfcore_grok_lwpstatus (abfd, note);
+      return elfcore_grok_lwpstatus(abfd, note);
 #endif /* HAVE_LWPSTATUS_T */
 
     case NT_FPREGSET:		/* FIXME: rename to NT_PRFPREG */
-      return elfcore_grok_prfpreg (abfd, note);
+      return elfcore_grok_prfpreg(abfd, note);
 
-#if defined (HAVE_WIN32_PSTATUS_T) && defined win32_pstatus_t
+#if defined(HAVE_WIN32_PSTATUS_T) && defined win32_pstatus_t
     case NT_WIN32PSTATUS:
-      return elfcore_grok_win32pstatus (abfd, note);
+      return elfcore_grok_win32pstatus(abfd, note);
 #endif /* HAVE_WIN32_PSTATUS_T && win32_pstatus_t */
 
     case NT_PRXFPREG:		/* Linux SSE extension */
-      if (note->namesz == 6
-		  && strcmp (note->namedata, "LINUX") == 0) {
-		  return elfcore_grok_prxfpreg (abfd, note);
+      if ((note->namesz == 6)
+          && (strcmp(note->namedata, "LINUX") == 0)) {
+        return elfcore_grok_prxfpreg(abfd, note);
       } else {
-		  return TRUE;
-	  }
+        return TRUE;
+      }
 
     case NT_PRPSINFO:
     case NT_PSINFO:
       if (bed->elf_backend_grok_psinfo)
-		  if ((*bed->elf_backend_grok_psinfo) (abfd, note)) {
-			  return TRUE;
-		  }
+        if ((*bed->elf_backend_grok_psinfo)(abfd, note)) {
+          return TRUE;
+        }
 #if (defined (HAVE_PRPSINFO_T) && defined prpsinfo_t) || (defined (HAVE_PSINFO_T) && defined psinfo_t)
-      return elfcore_grok_psinfo (abfd, note);
+      return elfcore_grok_psinfo(abfd, note);
 #else
       return TRUE;
 #endif /* (HAVE_PRPSINFO_T && prpsinfo_t) || (HAVE_PSINFO_T && psinfo_t) */
 
     case NT_AUXV:
       {
-	asection *sect = bfd_make_section_anyway (abfd, ".auxv");
+	asection *sect = bfd_make_section_anyway(abfd, ".auxv");
 
-		  if (sect == NULL) {
-			  return FALSE;
-		  }
+        if (sect == NULL) {
+          return FALSE;
+        }
 	sect->size = note->descsz;
 	sect->filepos = note->descpos;
 	sect->flags = SEC_HAS_CONTENTS;
-	sect->alignment_power = 1 + bfd_get_arch_size (abfd) / 32;
+	sect->alignment_power = (1 + bfd_get_arch_size(abfd) / 32);
 
 	return TRUE;
       }
@@ -7578,11 +7581,11 @@ elfcore_grok_note (bfd *abfd, Elf_Internal_Note *note)
 }
 
 static bfd_boolean
-elfcore_netbsd_get_lwpid (Elf_Internal_Note *note, int *lwpidp)
+elfcore_netbsd_get_lwpid(Elf_Internal_Note *note, int *lwpidp)
 {
   char *cp;
 
-  cp = strchr (note->namedata, '@');
+  cp = strchr(note->namedata, '@');
   if (cp != NULL)
     {
       *lwpidp = atoi(cp + 1);
@@ -7592,33 +7595,32 @@ elfcore_netbsd_get_lwpid (Elf_Internal_Note *note, int *lwpidp)
 }
 
 static bfd_boolean
-elfcore_grok_netbsd_procinfo (bfd *abfd, Elf_Internal_Note *note)
+elfcore_grok_netbsd_procinfo(bfd *abfd, Elf_Internal_Note *note)
 {
-
   /* Signal number at offset 0x08. */
-  elf_tdata (abfd)->core_signal
-    = bfd_h_get_32 (abfd, (bfd_byte *) note->descdata + 0x08);
+  elf_tdata(abfd)->core_signal
+    = bfd_h_get_32(abfd, (bfd_byte *)note->descdata + 0x08);
 
   /* Process ID at offset 0x50. */
-  elf_tdata (abfd)->core_pid
-    = bfd_h_get_32 (abfd, (bfd_byte *) note->descdata + 0x50);
+  elf_tdata(abfd)->core_pid
+    = bfd_h_get_32(abfd, (bfd_byte *)note->descdata + 0x50);
 
   /* Command name at 0x7c (max 32 bytes, including nul). */
-  elf_tdata (abfd)->core_command
-    = _bfd_elfcore_strndup (abfd, note->descdata + 0x7c, 31);
+  elf_tdata(abfd)->core_command
+    = _bfd_elfcore_strndup(abfd, note->descdata + 0x7c, 31);
 
-  return elfcore_make_note_pseudosection (abfd, ".note.netbsdcore.procinfo",
-					  note);
+  return elfcore_make_note_pseudosection(abfd, ".note.netbsdcore.procinfo",
+					 note);
 }
 
 static bfd_boolean
-elfcore_grok_netbsd_note (bfd *abfd, Elf_Internal_Note *note)
+elfcore_grok_netbsd_note(bfd *abfd, Elf_Internal_Note *note)
 {
   int lwp;
 
-	if (elfcore_netbsd_get_lwpid (note, &lwp)) {
-		elf_tdata (abfd)->core_lwpid = lwp;
-	}
+  if (elfcore_netbsd_get_lwpid(note, &lwp)) {
+    elf_tdata(abfd)->core_lwpid = lwp;
+  }
 
   if (note->type == NT_NETBSDCORE_PROCINFO)
     {
@@ -7627,7 +7629,7 @@ elfcore_grok_netbsd_note (bfd *abfd, Elf_Internal_Note *note)
          since the kernel writes this note out first when it
          creates a core file.  */
 
-      return elfcore_grok_netbsd_procinfo (abfd, note);
+      return elfcore_grok_netbsd_procinfo(abfd, note);
     }
 
   /* As of Jan 2002 there are no other machine-independent notes
@@ -7639,7 +7641,7 @@ elfcore_grok_netbsd_note (bfd *abfd, Elf_Internal_Note *note)
     return TRUE;
 
 
-  switch (bfd_get_arch (abfd))
+  switch (bfd_get_arch(abfd))
     {
     /* On the Alpha, SPARC (32-bit and 64-bit), PT_GETREGS == mach+0 and
        PT_GETFPREGS == mach+2.  */
@@ -7649,10 +7651,10 @@ elfcore_grok_netbsd_note (bfd *abfd, Elf_Internal_Note *note)
       switch (note->type)
         {
         case NT_NETBSDCORE_FIRSTMACH+0:
-          return elfcore_make_note_pseudosection (abfd, ".reg", note);
+          return elfcore_make_note_pseudosection(abfd, ".reg", note);
 
         case NT_NETBSDCORE_FIRSTMACH+2:
-          return elfcore_make_note_pseudosection (abfd, ".reg2", note);
+          return elfcore_make_note_pseudosection(abfd, ".reg2", note);
 
         default:
           return TRUE;
@@ -7665,10 +7667,10 @@ elfcore_grok_netbsd_note (bfd *abfd, Elf_Internal_Note *note)
       switch (note->type)
         {
         case NT_NETBSDCORE_FIRSTMACH+1:
-          return elfcore_make_note_pseudosection (abfd, ".reg", note);
+          return elfcore_make_note_pseudosection(abfd, ".reg", note);
 
         case NT_NETBSDCORE_FIRSTMACH+3:
-          return elfcore_make_note_pseudosection (abfd, ".reg2", note);
+          return elfcore_make_note_pseudosection(abfd, ".reg2", note);
 
         default:
           return TRUE;
@@ -7678,7 +7680,7 @@ elfcore_grok_netbsd_note (bfd *abfd, Elf_Internal_Note *note)
 }
 
 static bfd_boolean
-elfcore_grok_nto_status (bfd *abfd, Elf_Internal_Note *note, pid_t *tid)
+elfcore_grok_nto_status(bfd *abfd, Elf_Internal_Note *note, pid_t *tid)
 {
   void *ddata = note->descdata;
   char buf[100];
@@ -7687,20 +7689,20 @@ elfcore_grok_nto_status (bfd *abfd, Elf_Internal_Note *note, pid_t *tid)
   short sig;
   unsigned flags;
 
-  /* nto_procfs_status 'pid' field is at offset 0.  */
-  elf_tdata (abfd)->core_pid = bfd_get_32 (abfd, (bfd_byte *) ddata);
+  /* nto_procfs_status 'pid' field is at offset 0: */
+  elf_tdata(abfd)->core_pid = bfd_get_32(abfd, (bfd_byte *)ddata);
 
-  /* nto_procfs_status 'tid' field is at offset 4.  Pass it back.  */
-  *tid = bfd_get_32 (abfd, (bfd_byte *) ddata + 4);
+  /* nto_procfs_status 'tid' field is at offset 4.  Pass it back: */
+  *tid = bfd_get_32(abfd, (bfd_byte *)ddata + 4);
 
-  /* nto_procfs_status 'flags' field is at offset 8.  */
-  flags = bfd_get_32 (abfd, (bfd_byte *) ddata + 8);
+  /* nto_procfs_status 'flags' field is at offset 8: */
+  flags = bfd_get_32(abfd, (bfd_byte *)ddata + 8);
 
   /* nto_procfs_status 'what' field is at offset 14.  */
-  if ((sig = bfd_get_16 (abfd, (bfd_byte *) ddata + 14)) > 0)
+  if ((sig = bfd_get_16(abfd, (bfd_byte *)ddata + 14)) > 0)
     {
-      elf_tdata (abfd)->core_signal = sig;
-      elf_tdata (abfd)->core_lwpid = *tid;
+      elf_tdata(abfd)->core_signal = sig;
+      elf_tdata(abfd)->core_lwpid = *tid;
     }
 
   /* _DEBUG_FLAG_CURTID (current thread) is 0x80.  Some cores
@@ -7709,61 +7711,59 @@ elfcore_grok_nto_status (bfd *abfd, Elf_Internal_Note *note, pid_t *tid)
   if (flags & 0x00000080)
     elf_tdata (abfd)->core_lwpid = *tid;
 
-  /* Make a ".qnx_core_status/%d" section.  */
-  sprintf (buf, ".qnx_core_status/%ld", (long) *tid);
+  /* Make a ".qnx_core_status/%d" section: */
+  sprintf(buf, ".qnx_core_status/%ld", (long)*tid);
 
-  name = bfd_alloc (abfd, strlen (buf) + 1);
-	if (name == NULL) {
-		return FALSE;
-	}
-  strcpy (name, buf);
+  name = (char *)bfd_alloc(abfd, strlen(buf) + 1UL);
+  if (name == NULL) {
+    return FALSE;
+  }
+  strcpy(name, buf);
 
-  sect = bfd_make_section_anyway (abfd, name);
-	if (sect == NULL) {
-		return FALSE;
-	}
+  sect = bfd_make_section_anyway(abfd, name);
+  if (sect == NULL) {
+    return FALSE;
+  }
 
-  sect->size            = note->descsz;
-  sect->filepos         = note->descpos;
-  sect->flags           = SEC_HAS_CONTENTS;
+  sect->size = note->descsz;
+  sect->filepos = note->descpos;
+  sect->flags = SEC_HAS_CONTENTS;
   sect->alignment_power = 2;
 
-  return (elfcore_maybe_make_sect (abfd, ".qnx_core_status", sect));
+  return (elfcore_maybe_make_sect(abfd, ".qnx_core_status", sect));
 }
 
 static bfd_boolean
-elfcore_grok_nto_regs (bfd *abfd,
-		       Elf_Internal_Note *note,
-		       pid_t tid,
-		       char *base)
+elfcore_grok_nto_regs(bfd *abfd, Elf_Internal_Note *note, pid_t tid,
+		      char *base)
 {
   char buf[100];
   char *name;
   asection *sect;
 
-  /* Make a "(base)/%d" section.  */
-  sprintf (buf, "%s/%ld", base, (long) tid);
+  /* Make a "(base)/%d" section: */
+  sprintf(buf, "%s/%ld", base, (long) tid);
 
-  name = bfd_alloc (abfd, strlen (buf) + 1);
-	if (name == NULL) {
-		return FALSE;
-	}
-  strcpy (name, buf);
+  name = (char *)bfd_alloc(abfd, strlen(buf) + 1UL);
+  if (name == NULL) {
+    return FALSE;
+  }
+  strcpy(name, buf);
 
-  sect = bfd_make_section_anyway (abfd, name);
-	if (sect == NULL) {
-		return FALSE;
-	}
+  sect = bfd_make_section_anyway(abfd, name);
+  if (sect == NULL) {
+    return FALSE;
+  }
 
-  sect->size            = note->descsz;
-  sect->filepos         = note->descpos;
-  sect->flags           = SEC_HAS_CONTENTS;
+  sect->size = note->descsz;
+  sect->filepos = note->descpos;
+  sect->flags = SEC_HAS_CONTENTS;
   sect->alignment_power = 2;
 
-  /* This is the current thread.  */
-	if (elf_tdata (abfd)->core_lwpid == tid) {
-		return elfcore_maybe_make_sect (abfd, base, sect);
-	}
+  /* This is the current thread: */
+  if (elf_tdata (abfd)->core_lwpid == tid) {
+    return elfcore_maybe_make_sect(abfd, base, sect);
+  }
 
   return TRUE;
 }
@@ -7774,7 +7774,7 @@ elfcore_grok_nto_regs (bfd *abfd,
 #define BFD_QNT_CORE_FPREG	10
 
 static bfd_boolean
-elfcore_grok_nto_note (bfd *abfd, Elf_Internal_Note *note)
+elfcore_grok_nto_note(bfd *abfd, Elf_Internal_Note *note)
 {
   /* Every GREG section has a STATUS section before it.  Store the
      tid from the previous call to pass down to the next gregs
@@ -7784,13 +7784,13 @@ elfcore_grok_nto_note (bfd *abfd, Elf_Internal_Note *note)
   switch (note->type)
     {
     case BFD_QNT_CORE_INFO:
-      return elfcore_make_note_pseudosection (abfd, ".qnx_core_info", note);
+      return elfcore_make_note_pseudosection(abfd, ".qnx_core_info", note);
     case BFD_QNT_CORE_STATUS:
-      return elfcore_grok_nto_status (abfd, note, &tid);
+      return elfcore_grok_nto_status(abfd, note, &tid);
     case BFD_QNT_CORE_GREG:
-      return elfcore_grok_nto_regs (abfd, note, tid, ".reg");
+      return elfcore_grok_nto_regs(abfd, note, tid, ".reg");
     case BFD_QNT_CORE_FPREG:
-      return elfcore_grok_nto_regs (abfd, note, tid, ".reg2");
+      return elfcore_grok_nto_regs(abfd, note, tid, ".reg2");
     default:
       return TRUE;
     }
@@ -7809,13 +7809,8 @@ elfcore_grok_nto_note (bfd *abfd, Elf_Internal_Note *note)
    End of buffer containing note.  */
 
 char *
-elfcore_write_note (bfd  *abfd,
-		    char *buf,
-		    int  *bufsiz,
-		    const char *name,
-		    int  type,
-		    const void *input,
-		    int  size)
+elfcore_write_note(bfd *abfd, char *buf, int *bufsiz, const char *name,
+		   int type, const void *input, int size)
 {
   Elf_External_Note *xnp;
   size_t namesz;
@@ -7829,24 +7824,24 @@ elfcore_write_note (bfd  *abfd,
     {
       const struct elf_backend_data *bed;
 
-      namesz = strlen (name) + 1;
-      bed = get_elf_backend_data (abfd);
-      pad = -namesz & ((1 << bed->s->log_file_align) - 1);
+      namesz = (strlen(name) + 1UL);
+      bed = get_elf_backend_data(abfd);
+      pad = (-namesz & ((1 << bed->s->log_file_align) - 1));
     }
 
   newspace = 12 + namesz + pad + size;
 
-  p = realloc (buf, *bufsiz + newspace);
-  dest = p + *bufsiz;
+  p = (char *)realloc(buf, *bufsiz + newspace);
+  dest = (p + *bufsiz);
   *bufsiz += newspace;
-  xnp = (Elf_External_Note *) dest;
-  H_PUT_32 (abfd, namesz, xnp->namesz);
-  H_PUT_32 (abfd, size, xnp->descsz);
-  H_PUT_32 (abfd, type, xnp->type);
+  xnp = (Elf_External_Note *)dest;
+  H_PUT_32(abfd, namesz, xnp->namesz);
+  H_PUT_32(abfd, size, xnp->descsz);
+  H_PUT_32(abfd, type, xnp->type);
   dest = xnp->name;
   if (name != NULL)
     {
-      memcpy (dest, name, namesz);
+      memcpy(dest, name, namesz);
       dest += namesz;
       while (pad != 0)
 	{
@@ -7854,105 +7849,90 @@ elfcore_write_note (bfd  *abfd,
 	  --pad;
 	}
     }
-  memcpy (dest, input, size);
+  memcpy(dest, input, size);
   return p;
 }
 
-#if defined (HAVE_PRPSINFO_T) || defined (HAVE_PSINFO_T)
+#if defined(HAVE_PRPSINFO_T) || defined(HAVE_PSINFO_T)
 char *
-elfcore_write_prpsinfo (bfd  *abfd,
-			char *buf,
-			int  *bufsiz,
-			const char *fname,
-			const char *psargs)
+elfcore_write_prpsinfo(bfd  *abfd, char *buf, int *bufsiz,
+                       const char *fname, const char *psargs)
 {
   int note_type;
   char *note_name = "CORE";
 
-# if defined (HAVE_PSINFO_T) && defined psinfo_t
-  psinfo_t  data;
+# if defined(HAVE_PSINFO_T) && defined psinfo_t
+  psinfo_t data;
   note_type = NT_PSINFO;
 # else
   prpsinfo_t data;
   note_type = NT_PRPSINFO;
 # endif /* HAVE_PSINFO_T && psinfo_t */
 
-  memset (&data, 0, sizeof (data));
-  strncpy (data.pr_fname, fname, sizeof (data.pr_fname));
-  strncpy (data.pr_psargs, psargs, sizeof (data.pr_psargs));
-  return elfcore_write_note (abfd, buf, bufsiz,
-			     note_name, note_type, &data, sizeof (data));
+  memset(&data, 0, sizeof(data));
+  strncpy(data.pr_fname, fname, sizeof(data.pr_fname));
+  strncpy(data.pr_psargs, psargs, sizeof(data.pr_psargs));
+  return elfcore_write_note(abfd, buf, bufsiz,
+			    note_name, note_type, &data, sizeof(data));
 }
 #endif	/* PSINFO_T or PRPSINFO_T */
 
 #if defined (HAVE_PRSTATUS_T) && defined prstatus_t
 char *
-elfcore_write_prstatus (bfd *abfd,
-			char *buf,
-			int *bufsiz,
-			long pid,
-			int cursig,
-			const void *gregs)
+elfcore_write_prstatus(bfd *abfd, char *buf, int *bufsiz, long pid,
+                       int cursig, const void *gregs)
 {
   prstatus_t prstat;
   char *note_name = "CORE";
 
-  memset (&prstat, 0, sizeof (prstat));
+  memset(&prstat, 0, sizeof(prstat));
   prstat.pr_pid = pid;
   prstat.pr_cursig = cursig;
-  memcpy (&prstat.pr_reg, gregs, sizeof (prstat.pr_reg));
-  return elfcore_write_note (abfd, buf, bufsiz,
-			     note_name, NT_PRSTATUS, &prstat, sizeof (prstat));
+  memcpy(&prstat.pr_reg, gregs, sizeof(prstat.pr_reg));
+  return elfcore_write_note(abfd, buf, bufsiz, note_name, NT_PRSTATUS,
+                            &prstat, sizeof(prstat));
 }
 #endif /* HAVE_PRSTATUS_T && prstatus_t */
 
 #if defined (HAVE_LWPSTATUS_T) && defined lwpstatus_t
 char *
-elfcore_write_lwpstatus (bfd *abfd,
-			 char *buf,
-			 int *bufsiz,
-			 long pid,
-			 int cursig,
-			 const void *gregs)
+elfcore_write_lwpstatus(bfd *abfd, char *buf, int *bufsiz, long pid,
+                        int cursig, const void *gregs)
 {
   lwpstatus_t lwpstat;
   char *note_name = "CORE";
 
-  memset (&lwpstat, 0, sizeof (lwpstat));
-  lwpstat.pr_lwpid  = pid >> 16;
+  memset(&lwpstat, 0, sizeof(lwpstat));
+  lwpstat.pr_lwpid = (pid >> 16);
   lwpstat.pr_cursig = cursig;
-# if defined (HAVE_LWPSTATUS_T_PR_REG)
-  memcpy (lwpstat.pr_reg, gregs, sizeof (lwpstat.pr_reg));
-# elif defined (HAVE_LWPSTATUS_T_PR_CONTEXT)
+# if defined(HAVE_LWPSTATUS_T_PR_REG)
+  memcpy(lwpstat.pr_reg, gregs, sizeof(lwpstat.pr_reg));
+# elif defined(HAVE_LWPSTATUS_T_PR_CONTEXT)
 #  if !defined(gregs)
-  memcpy (lwpstat.pr_context.uc_mcontext.gregs,
-	  gregs, sizeof (lwpstat.pr_context.uc_mcontext.gregs));
+  memcpy(lwpstat.pr_context.uc_mcontext.gregs,
+	 gregs, sizeof(lwpstat.pr_context.uc_mcontext.gregs));
 #  else
-  memcpy (lwpstat.pr_context.uc_mcontext.__gregs,
-	  gregs, sizeof (lwpstat.pr_context.uc_mcontext.__gregs));
+  memcpy(lwpstat.pr_context.uc_mcontext.__gregs,
+	 gregs, sizeof(lwpstat.pr_context.uc_mcontext.__gregs));
 #  endif /* !gregs */
 # endif /* HAVE_LWPSTATUS_T_PR_REG || HAVE_LWPSTATUS_T_PR_CONTEXT */
-  return elfcore_write_note (abfd, buf, bufsiz, note_name,
-			     NT_LWPSTATUS, &lwpstat, sizeof (lwpstat));
+  return elfcore_write_note(abfd, buf, bufsiz, note_name,
+			    NT_LWPSTATUS, &lwpstat, sizeof(lwpstat));
 }
 #endif /* HAVE_LWPSTATUS_T && lwpstatus_t */
 
 #if defined (HAVE_PSTATUS_T) && defined pstatus_t
 char *
-elfcore_write_pstatus (bfd *abfd,
-		       char *buf,
-		       int *bufsiz,
-		       long pid,
-		       int cursig,
-		       const void *gregs)
+elfcore_write_pstatus(bfd *abfd, char *buf, int *bufsiz, long pid,
+                      int cursig, const void *gregs)
 {
   pstatus_t pstat;
   char *note_name = "CORE";
 
-  memset (&pstat, 0, sizeof (pstat));
+  memset(&pstat, 0, sizeof(pstat));
   pstat.pr_pid = pid & 0xffff;
-  buf = elfcore_write_note (abfd, buf, bufsiz, note_name,
-			    NT_PSTATUS, &pstat, sizeof (pstat));
+  buf = elfcore_write_note(abfd, buf, bufsiz, note_name,
+			   NT_PSTATUS, &pstat, sizeof(pstat));
   return buf;
 }
 #endif /* HAVE_PSTATUS_T && pstatus_t */
@@ -8116,7 +8096,8 @@ _bfd_elf_sprintf_vma(bfd *abfd ATTRIBUTE_UNUSED, char *buf, bfd_vma value)
 }
 
 void
-_bfd_elf_fprintf_vma (bfd *abfd ATTRIBUTE_UNUSED, void *stream, bfd_vma value)
+_bfd_elf_fprintf_vma(bfd *abfd ATTRIBUTE_UNUSED, void *stream,
+                     bfd_vma value)
 {
 #ifdef BFD64
   Elf_Internal_Ehdr *i_ehdrp;	/* Elf file header, internal form */
@@ -8152,25 +8133,22 @@ _bfd_elf_reloc_type_class(const Elf_Internal_Rela *rela ATTRIBUTE_UNUSED)
    relocation against a local symbol.  */
 
 bfd_vma
-_bfd_elf_rela_local_sym (bfd *abfd,
-			 Elf_Internal_Sym *sym,
-			 asection **psec,
-			 Elf_Internal_Rela *rel)
+_bfd_elf_rela_local_sym(bfd *abfd, Elf_Internal_Sym *sym, asection **psec,
+                        Elf_Internal_Rela *rel)
 {
   asection *sec = *psec;
   bfd_vma relocation;
 
-  relocation = (sec->output_section->vma
-		+ sec->output_offset
+  relocation = (sec->output_section->vma + sec->output_offset
 		+ sym->st_value);
   if ((sec->flags & SEC_MERGE)
-      && ELF_ST_TYPE (sym->st_info) == STT_SECTION
-      && sec->sec_info_type == ELF_INFO_TYPE_MERGE)
+      && (ELF_ST_TYPE(sym->st_info) == STT_SECTION)
+      && (sec->sec_info_type == ELF_INFO_TYPE_MERGE))
     {
       rel->r_addend =
-	_bfd_merged_section_offset (abfd, psec,
-				    elf_section_data (sec)->sec_info,
-				    sym->st_value + rel->r_addend);
+	_bfd_merged_section_offset(abfd, psec,
+				   elf_section_data(sec)->sec_info,
+				   (sym->st_value + rel->r_addend));
       if (sec != *psec)
 	{
 	  /* If we have changed the section, and our original section is
@@ -8183,40 +8161,36 @@ _bfd_elf_rela_local_sym (bfd *abfd,
 	  sec = *psec;
 	}
       rel->r_addend -= relocation;
-      rel->r_addend += sec->output_section->vma + sec->output_offset;
+      rel->r_addend += (sec->output_section->vma + sec->output_offset);
     }
   return relocation;
 }
 
 bfd_vma
-_bfd_elf_rel_local_sym (bfd *abfd,
-			Elf_Internal_Sym *sym,
-			asection **psec,
-			bfd_vma addend)
+_bfd_elf_rel_local_sym(bfd *abfd, Elf_Internal_Sym *sym, asection **psec,
+                       bfd_vma addend)
 {
   asection *sec = *psec;
 
   if (sec->sec_info_type != ELF_INFO_TYPE_MERGE)
-    return sym->st_value + addend;
+    return (sym->st_value + addend);
 
-  return _bfd_merged_section_offset (abfd, psec,
-				     elf_section_data (sec)->sec_info,
-				     sym->st_value + addend);
+  return _bfd_merged_section_offset(abfd, psec,
+				    elf_section_data(sec)->sec_info,
+				    (sym->st_value + addend));
 }
 
 bfd_vma
-_bfd_elf_section_offset (bfd *abfd,
-			 struct bfd_link_info *info,
-			 asection *sec,
-			 bfd_vma offset)
+_bfd_elf_section_offset(bfd *abfd, struct bfd_link_info *info,
+                        asection *sec, bfd_vma offset)
 {
   switch (sec->sec_info_type)
     {
     case ELF_INFO_TYPE_STABS:
-      return _bfd_stab_section_offset (sec, elf_section_data (sec)->sec_info,
-				       offset);
+      return _bfd_stab_section_offset(sec, elf_section_data(sec)->sec_info,
+				      offset);
     case ELF_INFO_TYPE_EH_FRAME:
-      return _bfd_elf_eh_frame_section_offset (abfd, info, sec, offset);
+      return _bfd_elf_eh_frame_section_offset(abfd, info, sec, offset);
     default:
       return offset;
     }
@@ -8240,9 +8214,9 @@ bfd_elf_bfd_from_remote_memory
   (bfd *templ,
    bfd_vma ehdr_vma,
    bfd_vma *loadbasep,
-   int (*target_read_memory) (bfd_vma, bfd_byte *, int))
+   int (*target_read_memory)(bfd_vma, bfd_byte *, int))
 {
-  return (*get_elf_backend_data (templ)->elf_backend_bfd_from_remote_memory)
+  return (*get_elf_backend_data(templ)->elf_backend_bfd_from_remote_memory)
     (templ, ehdr_vma, loadbasep, target_read_memory);
 }
 
@@ -8296,7 +8270,7 @@ _bfd_elf_get_synthetic_symtab(bfd *abfd, long symcount ATTRIBUTE_UNUSED,
     return 0;
   }
 
-  slurp_relocs = get_elf_backend_data (abfd)->s->slurp_reloc_table;
+  slurp_relocs = get_elf_backend_data(abfd)->s->slurp_reloc_table;
   if (!(*slurp_relocs)(abfd, relplt, dynsyms, TRUE)) {
     return -1;
   }
@@ -8321,20 +8295,20 @@ _bfd_elf_get_synthetic_symtab(bfd *abfd, long symcount ATTRIBUTE_UNUSED,
       size_t len;
       bfd_vma addr;
 
-      addr = bed->plt_sym_val (i, plt, p);
-		if (addr == (bfd_vma) -1) {
-			continue;
-		}
+      addr = bed->plt_sym_val(i, plt, p);
+      if (addr == (bfd_vma)-1L) {
+        continue;
+      }
 
       *s = **p->sym_ptr_ptr;
       s->section = plt;
-      s->value = addr - plt->vma;
+      s->value = (addr - plt->vma);
       s->name = names;
-      len = strlen ((*p->sym_ptr_ptr)->name);
-      memcpy (names, (*p->sym_ptr_ptr)->name, len);
+      len = strlen((*p->sym_ptr_ptr)->name);
+      memcpy(names, (*p->sym_ptr_ptr)->name, len);
       names += len;
-      memcpy (names, "@plt", sizeof ("@plt"));
-      names += sizeof ("@plt");
+      memcpy(names, "@plt", sizeof("@plt"));
+      names += sizeof("@plt");
       ++n;
     }
 
@@ -8345,30 +8319,30 @@ _bfd_elf_get_synthetic_symtab(bfd *abfd, long symcount ATTRIBUTE_UNUSED,
    sorted by section at the beginning.  */
 
 static int
-elf_sort_elf_symbol (const void *arg1, const void *arg2)
+elf_sort_elf_symbol(const void *arg1, const void *arg2)
 {
   const Elf_Internal_Sym *s1;
   const Elf_Internal_Sym *s2;
   int shndx;
 
   /* Make sure that undefined symbols are at the end.  */
-  s1 = (const Elf_Internal_Sym *) arg1;
-	if (s1->st_shndx == SHN_UNDEF) {
-		return 1;
-	}
-  s2 = (const Elf_Internal_Sym *) arg2;
-	if (s2->st_shndx == SHN_UNDEF) {
-		return -1;
-	}
+  s1 = (const Elf_Internal_Sym *)arg1;
+  if (s1->st_shndx == SHN_UNDEF) {
+    return 1;
+  }
+  s2 = (const Elf_Internal_Sym *)arg2;
+  if (s2->st_shndx == SHN_UNDEF) {
+    return -1;
+  }
 
-  /* Sorted by section index.  */
-  shndx = s1->st_shndx - s2->st_shndx;
-	if (shndx != 0) {
-		return shndx;
-	}
+  /* Sorted by section index: */
+  shndx = (s1->st_shndx - s2->st_shndx);
+  if (shndx != 0) {
+    return shndx;
+  }
 
-  /* Sorted by binding.  */
-  return ELF_ST_BIND (s1->st_info)  - ELF_ST_BIND (s2->st_info);
+  /* Sorted by binding: */
+  return (ELF_ST_BIND(s1->st_info) - ELF_ST_BIND(s2->st_info));
 }
 
 struct elf_symbol

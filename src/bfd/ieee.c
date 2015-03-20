@@ -687,12 +687,12 @@ get_symbol (bfd *abfd ATTRIBUTE_UNUSED,
   /* Need a new symbol.  */
   unsigned int new_index = must_parse_int (&(ieee->h));
 
-  if (new_index != last_index || this_type != last_type)
+  if ((new_index != last_index) || (this_type != last_type))
     {
       ieee_symbol_type *new_symbol;
-      bfd_size_type amt = sizeof (ieee_symbol_type);
+      bfd_size_type amt = sizeof(ieee_symbol_type);
 
-      new_symbol = bfd_alloc (ieee->h.abfd, amt);
+      new_symbol = (ieee_symbol_type *)bfd_alloc(ieee->h.abfd, amt);
       if (!new_symbol)
 	return NULL;
 
@@ -1130,7 +1130,7 @@ ieee_slurp_sections (bfd *abfd)
 			/* AS Absolute section attributes.  */
 		      case 0xD3:
 			next_byte (&(ieee->h));
-			section_type[2] = this_byte (&(ieee->h));
+			section_type[2] = this_byte(&(ieee->h));
 			switch (section_type[2])
 			  {
 			  case 0xD0:
@@ -1151,6 +1151,8 @@ ieee_slurp_sections (bfd *abfd)
 			  default:
 			    break;
 			  }
+                      default:
+                        break;
 		      }
 		    break;
 
@@ -1175,6 +1177,9 @@ ieee_slurp_sections (bfd *abfd)
 		      default:
 			break;
 		      }
+
+                  default:
+                    break;
 		  }
 
 		/* Read section name, use it if non empty.  */

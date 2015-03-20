@@ -1,4 +1,4 @@
-/* TUI Interpreter definitions for GDB, the GNU debugger.
+/* tui-interp.c: TUI Interpreter definitions for GDB, the GNU debugger.
 
    Copyright 2003 Free Software Foundation, Inc.
 
@@ -33,17 +33,18 @@
 #include "tui/tui-io.h"
 #include "exceptions.h"
 
-/* Set to 1 when the TUI mode must be activated when we first start gdb.  */
+extern void _initialize_tui_interp(void);
+
+/* Set to 1 when the TUI mode must be activated when we first start gdb: */
 static int tui_start_enabled = 0;
 
-/* Cleanup the tui before exiting.  */
-
+/* Cleanup the tui before exiting: */
 static void
-tui_exit (void)
+tui_exit(void)
 {
   /* Disable the tui.  Curses mode is left leaving the screen
      in a clean state (see endwin()).  */
-  tui_disable ();
+  tui_disable();
 }
 
 /* These implement the TUI interpreter.  */
@@ -159,7 +160,7 @@ tui_command_loop (void *data)
         uiout = tui_out;
       else
         uiout = tui_old_uiout;
-      
+
       if (result == 0)
 	{
 	  /* FIXME: this should really be a call to a hook that is
@@ -185,7 +186,7 @@ tui_command_loop (void *data)
 }
 
 void
-_initialize_tui_interp (void)
+_initialize_tui_interp(void)
 {
   static const struct interp_procs procs = {
     tui_init,
@@ -198,18 +199,20 @@ _initialize_tui_interp (void)
   struct interp *tui_interp;
 
   /* Create a default uiout builder for the TUI. */
-  tui_out = tui_out_new (gdb_stdout);
-  interp_add (interp_new ("tui", NULL, tui_out, &procs));
-  if (interpreter_p && strcmp (interpreter_p, "tui") == 0)
+  tui_out = tui_out_new(gdb_stdout);
+  interp_add(interp_new("tui", NULL, tui_out, &procs));
+  if (interpreter_p && (strcmp(interpreter_p, "tui") == 0))
     tui_start_enabled = 1;
 
-  /* APPLE LOCAL: We don't test the TUI interpreter, and 
-     we don't by any means want it to be the default interpreter.  */
+  /* APPLE LOCAL: We do NOT test the TUI interpreter, and
+     we do NOT by any means want it to be the default interpreter: */
 #if 0
-  if (interpreter_p && strcmp (interpreter_p, INTERP_CONSOLE) == 0)
+  if (interpreter_p && (strcmp(interpreter_p, INTERP_CONSOLE) == 0))
     {
-      xfree (interpreter_p);
-      interpreter_p = xstrdup ("tui");
+      xfree(interpreter_p);
+      interpreter_p = xstrdup("tui");
     }
-#endif
+#endif /* 0 */
 }
+
+/* EOF */

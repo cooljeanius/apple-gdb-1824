@@ -65,7 +65,10 @@ static int dont_handle_bad_access = 0;
 # define MACH_EXCEPTION_CODES 0
 #endif /* !HAVE_64_BIT_MACH_EXCEPTIONS */
 
-extern boolean_t mach_exc_server (mach_msg_header_t * in, mach_msg_header_t * out);
+extern boolean_t mach_exc_server(mach_msg_header_t *in,
+                                 mach_msg_header_t *out);
+
+extern void _initialize_macosx_nat_excthread(void);
 
 /* This struct holds all the data for one mach message.  Since we might
    have to hold onto a sequence of messages while gdb thinks about them,
@@ -161,29 +164,30 @@ static void excthread_debug_exception (int level, mach_msg_header_t *msg)
   fprintf (excthread_stderr_re, " }");
 }
 
-static void excthread_debug_message (int level, macosx_exception_thread_message *msg)
+static void
+excthread_debug_message(int level, macosx_exception_thread_message *msg)
 {
   if (excthread_debugflag < level)
     return;
 
-  fprintf (excthread_stderr_re, "{ task: 0x%lx, thread: 0x%lx, type: %s",
-	   (unsigned long) msg->task_port,
-	   (unsigned long) msg->thread_port,
-	   unparse_exception_type (msg->exception_type));
+  fprintf(excthread_stderr_re, "{ task: 0x%lx, thread: 0x%lx, type: %s",
+	  (unsigned long)msg->task_port,
+	  (unsigned long)msg->thread_port,
+	  unparse_exception_type(msg->exception_type));
 
   if ((msg->exception_type == EXC_SOFTWARE) &&
       (msg->data_count == 2) &&
       (msg->exception_data[0] == EXC_SOFT_SIGNAL))
     {
       const char *signame;
-      signame = target_signal_to_name ((unsigned int) target_signal_from_host (msg->exception_data[1]));
+      signame = target_signal_to_name(target_signal_from_host(msg->exception_data[1]));
 
 #ifdef HAVE_64_BIT_MACH_EXCEPTIONS
-      fprintf (excthread_stderr_re, ", subtype: EXC_SOFT_SIGNAL, signal: %s (%lld)",
-	       signame, msg->exception_data[1]);
+      fprintf(excthread_stderr_re, ", subtype: EXC_SOFT_SIGNAL, signal: %s (%lld)",
+	      signame, msg->exception_data[1]);
 #else
-      fprintf (excthread_stderr_re, ", subtype: EXC_SOFT_SIGNAL, signal: %s (%d)",
-	       signame, msg->exception_data[1]);
+      fprintf(excthread_stderr_re, ", subtype: EXC_SOFT_SIGNAL, signal: %s (%d)",
+	      signame, msg->exception_data[1]);
 #endif /* HAVE_64_BIT_MACH_EXCEPTIONS */
     }
   else
@@ -205,37 +209,46 @@ static void excthread_debug_message (int level, macosx_exception_thread_message 
 
 #define EXCEPTION_WRITE_LOCK_LEVEL  6
 void
-macosx_exception_get_write_lock (macosx_exception_thread_status *s)
+macosx_exception_get_write_lock(macosx_exception_thread_status *s)
 {
 
   if (excthread_debugflag >= EXCEPTION_WRITE_LOCK_LEVEL)
     {
-      pthread_t this_thread = pthread_self ();
+      pthread_t this_thread = pthread_self();
       if (this_thread == s->exception_thread)
-	excthread_debug_re (6, "Acquiring write lock for exception thread\n");
+	excthread_debug_re(6, "Acquiring write lock for exception thread\n");
       else
-	inferior_debug (6, "Acquiring write lock for main thread\n");
+	inferior_debug(6, "Acquiring write lock for main thread\n");
     }
-  pthread_mutex_lock (&write_mutex);
+  pthread_mutex_lock(&write_mutex);
 }
 
 void
-macosx_exception_release_write_lock (macosx_exception_thread_status *s)
+macosx_exception_release_write_lock(macosx_exception_thread_status *s)
 {
   if (excthread_debugflag >= EXCEPTION_WRITE_LOCK_LEVEL)
     {
-      pthread_t this_thread = pthread_self ();
+      pthread_t this_thread = pthread_self();
       if (this_thread == s->exception_thread)
-	excthread_debug_re (6, "Releasing write lock for exception thread\n");
+	excthread_debug_re(6, "Releasing write lock for exception thread\n");
       else
-	inferior_debug (6, "Releasing write lock for main thread\n");
+	inferior_debug(6, "Releasing write lock for main thread\n");
     }
-  pthread_mutex_unlock (&write_mutex);
+  pthread_mutex_unlock(&write_mutex);
 }
 
-static void macosx_exception_thread (void *arg);
+static void macosx_exception_thread(void *arg);
 
 static macosx_exception_thread_message *static_message = NULL;
+
+/* It would be too much of a pain to do this correctly: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wmissing-declarations"
+ #  pragma GCC diagnostic ignored "-Wmissing-prototypes"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 kern_return_t
 #ifdef HAVE_64_BIT_MACH_EXCEPTIONS
@@ -245,7 +258,7 @@ kern_return_t
 #endif /* HAVE_64_BIT_MACH_EXCEPTIONS */
   (mach_port_t port,
    exception_type_t exception_type, mach_exception_data_t exception_data,
-   mach_msg_type_number_t data_count, thread_state_flavor_t * state_flavor,
+   mach_msg_type_number_t data_count, thread_state_flavor_t *state_flavor,
    thread_state_t in_state, mach_msg_type_number_t in_state_count,
    thread_state_t out_state, mach_msg_type_number_t out_state_count)
 {
@@ -260,16 +273,16 @@ kern_return_t
 #endif /* HAVE_64_BIT_MACH_EXCEPTIONS */
   (mach_port_t port, mach_port_t thread_port, mach_port_t task_port,
    exception_type_t exception_type, mach_exception_data_t exception_data,
-   mach_msg_type_number_t data_count, thread_state_flavor_t * state_flavor,
+   mach_msg_type_number_t data_count, thread_state_flavor_t *state_flavor,
    thread_state_t in_state, mach_msg_type_number_t in_state_count,
    thread_state_t out_state, mach_msg_type_number_t out_state_count)
 {
   kern_return_t kret;
 
-  kret = mach_port_deallocate (mach_task_self (), task_port);
-  MACH_CHECK_ERROR (kret);
-  kret = mach_port_deallocate (mach_task_self (), thread_port);
-  MACH_CHECK_ERROR (kret);
+  kret = mach_port_deallocate(mach_task_self(), task_port);
+  MACH_CHECK_ERROR(kret);
+  kret = mach_port_deallocate(mach_task_self(), thread_port);
+  MACH_CHECK_ERROR(kret);
 
   return KERN_FAILURE;
 }
@@ -287,10 +300,10 @@ kern_return_t
    mach_msg_type_number_t data_count)
 {
 #if 0
-  kret = mach_port_deallocate (mach_task_self (), task_port);
-  MACH_CHECK_ERROR (kret);
-  kret = mach_port_deallocate (mach_task_self (), thread_port);
-  MACH_CHECK_ERROR (kret);
+  kret = mach_port_deallocate(mach_task_self(), task_port);
+  MACH_CHECK_ERROR(kret);
+  kret = mach_port_deallocate(mach_task_self(), thread_port);
+  MACH_CHECK_ERROR(kret);
 #endif /* 0 */
 
   static_message->task_port = task_port;
@@ -308,8 +321,15 @@ kern_return_t
     return KERN_FAILURE;
 }
 
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 void
-macosx_exception_thread_init (macosx_exception_thread_status *s)
+macosx_exception_thread_init(macosx_exception_thread_status *s)
 {
   s->transmit_from_fd = -1;
   s->receive_from_fd = -1;
@@ -332,27 +352,28 @@ pthread_mutex_t excthread_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t excthread_cond = PTHREAD_COND_INITIALIZER;
 
 void
-macosx_exception_thread_create (macosx_exception_thread_status *s,
-                                task_t task)
+macosx_exception_thread_create(macosx_exception_thread_status *s,
+                               task_t task)
 {
   int fd[2];
   int ret;
   kern_return_t kret;
   pthread_mutexattr_t attrib;
   struct gdb_exception e;
+  unsigned int which_exceptions;
 
-  ret = pipe (fd);
-  CHECK_FATAL (ret == 0);
+  ret = pipe(fd);
+  CHECK_FATAL(ret == 0);
   s->transmit_from_fd = fd[1];
   s->receive_from_fd = fd[0];
 
-  ret = pipe (fd);
-  CHECK_FATAL (ret == 0);
+  ret = pipe(fd);
+  CHECK_FATAL(ret == 0);
   s->error_transmit_fd = fd[1];
   s->error_receive_fd = fd[0];
 
-  ret = pipe (fd);
-  CHECK_FATAL (ret == 0);
+  ret = pipe(fd);
+  CHECK_FATAL(ret == 0);
   s->transmit_to_fd = fd[1];
   s->receive_to_fd = fd[0];
   s->task = task;
@@ -360,113 +381,114 @@ macosx_exception_thread_create (macosx_exception_thread_status *s,
   s->shutting_down = 0;
 
   kret =
-    mach_port_allocate (mach_task_self (), MACH_PORT_RIGHT_RECEIVE,
-                        &s->inferior_exception_port);
-  MACH_CHECK_ERROR (kret);
+    mach_port_allocate(mach_task_self(), MACH_PORT_RIGHT_RECEIVE,
+                       &s->inferior_exception_port);
+  MACH_CHECK_ERROR(kret);
   kret =
-    mach_port_insert_right (mach_task_self (), s->inferior_exception_port,
-                            s->inferior_exception_port,
-                            MACH_MSG_TYPE_MAKE_SEND);
-  MACH_CHECK_ERROR (kret);
+    mach_port_insert_right(mach_task_self(), s->inferior_exception_port,
+                           s->inferior_exception_port,
+                           MACH_MSG_TYPE_MAKE_SEND);
+  MACH_CHECK_ERROR(kret);
 
-  unsigned int which_exceptions = GDB_MACH_EXC_MASK_ALL;
+  which_exceptions = GDB_MACH_EXC_MASK_ALL;
   if (dont_handle_bad_access)
     which_exceptions &= ~EXC_MASK_BAD_ACCESS;
 
   if (inferior_bind_exception_port_flag)
     {
-      macosx_save_exception_ports (task, &s->saved_exceptions);
+      macosx_save_exception_ports(task, &s->saved_exceptions);
 
-      kret = task_set_exception_ports
-        (task,
-         which_exceptions,
-         s->inferior_exception_port, EXCEPTION_DEFAULT | MACH_EXCEPTION_CODES, THREAD_STATE_NONE);
-      MACH_CHECK_ERROR (kret);
+      kret =
+        task_set_exception_ports(task, which_exceptions,
+                                 s->inferior_exception_port,
+                                 EXCEPTION_DEFAULT | MACH_EXCEPTION_CODES,
+                                 THREAD_STATE_NONE);
+      MACH_CHECK_ERROR(kret);
     }
 
-  alloc_msg_data (&msg_data, msg_data_size);
+  alloc_msg_data(&msg_data, msg_data_size);
 
-  pthread_mutexattr_init (&attrib);
-  pthread_mutex_init (&write_mutex, &attrib);
+  pthread_mutexattr_init(&attrib);
+  pthread_mutex_init(&write_mutex, &attrib);
 
-  pthread_mutex_lock (&excthread_mutex);
-  TRY_CATCH (e, RETURN_MASK_ERROR)
+  pthread_mutex_lock(&excthread_mutex);
+  TRY_CATCH(e, RETURN_MASK_ERROR)
     {
       s->exception_thread =
-	gdb_thread_fork ((gdb_thread_fn_t) &macosx_exception_thread, s);
+	gdb_thread_fork((gdb_thread_fn_t)&macosx_exception_thread, s);
     }
-  if (e.reason != NO_ERROR)
+  if (e.reason != (int)NO_ERROR)
     {
-      pthread_mutex_unlock (&excthread_mutex);
-      throw_exception (e);
+      pthread_mutex_unlock(&excthread_mutex);
+      throw_exception(e);
     }
 
-  pthread_cond_wait (&excthread_cond, &excthread_mutex);
-  pthread_mutex_unlock (&excthread_mutex);
+  pthread_cond_wait(&excthread_cond, &excthread_mutex);
+  pthread_mutex_unlock(&excthread_mutex);
 }
 
 void
-macosx_exception_thread_destroy (macosx_exception_thread_status *s)
+macosx_exception_thread_destroy(macosx_exception_thread_status *s)
 {
   if (s->exception_thread != THREAD_NULL)
     {
-
       /* Let us destroy the exception port here, so that we
-	   * will force the exception thread out of any mach_msg we
-	   * may be sitting in.  */
+       * will force the exception thread out of any mach_msg we
+       * may be sitting in.  */
 
       s->shutting_down = 1;
-      mach_port_deallocate (mach_task_self (), s->inferior_exception_port);
-      mach_port_deallocate (mach_task_self (), s->task);
+      mach_port_deallocate(mach_task_self(), s->inferior_exception_port);
+      mach_port_deallocate(mach_task_self(), s->task);
       /* The exception thread may have hit an error, in which
-	   * case it is sitting in read wondering what to do. Tell
-	   * it to exit here.  */
+       * case it is sitting in read wondering what to do. Tell
+       * it to exit here.  */
       if (s->transmit_to_fd >= 0)
 	{
 	  unsigned char charbuf[1] = { 1 };
-	  write (s->transmit_to_fd, charbuf, 1);
+	  write(s->transmit_to_fd, charbuf, 1);
 	}
-      gdb_thread_kill (s->exception_thread);
+      gdb_thread_kill(s->exception_thread);
     }
 
   if (s->receive_from_fd > 0)
     {
-      delete_file_handler (s->receive_from_fd);
-      close (s->receive_from_fd);
+      delete_file_handler(s->receive_from_fd);
+      close(s->receive_from_fd);
     }
   if (s->transmit_from_fd > 0)
-    close (s->transmit_from_fd);
+    close(s->transmit_from_fd);
   if (s->receive_to_fd > 0)
-    close (s->receive_to_fd);
+    close(s->receive_to_fd);
   if (s->transmit_to_fd > 0)
-    close (s->transmit_to_fd);
+    close(s->transmit_to_fd);
   if (s->error_transmit_fd > 0)
-    close (s->error_transmit_fd);
+    close(s->error_transmit_fd);
   if (s->error_receive_fd > 0)
     {
-      delete_file_handler (s->error_receive_fd);
-      close (s->error_receive_fd);
+      delete_file_handler(s->error_receive_fd);
+      close(s->error_receive_fd);
     }
 
-  xfree (msg_data);
+  xfree(msg_data);
   msg_data = NULL;
   msg_data_size = MACOSX_EXCEPTION_ARRAY_SIZE;
 
-  pthread_mutex_destroy (&write_mutex);
-  macosx_exception_thread_init (s);
+  pthread_mutex_destroy(&write_mutex);
+  macosx_exception_thread_init(s);
 }
 
 static void
-macosx_exception_thread (void *arg)
+macosx_exception_thread(void *arg)
 {
   int first_time = 1;
-  macosx_exception_thread_status *s = (macosx_exception_thread_status *) arg;
-  CHECK_FATAL (s != NULL);
-
+  macosx_exception_thread_status *s;
   int next_msg_ctr;
 
+  s = (macosx_exception_thread_status *)arg;
+  CHECK_FATAL(s != NULL);
+
 #ifdef HAVE_PTHREAD_SETNAME_NP
-  pthread_setname_np ("exception thread");
+  pthread_setname_np("exception thread");
 #endif /* HAVE_PTHREAD_SETNAME_NP */
 
   for (;;)

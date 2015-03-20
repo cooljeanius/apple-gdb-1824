@@ -1,4 +1,4 @@
-/* Disassembly display.
+/* tui-disasm.c: Disassembly display.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -32,6 +32,7 @@
 #include "gdb_string.h"
 #include "tui/tui.h"
 #include "tui/tui-data.h"
+#include "tui/tui-disasm.h"
 #include "tui/tui-win.h"
 #include "tui/tui-layout.h"
 #include "tui/tui-winsource.h"
@@ -40,7 +41,7 @@
 
 #include "gdb_curses.h"
 
-struct tui_asm_line 
+struct tui_asm_line
 {
   CORE_ADDR addr;
   char* addr_string;
@@ -65,7 +66,7 @@ tui_disassemble (struct tui_asm_line* asm_lines, CORE_ADDR pc, int count)
         xfree (asm_lines->addr_string);
       if (asm_lines->insn)
         xfree (asm_lines->insn);
-      
+
       print_address (pc, gdb_dis_out);
       asm_lines->addr = pc;
       asm_lines->addr_string = xstrdup (tui_file_get_strbuf (gdb_dis_out));
@@ -113,7 +114,7 @@ tui_find_disassembly_address (CORE_ADDR pc, int from)
       CORE_ADDR last_addr;
       int pos;
       struct minimal_symbol* msymbol;
-              
+
       /* Find backward an address which is a symbol
          and for which disassembling from that address will fill
          completely the window.  */
@@ -140,7 +141,7 @@ tui_find_disassembly_address (CORE_ADDR pc, int from)
         do
           {
             CORE_ADDR next_addr;
-                 
+
             pos++;
             if (pos >= max_lines)
               pos = 0;
@@ -167,85 +168,85 @@ tui_find_disassembly_address (CORE_ADDR pc, int from)
 
 /* Function to set the disassembly window's content.  */
 enum tui_status
-tui_set_disassem_content (CORE_ADDR pc)
+tui_set_disassem_content(CORE_ADDR pc)
 {
   enum tui_status ret = TUI_FAILURE;
   int i;
   int offset = TUI_DISASM_WIN->detail.source_info.horizontal_offset;
   int line_width, max_lines;
   CORE_ADDR cur_pc;
-  struct tui_gen_win_info * locator = tui_locator_win_info_ptr ();
-  int tab_len = tui_default_tab_len ();
+  struct tui_gen_win_info *locator = tui_locator_win_info_ptr();
+  int tab_len = tui_default_tab_len();
   struct tui_asm_line* asm_lines;
   int insn_pos;
-  int addr_size, max_size;
+  size_t addr_size, max_size;
   char* line;
-  
+
   if (pc == 0)
     return TUI_FAILURE;
 
-  ret = tui_alloc_source_buffer (TUI_DISASM_WIN);
+  ret = tui_alloc_source_buffer(TUI_DISASM_WIN);
   if (ret != TUI_SUCCESS)
     return ret;
 
   TUI_DISASM_WIN->detail.source_info.start_line_or_addr.addr = pc;
   cur_pc = (CORE_ADDR)
-    (((struct tui_win_element *) locator->content[0])->which_element.locator.addr);
+    (((struct tui_win_element *)locator->content[0])->which_element.locator.addr);
 
-  max_lines = TUI_DISASM_WIN->generic.height - 2;	/* account for hilite */
+  max_lines = TUI_DISASM_WIN->generic.height - 2; /* account for hilite */
 
-  /* Get temporary table that will hold all strings (addr & insn).  */
-  asm_lines = (struct tui_asm_line*) alloca (sizeof (struct tui_asm_line)
-                                         * max_lines);
-  memset (asm_lines, 0, sizeof (struct tui_asm_line) * max_lines);
+  /* Get temporary table that will hold all strings (addr & insn): */
+  asm_lines = (struct tui_asm_line*)alloca(sizeof(struct tui_asm_line)
+                                           * max_lines);
+  memset(asm_lines, 0, (sizeof(struct tui_asm_line) * max_lines));
 
-  line_width = TUI_DISASM_WIN->generic.width - 1;
+  line_width = (TUI_DISASM_WIN->generic.width - 1);
 
-  tui_disassemble (asm_lines, pc, max_lines);
+  tui_disassemble(asm_lines, pc, max_lines);
 
-  /* See what is the maximum length of an address and of a line.  */
+  /* See what is the maximum length of an address and of a line: */
   addr_size = 0;
   max_size = 0;
   for (i = 0; i < max_lines; i++)
     {
-      size_t len = strlen (asm_lines[i].addr_string);
+      size_t len = strlen(asm_lines[i].addr_string);
       if (len > addr_size)
         addr_size = len;
 
-      len = strlen (asm_lines[i].insn) + tab_len;
+      len = (strlen(asm_lines[i].insn) + tab_len);
       if (len > max_size)
         max_size = len;
     }
-  max_size += addr_size + tab_len;
+  max_size += (addr_size + tab_len);
 
-  /* Allocate memory to create each line.  */
-  line = (char*) alloca (max_size);
-  insn_pos = (1 + (addr_size / tab_len)) * tab_len;
+  /* Allocate memory to create each line: */
+  line = (char*)alloca(max_size);
+  insn_pos = ((1 + (addr_size / tab_len)) * tab_len);
 
-  /* Now construct each line */
+  /* Now construct each line: */
   for (i = 0; i < max_lines; i++)
     {
-      struct tui_win_element * element;
-      struct tui_source_element* src;
+      struct tui_win_element *element;
+      struct tui_source_element *src;
       int cur_len;
 
-      element = (struct tui_win_element *) TUI_DISASM_WIN->generic.content[i];
+      element = (struct tui_win_element *)TUI_DISASM_WIN->generic.content[i];
       src = &element->which_element.source;
-      strcpy (line, asm_lines[i].addr_string);
-      cur_len = strlen (line);
+      strcpy(line, asm_lines[i].addr_string);
+      cur_len = strlen(line);
 
-      /* Add spaces to make the instructions start on the same column */
+      /* Add spaces to make the instructions start on the same column: */
       while (cur_len < insn_pos)
         {
-          strcat (line, " ");
+          strcat(line, " ");
           cur_len++;
         }
 
-      strcat (line, asm_lines[i].insn);
+      strcat(line, asm_lines[i].insn);
 
-      /* Now copy the line taking the offset into account */
-      if (strlen (line) > offset)
-        strcpy (src->line, &line[offset]);
+      /* Now copy the line taking the offset into account: */
+      if (strlen(line) > (size_t)offset)
+        strcpy(src->line, &line[offset]);
       else
         src->line[0] = '\0';
 

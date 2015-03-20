@@ -1083,39 +1083,39 @@ call_command (char *exp, int from_tty)
 }
 
 void
-output_command (char *exp, int from_tty)
+output_command(char *exp, int from_tty)
 {
   struct expression *expr;
   struct cleanup *old_chain;
   char format = 0;
   struct value *val;
-  struct format_data fmt;
+  struct format_data fmt = { 0, '\0', 0 };
 
-  if (exp && *exp == '/')
+  if (exp && (*exp == '/'))
     {
       exp++;
-      fmt = decode_format (&exp, 0, 0);
-      validate_format (fmt, "output");
+      fmt = decode_format(&exp, 0, 0);
+      validate_format(fmt, "output");
       format = fmt.format;
     }
 
   /* APPLE LOCAL initialize innermost_block  */
   innermost_block = NULL;
-  expr = parse_expression (exp);
-  old_chain = make_cleanup (free_current_contents, &expr);
+  expr = parse_expression(exp);
+  old_chain = make_cleanup(free_current_contents, &expr);
 
-  val = evaluate_expression (expr);
+  val = evaluate_expression(expr);
 
-  annotate_value_begin (value_type (val));
+  annotate_value_begin(value_type(val));
 
-  print_formatted (val, format, fmt.size, gdb_stdout);
+  print_formatted(val, format, fmt.size, gdb_stdout);
 
-  annotate_value_end ();
+  annotate_value_end();
 
-  wrap_here ("");
-  gdb_flush (gdb_stdout);
+  wrap_here("");
+  gdb_flush(gdb_stdout);
 
-  do_cleanups (old_chain);
+  do_cleanups(old_chain);
 }
 
 static void
@@ -1513,35 +1513,35 @@ x_command (char *exp, int from_tty)
    Specify the expression.  */
 
 static void
-display_command (char *exp, int from_tty)
+display_command(char *exp, int from_tty)
 {
   struct format_data fmt;
   struct expression *expr;
-  struct display *new;
+  struct display *newdis;
   int display_it = 1;
 
 #if defined(TUI)
   /* NOTE: cagney/2003-02-13 The `tui_active' was previously
      `tui_version'.  */
-  if (tui_active && exp != NULL && *exp == '$')
-    display_it = (tui_set_layout_for_display_command (exp) == TUI_FAILURE);
-#endif
+  if (tui_active && (exp != NULL) && (*exp == '$'))
+    display_it = (tui_set_layout_for_display_command(exp) == TUI_FAILURE);
+#endif /* TUI */
 
   if (display_it)
     {
       if (exp == 0)
 	{
-	  do_displays ();
+	  do_displays();
 	  return;
 	}
 
       if (*exp == '/')
 	{
 	  exp++;
-	  fmt = decode_format (&exp, 0, 0);
-	  if (fmt.size && fmt.format == 0)
+	  fmt = decode_format(&exp, 0, 0);
+	  if (fmt.size && (fmt.format == 0))
 	    fmt.format = 'x';
-	  if (fmt.format == 'i' || fmt.format == 's')
+	  if ((fmt.format == 'i') || (fmt.format == 's'))
 	    fmt.size = 'b';
 	}
       else
@@ -1552,30 +1552,30 @@ display_command (char *exp, int from_tty)
 	}
 
       innermost_block = 0;
-      expr = parse_expression (exp);
+      expr = parse_expression(exp);
 
-      new = (struct display *) xmalloc (sizeof (struct display));
+      newdis = (struct display *)xmalloc(sizeof(struct display));
 
-      new->exp = expr;
-      new->block = innermost_block;
-      new->next = display_chain;
-      new->number = ++display_number;
-      new->format = fmt;
-      new->enabled_p = 1;
-      display_chain = new;
+      newdis->exp = expr;
+      newdis->block = innermost_block;
+      newdis->next = display_chain;
+      newdis->number = ++display_number;
+      newdis->format = fmt;
+      newdis->enabled_p = 1;
+      display_chain = newdis;
 
       if (from_tty && target_has_execution)
-	do_one_display (new);
+	do_one_display(newdis);
 
-      dont_repeat ();
+      dont_repeat();
     }
 }
 
 static void
-free_display (struct display *d)
+free_display(struct display *d)
 {
-  xfree (d->exp);
-  xfree (d);
+  xfree(d->exp);
+  xfree(d);
 }
 
 /* Clear out the display_chain.
@@ -1984,19 +1984,19 @@ printf_command (char *arg, int from_tty)
   /* Skip over " and following space and comma.  */
   s++;
   *f++ = '\0';
-  while (*s == ' ' || *s == '\t')
+  while ((*s == ' ') || (*s == '\t'))
     s++;
 
-  if (*s != ',' && *s != 0)
-    error (_("Invalid argument syntax"));
+  if ((*s != ',') && (*s != 0))
+    error(_("Invalid argument syntax"));
 
   if (*s == ',')
     s++;
-  while (*s == ' ' || *s == '\t')
+  while ((*s == ' ') || (*s == '\t'))
     s++;
 
   /* Need extra space for the '\0's.  Doubling the size is sufficient.  */
-  substrings = alloca (strlen (string) * 2);
+  substrings = (char *)alloca(strlen(string) * 2UL);
   current_substring = substrings;
 
   {
@@ -2124,7 +2124,7 @@ printf_command (char *arg, int from_tty)
 		{
 		  char c;
 		  QUIT;
-		  read_memory(tem + j, &c, 1);
+		  read_memory((tem + j), (gdb_byte *)&c, 1);
 		  if (c == 0)
 		    break;
 		}
@@ -2132,7 +2132,7 @@ printf_command (char *arg, int from_tty)
 	      /* Copy the string contents into a string inside GDB: */
 	      str = (char *)alloca(j + 1);
 	      if (j != 0)
-		read_memory(tem, str, j);
+		read_memory(tem, (gdb_byte *)str, j);
 	      str[j] = 0;
 
 	      printf_filtered(current_substring, str);

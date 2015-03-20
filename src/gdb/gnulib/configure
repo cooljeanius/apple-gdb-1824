@@ -687,6 +687,7 @@ NEXT_WCHAR_H
 HAVE_UNISTD_H
 NEXT_AS_FIRST_DIRECTIVE_UNISTD_H
 NEXT_UNISTD_H
+UNISTD_H_DEFINES_STRUCT_TIMESPEC
 PTHREAD_H_DEFINES_STRUCT_TIMESPEC
 SYS_TIME_H_DEFINES_STRUCT_TIMESPEC
 TIME_H_DEFINES_STRUCT_TIMESPEC
@@ -3675,7 +3676,6 @@ gl_header_list="${gl_header_list} sys/socket.h"
 gl_func_list="${gl_func_list} fchdir"
 gl_header_list="${gl_header_list} dirent.h"
 gl_func_list="${gl_func_list} fdopendir"
-gl_func_list="${gl_func_list} getdtablesize"
 gl_func_list="${gl_func_list} dup2"
 gl_func_list="${gl_func_list} fcntl"
 gl_func_list="${gl_func_list} symlink"
@@ -3693,6 +3693,7 @@ gl_header_list="${gl_header_list} sys/stat.h"
 gl_func_list="${gl_func_list} openat"
 gl_func_list="${gl_func_list} fstatfs"
 gl_header_list="${gl_header_list} sys/vfs.h"
+gl_func_list="${gl_func_list} getdtablesize"
 gl_header_list="${gl_header_list} sys/time.h"
 gl_func_list="${gl_func_list} gettimeofday"
 gl_header_list="${gl_header_list} stdint.h"
@@ -6974,11 +6975,6 @@ $as_echo "#define DOUBLE_SLASH_IS_DISTINCT_ROOT 1" >>confdefs.h
 
 
 
-
-
-
-
-
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for complete errno.h" >&5
 $as_echo_n "checking for complete errno.h... " >&6; }
 if ${gl_cv_header_errno_h_complete+:} false; then :
@@ -8601,6 +8597,24 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_getcwd_posix_signature" >&5
 $as_echo "$gl_cv_func_getcwd_posix_signature" >&6; }
+
+
+
+
+
+
+
+      ac_fn_c_check_decl "$LINENO" "getdtablesize" "ac_cv_have_decl_getdtablesize" "$ac_includes_default"
+if test "x$ac_cv_have_decl_getdtablesize" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_GETDTABLESIZE $ac_have_decl
+_ACEOF
+
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for C/C++ restrict keyword" >&5
 $as_echo_n "checking for C/C++ restrict keyword... " >&6; }
@@ -13293,6 +13307,7 @@ $as_echo "$gl_cv_sys_struct_timespec_in_time_h" >&6; }
   TIME_H_DEFINES_STRUCT_TIMESPEC=0
   SYS_TIME_H_DEFINES_STRUCT_TIMESPEC=0
   PTHREAD_H_DEFINES_STRUCT_TIMESPEC=0
+  UNISTD_H_DEFINES_STRUCT_TIMESPEC=0
   if test $gl_cv_sys_struct_timespec_in_time_h = yes; then
     TIME_H_DEFINES_STRUCT_TIMESPEC=1
   else
@@ -13353,9 +13368,40 @@ fi
 $as_echo "$gl_cv_sys_struct_timespec_in_pthread_h" >&6; }
       if test $gl_cv_sys_struct_timespec_in_pthread_h = yes; then
         PTHREAD_H_DEFINES_STRUCT_TIMESPEC=1
+      else
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for struct timespec in <unistd.h>" >&5
+$as_echo_n "checking for struct timespec in <unistd.h>... " >&6; }
+if ${gl_cv_sys_struct_timespec_in_unistd_h+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <unistd.h>
+
+int
+main ()
+{
+static struct timespec x; x.tv_sec = x.tv_nsec;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_sys_struct_timespec_in_unistd_h=yes
+else
+  gl_cv_sys_struct_timespec_in_unistd_h=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_sys_struct_timespec_in_unistd_h" >&5
+$as_echo "$gl_cv_sys_struct_timespec_in_unistd_h" >&6; }
+        if test $gl_cv_sys_struct_timespec_in_unistd_h = yes; then
+          UNISTD_H_DEFINES_STRUCT_TIMESPEC=1
+        fi
       fi
     fi
   fi
+
 
 
 
@@ -14748,13 +14794,6 @@ $as_echo "#define GNULIB_TEST_DUP 1" >>confdefs.h
 
 
 
-  :
-
-
-
-
-
-
 
   :
 
@@ -14778,14 +14817,13 @@ else
              gl_cv_func_dup2_works="guessing no" ;;
            cygwin*) # on cygwin 1.5.x, dup2(1,1) returns 0
              gl_cv_func_dup2_works="guessing no" ;;
-           linux*) # On linux between 2008-07-27 and 2009-05-11, dup2 of a
-                   # closed fd may yield -EBADF instead of -1 / errno=EBADF.
-             gl_cv_func_dup2_works="guessing no" ;;
            aix* | freebsd*)
                    # on AIX 7.1 and FreeBSD 6.1, dup2 (1,toobig) gives EMFILE,
                    # not EBADF.
              gl_cv_func_dup2_works="guessing no" ;;
            haiku*) # on Haiku alpha 2, dup2(1, 1) resets FD_CLOEXEC.
+             gl_cv_func_dup2_works="guessing no" ;;
+           *-android*) # implemented using dup3(), which fails if oldfd == newfd
              gl_cv_func_dup2_works="guessing no" ;;
            *) gl_cv_func_dup2_works="guessing yes" ;;
          esac
@@ -14793,41 +14831,52 @@ else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-         #include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
+         #include <errno.h>
+             #include <fcntl.h>
+             #include <limits.h>
+             #include <sys/resource.h>
+             #include <unistd.h>
+             #ifndef RLIM_SAVED_CUR
+             # define RLIM_SAVED_CUR RLIM_INFINITY
+             #endif
+             #ifndef RLIM_SAVED_MAX
+             # define RLIM_SAVED_MAX RLIM_INFINITY
+             #endif
+
 int
 main ()
 {
 int result = 0;
-#ifdef HAVE_GETDTABLESIZE
-            int bad_fd = getdtablesize ();
-#else
-            int bad_fd = 1000000;
-#endif
-#ifdef FD_CLOEXEC
-            if (fcntl (1, F_SETFD, FD_CLOEXEC) == -1)
-              result |= 1;
-#endif
-            if (dup2 (1, 1) == 0)
-              result |= 2;
-#ifdef FD_CLOEXEC
-            if (fcntl (1, F_GETFD) != FD_CLOEXEC)
-              result |= 4;
-#endif
-            close (0);
-            if (dup2 (0, 0) != -1)
-              result |= 8;
-            /* Many gnulib modules require POSIX conformance of EBADF.  */
-            if (dup2 (2, bad_fd) == -1 && errno != EBADF)
-              result |= 16;
-            /* Flush out some cygwin core dumps.  */
-            if (dup2 (2, -1) != -1 || errno != EBADF)
-              result |= 32;
-            dup2 (2, 255);
-            dup2 (2, 256);
-            return result;
-
+             int bad_fd = INT_MAX;
+             struct rlimit rlim;
+             if (getrlimit (RLIMIT_NOFILE, &rlim) == 0
+                 && 0 <= rlim.rlim_cur && rlim.rlim_cur <= INT_MAX
+                 && rlim.rlim_cur != RLIM_INFINITY
+                 && rlim.rlim_cur != RLIM_SAVED_MAX
+                 && rlim.rlim_cur != RLIM_SAVED_CUR)
+               bad_fd = rlim.rlim_cur;
+             #ifdef FD_CLOEXEC
+               if (fcntl (1, F_SETFD, FD_CLOEXEC) == -1)
+                 result |= 1;
+             #endif
+             if (dup2 (1, 1) != 1)
+               result |= 2;
+             #ifdef FD_CLOEXEC
+               if (fcntl (1, F_GETFD) != FD_CLOEXEC)
+                 result |= 4;
+             #endif
+             close (0);
+             if (dup2 (0, 0) != -1)
+               result |= 8;
+             /* Many gnulib modules require POSIX conformance of EBADF.  */
+             if (dup2 (2, bad_fd) == -1 && errno != EBADF)
+               result |= 16;
+             /* Flush out some cygwin core dumps.  */
+             if (dup2 (2, -1) != -1 || errno != EBADF)
+               result |= 32;
+             dup2 (2, 255);
+             dup2 (2, 256);
+             return result;
   ;
   return 0;
 }
@@ -15075,9 +15124,6 @@ $as_echo "#define GNULIB_TEST_FCHDIR 1" >>confdefs.h
 
 
 
-
-
-
   if test $ac_cv_func_fcntl = no; then
 
 
@@ -15101,36 +15147,43 @@ if ${gl_cv_func_fcntl_f_dupfd_works+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   if test "$cross_compiling" = yes; then :
-  # Guess that it works on glibc systems
-          case $host_os in #((
-            *-gnu*) gl_cv_func_fcntl_f_dupfd_works="guessing yes";;
-            *)      gl_cv_func_fcntl_f_dupfd_works="guessing no";;
+  case $host_os in
+            aix* | cygwin* | haiku*)
+               gl_cv_func_fcntl_f_dupfd_works="guessing no" ;;
+            *) gl_cv_func_fcntl_f_dupfd_works="guessing yes" ;;
           esac
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-
-#ifdef HAVE_GETDTABLESIZE
-# include <unistd.h>
-#endif
-#include <fcntl.h>
 #include <errno.h>
+              #include <fcntl.h>
+              #include <limits.h>
+              #include <sys/resource.h>
+              #include <unistd.h>
+              #ifndef RLIM_SAVED_CUR
+              # define RLIM_SAVED_CUR RLIM_INFINITY
+              #endif
+              #ifndef RLIM_SAVED_MAX
+              # define RLIM_SAVED_MAX RLIM_INFINITY
+              #endif
 
 int
 main ()
 {
 int result = 0;
-#ifdef HAVE_GETDTABLESIZE
-      int bad_fd = getdtablesize ();
-#else
-      int bad_fd = 1000000;
-#endif
-      if (fcntl (0, F_DUPFD, -1) != -1) result |= 1;
-      if (errno != EINVAL) result |= 2;
-      if (fcntl (0, F_DUPFD, bad_fd) != -1) result |= 4;
-      if (errno != EINVAL) result |= 8;
-      return result;
-
+              int bad_fd = INT_MAX;
+              struct rlimit rlim;
+              if (getrlimit (RLIMIT_NOFILE, &rlim) == 0
+                  && 0 <= rlim.rlim_cur && rlim.rlim_cur <= INT_MAX
+                  && rlim.rlim_cur != RLIM_INFINITY
+                  && rlim.rlim_cur != RLIM_SAVED_MAX
+                  && rlim.rlim_cur != RLIM_SAVED_CUR)
+                bad_fd = rlim.rlim_cur;
+              if (fcntl (0, F_DUPFD, -1) != -1) result |= 1;
+              if (errno != EINVAL) result |= 2;
+              if (fcntl (0, F_DUPFD, bad_fd) != -1) result |= 4;
+              if (errno != EINVAL) result |= 8;
+              return result;
   ;
   return 0;
 }
@@ -16746,7 +16799,15 @@ $as_echo "#define GNULIB_TEST_GETCWD 1" >>confdefs.h
 
 
 
-  if test $ac_cv_func_getdtablesize = yes; then
+
+  :
+
+
+
+
+
+  if test $ac_cv_func_getdtablesize = yes &&
+     test $ac_cv_have_decl_getdtablesize = yes; then
     # Cygwin 1.7.25 automatically increases the RLIMIT_NOFILE soft limit
     # up to an unchangeable hard limit; all other platforms correctly
     # require setrlimit before getdtablesize() can report a larger value.
@@ -17692,17 +17753,7 @@ if ${gl_cv_func_isnanl_works+:} false; then :
 else
 
       if test "$cross_compiling" = yes; then :
-  case "$host_cpu" in
-                                 # Guess no on ia64, x86_64, i386.
-           ia64 | x86_64 | i*86) gl_cv_func_isnanl_works="guessing no";;
-           *)
-             case "$host_os" in
-               netbsd*) gl_cv_func_isnanl_works="guessing no";;
-               *)       gl_cv_func_isnanl_works="guessing yes";;
-             esac
-             ;;
-         esac
-
+  gl_cv_func_isnanl_works="guessing yes"
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -17781,41 +17832,35 @@ int main ()
     if (!isnanl (x.value))
       result |= 2;
   }
-  /* The isnanl function should recognize Pseudo-NaNs, Pseudo-Infinities,
-     Pseudo-Zeroes, Unnormalized Numbers, and Pseudo-Denormals, as defined in
-       Intel IA-64 Architecture Software Developer's Manual, Volume 1:
-       Application Architecture.
-       Table 5-2 "Floating-Point Register Encodings"
-       Figure 5-6 "Memory to Floating-Point Register Data Translation"
-   */
+  /* isnanl should return something even for noncanonical values.  */
   { /* Pseudo-NaN.  */
     static memory_long_double x =
       { LDBL80_WORDS (0xFFFF, 0x40000001, 0x00000000) };
-    if (!isnanl (x.value))
+    if (isnanl (x.value) && !isnanl (x.value))
       result |= 4;
   }
   { /* Pseudo-Infinity.  */
     static memory_long_double x =
       { LDBL80_WORDS (0xFFFF, 0x00000000, 0x00000000) };
-    if (!isnanl (x.value))
+    if (isnanl (x.value) && !isnanl (x.value))
       result |= 8;
   }
   { /* Pseudo-Zero.  */
     static memory_long_double x =
       { LDBL80_WORDS (0x4004, 0x00000000, 0x00000000) };
-    if (!isnanl (x.value))
+    if (isnanl (x.value) && !isnanl (x.value))
       result |= 16;
   }
   { /* Unnormalized number.  */
     static memory_long_double x =
       { LDBL80_WORDS (0x4000, 0x63333333, 0x00000000) };
-    if (!isnanl (x.value))
+    if (isnanl (x.value) && !isnanl (x.value))
       result |= 32;
   }
   { /* Pseudo-Denormal.  */
     static memory_long_double x =
       { LDBL80_WORDS (0x0000, 0x83333333, 0x00000000) };
-    if (!isnanl (x.value))
+    if (isnanl (x.value) && !isnanl (x.value))
       result |= 64;
   }
 #endif
@@ -25170,6 +25215,29 @@ fi
 
 
 $as_echo "#define GNULIB_TEST_MEMPCPY 1" >>confdefs.h
+
+
+  ## set up libobj if needed:
+if test "x${ac_cv_func_memrchr}" = "xno"; then
+  case " $LIBOBJS " in
+  *" memrchr.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS memrchr.$ac_objext"
+ ;;
+esac
+  :
+fi
+
+
+
+
+
+          GNULIB_MEMRCHR=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_MEMRCHR 1" >>confdefs.h
 
 
   ## set up libobj if needed:

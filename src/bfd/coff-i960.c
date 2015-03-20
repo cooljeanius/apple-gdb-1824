@@ -57,18 +57,15 @@ static bfd_boolean coff_i960_adjust_symndx
 
 #define COFF_LONG_FILENAMES
 
-/* This set of local label names is taken from gas.  */
-
+/* This set of local label names is taken from gas: */
 static bfd_boolean
-coff_i960_is_local_label_name (abfd, name)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     const char *name;
+coff_i960_is_local_label_name(bfd *abfd ATTRIBUTE_UNUSED, const char *name)
 {
-  return (name[0] == 'L'
-	  || (name[0] == '.'
-	      && (name[1] == 'C'
-		  || name[1] == 'I'
-		  || name[1] == '.')));
+  return ((name[0] == 'L')
+	  || ((name[0] == '.')
+	      && ((name[1] == 'C')
+		  || (name[1] == 'I')
+		  || (name[1] == '.'))));
 }
 
 /* This is just like the usual CALC_ADDEND, but it includes the
@@ -102,8 +99,8 @@ coff_i960_is_local_label_name (abfd, name)
 #define BAL_MASK 0x00ffffff
 
 static bfd_reloc_status_type
-optcall_callback (abfd, reloc_entry, symbol_in, data,
-		  input_section, ignore_bfd, error_message)
+optcall_callback(abfd, reloc_entry, symbol_in, data,
+		 input_section, ignore_bfd, error_message)
      bfd *abfd;
      arelent *reloc_entry;
      asymbol *symbol_in;
@@ -192,8 +189,8 @@ optcall_callback (abfd, reloc_entry, symbol_in, data,
    COFF specific backend linker.  */
 
 static bfd_reloc_status_type
-coff_i960_relocate (abfd, reloc_entry, symbol, data, input_section,
-		    output_bfd, error_message)
+coff_i960_relocate(abfd, reloc_entry, symbol, data, input_section,
+		   output_bfd, error_message)
      bfd *abfd;
      arelent *reloc_entry;
      asymbol *symbol;
@@ -279,9 +276,8 @@ static reloc_howto_type howto_optcall =
 	 optcall_callback, "optcall", TRUE, 0x00ffffff, 0x00ffffff, 0);
 
 static reloc_howto_type *
-coff_i960_reloc_type_lookup (abfd, code)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+coff_i960_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                            bfd_reloc_code_real_type code)
 {
   switch (code)
     {

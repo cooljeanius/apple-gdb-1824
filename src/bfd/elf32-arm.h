@@ -991,30 +991,22 @@ insert_thumb_branch(insn32 br_insn, int rel_off)
   return br_insn;
 }
 
-/* Thumb code calling an ARM function.  */
-
+/* Thumb code calling an ARM function: */
 static int
-elf32_thumb_to_arm_stub (info, name, input_bfd, output_bfd, input_section,
-			 hit_data, sym_sec, offset, addend, val)
-     struct bfd_link_info * info;
-     const char *           name;
-     bfd *                  input_bfd;
-     bfd *                  output_bfd;
-     asection *             input_section;
-     bfd_byte *             hit_data;
-     asection *             sym_sec;
-     bfd_vma                offset;
-     bfd_signed_vma         addend;
-     bfd_vma                val;
+elf32_thumb_to_arm_stub(struct bfd_link_info *info, const char *name,
+                        bfd *input_bfd, bfd *output_bfd,
+                        asection *input_section, bfd_byte *hit_data,
+                        asection *sym_sec, bfd_vma offset,
+                        bfd_signed_vma addend, bfd_vma val)
 {
-  asection * s = 0;
+  asection *s = 0;
   bfd_vma my_offset;
   unsigned long int tmp;
   long int ret_offset;
-  struct elf_link_hash_entry * myh;
-  struct elf32_arm_link_hash_table * globals;
+  struct elf_link_hash_entry *myh;
+  struct elf32_arm_link_hash_table *globals;
 
-  myh = find_thumb_glue (info, name, input_bfd);
+  myh = find_thumb_glue(info, name, input_bfd);
   if (myh == NULL)
     return FALSE;
 
@@ -1100,21 +1092,13 @@ elf32_thumb_to_arm_stub (info, name, input_bfd, output_bfd, input_section,
   return TRUE;
 }
 
-/* Arm code calling a Thumb function.  */
-
+/* Arm code calling a Thumb function: */
 static int
-elf32_arm_to_thumb_stub (info, name, input_bfd, output_bfd, input_section,
-			 hit_data, sym_sec, offset, addend, val)
-     struct bfd_link_info * info;
-     const char *           name;
-     bfd *                  input_bfd;
-     bfd *                  output_bfd;
-     asection *             input_section;
-     bfd_byte *             hit_data;
-     asection *             sym_sec;
-     bfd_vma                offset;
-     bfd_signed_vma         addend;
-     bfd_vma                val;
+elf32_arm_to_thumb_stub(struct bfd_link_info *info, const char *name,
+                        bfd *input_bfd, bfd *output_bfd,
+                        asection *input_section, bfd_byte *hit_data,
+                        asection *sym_sec, bfd_vma offset,
+                        bfd_signed_vma addend, bfd_vma val)
 {
   unsigned long int tmp;
   bfd_vma my_offset;
@@ -1123,7 +1107,7 @@ elf32_arm_to_thumb_stub (info, name, input_bfd, output_bfd, input_section,
   struct elf_link_hash_entry * myh;
   struct elf32_arm_link_hash_table * globals;
 
-  myh = find_arm_glue (info, name, input_bfd);
+  myh = find_arm_glue(info, name, input_bfd);
   if (myh == NULL)
     return FALSE;
 
@@ -1205,35 +1189,26 @@ elf32_arm_to_thumb_stub (info, name, input_bfd, output_bfd, input_section,
 
 /* Perform a relocation as part of a final link: */
 static bfd_reloc_status_type
-elf32_arm_final_link_relocate (howto, input_bfd, output_bfd,
-			       input_section, contents, rel, value,
-			       info, sym_sec, sym_name, sym_flags, h)
-     reloc_howto_type *     howto;
-     bfd *                  input_bfd;
-     bfd *                  output_bfd;
-     asection *             input_section;
-     bfd_byte *             contents;
-     Elf_Internal_Rela *    rel;
-     bfd_vma                value;
-     struct bfd_link_info * info;
-     asection *             sym_sec;
-     const char *           sym_name;
-     int		    sym_flags;
-     struct elf_link_hash_entry * h;
+elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
+                              bfd *output_bfd, asection *input_section,
+                              bfd_byte *contents, Elf_Internal_Rela *rel,
+                              bfd_vma value, struct bfd_link_info *info,
+                              asection *sym_sec, const char *sym_name,
+                              int sym_flags, struct elf_link_hash_entry *h)
 {
-  unsigned long                 r_type = howto->type;
-  unsigned long                 r_symndx;
-  bfd_byte *                    hit_data = contents + rel->r_offset;
-  bfd *                         dynobj = NULL;
-  Elf_Internal_Shdr *           symtab_hdr;
-  struct elf_link_hash_entry ** sym_hashes;
-  bfd_vma *                     local_got_offsets;
-  asection *                    sgot = NULL;
-  asection *                    splt = NULL;
-  asection *                    sreloc = NULL;
-  bfd_vma                       addend;
-  bfd_signed_vma                signed_addend;
-  struct elf32_arm_link_hash_table * globals;
+  unsigned long r_type = howto->type;
+  unsigned long r_symndx;
+  bfd_byte *hit_data = (contents + rel->r_offset);
+  bfd *dynobj = NULL;
+  Elf_Internal_Shdr *symtab_hdr;
+  struct elf_link_hash_entry **sym_hashes;
+  bfd_vma *local_got_offsets;
+  asection *sgot = NULL;
+  asection *splt = NULL;
+  asection *sreloc = NULL;
+  bfd_vma addend;
+  bfd_signed_vma signed_addend;
+  struct elf32_arm_link_hash_table *globals;
 
   /* If the start address has been set, then set the EF_ARM_HASENTRY
      flag.  Setting this more than once is redundant, but the cost is
@@ -2101,6 +2076,7 @@ elf32_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  bfd_boolean unresolved_reloc;
 
 #ifdef RELOC_FOR_GLOBAL_SYMBOL
+          /* FIXME: arguments have changed: */
 	  RELOC_FOR_GLOBAL_SYMBOL(h, sym_hashes, r_symndx,
 				  symtab_hdr, relocation,
 				  sec, unresolved_reloc, info,
@@ -2194,10 +2170,11 @@ elf32_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		 we have already printed one error message and there
 		 is no point complaining again.  */
 	      if ((! h ||
-		   h->root.type != bfd_link_hash_undefined)
+		   (h->root.type != bfd_link_hash_undefined))
 		  && (!((*info->callbacks->reloc_overflow)
-			(info, name, howto->name, (bfd_vma)0L,
-			 input_bfd, input_section, rel->r_offset))))
+			(info, (struct bfd_link_hash_entry *)NULL, name,
+                         howto->name, (bfd_vma)0UL, input_bfd,
+                         input_section, rel->r_offset))))
 		  return FALSE;
 	      break;
 
@@ -2237,84 +2214,75 @@ elf32_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
   return TRUE;
 }
 
-/* Set the right machine number.  */
-
+/* Set the right machine number: */
 static bfd_boolean
-elf32_arm_object_p (abfd)
-     bfd *abfd;
+elf32_arm_object_p(bfd *abfd)
 {
   unsigned int mach;
 
-  mach = bfd_arm_get_mach_from_notes (abfd, ARM_NOTE_SECTION);
+  mach = bfd_arm_get_mach_from_notes(abfd, ARM_NOTE_SECTION);
 
   if (mach != bfd_mach_arm_unknown)
-    bfd_default_set_arch_mach (abfd, bfd_arch_arm, mach);
-
-  else if (elf_elfheader (abfd)->e_flags & EF_ARM_MAVERICK_FLOAT)
-    bfd_default_set_arch_mach (abfd, bfd_arch_arm, bfd_mach_arm_ep9312);
-
+    bfd_default_set_arch_mach(abfd, bfd_arch_arm, mach);
+  else if (elf_elfheader(abfd)->e_flags & EF_ARM_MAVERICK_FLOAT)
+    bfd_default_set_arch_mach(abfd, bfd_arch_arm, bfd_mach_arm_ep9312);
   else
-    bfd_default_set_arch_mach (abfd, bfd_arch_arm, mach);
+    bfd_default_set_arch_mach(abfd, bfd_arch_arm, mach);
 
   return TRUE;
 }
 
-/* Function to keep ARM specific flags in the ELF header.  */
+/* Function to keep ARM specific flags in the ELF header: */
 static bfd_boolean
-elf32_arm_set_private_flags (abfd, flags)
-     bfd *abfd;
-     flagword flags;
+elf32_arm_set_private_flags(bfd *abfd, flagword flags)
 {
-  if (elf_flags_init (abfd)
-      && elf_elfheader (abfd)->e_flags != flags)
+  if (elf_flags_init(abfd)
+      && (elf_elfheader(abfd)->e_flags != flags))
     {
-      if (EF_ARM_EABI_VERSION (flags) == EF_ARM_EABI_UNKNOWN)
+      if (EF_ARM_EABI_VERSION(flags) == EF_ARM_EABI_UNKNOWN)
 	{
 	  if (flags & EF_ARM_INTERWORK)
-	    (*_bfd_error_handler) (_("\
+	    (*_bfd_error_handler)(_("\
 Warning: Not setting interworking flag of %s since it has already been specified as non-interworking"),
-				   bfd_archive_filename (abfd));
+                                  bfd_archive_filename(abfd));
 	  else
-	    _bfd_error_handler (_("\
+	    _bfd_error_handler(_("\
 Warning: Clearing the interworking flag of %s due to outside request"),
-				bfd_archive_filename (abfd));
+                               bfd_archive_filename(abfd));
 	}
     }
   else
     {
-      elf_elfheader (abfd)->e_flags = flags;
-      elf_flags_init (abfd) = TRUE;
+      elf_elfheader(abfd)->e_flags = flags;
+      elf_flags_init(abfd) = TRUE;
     }
 
   return TRUE;
 }
 
-/* Copy backend specific data from one object module to another.  */
-
+/* Copy backend specific data from one object module to another: */
 static bfd_boolean
-elf32_arm_copy_private_bfd_data (ibfd, obfd)
-     bfd *ibfd;
-     bfd *obfd;
+elf32_arm_copy_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
   flagword in_flags;
   flagword out_flags;
 
-  if (   bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+  if ((bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
+      || (bfd_get_flavour(obfd) != bfd_target_elf_flavour))
     return TRUE;
 
-  in_flags  = elf_elfheader (ibfd)->e_flags;
-  out_flags = elf_elfheader (obfd)->e_flags;
+  in_flags = elf_elfheader(ibfd)->e_flags;
+  out_flags = elf_elfheader(obfd)->e_flags;
 
-  if (elf_flags_init (obfd)
-      && EF_ARM_EABI_VERSION (out_flags) == EF_ARM_EABI_UNKNOWN
-      && in_flags != out_flags)
+  if (elf_flags_init(obfd)
+      && (EF_ARM_EABI_VERSION(out_flags) == EF_ARM_EABI_UNKNOWN)
+      && (in_flags != out_flags))
     {
-      /* Cannot mix APCS26 and APCS32 code.  */
+      /* Cannot mix APCS26 and APCS32 code: */
       if ((in_flags & EF_ARM_APCS_26) != (out_flags & EF_ARM_APCS_26))
 	return FALSE;
 
-      /* Cannot mix float APCS and non-float APCS code.  */
+      /* Cannot mix float APCS and non-float APCS code: */
       if ((in_flags & EF_ARM_APCS_FLOAT) != (out_flags & EF_ARM_APCS_FLOAT))
 	return FALSE;
 
@@ -2323,44 +2291,41 @@ elf32_arm_copy_private_bfd_data (ibfd, obfd)
       if ((in_flags & EF_ARM_INTERWORK) != (out_flags & EF_ARM_INTERWORK))
 	{
 	  if (out_flags & EF_ARM_INTERWORK)
-	    _bfd_error_handler (_("\
+	    _bfd_error_handler(_("\
 Warning: Clearing the interworking flag of %s because non-interworking code in %s has been linked with it"),
-				bfd_get_filename (obfd),
-				bfd_archive_filename (ibfd));
+                               bfd_get_filename(obfd),
+                               bfd_archive_filename(ibfd));
 
 	  in_flags &= ~EF_ARM_INTERWORK;
 	}
 
-      /* Likewise for PIC, though don't warn for this case.  */
+      /* Likewise for PIC, though do NOT warn for this case: */
       if ((in_flags & EF_ARM_PIC) != (out_flags & EF_ARM_PIC))
 	in_flags &= ~EF_ARM_PIC;
     }
 
-  elf_elfheader (obfd)->e_flags = in_flags;
-  elf_flags_init (obfd) = TRUE;
+  elf_elfheader(obfd)->e_flags = in_flags;
+  elf_flags_init(obfd) = TRUE;
 
   return TRUE;
 }
 
 /* Merge backend specific data from an object file to the output
    object file when linking.  */
-
 static bfd_boolean
-elf32_arm_merge_private_bfd_data (ibfd, obfd)
-     bfd * ibfd;
-     bfd * obfd;
+elf32_arm_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
   flagword out_flags;
   flagword in_flags;
   bfd_boolean flags_compatible = TRUE;
   asection *sec;
 
-  /* Check if we have the same endianess.  */
-  if (! _bfd_generic_verify_endian_match (ibfd, obfd))
+  /* Check if we have the same endianess: */
+  if (! _bfd_generic_verify_endian_match(ibfd, obfd))
     return FALSE;
 
-  if (   bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+  if ((bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
+      || (bfd_get_flavour(obfd) != bfd_target_elf_flavour))
     return TRUE;
 
   /* The input BFD must have had its flags initialised.  */
@@ -2551,17 +2516,14 @@ Warning: %s does not support interworking, whereas %s does"),
   return flags_compatible;
 }
 
-/* Display the flags field.  */
-
+/* Display the flags field: */
 static bfd_boolean
-elf32_arm_print_private_bfd_data (abfd, ptr)
-     bfd *abfd;
-     PTR ptr;
+elf32_arm_print_private_bfd_data(bfd *abfd, PTR ptr)
 {
-  FILE * file = (FILE *) ptr;
+  FILE * file = (FILE *)ptr;
   unsigned long flags;
 
-  BFD_ASSERT (abfd != NULL && ptr != NULL);
+  BFD_ASSERT((abfd != NULL) && (ptr != NULL));
 
   /* Print normal ELF private data.  */
   _bfd_elf_print_private_bfd_data (abfd, ptr);
@@ -2652,30 +2614,28 @@ elf32_arm_print_private_bfd_data (abfd, ptr)
   flags &= ~ EF_ARM_EABIMASK;
 
   if (flags & EF_ARM_RELEXEC)
-    fprintf (file, _(" [relocatable executable]"));
+    fprintf(file, _(" [relocatable executable]"));
 
   if (flags & EF_ARM_HASENTRY)
-    fprintf (file, _(" [has entry point]"));
+    fprintf(file, _(" [has entry point]"));
 
-  flags &= ~ (EF_ARM_RELEXEC | EF_ARM_HASENTRY);
+  flags &= ~(EF_ARM_RELEXEC | EF_ARM_HASENTRY);
 
   if (flags)
-    fprintf (file, _("<Unrecognised flag bits set>"));
+    fprintf(file, _("<Unrecognised flag bits set>"));
 
-  fputc ('\n', file);
+  fputc('\n', file);
 
   return TRUE;
 }
 
 static int
-elf32_arm_get_symbol_type (elf_sym, type)
-     Elf_Internal_Sym * elf_sym;
-     int type;
+elf32_arm_get_symbol_type(Elf_Internal_Sym *elf_sym, int type)
 {
-  switch (ELF_ST_TYPE (elf_sym->st_info))
+  switch (ELF_ST_TYPE(elf_sym->st_info))
     {
     case STT_ARM_TFUNC:
-      return ELF_ST_TYPE (elf_sym->st_info);
+      return ELF_ST_TYPE(elf_sym->st_info);
 
     case STT_ARM_16BIT:
       /* If the symbol is not an object, return the STT_ARM_16BIT flag.
@@ -2694,16 +2654,15 @@ elf32_arm_get_symbol_type (elf_sym, type)
 }
 
 static asection *
-elf32_arm_gc_mark_hook (sec, info, rel, h, sym)
-       asection *sec;
-       struct bfd_link_info *info ATTRIBUTE_UNUSED;
-       Elf_Internal_Rela *rel;
-       struct elf_link_hash_entry *h;
-       Elf_Internal_Sym *sym;
+elf32_arm_gc_mark_hook(asection *sec,
+                       struct bfd_link_info *info ATTRIBUTE_UNUSED,
+                       Elf_Internal_Rela *rel,
+                       struct elf_link_hash_entry *h,
+                       Elf_Internal_Sym *sym)
 {
   if (h != NULL)
     {
-      switch (ELF32_R_TYPE (rel->r_info))
+      switch (ELF32_R_TYPE(rel->r_info))
       {
       case R_ARM_GNU_VTINHERIT:
       case R_ARM_GNU_VTENTRY:

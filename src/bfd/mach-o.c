@@ -3442,8 +3442,11 @@ mach_o_bfd_fat_free_cached_info(bfd *input)
 #undef TARGET_ARCHIVE
 #undef TARGET_PRIORITY
 
+/* FIXME: already done above: */
+#ifndef bfd_mach_o_mkarchive
 /* Not yet handled: creating an archive: */
-#define bfd_mach_o_mkarchive                      _bfd_noarchive_mkarchive
+# define bfd_mach_o_mkarchive _bfd_noarchive_mkarchive
+#endif /* !bfd_mach_o_mkarchive */
 
 /* Not used: */
 #define bfd_mach_o_read_ar_hdr _bfd_noarchive_read_ar_hdr

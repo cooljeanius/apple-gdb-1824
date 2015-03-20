@@ -67,7 +67,7 @@ enum tui_key_mode tui_current_key_mode = TUI_COMMAND_MODE;
 struct tui_char_command
 {
   unsigned char key;
-  const char* cmd;
+  const char *cmd;
 };
 
 /* Key mapping to gdb commands when the TUI is using the single key mode.  */
@@ -157,7 +157,7 @@ tui_rl_change_windows (int notused1, int notused2)
 	case SRC_DISASSEM_COMMAND:
 	  new_layout = DISASSEM_DATA_COMMAND;
 	  break;
-	  
+
 	case DISASSEM_DATA_COMMAND:
 	  new_layout = SRC_DATA_COMMAND;
 	  break;
@@ -372,7 +372,7 @@ tui_enable (void)
       WINDOW *w;
 
       w = initscr ();
-  
+
       cbreak ();
       noecho ();
       /*timeout (1);*/
@@ -404,7 +404,7 @@ tui_enable (void)
   rl_startup_hook = tui_rl_startup_hook;
 
   tui_update_variables ();
-  
+
   tui_setup_io (1);
 
   tui_active = 1;
@@ -425,56 +425,56 @@ tui_enable (void)
    back to their original state.  The curses mode is left so that
    the terminal setting is restored to the point when we entered.  */
 void
-tui_disable (void)
+tui_disable(void)
 {
   if (!tui_active)
     return;
 
-  /* Restore initial readline keymap.  */
-  rl_set_keymap (tui_readline_standard_keymap);
+  /* Restore initial readline keymap: */
+  rl_set_keymap(tui_readline_standard_keymap);
 
-  /* Remove TUI hooks.  */
-  tui_remove_hooks ();
+  /* Remove TUI hooks: */
+  tui_remove_hooks();
   rl_startup_hook = 0;
   rl_already_prompted = 0;
 
-  /* Leave curses and restore previous gdb terminal setting.  */
-  endwin ();
+  /* Leave curses and restore previous gdb terminal setting: */
+  endwin();
 
   /* gdb terminal has changed, update gdb internal copy of it
      so that terminal management with the inferior works.  */
-  tui_setup_io (0);
+  tui_setup_io(0);
 
-  /* Update gdb's knowledge of its terminal.  */
-  target_terminal_save_ours ();
+  /* Update gdb's knowledge of its terminal: */
+  target_terminal_save_ours();
 
   tui_active = 0;
-  tui_update_gdb_sizes ();
+  tui_update_gdb_sizes();
 }
 
 void
-strcat_to_buf (char *buf, int buflen, const char *item_to_add)
+strcat_to_buf(char *buf, int buflen, const char *item_to_add)
 {
-  if (item_to_add != (char *) NULL && buf != (char *) NULL)
+  if ((item_to_add != (char *)NULL) && (buf != (char *)NULL))
     {
-      if ((strlen (buf) + strlen (item_to_add)) <= buflen)
-	strcat (buf, item_to_add);
+      if ((strlen(buf) + strlen(item_to_add)) <= (size_t)buflen)
+	strcat(buf, item_to_add);
       else
-	strncat (buf, item_to_add, (buflen - strlen (buf)));
+	strncat(buf, item_to_add, (buflen - strlen(buf)));
     }
 }
 
-#if 0
-/* Solaris <sys/termios.h> defines CTRL. */
-#ifndef CTRL
-#define CTRL(x)         (x & ~0140)
-#endif
+#if defined(HAVE_TERMIO_H)
+/* Solaris <sys/termios.h> defines CTRL: */
+# ifndef CTRL
+#  define CTRL(x)         (x & ~0140)
+# endif /* !CTRL */
 
-#define FILEDES         2
-#define CHK(val, dft)   (val<=0 ? dft : val)
+# define FILEDES         2
+# define CHK(val, dft)   ((val <= 0) ? dft : val)
 
 static void
-tui_reset (void)
+tui_reset(void)
 {
   struct termio mode;
 
@@ -482,44 +482,48 @@ tui_reset (void)
      ** reset the teletype mode bits to a sensible state.
      ** Copied tset.c
    */
-#if defined (TIOCGETC)
+# if defined(TIOCGETC)
   struct tchars tbuf;
-#endif /* TIOCGETC */
-#ifdef UCB_NTTY
+# endif /* TIOCGETC */
+# ifdef UCB_NTTY
   struct ltchars ltc;
 
   if (ldisc == NTTYDISC)
     {
-      ioctl (FILEDES, TIOCGLTC, &ltc);
-      ltc.t_suspc = CHK (ltc.t_suspc, CTRL ('Z'));
-      ltc.t_dsuspc = CHK (ltc.t_dsuspc, CTRL ('Y'));
-      ltc.t_rprntc = CHK (ltc.t_rprntc, CTRL ('R'));
-      ltc.t_flushc = CHK (ltc.t_flushc, CTRL ('O'));
-      ltc.t_werasc = CHK (ltc.t_werasc, CTRL ('W'));
-      ltc.t_lnextc = CHK (ltc.t_lnextc, CTRL ('V'));
-      ioctl (FILEDES, TIOCSLTC, &ltc);
+      ioctl(FILEDES, TIOCGLTC, &ltc);
+      ltc.t_suspc = CHK(ltc.t_suspc, CTRL('Z'));
+      ltc.t_dsuspc = CHK(ltc.t_dsuspc, CTRL('Y'));
+      ltc.t_rprntc = CHK(ltc.t_rprntc, CTRL('R'));
+      ltc.t_flushc = CHK(ltc.t_flushc, CTRL('O'));
+      ltc.t_werasc = CHK(ltc.t_werasc, CTRL('W'));
+      ltc.t_lnextc = CHK(ltc.t_lnextc, CTRL('V'));
+      ioctl(FILEDES, TIOCSLTC, &ltc);
     }
-#endif /* UCB_NTTY */
-#ifdef TIOCGETC
-  ioctl (FILEDES, TIOCGETC, &tbuf);
-  tbuf.t_intrc = CHK (tbuf.t_intrc, CTRL ('?'));
-  tbuf.t_quitc = CHK (tbuf.t_quitc, CTRL ('\\'));
-  tbuf.t_startc = CHK (tbuf.t_startc, CTRL ('Q'));
-  tbuf.t_stopc = CHK (tbuf.t_stopc, CTRL ('S'));
-  tbuf.t_eofc = CHK (tbuf.t_eofc, CTRL ('D'));
-  /* brkc is left alone */
-  ioctl (FILEDES, TIOCSETC, &tbuf);
-#endif /* TIOCGETC */
+# endif /* UCB_NTTY */
+# ifdef TIOCGETC
+  ioctl(FILEDES, TIOCGETC, &tbuf);
+  tbuf.t_intrc = CHK(tbuf.t_intrc, CTRL('?'));
+  tbuf.t_quitc = CHK(tbuf.t_quitc, CTRL('\\'));
+  tbuf.t_startc = CHK(tbuf.t_startc, CTRL('Q'));
+  tbuf.t_stopc = CHK(tbuf.t_stopc, CTRL('S'));
+  tbuf.t_eofc = CHK(tbuf.t_eofc, CTRL('D'));
+  /* brkc is left alone: */
+  ioctl(FILEDES, TIOCSETC, &tbuf);
+# endif /* TIOCGETC */
+# if defined(RAW) && defined(VTDELAY) && defined(ALLDELAY)
   mode.sg_flags &= ~(RAW
-#ifdef CBREAK
+#  ifdef CBREAK
 		     | CBREAK
-#endif /* CBREAK */
+#  endif /* CBREAK */
 		     | VTDELAY | ALLDELAY);
-  mode.sg_flags |= XTABS | ECHO | CRMOD | ANYP;
+# endif /* RAW && VTDELAY && ALLDELAY */
+# if defined(XTABS) && defined(CRMOD) && defined(ANYP)
+  mode.sg_flags |= (XTABS | ECHO | CRMOD | ANYP);
+# endif /* XTABS && CRMOD && ANYP */
 
   return;
 }
-#endif
+#endif /* HAVE_TERMIO_H */
 
 void
 tui_show_source (const char *file, int line)
@@ -547,7 +551,7 @@ tui_is_window_visible (enum tui_win_type type)
 
   if (tui_win_list[type] == 0)
     return 0;
-  
+
   return tui_win_list[type]->generic.is_visible;
 }
 
@@ -558,7 +562,7 @@ tui_get_command_dimension (unsigned int *width, unsigned int *height)
     {
       return 0;
     }
-  
+
   *width = TUI_CMD_WIN->generic.width;
   *height = TUI_CMD_WIN->generic.height;
   return 1;

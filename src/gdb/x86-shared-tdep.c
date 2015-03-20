@@ -1,5 +1,6 @@
-/* APPLE LOCAL: A tdep file used by both the i386 and the amd64 (x86_64) 
-   targets.  These two architectures are similar enough that we can share 
+/* x86-shared-tdep.c */
+/* APPLE LOCAL: A tdep file used by both the i386 and the amd64 (x86_64)
+   targets.  These two architectures are similar enough that we can share
    the same algorithms between them easily.  */
 
 #include <ctype.h>
@@ -24,12 +25,14 @@
 #include "i386-tdep.h"
 #include "amd64-tdep.h"
 
+extern void _initialize_x86_shared_tdep(void);
+
 int debug_x86bt;
 static void
-show_debug_x86bt (struct ui_file *file, int from_tty,
-                  struct cmd_list_element *c, const char *value)
+show_debug_x86bt(struct ui_file *file, int from_tty,
+                 struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("x86 backtracer debugging is %s.\n"), value);
+  fprintf_filtered(file, _("x86 backtracer debugging is %s.\n"), value);
 }
 
 
@@ -45,24 +48,24 @@ show_debug_x86bt (struct ui_file *file, int from_tty,
    push %esp, %ebp instruction that typically appears in a function prologue. */
 
 static int
-x86_mov_esp_ebp_pattern_p (CORE_ADDR memaddr)
+x86_mov_esp_ebp_pattern_p(CORE_ADDR memaddr)
 {
-  gdb_byte op = read_memory_unsigned_integer (memaddr, 1);
+  gdb_byte op = read_memory_unsigned_integer(memaddr, 1);
 
   /* Look for & consume the x86-64 REX.W prefix byte 0x48
      with no register bit additions */
   if (op == 0x48)
     {
       memaddr++;
-      op = read_memory_unsigned_integer (memaddr, 1);
+      op = read_memory_unsigned_integer(memaddr, 1);
     }
 
   /* Two ways to write push %esp, %ebp: [0x8b 0xec] and [0x89 0xe5] */
   if (op == 0x8b)
-    if (read_memory_unsigned_integer (memaddr + 1, 1) == 0xec)
+    if (read_memory_unsigned_integer((memaddr + 1), 1) == 0xec)
       return 1;
   if (op == 0x89)
-    if (read_memory_unsigned_integer (memaddr + 1, 1) == 0xe5)
+    if (read_memory_unsigned_integer((memaddr + 1), 1) == 0xe5)
       return 1;
 
   return 0;
@@ -72,30 +75,29 @@ x86_mov_esp_ebp_pattern_p (CORE_ADDR memaddr)
    or push $0x0 [0x6a 0x00].  */
 
 static int
-x86_push_ebp_pattern_p (CORE_ADDR memaddr)
+x86_push_ebp_pattern_p(CORE_ADDR memaddr)
 {
-  gdb_byte op = read_memory_unsigned_integer (memaddr, 1);
+  gdb_byte op = read_memory_unsigned_integer(memaddr, 1);
   if (op == 0x55)
     return 1;
   if (op == 0x6a)
-    if (read_memory_unsigned_integer (memaddr + 1, 1) == 0x00)
+    if (read_memory_unsigned_integer((memaddr + 1), 1) == 0x00)
       return 1;
 
   return 0;
 }
 
-/* Return true if the i386/x86-64 instruction at MEMADDR is a ret/retq.  */
-
+/* Return true if the i386/x86-64 instruction at MEMADDR is a ret/retq: */
 static int
-x86_ret_pattern_p (CORE_ADDR memaddr)
+x86_ret_pattern_p(CORE_ADDR memaddr)
 {
-  gdb_byte op = read_memory_unsigned_integer (memaddr, 1); 
+  gdb_byte op = read_memory_unsigned_integer(memaddr, 1);
 
-  /* C2 and CA are 'RET imm16' instructions.  */
-  if (op == 0xc3 || op == 0xcb || op == 0xc2 || op == 0xca)
+  /* C2 and CA are 'RET imm16' instructions: */
+  if ((op == 0xc3) || (op == 0xcb) || (op == 0xc2) || (op == 0xca))
     return 1;
 
-  /* Let's recognize LEAVE as well.  */
+  /* Let us recognize LEAVE as well: */
   if (op == 0xc9)
     return 1;
 
@@ -105,7 +107,7 @@ x86_ret_pattern_p (CORE_ADDR memaddr)
 /* Return 1 if MEMADDR is a call + pop instruction sequence to set up a
    register as the picbase.
    If REGNUM is non-NULL, it is filled in with the register # that the picbase
-   address was popped into.  
+   address was popped into.
 
    Looking for the sequence
      call L1        [ 0xe8 0x00 0x00 0x00 0x00 ]
@@ -117,66 +119,66 @@ x86_ret_pattern_p (CORE_ADDR memaddr)
    This sequence only occurs in i386 code.  */
 
 static int
-x86_picbase_setup_pattern_p (CORE_ADDR memaddr, int *regnum)
+x86_picbase_setup_pattern_p(CORE_ADDR memaddr, int *regnum)
 {
   gdb_byte op;
-  if (length_of_this_instruction (memaddr) != 5
-      || read_memory_unsigned_integer (memaddr, 1) != 0xe8
-      || read_memory_unsigned_integer (memaddr + 1, 4) != 0)
+  if ((length_of_this_instruction(memaddr) != 5)
+      || (read_memory_unsigned_integer(memaddr, 1) != 0xe8)
+      || (read_memory_unsigned_integer((memaddr + 1), 4) != 0))
     return 0;
-  
-  op = read_memory_unsigned_integer (memaddr + 5, 1);
+
+  op = read_memory_unsigned_integer((memaddr + 5), 1);
   if ((op & 0xf8) != 0x58)
     return 0;
 
   if (regnum)
-    *regnum = (int) op & 0x7;
+    *regnum = ((int)op & 0x7);
 
   return 1;
 }
 
 int
-i386_nonvolatile_regnum_p (int r)
+i386_nonvolatile_regnum_p(int r)
 {
-  if (r == I386_EBX_REGNUM || r == I386_EBP_REGNUM
-      || r == I386_ESI_REGNUM || r == I386_EDI_REGNUM
-      || r == I386_ESP_REGNUM)
+  if ((r == I386_EBX_REGNUM) || (r == I386_EBP_REGNUM)
+      || (r == I386_ESI_REGNUM) || (r == I386_EDI_REGNUM)
+      || (r == I386_ESP_REGNUM))
     return 1;
   else
     return 0;
 }
 
 int
-i386_argument_regnum_p (int r)
+i386_argument_regnum_p(int r)
 {
   return 0;
 }
 
 int
-x86_64_nonvolatile_regnum_p (int r)
+x86_64_nonvolatile_regnum_p(int r)
 {
-  if (r == AMD64_RBX_REGNUM || r == AMD64_RSP_REGNUM
-      || r == AMD64_RBP_REGNUM
-      || r == AMD64_R8_REGNUM + 4 || r == AMD64_R8_REGNUM + 5
-      || r == AMD64_R8_REGNUM + 6 || r == AMD64_R8_REGNUM + 7)
+  if ((r == AMD64_RBX_REGNUM) || (r == AMD64_RSP_REGNUM)
+      || (r == AMD64_RBP_REGNUM)
+      || (r == AMD64_R8_REGNUM + 4) || (r == AMD64_R8_REGNUM + 5)
+      || (r == AMD64_R8_REGNUM + 6) || (r == AMD64_R8_REGNUM + 7))
     return 1;
   else
     return 0;
 }
 
 int
-x86_64_argument_regnum_p (int r)
+x86_64_argument_regnum_p(int r)
 {
-  if (r == AMD64_RDI_REGNUM || r == AMD64_RSI_REGNUM
-      || r == AMD64_RDX_REGNUM || r == AMD64_RCX_REGNUM
-      || r == AMD64_R8_REGNUM || r == AMD64_R8_REGNUM + 1)
+  if ((r == AMD64_RDI_REGNUM) || (r == AMD64_RSI_REGNUM)
+      || (r == AMD64_RDX_REGNUM) || (r == AMD64_RCX_REGNUM)
+      || (r == AMD64_R8_REGNUM) || (r == (AMD64_R8_REGNUM + 1)))
     return 1;
   else
     return 0;
 }
 
 int
-i386_machine_regno_to_gdb_regno (int r)
+i386_machine_regno_to_gdb_regno(int r)
 {
   return r;
 }
@@ -188,7 +190,7 @@ i386_machine_regno_to_gdb_regno (int r)
    getting reg nums from assembly instructions.  */
 
 int
-x86_64_machine_regno_to_gdb_regno (int r)
+x86_64_machine_regno_to_gdb_regno(int r)
 {
   switch (r)
     {
@@ -245,7 +247,7 @@ x86_pop_p (CORE_ADDR memaddr)
      in the second half of the reg set.  */
   if (op == 0x41)
     op = read_memory_unsigned_integer (memaddr + 1, 1);
-    
+
   /* 58+ rd      POP r32 */
   if ((op & 0xf8) == 0x58)
     return 1;
@@ -259,9 +261,9 @@ x86_pop_p (CORE_ADDR memaddr)
    i386:   mov    %eax,-0xc(%ebp)    [ 0x89 0x45 0xf4 ]
 
    If REGNUM is non-NULL, it is filled in with the register # that was saved.
-   If OFFSET is non-NULL, it is filled in with the stack frame offset that the 
-   reg was saved to.  
-   e.g. for 'mov %ebx,-0xc(%ebp)', *OFFSET will be set to 12, indicating that 
+   If OFFSET is non-NULL, it is filled in with the stack frame offset that the
+   reg was saved to.
+   e.g. for 'mov %ebx,-0xc(%ebp)', *OFFSET will be set to 12, indicating that
    EBX was saved at EBP -12.  */
 
 static int
@@ -287,23 +289,27 @@ x86_mov_reg_to_local_stack_frame_p (CORE_ADDR memaddr, int *regnum, int *offset)
      aka 'MOV r/m32,r32' in Intel syntax terms.  */
   if (op == 0x89)
     {
-      op = read_memory_unsigned_integer (memaddr + 1, 1);
+      int op_sans_dest_reg;
+      int saved_reg;
+      int off;
+
+      op = read_memory_unsigned_integer(memaddr + 1, 1);
       /* Mask off the 3-5 bits which indicate the destination register
          if this is a ModR/M byte.  */
-      int op_sans_dest_reg = op & (~0x38);
+      op_sans_dest_reg = (op & (~0x38));
 
-      /* Look for a ModR/M byte with Mod bits 01 and R/M bits 101 
+      /* Look for a ModR/M byte with Mod bits 01 and R/M bits 101
          ([EBP] disp8), i.e. 01xxx101
          I want to see a destination of ebp-disp8 or ebp-disp32.   */
-      if (op_sans_dest_reg != 0x45 && op_sans_dest_reg != 0x85)
+      if ((op_sans_dest_reg != 0x45) && (op_sans_dest_reg != 0x85))
         return 0;
 
-      int saved_reg = ((op >> 3) & 0x7) | source_reg_mod;
-      int off = 0;
+      saved_reg = (((op >> 3) & 0x7) | source_reg_mod);
+      off = 0;
       if (op_sans_dest_reg == 0x45)
-        off = (int8_t) read_memory_unsigned_integer (memaddr + 2, 1);
+        off = (int8_t)read_memory_unsigned_integer(memaddr + 2, 1);
       if (op_sans_dest_reg == 0x85)
-        off = (uint32_t) read_memory_unsigned_integer (memaddr + 2, 4);
+        off = (uint32_t)read_memory_unsigned_integer(memaddr + 2, 4);
 
       if (off > 0)
         return 0;
@@ -311,7 +317,7 @@ x86_mov_reg_to_local_stack_frame_p (CORE_ADDR memaddr, int *regnum, int *offset)
       if (regnum != NULL)
         *regnum = saved_reg;
       if (offset != NULL)
-        *offset = abs (off);
+        *offset = abs(off);
       return 1;
     }
 
@@ -328,43 +334,46 @@ x86_mov_reg_to_local_stack_frame_p (CORE_ADDR memaddr, int *regnum, int *offset)
    If REGNUM is non-NULL, it is filled in with the register # is used.  */
 
 static int
-x86_mov_func_arg_to_reg_p (CORE_ADDR memaddr, int *regnum, int *offset)
+x86_mov_func_arg_to_reg_p(CORE_ADDR memaddr, int *regnum, int *offset)
 {
   gdb_byte op;
   int source_reg_mod = 0;
   int target_reg_mod = 0;
-  op = read_memory_unsigned_integer (memaddr, 1);
+  op = read_memory_unsigned_integer(memaddr, 1);
 
-  if (REX_W_PREFIX_P (op))
+  if (REX_W_PREFIX_P(op))
     {
-      source_reg_mod = REX_W_R (op) << 3;
-      target_reg_mod = REX_W_B (op) << 3;
+      source_reg_mod = (REX_W_R(op) << 3);
+      target_reg_mod = (REX_W_B(op) << 3);
       /* The target register should be ebp/rbp which doesn't require an
          extra bit to specify.  */
       if (target_reg_mod == 1)
         return 0;
-      op = read_memory_unsigned_integer (++memaddr, 1);
+      op = read_memory_unsigned_integer(++memaddr, 1);
     }
 
   if (op == 0x8b)
     {
-      op = read_memory_unsigned_integer (memaddr + 1, 1);
+      int op_sans_dest_reg;
+      int saved_reg;
+      int off;
+      op = read_memory_unsigned_integer(memaddr + 1, 1);
       /* Mask off the 3-5 bits which indicate the destination register
          if this is a ModR/M byte.  */
-      int op_sans_dest_reg = op & (~0x38);
+      op_sans_dest_reg = (op & (~0x38));
 
-      /* Look for a ModR/M byte with Mod bits 01 and R/M bits 101 
+      /* Look for a ModR/M byte with Mod bits 01 and R/M bits 101
          ([EBP] disp8), i.e. 01xxx101
          I want to see a destination of ebp-disp8 or ebp-disp32.   */
-      if (op_sans_dest_reg != 0x45 && op_sans_dest_reg != 0x85)
+      if ((op_sans_dest_reg != 0x45) && (op_sans_dest_reg != 0x85))
         return 0;
 
-      int saved_reg = ((op >> 3) & 0x7) | source_reg_mod;
-      int off = 0;
+      saved_reg = (((op >> 3) & 0x7) | source_reg_mod);
+      off = 0;
       if (op_sans_dest_reg == 0x45)
-        off = (int8_t) read_memory_unsigned_integer (memaddr + 2, 1);
+        off = (int8_t)read_memory_unsigned_integer(memaddr + 2, 1);
       if (op_sans_dest_reg == 0x85)
-        off = (int32_t) read_memory_unsigned_integer (memaddr + 2, 4);
+        off = (int32_t)read_memory_unsigned_integer(memaddr + 2, 4);
 
       if (offset != NULL)
         *offset = off;
@@ -390,7 +399,7 @@ x86_mov_func_arg_to_reg_p (CORE_ADDR memaddr, int *regnum, int *offset)
    and stop after them.
 
    This function returns 0 if this memory address is NOT these pair of
-   instructions.  It returns the number of bytes to skip if it is.  
+   instructions.  It returns the number of bytes to skip if it is.
 
    This sequence only occurs in i386 code.  */
 
@@ -410,7 +419,7 @@ x86_unopt_arg_copy_to_local_stack_p (CORE_ADDR memaddr)
   if (reg1 != reg2)
     return 0;
 
-  /* The offset from ebp of the first insn should be positive; 
+  /* The offset from ebp of the first insn should be positive;
      the offset from ebp of the second insn should be negative.  */
   if (off1 < 0 || off2 > 0)
     return 0;
@@ -420,8 +429,8 @@ x86_unopt_arg_copy_to_local_stack_p (CORE_ADDR memaddr)
 
 /* Return non-zero if MEMADDR is an instruction that subtracts a value from the
    stack pointer (esp) - typically seen in the middle of a function prologue.
-   In an -fomit-frame-pointer program this instruction may be the only 
-   identifiable prologue instruction outside register saves.  
+   In an -fomit-frame-pointer program this instruction may be the only
+   identifiable prologue instruction outside register saves.
 
    The return value is the esp displacement.  0 indicates that this is not
    a sub $esp instruction.  A positive value, e.g. 0x1c, indicates that 12 is
@@ -455,14 +464,14 @@ x86_sub_esp_pattern_p (CORE_ADDR memaddr)
       return (int32_t) read_memory_integer (memaddr + 2, 4);
     }
 
-  /* Handle [0x83, 0xc4] for imm8 with neg values?  
-     Or [0x81, 0xc4] for imm32 with neg values?  Does gcc ever emit these?  
+  /* Handle [0x83, 0xc4] for imm8 with neg values?
+     Or [0x81, 0xc4] for imm32 with neg values?  Does gcc ever emit these?
      The old i386_find_esp_adjustments func used to detect them.  */
 
   return 0;
 }
 
-/* Returns true if MEMADDR is a JMP or one of the Jcc (Jump if Condition) 
+/* Returns true if MEMADDR is a JMP or one of the Jcc (Jump if Condition)
    instructions.  */
 
 static int
@@ -470,7 +479,7 @@ x86_jump_insn_p (CORE_ADDR memaddr)
 {
   gdb_byte op;
   op = read_memory_unsigned_integer (memaddr, 1);
-  
+
   /* Jcc */
   if (op >= 0x70 && op <= 0x7f)
     return 1;
@@ -492,8 +501,8 @@ x86_jump_insn_p (CORE_ADDR memaddr)
   return 0;
 }
 
-/* Returns true if MEMADDR is a 3-instruction sequence that copies variables 
-   which are a part of a block's context into the local stack frame from the 
+/* Returns true if MEMADDR is a 3-instruction sequence that copies variables
+   which are a part of a block's context into the local stack frame from the
    first argument ("_self") in the block's prologue setup.
    On x86_64 this looks like
         <__helper_1+15>:     mov    -0x18(%rbp),%rax   [ 0x48 0x8b 0x45 0xe8 ]
@@ -512,40 +521,45 @@ x86_jump_insn_p (CORE_ADDR memaddr)
    everything via the stack pointer instead of the frame pointer.  */
 
 static int
-x86_blocks_context_var_copy_pattern_p (CORE_ADDR memaddr, int wordsize)
+x86_blocks_context_var_copy_pattern_p(CORE_ADDR memaddr, int wordsize)
 {
   int reg1, off1, reg2, reg3, off3;
-  if (x86_mov_func_arg_to_reg_p (memaddr, &reg1, &off1) == 0)
-    return 0;
-  
-  memaddr += length_of_this_instruction (memaddr);
-
-  /* Now look for a 'mov 0x30(%rax),%rax' type instruction  */
 
   gdb_byte op;
-  int off = 0;
-  op = read_memory_unsigned_integer (memaddr, 1);
-    
-  if (REX_W_PREFIX_P (op))
+  int off;
+
+  int sreg;
+  int treg;
+
+  if (x86_mov_func_arg_to_reg_p(memaddr, &reg1, &off1) == 0)
+    return 0;
+
+  memaddr += length_of_this_instruction(memaddr);
+
+  /* Now look for a 'mov 0x30(%rax),%rax' type instruction: */
+  off = 0;
+  op = read_memory_unsigned_integer(memaddr, 1);
+
+  if (REX_W_PREFIX_P(op))
     {
-      int source_reg_mod = REX_W_R (op) << 3;
-      int target_reg_mod = REX_W_B (op) << 3;
+      int source_reg_mod = (REX_W_R(op) << 3);
+      int target_reg_mod = (REX_W_B(op) << 3);
       if (source_reg_mod != target_reg_mod)
         return 0;
       off++;
-      op = read_memory_unsigned_integer (memaddr + off, 1);
+      op = read_memory_unsigned_integer(memaddr + off, 1);
     }
   if (op != 0x8b)
     return 0;
 
   off++;
-  op = read_memory_unsigned_integer (memaddr + off, 1);
+  op = read_memory_unsigned_integer(memaddr + off, 1);
   /* See if this ModR/M has a Mod of 01 -- (reg)+disp8  */
   if ((op & ~0x3f) != 0x40)
     return 0;
   /* Extract the source & target regs from the ModR/M byte */
-  int sreg = (op & 0x38) >> 3;
-  int treg = (op & 0x7);
+  sreg = ((op & 0x38) >> 3);
+  treg = (op & 0x7);
   if (sreg != treg)
     return 0;
   reg2 = sreg;
@@ -557,17 +571,17 @@ x86_blocks_context_var_copy_pattern_p (CORE_ADDR memaddr, int wordsize)
 
   if (reg1 != reg2 || reg2 != reg3)
     return 0;
-    
+
   /* The offset from ebp of the first insn should be positive;
      the offset from ebp of the second insn should be negative.  */
   if (wordsize == 4 && off1 < 0)
     return 0;
-    
+
   /* The offset from rbp of the first insn should be negative;
      the offset from rbp of the second insn should be negative.  */
   if (wordsize == 8 && off1 > 0)
     return 0;
-  
+
   return 1;
 }
 
@@ -577,7 +591,7 @@ static struct type *
 init_vector_type (struct type *elt_type, int n)
 {
   struct type *array_type;
- 
+
   array_type = create_array_type (0, elt_type,
                                   create_range_type (0, builtin_type_int,
                                                      0, n-1));
@@ -669,7 +683,7 @@ x86_initialize_frame_cache (struct x86_frame_cache *cache, int wordsize)
   cache->saved_regs = FRAME_OBSTACK_CALLOC (cache->num_savedregs, CORE_ADDR);
   cache->wordsize = wordsize;
 
-  /* Saved registers.  We initialize these to INVALID_ADDRESS since zero 
+  /* Saved registers.  We initialize these to INVALID_ADDRESS since zero
      is a valid offset (that's where eip is).  */
   for (i = 0; i < cache->num_savedregs; i++)
     cache->saved_regs[i] = INVALID_ADDRESS;
@@ -689,15 +703,15 @@ x86_alloc_frame_cache (int wordsize)
   cache = FRAME_OBSTACK_ZALLOC (struct x86_frame_cache);
 
   x86_initialize_frame_cache (cache, wordsize);
-  
+
   return cache;
 }
 
 
-/* Check whether FUNC_START_ADDR points at instructions that set up a new 
+/* Check whether FUNC_START_ADDR points at instructions that set up a new
    stack frame.  If so, it updates CACHE and returns the address of the first
    instruction after the sequence that sets up the frame or LIMIT,
-   whichever is smaller.  If we don't recognize the instruction sequence, 
+   whichever is smaller.  If we don't recognize the instruction sequence,
    return FUNC_START_ADDR.  */
 
 CORE_ADDR
@@ -712,7 +726,7 @@ x86_analyze_prologue (CORE_ADDR func_start_addr, CORE_ADDR limit,
 
   int non_prologue_insns = 0;
 
-  /* If we iterate over 50 instructions max. 
+  /* If we iterate over 50 instructions max.
      We can get in this state when backtracing through a dylib/etc
      with no symbols: we have a pc in the middle of it and we
      consider the start of the function to be the last symbol before
@@ -723,9 +737,9 @@ x86_analyze_prologue (CORE_ADDR func_start_addr, CORE_ADDR limit,
 
   /* APPLE LOCAL: This function returns a CORE_ADDR which is the instruction
      following the last frame-setup instruction we saw such that "frame-setup
-     instruction" is one of push %ebp, push $0x0, mov %esp, %ebp, 
+     instruction" is one of push %ebp, push $0x0, mov %esp, %ebp,
      sub $<size>, $esp, enter, etc.. */
- 
+
   CORE_ADDR end_of_frame_setup = func_start_addr;
   CORE_ADDR pc = func_start_addr;
 
@@ -746,20 +760,21 @@ x86_analyze_prologue (CORE_ADDR func_start_addr, CORE_ADDR limit,
       return limit;
     }
 
-  while (non_prologue_insns < 10 && pc < limit && insn_count++ < insn_limit)
+  while ((non_prologue_insns < 10) && (pc < limit) && (insn_count++ < insn_limit))
     {
       int r;
-      CORE_ADDR next_insn = pc + length_of_this_instruction (pc);
+      CORE_ADDR next_insn = (pc + length_of_this_instruction(pc));
       int prologue_insn = 0;
+      int off;
 
-      if (x86_ret_pattern_p (pc))
+      if (x86_ret_pattern_p(pc))
         break;
 
-      if (x86_push_reg_p (pc, &r))
+      if (x86_push_reg_p(pc, &r))
         {
-          r = cache->machine_regno_to_gdb_regno (r);
+          r = cache->machine_regno_to_gdb_regno(r);
           cache->sp_offset += cache->wordsize;
-          if (cache->volatile_reg_p (r) || cache->argument_reg_p (r))
+          if (cache->volatile_reg_p(r) || cache->argument_reg_p(r))
             {
               if (cache->saved_regs[r] == INVALID_ADDRESS)
                 {
@@ -772,67 +787,66 @@ x86_analyze_prologue (CORE_ADDR func_start_addr, CORE_ADDR limit,
           goto loopend;
         }
 
-      if (x86_sub_esp_pattern_p (pc))
+      if (x86_sub_esp_pattern_p(pc))
         {
-          cache->sp_offset += x86_sub_esp_pattern_p (pc);
+          cache->sp_offset += x86_sub_esp_pattern_p(pc);
           saw_sub_esp_insn = 1;
           prologue_insn = 1;
           goto loopend;
         }
 
-      if (x86_mov_esp_ebp_pattern_p (pc))
+      if (x86_mov_esp_ebp_pattern_p(pc))
         {
           saw_mov_esp_ebp = 1;
           prologue_insn = 1;
           goto loopend;
         }
 
-      if (x86_picbase_setup_pattern_p (pc, NULL))
+      if (x86_picbase_setup_pattern_p(pc, NULL))
         {
           /* This is a two-instruction sequence so skip the pair of them */
-          next_insn = next_insn + length_of_this_instruction (next_insn);
+          next_insn = (next_insn + length_of_this_instruction(next_insn));
           prologue_insn = 1;
           goto loopend;
         }
 
-      /* Detect a 'mov %ebx, -0xc(%ebp)' type store.  */
-      int off;
-      if (x86_mov_reg_to_local_stack_frame_p (pc, &r, &off))
+      /* Detect a 'mov %ebx, -0xc(%ebp)' type store: */
+      if (x86_mov_reg_to_local_stack_frame_p(pc, &r, &off))
         {
-          r = cache->machine_regno_to_gdb_regno (r);
-          if ((cache->volatile_reg_p (r) || cache->argument_reg_p (r))
-              && cache->saved_regs[r] == INVALID_ADDRESS)
+          r = cache->machine_regno_to_gdb_regno(r);
+          if ((cache->volatile_reg_p(r) || cache->argument_reg_p(r))
+              && (cache->saved_regs[r] == INVALID_ADDRESS))
             {
-              cache->saved_regs[r] = off + cache->wordsize;
+              cache->saved_regs[r] = (off + cache->wordsize);
               prologue_insn = 1;
             }
           goto loopend;
         }
-  
-      if (x86_unopt_arg_copy_to_local_stack_p (pc))
+
+      if (x86_unopt_arg_copy_to_local_stack_p(pc))
         {
           /* This is a two-instruction sequence so skip the pair of them */
-          next_insn = next_insn + length_of_this_instruction (next_insn);
+          next_insn = (next_insn + length_of_this_instruction(next_insn));
           prologue_insn = 1;
           goto loopend;
         }
 
-      /* Any kind of jump instruction implies flow control -- we're past
+      /* Any kind of jump instruction implies flow control -- we are past
          the prologue now.  */
-      if (x86_jump_insn_p (pc))
+      if (x86_jump_insn_p(pc))
         break;
 
-      if (x86_pop_p (pc))
+      if (x86_pop_p(pc))
         {
           cache->sp_offset -= cache->wordsize;
           goto loopend;
         }
 
-      if (x86_blocks_context_var_copy_pattern_p (pc, cache->wordsize))
+      if (x86_blocks_context_var_copy_pattern_p(pc, cache->wordsize))
         {
-          /* This is a three-instruction sequence so skip the lot of them */
-          next_insn = next_insn + length_of_this_instruction (next_insn);
-          next_insn = next_insn + length_of_this_instruction (next_insn);
+          /* This is a 3-instruction sequence, so skip the lot of them: */
+          next_insn = (next_insn + length_of_this_instruction(next_insn));
+          next_insn = (next_insn + length_of_this_instruction(next_insn));
           prologue_insn = 1;
           goto loopend;
         }
@@ -840,7 +854,7 @@ x86_analyze_prologue (CORE_ADDR func_start_addr, CORE_ADDR limit,
       /* The plain old i386_push_reg_p() would detect the standard 'push %ebp'
          but an alternate insn that this function checks for is 'push $0x0'
          which is done by the 'start' func.  */
-      if (x86_push_ebp_pattern_p (pc))
+      if (x86_push_ebp_pattern_p(pc))
         {
           if (saw_push_ebp)
             break;
@@ -854,7 +868,7 @@ x86_analyze_prologue (CORE_ADDR func_start_addr, CORE_ADDR limit,
       /* A call instruction (opcode 0xe8) which ISN'T a picbase setup
          instruction -- we're calling another function and it's safe to
          say that we're done with prologue instructions.  */
-      if (read_memory_unsigned_integer (pc, 1) == 0xe8)
+      if (read_memory_unsigned_integer(pc, 1) == 0xe8)
         break;
 
       /* Why use a goto?  So we don't evaluate all the other instruction
@@ -879,7 +893,7 @@ loopend:
 
   /* If we haven't seen the standard push ebp; mov esp, ebp sequence
      then this is a function that doesn't set up a frame pointer.  */
-  if (saw_push_ebp == 0 && saw_sub_esp_insn)
+  if ((saw_push_ebp == 0) && saw_sub_esp_insn)
     {
       cache->saved_regs[cache->ebp_regnum] = INVALID_ADDRESS;
       cache->ebp_is_frame_pointer = 0;
@@ -888,44 +902,44 @@ loopend:
 
   /* We're probably mid-prologue, having just executed the push ebp but
      not yet executing the mov esp, ebp.  */
-  if (saw_push_ebp && saw_mov_esp_ebp == 0)
+  if (saw_push_ebp && (saw_mov_esp_ebp == 0))
     {
       cache->ebp_is_frame_pointer = 0;
       return end_of_frame_setup;
     }
 
-  /* We didn't detect any prologue instructions at all.  */
+  /* We did NOT detect any prologue instructions at all: */
   cache->ebp_is_frame_pointer = 0;
   return end_of_frame_setup;
 }
 
 void
-x86_finalize_saved_reg_locations (struct frame_info *next_frame, 
-                                  struct x86_frame_cache *cache)
+x86_finalize_saved_reg_locations(struct frame_info *next_frame,
+                                 struct x86_frame_cache *cache)
 {
   gdb_byte buf[8];
+  int i;
 
   if (cache->saved_regs_are_absolute == 1)
     return;
 
   if (cache->ebp_is_frame_pointer)
     {
-      frame_unwind_register (next_frame, cache->ebp_regnum, buf);
-      cache->frame_base = extract_unsigned_integer (buf, cache->wordsize) 
-                          + cache->wordsize;
+      frame_unwind_register(next_frame, cache->ebp_regnum, buf);
+      cache->frame_base = (extract_unsigned_integer(buf, cache->wordsize)
+                           + cache->wordsize);
     }
   else
     {
-      frame_unwind_register (next_frame, cache->esp_regnum, buf);
-      cache->frame_base = extract_unsigned_integer (buf, cache->wordsize) 
-                          + cache->sp_offset;
+      frame_unwind_register(next_frame, cache->esp_regnum, buf);
+      cache->frame_base = (extract_unsigned_integer(buf, cache->wordsize)
+                           + cache->sp_offset);
     }
-  int i;
   for (i = 0; i < cache->num_savedregs; i++)
     if (cache->saved_regs[i] != INVALID_ADDRESS)
-      cache->saved_regs[i] = cache->frame_base - cache->saved_regs[i];
+      cache->saved_regs[i] = (cache->frame_base - cache->saved_regs[i]);
 
-  cache->saved_sp = cache->frame_base + cache->wordsize;
+  cache->saved_sp = (cache->frame_base + cache->wordsize);
   cache->saved_regs_are_absolute = 1;
 }
 
@@ -935,19 +949,20 @@ x86_finalize_saved_reg_locations (struct frame_info *next_frame,
    are only crawling the stack, that's all we need to know -- we don't
    need to disassemble all of the instrucitons looking for other prologue
    insns.
-   If gdb wants to know any other registers, or this is an unusual 
+   If gdb wants to know any other registers, or this is an unusual
    prologue, we can do the full prologue instruction analysis - but it
    is costly to do for no good reason.  */
 
 CORE_ADDR
-x86_quickie_analyze_prologue (CORE_ADDR func_start_addr, CORE_ADDR limit,
-                              struct x86_frame_cache *cache,
-                              int potentially_frameless)
+x86_quickie_analyze_prologue(CORE_ADDR func_start_addr, CORE_ADDR limit,
+                             struct x86_frame_cache *cache,
+                             int potentially_frameless)
 {
   ULONGEST buf;
+  int i386_matched;
+  int x86_64_matched;
 
   /* Should we look for Fix & Continue nop paddings?  */
-
   gdb_byte i386_pat[3] = { 0x55, 0x89, 0xe5 };
   gdb_byte x86_64_pat[4] = { 0x55, 0x48, 0x89, 0xe5 };
 
@@ -956,21 +971,21 @@ x86_quickie_analyze_prologue (CORE_ADDR func_start_addr, CORE_ADDR limit,
 
   /* If we were unable to find the start address of the function we're
      currently in, try using the current RIP value as a function start addr
-     and look for the typical prologue instructions.  Maybe we just 
-     instruction-stepped into a function w/o syms.  
+     and look for the typical prologue instructions.  Maybe we just
+     instruction-stepped into a function w/o syms.
 
      If we don't see typical prologue instructions we can't make
      an accurate assumption here.  Maybe it would be best to just
      assume that we instruction stepped into something... */
 
-  if (func_start_addr == INVALID_ADDRESS 
-      && potentially_frameless == 1
-      && limit != INVALID_ADDRESS)
+  if ((func_start_addr == INVALID_ADDRESS)
+      && (potentially_frameless == 1)
+      && (limit != INVALID_ADDRESS))
     {
-      if (safe_read_memory_unsigned_integer (limit, 4, &buf))
+      if (safe_read_memory_unsigned_integer(limit, 4, &buf))
         {
-          if (memcmp (&buf, i386_pat, sizeof (i386_pat)) == 0
-              || memcmp (&buf, x86_64_pat, sizeof (x86_64_pat)) == 0)
+          if ((memcmp(&buf, i386_pat, sizeof(i386_pat)) == 0)
+              || (memcmp(&buf, x86_64_pat, sizeof(x86_64_pat)) == 0))
             {
               cache->prologue_scan_status = quick_scan_succeeded;
               cache->ebp_is_frame_pointer = 0;
@@ -981,7 +996,7 @@ x86_quickie_analyze_prologue (CORE_ADDR func_start_addr, CORE_ADDR limit,
 
   if (func_start_addr == INVALID_ADDRESS)
     {
-      /* Set some reasonable defaults assuming the normal calling 
+      /* Set some reasonable defaults assuming the normal calling
          convention and a frame was set up already */
       cache->prologue_scan_status = quick_scan_succeeded;
       cache->saved_regs[cache->ebp_regnum] = cache->wordsize;
@@ -989,10 +1004,10 @@ x86_quickie_analyze_prologue (CORE_ADDR func_start_addr, CORE_ADDR limit,
       return limit;
     }
 
-  read_memory (func_start_addr, &buf, 4);
-  
-  int i386_matched = memcmp (&buf, i386_pat, sizeof (i386_pat)) == 0;
-  int x86_64_matched = memcmp (&buf, x86_64_pat, sizeof (x86_64_pat)) == 0;
+  read_memory(func_start_addr, (gdb_byte *)&buf, 4);
+
+  i386_matched = (memcmp(&buf, i386_pat, sizeof(i386_pat)) == 0);
+  x86_64_matched = (memcmp(&buf, x86_64_pat, sizeof(x86_64_pat)) == 0);
   if (i386_matched || x86_64_matched)
     {
       if (limit == func_start_addr)
@@ -1001,7 +1016,7 @@ x86_quickie_analyze_prologue (CORE_ADDR func_start_addr, CORE_ADDR limit,
           cache->ebp_is_frame_pointer = 0;
           return func_start_addr;
         }
-      if (limit == func_start_addr + 1)
+      if (limit == (func_start_addr + 1))
         {
           cache->prologue_scan_status = quick_scan_succeeded;
           cache->ebp_is_frame_pointer = 0;
@@ -1013,9 +1028,9 @@ x86_quickie_analyze_prologue (CORE_ADDR func_start_addr, CORE_ADDR limit,
       cache->sp_offset += cache->wordsize;
       cache->saved_regs[cache->ebp_regnum] = cache->wordsize;
       if (i386_matched)
-        return func_start_addr + 3;
+        return (func_start_addr + 3);
       else
-        return func_start_addr + 4;
+        return (func_start_addr + 4);
     }
 
   cache->prologue_scan_status = quick_scan_failed;
@@ -1024,7 +1039,8 @@ x86_quickie_analyze_prologue (CORE_ADDR func_start_addr, CORE_ADDR limit,
 }
 
 struct x86_frame_cache *
-x86_frame_cache (struct frame_info *next_frame, void **this_cache, int wordsize)
+x86_frame_cache(struct frame_info *next_frame, void **this_cache,
+                int wordsize)
 {
   struct x86_frame_cache *cache;
   int potentially_frameless;
@@ -1032,22 +1048,22 @@ x86_frame_cache (struct frame_info *next_frame, void **this_cache, int wordsize)
   CORE_ADDR current_pc;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct x86_frame_cache *)*this_cache;
 
-  potentially_frameless = frame_relative_level (next_frame) == -1 
-                       || get_frame_type (next_frame) == SIGTRAMP_FRAME
-                       || get_frame_type (next_frame) == DUMMY_FRAME;
+  potentially_frameless = ((frame_relative_level(next_frame) == -1)
+                           || get_frame_type(next_frame) == SIGTRAMP_FRAME
+                           || (get_frame_type(next_frame) == DUMMY_FRAME));
 
-  cache = x86_alloc_frame_cache (wordsize);
+  cache = x86_alloc_frame_cache(wordsize);
   *this_cache = cache;
 
   /* We want to make sure we get the function beginning right or
      analyze_prologue will be reading off into the weeds.  So make sure
      the load level is raised before we get the function pc.  */
-  current_pc = frame_pc_unwind (next_frame);
-  pc_set_load_state (current_pc, OBJF_SYM_ALL, 0);
+  current_pc = frame_pc_unwind(next_frame);
+  pc_set_load_state(current_pc, OBJF_SYM_ALL, 0);
 
-  cache->func_start_addr = frame_func_unwind (next_frame);
+  cache->func_start_addr = frame_func_unwind(next_frame);
   cache->pc = current_pc;
 
   /* The nuggets of code that constitute the ObjC trampolines confuse us.
@@ -1055,7 +1071,7 @@ x86_frame_cache (struct frame_info *next_frame, void **this_cache, int wordsize)
      will detect whether we are in one, and if so just manually set the
      results of the prologue scanning appropriately.  */
 
-  if (pc_in_objc_trampoline_p (current_pc, NULL))
+  if (pc_in_objc_trampoline_p(current_pc, NULL))
     {
       cache->prologue_scan_status = full_scan_succeeded;
       cache->ebp_is_frame_pointer = 0;
@@ -1063,11 +1079,11 @@ x86_frame_cache (struct frame_info *next_frame, void **this_cache, int wordsize)
     }
 
   /* Sanity check: If the start of the function is more than 65kbytes away
-     from the current pc value, I'm going to assume that the "start of the
-     function" address is some random symbol we found, not really the 
-     start of this function, and that we're currently stopped in some code 
-     without symbols.  128k was chosen with great scientific consideration... 
-     ok, no it wasn't, I pulled a number out of my hat.  Our defaults won't 
+     from the current pc value, I am going to assume that the "start of the
+     function" address is some random symbol we found, not really the
+     start of this function, and that we are currently stopped in some code
+     without symbols.  128k was chosen with great scientific consideration...
+     ok, no it wasn't, I pulled a number out of my hat.  Our defaults won't
      behave too badly if someone is actually stopped in a larger-than-65k
      function. */
 
@@ -1077,41 +1093,42 @@ x86_frame_cache (struct frame_info *next_frame, void **this_cache, int wordsize)
     }
   else
     {
-      if (current_pc < cache->func_start_addr
-          || (current_pc - cache->func_start_addr) > 65000)
+      if ((current_pc < cache->func_start_addr)
+          || ((current_pc - cache->func_start_addr) > 65000))
         prologue_parsed_to = cache->func_start_addr = INVALID_ADDRESS;
     }
 
-  /* Someone jumped through a null function pointer.  */
-  if (cache->func_start_addr == INVALID_ADDRESS 
-      && current_pc == 0 && potentially_frameless)
+  /* Someone jumped through a null function pointer: */
+  if ((cache->func_start_addr == INVALID_ADDRESS)
+      && (current_pc == 0) && potentially_frameless)
     {
       cache->prologue_scan_status = full_scan_succeeded;
       cache->ebp_is_frame_pointer = 0;
       return cache;
     }
 
-  prologue_parsed_to = x86_quickie_analyze_prologue (cache->func_start_addr, 
-                                     current_pc, cache, potentially_frameless);
+  prologue_parsed_to = x86_quickie_analyze_prologue(cache->func_start_addr,
+                                                    current_pc, cache,
+                                                    potentially_frameless);
 
   if (cache->prologue_scan_status == quick_scan_failed)
     {
-      x86_initialize_frame_cache (cache, wordsize);
-      cache->func_start_addr = frame_func_unwind (next_frame);
-      cache->pc = frame_pc_unwind (next_frame);
-      prologue_parsed_to = x86_analyze_prologue (cache->func_start_addr,
-                                                 current_pc, cache);
+      x86_initialize_frame_cache(cache, wordsize);
+      cache->func_start_addr = frame_func_unwind(next_frame);
+      cache->pc = frame_pc_unwind(next_frame);
+      prologue_parsed_to = x86_analyze_prologue(cache->func_start_addr,
+                                                current_pc, cache);
     }
 
-  /* If this can't be a frameless function but the i386_analyze_prologue
+  /* If this cannot be a frameless function but the i386_analyze_prologue
      claims that it is, then we obviously have a problem.  Either this
-     function was built -fomit-frame-pointer (in which case we can't back
+     function was built -fomit-frame-pointer (in which case we cannot back
      out of it without CFI/EH info) or the prologue analyzer got it wrong.
 
      We'll assume that the prologue analyzer got it wrong and set up some
      probably-good defaults.  */
 
-  if (potentially_frameless == 0 && cache->ebp_is_frame_pointer == 0)
+  if ((potentially_frameless == 0) && (cache->ebp_is_frame_pointer == 0))
     {
       cache->saved_regs[cache->ebp_regnum] = cache->wordsize;
       cache->ebp_is_frame_pointer = 1;
@@ -1122,80 +1139,80 @@ x86_frame_cache (struct frame_info *next_frame, void **this_cache, int wordsize)
 }
 
 void
-x86_frame_this_id (struct frame_info *next_frame, void **this_cache,
-                   struct frame_id *this_id)
+x86_frame_this_id(struct frame_info *next_frame, void **this_cache,
+                  struct frame_id *this_id)
 {
-  int wordsize = TARGET_PTR_BIT / 8;
-  struct x86_frame_cache *cache = x86_frame_cache (next_frame, this_cache, 
-                                                   wordsize);
+  int wordsize = (TARGET_PTR_BIT / 8);
+  struct x86_frame_cache *cache = x86_frame_cache(next_frame, this_cache,
+                                                  wordsize);
   CORE_ADDR startaddr;
   CORE_ADDR prev_frame_pc = INVALID_ADDRESS;
-  x86_finalize_saved_reg_locations (next_frame, cache); 
+  x86_finalize_saved_reg_locations(next_frame, cache);
 
   /* If this is the sentinel frame, make sure the frame base we get
      from it is readable, otherwise we aren't going to get anywhere,
      and we should just stop now... */
-  if (get_frame_type (next_frame) == SENTINEL_FRAME)
+  if (get_frame_type(next_frame) == SENTINEL_FRAME)
     {
       struct gdb_exception e;
-      TRY_CATCH (e, RETURN_MASK_ERROR)
+      TRY_CATCH(e, RETURN_MASK_ERROR)
 	{
 	  gdb_byte buf[8];
-	  read_memory (cache->frame_base, buf, wordsize);
+	  read_memory(cache->frame_base, buf, wordsize);
 	}
-      if (e.reason != NO_ERROR)
+      if (e.reason != (enum return_reason)NO_ERROR)
 	{
 	  if (debug_x86bt)
-	    printf_filtered ("X86BT: Terminating backtrace of thread port#: "
-                    "0x%lx with unreadible "
-		    "initial stack address at 0x%s, at frame level %d.\n", 
-		    inferior_ptid.tid, paddr_nz (cache->frame_base),
-                     frame_relative_level (next_frame) + 1);
+	    printf_filtered("X86BT: Terminating backtrace of thread port#: "
+                            "0x%lx with unreadible "
+                            "initial stack address at 0x%s, at frame level %d.\n",
+                            inferior_ptid.tid, paddr_nz(cache->frame_base),
+                            (frame_relative_level(next_frame) + 1));
 	  *this_id = null_frame_id;
 	  return;
 	}
     }
 
-  /* This marks the outermost frame.  
+  /* This marks the outermost frame.
      APPLE LOCAL: Don't do this if NEXT_FRAME is the sentinal
      frame, because then the id we are building should just
      come from the registers.  */
 
-  if (get_frame_type (next_frame) != SENTINEL_FRAME)
+  if (get_frame_type(next_frame) != SENTINEL_FRAME)
     {
       /* Try to read the saved PC in a try-catch block so we don't cease
          a backtrace display just because the last frame got an invalid
          saved pc value. */
-      if (get_prev_frame (next_frame) != NULL)
+      if (get_prev_frame(next_frame) != NULL)
         {
           struct gdb_exception e;
-          TRY_CATCH (e, RETURN_MASK_ALL)
-            {                   
-              prev_frame_pc = frame_pc_unwind (get_prev_frame (next_frame));
+          TRY_CATCH(e, RETURN_MASK_ALL)
+            {
+              prev_frame_pc = frame_pc_unwind(get_prev_frame(next_frame));
             }
-          if (e.reason != NO_ERROR)
+          if (e.reason != (enum return_reason)NO_ERROR)
             {
               if (debug_x86bt)
-                printf_filtered ("X86BT: Could not retrieve saved pc value at frame "
-                                 "level %d in backtrace of thread port# 0x%lx, "
-                                 "tried to read it from stack addr 0x%s.\n",
-                                 frame_relative_level (next_frame) + 1,
-                                 inferior_ptid.tid, 
-                                 paddr_nz (cache->frame_base));
+                printf_filtered("X86BT: Could not retrieve saved pc value at frame "
+                                "level %d in backtrace of thread port# 0x%lx, "
+                                "tried to read it from stack addr 0x%s.\n",
+                                (frame_relative_level(next_frame) + 1),
+                                inferior_ptid.tid,
+                                paddr_nz(cache->frame_base));
               prev_frame_pc = 0;
             }
         }
 
       /* We have to handle the trap_from_kernel() function specially.  It
          will have a saved pc value of 0.  Normally a non-leaf frame with a
-         saved pc value of 0 means that we've screwed up our stack walk but 
+         saved pc value of 0 means that we've screwed up our stack walk but
          in this one case it is expected.  */
       if (prev_frame_pc == 0)
         {
           struct minimal_symbol *minsym;
-          minsym = lookup_minimal_symbol_by_pc (frame_pc_unwind (next_frame));
-          if (!minsym || strcmp (SYMBOL_LINKAGE_NAME (minsym), 
-                                "trap_from_kernel") != 0)
+          minsym = lookup_minimal_symbol_by_pc(frame_pc_unwind(next_frame));
+          if (!minsym || (strcmp(SYMBOL_LINKAGE_NAME(minsym),
+                                 "trap_from_kernel") != 0))
             {
               *this_id = null_frame_id;
               return;
@@ -1205,26 +1222,27 @@ x86_frame_this_id (struct frame_info *next_frame, void **this_cache,
       if (cache->frame_base == 0)
         {
           if (debug_x86bt)
-            printf_filtered ("X86BT: Frame level %d's frame base is 0, done "
-                             "backtracing thread port# 0x%lx\n", 
-                             frame_relative_level (next_frame) + 1,
-                             inferior_ptid.tid);
+            printf_filtered("X86BT: Frame level %d's frame base is 0, done "
+                            "backtracing thread port# 0x%lx\n",
+                            (frame_relative_level(next_frame) + 1),
+                            inferior_ptid.tid);
           *this_id = null_frame_id;
           return;
         }
       else
         {
-          ULONGEST prev_frame_addr = 0;
-          if (safe_read_memory_unsigned_integer
-              (cache->frame_base - wordsize, wordsize, &prev_frame_addr))
+          ULONGEST prev_frame_addr = 0UL;
+          if (safe_read_memory_unsigned_integer((cache->frame_base
+                                                 - wordsize), wordsize,
+                                                &prev_frame_addr))
             {
               if (prev_frame_addr == 0)
                 {
                   if (debug_x86bt)
-                    printf_filtered ("X86BT: Frame level %d's frame base is 0, "
-                                     "done backtracing thread port# 0x%lx\n", 
-                                     frame_relative_level (next_frame) + 1,
-                                     inferior_ptid.tid);
+                    printf_filtered("X86BT: Frame level %d's frame base is 0, "
+                                    "done backtracing thread port# 0x%lx\n",
+                                    (frame_relative_level(next_frame) + 1),
+                                    inferior_ptid.tid);
                   *this_id = null_frame_id;
                   return;
                 }
@@ -1232,103 +1250,104 @@ x86_frame_this_id (struct frame_info *next_frame, void **this_cache,
           else
             {
                 if (debug_x86bt)
-                  printf_filtered ("X86BT: Could not read frame level %d's frame "
-                                   "pointer value in thread port# 0x%lx.\n",
-                                   frame_relative_level (next_frame) + 1,
-                                   inferior_ptid.tid);
+                  printf_filtered("X86BT: Could not read frame level %d's frame "
+                                  "pointer value in thread port# 0x%lx.\n",
+                                  (frame_relative_level(next_frame) + 1),
+                                  inferior_ptid.tid);
             }
         }
     }
 
-  /* Most of gdb uses 0 to represent an unknown address here.  */
+  /* Most of gdb uses 0 to represent an unknown address here: */
   if (cache->func_start_addr == INVALID_ADDRESS)
     startaddr = 0;
   else
     startaddr = cache->func_start_addr;
 
   if (debug_x86bt > 2)
-    printf_filtered ("X86BT: Creating frame %d id pc 0x%s, "
-                     "func-start-pc 0x%s, frame ptr 0x%s\n",
-                     frame_relative_level (next_frame) + 1,
-                     paddr_nz (cache->pc),
-                     paddr_nz (startaddr), 
-                     paddr_nz (cache->frame_base + wordsize));
+    printf_filtered("X86BT: Creating frame %d id pc 0x%s, "
+                    "func-start-pc 0x%s, frame ptr 0x%s\n",
+                    (frame_relative_level(next_frame) + 1),
+                    paddr_nz(cache->pc),
+                    paddr_nz(startaddr),
+                    paddr_nz(cache->frame_base + wordsize));
 
   /* See the end of i386_push_dummy_call.  */
-  (*this_id) = frame_id_build (cache->frame_base + wordsize, startaddr);
+  (*this_id) = frame_id_build(cache->frame_base + wordsize, startaddr);
 }
 
 void
-x86_frame_prev_register (struct frame_info *next_frame, void **this_cache,
-                         int regnum, enum opt_state *optimizedp,
-                         enum lval_type *lvalp, CORE_ADDR *addrp,
-                         int *realnump, gdb_byte *valuep)
+x86_frame_prev_register(struct frame_info *next_frame, void **this_cache,
+                        int regnum, enum opt_state *optimizedp,
+                        enum lval_type *lvalp, CORE_ADDR *addrp,
+                        int *realnump, gdb_byte *valuep)
 {
-  int wordsize = TARGET_PTR_BIT / 8;
-  struct x86_frame_cache *cache = x86_frame_cache (next_frame, this_cache, 
-                                                   wordsize);
+  int wordsize = (TARGET_PTR_BIT / 8);
+  struct x86_frame_cache *cache = x86_frame_cache(next_frame, this_cache,
+                                                  wordsize);
 
-  /* If we're retrieving the eip, ebp or esp, we can do that with just the
+  /* If we are retrieving the eip, ebp or esp, we can do that with just the
      "quickie" scan.  If we want any other regs, we need to do the full
      prologue scan.  Don't try to do a scan (and throw away our quickie scan
      results) if we don't have a function start address.  */
-  if (cache->prologue_scan_status != full_scan_succeeded
-      && regnum != cache->eip_regnum 
-      && regnum != cache->ebp_regnum
-      && regnum != cache->esp_regnum
-      && cache->func_start_addr != 0
-      && cache->func_start_addr != INVALID_ADDRESS)
+  if ((cache->prologue_scan_status != full_scan_succeeded)
+      && (regnum != cache->eip_regnum)
+      && (regnum != cache->ebp_regnum)
+      && (regnum != cache->esp_regnum)
+      && (cache->func_start_addr != 0)
+      && (cache->func_start_addr != INVALID_ADDRESS))
     {
-      x86_initialize_frame_cache (cache, wordsize);
-      cache->func_start_addr = frame_func_unwind (next_frame);
-      cache->pc = frame_pc_unwind (next_frame);
-      x86_analyze_prologue (cache->func_start_addr, cache->pc, cache);
+      x86_initialize_frame_cache(cache, wordsize);
+      cache->func_start_addr = frame_func_unwind(next_frame);
+      cache->pc = frame_pc_unwind(next_frame);
+      x86_analyze_prologue(cache->func_start_addr, cache->pc, cache);
     }
 
   if (cache->saved_regs_are_absolute == 0)
-    x86_finalize_saved_reg_locations (next_frame, cache);
+    x86_finalize_saved_reg_locations(next_frame, cache);
 
-  gdb_assert (regnum >= 0);
+  gdb_assert(regnum >= 0);
 
-  if (regnum == cache->esp_regnum && cache->saved_sp != INVALID_ADDRESS)
+  if ((regnum == cache->esp_regnum) && cache->saved_sp != INVALID_ADDRESS)
     {
-      /* APPLE LOCAL variable opt states.  */
+      /* APPLE LOCAL variable opt states: */
       *optimizedp = opt_okay;
       *lvalp = not_lval;
       *addrp = 0;
       *realnump = -1;
       if (valuep)
         {
-          /* Store the value.  */
-          store_unsigned_integer (valuep, wordsize, cache->saved_sp);
+          /* Store the value: */
+          store_unsigned_integer(valuep, wordsize, cache->saved_sp);
         }
       return;
     }
 
-  if (regnum < cache->num_savedregs && cache->saved_regs[regnum] != -1)
+  if ((regnum < cache->num_savedregs)
+      && (cache->saved_regs[regnum] != (CORE_ADDR)-1))
     {
-      /* APPLE LOCAL variable opt states.  */
+      /* APPLE LOCAL variable opt states: */
       *optimizedp = opt_okay;
       *lvalp = lval_memory;
       *addrp = cache->saved_regs[regnum];
       *realnump = -1;
       if (valuep)
         {
-          /* Read the value in from memory.  */
-          read_memory (*addrp, valuep,
-                       register_size (current_gdbarch, regnum));
+          /* Read the value in from memory: */
+          read_memory(*addrp, valuep,
+                      register_size(current_gdbarch, regnum));
           if (debug_x86bt > 8)
-            printf_filtered ("X86BT: Retrieving reg #%d for frame %d, "
-                             "is saved at 0x%s, value 0x%s\n",
-                             regnum,
-                             frame_relative_level (next_frame) + 2,
-                             paddr_nz (cache->saved_regs[regnum]),
-                             paddr_nz (read_memory_unsigned_integer (cache->saved_regs[regnum], cache->wordsize)));
+            printf_filtered("X86BT: Retrieving reg #%d for frame %d, "
+                            "is saved at 0x%s, value 0x%s\n",
+                            regnum,
+                            frame_relative_level(next_frame) + 2,
+                            paddr_nz(cache->saved_regs[regnum]),
+                            paddr_nz(read_memory_unsigned_integer(cache->saved_regs[regnum], cache->wordsize)));
         }
       return;
     }
 
-  /* APPLE LOCAL variable opt states.  */
+  /* APPLE LOCAL variable opt states: */
   *optimizedp = opt_okay;
   *lvalp = lval_register;
   *addrp = 0;
@@ -1336,9 +1355,9 @@ x86_frame_prev_register (struct frame_info *next_frame, void **this_cache,
   if (valuep)
     {
       if (debug_x86bt > 8)
-        printf_filtered ("X86BT: Could not find save location for regnum %d in frame %d, going down stack.\n",
-                         regnum, frame_relative_level (next_frame) + 1);
-      frame_unwind_register (next_frame, (*realnump), valuep);
+        printf_filtered("X86BT: Could not find save location for regnum %d in frame %d, going down stack.\n",
+                        regnum, frame_relative_level(next_frame) + 1);
+      frame_unwind_register(next_frame, (*realnump), valuep);
     }
 }
 
@@ -1346,7 +1365,7 @@ x86_frame_prev_register (struct frame_info *next_frame, void **this_cache,
      http://www.codesourcery.com/public/cxx-abi/abi.html#mangling-special
    these trampolines fix up the this pointer before calling the real function.
    In both cases we disassemble forward a few instructions to look for an
-   unconditional jump instruction - that is the real function.  
+   unconditional jump instruction - that is the real function.
 
    These thunk trampolines have symbol names that begin either with
    _ZThn[0-9] or _ZTv[0-9].  */
@@ -1356,61 +1375,64 @@ x86_cxx_virtual_override_thunk_trampline (CORE_ADDR pc)
 {
   struct minimal_symbol *msym;
   int is_thunk = 0;
+  int insn_count;
 
-  msym = lookup_minimal_symbol_by_pc (pc);
+  msym = lookup_minimal_symbol_by_pc(pc);
   if (msym == NULL)
     return 0;
 
-  if (strncmp (SYMBOL_LINKAGE_NAME (msym), "_ZThn", 5) == 0)
+  if (strncmp(SYMBOL_LINKAGE_NAME(msym), "_ZThn", 5) == 0)
     {
-      if (isdigit ((SYMBOL_LINKAGE_NAME (msym))[5]))
+      if (isdigit((SYMBOL_LINKAGE_NAME(msym))[5]))
         is_thunk = 1;
     }
-  else if (strncmp (SYMBOL_LINKAGE_NAME (msym), "_ZTv", 4) == 0)
+  else if (strncmp(SYMBOL_LINKAGE_NAME(msym), "_ZTv", 4) == 0)
     {
-      if (isdigit ((SYMBOL_LINKAGE_NAME (msym))[4]))
+      if (isdigit((SYMBOL_LINKAGE_NAME(msym))[4]))
         is_thunk = 1;
     }
 
   if (is_thunk == 0)
     return 0;
 
-  int insn_count = 0;
+  insn_count = 0;
   while (insn_count++ < 6)
     {
+      gdb_byte op;
+
       /* Did we scan off into another minimal symbol?  */
-      if (lookup_minimal_symbol_by_pc (pc) != msym)
+      if (lookup_minimal_symbol_by_pc(pc) != msym)
         return 0;
 
-      gdb_byte op;
-      /* E9 is JMP with a 4-byte relative displacement.  */
-      op = read_memory_unsigned_integer (pc, 1);
+      /* E9 is JMP with a 4-byte relative displacement: */
+      op = read_memory_unsigned_integer(pc, 1);
       if (op == 0xe9)
         {
-          int64_t off = read_memory_integer (pc + 1, 4);
-          return pc + 5 + off;
+          int64_t off = read_memory_integer(pc + 1, 4);
+          return (pc + 5 + off);
         }
-      /* EB is JMP with a 1-byte relative displacement.  */
+      /* EB is JMP with a 1-byte relative displacement: */
       if (op == 0xeb)
         {
-          int64_t off = read_memory_integer (pc + 1, 1);
-          return pc + 1 + off;
+          int64_t off = read_memory_integer(pc + 1, 1);
+          return (pc + 1 + off);
         }
-      pc += length_of_this_instruction (pc);
+      pc += length_of_this_instruction(pc);
     }
 
   return 0;
 }
 
 void
-_initialize_x86_shared_tdep (void)
+_initialize_x86_shared_tdep(void)
 {
-  /* Debug this file's internals. */
-  add_setshow_zinteger_cmd ("x86bt", class_maintenance, &debug_x86bt, _("\
+  /* Debug this file's internals: */
+  add_setshow_zinteger_cmd("x86bt", class_maintenance, &debug_x86bt, _("\
 Set x86 backtrace debugging."), _("\
 Show x86 backtrace debugging."), _("\
 When non-zero, x86 backtrace specific debugging is enabled."),
-                            NULL,
-                            show_debug_x86bt,
-                            &setdebuglist, &showdebuglist);
+                           NULL, show_debug_x86bt,
+                           &setdebuglist, &showdebuglist);
 }
+
+/* EOF */

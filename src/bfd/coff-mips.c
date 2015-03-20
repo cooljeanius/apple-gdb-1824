@@ -277,36 +277,33 @@ mips_ecoff_bad_format_hook(bfd *abfd, PTR filehdr)
    external form.  They use a bit which indicates whether the symbol
    is external.  */
 
-/* Swap a reloc in.  */
-
+/* Swap a reloc in: */
 static void
-mips_ecoff_swap_reloc_in (abfd, ext_ptr, intern)
-     bfd *abfd;
-     PTR ext_ptr;
-     struct internal_reloc *intern;
+mips_ecoff_swap_reloc_in(bfd *abfd, PTR ext_ptr,
+                         struct internal_reloc *intern)
 {
-  const RELOC *ext = (RELOC *) ext_ptr;
+  const RELOC *ext = (RELOC *)ext_ptr;
 
-  intern->r_vaddr = H_GET_32 (abfd, ext->r_vaddr);
-  if (bfd_header_big_endian (abfd))
+  intern->r_vaddr = H_GET_32(abfd, ext->r_vaddr);
+  if (bfd_header_big_endian(abfd))
     {
-      intern->r_symndx = (((int) ext->r_bits[0]
+      intern->r_symndx = (((int)ext->r_bits[0]
 			   << RELOC_BITS0_SYMNDX_SH_LEFT_BIG)
-			  | ((int) ext->r_bits[1]
+			  | ((int)ext->r_bits[1]
 			     << RELOC_BITS1_SYMNDX_SH_LEFT_BIG)
-			  | ((int) ext->r_bits[2]
+			  | ((int)ext->r_bits[2]
 			     << RELOC_BITS2_SYMNDX_SH_LEFT_BIG));
       intern->r_type = ((ext->r_bits[3] & RELOC_BITS3_TYPE_BIG)
 			>> RELOC_BITS3_TYPE_SH_BIG);
-      intern->r_extern = (ext->r_bits[3] & RELOC_BITS3_EXTERN_BIG) != 0;
+      intern->r_extern = ((ext->r_bits[3] & RELOC_BITS3_EXTERN_BIG) != 0);
     }
   else
     {
-      intern->r_symndx = (((int) ext->r_bits[0]
+      intern->r_symndx = (((int)ext->r_bits[0]
 			   << RELOC_BITS0_SYMNDX_SH_LEFT_LITTLE)
-			  | ((int) ext->r_bits[1]
+			  | ((int)ext->r_bits[1]
 			     << RELOC_BITS1_SYMNDX_SH_LEFT_LITTLE)
-			  | ((int) ext->r_bits[2]
+			  | ((int)ext->r_bits[2]
 			     << RELOC_BITS2_SYMNDX_SH_LEFT_LITTLE));
       intern->r_type = (((ext->r_bits[3] & RELOC_BITS3_TYPE_LITTLE)
 			 >> RELOC_BITS3_TYPE_SH_LITTLE)
@@ -316,37 +313,34 @@ mips_ecoff_swap_reloc_in (abfd, ext_ptr, intern)
     }
 }
 
-/* Swap a reloc out.  */
-
+/* Swap a reloc out: */
 static void
-mips_ecoff_swap_reloc_out (abfd, intern, dst)
-     bfd *abfd;
-     const struct internal_reloc *intern;
-     PTR dst;
+mips_ecoff_swap_reloc_out(bfd *abfd, const struct internal_reloc *intern,
+                          PTR dst)
 {
-  RELOC *ext = (RELOC *) dst;
+  RELOC *ext = (RELOC *)dst;
   long r_symndx;
 
-  BFD_ASSERT (intern->r_extern
-	      || (intern->r_symndx >= 0 && intern->r_symndx <= 12));
+  BFD_ASSERT(intern->r_extern
+	     || ((intern->r_symndx >= 0) && (intern->r_symndx <= 12)));
 
   r_symndx = intern->r_symndx;
 
   H_PUT_32 (abfd, intern->r_vaddr, ext->r_vaddr);
-  if (bfd_header_big_endian (abfd))
+  if (bfd_header_big_endian(abfd))
     {
-      ext->r_bits[0] = r_symndx >> RELOC_BITS0_SYMNDX_SH_LEFT_BIG;
-      ext->r_bits[1] = r_symndx >> RELOC_BITS1_SYMNDX_SH_LEFT_BIG;
-      ext->r_bits[2] = r_symndx >> RELOC_BITS2_SYMNDX_SH_LEFT_BIG;
+      ext->r_bits[0] = (r_symndx >> RELOC_BITS0_SYMNDX_SH_LEFT_BIG);
+      ext->r_bits[1] = (r_symndx >> RELOC_BITS1_SYMNDX_SH_LEFT_BIG);
+      ext->r_bits[2] = (r_symndx >> RELOC_BITS2_SYMNDX_SH_LEFT_BIG);
       ext->r_bits[3] = (((intern->r_type << RELOC_BITS3_TYPE_SH_BIG)
 			 & RELOC_BITS3_TYPE_BIG)
 			| (intern->r_extern ? RELOC_BITS3_EXTERN_BIG : 0));
     }
   else
     {
-      ext->r_bits[0] = r_symndx >> RELOC_BITS0_SYMNDX_SH_LEFT_LITTLE;
-      ext->r_bits[1] = r_symndx >> RELOC_BITS1_SYMNDX_SH_LEFT_LITTLE;
-      ext->r_bits[2] = r_symndx >> RELOC_BITS2_SYMNDX_SH_LEFT_LITTLE;
+      ext->r_bits[0] = (r_symndx >> RELOC_BITS0_SYMNDX_SH_LEFT_LITTLE);
+      ext->r_bits[1] = (r_symndx >> RELOC_BITS1_SYMNDX_SH_LEFT_LITTLE);
+      ext->r_bits[2] = (r_symndx >> RELOC_BITS2_SYMNDX_SH_LEFT_LITTLE);
       ext->r_bits[3] = (((intern->r_type << RELOC_BITS3_TYPE_SH_LITTLE)
 			 & RELOC_BITS3_TYPE_LITTLE)
 			| ((intern->r_type >> RELOC_BITS3_TYPEHI_SH_LITTLE
@@ -360,18 +354,16 @@ mips_ecoff_swap_reloc_out (abfd, intern, dst)
    this backend routine.  It must fill in the howto field.  */
 
 static void
-mips_adjust_reloc_in (abfd, intern, rptr)
-     bfd *abfd;
-     const struct internal_reloc *intern;
-     arelent *rptr;
+mips_adjust_reloc_in(bfd *abfd, const struct internal_reloc *intern,
+                     arelent *rptr)
 {
   if (intern->r_type > MIPS_R_PCREL16)
-    abort ();
+    abort();
 
   if (! intern->r_extern
-      && (intern->r_type == MIPS_R_GPREL
-	  || intern->r_type == MIPS_R_LITERAL))
-    rptr->addend += ecoff_data (abfd)->gp;
+      && ((intern->r_type == MIPS_R_GPREL)
+	  || (intern->r_type == MIPS_R_LITERAL)))
+    rptr->addend += ecoff_data(abfd)->gp;
 
   /* If the type is MIPS_R_IGNORE, make sure this is a reference to
      the absolute section so that the reloc is ignored.  */
@@ -385,11 +377,11 @@ mips_adjust_reloc_in (abfd, intern, rptr)
    are needed for MIPS.  */
 
 static void
-mips_adjust_reloc_out (abfd, rel, intern)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     const arelent *rel ATTRIBUTE_UNUSED;
-     struct internal_reloc *intern ATTRIBUTE_UNUSED;
+mips_adjust_reloc_out(bfd *abfd ATTRIBUTE_UNUSED,
+                      const arelent *rel ATTRIBUTE_UNUSED,
+                      struct internal_reloc *intern ATTRIBUTE_UNUSED)
 {
+  return;
 }
 
 /* ECOFF relocs are either against external symbols, or against

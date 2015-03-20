@@ -67,7 +67,7 @@ static struct using_direct *cp_add_using (const char *name,
 					  unsigned int outer_len,
 					  struct using_direct *next);
 
-static struct using_direct *cp_copy_usings (struct using_direct *using,
+static struct using_direct *cp_copy_usings (struct using_direct *usingd,
 					    struct obstack *obstack);
 
 static struct symbol *lookup_namespace_scope (const char *name,
@@ -108,6 +108,8 @@ struct symbol *lookup_possible_namespace_symbol (const char *name,
 						 struct symtab **symtab);
 
 static void maintenance_cplus_namespace (char *args, int from_tty);
+
+extern void _initialize_cp_namespace(void);
 
 /* Set up support for dealing with C++ namespace info in the current
  * symtab: */
@@ -217,22 +219,21 @@ cp_add_using_directive (const char *name, unsigned int outer_length,
    OBSTACK for allocation.  */
 
 void
-cp_set_block_scope (const struct symbol *symbol,
-		    struct block *block,
-		    struct obstack *obstack)
+cp_set_block_scope(const struct symbol *symbol, struct block *block,
+		   struct obstack *obstack)
 {
   /* Make sure that the name was originally mangled: if not, there
      certainly isn't any namespace information to worry about!  */
 
-  if (SYMBOL_CPLUS_DEMANGLED_NAME (symbol) != NULL)
+  if (SYMBOL_CPLUS_DEMANGLED_NAME(symbol) != NULL)
     {
       if (processing_has_namespace_info)
 	{
-	  block_set_scope
-	    (block, obsavestring (processing_current_prefix,
-				  strlen (processing_current_prefix),
-				  obstack),
-	     obstack);
+	  block_set_scope(block,
+                          obsavestring(processing_current_prefix,
+                                       strlen(processing_current_prefix),
+                                       obstack),
+                          obstack);
 	}
       else
 	{
@@ -244,12 +245,12 @@ cp_set_block_scope (const struct symbol *symbol,
 	     name of the class as well.  This should be harmless, but
 	     is a little unfortunate.  */
 
-	  const char *name = SYMBOL_CPLUS_DEMANGLED_NAME (symbol);
-	  unsigned int prefix_len = cp_entire_prefix_len (name);
+	  const char *name = SYMBOL_CPLUS_DEMANGLED_NAME(symbol);
+	  unsigned int prefix_len = cp_entire_prefix_len(name);
 
-	  block_set_scope (block,
-			   obsavestring (name, prefix_len, obstack),
-			   obstack);
+	  block_set_scope(block,
+			  obsavestring(name, prefix_len, obstack),
+			  obstack);
 	}
     }
 }
@@ -258,10 +259,9 @@ cp_set_block_scope (const struct symbol *symbol,
    namespace; return nonzero if so.  */
 
 int
-cp_is_anonymous (const char *namespace)
+cp_is_anonymous(const char *cp_namespace)
 {
-  return (strstr (namespace, "(anonymous namespace)")
-	  != NULL);
+  return (strstr(cp_namespace, "(anonymous namespace)") != NULL);
 }
 
 /* Create a new struct using direct whose inner namespace is the
@@ -272,18 +272,16 @@ cp_is_anonymous (const char *namespace)
    string.  */
 
 static struct using_direct *
-cp_add_using (const char *name,
-	      unsigned int inner_len,
-	      unsigned int outer_len,
-	      struct using_direct *next)
+cp_add_using(const char *name, unsigned int inner_len,
+             unsigned int outer_len, struct using_direct *next)
 {
   struct using_direct *retval;
 
-  gdb_assert (outer_len < inner_len);
+  gdb_assert(outer_len < inner_len);
 
-  retval = xmalloc (sizeof (struct using_direct));
-  retval->inner = savestring (name, inner_len);
-  retval->outer = savestring (name, outer_len);
+  retval = (struct using_direct *)xmalloc(sizeof(struct using_direct));
+  retval->inner = savestring(name, inner_len);
+  retval->outer = savestring(name, outer_len);
   retval->next = next;
 
   return retval;
@@ -294,26 +292,26 @@ cp_add_using (const char *name,
    to by USING via xfree.  */
 
 static struct using_direct *
-cp_copy_usings (struct using_direct *using,
-		struct obstack *obstack)
+cp_copy_usings(struct using_direct *usingd, struct obstack *obstack)
 {
-  if (using == NULL)
+  if (usingd == NULL)
     {
       return NULL;
     }
   else
     {
-      struct using_direct *retval
-	= obstack_alloc (obstack, sizeof (struct using_direct));
-      retval->inner = obsavestring (using->inner, strlen (using->inner),
-				    obstack);
-      retval->outer = obsavestring (using->outer, strlen (using->outer),
-				    obstack);
-      retval->next = cp_copy_usings (using->next, obstack);
+      struct using_direct *retval =
+        (struct using_direct *)obstack_alloc(obstack,
+                                             sizeof(struct using_direct));
+      retval->inner = obsavestring(usingd->inner, strlen(usingd->inner),
+				   obstack);
+      retval->outer = obsavestring(usingd->outer, strlen(usingd->outer),
+				   obstack);
+      retval->next = cp_copy_usings(usingd->next, obstack);
 
-      xfree (using->inner);
-      xfree (using->outer);
-      xfree (using);
+      xfree(usingd->inner);
+      xfree(usingd->outer);
+      xfree(usingd);
 
       return retval;
     }
@@ -328,14 +326,12 @@ cp_copy_usings (struct using_direct *using,
    we should store the symtab where we found the symbol in it.  */
 
 struct symbol *
-cp_lookup_symbol_nonlocal (const char *name,
-			   const char *linkage_name,
-			   const struct block *block,
-			   const domain_enum domain,
-			   struct symtab **symtab)
+cp_lookup_symbol_nonlocal(const char *name, const char *linkage_name,
+			  const struct block *block,
+                          const domain_enum domain, struct symtab **symtab)
 {
-  return lookup_namespace_scope (name, linkage_name, block, domain,
-				 symtab, block_scope (block), 0);
+  return lookup_namespace_scope(name, linkage_name, block, domain,
+                                symtab, block_scope(block), 0);
 }
 
 /* Lookup NAME at namespace scope (or, in C terms, in static and
@@ -354,45 +350,40 @@ cp_lookup_symbol_nonlocal (const char *name,
    "x".  */
 
 static struct symbol *
-lookup_namespace_scope (const char *name,
-			const char *linkage_name,
-			const struct block *block,
-			const domain_enum domain,
-			struct symtab **symtab,
-			const char *scope,
-			int scope_len)
+lookup_namespace_scope(const char *name, const char *linkage_name,
+                       const struct block *block, const domain_enum domain,
+                       struct symtab **symtab, const char *scope,
+                       int scope_len)
 {
-  char *namespace;
+  char *cp_namespace;
 
   if (scope[scope_len] != '\0')
     {
-      /* Recursively search for names in child namespaces first.  */
-
+      /* Recursively search for names in child namespaces first: */
       struct symbol *sym;
       int new_scope_len = scope_len;
 
-      /* If the current scope is followed by "::", skip past that.  */
+      /* If the current scope is followed by "::", skip past that: */
       if (new_scope_len != 0)
 	{
-	  gdb_assert (scope[new_scope_len] == ':');
+	  gdb_assert(scope[new_scope_len] == ':');
 	  new_scope_len += 2;
 	}
-      new_scope_len += cp_find_first_component (scope + new_scope_len);
-      sym = lookup_namespace_scope (name, linkage_name, block,
-				    domain, symtab,
-				    scope, new_scope_len);
+      new_scope_len += cp_find_first_component(scope + new_scope_len);
+      sym = lookup_namespace_scope(name, linkage_name, block,
+				   domain, symtab,
+				   scope, new_scope_len);
       if (sym != NULL)
 	return sym;
     }
 
-  /* Okay, we didn't find a match in our children, so look for the
-     name in the current namespace.  */
-
-  namespace = alloca (scope_len + 1);
-  strncpy (namespace, scope, scope_len);
-  namespace[scope_len] = '\0';
-  return cp_lookup_symbol_namespace (namespace, name, linkage_name,
-				     block, domain, symtab);
+  /* Okay, we did NOT find a match in our children, so look for the
+   * name in the current namespace: */
+  cp_namespace = (char *)alloca(scope_len + 1UL);
+  strncpy(cp_namespace, scope, scope_len);
+  cp_namespace[scope_len] = '\0';
+  return cp_lookup_symbol_namespace(cp_namespace, name, linkage_name,
+				    block, domain, symtab);
 }
 
 /* Look up NAME in the C++ namespace NAMESPACE, applying the using
@@ -400,12 +391,12 @@ lookup_namespace_scope (const char *name,
    cp_lookup_symbol_nonlocal.  */
 
 struct symbol *
-cp_lookup_symbol_namespace (const char *namespace,
-			    const char *name,
-			    const char *linkage_name,
-			    const struct block *block,
-			    const domain_enum domain,
-			    struct symtab **symtab)
+cp_lookup_symbol_namespace(const char *symnamespace,
+                           const char *name,
+			   const char *linkage_name,
+                           const struct block *block,
+                           const domain_enum domain,
+                           struct symtab **symtab)
 {
   const struct using_direct *current;
   struct symbol *sym;
@@ -414,18 +405,15 @@ cp_lookup_symbol_namespace (const char *namespace,
      names to the namespace we're searching in, see if we can find a
      match by applying them.  */
 
-  for (current = block_using (block);
+  for (current = block_using(block);
        current != NULL;
        current = current->next)
     {
-      if (strcmp (namespace, current->outer) == 0)
+      if (strcmp(symnamespace, current->outer) == 0)
 	{
-	  sym = cp_lookup_symbol_namespace (current->inner,
-					    name,
-					    linkage_name,
-					    block,
-					    domain,
-					    symtab);
+	  sym = cp_lookup_symbol_namespace(current->inner, name,
+                                           linkage_name, block, domain,
+					   symtab);
 	  if (sym != NULL)
 	    return sym;
 	}
@@ -435,21 +423,21 @@ cp_lookup_symbol_namespace (const char *namespace,
      that are still applicable; so let's see if we've got a match
      using the current namespace.  */
 
-  if (namespace[0] == '\0')
+  if (symnamespace[0] == '\0')
     {
-      return lookup_symbol_file (name, linkage_name, block,
-				 domain, symtab, 0);
+      return lookup_symbol_file(name, linkage_name, block, domain,
+                                symtab, 0);
     }
   else
     {
       char *concatenated_name
-	= alloca (strlen (namespace) + 2 + strlen (name) + 1);
-      strcpy (concatenated_name, namespace);
-      strcat (concatenated_name, "::");
-      strcat (concatenated_name, name);
-      sym = lookup_symbol_file (concatenated_name, linkage_name,
-				block, domain, symtab,
-				cp_is_anonymous (namespace));
+	= (char *)alloca(strlen(symnamespace) + 2 + strlen(name) + 1);
+      strcpy(concatenated_name, symnamespace);
+      strcat(concatenated_name, "::");
+      strcat(concatenated_name, name);
+      sym = lookup_symbol_file(concatenated_name, linkage_name,
+                               block, domain, symtab,
+                               cp_is_anonymous(symnamespace));
       return sym;
     }
 }
@@ -460,16 +448,13 @@ cp_lookup_symbol_namespace (const char *namespace,
    cp_lookup_symbol_nonlocal.  */
 
 static struct symbol *
-lookup_symbol_file (const char *name,
-		    const char *linkage_name,
-		    const struct block *block,
-		    const domain_enum domain,
-		    struct symtab **symtab,
-		    int anonymous_namespace)
+lookup_symbol_file(const char *name, const char *linkage_name,
+		   const struct block *block, const domain_enum domain,
+		   struct symtab **symtab, int anonymous_namespace)
 {
   struct symbol *sym = NULL;
 
-  sym = lookup_symbol_static (name, linkage_name, block, domain, symtab);
+  sym = lookup_symbol_static(name, linkage_name, block, domain, symtab);
   if (sym != NULL)
     return sym;
 
@@ -596,10 +581,10 @@ cp_lookup_transparent_type (const char *name)
    component of SCOPE.  */
 
 static struct type *
-cp_lookup_transparent_type_loop (const char *name, const char *scope,
-				 int length)
+cp_lookup_transparent_type_loop(const char *name, const char *scope,
+                                int length)
 {
-  int scope_length = length + cp_find_first_component (scope + length);
+  int scope_length = (length + cp_find_first_component(scope + length));
   char *full_name;
 
   /* If the current scope is followed by "::", look in the next
@@ -607,17 +592,17 @@ cp_lookup_transparent_type_loop (const char *name, const char *scope,
   if (scope[scope_length] == ':')
     {
       struct type *retval
-	= cp_lookup_transparent_type_loop (name, scope, scope_length + 2);
+	= cp_lookup_transparent_type_loop(name, scope, scope_length + 2);
       if (retval != NULL)
 	return retval;
     }
 
-  full_name = alloca (scope_length + 2 + strlen (name) + 1);
-  strncpy (full_name, scope, scope_length);
-  strncpy (full_name + scope_length, "::", 2);
-  strcpy (full_name + scope_length + 2, name);
+  full_name = (char *)alloca(scope_length + 2 + strlen(name) + 1);
+  strncpy(full_name, scope, scope_length);
+  strncpy(full_name + scope_length, "::", 2);
+  strcpy(full_name + scope_length + 2, name);
 
-  return basic_lookup_transparent_type (full_name);
+  return basic_lookup_transparent_type(full_name);
 }
 
 /* Now come functions for dealing with symbols associated to
@@ -640,33 +625,33 @@ cp_lookup_transparent_type_loop (const char *name, const char *scope,
    associated to OBJFILE.  */
 
 static void
-initialize_namespace_symtab (struct objfile *objfile)
+initialize_namespace_symtab(struct objfile *objfile)
 {
   struct symtab *namespace_symtab;
   struct blockvector *bv;
   struct block *bl;
 
-  namespace_symtab = allocate_symtab ("<<C++-namespaces>>", objfile);
+  namespace_symtab = allocate_symtab("<<C++-namespaces>>", objfile);
   namespace_symtab->language = language_cplus;
   namespace_symtab->free_code = free_nothing;
   namespace_symtab->dirname = NULL;
 
-  bv = obstack_alloc (&objfile->objfile_obstack,
-		      sizeof (struct blockvector)
-		      + FIRST_LOCAL_BLOCK * sizeof (struct block *));
-  BLOCKVECTOR_NBLOCKS (bv) = FIRST_LOCAL_BLOCK + 1;
-  BLOCKVECTOR (namespace_symtab) = bv;
+  bv = (struct blockvector *)obstack_alloc(&objfile->objfile_obstack,
+                                           (sizeof(struct blockvector)
+                                            + FIRST_LOCAL_BLOCK
+                                            * sizeof(struct block *)));
+  BLOCKVECTOR_NBLOCKS(bv) = (FIRST_LOCAL_BLOCK + 1);
+  BLOCKVECTOR(namespace_symtab) = bv;
 
-  /* Allocate empty GLOBAL_BLOCK and STATIC_BLOCK. */
-
-  bl = allocate_block (&objfile->objfile_obstack);
-  BLOCK_DICT (bl) = dict_create_linear (&objfile->objfile_obstack,
-					NULL);
-  BLOCKVECTOR_BLOCK (bv, GLOBAL_BLOCK) = bl;
-  bl = allocate_block (&objfile->objfile_obstack);
-  BLOCK_DICT (bl) = dict_create_linear (&objfile->objfile_obstack,
-					NULL);
-  BLOCKVECTOR_BLOCK (bv, STATIC_BLOCK) = bl;
+  /* Allocate empty GLOBAL_BLOCK and STATIC_BLOCK: */
+  bl = allocate_block(&objfile->objfile_obstack);
+  BLOCK_DICT(bl) = dict_create_linear(&objfile->objfile_obstack,
+                                      NULL);
+  BLOCKVECTOR_BLOCK(bv, GLOBAL_BLOCK) = bl;
+  bl = allocate_block(&objfile->objfile_obstack);
+  BLOCK_DICT(bl) = dict_create_linear(&objfile->objfile_obstack,
+                                      NULL);
+  BLOCKVECTOR_BLOCK(bv, STATIC_BLOCK) = bl;
 
   /* Allocate the possible namespace block; we put it where the first
      local block will live, though I don't think there's any need to
@@ -775,35 +760,36 @@ check_possible_namespace_symbols_loop (const char *name, int len,
    If not, create one and return 0; otherwise, return 1.  */
 
 static int
-check_one_possible_namespace_symbol (const char *name, int len,
-				     struct objfile *objfile)
+check_one_possible_namespace_symbol(const char *name, int len,
+				    struct objfile *objfile)
 {
-  struct block *block = get_possible_namespace_block (objfile);
-  char *name_copy = alloca (len + 1);
+  struct block *block = get_possible_namespace_block(objfile);
+  char *name_copy = (char *)alloca(len + 1);
   struct symbol *sym;
 
-  memcpy (name_copy, name, len);
+  memcpy(name_copy, name, len);
   name_copy[len] = '\0';
-  sym = lookup_block_symbol (block, name_copy, NULL, VAR_DOMAIN);
+  sym = lookup_block_symbol(block, name_copy, NULL, VAR_DOMAIN);
 
   if (sym == NULL)
     {
       struct type *type;
-      name_copy = obsavestring (name, len, &objfile->objfile_obstack);
+      name_copy = obsavestring(name, len, &objfile->objfile_obstack);
 
-      type = init_type (TYPE_CODE_NAMESPACE, 0, 0, name_copy, objfile);
+      type = init_type(TYPE_CODE_NAMESPACE, 0, 0, name_copy, objfile);
 
-      TYPE_TAG_NAME (type) = TYPE_NAME (type);
+      TYPE_TAG_NAME(type) = TYPE_NAME(type);
 
-      sym = obstack_alloc (&objfile->objfile_obstack, sizeof (struct symbol));
-      memset (sym, 0, sizeof (struct symbol));
-      SYMBOL_LANGUAGE (sym) = language_cplus;
-      SYMBOL_SET_NAMES (sym, name_copy, len, objfile);
-      SYMBOL_CLASS (sym) = LOC_TYPEDEF;
-      SYMBOL_TYPE (sym) = type;
-      SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
+      sym = (struct symbol *)obstack_alloc(&objfile->objfile_obstack,
+                                           sizeof(struct symbol));
+      memset(sym, 0, sizeof(struct symbol));
+      SYMBOL_LANGUAGE(sym) = language_cplus;
+      SYMBOL_SET_NAMES(sym, name_copy, len, objfile);
+      SYMBOL_CLASS(sym) = LOC_TYPEDEF;
+      SYMBOL_TYPE(sym) = type;
+      SYMBOL_DOMAIN(sym) = VAR_DOMAIN;
 
-      dict_add_symbol (BLOCK_DICT (block), sym);
+      dict_add_symbol(BLOCK_DICT(block), sym);
 
       return 0;
     }

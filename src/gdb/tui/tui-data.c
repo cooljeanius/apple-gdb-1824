@@ -1,4 +1,4 @@
-/* TUI data manipulation routines.
+/* tui-data.c: TUI data manipulation routines.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -58,8 +58,8 @@ static int win_resized = FALSE;
 /*********************************
 ** Static function forward decls
 **********************************/
-static void free_content (tui_win_content, int, enum tui_win_type);
-static void free_content_elements (tui_win_content, int, enum tui_win_type);
+static void free_content(tui_win_content, int, enum tui_win_type);
+static void free_content_elements(tui_win_content, int, enum tui_win_type);
 
 
 
@@ -298,17 +298,17 @@ tui_current_layout (void)
 }
 
 
-/* Mutator for the current layout.  */
+/* Mutator for the current layout: */
 void
-tui_set_current_layout_to (enum tui_layout_type new_layout)
+tui_set_current_layout_to(enum tui_layout_type new_layout)
 {
   current_layout = new_layout;
 }
 
 
-/* Set the origin of the window.  */
+/* Set the origin of the window: */
 void
-set_gen_win_origin (struct tui_gen_win_info * win_info, int x, int y)
+set_gen_win_origin(struct tui_gen_win_info * win_info, int x, int y)
 {
   win_info->origin.x = x;
   win_info->origin.y = y;
@@ -323,16 +323,16 @@ set_gen_win_origin (struct tui_gen_win_info * win_info, int x, int y)
 /* Answer the next window in the list, cycling back to the top if
    necessary.  */
 struct tui_win_info *
-tui_next_win (struct tui_win_info * cur_win)
+tui_next_win(struct tui_win_info * cur_win)
 {
   enum tui_win_type type = cur_win->generic.type;
-  struct tui_win_info * next_win = (struct tui_win_info *) NULL;
+  struct tui_win_info * next_win = (struct tui_win_info *)NULL;
 
   if (cur_win->generic.type == CMD_WIN)
     type = SRC_WIN;
   else
-    type = cur_win->generic.type + 1;
-  while (type != cur_win->generic.type && (next_win == NULL))
+    type = (enum tui_win_type)(cur_win->generic.type + 1);
+  while ((type != cur_win->generic.type) && (next_win == NULL))
     {
       if (tui_win_list[type] && tui_win_list[type]->generic.is_visible)
 	next_win = tui_win_list[type];
@@ -352,15 +352,15 @@ tui_next_win (struct tui_win_info * cur_win)
 /* Answer the prev window in the list, cycling back to the bottom if
    necessary.  */
 struct tui_win_info *
-tui_prev_win (struct tui_win_info * cur_win)
+tui_prev_win(struct tui_win_info * cur_win)
 {
   enum tui_win_type type = cur_win->generic.type;
-  struct tui_win_info * prev = (struct tui_win_info *) NULL;
+  struct tui_win_info *prev = (struct tui_win_info *)NULL;
 
   if (cur_win->generic.type == SRC_WIN)
     type = CMD_WIN;
   else
-    type = cur_win->generic.type - 1;
+    type = (enum tui_win_type)(cur_win->generic.type - 1);
   while (type != cur_win->generic.type && (prev == NULL))
     {
       if (tui_win_list[type]->generic.is_visible)
@@ -378,13 +378,13 @@ tui_prev_win (struct tui_win_info * cur_win)
 }
 
 
-/* Answer the window represented by name.    */
+/* Answer the window represented by name: */
 struct tui_win_info *
-tui_partial_win_by_name (char *name)
+tui_partial_win_by_name(char *name)
 {
-  struct tui_win_info * win_info = (struct tui_win_info *) NULL;
+  struct tui_win_info *win_info = (struct tui_win_info *)NULL;
 
-  if (name != (char *) NULL)
+  if (name != (char *)NULL)
     {
       int i = 0;
 
@@ -457,7 +457,7 @@ tui_alloc_generic_win_info (void)
 
 
 void
-tui_init_generic_part (struct tui_gen_win_info * win)
+tui_init_generic_part(struct tui_gen_win_info * win)
 {
   win->width =
     win->height =
@@ -466,7 +466,7 @@ tui_init_generic_part (struct tui_gen_win_info * win)
     win->viewport_height =
     win->content_size =
     win->last_visible_line = 0;
-  win->handle = (WINDOW *) NULL;
+  win->handle = (WINDOW *)NULL;
   win->content = NULL;
   win->content_in_use =
     win->is_visible = FALSE;
@@ -478,14 +478,14 @@ tui_init_generic_part (struct tui_gen_win_info * win)
    ** init_content_element().
  */
 void
-init_content_element (struct tui_win_element * element, enum tui_win_type type)
+init_content_element(struct tui_win_element *element, enum tui_win_type type)
 {
   element->highlight = FALSE;
   switch (type)
     {
     case SRC_WIN:
     case DISASSEM_WIN:
-      element->which_element.source.line = (char *) NULL;
+      element->which_element.source.line = (char *)NULL;
       element->which_element.source.line_or_addr.line_no = 0;
       element->which_element.source.is_exec_point = FALSE;
       element->which_element.source.has_break = FALSE;
@@ -525,16 +525,16 @@ init_content_element (struct tui_win_element * element, enum tui_win_type type)
 }
 
 void
-init_win_info (struct tui_win_info * win_info)
+init_win_info(struct tui_win_info * win_info)
 {
-  tui_init_generic_part (&win_info->generic);
+  tui_init_generic_part(&win_info->generic);
   win_info->can_highlight =
     win_info->is_highlighted = FALSE;
   switch (win_info->generic.type)
     {
     case SRC_WIN:
     case DISASSEM_WIN:
-      win_info->detail.source_info.execution_info = (struct tui_gen_win_info *) NULL;
+      win_info->detail.source_info.execution_info = (struct tui_gen_win_info *)NULL;
       win_info->detail.source_info.has_locator = FALSE;
       win_info->detail.source_info.horizontal_offset = 0;
       win_info->detail.source_info.start_line_or_addr.addr = 0;

@@ -1,4 +1,4 @@
-/* Print and select stack frames for GDB, the GNU debugger.
+/* stack.c: Print and select stack frames for GDB, the GNU debugger.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
@@ -103,10 +103,10 @@ static int print_block_frame_locals (struct block *,
 				     int,
 				     struct ui_file *);
 
-static void print_frame (struct frame_info *fi, 
-			 int print_level, 
-			 enum print_what print_what, 
-			 int print_args, 
+static void print_frame (struct frame_info *fi,
+			 int print_level,
+			 enum print_what print_what,
+			 int print_args,
 			 struct symtab_and_line sal);
 
 static void set_current_sal_from_frame (struct frame_info *, int);
@@ -137,14 +137,14 @@ struct print_stack_frame_args
 /* Show or print the frame arguments.
    Pass the args the way catch_errors wants them.  */
 static int
-print_stack_frame_stub (void *args)
+print_stack_frame_stub(void *args)
 {
-  struct print_stack_frame_args *p = args;
-  int center = (p->print_what == SRC_LINE
-                || p->print_what == SRC_AND_LOC);
+  struct print_stack_frame_args *p = (struct print_stack_frame_args *)args;
+  int center = ((p->print_what == SRC_LINE)
+                || (p->print_what == SRC_AND_LOC));
 
-  print_frame_info (p->fi, p->print_level, p->print_what, p->print_args);
-  set_current_sal_from_frame (p->fi, center);
+  print_frame_info(p->fi, p->print_level, p->print_what, p->print_args);
+  set_current_sal_from_frame(p->fi, center);
   return 0;
 }
 
@@ -166,7 +166,7 @@ print_stack_frame (struct frame_info *fi, int print_level,
   args.print_args = 1;
 
   catch_errors (print_stack_frame_stub, (char *) &args, "", RETURN_MASK_ALL);
-}  
+}
 
 struct print_args_args
 {
@@ -433,12 +433,12 @@ set_current_sal_from_frame (struct frame_info *fi, int center)
 
 /* Print information about a frame for frame "fi" at level "level".
    Used in "where" output, also used to emit breakpoint or step
-   messages.  
+   messages.
    LEVEL is the level of the frame, or -1 if it is the
-   innermost frame but we don't want to print the level.  
-   The meaning of the SOURCE argument is: 
+   innermost frame but we don't want to print the level.
+   The meaning of the SOURCE argument is:
    SRC_LINE: Print only source line
-   LOCATION: Print only location 
+   LOCATION: Print only location
    LOC_AND_SRC: Print location and source line.  */
 
 void
@@ -468,7 +468,7 @@ print_frame_info (struct frame_info *fi, int print_level,
         }
       if (ui_out_is_mi_like_p (uiout))
         {
-          annotate_frame_address ();  
+          annotate_frame_address ();
           ui_out_field_core_addr (uiout, "addr", get_frame_pc (fi));
           annotate_frame_address_end ();
 	  /* APPLE LOCAL: include $fp and $pc for MI output so PB can
@@ -493,7 +493,7 @@ print_frame_info (struct frame_info *fi, int print_level,
       do_cleanups (uiout_cleanup);
       return;
     }
-  
+
   /* APPLE LOCAL: if we find a frame in a backtrace, increase the load level
      to ALL...  */
 
@@ -507,7 +507,7 @@ print_frame_info (struct frame_info *fi, int print_level,
      line containing fi->pc.  */
   find_frame_sal (fi, &sal);
 
-  location_print = (print_what == LOCATION 
+  location_print = (print_what == LOCATION
 		    || print_what == LOC_AND_ADDRESS
 		    || print_what == SRC_AND_LOC);
 
@@ -545,7 +545,7 @@ print_frame_info (struct frame_info *fi, int print_level,
 	      else
 		{
 		  tmp_symtab = find_pc_symtab (stop_pc);
-		  if (tmp_symtab 
+		  if (tmp_symtab
 		      && tmp_symtab != sal.symtab
 		      && strcmp (tmp_symtab->filename, filename) == 0)
 		    {
@@ -561,12 +561,12 @@ print_frame_info (struct frame_info *fi, int print_level,
 					 get_frame_pc (fi));
 	}
         /* APPLE LOCAL end subroutine inlining  */
-      
+
       if (!done)
 	{
 	  if (deprecated_print_frame_info_listing_hook)
-	    deprecated_print_frame_info_listing_hook (sal.symtab, 
-						      sal.line, 
+	    deprecated_print_frame_info_listing_hook (sal.symtab,
+						      sal.line,
 						      sal.line + 1, 0);
 	  else
 	    {
@@ -623,10 +623,10 @@ print_frame_info (struct frame_info *fi, int print_level,
 }
 
 static void
-print_frame (struct frame_info *fi, 
-	     int print_level, 
-	     enum print_what print_what, 
-	     int print_args, 
+print_frame (struct frame_info *fi,
+	     int print_level,
+	     enum print_what print_what,
+	     int print_args,
 	     struct symtab_and_line sal)
 {
   struct symbol *func;
@@ -658,7 +658,7 @@ print_frame (struct frame_info *fi,
       || get_frame_type (get_current_frame ()) == INLINED_FRAME)
     {
       if (frame_relative_level (fi) == 0)
-        inside_inlined = at_inlined_call_site_p (&filename, &line_num, 
+        inside_inlined = at_inlined_call_site_p (&filename, &line_num,
                                                  &column);
       if (!inside_inlined
           && frame_relative_level (fi) == 0)
@@ -670,7 +670,7 @@ print_frame (struct frame_info *fi,
 
   if (get_frame_type (fi) == INLINED_FRAME)
     {
-      print_inlined_frame (fi, print_level, print_what, print_args, sal, 
+      print_inlined_frame (fi, print_level, print_what, print_args, sal,
 			   line_num);
       return;
     }
@@ -707,7 +707,7 @@ print_frame (struct frame_info *fi,
 	 ends has been truncated by ar because it is longer than 15
 	 characters).  This also occurs if the user uses asm() to create
 	 a function but not stabs for it (in a file compiled -g).
-	 
+
 	 So look in the minimal symbol tables as well, and if it comes
 	 up with a larger address for the function use that instead.
 	 I don't think this can ever cause any problems; there shouldn't
@@ -871,12 +871,12 @@ print_frame (struct frame_info *fi,
       annotate_frame_source_line ();
       /* APPLE LOCAL begin subroutine inlining  */
       if (inside_inlined)
-	ui_out_field_int (uiout, "line", 
+	ui_out_field_int (uiout, "line",
 			  current_inlined_bottom_call_site_line ());
       else if (get_frame_type (fi) == NORMAL_FRAME
 	       && get_next_frame (fi)
 	       && get_frame_type (get_next_frame (fi)) == INLINED_FRAME)
-	ui_out_field_int (uiout, "line", 
+	ui_out_field_int (uiout, "line",
 			  current_inlined_bottom_call_site_line ());
       else
 	ui_out_field_int (uiout, "line", sal.line);
@@ -911,7 +911,7 @@ print_frame (struct frame_info *fi,
   do_cleanups (old_chain);
 }
 
-/* Show the frame info.  If this is the tui, it will be shown in 
+/* Show the frame info.  If this is the tui, it will be shown in
    the source display otherwise, nothing is done */
 void
 show_stack_frame (struct frame_info *fi)
@@ -925,18 +925,17 @@ show_stack_frame (struct frame_info *fi)
    target to indicate that the default selected frame was used.  */
 
 struct frame_info *
-parse_frame_specification_1 (const char *frame_exp, const char *message,
-			     int *selected_frame_p)
+parse_frame_specification_1(const char *frame_exp, const char *message,
+			    int *selected_frame_p)
 {
-  int numargs;
+  size_t numargs;
   struct value *args[4];
-  CORE_ADDR addrs[ARRAY_SIZE (args)];
+  CORE_ADDR addrs[ARRAY_SIZE(args)];
 
   if (frame_exp == NULL)
     numargs = 0;
   else
     {
-
       numargs = 0;
       while (1)
 	{
@@ -945,39 +944,39 @@ parse_frame_specification_1 (const char *frame_exp, const char *message,
 	  const char *p;
 
 	  /* Skip leading white space, bail of EOL.  */
-	  while (isspace (*frame_exp))
+	  while (isspace(*frame_exp))
 	    frame_exp++;
 	  if (!*frame_exp)
 	    break;
 
 	  /* Parse the argument, extract it, save it.  */
 	  for (p = frame_exp;
-	       *p && !isspace (*p);
+	       *p && !isspace(*p);
 	       p++);
-	  addr_string = savestring (frame_exp, p - frame_exp);
+	  addr_string = savestring(frame_exp, p - frame_exp);
 	  frame_exp = p;
-	  cleanup = make_cleanup (xfree, addr_string);
-	  
+	  cleanup = make_cleanup(xfree, addr_string);
+
 	  /* NOTE: Parse and evaluate expression, but do not use
 	     functions such as parse_and_eval_long or
 	     parse_and_eval_address to also extract the value.
 	     Instead value_as_long and value_as_address are used.
 	     This avoids problems with expressions that contain
 	     side-effects.  */
-	  if (numargs >= ARRAY_SIZE (args))
-	    error (_("Too many args in frame specification"));
-	  args[numargs++] = parse_and_eval (addr_string);
+	  if (numargs >= ARRAY_SIZE(args))
+	    error(_("Too many args in frame specification"));
+	  args[numargs++] = parse_and_eval(addr_string);
 
-	  do_cleanups (cleanup);
+	  do_cleanups(cleanup);
 	}
     }
 
-  /* If no args, default to the selected frame.  */
+  /* If no args, default to the selected frame: */
   if (numargs == 0)
     {
       if (selected_frame_p != NULL)
 	(*selected_frame_p) = 1;
-      return get_selected_frame (message);
+      return get_selected_frame(message);
     }
 
   /* None of the remaining use the selected frame.  */
@@ -996,11 +995,11 @@ parse_frame_specification_1 (const char *frame_exp, const char *message,
 	return fid;
     }
 
-  /* Convert each value into a corresponding address.  */
+  /* Convert each value into a corresponding address: */
   {
-    int i;
-    for (i = 0; i < numargs; i++)
-      addrs[i] = value_as_address (args[0]);
+    size_t i;
+    for (i = 0UL; i < numargs; i++)
+      addrs[i] = value_as_address(args[0]);
   }
 
   /* Assume that the single arg[0] is an address, use that to identify
@@ -1450,7 +1449,7 @@ backtrace_command_1 (char *count_exp, int show_locals, int from_tty)
       /* We already printed out the inlined information above; don't repeat
 	 it here.  */
 
-      /* Even if we have an uncaught error printing the frame, 
+      /* Even if we have an uncaught error printing the frame,
          keep on backtracing. */
       TRY_CATCH (e, RETURN_MASK_ALL)
         {
@@ -1745,7 +1744,7 @@ print_frame_label_vars (struct frame_info *fi, int this_level_only,
 
       /* APPLE LOCAL begin address ranges  */
       while (index < last_index
-	     && contained_in (BLOCKVECTOR_BLOCK (bl, index), 
+	     && contained_in (BLOCKVECTOR_BLOCK (bl, index),
 			      (const struct block *) containing_block))
 	/* && BLOCK_END (BLOCKVECTOR_BLOCK (bl, index)) < end) */
       /* APPLE LOCAL end address ranges  */
@@ -1799,7 +1798,7 @@ catch_info (char *ignore, int from_tty)
 	  /* Currently not handling this */
 	  /* Ideally, here we should interact with the C++ runtime
 	     system to find the list of active handlers, etc. */
-	  fprintf_filtered (gdb_stdout, "Info catch not supported with this" 
+	  fprintf_filtered (gdb_stdout, "Info catch not supported with this"
 			    " target/compiler combination.\n");
 	  if (sals != (struct symtabs_and_lines *) -1)
 	    {
@@ -2128,7 +2127,7 @@ return_command (char *retval_exp, int from_tty)
 	  fn_name = current_inlined_subroutine_function_name ();
 	  calling_fn_name = current_inlined_subroutine_calling_function_name ();
 	  line = current_inlined_subroutine_call_site_line ();
-	  ui_out_text_fmt (uiout, 
+	  ui_out_text_fmt (uiout,
 			 "Function %s was inlined into function %s at line %d.\n",
 			   fn_name, calling_fn_name, line);
 	  adjust_current_inlined_subroutine_stack_position (-1);
@@ -2260,7 +2259,7 @@ If you continue, the return value that you specified will be ignored.\n";
   if (stack_changed_hook != NULL)
     stack_changed_hook ();
   /* APPLE LOCAL end hooks */
-  
+
   /* If interactive, print the frame that is now current.  */
   if (from_tty)
     frame_command ("0", 1);
@@ -2357,7 +2356,7 @@ get_frame_language (void)
 		 the language of a function symbol to C++ if it's name
 		 passes the C++ demangler.  So let's use that to get
 		 the frame's language... */
-	      struct symbol *sym = 
+	      struct symbol *sym =
 		find_pc_function (get_frame_pc (deprecated_selected_frame));
 	      if (sym && (SYMBOL_LANGUAGE (sym) == language_cplus))
 		flang = language_cplus;

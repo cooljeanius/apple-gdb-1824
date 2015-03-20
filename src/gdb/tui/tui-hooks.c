@@ -1,4 +1,4 @@
-/* GDB hooks for TUI.
+/* tui-hooks.c: GDB hooks for TUI.
 
    Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
@@ -58,56 +58,54 @@
 
 int tui_target_has_run = 0;
 
-static void (* tui_target_new_objfile_chain) (struct objfile*);
+static void (* tui_target_new_objfile_chain)(struct objfile*);
 
 static void
-tui_new_objfile_hook (struct objfile* objfile)
+tui_new_objfile_hook(struct objfile* objfile)
 {
   if (tui_active)
-    tui_display_main ();
-  
+    tui_display_main();
+
   if (tui_target_new_objfile_chain)
-    tui_target_new_objfile_chain (objfile);
+    tui_target_new_objfile_chain(objfile);
 }
 
-static int ATTR_FORMAT (printf, 1, 0)
-tui_query_hook (const char * msg, va_list argp)
+static int ATTR_FORMAT(printf, 1, 0)
+tui_query_hook(const char * msg, va_list argp)
 {
   int retval;
   int ans2;
   int answer;
 
   /* Automatically answer "yes" if input is not from a terminal.  */
-  if (!input_from_terminal_p ())
+  if (!input_from_terminal_p())
     return 1;
 
-  echo ();
+  echo();
   while (1)
     {
-      wrap_here ("");		/* Flush any buffered output */
-      gdb_flush (gdb_stdout);
+      wrap_here("");		/* Flush any buffered output */
+      gdb_flush(gdb_stdout);
 
-      vfprintf_filtered (gdb_stdout, msg, argp);
-      printf_filtered (_("(y or n) "));
+      vfprintf_filtered(gdb_stdout, msg, argp);
+      printf_filtered(_("(y or n) "));
 
-      wrap_here ("");
-      gdb_flush (gdb_stdout);
+      wrap_here("");
+      gdb_flush(gdb_stdout);
 
-      answer = tui_getc (stdin);
-      clearerr (stdin);		/* in case of C-d */
+      answer = tui_getc(stdin);
+      clearerr(stdin);		/* in case of C-d */
       if (answer == EOF)	/* C-d */
 	{
 	  retval = 1;
 	  break;
 	}
-      /* Eat rest of input line, to EOF or newline */
+      /* Eat rest of input line, to EOF or newline: */
       if (answer != '\n')
-	do
-	  {
-            ans2 = tui_getc (stdin);
-	    clearerr (stdin);
-	  }
-	while (ans2 != EOF && ans2 != '\n' && ans2 != '\r');
+	do {
+          ans2 = tui_getc(stdin);
+          clearerr(stdin);
+        } while ((ans2 != EOF) && (ans2 != '\n') && (ans2 != '\r'));
 
       if (answer >= 'a')
 	answer -= 040;
@@ -121,9 +119,9 @@ tui_query_hook (const char * msg, va_list argp)
 	  retval = 0;
 	  break;
 	}
-      printf_filtered (_("Please answer y or n.\n"));
+      printf_filtered(_("Please answer y or n.\n"));
     }
-  noecho ();
+  noecho();
   return retval;
 }
 
@@ -131,23 +129,23 @@ tui_query_hook (const char * msg, va_list argp)
 static int tui_refreshing_registers = 0;
 
 static void
-tui_registers_changed_hook (void)
+tui_registers_changed_hook(void)
 {
   struct frame_info *fi;
 
   fi = deprecated_selected_frame;
-  if (fi && tui_refreshing_registers == 0)
+  if (fi && (tui_refreshing_registers == 0))
     {
       tui_refreshing_registers = 1;
 #if 0
-      tui_check_data_values (fi);
-#endif
+      tui_check_data_values(fi);
+#endif /* 0 */
       tui_refreshing_registers = 0;
     }
 }
 
 static void
-tui_register_changed_hook (int regno)
+tui_register_changed_hook(int regno)
 {
   struct frame_info *fi;
 
@@ -155,7 +153,7 @@ tui_register_changed_hook (int regno)
   if (fi && tui_refreshing_registers == 0)
     {
       tui_refreshing_registers = 1;
-      tui_check_data_values (fi);
+      tui_check_data_values(fi);
       tui_refreshing_registers = 0;
     }
 }
@@ -163,29 +161,29 @@ tui_register_changed_hook (int regno)
 /* Breakpoint creation hook.
    Update the screen to show the new breakpoint.  */
 static void
-tui_event_create_breakpoint (int number)
+tui_event_create_breakpoint(int number)
 {
-  tui_update_all_breakpoint_info ();
+  tui_update_all_breakpoint_info();
 }
 
 /* Breakpoint deletion hook.
    Refresh the screen to update the breakpoint marks.  */
 static void
-tui_event_delete_breakpoint (int number)
+tui_event_delete_breakpoint(int number)
 {
-  tui_update_all_breakpoint_info ();
+  tui_update_all_breakpoint_info();
 }
 
 static void
-tui_event_modify_breakpoint (int number)
+tui_event_modify_breakpoint(int number)
 {
-  tui_update_all_breakpoint_info ();
+  tui_update_all_breakpoint_info();
 }
 
 static void
-tui_event_default (int number)
+tui_event_default(int number)
 {
-  ;
+  return;
 }
 
 static struct gdb_events *tui_old_event_hooks;
@@ -195,6 +193,7 @@ static struct gdb_events tui_event_hooks =
   tui_event_create_breakpoint,
   tui_event_delete_breakpoint,
   tui_event_modify_breakpoint,
+  (gdb_events_breakpoint_resolve_ftype *)NULL, /* FIXME */
   tui_event_default,
   tui_event_default,
   tui_event_default
@@ -203,25 +202,27 @@ static struct gdb_events tui_event_hooks =
 /* Called when going to wait for the target.
    Leave curses mode and setup program mode.  */
 static ptid_t
-tui_target_wait_hook (ptid_t pid, struct target_waitstatus *status)
+tui_target_wait_hook(ptid_t pid, struct target_waitstatus *status,
+                     gdb_client_data client_data ATTRIBUTE_UNUSED)
 {
   ptid_t res;
 
   /* Leave tui mode (optional).  */
-#if 0
+#if defined(__OPTIONAL__) && \
+    defined(target_terminal_ours) && defined(target_terminal_inferior)
   if (tui_active)
     {
-      target_terminal_ours ();
-      endwin ();
-      target_terminal_inferior ();
+      target_terminal_ours();
+      endwin();
+      target_terminal_inferior();
     }
-#endif
+#endif /* optional && target_terminal_ours && target_terminal_inferior */
   tui_target_has_run = 1;
-  res = target_wait (pid, status, NULL);
+  res = target_wait(pid, status, NULL);
 
   if (tui_active)
     {
-      /* TODO: need to refresh (optional).  */
+      ; /* TODO: need to refresh (optional).  */
     }
   return res;
 }
@@ -239,10 +240,10 @@ tui_selected_frame_level_changed_hook (int level)
   if (fi)
     {
       struct symtab *s;
-      
+
       s = find_pc_symtab (get_frame_pc (fi));
       /* elz: this if here fixes the problem with the pc not being displayed
-         in the tui asm layout, with no debug symbols. The value of s 
+         in the tui asm layout, with no debug symbols. The value of s
          would be 0 here, and select_source_symtab would abort the
          command by calling the 'error' function */
       if (s)

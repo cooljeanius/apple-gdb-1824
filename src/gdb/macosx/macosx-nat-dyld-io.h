@@ -5,6 +5,9 @@
 
 #include "symtab.h"
 
+size_t inferior_read_memory_partial(CORE_ADDR addr, int nbytes,
+                                    gdb_byte *mbuf);
+
 bfd *inferior_bfd(const char *name, CORE_ADDR addr, CORE_ADDR offset,
                   CORE_ADDR len);
 

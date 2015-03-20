@@ -1,4 +1,4 @@
-/* TUI display registers in window.
+/* tui-regs.c: TUI display registers in window.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -34,6 +34,7 @@
 #include "target.h"
 #include "gdb_string.h"
 #include "tui/tui-layout.h"
+#include "tui/tui-regs.h"
 #include "tui/tui-win.h"
 #include "tui/tui-windata.h"
 #include "tui/tui-wingeneral.h"
@@ -47,22 +48,22 @@
 ** STATIC LOCAL FUNCTIONS FORWARD DECLS    **
 ******************************************/
 static void
-tui_display_register (struct tui_data_element *data,
-                      struct tui_gen_win_info *win_info);
+tui_display_register(struct tui_data_element *data,
+                     struct tui_gen_win_info *win_info);
 
 static enum tui_status
-tui_show_register_group (struct gdbarch *gdbarch, struct reggroup *group,
-                         struct frame_info *frame, int refresh_values_only);
+tui_show_register_group(struct gdbarch *gdbarch, struct reggroup *group,
+                        struct frame_info *frame, int refresh_values_only);
 
 static enum tui_status
-tui_get_register (struct gdbarch *gdbarch, struct frame_info *frame,
-                  struct tui_data_element *data, int regnum, int *changedp);
+tui_get_register(struct gdbarch *gdbarch, struct frame_info *frame,
+                 struct tui_data_element *data, int regnum, int *changedp);
 static void tui_register_format
   (struct gdbarch *, struct frame_info *, struct tui_data_element*, int);
-static void tui_scroll_regs_forward_command (char *, int);
-static void tui_scroll_regs_backward_command (char *, int);
+static void tui_scroll_regs_forward_command(char *, int);
+static void tui_scroll_regs_backward_command(char *, int);
 
-
+extern void _initialize_tui_regs(void);
 
 /*****************************************
 ** PUBLIC FUNCTIONS                     **
@@ -132,10 +133,10 @@ tui_first_reg_element_no_inline (int line_no)
 /* Answer the index of the last element in line_no.  If line_no is
    past the register area (-1) is returned.  */
 int
-tui_last_reg_element_no_in_line (int line_no)
+tui_last_reg_element_no_in_line(int line_no)
 {
-  if ((line_no * TUI_DATA_WIN->detail.data_display_info.regs_column_count) <=
-      TUI_DATA_WIN->detail.data_display_info.regs_content_count)
+  if ((line_no * TUI_DATA_WIN->detail.data_display_info.regs_column_count)
+      <= TUI_DATA_WIN->detail.data_display_info.regs_content_count)
     return ((line_no + 1) *
 	    TUI_DATA_WIN->detail.data_display_info.regs_column_count) - 1;
   else
@@ -375,7 +376,7 @@ tui_display_registers_from (int start_element_no)
                   tui_delete_win (data_item_win->handle);
                   data_item_win->handle = 0;
                 }
-                  
+
 	      if (data_item_win->handle == (WINDOW *) NULL)
 		{
 		  data_item_win->height = 1;
@@ -401,21 +402,21 @@ tui_display_registers_from (int start_element_no)
 /* Function to display the registers in the content from
    'start_element_no' on 'start_line_no' until the end of the register
    content or the end of the display height.  This function checks
-   that we won't display off the end of the register display.  */
+   that we will NOT display off the end of the register display.  */
 void
-tui_display_reg_element_at_line (int start_element_no, int start_line_no)
+tui_display_reg_element_at_line(int start_element_no, int start_line_no)
 {
-  if (TUI_DATA_WIN->detail.data_display_info.regs_content != (tui_win_content) NULL &&
-      TUI_DATA_WIN->detail.data_display_info.regs_content_count > 0)
+  if ((TUI_DATA_WIN->detail.data_display_info.regs_content != (tui_win_content)NULL)
+      && (TUI_DATA_WIN->detail.data_display_info.regs_content_count > 0))
     {
       int element_no = start_element_no;
 
-      if (start_element_no != 0 && start_line_no != 0)
+      if ((start_element_no != 0) && (start_line_no != 0))
 	{
 	  int last_line_no, first_line_on_last_page;
 
-	  last_line_no = tui_last_regs_line_no ();
-	  first_line_on_last_page = last_line_no - (TUI_DATA_WIN->generic.height - 2);
+	  last_line_no = tui_last_regs_line_no();
+	  first_line_on_last_page = (last_line_no - (TUI_DATA_WIN->generic.height - 2));
 	  if (first_line_on_last_page < 0)
 	    first_line_on_last_page = 0;
 	  /*
@@ -528,7 +529,7 @@ tui_display_register (struct tui_data_element *data,
 
       if (data->highlight)
 	wstandout (win_info->handle);
-      
+
       wmove (win_info->handle, 0, 0);
       for (i = 1; i < win_info->width; i++)
         waddch (win_info->handle, ' ');
@@ -560,39 +561,39 @@ tui_reg_next_command (char *arg, int from_tty)
 }
 
 static void
-tui_reg_float_command (char *arg, int from_tty)
+tui_reg_float_command(char *arg, int from_tty)
 {
-  tui_show_registers (float_reggroup);
+  tui_show_registers(float_reggroup);
 }
 
 static void
-tui_reg_general_command (char *arg, int from_tty)
+tui_reg_general_command(char *arg, int from_tty)
 {
-  tui_show_registers (general_reggroup);
+  tui_show_registers(general_reggroup);
 }
 
 static void
-tui_reg_system_command (char *arg, int from_tty)
+tui_reg_system_command(char *arg, int from_tty)
 {
-  tui_show_registers (system_reggroup);
+  tui_show_registers(system_reggroup);
 }
 
 static struct cmd_list_element *tuireglist;
 
 static void
-tui_reg_command (char *args, int from_tty)
+tui_reg_command(char *args, int from_tty)
 {
-  printf_unfiltered (_("\"tui reg\" must be followed by the name of a "
-                     "tui reg command.\n"));
-  help_list (tuireglist, "tui reg ", -1, gdb_stdout);
+  printf_unfiltered(_("\"tui reg\" must be followed by the name of a "
+                    "tui reg command.\n"));
+  help_list(tuireglist, "tui reg ", (enum command_class)-1, gdb_stdout);
 }
 
 void
-_initialize_tui_regs (void)
+_initialize_tui_regs(void)
 {
   struct cmd_list_element **tuicmd;
 
-  tuicmd = tui_get_cmd_list ();
+  tuicmd = tui_get_cmd_list();
 
   add_prefix_cmd ("reg", class_tui, tui_reg_command,
                   _("TUI commands to control the register window."),
@@ -661,7 +662,7 @@ tui_register_format (struct gdbarch *gdbarch, struct frame_info *frame,
     {
       return;
     }
-  
+
   pagination_enabled = 0;
   old_stdout = gdb_stdout;
   stream = tui_sfileopen (256);
@@ -741,14 +742,16 @@ tui_get_register (struct gdbarch *gdbarch, struct frame_info *frame,
 }
 
 static void
-tui_scroll_regs_forward_command (char *arg, int from_tty)
+tui_scroll_regs_forward_command(char *arg, int from_tty)
 {
-  tui_scroll (FORWARD_SCROLL, TUI_DATA_WIN, 1);
+  tui_scroll(FORWARD_SCROLL, TUI_DATA_WIN, 1);
 }
 
 
 static void
-tui_scroll_regs_backward_command (char *arg, int from_tty)
+tui_scroll_regs_backward_command(char *arg, int from_tty)
 {
-  tui_scroll (BACKWARD_SCROLL, TUI_DATA_WIN, 1);
+  tui_scroll(BACKWARD_SCROLL, TUI_DATA_WIN, 1);
 }
+
+/* EOF */

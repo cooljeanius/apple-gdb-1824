@@ -460,8 +460,8 @@ i386_handle_nonaligned_watchpoint (i386_wp_op_t what, CORE_ADDR addr, int len,
       int align = addr % max_wp_len;
       /* Four (eight on AMD64) is the maximum length a debug register
 	 can watch.  */
-      int try = (len > max_wp_len ? (max_wp_len - 1) : len - 1);
-      int size = size_try_array[try][align];
+      int tryit = ((len > max_wp_len) ? (max_wp_len - 1) : (len - 1));
+      int size = size_try_array[tryit][align];
 
       if (what == WP_COUNT)
 	{
@@ -510,22 +510,26 @@ Invalid value %d of operation in i386_handle_nonaligned_watchpoint.\n"),
    of the type TYPE.  Return 0 on success, -1 on failure.  */
 
 int
-i386_insert_watchpoint (CORE_ADDR addr, int len, int type)
+i386_insert_watchpoint(CORE_ADDR addr, int len, int the_type)
 {
   int retval;
 
-  if (((len != 1 && len != 2 && len != 4) && !(wordsize () == 8 && len == 8))
-      || addr % len != 0)
-    retval = i386_handle_nonaligned_watchpoint (WP_INSERT, addr, len, type);
+  if ((((len != 1) && (len != 2) && (len != 4)) && !((wordsize() == 8) && (len == 8)))
+      || ((addr % len) != 0))
+    retval = i386_handle_nonaligned_watchpoint(WP_INSERT, addr, len,
+                                               (enum target_hw_bp_type)the_type);
   else
     {
-      unsigned len_rw = i386_length_and_rw_bits (len, type);
+      unsigned len_rw;
+      len_rw = i386_length_and_rw_bits(len,
+                                       (enum target_hw_bp_type)the_type);
 
-      retval = i386_insert_aligned_watchpoint (addr, len_rw);
+      retval = i386_insert_aligned_watchpoint(addr, len_rw);
     }
 
   if (maint_show_dr)
-    i386_show_dr ("insert_watchpoint", addr, len, type);
+    i386_show_dr("insert_watchpoint", addr, len,
+                 (enum target_hw_bp_type)the_type);
 
   return retval;
 }
@@ -534,22 +538,26 @@ i386_insert_watchpoint (CORE_ADDR addr, int len, int type)
    address ADDR, whose length is LEN bytes, and for accesses of the
    type TYPE.  Return 0 on success, -1 on failure.  */
 int
-i386_remove_watchpoint (CORE_ADDR addr, int len, int type)
+i386_remove_watchpoint(CORE_ADDR addr, int len, int the_type)
 {
   int retval;
 
-  if (((len != 1 && len != 2 && len != 4) && !(wordsize () == 8 && len == 8))
-      || addr % len != 0)
-    retval = i386_handle_nonaligned_watchpoint (WP_REMOVE, addr, len, type);
+  if ((((len != 1) && (len != 2) && (len != 4)) && !((wordsize() == 8) && (len == 8)))
+      || ((addr % len) != 0))
+    retval = i386_handle_nonaligned_watchpoint(WP_REMOVE, addr, len,
+                                               (enum target_hw_bp_type)the_type);
   else
     {
-      unsigned len_rw = i386_length_and_rw_bits (len, type);
+      unsigned len_rw;
+      len_rw = i386_length_and_rw_bits(len,
+                                       (enum target_hw_bp_type)the_type);
 
-      retval = i386_remove_aligned_watchpoint (addr, len_rw);
+      retval = i386_remove_aligned_watchpoint(addr, len_rw);
     }
 
   if (maint_show_dr)
-    i386_show_dr ("remove_watchpoint", addr, len, type);
+    i386_show_dr("remove_watchpoint", addr, len,
+                 (enum target_hw_bp_type)the_type);
 
   return retval;
 }

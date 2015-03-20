@@ -217,14 +217,14 @@ c_printstr(struct ui_file *stream, const gdb_byte *string,
    in output depending upon what the compiler and debugging format
    support.  We will probably have to re-examine the issue when gdb
    starts taking its fundamental type information directly from the
-   debugging information supplied by the compiler.  fnf@cygnus.com */
+   debugging information supplied by the compiler.  <fnf@cygnus.com> */
 
 struct type *
-c_create_fundamental_type (struct objfile *objfile, int typeid)
+c_create_fundamental_type(struct objfile *objfile, int ctypeid)
 {
   struct type *type = NULL;
 
-  switch (typeid)
+  switch (ctypeid)
     {
     default:
       /* FIXME:  For now, if we are asked to produce a type not in this
@@ -234,7 +234,7 @@ c_create_fundamental_type (struct objfile *objfile, int typeid)
       type = init_type (TYPE_CODE_INT,
 			TARGET_INT_BIT / TARGET_CHAR_BIT,
 			0, "<?type?>", objfile);
-      warning (_("internal error: no C/C++ fundamental type %d"), typeid);
+      warning (_("internal error: no C/C++ fundamental type %d"), ctypeid);
       break;
     case FT_VOID:
       type = init_type (TYPE_CODE_VOID,
@@ -525,7 +525,7 @@ const struct op_print c_op_print_tab[] =
   {"sizeof ", UNOP_SIZEOF, PREC_PREFIX, 0},
   {"++", UNOP_PREINCREMENT, PREC_PREFIX, 0},
   {"--", UNOP_PREDECREMENT, PREC_PREFIX, 0},
-  {NULL, 0, 0, 0}
+  {NULL, (enum exp_opcode)0, (enum precedence)0, 0}
 };
 
 enum c_primitive_types {

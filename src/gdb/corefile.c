@@ -324,15 +324,19 @@ struct captured_read_memory_integer_arguments
 static int
 do_captured_read_memory_integer (void *data)
 {
-  struct captured_read_memory_integer_arguments *args = (struct captured_read_memory_integer_arguments*) data;
-  CORE_ADDR memaddr = args->memaddr;
-  int len = args->len;
+  struct captured_read_memory_integer_arguments *args;
+  CORE_ADDR memaddr;
+  int len;
+
+  args = (struct captured_read_memory_integer_arguments*)data;
+  memaddr = args->memaddr;
+  len = args->len;
 
   /* APPLE LOCAL begin unsigned */
   if (args->signedp)
-    args->result.sresult = read_memory_integer (memaddr, len);
+    args->result.sresult = read_memory_integer(memaddr, len);
   else
-    args->result.uresult = read_memory_unsigned_integer (memaddr, len);
+    args->result.uresult = read_memory_unsigned_integer(memaddr, len);
   /* APPLE LOCAL end unsigned */
 
   return 1;
@@ -352,7 +356,7 @@ safe_read_memory_integer(CORE_ADDR memaddr, int len, LONGEST *return_value)
   args.signedp = 1;
 
   status = catch_errors(do_captured_read_memory_integer, &args,
-                       "", RETURN_MASK_ALL);
+                        "", RETURN_MASK_ALL);
   if (status)
     *return_value = args.result.sresult;
 
@@ -361,7 +365,8 @@ safe_read_memory_integer(CORE_ADDR memaddr, int len, LONGEST *return_value)
 
 /* APPLE LOCAL begin unsigned */
 int
-safe_read_memory_unsigned_integer(CORE_ADDR memaddr, int len, ULONGEST *return_value)
+safe_read_memory_unsigned_integer(CORE_ADDR memaddr, int len,
+                                  ULONGEST *return_value)
 {
   int status;
   struct captured_read_memory_integer_arguments args;
@@ -370,7 +375,7 @@ safe_read_memory_unsigned_integer(CORE_ADDR memaddr, int len, ULONGEST *return_v
   args.signedp = 0;
 
   status = catch_errors(do_captured_read_memory_integer, &args,
-                       "", RETURN_MASK_ALL);
+                        "", RETURN_MASK_ALL);
   if (status)
     *return_value = args.result.uresult;
 
@@ -381,10 +386,10 @@ safe_read_memory_unsigned_integer(CORE_ADDR memaddr, int len, ULONGEST *return_v
 LONGEST
 read_memory_integer(CORE_ADDR memaddr, int len)
 {
-  char buf[sizeof (LONGEST)];
+  char buf[sizeof(LONGEST)];
 
   read_memory(memaddr, (gdb_byte *)buf, len);
-  return extract_signed_integer(buf, len);
+  return extract_signed_integer((const gdb_byte *)buf, len);
 }
 
 ULONGEST
@@ -393,11 +398,11 @@ read_memory_unsigned_integer(CORE_ADDR memaddr, int len)
   char buf[sizeof(ULONGEST)];
 
   read_memory(memaddr, (gdb_byte *)buf, len);
-  return extract_unsigned_integer(buf, len);
+  return extract_unsigned_integer((const gdb_byte *)buf, len);
 }
 
 void
-read_memory_string (CORE_ADDR memaddr, char *buffer, int max_len)
+read_memory_string(CORE_ADDR memaddr, char *buffer, int max_len)
 {
   char *cp;
   int i;
@@ -406,95 +411,94 @@ read_memory_string (CORE_ADDR memaddr, char *buffer, int max_len)
   cp = buffer;
   while (1)
     {
-      if (cp - buffer >= max_len)
+      if ((cp - buffer) >= max_len)
 	{
 	  buffer[max_len - 1] = '\0';
 	  break;
 	}
-      cnt = max_len - (cp - buffer);
+      cnt = (max_len - (cp - buffer));
       if (cnt > 8)
 	cnt = 8;
-      read_memory (memaddr + (int) (cp - buffer), cp, cnt);
-      for (i = 0; i < cnt && *cp; i++, cp++)
+      read_memory(memaddr + (int)(cp - buffer), (gdb_byte *)cp, cnt);
+      for (i = 0; (i < cnt) && *cp; i++, cp++)
 	;			/* null body */
 
-      if (i < cnt && !*cp)
+      if ((i < cnt) && !*cp)
 	break;
     }
 }
 
 CORE_ADDR
-read_memory_typed_address (CORE_ADDR addr, struct type *type)
+read_memory_typed_address(CORE_ADDR addr, struct type *type)
 {
-  char *buf = alloca (TYPE_LENGTH (type));
-  read_memory (addr, buf, TYPE_LENGTH (type));
-  return extract_typed_address (buf, type);
+  char *buf = (char *)alloca(TYPE_LENGTH(type));
+  read_memory(addr, (gdb_byte *)buf, TYPE_LENGTH(type));
+  return extract_typed_address((const gdb_byte *)buf, type);
 }
 
-/* Same as target_write_memory, but report an error if can't write.  */
+/* Same as target_write_memory, but report an error if cannot write: */
 void
-write_memory (CORE_ADDR memaddr, const bfd_byte *myaddr, int len)
+write_memory(CORE_ADDR memaddr, const bfd_byte *myaddr, int len)
 {
   int status;
-  bfd_byte *bytes = alloca (len);
+  bfd_byte *bytes = (bfd_byte *)alloca(len);
 
-  memcpy (bytes, myaddr, len);
-  status = target_write_memory (memaddr, bytes, len);
+  memcpy(bytes, myaddr, len);
+  status = target_write_memory(memaddr, bytes, len);
   if (status != 0)
-    memory_error (status, memaddr);
+    memory_error(status, memaddr);
 }
 
-/* Store VALUE at ADDR in the inferior as a LEN-byte unsigned integer.  */
+/* Store VALUE at ADDR in the inferior as a LEN-byte unsigned integer: */
 void
-write_memory_unsigned_integer (CORE_ADDR addr, int len, ULONGEST value)
+write_memory_unsigned_integer(CORE_ADDR addr, int len, ULONGEST value)
 {
-  char *buf = alloca (len);
-  store_unsigned_integer (buf, len, value);
-  write_memory (addr, buf, len);
+  char *buf = alloca(len);
+  store_unsigned_integer((gdb_byte *)buf, len, value);
+  write_memory(addr, (const bfd_byte *)buf, len);
 }
 
-/* Store VALUE at ADDR in the inferior as a LEN-byte signed integer.  */
+/* Store VALUE at ADDR in the inferior as a LEN-byte signed integer: */
 void
-write_memory_signed_integer (CORE_ADDR addr, int len, LONGEST value)
+write_memory_signed_integer(CORE_ADDR addr, int len, LONGEST value)
 {
-  char *buf = alloca (len);
-  store_signed_integer (buf, len, value);
-  write_memory (addr, buf, len);
+  char *buf = (char *)alloca(len);
+  store_signed_integer((gdb_byte *)buf, len, value);
+  write_memory(addr, (const bfd_byte *)buf, len);
 }
-
 
 
-#if 0
+#if defined(__4_12_OR_LATER__) && defined(IT_IS_TESTED)
 /* Enable after 4.12.  It is not tested.  */
 
 /* Search code.  Targets can just make this their search function, or
    if the protocol has a less general search function, they can call this
    in the cases it can't handle.  */
 void
-generic_search (int len, char *data, char *mask, CORE_ADDR startaddr,
-		int increment, CORE_ADDR lorange, CORE_ADDR hirange,
-		CORE_ADDR *addr_found, char *data_found)
+generic_search(int len, char *data, char *mask, CORE_ADDR startaddr,
+               int increment, CORE_ADDR lorange, CORE_ADDR hirange,
+               CORE_ADDR *addr_found, char *data_found)
 {
   int i;
   CORE_ADDR curaddr = startaddr;
 
-  while (curaddr >= lorange && curaddr < hirange)
+  while ((curaddr >= lorange) && (curaddr < hirange))
     {
-      read_memory (curaddr, data_found, len);
+      read_memory(curaddr, data_found, len);
       for (i = 0; i < len; ++i)
 	if ((data_found[i] & mask[i]) != data[i])
 	  goto try_again;
-      /* It matches.  */
+      /* It matches: */
       *addr_found = curaddr;
       return;
 
     try_again:
       curaddr += increment;
     }
-  *addr_found = (CORE_ADDR) 0;
+  *addr_found = (CORE_ADDR)0;
   return;
 }
-#endif /* 0 */
+#endif /* __4_12_OR_LATER__ && IT_IS_TESTED */
 
 /* The current default bfd target.  Points to storage allocated for
    gnutarget_string.  */

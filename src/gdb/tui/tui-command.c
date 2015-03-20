@@ -1,4 +1,4 @@
-/* Specific command window processing.
+/* tui-command.c: Specific command window processing.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -25,6 +25,7 @@
 #include "defs.h"
 #include <ctype.h>
 #include "tui/tui.h"
+#include "tui/tui-command.h"
 #include "tui/tui-data.h"
 #include "tui/tui-win.h"
 #include "tui/tui-io.h"
@@ -43,11 +44,11 @@
 ** PUBLIC FUNCTIONS                        **
 ******************************************/
 
-/* Dispatch the correct tui function based upon the control character.   */
+/* Dispatch the correct tui function based upon the control character: */
 unsigned int
-tui_dispatch_ctrl_char (unsigned int ch)
+tui_dispatch_ctrl_char(unsigned int ch)
 {
-  struct tui_win_info *win_info = tui_win_with_focus ();
+  struct tui_win_info *win_info = tui_win_with_focus();
   WINDOW *w = TUI_CMD_WIN->generic.handle;
 
   /*
@@ -55,39 +56,39 @@ tui_dispatch_ctrl_char (unsigned int ch)
      ** assume it is the command window; in this case, pass the
      ** character on through and do nothing here.
    */
-  if (win_info == NULL || win_info == TUI_CMD_WIN)
+  if ((win_info == NULL) || (win_info == TUI_CMD_WIN))
     return ch;
   else
     {
-      unsigned int c = 0, ch_copy = ch;
+      unsigned int c = 0U, ch_copy = ch;
       int i;
       char *term;
 
-      /* If this is an xterm, page next/prev keys aren't returned
+      /* If this is an xterm, page next/prev keys are NOT returned
          ** by keypad as a single char, so we must handle them here.
          ** Seems like a bug in the curses library?
        */
-      term = (char *) getenv ("TERM");
+      term = (char *)getenv("TERM");
       for (i = 0; (term && term[i]); i++)
-	term[i] = toupper (term[i]);
-      if ((strcmp (term, "XTERM") == 0) && key_is_start_sequence (ch))
+	term[i] = toupper(term[i]);
+      if ((strcmp(term, "XTERM") == 0) && key_is_start_sequence(ch))
 	{
-	  unsigned int page_ch = 0;
+	  unsigned int page_ch = 0U;
 	  unsigned int tmp_char;
 
-	  tmp_char = 0;
-	  while (!key_is_end_sequence (tmp_char))
+	  tmp_char = 0U;
+	  while (!key_is_end_sequence(tmp_char))
 	    {
-	      tmp_char = (int) wgetch (w);
-	      if (tmp_char == ERR)
+	      tmp_char = (unsigned int)wgetch(w);
+	      if (tmp_char == (unsigned int)ERR)
 		{
 		  return ch;
 		}
 	      if (!tmp_char)
 		break;
-	      if (tmp_char == 53)
+	      if (tmp_char == 53U)
 		page_ch = KEY_PPAGE;
-	      else if (tmp_char == 54)
+	      else if (tmp_char == 54U)
 		page_ch = KEY_NPAGE;
 	      else
 		{
@@ -100,27 +101,27 @@ tui_dispatch_ctrl_char (unsigned int ch)
       switch (ch_copy)
 	{
 	case KEY_NPAGE:
-	  tui_scroll_forward (win_info, 0);
+	  tui_scroll_forward(win_info, 0);
 	  break;
 	case KEY_PPAGE:
-	  tui_scroll_backward (win_info, 0);
+	  tui_scroll_backward(win_info, 0);
 	  break;
 	case KEY_DOWN:
 	case KEY_SF:
-	  tui_scroll_forward (win_info, 1);
+	  tui_scroll_forward(win_info, 1);
 	  break;
 	case KEY_UP:
 	case KEY_SR:
-	  tui_scroll_backward (win_info, 1);
+	  tui_scroll_backward(win_info, 1);
 	  break;
 	case KEY_RIGHT:
-	  tui_scroll_left (win_info, 1);
+	  tui_scroll_left(win_info, 1);
 	  break;
 	case KEY_LEFT:
-	  tui_scroll_right (win_info, 1);
+	  tui_scroll_right(win_info, 1);
 	  break;
 	case '\f':
-	  tui_refresh_all_win ();
+	  tui_refresh_all_win();
 	  break;
 	default:
 	  c = ch_copy;
@@ -129,3 +130,5 @@ tui_dispatch_ctrl_char (unsigned int ch)
       return c;
     }
 }
+
+/* EOF */

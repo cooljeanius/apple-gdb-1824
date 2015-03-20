@@ -1,4 +1,4 @@
-/* Generic support for remote debugging interfaces.
+/* remote-utils.c: Generic support for remote debugging interfaces.
 
    Copyright 1993, 1994, 1995, 1996, 1998, 2000, 2001
    Free Software Foundation, Inc.
@@ -32,7 +32,7 @@
 
    The second package is a collection of more or less generic
    functions for use by remote backends.  They support user settable
-   variables for debugging, retries, and the like.  
+   variables for debugging, retries, and the like.
 
    Todo:
 
@@ -466,27 +466,27 @@ gr_kill (void)
 /* This is called not only when we first attach, but also when the
    user types "run" after having attached.  */
 void
-gr_create_inferior (char *execfile, char *args, char **env)
+gr_create_inferior(char *execfile, char *args, char **env)
 {
   int entry_pt;
 
   if (args && *args)
-    error (_("Can't pass arguments to remote process."));
+    error(_("Cannot pass arguments to remote process."));
 
-  if (execfile == 0 || exec_bfd == 0)
-    error (_("No executable file specified"));
+  if ((execfile == 0) || (exec_bfd == 0))
+    error(_("No executable file specified"));
 
-  entry_pt = (int) bfd_get_start_address (exec_bfd);
-  sr_check_open ();
+  entry_pt = (int)bfd_get_start_address(exec_bfd);
+  sr_check_open();
 
-  gr_kill ();
-  gr_clear_all_breakpoints ();
+  gr_kill();
+  gr_clear_all_breakpoints();
 
-  init_wait_for_inferior ();
-  gr_checkin ();
+  init_wait_for_inferior();
+  gr_checkin();
 
-  insert_breakpoints ();	/* Needed to get correct instruction in cache */
-  proceed (entry_pt, -1, 0);
+  insert_breakpoints(); /* Needed to get correct instruction in cache */
+  proceed(entry_pt, (enum target_signal)-1, 0);
 }
 
 /* Given a null terminated list of strings LIST, read the input until we find one of
@@ -497,7 +497,7 @@ gr_create_inferior (char *execfile, char *args, char **env)
    pass non-matching data on.  */
 
 int
-gr_multi_scan (char *list[], int passthrough)
+gr_multi_scan(char *list[], int passthrough)
 {
   char *swallowed;
   char *swallowed_p;
@@ -505,7 +505,7 @@ gr_multi_scan (char *list[], int passthrough)
   int ch_handled;
   int i;
   int string_count;
-  int max_length;
+  size_t max_length;
   char **plist;
 
   /* Look through the strings.  Count them.  Find the largest one so we can
@@ -515,7 +515,7 @@ gr_multi_scan (char *list[], int passthrough)
        list[i] != NULL;
        ++i, ++string_count)
     {
-      int length = strlen (list[i]);
+      size_t length = strlen(list[i]);
 
       if (length > max_length)
 	max_length = length;
@@ -527,10 +527,10 @@ gr_multi_scan (char *list[], int passthrough)
 
   /* otherwise, we will need a holding area big enough to hold almost two
      copies of our largest string.  */
-  swallowed_p = swallowed = alloca (max_length << 1);
+  swallowed_p = swallowed = (char *)alloca(max_length << 1);
 
   /* and a list of pointers to current scan points. */
-  plist = (char **) alloca (string_count * sizeof (*plist));
+  plist = (char **)alloca(string_count * sizeof(*plist));
 
   /* and initialize */
   for (i = 0; i < string_count; ++i)
@@ -538,7 +538,7 @@ gr_multi_scan (char *list[], int passthrough)
 
   for (ch = sr_readchar (); /* loop forever */ ; ch = sr_readchar ())
     {
-      QUIT;			/* Let user quit and leave process running */
+      QUIT;		/* Let user quit and leave process running */
       ch_handled = 0;
 
       for (i = 0; i < string_count; ++i)
@@ -575,9 +575,9 @@ gr_multi_scan (char *list[], int passthrough)
 	}
     }
 #if 0
-  /* Never reached.  */
+  /* Never reached: */
   return (-1);
-#endif
+#endif /* 0 */
 }
 
 /* Get ready to modify the registers array.  On machines which store

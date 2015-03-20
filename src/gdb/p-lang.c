@@ -167,8 +167,8 @@ pascal_printstr(struct ui_file *stream, const gdb_byte *string,
 
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic warning "-Wtraditional"
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic warning "-Wtraditional"
 # endif /* gcc 4.6+ */
 #endif /* GCC */
 
@@ -281,18 +281,18 @@ pascal_printstr(struct ui_file *stream, const gdb_byte *string,
    in output depending upon what the compiler and debugging format
    support.  We will probably have to re-examine the issue when gdb
    starts taking it's fundamental type information directly from the
-   debugging information supplied by the compiler.  fnf@cygnus.com */
+   debugging information supplied by the compiler.  <fnf@cygnus.com> */
 
 /* Note there might be some discussion about the choosen correspondance
    because it mainly reflects Free Pascal Compiler setup for now PM */
 
 
 struct type *
-pascal_create_fundamental_type (struct objfile *objfile, int typeid)
+pascal_create_fundamental_type(struct objfile *objfile, int ptypeid)
 {
   struct type *type = NULL;
 
-  switch (typeid)
+  switch (ptypeid)
     {
     default:
       /* FIXME:  For now, if we are asked to produce a type not in this
@@ -302,7 +302,7 @@ pascal_create_fundamental_type (struct objfile *objfile, int typeid)
       type = init_type (TYPE_CODE_INT,
 			TARGET_INT_BIT / TARGET_CHAR_BIT,
 			0, "<?type?>", objfile);
-      warning (_("internal error: no Pascal fundamental type %d"), typeid);
+      warning(_("internal error: no Pascal fundamental type %d"), ptypeid);
       break;
     case FT_VOID:
       type = init_type (TYPE_CODE_VOID,
@@ -434,7 +434,7 @@ const struct op_print pascal_op_print_tab[] =
   {"^", UNOP_IND, PREC_SUFFIX, 1},
   {"@", UNOP_ADDR, PREC_PREFIX, 0},
   {"sizeof", UNOP_SIZEOF, PREC_PREFIX, 0},
-  {NULL, 0, 0, 0}
+  {NULL, (enum exp_opcode)0, (enum precedence)0, 0}
 };
 
 struct type **const (pascal_builtin_types[]) =

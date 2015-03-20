@@ -2223,14 +2223,14 @@ if test -d ${srcdir}/gcc; then
   missing_languages=`echo ",${enable_languages}," | sed -e s/,all,/,/ -e s/,c,/,/ `
   potential_languages=c
 
-  # If LTO is enabled, add the LTO front end.
+  # If LTO is enabled, then add the LTO front end:
   extra_host_libiberty_configure_flags=""
   if test "${enable_lto}" = "yes" ; then
     case ,${enable_languages}, in
       *,lto,*) ;;
       *) enable_languages="${enable_languages},lto" ;;
     esac
-    if test "${build_lto_plugin}" = "yes" ; then
+    if test "x${build_lto_plugin}" = "xyes"; then
       configdirs="${configdirs} lto-plugin"
       extra_host_libiberty_configure_flags=--enable-shared
     fi
@@ -2341,6 +2341,9 @@ Recognized languages are: ${potential_languages}])
   fi
   enable_languages="${new_enable_languages}"
   ac_configure_args=`echo " ${ac_configure_args}" | sed -e 's/ --enable-languages=[[^ ]]*//' -e 's/$/ --enable-languages='"${enable_languages}"/ `
+else
+  # Disable all target libraries if not building gcc:
+  target_configdirs=""
 fi
 
 # Check for Boehm's garbage collector:
@@ -3232,7 +3235,7 @@ esac
 # Host dirs do not like to share a cache file either, horribly enough.
 # This seems to be due to autoconf 2.5x stupidity.
 # APPLE LOCAL
-host_configargs="$host_configargs --cache-file=./config.cache --build=${build} --host=${host} --target=${target} ${extra_host_args} ${baseargs}"
+host_configargs="${host_configargs} --cache-file=./config.cache --build=${build} --host=${host} --target=${target} ${extra_host_args} ${baseargs}"
 
 target_configargs=${baseargs}
 

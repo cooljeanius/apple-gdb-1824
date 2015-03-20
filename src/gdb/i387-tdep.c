@@ -1,4 +1,4 @@
-/* Intel 387 floating point stuff.
+/* i387-tdep.c: Intel 387 floating point stuff.
 
    Copyright 1988, 1989, 1991, 1992, 1993, 1994, 1998, 1999, 2000,
    2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
@@ -99,7 +99,7 @@ print_i387_ext (const gdb_byte *raw, struct ui_file *file)
     {
       /* Denormal or zero.  */
       print_i387_value (raw, file);
-      
+
       if (integer)
 	/* Pseudo-denormal.  */
 	fputs_filtered (" Pseudo-denormal", file);
@@ -175,7 +175,7 @@ print_i387_control_word (unsigned int control, struct ui_file *file)
       fputs_filtered ("Extended Precision (64-bits)\n", file);
       break;
     }
-      
+
   fputs_filtered ("                       RC: ", file);
   switch ((control >> 10) & 3)
     {
@@ -372,13 +372,13 @@ static int fsave_offset[] =
    *FSAVE.  */
 
 void
-i387_supply_fsave (struct regcache *regcache, int regnum, const void *fsave)
+i387_supply_fsave(struct regcache *regcache, int regnum, const void *fsave)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (get_regcache_arch (regcache));
-  const gdb_byte *regs = fsave;
+  struct gdbarch_tdep *tdep = gdbarch_tdep(get_regcache_arch(regcache));
+  const gdb_byte *regs = (const gdb_byte *)fsave;
   int i;
 
-  gdb_assert (tdep->st0_regnum >= I386_ST0_REGNUM);
+  gdb_assert(tdep->st0_regnum >= I386_ST0_REGNUM);
 
   /* Define I387_ST0_REGNUM and I387_NUM_XMM_REGS such that we use the
      proper definitions for REGCACHE's architecture.  */
@@ -434,20 +434,20 @@ i387_supply_fsave (struct regcache *regcache, int regnum, const void *fsave)
    *FSAVE.  */
 
 void
-i387_collect_fsave (const struct regcache *regcache, int regnum, void *fsave)
+i387_collect_fsave(const struct regcache *regcache, int regnum, void *fsave)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
-  gdb_byte *regs = fsave;
+  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  gdb_byte *regs = (gdb_byte *)fsave;
   int i;
 
-  gdb_assert (tdep->st0_regnum >= I386_ST0_REGNUM);
+  gdb_assert(tdep->st0_regnum >= I386_ST0_REGNUM);
 
   /* Define I387_ST0_REGNUM such that we use the proper definitions
      for REGCACHE's architecture.  */
 #define I387_ST0_REGNUM tdep->st0_regnum
 
   for (i = I387_ST0_REGNUM; i < I387_XMM0_REGNUM; i++)
-    if (regnum == -1 || regnum == i)
+    if ((regnum == -1) || (regnum == i))
       {
 	/* Most of the FPU control registers occupy only 16 bits in
            the fsave area.  Give those a special treatment.  */
@@ -566,14 +566,14 @@ i387_swap_fxsave (struct regcache *regcache, const uint8_t *fxsave)
    masks off any of the reserved bits in *FXSAVE.  */
 
 void
-i387_supply_fxsave (struct regcache *regcache, int regnum, const void *fxsave)
+i387_supply_fxsave(struct regcache *regcache, int regnum, const void *fxsave)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (get_regcache_arch (regcache));
-  const gdb_byte *regs = fxsave;
+  struct gdbarch_tdep *tdep = gdbarch_tdep(get_regcache_arch(regcache));
+  const gdb_byte *regs = (const gdb_byte *)fxsave;
   int i;
 
-  gdb_assert (tdep->st0_regnum >= I386_ST0_REGNUM);
-  gdb_assert (tdep->num_xmm_regs > 0);
+  gdb_assert(tdep->st0_regnum >= I386_ST0_REGNUM);
+  gdb_assert(tdep->num_xmm_regs > 0);
 
   /* Define I387_ST0_REGNUM and I387_NUM_XMM_REGS such that we use the
      proper definitions for REGCACHE's architecture.  */
@@ -656,14 +656,14 @@ i387_supply_fxsave (struct regcache *regcache, int regnum, const void *fxsave)
    bits in *FXSAVE.  */
 
 void
-i387_collect_fxsave (const struct regcache *regcache, int regnum, void *fxsave)
+i387_collect_fxsave(const struct regcache *regcache, int regnum, void *fxsave)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
-  gdb_byte *regs = fxsave;
+  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  gdb_byte *regs = (gdb_byte *)fxsave;
   int i;
 
-  gdb_assert (tdep->st0_regnum >= I386_ST0_REGNUM);
-  gdb_assert (tdep->num_xmm_regs > 0);
+  gdb_assert(tdep->st0_regnum >= I386_ST0_REGNUM);
+  gdb_assert(tdep->num_xmm_regs > 0);
 
   /* Define I387_ST0_REGNUM and I387_NUM_XMM_REGS such that we use the
      proper definitions for REGCACHE's architecture.  */
@@ -810,3 +810,5 @@ i387_return_value (struct gdbarch *gdbarch, struct regcache *regcache)
 
 #undef I387_ST0_REGNUM
 }
+
+/* EOF */

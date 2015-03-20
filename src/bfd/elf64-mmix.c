@@ -33,18 +33,20 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #include "elf/mmix.h"
 #include "opcode/mmix.h"
 
-#define MINUS_ONE	(((bfd_vma) 0) - 1)
+#define MINUS_ONE	(((bfd_vma)0UL) - 1)
 
 #define MAX_PUSHJ_STUB_SIZE (5 * 4)
 
-/* Put these everywhere in new code.  */
-#define FATAL_DEBUG						\
- _bfd_abort (__FILE__, __LINE__,				\
-	     "Internal: Non-debugged code (test-case missing)")
+/* Put these everywhere in new code: */
+#ifndef FATAL_DEBUG
+# define FATAL_DEBUG						\
+  _bfd_abort(__FILE__, __LINE__,				\
+ 	     "Internal: Non-debugged code (test-case missing)")
+#endif /* !FATAL_DEBUG */
 
 #define BAD_CASE(x)				\
- _bfd_abort (__FILE__, __LINE__,		\
-	     "bad case for " #x)
+ _bfd_abort(__FILE__, __LINE__,		\
+	    "bad case for " #x)
 
 struct _mmix_elf_section_data
 {
@@ -1309,7 +1311,7 @@ mmix_elf_reloc (abfd, reloc_entry, symbol, data, input_section,
     }
 
   return mmix_final_link_relocate(reloc_entry->howto, input_section,
-                                  data, reloc_entry->address,
+                                  (bfd_byte *)data, reloc_entry->address,
                                   reloc_entry->addend, relocation,
                                   bfd_asymbol_name(symbol),
                                   reloc_target_output_section);
@@ -1546,24 +1548,15 @@ mmix_elf_relocate_section (output_bfd, info, input_bfd, input_section,
    routines.  A few relocs we have to do ourselves.  */
 
 static bfd_reloc_status_type
-mmix_final_link_relocate (howto, input_section, contents,
-			  r_offset, r_addend, relocation, symname, symsec)
-     reloc_howto_type *howto;
-     asection *input_section;
-     bfd_byte *contents;
-     bfd_vma r_offset;
-     bfd_signed_vma r_addend;
-     bfd_vma relocation;
-     const char *symname;
-     asection *symsec;
+mmix_final_link_relocate(reloc_howto_type *howto, asection *input_section,
+                         bfd_byte *contents, bfd_vma r_offset,
+                         bfd_signed_vma r_addend, bfd_vma relocation,
+                         const char *symname, asection *symsec)
 {
   bfd_reloc_status_type r = bfd_reloc_ok;
-  bfd_vma addr
-    = (input_section->output_section->vma
-       + input_section->output_offset
-       + r_offset);
-  bfd_signed_vma srel
-    = (bfd_signed_vma) relocation + r_addend;
+  bfd_vma addr = (input_section->output_section->vma
+                  + input_section->output_offset + r_offset);
+  bfd_signed_vma srel = ((bfd_signed_vma)relocation + r_addend);
 
   switch (howto->type)
     {
@@ -1954,19 +1947,20 @@ mmix_elf_check_common_relocs  (abfd, info, sec, relocs)
 
   /* Allocate per-reloc stub storage and initialize it to the max stub
      size.  */
-  if (mmix_elf_section_data (sec)->pjs.n_pushj_relocs != 0)
+  if (mmix_elf_section_data(sec)->pjs.n_pushj_relocs != 0)
     {
       size_t i;
 
-      mmix_elf_section_data (sec)->pjs.stub_size
-	= bfd_alloc (abfd, mmix_elf_section_data (sec)->pjs.n_pushj_relocs
-		     * sizeof (mmix_elf_section_data (sec)
-			       ->pjs.stub_size[0]));
-      if (mmix_elf_section_data (sec)->pjs.stub_size == NULL)
+      mmix_elf_section_data(sec)->pjs.stub_size =
+        ((bfd_size_type *)
+         bfd_alloc(abfd,
+                   (mmix_elf_section_data(sec)->pjs.n_pushj_relocs
+                    * sizeof(mmix_elf_section_data(sec)->pjs.stub_size[0]))));
+      if (mmix_elf_section_data(sec)->pjs.stub_size == NULL)
 	return FALSE;
 
-      for (i = 0; i < mmix_elf_section_data (sec)->pjs.n_pushj_relocs; i++)
-	mmix_elf_section_data (sec)->pjs.stub_size[i] = MAX_PUSHJ_STUB_SIZE;
+      for (i = 0; i < mmix_elf_section_data(sec)->pjs.n_pushj_relocs; i++)
+	mmix_elf_section_data(sec)->pjs.stub_size[i] = MAX_PUSHJ_STUB_SIZE;
     }
 
   return TRUE;
@@ -2372,19 +2366,20 @@ _bfd_mmix_before_linker_allocation (abfd, info)
      time.  Note that we must use the max number ever noted for the array,
      since the index numbers were created before GC.  */
   gregdata->reloc_request
-    = bfd_zalloc (bpo_greg_owner,
-		  sizeof (struct bpo_reloc_request)
-		  * gregdata->n_max_bpo_relocs);
+    = ((struct bpo_reloc_request *)
+       bfd_zalloc(bpo_greg_owner,
+                  (sizeof(struct bpo_reloc_request)
+                   * gregdata->n_max_bpo_relocs)));
 
   gregdata->bpo_reloc_indexes
     = bpo_reloc_indexes
-    = bfd_alloc (bpo_greg_owner,
-		 gregdata->n_max_bpo_relocs
-		 * sizeof (size_t));
+    = (size_t *)bfd_alloc(bpo_greg_owner,
+                          (gregdata->n_max_bpo_relocs
+                           * sizeof(size_t)));
   if (bpo_reloc_indexes == NULL)
     return FALSE;
 
-  /* The default order is an identity mapping.  */
+  /* The default order is an identity mapping: */
   for (i = 0; i < gregdata->n_max_bpo_relocs; i++)
     {
       bpo_reloc_indexes[i] = i;
@@ -2427,16 +2422,16 @@ _bfd_mmix_after_linker_allocation (abfd, link_info)
   if (bpo_gregs_section == NULL)
     return TRUE;
 
-  /* We use the target-data handle in the ELF section data.  */
-
-  gregdata = mmix_elf_section_data (bpo_gregs_section)->bpo.greg;
+  /* We use the target-data handle in the ELF section data: */
+  gregdata = mmix_elf_section_data(bpo_gregs_section)->bpo.greg;
   if (gregdata == NULL)
     return FALSE;
 
   n_gregs = gregdata->n_allocated_bpo_gregs;
 
   bpo_gregs_section->contents
-    = contents = bfd_alloc (bpo_greg_owner, bpo_gregs_section->size);
+    = contents = (bfd_byte *)bfd_alloc(bpo_greg_owner,
+                                       bpo_gregs_section->size);
   if (contents == NULL)
     return FALSE;
 

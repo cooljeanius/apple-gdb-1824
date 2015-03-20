@@ -1274,23 +1274,23 @@ ecoff_type_to_string (bfd *abfd, FDR *fdr, unsigned int indx)
 	      break;
 
 	    case tqPtr:
-	      strcpy (p2, "ptr to ");
-	      p2 += sizeof ("ptr to ")-1;
+	      strcpy(p2, "ptr to ");
+	      p2 += (sizeof("ptr to ") - 1UL);
 	      break;
 
 	    case tqVol:
-	      strcpy (p2, "volatile ");
-	      p2 += sizeof ("volatile ")-1;
+	      strcpy(p2, "volatile ");
+	      p2 += (sizeof("volatile ") - 1UL);
 	      break;
 
 	    case tqFar:
-	      strcpy (p2, "far ");
-	      p2 += sizeof ("far ")-1;
+	      strcpy(p2, "far ");
+	      p2 += (sizeof("far ") - 1UL);
 	      break;
 
 	    case tqProc:
-	      strcpy (p2, "func. ret. ");
-	      p2 += sizeof ("func. ret. ");
+	      strcpy(p2, "func. ret. ");
+	      p2 += sizeof("func. ret. ");
 	      break;
 
 	    case tqArray:
@@ -1298,53 +1298,57 @@ ecoff_type_to_string (bfd *abfd, FDR *fdr, unsigned int indx)
 		int first_array = i;
 		int j;
 
-		/* Print array bounds reversed (ie, in the order the C
-		   programmer writes them).  C is such a fun language....  */
-		while (i < 5 && qualifiers[i+1].type == tqArray)
+		/* Print array bounds reversed (i.e., in the order the C
+		   programmer writes them).  C is such a fun language!  */
+		while ((i < 5) && (qualifiers[i + 1].type == tqArray))
 		  i++;
 
 		for (j = i; j >= first_array; j--)
 		  {
-		    strcpy (p2, "array [");
-		    p2 += sizeof ("array [")-1;
+		    strcpy(p2, "array [");
+		    p2 += (sizeof("array [") - 1UL);
 		    if (qualifiers[j].low_bound != 0)
-		      sprintf (p2,
-			       "%ld:%ld {%ld bits}",
-			       (long) qualifiers[j].low_bound,
-			       (long) qualifiers[j].high_bound,
-			       (long) qualifiers[j].stride);
+		      sprintf(p2, "%ld:%ld {%ld bits}",
+			      (long)qualifiers[j].low_bound,
+			      (long)qualifiers[j].high_bound,
+			      (long)qualifiers[j].stride);
 
 		    else if (qualifiers[j].high_bound != -1)
-		      sprintf (p2,
-			       "%ld {%ld bits}",
-			       (long) (qualifiers[j].high_bound + 1),
-			       (long) (qualifiers[j].stride));
+		      sprintf(p2, "%ld {%ld bits}",
+			      (long)(qualifiers[j].high_bound + 1L),
+			      (long)(qualifiers[j].stride));
 
 		    else
-		      sprintf (p2, " {%ld bits}", (long) (qualifiers[j].stride));
+		      sprintf(p2, " {%ld bits}", (long)(qualifiers[j].stride));
 
-		    p2 += strlen (p2);
-		    strcpy (p2, "] of ");
-		    p2 += sizeof ("] of ")-1;
+		    p2 += strlen(p2);
+		    strcpy(p2, "] of ");
+		    p2 += sizeof("] of ")-1;
 		  }
 	      }
 	      break;
+
+            default:
+#if defined(DEBUG) || defined(_DEBUG)
+              strcpy(p2, "unhandled");
+              p2 += sizeof("unhandled");
+#endif /* DEBUG || _DEBUG */
+              break;
 	    }
 	}
     }
 
-  strcpy (p2, buffer1);
+  strcpy(p2, buffer1);
   return buffer2;
 }
 
-/* Return information about ECOFF symbol SYMBOL in RET.  */
-
+/* Return information about ECOFF symbol SYMBOL in RET: */
 void
-_bfd_ecoff_get_symbol_info (bfd *abfd ATTRIBUTE_UNUSED,
-			    asymbol *symbol,
-			    symbol_info *ret)
+_bfd_ecoff_get_symbol_info(bfd *abfd ATTRIBUTE_UNUSED,
+			   asymbol *symbol,
+			   symbol_info *ret)
 {
-  bfd_symbol_info (symbol, ret);
+  bfd_symbol_info(symbol, ret);
 }
 
 /* Return whether this is a local label.  */
@@ -1359,26 +1363,24 @@ _bfd_ecoff_bfd_is_local_label_name (bfd *abfd ATTRIBUTE_UNUSED,
 /* Print information about an ECOFF symbol.  */
 
 void
-_bfd_ecoff_print_symbol (bfd *abfd,
-			 void * filep,
-			 asymbol *symbol,
-			 bfd_print_symbol_type how)
+_bfd_ecoff_print_symbol(bfd *abfd, void *filep, asymbol *symbol,
+                        bfd_print_symbol_type how)
 {
   const struct ecoff_debug_swap * const debug_swap
-    = &ecoff_backend (abfd)->debug_swap;
+    = &ecoff_backend(abfd)->debug_swap;
   FILE *file = (FILE *)filep;
 
   switch (how)
     {
     case bfd_print_symbol_name:
-      fprintf (file, "%s", symbol->name);
+      fprintf(file, "%s", symbol->name);
       break;
     case bfd_print_symbol_more:
-      if (ecoffsymbol (symbol)->local)
+      if (ecoffsymbol(symbol)->local)
 	{
 	  SYMR ecoff_sym;
 
-	  (*debug_swap->swap_sym_in) (abfd, ecoffsymbol (symbol)->native,
+	  (*debug_swap->swap_sym_in) (abfd, ecoffsymbol(symbol)->native,
 				      &ecoff_sym);
 	  fprintf (file, "ecoff local ");
 	  fprintf_vma (file, (bfd_vma) ecoff_sym.value);
@@ -1541,17 +1543,21 @@ _bfd_ecoff_print_symbol (bfd *abfd,
 	  }
       }
       break;
+
+    default:
+#if (defined(DEBUG) || defined(_DEBUG)) && defined(stderr)
+      fprintf(stderr, "Unhandled way to print symbol types.\n");
+#endif /* (DEBUG || _DEBUG) && stderr */
+      break;
     }
+  /* end switch on "how" */
 }
 
-/* Read in the relocs for a section.  */
-
+/* Read in the relocs for a section: */
 static bfd_boolean
-ecoff_slurp_reloc_table (bfd *abfd,
-			 asection *section,
-			 asymbol **symbols)
+ecoff_slurp_reloc_table(bfd *abfd, asection *section, asymbol **symbols)
 {
-  const struct ecoff_backend_data * const backend = ecoff_backend (abfd);
+  const struct ecoff_backend_data * const backend = ecoff_backend(abfd);
   arelent *internal_relocs;
   bfd_size_type external_reloc_size;
   bfd_size_type amt;
@@ -1925,7 +1931,7 @@ ecoff_sort_hdrs (const void * arg1, const void * arg2)
    reloc_filepos.  */
 
 static bfd_boolean
-ecoff_compute_section_file_positions (bfd *abfd)
+ecoff_compute_section_file_positions(bfd *abfd)
 {
   file_ptr sofar, file_sofar;
   asection **sorted_hdrs;
@@ -1934,47 +1940,47 @@ ecoff_compute_section_file_positions (bfd *abfd)
   file_ptr old_sofar;
   bfd_boolean rdata_in_text;
   bfd_boolean first_data, first_nonalloc;
-  const bfd_vma round = ecoff_backend (abfd)->round;
+  const bfd_vma round = ecoff_backend(abfd)->round;
   bfd_size_type amt;
 
-  sofar = _bfd_ecoff_sizeof_headers (abfd, FALSE);
+  sofar = _bfd_ecoff_sizeof_headers(abfd, FALSE);
   file_sofar = sofar;
 
   /* Sort the sections by VMA.  */
   amt = abfd->section_count;
-  amt *= sizeof (asection *);
-  sorted_hdrs = bfd_malloc (amt);
+  amt *= sizeof(asection *);
+  sorted_hdrs = (asection **)bfd_malloc(amt);
   if (sorted_hdrs == NULL)
     return FALSE;
   for (current = abfd->sections, i = 0;
        current != NULL;
        current = current->next, i++)
     sorted_hdrs[i] = current;
-  BFD_ASSERT (i == abfd->section_count);
+  BFD_ASSERT(i == abfd->section_count);
 
-  qsort (sorted_hdrs, abfd->section_count, sizeof (asection *),
-	 ecoff_sort_hdrs);
+  qsort(sorted_hdrs, abfd->section_count, sizeof(asection *),
+        ecoff_sort_hdrs);
 
   /* Some versions of the OSF linker put the .rdata section in the
      text segment, and some do not.  */
-  rdata_in_text = ecoff_backend (abfd)->rdata_in_text;
+  rdata_in_text = ecoff_backend(abfd)->rdata_in_text;
   if (rdata_in_text)
     {
       for (i = 0; i < abfd->section_count; i++)
 	{
 	  current = sorted_hdrs[i];
-	  if (streq (current->name, _RDATA))
+	  if (streq(current->name, _RDATA))
 	    break;
-	  if ((current->flags & SEC_CODE) == 0
-	      && ! streq (current->name, _PDATA)
-	      && ! streq (current->name, _RCONST))
+	  if (((current->flags & SEC_CODE) == 0)
+	      && ! streq(current->name, _PDATA)
+	      && ! streq(current->name, _RCONST))
 	    {
 	      rdata_in_text = FALSE;
 	      break;
 	    }
 	}
     }
-  ecoff_data (abfd)->rdata_in_text = rdata_in_text;
+  ecoff_data(abfd)->rdata_in_text = rdata_in_text;
 
   first_data = TRUE;
   first_nonalloc = TRUE;
