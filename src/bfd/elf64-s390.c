@@ -368,12 +368,10 @@ elf_s390_reloc_type_lookup (abfd, code)
    and elf64-s390.c has its own copy.  */
 
 static void
-elf_s390_info_to_howto (abfd, cache_ptr, dst)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *cache_ptr;
-     Elf_Internal_Rela *dst;
+elf_s390_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+                       Elf_Internal_Rela *dst)
 {
-  unsigned int r_type = ELF64_R_TYPE(dst->r_info);
+  unsigned int r_type = (unsigned int)ELF64_R_TYPE(dst->r_info);
   switch (r_type)
     {
     case R_390_GNU_VTINHERIT:
@@ -385,10 +383,10 @@ elf_s390_info_to_howto (abfd, cache_ptr, dst)
       break;
 
     default:
-      if (r_type >= sizeof (elf_howto_table) / sizeof (elf_howto_table[0]))
+      if (r_type >= (sizeof(elf_howto_table) / sizeof(elf_howto_table[0])))
 	{
-	  (*_bfd_error_handler) (_("%B: invalid relocation type %d"),
-				 abfd, (int) r_type);
+	  (*_bfd_error_handler)(_("%B: invalid relocation type %d"),
+                                abfd, (int)r_type);
 	  r_type = R_390_NONE;
 	}
       cache_ptr->howto = &elf_howto_table[r_type];
@@ -953,16 +951,16 @@ elf_s390_check_relocs (abfd, info, sec, relocs)
       else
 	{
 	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
-	  while (h->root.type == bfd_link_hash_indirect
-		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	  while ((h->root.type == bfd_link_hash_indirect)
+		 || (h->root.type == bfd_link_hash_warning))
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 	}
 
       /* Create got section and local_got_refcounts array if they
 	 are needed.  */
-      r_type = elf_s390_tls_transition (info,
-					ELF64_R_TYPE (rel->r_info),
-					h == NULL);
+      r_type = elf_s390_tls_transition(info,
+                                       ELF64_R_TYPE(rel->r_info),
+                                       (h == NULL));
       switch (r_type)
 	{
 	case R_390_GOT12:

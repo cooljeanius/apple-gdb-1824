@@ -19,7 +19,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -29,18 +29,22 @@
 #include "coff/sh.h"
 #include "coff/internal.h"
 
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
+
 #ifdef COFF_WITH_PE
-#include "coff/pe.h"
+# include "coff/pe.h"
 
-#ifndef COFF_IMAGE_WITH_PE
+# ifndef COFF_IMAGE_WITH_PE
 static bfd_boolean sh_align_load_span
-  PARAMS ((bfd *, asection *, bfd_byte *,
-	   bfd_boolean (*) (bfd *, asection *, PTR, bfd_byte *, bfd_vma),
-	   PTR, bfd_vma **, bfd_vma *, bfd_vma, bfd_vma, bfd_boolean *));
+  PARAMS((bfd *, asection *, bfd_byte *,
+	  bfd_boolean (*)(bfd *, asection *, PTR, bfd_byte *, bfd_vma),
+	  PTR, bfd_vma **, bfd_vma *, bfd_vma, bfd_vma, bfd_boolean *));
 
-#define _bfd_sh_align_load_span sh_align_load_span
-#endif
-#endif
+#  define _bfd_sh_align_load_span sh_align_load_span
+# endif /* !COFF_IMAGE_WITH_PE */
+#endif /* COFF_WITH_PE */
 
 #include "libcoff.h"
 
@@ -2309,7 +2313,7 @@ _bfd_sh_align_load_span(bfd *abfd, asection *sec, bfd_byte *contents,
   prev_i = start;
   if ((prev_i & 2) == 0)
     prev_i += 2UL;
-  for (i = prev_i; i < stop; i += 4UL)
+  for (i = prev_i; (i < stop) && (i < (bfd_vma)UINT_MAX); i += 4UL)
     {
       unsigned int insn;
       const struct sh_opcode *op;

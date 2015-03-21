@@ -22,6 +22,10 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 # define POWERMAC
 #endif /* !POWERMAC */
 
+/* try to work around symbol name conflicts: */
+#ifndef pmac_xcoff_vec
+# define pmac_xcoff_vec xcoff_pmac_vec
+#endif /* !pmac_xcoff_vec */
 #define TARGET_SYM	pmac_xcoff_vec
 #define TARGET_NAME	"xcoff-powermac"
 

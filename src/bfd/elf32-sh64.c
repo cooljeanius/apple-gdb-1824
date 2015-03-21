@@ -149,20 +149,20 @@ sh64_elf_fake_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 }
 
 static bfd_boolean
-sh64_elf_set_mach_from_flags (bfd *abfd)
+sh64_elf_set_mach_from_flags(bfd *abfd)
 {
-  flagword flags = elf_elfheader (abfd)->e_flags;
+  flagword flags = (flagword)elf_elfheader(abfd)->e_flags;
 
   switch (flags & EF_SH_MACH_MASK)
     {
     case EF_SH5:
       /* These are fit to execute on SH5.  Just one but keep the switch
 	 construct to make additions easy.  */
-      bfd_default_set_arch_mach (abfd, bfd_arch_sh, bfd_mach_sh5);
+      bfd_default_set_arch_mach(abfd, bfd_arch_sh, bfd_mach_sh5);
       break;
 
     default:
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return FALSE;
     }
 
@@ -170,8 +170,8 @@ sh64_elf_set_mach_from_flags (bfd *abfd)
 }
 
 static bfd_boolean
-sh64_elf_section_flags (flagword *flags,
-			const Elf_Internal_Shdr *hdr)
+sh64_elf_section_flags(flagword *flags,
+                       const Elf_Internal_Shdr *hdr)
 {
   if (hdr->bfd_section == NULL)
     return FALSE;
@@ -198,45 +198,45 @@ sh64_elf_copy_private_data (bfd * ibfd, bfd * obfd)
 }
 
 static bfd_boolean
-sh64_elf_merge_private_data (bfd *ibfd, bfd *obfd)
+sh64_elf_merge_private_data(bfd *ibfd, bfd *obfd)
 {
   flagword old_flags, new_flags;
 
-  if (! _bfd_generic_verify_endian_match (ibfd, obfd))
+  if (! _bfd_generic_verify_endian_match(ibfd, obfd))
     return FALSE;
 
-  if (   bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+  if ((bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
+      || (bfd_get_flavour(obfd) != bfd_target_elf_flavour))
     return TRUE;
 
-  if (bfd_get_arch_size (ibfd) != bfd_get_arch_size (obfd))
+  if (bfd_get_arch_size(ibfd) != bfd_get_arch_size(obfd))
     {
       const char *msg;
 
-      if (bfd_get_arch_size (ibfd) == 32
-	  && bfd_get_arch_size (obfd) == 64)
+      if ((bfd_get_arch_size (ibfd) == 32)
+	  && (bfd_get_arch_size (obfd) == 64))
 	msg = _("%s: compiled as 32-bit object and %s is 64-bit");
-      else if (bfd_get_arch_size (ibfd) == 64
-	       && bfd_get_arch_size (obfd) == 32)
+      else if ((bfd_get_arch_size(ibfd) == 64)
+	       && (bfd_get_arch_size(obfd) == 32))
 	msg = _("%s: compiled as 64-bit object and %s is 32-bit");
       else
 	msg = _("%s: object size does not match that of target %s");
 
-      (*_bfd_error_handler) (msg, bfd_get_filename (ibfd),
-			     bfd_get_filename (obfd));
-      bfd_set_error (bfd_error_wrong_format);
+      (*_bfd_error_handler)(msg, bfd_get_filename(ibfd),
+			    bfd_get_filename(obfd));
+      bfd_set_error(bfd_error_wrong_format);
       return FALSE;
     }
 
-  old_flags = elf_elfheader (obfd)->e_flags;
-  new_flags = elf_elfheader (ibfd)->e_flags;
-  if (! elf_flags_init (obfd))
+  old_flags = (flagword)elf_elfheader(obfd)->e_flags;
+  new_flags = (flagword)elf_elfheader(ibfd)->e_flags;
+  if (! elf_flags_init(obfd))
     {
       /* This happens when ld starts out with a 'blank' output file.  */
-      elf_flags_init (obfd) = TRUE;
-      elf_elfheader (obfd)->e_flags = old_flags = new_flags;
+      elf_flags_init(obfd) = TRUE;
+      elf_elfheader(obfd)->e_flags = old_flags = new_flags;
     }
-  /* We don't allow linking in non-SH64 code.  */
+  /* We do NOT allow linking in non-SH64 code: */
   else if ((new_flags & EF_SH_MACH_MASK) != EF_SH5)
     {
       (*_bfd_error_handler)
@@ -304,31 +304,31 @@ sh64_backend_section_from_shdr (bfd *abfd, Elf_Internal_Shdr *hdr,
    structure for the SH64 ELF section flags to be copied correctly.  */
 
 bfd_boolean
-sh64_bfd_elf_copy_private_section_data (bfd *ibfd, asection *isec,
-					bfd *obfd, asection *osec)
+sh64_bfd_elf_copy_private_section_data(bfd *ibfd, asection *isec,
+                                       bfd *obfd, asection *osec)
 {
   struct sh64_section_data *sh64_sec_data;
 
-  if (ibfd->xvec->flavour != bfd_target_elf_flavour
-      || obfd->xvec->flavour != bfd_target_elf_flavour)
+  if ((ibfd->xvec->flavour != bfd_target_elf_flavour)
+      || (obfd->xvec->flavour != bfd_target_elf_flavour))
     return TRUE;
 
-  if (! _bfd_elf_copy_private_section_data (ibfd, isec, obfd, osec))
+  if (! _bfd_elf_copy_private_section_data(ibfd, isec, obfd, osec))
     return FALSE;
 
-  sh64_sec_data = sh64_elf_section_data (isec)->sh64_info;
+  sh64_sec_data = sh64_elf_section_data(isec)->sh64_info;
   if (sh64_sec_data == NULL)
     {
-      sh64_sec_data = bfd_zmalloc (sizeof (struct sh64_section_data));
+      sh64_sec_data = bfd_zmalloc(sizeof(struct sh64_section_data));
 
       if (sh64_sec_data == NULL)
 	return FALSE;
 
-      sh64_sec_data->contents_flags
-	= (elf_section_data (isec)->this_hdr.sh_flags
-	   & (SHF_SH5_ISA32 | SHF_SH5_ISA32_MIXED));
+      sh64_sec_data->contents_flags =
+        (flagword)(elf_section_data(isec)->this_hdr.sh_flags
+                   & (SHF_SH5_ISA32 | SHF_SH5_ISA32_MIXED));
 
-      sh64_elf_section_data (osec)->sh64_info = sh64_sec_data;
+      sh64_elf_section_data(osec)->sh64_info = sh64_sec_data;
     }
 
   return TRUE;

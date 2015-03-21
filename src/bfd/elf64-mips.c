@@ -2363,17 +2363,17 @@ mips_elf64_canonicalize_dynamic_reloc (bfd *abfd, arelent **storage,
    generic code seems to depend on this.  */
 
 static bfd_boolean
-mips_elf64_slurp_one_reloc_table (bfd *abfd, asection *asect,
-				  Elf_Internal_Shdr *rel_hdr,
-				  bfd_size_type reloc_count,
-				  arelent *relents, asymbol **symbols,
-				  bfd_boolean dynamic)
+mips_elf64_slurp_one_reloc_table(bfd *abfd, asection *asect,
+				 Elf_Internal_Shdr *rel_hdr,
+				 bfd_size_type reloc_count,
+				 arelent *relents, asymbol **symbols,
+				 bfd_boolean dynamic)
 {
   void *allocated;
   bfd_byte *native_relocs;
   arelent *relent;
   bfd_vma i;
-  int entsize;
+  size_t entsize;
   bfd_boolean rela_p;
 
   allocated = bfd_malloc(rel_hdr->sh_size);
@@ -2503,20 +2503,20 @@ mips_elf64_slurp_one_reloc_table (bfd *abfd, asection *asect,
 	  if ((abfd->flags & (EXEC_P | DYNAMIC)) == 0 || dynamic)
 	    relent->address = rela.r_offset;
 	  else
-	    relent->address = rela.r_offset - asect->vma;
+	    relent->address = (rela.r_offset - asect->vma);
 
 	  relent->addend = rela.r_addend;
 
-	  relent->howto = mips_elf64_rtype_to_howto (type, rela_p);
+	  relent->howto = mips_elf64_rtype_to_howto(type, rela_p);
 
 	  ++relent;
 	}
     }
 
-  asect->reloc_count += (relent - relents) / 3;
+  asect->reloc_count += (unsigned int)((relent - relents) / 3U);
 
   if (allocated != NULL)
-    free (allocated);
+    free(allocated);
 
   return TRUE;
 
@@ -2858,32 +2858,31 @@ mips_elf64_write_rela(bfd *abfd, asection *sec,
       mips_elf64_swap_reloca_out (abfd, &int_rela, ext_rela);
     }
 
-  BFD_ASSERT (ext_rela - (Elf64_Mips_External_Rela *) rela_hdr->contents
-	      == *count);
+  BFD_ASSERT(ext_rela - (Elf64_Mips_External_Rela *)rela_hdr->contents
+	     == *count);
 }
 
-/* Set the right machine number for a MIPS ELF file.  */
-
+/* Set the right machine number for a MIPS ELF file: */
 static bfd_boolean
-mips_elf64_object_p (bfd *abfd)
+mips_elf64_object_p(bfd *abfd)
 {
   unsigned long mach;
 
   /* Irix 6 is broken.  Object file symbol tables are not always
      sorted correctly such that local symbols precede global symbols,
      and the sh_info field in the symbol table is not always right.  */
-  if (elf64_mips_irix_compat (abfd) != ict_none)
-    elf_bad_symtab (abfd) = TRUE;
+  if (elf64_mips_irix_compat(abfd) != ict_none)
+    elf_bad_symtab(abfd) = TRUE;
 
-  mach = _bfd_elf_mips_mach (elf_elfheader (abfd)->e_flags);
-  bfd_default_set_arch_mach (abfd, bfd_arch_mips, mach);
+  mach = _bfd_elf_mips_mach((flagword)elf_elfheader(abfd)->e_flags);
+  bfd_default_set_arch_mach(abfd, bfd_arch_mips, mach);
   return TRUE;
 }
 
 /* Depending on the target vector we generate some version of Irix
    executables or "normal" MIPS ELF ABI executables.  */
 static irix_compat_t
-elf64_mips_irix_compat (bfd *abfd)
+elf64_mips_irix_compat(bfd *abfd)
 {
   if ((abfd->xvec == &bfd_elf64_bigmips_vec)
       || (abfd->xvec == &bfd_elf64_littlemips_vec))
@@ -2906,10 +2905,10 @@ elf64_mips_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 
       case 480:		/* Linux/MIPS - N64 kernel */
 	/* pr_cursig */
-	elf_tdata (abfd)->core_signal = bfd_get_16 (abfd, note->descdata + 12);
+	elf_tdata(abfd)->core_signal = (int)bfd_get_16(abfd, note->descdata + 12);
 
 	/* pr_pid */
-	elf_tdata (abfd)->core_pid = bfd_get_32 (abfd, note->descdata + 32);
+	elf_tdata(abfd)->core_pid = (int)bfd_get_32(abfd, note->descdata + 32);
 
 	/* pr_reg */
 	offset = 112;
@@ -2943,10 +2942,10 @@ elf64_mips_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
      implementations, so strip it off if it exists.  */
 
   {
-    char *command = elf_tdata (abfd)->core_command;
-    int n = strlen (command);
+    char *command = elf_tdata(abfd)->core_command;
+    size_t n = strlen(command);
 
-    if (0 < n && command[n - 1] == ' ')
+    if ((0UL < n) && (command[n - 1] == ' '))
       command[n - 1] = '\0';
   }
 

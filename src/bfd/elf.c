@@ -282,19 +282,18 @@ bfd_elf_get_str_section (bfd *abfd, unsigned int shindex)
 }
 
 char *
-bfd_elf_string_from_elf_section (bfd *abfd,
-				 unsigned int shindex,
-				 unsigned int strindex)
+bfd_elf_string_from_elf_section(bfd *abfd, unsigned int shindex,
+                                unsigned int strindex)
 {
   Elf_Internal_Shdr *hdr;
 
   if (strindex == 0)
     return "";
 
-  hdr = elf_elfsections (abfd)[shindex];
+  hdr = elf_elfsections(abfd)[shindex];
 
-  if (hdr->contents == NULL
-      && bfd_elf_get_str_section (abfd, shindex) == NULL)
+  if ((hdr->contents == NULL)
+      && (bfd_elf_get_str_section(abfd, shindex) == NULL))
     return NULL;
 
   if (strindex >= hdr->sh_size)
@@ -302,14 +301,14 @@ bfd_elf_string_from_elf_section (bfd *abfd,
       unsigned int shstrndx = elf_elfheader(abfd)->e_shstrndx;
       (*_bfd_error_handler)
 	(_("%B: invalid string offset %u >= %lu for section `%s'"),
-	 abfd, strindex, (unsigned long) hdr->sh_size,
-	 (shindex == shstrndx && strindex == hdr->sh_name
+	 abfd, strindex, (unsigned long)hdr->sh_size,
+	 (((shindex == shstrndx) && (strindex == hdr->sh_name))
 	  ? ".shstrtab"
-	  : bfd_elf_string_from_elf_section (abfd, shstrndx, hdr->sh_name)));
+	  : bfd_elf_string_from_elf_section(abfd, shstrndx, hdr->sh_name)));
       return "";
     }
 
-  return ((char *) hdr->contents) + strindex;
+  return (((char *)hdr->contents) + strindex);
 }
 
 /* Read and convert symbols to internal format.

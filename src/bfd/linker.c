@@ -794,19 +794,17 @@ _bfd_generic_link_just_syms (asection *sec,
   sec->output_offset = sec->vma;
 }
 
-/* Add symbols from an object file to the global hash table.  */
-
+/* Add symbols from an object file to the global hash table: */
 static bfd_boolean
-generic_link_add_symbols (bfd *abfd,
-			  struct bfd_link_info *info,
-			  bfd_boolean collect)
+generic_link_add_symbols(bfd *abfd, struct bfd_link_info *info,
+                         bfd_boolean collect)
 {
   bfd_boolean ret;
 
-  switch (bfd_get_format (abfd))
+  switch (bfd_get_format(abfd))
     {
     case bfd_object:
-      ret = generic_link_add_object_symbols (abfd, info, collect);
+      ret = generic_link_add_object_symbols(abfd, info, collect);
       break;
     case bfd_archive:
       ret = (_bfd_generic_link_add_archive_symbols
@@ -815,8 +813,11 @@ generic_link_add_symbols (bfd *abfd,
 	       ? generic_link_check_archive_element_collect
 	       : generic_link_check_archive_element_no_collect)));
       break;
+    case bfd_core: /* fall through to: */
+    case bfd_type_end: /* fall through to: */
+    case bfd_unknown: /* fall through to: */
     default:
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       ret = FALSE;
     }
 
@@ -1473,15 +1474,17 @@ static const enum link_action link_action[8][8] =
    Adding an entry to a set does not count as a reference to a set,
    and no warning is issued (SET_ROW/warn).  */
 
-/* Return the BFD in which a hash entry has been defined, if known.  */
-
+/* Return the BFD in which a hash entry has been defined, if known: */
 static bfd *
-hash_entry_bfd (struct bfd_link_hash_entry *h)
+hash_entry_bfd(struct bfd_link_hash_entry *h)
 {
   while (h->type == bfd_link_hash_warning)
     h = h->u.i.link;
   switch (h->type)
     {
+    case bfd_link_hash_indirect: /* fall through to: */
+    case bfd_link_hash_new: /* fall through to: */
+    case bfd_link_hash_warning: /* fall through to: */
     default:
       return NULL;
     case bfd_link_hash_undefined:
@@ -2099,15 +2102,17 @@ _bfd_generic_final_link(bfd *abfd, struct bfd_link_info *info)
 	    {
 	    case bfd_section_reloc_link_order:
 	    case bfd_symbol_reloc_link_order:
-	      if (! _bfd_generic_reloc_link_order (abfd, info, o, p))
+	      if (! _bfd_generic_reloc_link_order(abfd, info, o, p))
 		return FALSE;
 	      break;
 	    case bfd_indirect_link_order:
-	      if (! default_indirect_link_order (abfd, info, o, p, TRUE))
+	      if (! default_indirect_link_order(abfd, info, o, p, TRUE))
 		return FALSE;
 	      break;
+            case bfd_data_link_order: /* fall through to: */
+            case bfd_undefined_link_order: /* fall through to: */
 	    default:
-	      if (! _bfd_default_link_order (abfd, info, o, p))
+	      if (! _bfd_default_link_order(abfd, info, o, p))
 		return FALSE;
 	      break;
 	    }
@@ -2568,6 +2573,10 @@ _bfd_generic_reloc_link_order(bfd *abfd, struct bfd_link_info *info,
 	  break;
         case bfd_reloc_continue:
             /* fall through for now (should we continue instead?) */
+        case bfd_reloc_notsupported: /* fall through to: */
+        case bfd_reloc_other: /* fall through to: */
+        case bfd_reloc_undefined: /* fall through to: */
+        case bfd_reloc_dangerous: /* fall through to: */
 	default:
 	case bfd_reloc_outofrange:
 	  abort();

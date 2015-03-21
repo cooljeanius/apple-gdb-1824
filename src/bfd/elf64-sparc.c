@@ -51,34 +51,34 @@ elf64_sparc_get_dynamic_reloc_upper_bound (bfd *abfd)
    for the same location,  R_SPARC_LO10 and R_SPARC_13.  */
 
 static bfd_boolean
-elf64_sparc_slurp_one_reloc_table (bfd *abfd, asection *asect,
-				   Elf_Internal_Shdr *rel_hdr,
-				   asymbol **symbols, bfd_boolean dynamic)
+elf64_sparc_slurp_one_reloc_table(bfd *abfd, asection *asect,
+				  Elf_Internal_Shdr *rel_hdr,
+				  asymbol **symbols, bfd_boolean dynamic)
 {
   PTR allocated = NULL;
   bfd_byte *native_relocs;
   arelent *relent;
   unsigned int i;
-  int entsize;
+  size_t entsize;
   bfd_size_type count;
   arelent *relents;
 
-  allocated = (PTR) bfd_malloc (rel_hdr->sh_size);
+  allocated = (PTR)bfd_malloc(rel_hdr->sh_size);
   if (allocated == NULL)
     goto error_return;
 
-  if (bfd_seek (abfd, rel_hdr->sh_offset, SEEK_SET) != 0
-      || bfd_bread (allocated, rel_hdr->sh_size, abfd) != rel_hdr->sh_size)
+  if ((bfd_seek(abfd, rel_hdr->sh_offset, SEEK_SET) != 0)
+      || bfd_bread(allocated, rel_hdr->sh_size, abfd) != rel_hdr->sh_size)
     goto error_return;
 
-  native_relocs = (bfd_byte *) allocated;
+  native_relocs = (bfd_byte *)allocated;
 
-  relents = asect->relocation + canon_reloc_count (asect);
+  relents = (asect->relocation + canon_reloc_count(asect));
 
   entsize = rel_hdr->sh_entsize;
-  BFD_ASSERT (entsize == sizeof (Elf64_External_Rela));
+  BFD_ASSERT(entsize == sizeof(Elf64_External_Rela));
 
-  count = rel_hdr->sh_size / entsize;
+  count = (rel_hdr->sh_size / entsize);
 
   for (i = 0, relent = relents; i < count;
        i++, relent++, native_relocs += entsize)
@@ -92,18 +92,18 @@ elf64_sparc_slurp_one_reloc_table (bfd *abfd, asection *asect,
 	 file, and absolute for an executable file or shared library.
 	 The address of a normal BFD reloc is always section relative,
 	 and the address of a dynamic reloc is absolute..  */
-      if ((abfd->flags & (EXEC_P | DYNAMIC)) == 0 || dynamic)
+      if (((abfd->flags & (EXEC_P | DYNAMIC)) == 0) || dynamic)
 	relent->address = rela.r_offset;
       else
-	relent->address = rela.r_offset - asect->vma;
+	relent->address = (rela.r_offset - asect->vma);
 
-      if (ELF64_R_SYM (rela.r_info) == 0)
+      if (ELF64_R_SYM(rela.r_info) == 0)
 	relent->sym_ptr_ptr = bfd_abs_section_ptr->symbol_ptr_ptr;
       else
 	{
 	  asymbol **ps, *s;
 
-	  ps = symbols + ELF64_R_SYM (rela.r_info) - 1;
+	  ps = (symbols + ELF64_R_SYM(rela.r_info) - 1);
 	  s = *ps;
 
 	  /* Canonicalize ELF section symbols.  FIXME: Why?  */
@@ -115,21 +115,21 @@ elf64_sparc_slurp_one_reloc_table (bfd *abfd, asection *asect,
 
       relent->addend = rela.r_addend;
 
-      r_type = ELF64_R_TYPE_ID (rela.r_info);
+      r_type = ELF64_R_TYPE_ID(rela.r_info);
       if (r_type == R_SPARC_OLO10)
 	{
-	  relent->howto = _bfd_sparc_elf_info_to_howto_ptr (R_SPARC_LO10);
+	  relent->howto = _bfd_sparc_elf_info_to_howto_ptr(R_SPARC_LO10);
 	  relent[1].address = relent->address;
 	  relent++;
 	  relent->sym_ptr_ptr = bfd_abs_section_ptr->symbol_ptr_ptr;
-	  relent->addend = ELF64_R_TYPE_DATA (rela.r_info);
-	  relent->howto = _bfd_sparc_elf_info_to_howto_ptr (R_SPARC_13);
+	  relent->addend = ELF64_R_TYPE_DATA(rela.r_info);
+	  relent->howto = _bfd_sparc_elf_info_to_howto_ptr(R_SPARC_13);
 	}
       else
-	relent->howto = _bfd_sparc_elf_info_to_howto_ptr (r_type);
+	relent->howto = _bfd_sparc_elf_info_to_howto_ptr(r_type);
     }
 
-  canon_reloc_count (asect) += relent - relents;
+  canon_reloc_count(asect) += (relent - relents);
 
   if (allocated != NULL)
     free (allocated);

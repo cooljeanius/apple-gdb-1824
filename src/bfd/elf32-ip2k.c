@@ -25,6 +25,10 @@
 #include "elf-bfd.h"
 #include "elf/ip2k.h"
 
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
+
 /* Struct used to pass miscellaneous paramaters which
    helps to avoid overly long parameter lists.  */
 struct misc
@@ -333,10 +337,10 @@ ip2k_is_switch_table_128(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
   int i_index = 0;
 
   /* Check current page-jmp: */
-  if ((addr + 4) > sec->size)
+  if ((addr + 4UL) > sec->size)
     return -1;
 
-  ip2k_get_mem(abfd, contents + addr, 4, code);
+  ip2k_get_mem(abfd, (contents + addr), 4, code);
 
   if ((! IS_PAGE_OPCODE(code + 0))
       || (! IS_JMP_OPCODE(code + 2)))
@@ -345,11 +349,11 @@ ip2k_is_switch_table_128(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
   /* Search back: */
   while (1)
     {
-      if (addr < 4)
-	return -1;
+      if ((addr < 4UL) && (addr >= 1UL))
+        return -1;
 
       /* Check previous 2 instructions: */
-      ip2k_get_mem(abfd, contents + addr - 4, 4, code);
+      ip2k_get_mem(abfd, (contents + addr - 4UL), 4, code);
       if ((IS_ADD_W_WREG_OPCODE(code + 0))
 	  && (IS_ADD_PCL_W_OPCODE(code + 2)))
 	return i_index;
@@ -359,7 +363,7 @@ ip2k_is_switch_table_128(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
 	return -1;
 
       i_index++;
-      addr -= 4;
+      addr -= 4UL;
     }
 }
 
@@ -411,10 +415,10 @@ ip2k_is_switch_table_256(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
   int i_index = 0;
 
   /* Check current page-jmp: */
-  if ((addr + 4) > sec->size)
+  if ((addr + 4UL) > sec->size)
     return -1;
 
-  ip2k_get_mem(abfd, contents + addr, 4, code);
+  ip2k_get_mem(abfd, (contents + addr), 4, code);
   if ((! IS_PAGE_OPCODE(code + 0))
       || (! IS_JMP_OPCODE(code + 2)))
     return -1;
@@ -422,11 +426,12 @@ ip2k_is_switch_table_256(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
   /* Search back: */
   while (1)
     {
-      if (addr < 16)
+      /* FIXME: the gcc loop optimizer complains here: */
+      if (addr < 16UL)
 	return -1;
 
       /* Check previous 8 instructions: */
-      ip2k_get_mem(abfd, contents + addr - 16, 16, code);
+      ip2k_get_mem(abfd, (contents + addr - 16), 16, code);
       if ((IS_ADD_W_WREG_OPCODE(code + 0))
 	  && (IS_SNC_OPCODE(code + 2))
 	  && (IS_INC_1SP_OPCODE(code + 4))
@@ -451,8 +456,11 @@ ip2k_is_switch_table_256(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
 	return -1;
 
       i_index++;
-      addr -= 4;
+      addr -= 4UL;
     }
+
+  /* if we got here, something went wrong: */
+  return -1;
 }
 
 /* Returns the expected page state for the given instruction not including

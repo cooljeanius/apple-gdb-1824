@@ -216,7 +216,9 @@ m68kcoff_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
                         struct internal_syment *sym ATTRIBUTE_UNUSED,
                         bfd_vma *addendp)
 {
-  arelent relent;
+  arelent relent = {
+    (struct bfd_symbol **)NULL, 0UL, 0UL, (reloc_howto_type *)NULL
+  };
   reloc_howto_type *howto;
 
   RTYPE2HOWTO(&relent, rel);
@@ -370,7 +372,9 @@ m68kcoff_common_addend_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED,
                                       struct internal_syment *sym,
                                       bfd_vma *addendp)
 {
-  arelent relent;
+  arelent relent = {
+    (struct bfd_symbol **)NULL, 0UL, 0UL, (reloc_howto_type *)NULL
+  };
   reloc_howto_type *howto;
 
   RTYPE2HOWTO(&relent, rel);
@@ -380,7 +384,7 @@ m68kcoff_common_addend_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED,
   if (howto->pc_relative)
     *addendp += sec->vma;
 
-  if (sym != NULL && sym->n_scnum == 0 && sym->n_value != 0)
+  if ((sym != NULL) && (sym->n_scnum == 0) && (sym->n_value != 0))
     {
       /* This is a common symbol.  The section contents include the
 	 size (sym->n_value) as an addend.  The relocate_section

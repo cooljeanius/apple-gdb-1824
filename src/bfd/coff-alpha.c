@@ -31,6 +31,10 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 #include "aout/ar.h"
 #include "libcoff.h"
 #include "libecoff.h"
+
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
 
 /* Prototypes for static functions.  */
 
@@ -2071,9 +2075,7 @@ alpha_ecoff_read_ar_hdr (abfd)
    we uncompress the archive element if necessary.  */
 
 static bfd *
-alpha_ecoff_get_elt_at_filepos (archive, filepos)
-     bfd *archive;
-     file_ptr filepos;
+alpha_ecoff_get_elt_at_filepos(bfd *archive, file_ptr filepos)
 {
   bfd *nbfd = NULL;
   struct areltdata *tdata;
@@ -2083,19 +2085,19 @@ alpha_ecoff_get_elt_at_filepos (archive, filepos)
   bfd_byte *buf, *p;
   struct bfd_in_memory *bim;
 
-  nbfd = _bfd_get_elt_at_filepos (archive, filepos);
+  nbfd = _bfd_get_elt_at_filepos(archive, filepos);
   if (nbfd == NULL)
     goto error_return;
 
   if ((nbfd->flags & BFD_IN_MEMORY) != 0)
     {
-      /* We have already expanded this BFD.  */
+      /* We have already expanded this BFD: */
       return nbfd;
     }
 
-  tdata = (struct areltdata *) nbfd->arelt_data;
-  hdr = (struct ar_hdr *) tdata->arch_header;
-  if (strncmp (hdr->ar_fmag, ARFZMAG, 2) != 0)
+  tdata = (struct areltdata *)nbfd->arelt_data;
+  hdr = (struct ar_hdr *)tdata->arch_header;
+  if (strncmp(hdr->ar_fmag, ARFZMAG, 2) != 0)
     return nbfd;
 
   /* We must uncompress this element.  We do this by copying it into a
@@ -2105,14 +2107,14 @@ alpha_ecoff_get_elt_at_filepos (archive, filepos)
      code, and making sure that it is deleted at all appropriate
      times.  It can be changed if it ever becomes important.  */
 
-  /* The compressed file starts with a dummy ECOFF file header.  */
-  if (bfd_seek (nbfd, (file_ptr) FILHSZ, SEEK_SET) != 0)
+  /* The compressed file starts with a dummy ECOFF file header: */
+  if (bfd_seek(nbfd, (file_ptr)FILHSZ, SEEK_SET) != 0)
     goto error_return;
 
-  /* The next eight bytes are the real file size.  */
-  if (bfd_bread (ab, (bfd_size_type) 8, nbfd) != 8)
+  /* The next eight bytes are the real file size: */
+  if (bfd_bread(ab, (bfd_size_type)8UL, nbfd) != 8)
     goto error_return;
-  size = H_GET_64 (nbfd, ab);
+  size = H_GET_64(nbfd, ab);
 
   if (size == 0)
     buf = NULL;
@@ -2123,15 +2125,15 @@ alpha_ecoff_get_elt_at_filepos (archive, filepos)
       unsigned int h;
       bfd_byte b;
 
-      buf = (bfd_byte *) bfd_alloc (nbfd, size);
+      buf = (bfd_byte *)bfd_alloc(nbfd, size);
       if (buf == NULL)
 	goto error_return;
       p = buf;
 
       left = size;
 
-      /* I don't know what the next eight bytes are for.  */
-      if (bfd_bread (ab, (bfd_size_type) 8, nbfd) != 8)
+      /* I do NOT know what the next eight bytes are for: */
+      if (bfd_bread(ab, (bfd_size_type)8UL, nbfd) != 8)
 	goto error_return;
 
       /* This is the uncompression algorithm.  It's a simple
@@ -2140,13 +2142,13 @@ alpha_ecoff_get_elt_at_filepos (archive, filepos)
 	 indicates whether the character is predicted or whether it
 	 appears in the input stream; each control byte manages the
 	 next eight bytes in the output stream.  */
-      memset (dict, 0, sizeof dict);
+      memset(dict, 0, sizeof(dict));
       h = 0;
-      while (bfd_bread (&b, (bfd_size_type) 1, nbfd) == 1)
+      while (bfd_bread(&b, (bfd_size_type)1UL, nbfd) == 1)
 	{
 	  unsigned int i;
 
-	  for (i = 0; i < 8; i++, b >>= 1)
+	  for (i = 0U; (i < 8U) && (i < UINT_MAX); i++, b >>= 1)
 	    {
 	      bfd_byte n;
 
@@ -2154,7 +2156,7 @@ alpha_ecoff_get_elt_at_filepos (archive, filepos)
 		n = dict[h];
 	      else
 		{
-		  if (! bfd_bread (&n, (bfd_size_type) 1, nbfd))
+		  if (! bfd_bread(&n, (bfd_size_type)1UL, nbfd))
 		    goto error_return;
 		  dict[h] = n;
 		}
@@ -2162,33 +2164,33 @@ alpha_ecoff_get_elt_at_filepos (archive, filepos)
 	      *p++ = n;
 
 	      --left;
-	      if (left == 0)
+	      if (left == 0UL)
 		break;
 
-	      h <<= 4;
+	      h <<= 4U;
 	      h ^= n;
-	      h &= sizeof dict - 1;
+	      h &= (sizeof(dict) - 1U);
 	    }
 
-	  if (left == 0)
+	  if (left == 0UL)
 	    break;
 	}
     }
 
-  /* Now the uncompressed file contents are in buf.  */
+  /* Now the uncompressed file contents are in buf: */
   bim = ((struct bfd_in_memory *)
-	 bfd_alloc (nbfd, (bfd_size_type) sizeof (struct bfd_in_memory)));
+	 bfd_alloc(nbfd, (bfd_size_type)sizeof(struct bfd_in_memory)));
   if (bim == NULL)
     goto error_return;
   bim->size = size;
   bim->buffer = buf;
 
   nbfd->mtime_set = TRUE;
-  nbfd->mtime = strtol (hdr->ar_date, (char **) NULL, 10);
+  nbfd->mtime = strtol(hdr->ar_date, (char **)NULL, 10);
 
   nbfd->flags |= BFD_IN_MEMORY;
-  nbfd->iostream = (PTR) bim;
-  BFD_ASSERT (! nbfd->cacheable);
+  nbfd->iostream = (PTR)bim;
+  BFD_ASSERT(! nbfd->cacheable);
 
   return nbfd;
 

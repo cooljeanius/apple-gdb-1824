@@ -941,15 +941,15 @@ mmix_elf_perform_relocation (isec, howto, datap, addr, value)
     {
     case R_MMIX_GETA:
       offs = 0;
-      reg = bfd_get_8 (abfd, (bfd_byte *) datap + 1);
+      reg = bfd_get_8(abfd, (bfd_byte *)datap + 1);
 
-      /* We change to an absolute value.  */
+      /* We change to an absolute value: */
       value += addr;
       break;
 
     case R_MMIX_CBRANCH:
       {
-	int in1 = bfd_get_16 (abfd, (bfd_byte *) datap) << 16;
+	int in1 = (int)(bfd_get_16(abfd, (bfd_byte *)datap) << 16);
 
 	/* Invert the condition and prediction bit, and set the offset
 	   to five instructions ahead.
@@ -1220,18 +1220,15 @@ mmix_elf_perform_relocation (isec, howto, datap, addr, value)
   return flag;
 }
 
-/* Set the howto pointer for an MMIX ELF reloc (type RELA).  */
-
+/* Set the howto pointer for an MMIX ELF reloc (type RELA): */
 static void
-mmix_info_to_howto_rela (abfd, cache_ptr, dst)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *cache_ptr;
-     Elf_Internal_Rela *dst;
+mmix_info_to_howto_rela(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+                        Elf_Internal_Rela *dst)
 {
   unsigned int r_type;
 
-  r_type = ELF64_R_TYPE (dst->r_info);
-  BFD_ASSERT (r_type < (unsigned int) R_MMIX_max);
+  r_type = (unsigned int)ELF64_R_TYPE(dst->r_info);
+  BFD_ASSERT(r_type < (unsigned int)R_MMIX_max);
   cache_ptr->howto = &elf_mmix_howto_table[r_type];
 }
 
@@ -1363,13 +1360,13 @@ mmix_elf_relocate_section (output_bfd, info, input_bfd, input_section,
       int r_type;
       bfd_boolean undefined_signalled = FALSE;
 
-      r_type = ELF64_R_TYPE (rel->r_info);
+      r_type = (int)ELF64_R_TYPE(rel->r_info);
 
-      if (r_type == R_MMIX_GNU_VTINHERIT
-	  || r_type == R_MMIX_GNU_VTENTRY)
+      if ((r_type == R_MMIX_GNU_VTINHERIT)
+	  || (r_type == R_MMIX_GNU_VTENTRY))
 	continue;
 
-      r_symndx = ELF64_R_SYM (rel->r_info);
+      r_symndx = ELF64_R_SYM(rel->r_info);
 
       if (info->relocatable)
 	{
@@ -1460,21 +1457,21 @@ mmix_elf_relocate_section (output_bfd, info, input_bfd, input_section,
 	  continue;
 	}
 
-      /* This is a final link.  */
-      howto = elf_mmix_howto_table + ELF64_R_TYPE (rel->r_info);
+      /* This is a final link: */
+      howto = (elf_mmix_howto_table + ELF64_R_TYPE(rel->r_info));
       h = NULL;
       sym = NULL;
       sec = NULL;
 
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
-	  sec = local_sections [r_symndx];
-	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	  sym = (local_syms + r_symndx);
+	  sec = local_sections[r_symndx];
+	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 
-	  name = bfd_elf_string_from_elf_section (input_bfd,
-						  symtab_hdr->sh_link,
-						  sym->st_name);
+	  name = bfd_elf_string_from_elf_section(input_bfd,
+						 (unsigned int)symtab_hdr->sh_link,
+						 (unsigned int)sym->st_name);
 	  if (name == NULL)
 	    name = bfd_section_name (input_bfd, sec);
 	}
@@ -2206,42 +2203,36 @@ mmix_elf_add_symbol_hook (abfd, info, sym, namep, flagsp, secp, valp)
   return TRUE;
 }
 
-/* We consider symbols matching "L.*:[0-9]+" to be local symbols.  */
-
+/* We consider symbols matching "L.*:[0-9]+" to be local symbols: */
 bfd_boolean
-mmix_elf_is_local_label_name (abfd, name)
-     bfd *abfd;
-     const char *name;
+mmix_elf_is_local_label_name(bfd *abfd, const char *name)
 {
   const char *colpos;
-  int digits;
+  size_t digits;
 
-  /* Also include the default local-label definition.  */
-  if (_bfd_elf_is_local_label_name (abfd, name))
+  /* Also include the default local-label definition: */
+  if (_bfd_elf_is_local_label_name(abfd, name))
     return TRUE;
 
   if (*name != 'L')
     return FALSE;
 
-  /* If there's no ":", or more than one, it's not a local symbol.  */
-  colpos = strchr (name, ':');
-  if (colpos == NULL || strchr (colpos + 1, ':') != NULL)
+  /* If there is no ":", or more than 1, then it is not a local symbol: */
+  colpos = strchr(name, ':');
+  if ((colpos == NULL) || (strchr((colpos + 1), ':') != NULL))
     return FALSE;
 
-  /* Check that there are remaining characters and that they are digits.  */
+  /* Check that there are remaining characters and that they are digits: */
   if (colpos[1] == 0)
     return FALSE;
 
-  digits = strspn (colpos + 1, "0123456789");
-  return digits != 0 && colpos[1 + digits] == 0;
+  digits = strspn((colpos + 1), "0123456789");
+  return ((digits != 0) && (colpos[1 + digits] == 0));
 }
 
-/* We get rid of the register section here.  */
-
+/* We get rid of the register section here: */
 bfd_boolean
-mmix_elf_final_link (abfd, info)
-     bfd *abfd;
-     struct bfd_link_info *info;
+mmix_elf_final_link(bfd *abfd, struct bfd_link_info *info)
 {
   /* We never output a register section, though we create one for
      temporary measures.  Check that nobody entered contents into it.  */

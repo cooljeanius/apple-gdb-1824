@@ -2107,21 +2107,21 @@ ppc64_elf_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
 /* Set the howto pointer for a PowerPC ELF reloc.  */
 
 static void
-ppc64_elf_info_to_howto (bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
-			 Elf_Internal_Rela *dst)
+ppc64_elf_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+                        Elf_Internal_Rela *dst)
 {
   unsigned int type;
 
-  /* Initialize howto table if needed.  */
+  /* Initialize howto table if needed: */
   if (!ppc64_elf_howto_table[R_PPC64_ADDR32])
-    ppc_howto_init ();
+    ppc_howto_init();
 
-  type = ELF64_R_TYPE (dst->r_info);
-  if (type >= (sizeof (ppc64_elf_howto_table)
-	       / sizeof (ppc64_elf_howto_table[0])))
+  type = (unsigned int)ELF64_R_TYPE(dst->r_info);
+  if (type >= (sizeof(ppc64_elf_howto_table)
+	       / sizeof(ppc64_elf_howto_table[0])))
     {
-      (*_bfd_error_handler) (_("%B: invalid relocation type %d"),
-			     abfd, (int) type);
+      (*_bfd_error_handler)(_("%B: invalid relocation type %d"),
+			    abfd, (int)type);
       type = R_PPC64_NONE;
     }
   cache_ptr->howto = ppc64_elf_howto_table[type];
@@ -2443,10 +2443,9 @@ ppc64_elf_object_p (bfd *abfd)
   return TRUE;
 }
 
-/* Support for core dump NOTE sections.  */
-
+/* Support for core dump NOTE sections: */
 static bfd_boolean
-ppc64_elf_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
+ppc64_elf_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 {
   size_t offset, size;
 
@@ -2454,10 +2453,11 @@ ppc64_elf_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
     return FALSE;
 
   /* pr_cursig */
-  elf_tdata (abfd)->core_signal = bfd_get_16 (abfd, note->descdata + 12);
+  elf_tdata(abfd)->core_signal = (int)bfd_get_16(abfd,
+                                                 (note->descdata + 12));
 
   /* pr_pid */
-  elf_tdata (abfd)->core_pid = bfd_get_32 (abfd, note->descdata + 32);
+  elf_tdata(abfd)->core_pid = (int)bfd_get_32(abfd, note->descdata + 32);
 
   /* pr_reg */
   offset = 112;
@@ -4333,8 +4333,8 @@ ppc64_elf_check_relocs (bfd *abfd, struct bfd_link_info *info,
       ppc64_elf_section_data (sec)->opd.func_sec = opd_sym_map;
     }
 
-  if (htab->sfpr == NULL
-      && !create_linkage_sections (htab->elf.dynobj, info))
+  if ((htab->sfpr == NULL)
+      && !create_linkage_sections(htab->elf.dynobj, info))
     return FALSE;
 
   rel_end = relocs + sec->reloc_count;
@@ -4345,26 +4345,26 @@ ppc64_elf_check_relocs (bfd *abfd, struct bfd_link_info *info,
       enum elf_ppc64_reloc_type r_type;
       int tls_type = 0;
 
-      r_symndx = ELF64_R_SYM (rel->r_info);
+      r_symndx = ELF64_R_SYM(rel->r_info);
       if (r_symndx < symtab_hdr->sh_info)
 	h = NULL;
       else
 	{
 	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
-	  while (h->root.type == bfd_link_hash_indirect
-		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	  while ((h->root.type == bfd_link_hash_indirect)
+		 || (h->root.type == bfd_link_hash_warning))
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 	}
 
-      r_type = ELF64_R_TYPE (rel->r_info);
+      r_type = (enum elf_ppc64_reloc_type)ELF64_R_TYPE(rel->r_info);
       switch (r_type)
 	{
 	case R_PPC64_GOT_TLSLD16:
 	case R_PPC64_GOT_TLSLD16_LO:
 	case R_PPC64_GOT_TLSLD16_HI:
 	case R_PPC64_GOT_TLSLD16_HA:
-	  ppc64_tlsld_got (abfd)->refcount += 1;
-	  tls_type = TLS_TLS | TLS_LD;
+	  ppc64_tlsld_got(abfd)->refcount += 1;
+	  tls_type = (TLS_TLS | TLS_LD);
 	  goto dogottls;
 
 	case R_PPC64_GOT_TLSGD16:

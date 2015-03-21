@@ -24,6 +24,10 @@
 #include "libbfd.h"
 #include "elf-bfd.h"
 
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
+
 #ifndef NUM_ELEM
 # define NUM_ELEM(a)  (sizeof(a) / (sizeof(a)[0]))
 #endif /* !NUM_ELEM */
@@ -6664,8 +6668,8 @@ elf32_arm_compare_mapping (const void * a, const void * b)
    written out as normal.  */
 
 static bfd_boolean
-elf32_arm_write_section (bfd *output_bfd ATTRIBUTE_UNUSED, asection *sec,
-			 bfd_byte *contents)
+elf32_arm_write_section(bfd *output_bfd ATTRIBUTE_UNUSED, asection *sec,
+                        bfd_byte *contents)
 {
   int mapcount;
   _arm_elf_section_data *arm_data;
@@ -6678,7 +6682,7 @@ elf32_arm_write_section (bfd *output_bfd ATTRIBUTE_UNUSED, asection *sec,
 
   /* If this section has not been allocated an _arm_elf_section_data
      structure then we cannot record anything.  */
-  arm_data = get_arm_elf_section_data (sec);
+  arm_data = get_arm_elf_section_data(sec);
   if (arm_data == NULL)
     return FALSE;
 
@@ -6688,22 +6692,22 @@ elf32_arm_write_section (bfd *output_bfd ATTRIBUTE_UNUSED, asection *sec,
   if (mapcount == 0)
     return FALSE;
 
-  qsort (map, mapcount, sizeof (* map), elf32_arm_compare_mapping);
+  qsort(map, mapcount, sizeof(* map), elf32_arm_compare_mapping);
 
-  offset = sec->output_section->vma + sec->output_offset;
+  offset = (sec->output_section->vma + sec->output_offset);
   ptr = map[0].vma - offset;
   for (i = 0; i < mapcount; i++)
     {
-      if (i == mapcount - 1)
+      if (i == (mapcount - 1))
 	end = sec->size;
       else
-	end = map[i + 1].vma - offset;
+	end = (map[i + 1].vma - offset);
 
       switch (map[i].type)
 	{
 	case 'a':
-	  /* Byte swap code words.  */
-	  while (ptr + 3 < end)
+	  /* Byte swap code words: */
+	  while (((ptr + 3) < end) && (ptr < (bfd_vma)UINT_MAX))
 	    {
 	      tmp = contents[ptr];
 	      contents[ptr] = contents[ptr + 3];
@@ -6716,8 +6720,8 @@ elf32_arm_write_section (bfd *output_bfd ATTRIBUTE_UNUSED, asection *sec,
 	  break;
 
 	case 't':
-	  /* Byte swap code halfwords.  */
-	  while (ptr + 1 < end)
+	  /* Byte swap code halfwords: */
+	  while (((ptr + 1) < end) && (ptr < (bfd_vma)UINT_MAX))
 	    {
 	      tmp = contents[ptr];
 	      contents[ptr] = contents[ptr + 1];

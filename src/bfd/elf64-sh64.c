@@ -1399,18 +1399,18 @@ sh_elf64_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
    See sh_elf_info_to_howto in elf32-sh.c for the original.  */
 
 static void
-sh_elf64_info_to_howto (bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
-			Elf_Internal_Rela *dst)
+sh_elf64_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+                       Elf_Internal_Rela *dst)
 {
   unsigned int r;
 
-  r = ELF64_R_TYPE (dst->r_info);
+  r = (unsigned int)ELF64_R_TYPE(dst->r_info);
 
-  BFD_ASSERT (r <= (unsigned int) R_SH_64_PCREL);
-  BFD_ASSERT (r < R_SH_FIRST_INVALID_RELOC || r > R_SH_LAST_INVALID_RELOC);
-  BFD_ASSERT (r < R_SH_DIR8WPN || r > R_SH_LAST_INVALID_RELOC_2);
-  BFD_ASSERT (r < R_SH_FIRST_INVALID_RELOC_3 || r > R_SH_GOTPLT32);
-  BFD_ASSERT (r < R_SH_FIRST_INVALID_RELOC_4 || r > R_SH_LAST_INVALID_RELOC_4);
+  BFD_ASSERT(r <= (unsigned int) R_SH_64_PCREL);
+  BFD_ASSERT(r < R_SH_FIRST_INVALID_RELOC || r > R_SH_LAST_INVALID_RELOC);
+  BFD_ASSERT(r < R_SH_DIR8WPN || r > R_SH_LAST_INVALID_RELOC_2);
+  BFD_ASSERT(r < R_SH_FIRST_INVALID_RELOC_3 || r > R_SH_GOTPLT32);
+  BFD_ASSERT(r < R_SH_FIRST_INVALID_RELOC_4 || r > R_SH_LAST_INVALID_RELOC_4);
 
   cache_ptr->howto = &sh_elf64_howto_table[r];
 }
@@ -1463,33 +1463,33 @@ sh_elf64_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
       bfd_reloc_status_type r;
       int seen_stt_datalabel = 0;
 
-      r_symndx = ELF64_R_SYM (rel->r_info);
+      r_symndx = ELF64_R_SYM(rel->r_info);
 
-      r_type = ELF64_R_TYPE (rel->r_info);
+      r_type = (int)ELF64_R_TYPE(rel->r_info);
 
-      if (r_type == (int) R_SH_NONE)
+      if (r_type == (int)R_SH_NONE)
 	continue;
 
-      if (r_type < 0
-	  || r_type > R_SH_64_PCREL
-	  || (r_type >= (int) R_SH_FIRST_INVALID_RELOC
-	      && r_type <= (int) R_SH_LAST_INVALID_RELOC)
-	  || (r_type >= (int) R_SH_DIR8WPN
-	      && r_type <= (int) R_SH_LAST_INVALID_RELOC)
-	  || (r_type >= (int) R_SH_GNU_VTINHERIT
-	      && r_type <= (int) R_SH_PSHL)
-	  || (r_type >= (int) R_SH_FIRST_INVALID_RELOC_2
-	      && r_type <= R_SH_GOTPLT32)
-	  || (r_type >= (int) R_SH_FIRST_INVALID_RELOC_4
-	      && r_type <= (int) R_SH_LAST_INVALID_RELOC_4))
+      if ((r_type < 0)
+	  || (r_type > R_SH_64_PCREL)
+	  || ((r_type >= (int)R_SH_FIRST_INVALID_RELOC)
+	      && (r_type <= (int)R_SH_LAST_INVALID_RELOC))
+	  || ((r_type >= (int)R_SH_DIR8WPN)
+	      && (r_type <= (int)R_SH_LAST_INVALID_RELOC))
+	  || ((r_type >= (int)R_SH_GNU_VTINHERIT)
+	      && (r_type <= (int)R_SH_PSHL))
+	  || ((r_type >= (int)R_SH_FIRST_INVALID_RELOC_2)
+	      && (r_type <= R_SH_GOTPLT32))
+	  || ((r_type >= (int)R_SH_FIRST_INVALID_RELOC_4)
+	      && (r_type <= (int)R_SH_LAST_INVALID_RELOC_4)))
 	{
-	  bfd_set_error (bfd_error_bad_value);
+	  bfd_set_error(bfd_error_bad_value);
 	  return FALSE;
 	}
 
-      howto = sh_elf64_howto_table + r_type;
+      howto = (sh_elf64_howto_table + r_type);
 
-      /* This is a final link.  */
+      /* This is a final link: */
       h = NULL;
       sym = NULL;
       sec = NULL;
@@ -2077,8 +2077,9 @@ sh_elf64_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 		  name = NULL;
 		else
 		  {
-		    name = (bfd_elf_string_from_elf_section
-			    (input_bfd, symtab_hdr->sh_link, sym->st_name));
+		    name = (bfd_elf_string_from_elf_section(input_bfd,
+                                                            (unsigned int)symtab_hdr->sh_link,
+                                                            (unsigned int)sym->st_name));
 		    if (name == NULL)
 		      return FALSE;
 		    if (*name == '\0')
@@ -2228,19 +2229,19 @@ sh64_elf64_fake_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 }
 
 static bfd_boolean
-sh_elf64_set_mach_from_flags (bfd *abfd)
+sh_elf64_set_mach_from_flags(bfd *abfd)
 {
-  flagword flags = elf_elfheader (abfd)->e_flags;
+  flagword flags = (flagword)elf_elfheader(abfd)->e_flags;
 
   switch (flags & EF_SH_MACH_MASK)
     {
     case EF_SH5:
-      /* Just one, but keep the switch construct to make additions easy.  */
-      bfd_default_set_arch_mach (abfd, bfd_arch_sh, bfd_mach_sh5);
+      /* Just one, but keep the switch construct to make additions easy: */
+      bfd_default_set_arch_mach(abfd, bfd_arch_sh, bfd_mach_sh5);
       break;
 
     default:
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return FALSE;
     }
   return TRUE;
@@ -2265,26 +2266,26 @@ sh_elf64_set_private_flags (bfd *abfd, flagword flags)
    code, to keep attributes the same as for SHmedia in 32-bit ELF.  */
 
 static bfd_boolean
-sh_elf64_copy_private_data_internal (bfd *ibfd, bfd *obfd)
+sh_elf64_copy_private_data_internal(bfd *ibfd, bfd *obfd)
 {
   Elf_Internal_Shdr **o_shdrp;
   asection *isec;
   asection *osec;
 
-  if (bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+  if ((bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
+      || (bfd_get_flavour(obfd) != bfd_target_elf_flavour))
     return TRUE;
 
-  o_shdrp = elf_elfsections (obfd);
+  o_shdrp = elf_elfsections(obfd);
   for (osec = obfd->sections; osec; osec = osec->next)
     {
-      int oIndex = ((struct bfd_elf_section_data *) elf_section_data (osec))->this_idx;
+      int oIndex = ((struct bfd_elf_section_data *)elf_section_data(osec))->this_idx;
       for (isec = ibfd->sections; isec; isec = isec->next)
 	{
-	  if (strcmp (osec->name, isec->name) == 0)
+	  if (strcmp(osec->name, isec->name) == 0)
 	    {
-	      /* Note that we're not disallowing mixing data and code.  */
-	      if ((elf_section_data (isec)->this_hdr.sh_flags
+	      /* Note that we are not disallowing mixing data and code: */
+	      if ((elf_section_data(isec)->this_hdr.sh_flags
 		   & SHF_SH5_ISA32) != 0)
 		o_shdrp[oIndex]->sh_flags |= SHF_SH5_ISA32;
 	      break;
@@ -2292,53 +2293,53 @@ sh_elf64_copy_private_data_internal (bfd *ibfd, bfd *obfd)
 	}
     }
 
-  return sh_elf64_set_private_flags (obfd, elf_elfheader (ibfd)->e_flags);
+  return sh_elf64_set_private_flags(obfd, (flagword)elf_elfheader(ibfd)->e_flags);
 }
 
 static bfd_boolean
-sh_elf64_copy_private_data (bfd *ibfd, bfd *obfd)
+sh_elf64_copy_private_data(bfd *ibfd, bfd *obfd)
 {
-  return sh_elf64_copy_private_data_internal (ibfd, obfd);
+  return sh_elf64_copy_private_data_internal(ibfd, obfd);
 }
 
 static bfd_boolean
-sh_elf64_merge_private_data (bfd *ibfd, bfd *obfd)
+sh_elf64_merge_private_data(bfd *ibfd, bfd *obfd)
 {
   flagword old_flags, new_flags;
 
-  if (! _bfd_generic_verify_endian_match (ibfd, obfd))
+  if (! _bfd_generic_verify_endian_match(ibfd, obfd))
     return FALSE;
 
-  if (   bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+  if ((bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
+      || (bfd_get_flavour(obfd) != bfd_target_elf_flavour))
     return TRUE;
 
-  if (bfd_get_arch_size (ibfd) != bfd_get_arch_size (obfd))
+  if (bfd_get_arch_size(ibfd) != bfd_get_arch_size(obfd))
     {
       const char *msg;
 
-      if (bfd_get_arch_size (ibfd) == 32
-	  && bfd_get_arch_size (obfd) == 64)
+      if ((bfd_get_arch_size(ibfd) == 32)
+	  && (bfd_get_arch_size(obfd) == 64))
 	msg = _("%s: compiled as 32-bit object and %s is 64-bit");
-      else if (bfd_get_arch_size (ibfd) == 64
-	       && bfd_get_arch_size (obfd) == 32)
+      else if ((bfd_get_arch_size(ibfd) == 64)
+	       && (bfd_get_arch_size(obfd) == 32))
 	msg = _("%s: compiled as 64-bit object and %s is 32-bit");
       else
 	msg = _("%s: object size does not match that of target %s");
 
-      (*_bfd_error_handler) (msg, bfd_get_filename (ibfd),
-			     bfd_get_filename (obfd));
+      (*_bfd_error_handler)(msg, bfd_get_filename(ibfd),
+			    bfd_get_filename(obfd));
       bfd_set_error (bfd_error_wrong_format);
       return FALSE;
     }
 
-  old_flags = elf_elfheader (obfd)->e_flags;
-  new_flags = elf_elfheader (ibfd)->e_flags;
-  if (! elf_flags_init (obfd))
+  old_flags = (flagword)elf_elfheader(obfd)->e_flags;
+  new_flags = (flagword)elf_elfheader(ibfd)->e_flags;
+  if (! elf_flags_init(obfd))
     {
-      /* This happens when ld starts out with a 'blank' output file.  */
-      elf_flags_init (obfd) = TRUE;
-      elf_elfheader (obfd)->e_flags = old_flags = new_flags;
+      /* This happens when ld starts out with a 'blank' output file: */
+      elf_flags_init(obfd) = TRUE;
+      elf_elfheader(obfd)->e_flags = old_flags = new_flags;
     }
   /* We don't allow linking in anything else than SH64 code, and since
      this is a 64-bit ELF, we assume the 64-bit ABI is used.  Add code
@@ -2347,18 +2348,18 @@ sh_elf64_merge_private_data (bfd *ibfd, bfd *obfd)
     {
       (*_bfd_error_handler)
 	("%s: does not use the SH64 64-bit ABI as previous modules do",
-	 bfd_get_filename (ibfd));
-      bfd_set_error (bfd_error_bad_value);
+	 bfd_get_filename(ibfd));
+      bfd_set_error(bfd_error_bad_value);
       return FALSE;
     }
 
-  sh_elf64_copy_private_data_internal (ibfd, obfd);
+  sh_elf64_copy_private_data_internal(ibfd, obfd);
 
-  /* I can't think of anything sane other than old_flags being EF_SH5 and
+  /* I cannot think of anything sane other than old_flags being EF_SH5 and
      that we need to preserve that.  */
-  elf_elfheader (obfd)->e_flags = old_flags;
+  elf_elfheader(obfd)->e_flags = old_flags;
 
-  return sh_elf64_set_mach_from_flags (obfd);
+  return sh_elf64_set_mach_from_flags(obfd);
 }
 
 /* Return the section that should be marked against GC for a given

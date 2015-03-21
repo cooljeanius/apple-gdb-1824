@@ -1051,20 +1051,19 @@ elf64_alpha_bfd_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
   return 0;
 }
 
-/* Given an Alpha ELF reloc type, fill in an arelent structure.  */
-
+/* Given an Alpha ELF reloc type, fill in an arelent structure: */
 static void
-elf64_alpha_info_to_howto (bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
-			   Elf_Internal_Rela *dst)
+elf64_alpha_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+			  Elf_Internal_Rela *dst)
 {
-  unsigned r_type = ELF64_R_TYPE(dst->r_info);
-  BFD_ASSERT (r_type < (unsigned int) R_ALPHA_max);
+  unsigned int r_type = (unsigned int)ELF64_R_TYPE(dst->r_info);
+  BFD_ASSERT(r_type < (unsigned int)R_ALPHA_max);
   cache_ptr->howto = &elf64_alpha_howto_table[r_type];
 }
 
-/* These two relocations create a two-word entry in the got.  */
+/* These two relocations create a two-word entry in the got: */
 #define alpha_got_entry_size(r_type) \
-  (r_type == R_ALPHA_TLSGD || r_type == R_ALPHA_TLSLDM ? 16 : 8)
+  (((r_type == R_ALPHA_TLSGD) || (r_type == R_ALPHA_TLSLDM)) ? 16 : 8)
 
 /* This is PT_TLS segment p_vaddr.  */
 #define alpha_get_dtprel_base(info) \
@@ -1955,20 +1954,21 @@ elf64_alpha_check_relocs (bfd *abfd, struct bfd_link_info *info,
 	      struct alpha_elf_reloc_entry *rent;
 
 	      for (rent = h->reloc_entries; rent; rent = rent->next)
-		if (rent->rtype == r_type && rent->srel == sreloc)
+		if ((rent->rtype == r_type) && (rent->srel == sreloc))
 		  break;
 
 	      if (!rent)
 		{
-		  amt = sizeof (struct alpha_elf_reloc_entry);
-		  rent = (struct alpha_elf_reloc_entry *) bfd_alloc (abfd, amt);
+		  amt = sizeof(struct alpha_elf_reloc_entry);
+		  rent = (struct alpha_elf_reloc_entry *)bfd_alloc(abfd,
+                                                                   amt);
 		  if (!rent)
 		    return FALSE;
 
 		  rent->srel = sreloc;
-		  rent->rtype = r_type;
+		  rent->rtype = (unsigned int)r_type;
 		  rent->count = 1;
-		  rent->reltext = (sec->flags & SEC_READONLY) != 0;
+		  rent->reltext = ((sec->flags & SEC_READONLY) != 0);
 
 		  rent->next = h->reloc_entries;
 		  h->reloc_entries = rent;
@@ -2147,22 +2147,22 @@ elf64_alpha_can_merge_gots (bfd *a, bfd *b)
      we don't have to store undo information in case we fail.  */
   for (bsub = b; bsub ; bsub = alpha_elf_tdata (bsub)->in_got_link_next)
     {
-      struct alpha_elf_link_hash_entry **hashes = alpha_elf_sym_hashes (bsub);
-      Elf_Internal_Shdr *symtab_hdr = &elf_tdata (bsub)->symtab_hdr;
+      struct alpha_elf_link_hash_entry **hashes = alpha_elf_sym_hashes(bsub);
+      Elf_Internal_Shdr *symtab_hdr = &elf_tdata(bsub)->symtab_hdr;
       int i, n;
 
-      n = NUM_SHDR_ENTRIES (symtab_hdr) - symtab_hdr->sh_info;
+      n = (int)(NUM_SHDR_ENTRIES(symtab_hdr) - symtab_hdr->sh_info);
       for (i = 0; i < n; ++i)
 	{
 	  struct alpha_elf_got_entry *ae, *be;
 	  struct alpha_elf_link_hash_entry *h;
 
 	  h = hashes[i];
-	  while (h->root.root.type == bfd_link_hash_indirect
-	         || h->root.root.type == bfd_link_hash_warning)
+	  while ((h->root.root.type == bfd_link_hash_indirect)
+	         || (h->root.root.type == bfd_link_hash_warning))
 	    h = (struct alpha_elf_link_hash_entry *)h->root.root.u.i.link;
 
-	  for (be = h->got_entries; be ; be = be->next)
+	  for (be = h->got_entries; be; be = be->next)
 	    {
 	      if (be->use_count == 0)
 	        continue;
@@ -2212,7 +2212,7 @@ elf64_alpha_merge_gots (bfd *a, bfd *b)
       local_got_entries = alpha_elf_tdata (bsub)->local_got_entries;
       if (local_got_entries)
         {
-	  n = elf_tdata (bsub)->symtab_hdr.sh_info;
+	  n = (int)elf_tdata(bsub)->symtab_hdr.sh_info;
 	  for (i = 0; i < n; ++i)
 	    {
 	      struct alpha_elf_got_entry *ent;
@@ -2221,11 +2221,11 @@ elf64_alpha_merge_gots (bfd *a, bfd *b)
 	    }
         }
 
-      /* Merge the global .got entries.  */
-      hashes = alpha_elf_sym_hashes (bsub);
-      symtab_hdr = &elf_tdata (bsub)->symtab_hdr;
+      /* Merge the global .got entries: */
+      hashes = alpha_elf_sym_hashes(bsub);
+      symtab_hdr = &elf_tdata(bsub)->symtab_hdr;
 
-      n = NUM_SHDR_ENTRIES (symtab_hdr) - symtab_hdr->sh_info;
+      n = (int)(NUM_SHDR_ENTRIES(symtab_hdr) - symtab_hdr->sh_info);
       for (i = 0; i < n; ++i)
         {
 	  struct alpha_elf_got_entry *ae, *be, **pbe, **start;
@@ -2284,16 +2284,15 @@ elf64_alpha_merge_gots (bfd *a, bfd *b)
   }
 }
 
-/* Calculate the offsets for the got entries.  */
-
+/* Calculate the offsets for the got entries: */
 static bfd_boolean
-elf64_alpha_calc_got_offsets_for_symbol (struct alpha_elf_link_hash_entry *h,
-					 PTR arg ATTRIBUTE_UNUSED)
+elf64_alpha_calc_got_offsets_for_symbol(struct alpha_elf_link_hash_entry *h,
+                                        PTR arg ATTRIBUTE_UNUSED)
 {
   struct alpha_elf_got_entry *gotent;
 
   if (h->root.root.type == bfd_link_hash_warning)
-    h = (struct alpha_elf_link_hash_entry *) h->root.root.u.i.link;
+    h = (struct alpha_elf_link_hash_entry *)h->root.root.u.i.link;
 
   for (gotent = h->got_entries; gotent; gotent = gotent->next)
     if (gotent->use_count > 0)
@@ -2301,17 +2300,17 @@ elf64_alpha_calc_got_offsets_for_symbol (struct alpha_elf_link_hash_entry *h,
 	struct alpha_elf_obj_tdata *td;
 	bfd_size_type *plge;
 
-	td = alpha_elf_tdata (gotent->gotobj);
+	td = alpha_elf_tdata(gotent->gotobj);
 	plge = &td->got->size;
 	gotent->got_offset = *plge;
-	*plge += alpha_got_entry_size (gotent->reloc_type);
+	*plge += alpha_got_entry_size(gotent->reloc_type);
       }
 
   return TRUE;
 }
 
 static void
-elf64_alpha_calc_got_offsets (struct bfd_link_info *info)
+elf64_alpha_calc_got_offsets(struct bfd_link_info *info)
 {
   bfd *i, *got_list = alpha_elf_hash_table(info)->got_list;
 
@@ -2331,21 +2330,21 @@ elf64_alpha_calc_got_offsets (struct bfd_link_info *info)
       bfd_size_type got_offset = alpha_elf_tdata(i)->got->size;
       bfd *j;
 
-      for (j = i; j ; j = alpha_elf_tdata(j)->in_got_link_next)
+      for (j = i; j; j = alpha_elf_tdata(j)->in_got_link_next)
 	{
 	  struct alpha_elf_got_entry **local_got_entries, *gotent;
-	  int k, n;
+	  size_t k, n;
 
 	  local_got_entries = alpha_elf_tdata(j)->local_got_entries;
 	  if (!local_got_entries)
 	    continue;
 
-	  for (k = 0, n = elf_tdata(j)->symtab_hdr.sh_info; k < n; ++k)
+	  for (k = 0UL, n = elf_tdata(j)->symtab_hdr.sh_info; k < n; ++k)
 	    for (gotent = local_got_entries[k]; gotent; gotent = gotent->next)
 	      if (gotent->use_count > 0)
 	        {
 		  gotent->got_offset = got_offset;
-		  got_offset += alpha_got_entry_size (gotent->reloc_type);
+		  got_offset += alpha_got_entry_size(gotent->reloc_type);
 	        }
 	}
 
@@ -2690,18 +2689,18 @@ elf64_alpha_size_rela_got_section (struct bfd_link_info *info)
     {
       bfd *j;
 
-      for (j = i; j ; j = alpha_elf_tdata(j)->in_got_link_next)
+      for (j = i; j; j = alpha_elf_tdata(j)->in_got_link_next)
 	{
 	  struct alpha_elf_got_entry **local_got_entries, *gotent;
-	  int k, n;
+	  size_t k, n;
 
 	  local_got_entries = alpha_elf_tdata(j)->local_got_entries;
 	  if (!local_got_entries)
 	    continue;
 
-	  for (k = 0, n = elf_tdata(j)->symtab_hdr.sh_info; k < n; ++k)
+	  for (k = 0UL, n = elf_tdata(j)->symtab_hdr.sh_info; k < n; ++k)
 	    for (gotent = local_got_entries[k];
-		 gotent ; gotent = gotent->next)
+		 gotent; gotent = gotent->next)
 	      if (gotent->use_count > 0)
 		entries += (alpha_dynamic_entries_for_reloc
 			    (gotent->reloc_type, 0, info->shared));
@@ -2908,31 +2907,32 @@ elf64_alpha_find_reloc_at_ofs (Elf_Internal_Rela *rel,
 }
 
 static bfd_boolean
-elf64_alpha_relax_got_load (struct alpha_relax_info *info, bfd_vma symval,
-			    Elf_Internal_Rela *irel, unsigned long r_type)
+elf64_alpha_relax_got_load(struct alpha_relax_info *info, bfd_vma symval,
+			   Elf_Internal_Rela *irel, unsigned long r_type)
 {
   unsigned int insn;
   bfd_signed_vma disp;
 
-  /* Get the instruction.  */
-  insn = bfd_get_32 (info->abfd, info->contents + irel->r_offset);
+  /* Get the instruction: */
+  insn = (unsigned int)bfd_get_32(info->abfd,
+                                  (info->contents + irel->r_offset));
 
   if (insn >> 26 != OP_LDQ)
     {
-      reloc_howto_type *howto = elf64_alpha_howto_table + r_type;
+      reloc_howto_type *howto = (elf64_alpha_howto_table + r_type);
       ((*_bfd_error_handler)
        ("%B: %A+0x%lx: warning: %s relocation against unexpected insn",
 	info->abfd, info->sec,
-	(unsigned long) irel->r_offset, howto->name));
+	(unsigned long)irel->r_offset, howto->name));
       return TRUE;
     }
 
-  /* Can't relax dynamic symbols.  */
-  if (alpha_elf_dynamic_symbol_p (&info->h->root, info->link_info))
+  /* Cannot relax dynamic symbols: */
+  if (alpha_elf_dynamic_symbol_p(&info->h->root, info->link_info))
     return TRUE;
 
-  /* Can't use local-exec relocations in shared libraries.  */
-  if (r_type == R_ALPHA_GOTTPREL && info->link_info->shared)
+  /* Cannot use local-exec relocations in shared libraries: */
+  if ((r_type == R_ALPHA_GOTTPREL) && info->link_info->shared)
     return TRUE;
 
   if (r_type == R_ALPHA_LITERAL)
@@ -2944,8 +2944,8 @@ elf64_alpha_relax_got_load (struct alpha_relax_info *info, bfd_vma symval,
 	      && (symval >= (bfd_vma)-0x8000 || symval < 0x8000)))
 	{
 	  disp = 0;
-	  insn = (OP_LDA << 26) | (insn & (31 << 21)) | (31 << 16);
-	  insn |= (symval & 0xffff);
+	  insn = ((OP_LDA << 26) | (insn & (31 << 21)) | (31 << 16));
+	  insn |= (unsigned int)(symval & 0xffff);
 	  r_type = R_ALPHA_NONE;
 	}
       else

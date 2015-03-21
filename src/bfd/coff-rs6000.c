@@ -36,6 +36,10 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 #include "libcoff.h"
 #include "libxcoff.h"
 
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
+
 extern bfd_boolean _bfd_xcoff_mkobject
   PARAMS ((bfd *));
 extern bfd_boolean _bfd_xcoff_copy_private_bfd_data
@@ -1703,22 +1707,21 @@ do_pad (abfd, number)
 }
 
 static bfd_boolean
-do_copy (out_bfd, in_bfd)
-     bfd *out_bfd;
-     bfd *in_bfd;
+do_copy(bfd *out_bfd, bfd *in_bfd)
 {
   bfd_size_type remaining;
   bfd_byte buffer[DEFAULT_BUFFERSIZE];
 
-  if (bfd_seek (in_bfd, (file_ptr) 0, SEEK_SET) != 0)
+  if (bfd_seek(in_bfd, (file_ptr)0L, SEEK_SET) != 0)
     return FALSE;
 
-  remaining = arelt_size (in_bfd);
+  remaining = arelt_size(in_bfd);
 
-  while (remaining >= DEFAULT_BUFFERSIZE)
+  while ((remaining >= DEFAULT_BUFFERSIZE)
+         && (remaining < (bfd_size_type)UINT_MAX))
     {
-      if (bfd_bread (buffer, DEFAULT_BUFFERSIZE, in_bfd) != DEFAULT_BUFFERSIZE
-	  || bfd_bwrite (buffer, DEFAULT_BUFFERSIZE, out_bfd) != DEFAULT_BUFFERSIZE)
+      if ((bfd_bread(buffer, DEFAULT_BUFFERSIZE, in_bfd) != DEFAULT_BUFFERSIZE)
+	  || (bfd_bwrite(buffer, DEFAULT_BUFFERSIZE, out_bfd) != DEFAULT_BUFFERSIZE))
 	return FALSE;
 
       remaining -= DEFAULT_BUFFERSIZE;
@@ -1726,8 +1729,8 @@ do_copy (out_bfd, in_bfd)
 
   if (remaining)
     {
-      if (bfd_bread (buffer, remaining, in_bfd) != remaining
-	  || bfd_bwrite (buffer, remaining, out_bfd) != remaining)
+      if ((bfd_bread(buffer, remaining, in_bfd) != remaining)
+	  || (bfd_bwrite(buffer, remaining, out_bfd) != remaining))
 	return FALSE;
     }
 

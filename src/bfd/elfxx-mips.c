@@ -23,7 +23,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* This file handles functionality common to the different MIPS ABI's.  */
 
@@ -42,6 +42,10 @@
 #include "coff/mips.h"
 
 #include "hashtab.h"
+
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
 
 /* This structure is used to hold .got entries while estimating got
    sizes.  */
@@ -4629,10 +4633,9 @@ mips_elf_create_dynamic_relocation (bfd *output_bfd,
   return TRUE;
 }
 
-/* Return the MACH for a MIPS e_flags value.  */
-
+/* Return the MACH for a MIPS e_flags value: */
 unsigned long
-_bfd_elf_mips_mach (flagword flags)
+_bfd_elf_mips_mach(flagword flags)
 {
   switch (flags & EF_MIPS_MACH)
     {
@@ -9425,7 +9428,7 @@ _bfd_mips_elf_final_link(bfd *abfd, struct bfd_link_info *info)
 	      size = input_section->size;
 	      last = 0;
 	      for (gpentry = sizeof(Elf32_External_gptab);
-		   gpentry < size;
+		   (gpentry < size) && (gpentry < (bfd_size_type)UINT_MAX);
 		   gpentry += sizeof(Elf32_External_gptab))
 		{
 		  Elf32_External_gptab ext_gptab;

@@ -202,6 +202,10 @@ EXAMPLE
 #include "elf/mmix.h"
 #include "opcode/mmix.h"
 
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
+
 #define LOP 0x98
 #define LOP_QUOTE 0
 #define LOP_LOC 1
@@ -408,7 +412,7 @@ static void mmo_write_octa_raw (bfd *, bfd_vma);
 static bfd_boolean mmo_write_chunk (bfd *, const bfd_byte *, unsigned int);
 static bfd_boolean mmo_flush_chunk (bfd *);
 static bfd_boolean mmo_write_loc_chunk (bfd *, bfd_vma, const bfd_byte *,
-					unsigned int, bfd_vma *);
+					size_t, bfd_vma *);
 static bfd_boolean mmo_write_chunk_list (bfd *, mmo_data_list_type *);
 static bfd_boolean mmo_write_loc_chunk_list (bfd *, mmo_data_list_type *);
 static bfd_boolean mmo_write_symbols_and_terminator (bfd *);
@@ -795,7 +799,7 @@ mmo_write_chunk(bfd *abfd, const bfd_byte *loc, unsigned int len)
   /* Fill up a tetra from bytes remaining from a previous chunk: */
   if (abfd->tdata.mmo_data->byte_no != 0)
     {
-      while ((abfd->tdata.mmo_data->byte_no < 4) && (len != 0))
+      while ((abfd->tdata.mmo_data->byte_no < 4) && (len != 0U))
 	{
 	  abfd->tdata.mmo_data->buf[abfd->tdata.mmo_data->byte_no++] = *loc++;
 	  len--;
@@ -809,17 +813,17 @@ mmo_write_chunk(bfd *abfd, const bfd_byte *loc, unsigned int len)
 	}
     }
 
-  while (len >= 4)
+  while ((len >= 4U) && (len < UINT_MAX))
     {
       if (loc[0] == LOP)
 	mmo_write_tetra_raw(abfd, LOP_QUOTE_NEXT);
 
       retval = (retval
 		&& ! abfd->tdata.mmo_data->have_error
-		&& (4 == bfd_bwrite(loc, 4, abfd)));
+		&& (4UL == bfd_bwrite(loc, 4, abfd)));
 
       loc += 4;
-      len -= 4;
+      len -= 4U;
     }
 
   if (len)
@@ -868,8 +872,8 @@ mmo_write_chunk_list (bfd *abfd, mmo_data_list_type *datap)
    output if different than *LAST_VMAP, which is updated after this call.  */
 
 static bfd_boolean
-mmo_write_loc_chunk (bfd *abfd, bfd_vma vma, const bfd_byte *loc,
-		     unsigned int len, bfd_vma *last_vmap)
+mmo_write_loc_chunk(bfd *abfd, bfd_vma vma, const bfd_byte *loc,
+		    size_t len, bfd_vma *last_vmap)
 {
   /* Find an initial and trailing section of zero tetras; we don't need to
      write out zeros.  FIXME: When we do this, we should emit section size
@@ -879,37 +883,38 @@ mmo_write_loc_chunk (bfd *abfd, bfd_vma vma, const bfd_byte *loc,
      because then data isn't tetrabyte-aligned and we're concatenating to
      that left-over data.  */
 
-  if (abfd->tdata.mmo_data->byte_no == 0 || vma != *last_vmap)
+  if ((abfd->tdata.mmo_data->byte_no == 0) || (vma != *last_vmap))
     {
-      while (len >= 4 && bfd_get_32 (abfd, loc) == 0)
+      /* FIXME: the gcc loop optimizer complains about both of these: */
+      while ((len >= 4UL) && (bfd_get_32(abfd, loc) == 0))
 	{
-	  vma += 4;
-	  len -= 4;
+	  vma += 4UL;
+	  len -= 4UL;
 	  loc += 4;
 	}
 
-      while (len >= 4 && bfd_get_32 (abfd, loc + len - 4) == 0)
-	len -= 4;
+      while ((len >= 4UL) && (bfd_get_32(abfd, (loc + len - 4UL)) == 0))
+	len -= 4U;
     }
 
   /* Only write out the location if it's different than the one the caller
      (supposedly) previously handled, accounting for omitted leading zeros.  */
   if (vma != *last_vmap)
     {
-      /* We might be in the middle of a sequence.  */
-      mmo_flush_chunk (abfd);
+      /* We might be in the middle of a sequence: */
+      mmo_flush_chunk(abfd);
 
       /* We always write the location as 64 bits; no use saving bytes
          here.  */
-      mmo_write_tetra_raw (abfd, (LOP << 24) | (LOP_LOC << 16) | 2);
-      mmo_write_octa_raw (abfd, vma);
+      mmo_write_tetra_raw(abfd, ((LOP << 24) | (LOP_LOC << 16) | 2));
+      mmo_write_octa_raw(abfd, vma);
     }
 
-  /* Update to reflect end of this chunk, with trailing zeros omitted.  */
-  *last_vmap = vma + len;
+  /* Update to reflect end of this chunk, with trailing zeros omitted: */
+  *last_vmap = (vma + len);
 
   return (! abfd->tdata.mmo_data->have_error
-	  && mmo_write_chunk (abfd, loc, len));
+	  && mmo_write_chunk(abfd, loc, len));
 }
 
 /* Same, but from a list.  */

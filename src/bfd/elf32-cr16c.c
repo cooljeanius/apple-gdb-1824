@@ -454,26 +454,26 @@ cr16c_elf_final_link_relocate (reloc_howto_type *howto,
       switch (size)
 	{
 	case R_S_16C_04:	/* word1(4-7).  */
-	  if ((value - 32) > 32 || value < 2)
+	  if (((value - 32) > 32) || (value < 2))
 	    return bfd_reloc_overflow;
 	  value >>= 1;
 	  value--;
 	  value &= 0xF;
 	  value <<= 4;
 	  value |= left_val;
-	  bfd_put_8 (abfd, (bfd_vma) value, (unsigned char *) data + octets);
+	  bfd_put_8(abfd, (bfd_vma)value, (unsigned char *)data + octets);
 	  break;
 
 	case R_S_16C_08:    /* word1(0-3,8-11).  */
-	  if (value > 255 || value < -256 || value == 0x80)
+	  if ((value > 255) || (value < -256) || (value == 0x80))
 	    return bfd_reloc_overflow;
 	  value &= 0x1FF;
 	  value >>= 1;
-	  sword = value & 0x000F;
-	  sword |= (value & 0x00F0) << 4;
+	  sword = (value & 0x000F);
+	  sword |= ((value & 0x00F0) << 4);
 	  sword |= left_val;
-	  bfd_put_16 (abfd, (bfd_vma) sword,
-		      (unsigned char *) data + octets);
+	  bfd_put_16(abfd, (bfd_vma)sword,
+		     (unsigned char *)data + octets);
 	  break;
 
 	case R_S_16C_16:    /* word2.  */

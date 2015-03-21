@@ -28,6 +28,10 @@
 #include "libiberty.h"
 #include "../opcodes/sh-opc.h"
 
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
+
 static bfd_reloc_status_type sh_elf_reloc
   (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
 static bfd_reloc_status_type sh_elf_ignore_reloc
@@ -1839,10 +1843,11 @@ sh_elf_reloc_loop(int r_type ATTRIBUTE_UNUSED, bfd *input_bfd,
     {
       bfd_vma start0 = (start - 4UL);
 
-      while (start0 && IS_PPI (contents + start0))
-	start0 -= 2;
-      start0 = start - 2 - ((start - start0) & 2);
-      start = start0 - cum_diff - 2;
+      /* FIXME: the gcc loop optimizer complains here: */
+      while (start0 && IS_PPI(contents + start0))
+	start0 -= 2UL;
+      start0 = (start - 2UL - ((start - start0) & 2UL));
+      start = (start0 - cum_diff - 2UL);
       end = start0;
     }
 
@@ -5400,28 +5405,28 @@ sh_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
 	      if (srelgot == NULL)
 		{
-		  srelgot = bfd_get_section_by_name (dynobj, ".rela.got");
-		  BFD_ASSERT (srelgot != NULL);
+		  srelgot = bfd_get_section_by_name(dynobj, ".rela.got");
+		  BFD_ASSERT(srelgot != NULL);
 		}
 
 	      outrel.r_offset = (sgot->output_section->vma
 				 + sgot->output_offset + off);
 
-	      if (h == NULL || h->dynindx == -1)
+	      if ((h == NULL) || (h->dynindx == -1))
 		indx = 0;
 	      else
-		indx = h->dynindx;
+		indx = (int)h->dynindx;
 
-	      dr_type = (r_type == R_SH_TLS_GD_32 ? R_SH_TLS_DTPMOD32 :
+	      dr_type = ((r_type == R_SH_TLS_GD_32) ? R_SH_TLS_DTPMOD32 :
 			 R_SH_TLS_TPOFF32);
-	      if (dr_type == R_SH_TLS_TPOFF32 && indx == 0)
-		outrel.r_addend = relocation - dtpoff_base (info);
+	      if ((dr_type == R_SH_TLS_TPOFF32) && (indx == 0))
+		outrel.r_addend = (relocation - dtpoff_base(info));
 	      else
 		outrel.r_addend = 0;
-	      outrel.r_info = ELF32_R_INFO (indx, dr_type);
+	      outrel.r_info = ELF32_R_INFO(indx, dr_type);
 	      loc = srelgot->contents;
-	      loc += srelgot->reloc_count++ * sizeof (Elf32_External_Rela);
-	      bfd_elf32_swap_reloca_out (output_bfd, &outrel, loc);
+	      loc += srelgot->reloc_count++ * sizeof(Elf32_External_Rela);
+	      bfd_elf32_swap_reloca_out(output_bfd, &outrel, loc);
 
 	      if (r_type == R_SH_TLS_GD_32)
 		{
@@ -5619,37 +5624,37 @@ sh_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
 		name = (bfd_elf_string_from_elf_section
 			(input_bfd,
-			 elf_elfheader (input_bfd)->e_shstrndx,
-			 elf_section_data (input_section)->rel_hdr.sh_name));
+			 elf_elfheader(input_bfd)->e_shstrndx,
+			 elf_section_data(input_section)->rel_hdr.sh_name));
 		if (name == NULL)
 		  return FALSE;
 
-		BFD_ASSERT (strncmp (name, ".rela", 5) == 0
-			    && strcmp (bfd_get_section_name (input_bfd,
-							     input_section),
-				       name + 5) == 0);
+		BFD_ASSERT ((strncmp(name, ".rela", 5) == 0)
+			    && (strcmp(bfd_get_section_name(input_bfd,
+                                                           input_section),
+                                       name + 5) == 0));
 
-		sreloc = bfd_get_section_by_name (dynobj, name);
-		BFD_ASSERT (sreloc != NULL);
+		sreloc = bfd_get_section_by_name(dynobj, name);
+		BFD_ASSERT(sreloc != NULL);
 	      }
 
-	    if (h == NULL || h->dynindx == -1)
+	    if ((h == NULL) || (h->dynindx == -1))
 	      indx = 0;
 	    else
-	      indx = h->dynindx;
+	      indx = (int)h->dynindx;
 
 	    outrel.r_offset = (input_section->output_section->vma
 			       + input_section->output_offset
 			       + rel->r_offset);
-	    outrel.r_info = ELF32_R_INFO (indx, R_SH_TLS_TPOFF32);
+	    outrel.r_info = ELF32_R_INFO(indx, R_SH_TLS_TPOFF32);
 	    if (indx == 0)
-	      outrel.r_addend = relocation - dtpoff_base (info);
+	      outrel.r_addend = (relocation - dtpoff_base(info));
 	    else
 	      outrel.r_addend = 0;
 
 	    loc = sreloc->contents;
-	    loc += sreloc->reloc_count++ * sizeof (Elf32_External_Rela);
-	    bfd_elf32_swap_reloca_out (output_bfd, &outrel, loc);
+	    loc += (sreloc->reloc_count++ * sizeof(Elf32_External_Rela));
+	    bfd_elf32_swap_reloca_out(output_bfd, &outrel, loc);
 	    continue;
 	  }
 	}
@@ -5670,17 +5675,18 @@ sh_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  name = NULL;
 		else
 		  {
-		    name = (bfd_elf_string_from_elf_section
-			    (input_bfd, symtab_hdr->sh_link, sym->st_name));
+		    name = (bfd_elf_string_from_elf_section(input_bfd,
+                                                            (unsigned int)symtab_hdr->sh_link,
+                                                            (unsigned int)sym->st_name));
 		    if (name == NULL)
 		      return FALSE;
 		    if (*name == '\0')
-		      name = bfd_section_name (input_bfd, sec);
+		      name = bfd_section_name(input_bfd, sec);
 		  }
-		if (! ((*info->callbacks->reloc_overflow)
-		       (info, (h ? &h->root : NULL), name, howto->name,
-			(bfd_vma) 0, input_bfd, input_section,
-			rel->r_offset)))
+		if (!((*info->callbacks->reloc_overflow)
+		      (info, (h ? &h->root : NULL), name, howto->name,
+                       (bfd_vma)0UL, input_bfd, input_section,
+                       rel->r_offset)))
 		  return FALSE;
 	      }
 	      break;
@@ -5866,24 +5872,23 @@ sh_elf_gc_mark_hook (asection *sec,
   return NULL;
 }
 
-/* Update the got entry reference counts for the section being removed.  */
-
+/* Update the got entry reference counts for the section being removed: */
 static bfd_boolean
-sh_elf_gc_sweep_hook (bfd *abfd, struct bfd_link_info *info,
-		      asection *sec, const Elf_Internal_Rela *relocs)
+sh_elf_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info,
+		     asection *sec, const Elf_Internal_Rela *relocs)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
   bfd_signed_vma *local_got_refcounts;
   const Elf_Internal_Rela *rel, *relend;
 
-  elf_section_data (sec)->local_dynrel = NULL;
+  elf_section_data(sec)->local_dynrel = NULL;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (abfd);
-  local_got_refcounts = elf_local_got_refcounts (abfd);
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(abfd);
+  local_got_refcounts = elf_local_got_refcounts(abfd);
 
-  relend = relocs + sec->reloc_count;
+  relend = (relocs + sec->reloc_count);
   for (rel = relocs; rel < relend; rel++)
     {
       unsigned long r_symndx;
@@ -5891,9 +5896,9 @@ sh_elf_gc_sweep_hook (bfd *abfd, struct bfd_link_info *info,
       struct elf_link_hash_entry *h = NULL;
 #ifdef INCLUDE_SHMEDIA
       int seen_stt_datalabel = 0;
-#endif
+#endif /* INCLUDE_SHMEDIA */
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
       if (r_symndx >= symtab_hdr->sh_info)
 	{
 	  struct elf_sh_link_hash_entry *eh;
@@ -5901,30 +5906,30 @@ sh_elf_gc_sweep_hook (bfd *abfd, struct bfd_link_info *info,
 	  struct elf_sh_dyn_relocs *p;
 
 	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
-	  while (h->root.type == bfd_link_hash_indirect
-		 || h->root.type == bfd_link_hash_warning)
+	  while ((h->root.type == bfd_link_hash_indirect)
+		 || (h->root.type == bfd_link_hash_warning))
 	    {
 #ifdef INCLUDE_SHMEDIA
-	      seen_stt_datalabel |= h->type == STT_DATALABEL;
-#endif
-	      h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	      seen_stt_datalabel |= (h->type == STT_DATALABEL);
+#endif /* INCLUDE_SHMEDIA */
+	      h = (struct elf_link_hash_entry *)h->root.u.i.link;
 	    }
-	  eh = (struct elf_sh_link_hash_entry *) h;
+	  eh = (struct elf_sh_link_hash_entry *)h;
 	  for (pp = &eh->dyn_relocs; (p = *pp) != NULL; pp = &p->next)
 	    if (p->sec == sec)
 	      {
-		/* Everything must go for SEC.  */
+		/* Everything must go for SEC: */
 		*pp = p->next;
 		break;
 	      }
 	}
 
-      r_type = ELF32_R_TYPE (rel->r_info);
-      switch (sh_elf_optimized_tls_reloc (info, r_type, h != NULL))
+      r_type = (unsigned int)ELF32_R_TYPE(rel->r_info);
+      switch (sh_elf_optimized_tls_reloc(info, r_type, h != NULL))
 	{
 	case R_SH_TLS_LD_32:
-	  if (sh_elf_hash_table (info)->tls_ldm_got.refcount > 0)
-	    sh_elf_hash_table (info)->tls_ldm_got.refcount -= 1;
+	  if (sh_elf_hash_table(info)->tls_ldm_got.refcount > 0)
+	    sh_elf_hash_table(info)->tls_ldm_got.refcount -= 1;
 	  break;
 
 	case R_SH_GOT32:
@@ -6200,21 +6205,21 @@ sh_elf_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
       int seen_stt_datalabel = 0;
 #endif /* INCLUDE_SHMEDIA */
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
-      r_type = ELF32_R_TYPE (rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
+      r_type = (unsigned int)ELF32_R_TYPE(rel->r_info);
 
       if (r_symndx < symtab_hdr->sh_info)
 	h = NULL;
       else
 	{
 	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
-	  while (h->root.type == bfd_link_hash_indirect
-		 || h->root.type == bfd_link_hash_warning)
+	  while ((h->root.type == bfd_link_hash_indirect)
+		 || (h->root.type == bfd_link_hash_warning))
 	    {
 #ifdef INCLUDE_SHMEDIA
-	      seen_stt_datalabel |= h->type == STT_DATALABEL;
-#endif
-	      h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	      seen_stt_datalabel |= (h->type == STT_DATALABEL);
+#endif /* INCLUDE_SHMEDIA */
+	      h = (struct elf_link_hash_entry *)h->root.u.i.link;
 	    }
 	}
 

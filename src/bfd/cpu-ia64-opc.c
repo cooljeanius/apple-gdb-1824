@@ -1,7 +1,7 @@
-/* Copyright 1998, 1999, 2000, 2001, 2002, 2003
-   Free Software Foundation, Inc.
-   Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
-
+/* cpu-ia64-opc.c: Copyright 1998, 1999, 2000, 2001, 2002, 2003
+ * Free Software Foundation, Inc.
+ * Contributed by David Mosberger-Tang <davidm@hpl.hp.com>  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* Logically, this code should be part of libopcode but since some of
    the operand insertion/extraction functions help bfd to implement
@@ -27,40 +27,44 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 
    --davidm Mon Apr 13 22:14:02 1998 */
 
+#ifndef _BFD_CPU_IA64_C
+# error "this file should only be compiled when included from cpu-ia64.c"
+#endif /* !_BFD_CPU_IA64_C */
+
 #include "../opcodes/ia64-opc.h"
 
-#define NELEMS(a)  ((int) (sizeof (a) / sizeof ((a)[0])))
+#define NELEMS(a)  ((int)(sizeof(a) / sizeof((a)[0])))
 
 static const char*
-ins_rsvd (const struct ia64_operand *self ATTRIBUTE_UNUSED,
+ins_rsvd(const struct ia64_operand *self ATTRIBUTE_UNUSED,
+	 ia64_insn value ATTRIBUTE_UNUSED, ia64_insn *code ATTRIBUTE_UNUSED)
+{
+  return "internal error---this should never happen";
+}
+
+static const char*
+ext_rsvd(const struct ia64_operand *self ATTRIBUTE_UNUSED,
+	 ia64_insn code ATTRIBUTE_UNUSED, ia64_insn *valuep ATTRIBUTE_UNUSED)
+{
+  return "internal error---this should never happen";
+}
+
+static const char*
+ins_const(const struct ia64_operand *self ATTRIBUTE_UNUSED,
 	  ia64_insn value ATTRIBUTE_UNUSED, ia64_insn *code ATTRIBUTE_UNUSED)
 {
-  return "internal error---this shouldn't happen";
+  return 0;
 }
 
 static const char*
-ext_rsvd (const struct ia64_operand *self ATTRIBUTE_UNUSED,
+ext_const(const struct ia64_operand *self ATTRIBUTE_UNUSED,
 	  ia64_insn code ATTRIBUTE_UNUSED, ia64_insn *valuep ATTRIBUTE_UNUSED)
 {
-  return "internal error---this shouldn't happen";
-}
-
-static const char*
-ins_const (const struct ia64_operand *self ATTRIBUTE_UNUSED,
-	   ia64_insn value ATTRIBUTE_UNUSED, ia64_insn *code ATTRIBUTE_UNUSED)
-{
   return 0;
 }
 
 static const char*
-ext_const (const struct ia64_operand *self ATTRIBUTE_UNUSED,
-	   ia64_insn code ATTRIBUTE_UNUSED, ia64_insn *valuep ATTRIBUTE_UNUSED)
-{
-  return 0;
-}
-
-static const char*
-ins_reg (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
+ins_reg(const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 {
   if (value >= 1u << self->field[0].bits)
     return "register number out of range";
@@ -70,7 +74,7 @@ ins_reg (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 }
 
 static const char*
-ext_reg (const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
+ext_reg(const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
 {
   *valuep = ((code >> self->field[0].shift)
 	     & ((1u << self->field[0].bits) - 1));
@@ -78,7 +82,7 @@ ext_reg (const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
 }
 
 static const char*
-ins_immu (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
+ins_immu(const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 {
   ia64_insn new = 0;
   int i;
@@ -97,7 +101,7 @@ ins_immu (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 }
 
 static const char*
-ext_immu (const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
+ext_immu(const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
 {
   BFD_HOST_U_64_BIT value = 0;
   int i, bits = 0, total = 0;
@@ -597,3 +601,5 @@ const struct ia64_operand elf64_ia64_operands[IA64_OPND_COUNT] =
     { ABS, ins_const, ext_const, 0, {{0, 0}}, 0,		/* LDXMOV */
       "ldxmov target" },
   };
+
+/* EOF */

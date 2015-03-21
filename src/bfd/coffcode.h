@@ -5048,7 +5048,9 @@ coff_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED,
                     struct internal_syment *sym ATTRIBUTE_UNUSED,
                     bfd_vma *addendp ATTRIBUTE_UNUSED)
 {
-  arelent genrel;
+  arelent genrel = {
+    (struct bfd_symbol **)NULL, 0UL, 0UL, (reloc_howto_type *)NULL
+  };
 
   RTYPE2HOWTO(&genrel, rel);
   return genrel.howto;

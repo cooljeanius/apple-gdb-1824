@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - 5th Floor, Boston, MA 02110-1301, USA. */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "safe-ctype.h"
 #include "pef.h"
@@ -26,6 +26,10 @@
 #include "sysdep.h"
 #include "libbfd.h"
 #include "libiberty.h"
+
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
 
 #ifndef BFD_IO_FUNCS
 # define BFD_IO_FUNCS 0
@@ -704,7 +708,7 @@ bfd_pef_parse_traceback_tables(bfd *abfd, asection *sec,
       pos += 3UL;
       pos -= (pos % 4UL);
 
-      while ((pos + 4) <= len)
+      while (((pos + 4UL) <= len) && (pos < (size_t)UINT_MAX))
 	{
           if (bfd_getb32(buf + pos) == 0) {
             break;
@@ -868,7 +872,7 @@ bfd_pef_parse_function_stubs(bfd *abfd, asection *codesec,
       codepos += 3UL;
       codepos -= (codepos % 4UL);
 
-      while ((codepos + 4UL) <= codelen)
+      while (((codepos + 4UL) <= codelen) && (codepos < (size_t)UINT_MAX))
 	{
           if ((bfd_getb32(codebuf + codepos) & 0xffff0000) == 0x81820000) {
             break;
