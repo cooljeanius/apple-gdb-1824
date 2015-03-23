@@ -26,6 +26,8 @@ Boston, MA 02110-1301, USA.  */
 #endif /* HAVE_SYS_PRCTL_H */
 #include "ansidecl.h"
 
+#include "libiberty.h"
+
 /*
 
 @deftypefn Supplemental void setproctitle (const char *@var{fmt}, ...)

@@ -1639,15 +1639,15 @@ coff_get_normalized_symtab(bfd *abfd)
 		  && coff_data (abfd)->pe)
 		internal_ptr->u.syment._n._n_n._n_offset =
 		  ((long)
-		   copy_name (abfd,
-			      (internal_ptr + 1)->u.auxent.x_file.x_fname,
-			      internal_ptr->u.syment.n_numaux * symesz));
+		   copy_name(abfd,
+			     (internal_ptr + 1)->u.auxent.x_file.x_fname,
+			     internal_ptr->u.syment.n_numaux * symesz));
 	      else
 		internal_ptr->u.syment._n._n_n._n_offset =
 		  ((long)
-		   copy_name (abfd,
-			      (internal_ptr + 1)->u.auxent.x_file.x_fname,
-			      (size_t) bfd_coff_filnmlen (abfd)));
+		   copy_name(abfd,
+			     (internal_ptr + 1)->u.auxent.x_file.x_fname,
+			     (size_t)bfd_coff_filnmlen(abfd)));
 	    }
 	}
       else

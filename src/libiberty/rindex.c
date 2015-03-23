@@ -12,6 +12,8 @@ deprecated in new programs in favor of @code{strrchr}.
 
 */
 
+#include "libiberty_deprecated.h"
+
 extern char *strrchr(const char *, int);
 
 char *

@@ -892,20 +892,23 @@ elf32_m68hc11_check_relocs (bfd *abfd, struct bfd_link_info *info,
 	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
 	}
 
-      switch (ELF32_R_TYPE (rel->r_info))
+      switch (ELF32_R_TYPE(rel->r_info))
         {
         /* This relocation describes the C++ object vtable hierarchy.
            Reconstruct it for later use during GC.  */
         case R_M68HC11_GNU_VTINHERIT:
-          if (!bfd_elf_gc_record_vtinherit (abfd, sec, h, rel->r_offset))
+          if (!bfd_elf_gc_record_vtinherit(abfd, sec, h, rel->r_offset))
             return FALSE;
           break;
 
         /* This relocation describes which C++ vtable entries are actually
            used.  Record for later use during GC.  */
         case R_M68HC11_GNU_VTENTRY:
-          if (!bfd_elf_gc_record_vtentry (abfd, sec, h, rel->r_addend))
+          if (!bfd_elf_gc_record_vtentry(abfd, sec, h, rel->r_addend))
             return FALSE;
+          break;
+
+        default:
           break;
         }
     }
@@ -1066,17 +1069,17 @@ elf32_m68hc11_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 				    local_sections, local_syms,
                                     rel, &name, &relocation, &is_far);
 
-      /* Do the memory bank mapping.  */
-      phys_addr = m68hc11_phys_addr (pinfo, relocation + rel->r_addend);
-      phys_page = m68hc11_phys_page (pinfo, relocation + rel->r_addend);
+      /* Do the memory bank mapping: */
+      phys_addr = m68hc11_phys_addr(pinfo, relocation + rel->r_addend);
+      phys_page = m68hc11_phys_page(pinfo, relocation + rel->r_addend);
       switch (r_type)
         {
         case R_M68HC11_24:
-          /* Reloc used by 68HC12 call instruction.  */
-          bfd_put_16 (input_bfd, phys_addr,
-                      (bfd_byte*) contents + rel->r_offset);
-          bfd_put_8 (input_bfd, phys_page,
-                     (bfd_byte*) contents + rel->r_offset + 2);
+          /* Reloc used by 68HC12 call instruction: */
+          bfd_put_16(input_bfd, phys_addr,
+                     (bfd_byte*)contents + rel->r_offset);
+          bfd_put_8(input_bfd, phys_page,
+                    (bfd_byte*)contents + rel->r_offset + 2);
           r = bfd_reloc_ok;
           r_type = R_M68HC11_NONE;
           break;
@@ -1112,16 +1115,16 @@ elf32_m68hc11_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
                 (info, buf, name, input_bfd, NULL, rel->r_offset);
             }
 
-          /* Get virtual address of instruction having the relocation.  */
-          insn_addr = input_section->output_section->vma
-            + input_section->output_offset
-            + rel->r_offset;
+          /* Get virtual address of instruction having the relocation: */
+          insn_addr = (input_section->output_section->vma
+                       + input_section->output_offset
+                       + rel->r_offset);
 
-          insn_page = m68hc11_phys_page (pinfo, insn_addr);
+          insn_page = m68hc11_phys_page(pinfo, insn_addr);
 
-          if (m68hc11_addr_is_banked (pinfo, relocation + rel->r_addend)
-              && m68hc11_addr_is_banked (pinfo, insn_addr)
-              && phys_page != insn_page)
+          if (m68hc11_addr_is_banked(pinfo, (relocation + rel->r_addend))
+              && m68hc11_addr_is_banked(pinfo, insn_addr)
+              && (phys_page != insn_page))
             {
               const char* msg;
               char* buf;
@@ -1161,18 +1164,22 @@ elf32_m68hc11_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 
           /* If this is a banked address use the phys_addr so that
              we stay in the banked window.  */
-          if (m68hc11_addr_is_banked (pinfo, relocation + rel->r_addend))
+          if (m68hc11_addr_is_banked(pinfo, relocation + rel->r_addend))
             relocation = phys_addr;
           break;
+
+        default:
+          break;
         }
+      /* That was the end of the switch on 'r_type' */
       if (r_type != R_M68HC11_NONE)
-        r = _bfd_final_link_relocate (howto, input_bfd, input_section,
-                                      contents, rel->r_offset,
-                                      relocation, rel->r_addend);
+        r = _bfd_final_link_relocate(howto, input_bfd, input_section,
+                                     contents, rel->r_offset,
+                                     relocation, rel->r_addend);
 
       if (r != bfd_reloc_ok)
 	{
-	  const char * msg = (const char *) 0;
+	  const char *msg = (const char *)0;
 
 	  switch (r)
 	    {
@@ -1221,16 +1228,15 @@ elf32_m68hc11_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 
 
 
-/* Set and control ELF flags in ELF header.  */
-
+/* Set and control ELF flags in ELF header: */
 bfd_boolean
-_bfd_m68hc11_elf_set_private_flags (bfd *abfd, flagword flags)
+_bfd_m68hc11_elf_set_private_flags(bfd *abfd, flagword flags)
 {
-  BFD_ASSERT (!elf_flags_init (abfd)
-	      || elf_elfheader (abfd)->e_flags == flags);
+  BFD_ASSERT(!elf_flags_init(abfd)
+	     || (elf_elfheader(abfd)->e_flags == flags));
 
-  elf_elfheader (abfd)->e_flags = flags;
-  elf_flags_init (abfd) = TRUE;
+  elf_elfheader(abfd)->e_flags = flags;
+  elf_flags_init(abfd) = TRUE;
   return TRUE;
 }
 

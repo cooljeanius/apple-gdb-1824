@@ -27,9 +27,9 @@ struct _bfd_sparc_elf_section_data
 };
 
 #define sec_do_relax(sec) \
-  ((struct _bfd_sparc_elf_section_data *) elf_section_data (sec))->do_relax
+  ((struct _bfd_sparc_elf_section_data *)elf_section_data(sec))->do_relax
 #define canon_reloc_count(sec) \
-  ((struct _bfd_sparc_elf_section_data *) elf_section_data (sec))->reloc_count
+  ((struct _bfd_sparc_elf_section_data *)elf_section_data(sec))->reloc_count
 
 struct _bfd_sparc_elf_app_reg
 {

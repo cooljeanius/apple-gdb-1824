@@ -433,6 +433,8 @@ extern const bfd_arch_info_type bfd_i960_arch;
 extern const bfd_arch_info_type bfd_ia64_arch;
 extern const bfd_arch_info_type bfd_ip2k_arch;
 extern const bfd_arch_info_type bfd_iq2000_arch;
+extern const bfd_arch_info_type bfd_l1om_arch;
+extern const bfd_arch_info_type bfd_k1om_arch;
 extern const bfd_arch_info_type bfd_m32c_arch;
 extern const bfd_arch_info_type bfd_m32r_arch;
 extern const bfd_arch_info_type bfd_m68hc11_arch;
@@ -451,6 +453,7 @@ extern const bfd_arch_info_type bfd_ns32k_arch;
 extern const bfd_arch_info_type bfd_openrisc_arch;
 extern const bfd_arch_info_type bfd_or32_arch;
 extern const bfd_arch_info_type bfd_pdp11_arch;
+extern const bfd_arch_info_type bfd_plugin_arch;
 extern const bfd_arch_info_type bfd_pj_arch;
 extern const bfd_arch_info_type bfd_powerpc_archs[];
 #define bfd_powerpc_arch bfd_powerpc_archs[0]
@@ -532,7 +535,7 @@ static const bfd_arch_info_type * const bfd_archures_list[] =
     &bfd_xstormy16_arch,
     &bfd_xtensa_arch,
     &bfd_z8k_arch,
-#endif
+#endif /* SELECT_ARCHITECTURES */
   0
 };
 

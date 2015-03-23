@@ -12,12 +12,14 @@ deprecated in new programs in favor of @code{strchr}.
 
 */
 
+#include "libiberty_deprecated.h"
+
 extern char * strchr(const char *, int);
 
 char *
-index (const char *s, int c)
+index(const char *s, int c)
 {
-  return strchr (s, c);
+  return strchr(s, c);
 }
 
 /* EOF */

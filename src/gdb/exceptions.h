@@ -24,6 +24,8 @@
 #ifndef EXCEPTIONS_H
 #define EXCEPTIONS_H
 
+#include "ansidecl.h"
+
 #include "ui-out.h"
 #include <setjmp.h>
 
@@ -169,7 +171,8 @@ extern NORETURN void throw_error (enum errors error, const char *fmt,
 
 /* Instead of deprecated_throw_reason, code should use catch_exception
    and throw_exception.  */
-extern NORETURN void deprecated_throw_reason (enum return_reason reason) ATTR_NORETURN;
+extern NORETURN void deprecated_throw_reason(enum return_reason reason)
+  ATTR_NORETURN ATTRIBUTE_DEPRECATED;
 
 /* Call FUNC(UIOUT, FUNC_ARGS) but wrapped within an exception
    handler.  If an exception (enum return_reason) is thrown using

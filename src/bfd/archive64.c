@@ -148,7 +148,7 @@ bfd_elf64_archive_write_armap(bfd *arch, unsigned int elength,
                               struct orl *map, unsigned int symbol_count,
                               int stridx)
 {
-  unsigned int ranlibsize = ((symbol_count * 8) + 8);
+  unsigned int ranlibsize = ((symbol_count * 8U) + 8U);
   unsigned int stringsize = (unsigned int)stridx;
   unsigned int mapsize = (stringsize + ranlibsize);
   file_ptr archive_member_file_ptr;
@@ -157,6 +157,10 @@ bfd_elf64_archive_write_armap(bfd *arch, unsigned int elength,
   struct ar_hdr hdr;
   int padding;
   bfd_byte buf[8];
+
+  if (current != NULL) {
+    ; /* do nothing; just uses the value stored to it */
+  }
 
   padding = (int)(BFD_ALIGN(mapsize, 8) - mapsize);
   mapsize += (unsigned int)padding;
@@ -216,7 +220,7 @@ bfd_elf64_archive_write_armap(bfd *arch, unsigned int elength,
   /* now write the strings themselves: */
   for (count = 0; count < symbol_count; count++)
     {
-      size_t len = (strlen(*map[count].name) + 1);
+      size_t len = (strlen(*map[count].name) + 1UL);
 
       if (bfd_bwrite(*map[count].name, len, arch) != len) {
 	return FALSE;

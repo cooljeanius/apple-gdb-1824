@@ -159,21 +159,22 @@ const bfd_arch_info_type bfd_arm_arch =
    Returns TRUE if they were merged successfully or FALSE otherwise.  */
 
 bfd_boolean
-bfd_arm_merge_machines (bfd *ibfd, bfd *obfd)
+bfd_arm_merge_machines(bfd *ibfd, bfd *obfd)
 {
-  unsigned int in  = bfd_get_mach (ibfd);
-  unsigned int out = bfd_get_mach (obfd);
+  unsigned int in = bfd_get_mach(ibfd);
+  unsigned int out = bfd_get_mach(obfd);
 
   /* If the output architecture is unknown, we now have a value to set.  */
   if (out == bfd_mach_arm_unknown)
-    bfd_set_arch_mach (obfd, bfd_arch_arm, in);
+    bfd_set_arch_mach(obfd, bfd_arch_arm, (unsigned long)in);
 
   /* If the input architecture is unknown,
      then so must be the output architecture.  */
   else if (in == bfd_mach_arm_unknown)
     /* FIXME: We ought to have some way to
        override this on the command line.  */
-    bfd_set_arch_mach (obfd, bfd_arch_arm, bfd_mach_arm_unknown);
+    bfd_set_arch_mach(obfd, bfd_arch_arm,
+                      (unsigned long)bfd_mach_arm_unknown);
 
   /* If they are the same then nothing needs to be done.  */
   else if (out == in)
@@ -209,7 +210,7 @@ ERROR: %B is compiled for the EP9312, whereas %B is compiled for XScale"),
       return FALSE;
     }
   else if (in > out)
-    bfd_set_arch_mach (obfd, bfd_arch_arm, in);
+    bfd_set_arch_mach(obfd, bfd_arch_arm, (unsigned long)in);
   /* else
      Nothing to do.  */
 
@@ -257,7 +258,7 @@ arm_check_note (bfd *abfd,
     }
   else
     {
-      if (namesz != ((strlen(expected_name) + 1 + 3) & ~3)) {
+      if (namesz != ((strlen(expected_name) + 1UL + 3UL) & (size_t)~3)) {
 	return FALSE;
       }
 
@@ -265,7 +266,7 @@ arm_check_note (bfd *abfd,
 	return FALSE;
       }
 
-      descr += ((namesz + 3) & ~3);
+      descr += ((namesz + 3) & (size_t)~3);
     }
 
   /* FIXME: We should probably check the type as well: */
@@ -330,11 +331,12 @@ bfd_arm_update_notes(bfd *abfd, const char *note_section)
     case bfd_mach_arm_iWMMXt2: expected = "iWMMXt2"; break;
     }
 
-  if (strcmp (arch_string, expected) != 0)
+  if (strcmp(arch_string, expected) != 0)
     {
-      strcpy ((char *) buffer + (offsetof (arm_Note, name)
-				 + ((strlen (NOTE_ARCH_STRING) + 3) & ~3)),
-	      expected);
+      strcpy((char *)buffer + (offsetof(arm_Note, name)
+                               + ((strlen(NOTE_ARCH_STRING) + 3UL)
+                                  & (size_t)~3)),
+	     expected);
 
       if (! bfd_set_section_contents (abfd, arm_arch_section, buffer,
 				      (file_ptr) 0, buffer_size))

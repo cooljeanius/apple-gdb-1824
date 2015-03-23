@@ -1064,6 +1064,14 @@ macosx_dyld_create_inferior_hook (CORE_ADDR all_image_info_addr)
       macosx_dyld_init (&macosx_dyld_status, exec_bfd);
     }
 }
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Woverflow"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* Locates the dylinker in the executable, and updates the dyld part
    of our data structures.
 
@@ -1102,7 +1110,7 @@ macosx_dyld_init (macosx_dyld_thread_status *s, bfd *exec_bfd)
   prev_dyld_address = s->dyld_addr;
 
   /* Ask the kernel, if possible. */
-  ret = macosx_locate_dyld_via_taskinfo (s);
+  ret = macosx_locate_dyld_via_taskinfo(s);
   /* If dyld loaded someplace other than where it normally would, slide
      the minsyms in the objfile right away: we will NOT get any dyld notification
      about it sliding as we do with other images.  */
@@ -1144,9 +1152,9 @@ macosx_dyld_init (macosx_dyld_thread_status *s, bfd *exec_bfd)
          We need to add a remote protocol packet which will iterate over
          allocated memory regions and look for a dyld on the remote side
          instead of hardcoding these.  */
-      ret = macosx_locate_dyld (&dyld_address, 0x2fe00000ull);
+      ret = macosx_locate_dyld(&dyld_address, 0x2fe00000ull);
       if (ret != 1)
-        ret = macosx_locate_dyld (&dyld_address, 0x8fc00000ull);
+        ret = macosx_locate_dyld(&dyld_address, 0x8fc00000ull);
     }
 
   if (ret != 1)
@@ -1155,16 +1163,16 @@ macosx_dyld_init (macosx_dyld_thread_status *s, bfd *exec_bfd)
          in the core memory.  */
       if (core_bfd)
 	{
-	  /* Check the two usual dyld addresses for 32 and 64 bit first.  */
-	  if (dyld_starts_here_in_memory (0x8fe00000ull))
+	  /* Check the two usual dyld addresses for 32 and 64 bit first: */
+	  if (dyld_starts_here_in_memory(0x8fe00000ull))
 	    {
 	      /* We found dyld at the default 32 bit location.  */
 	      dyld_address = 0x8fe00000ull;
 	      ret = 1;
 	    }
-	  else if (dyld_starts_here_in_memory (0x00007fff5fc00000ull))
+	  else if (dyld_starts_here_in_memory(0x00007fff5fc00000ull))
 	    {
-	      /* We found dyld at the default 64 bit location.  */
+	      /* We found dyld at the default 64 bit location: */
 	      dyld_address = 0x00007fff5fc00000ull;
 	      ret = 1;
 	    }
@@ -1281,6 +1289,13 @@ macosx_dyld_init (macosx_dyld_thread_status *s, bfd *exec_bfd)
   breakpoints_changed ();
   return 1;
 }
+
+/* keep this condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* Put a breakpoint in the dyld function (in the inferior) which is
    called every time an image/a group of images (bundles, dylibs, etc.) are
@@ -1919,28 +1934,28 @@ macosx_get_osabi_from_dyld_entry (bfd *abfd)
 
   if (bfd_osabi <= GDB_OSABI_UNKNOWN)
     {
-      /* Check the current list of dyld objfile entries.  */
-      DYLD_ALL_OBJFILE_INFO_ENTRIES (&status->current_info, e, i)
+      /* Check the current list of dyld objfile entries: */
+      DYLD_ALL_OBJFILE_INFO_ENTRIES(&status->current_info, e, i)
 	{
-	  entry_name = dyld_entry_filename (e, d, DYLD_ENTRY_FILENAME_LOADED);
+	  entry_name = dyld_entry_filename(e, d, DYLD_ENTRY_FILENAME_LOADED);
 	  if (entry_name != NULL)
             {
-              const char *alt_entry_name = dyld_fix_path (entry_name);
-              if (strcmp (entry_name, bfd_name) == 0
-                  || strcmp (alt_entry_name, bfd_name) == 0)
+              const char *alt_entry_name = dyld_fix_path(entry_name);
+              if ((strcmp(entry_name, bfd_name) == 0)
+                  || (strcmp(alt_entry_name, bfd_name) == 0))
                 {
-                  bfd_osabi = dyld_objfile_entry_osabi (e);
-                  xfree (alt_entry_name);
+                  bfd_osabi = dyld_objfile_entry_osabi(e);
+                  xfree((void *)alt_entry_name);
                   break;
                 }
-              xfree (alt_entry_name);
+              xfree((void *)alt_entry_name);
             }
 	}
     }
 
   if (bfd_osabi >= GDB_OSABI_UNKNOWN)
-    dyld_debug ("macosx_get_osabi_from_dyld_entry(%s) returned osabi = %s\n",
-		bfd_name, gdbarch_osabi_name (bfd_osabi));
+    dyld_debug("macosx_get_osabi_from_dyld_entry(%s) returned osabi = %s\n",
+               bfd_name, gdbarch_osabi_name(bfd_osabi));
   return bfd_osabi;
 }
 

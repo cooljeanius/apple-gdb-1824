@@ -88,6 +88,7 @@ typedef struct
      version information.  */
   unsigned short version;
 
+  short padding; /* should be 2 bytes */
 } elf_symbol_type;
 
 struct elf_strtab_hash;
@@ -1043,53 +1044,55 @@ struct elf_backend_data
      global constructors and destructors by name.  This is TRUE for
      MIPS ELF because the Irix 5 tools can not handle the .init
      section.  */
-  unsigned collect : 1;
+  unsigned int collect : 1;
 
   /* This is TRUE if the linker should ignore changes to the type of a
      symbol.  This is TRUE for MIPS ELF because some Irix 5 objects
      record undefined functions as STT_OBJECT although the definitions
      are STT_FUNC.  */
-  unsigned type_change_ok : 1;
+  unsigned int type_change_ok : 1;
 
   /* Whether the backend may use REL relocations.  (Some backends use
      both REL and RELA relocations, and this flag is set for those
      backends.)  */
-  unsigned may_use_rel_p : 1;
+  unsigned int may_use_rel_p : 1;
 
   /* Whether the backend may use RELA relocations.  (Some backends use
      both REL and RELA relocations, and this flag is set for those
      backends.)  */
-  unsigned may_use_rela_p : 1;
+  unsigned int may_use_rela_p : 1;
 
   /* Whether the default relocation type is RELA.  If a backend with
      this flag set wants REL relocations for a particular section,
      it must note that explicitly.  Similarly, if this flag is clear,
      and the backend wants RELA relocations for a particular
      section.  */
-  unsigned default_use_rela_p : 1;
+  unsigned int default_use_rela_p : 1;
 
   /* Set if RELA relocations for a relocatable link can be handled by
      generic code.  Backends that set this flag need do nothing in the
      backend relocate_section routine for relocatable linking.  */
-  unsigned rela_normal : 1;
+  unsigned int rela_normal : 1;
 
   /* TRUE if addresses "naturally" sign extend.  This is used when
      swapping in from Elf32 when BFD64.  */
-  unsigned sign_extend_vma : 1;
+  unsigned int sign_extend_vma : 1;
 
-  unsigned want_got_plt : 1;
-  unsigned plt_readonly : 1;
-  unsigned want_plt_sym : 1;
-  unsigned plt_not_loaded : 1;
-  unsigned plt_alignment : 4;
-  unsigned can_gc_sections : 1;
-  unsigned can_refcount : 1;
-  unsigned want_got_sym : 1;
-  unsigned want_dynbss : 1;
+  unsigned int want_got_plt : 1;
+  unsigned int plt_readonly : 1;
+  unsigned int want_plt_sym : 1;
+  unsigned int plt_not_loaded : 1;
+  unsigned int plt_alignment : 4;
+  unsigned int can_gc_sections : 1;
+  unsigned int can_refcount : 1;
+  unsigned int want_got_sym : 1;
+  unsigned int want_dynbss : 1;
     /* Targets which do not support physical addressing often require
        that the p_paddr field in the section header to be set to zero.
        This field indicates whether this behavior is required.  */
-  unsigned want_p_paddr_set_to_zero : 1;
+  unsigned int want_p_paddr_set_to_zero : 1;
+  /* '-Wpadded': */
+  unsigned int padding : 12;
 };
 
 /* Information stored for each BFD section in an ELF file.  This

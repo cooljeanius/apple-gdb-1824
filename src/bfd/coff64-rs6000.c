@@ -533,21 +533,20 @@ _bfd_xcoff64_put_symbol_name(bfd *abfd, struct bfd_strtab_hash *strtab,
 }
 
 static bfd_boolean
-_bfd_xcoff64_put_ldsymbol_name (abfd, ldinfo, ldsym, name)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     struct xcoff_loader_info *ldinfo;
-     struct internal_ldsym *ldsym;
-     const char *name;
+_bfd_xcoff64_put_ldsymbol_name(bfd *abfd ATTRIBUTE_UNUSED,
+                               struct xcoff_loader_info *ldinfo,
+                               struct internal_ldsym *ldsym,
+                               const char *name)
 {
   size_t len;
-  len = strlen (name);
+  len = strlen(name);
 
-  if (ldinfo->string_size + len + 3 > ldinfo->string_alc)
+  if ((ldinfo->string_size + len + 3UL) > ldinfo->string_alc)
     {
       bfd_size_type newalc;
       char *newstrings;
 
-      newalc = ldinfo->string_alc * 2;
+      newalc = (ldinfo->string_alc * 2UL);
       if (newalc == 0)
 	newalc = 32;
       while (ldinfo->string_size + len + 3 > newalc)
@@ -578,160 +577,129 @@ _bfd_xcoff64_put_ldsymbol_name (abfd, ldinfo, ldsym, name)
    moved to another file shared by the linker (which XCOFF calls the
    ``binder'') and the loader.  */
 
-/* Swap in the ldhdr structure.  */
-
+/* Swap in the ldhdr structure: */
 static void
-xcoff64_swap_ldhdr_in (abfd, s, dst)
-     bfd *abfd;
-     const PTR s;
-     struct internal_ldhdr *dst;
+xcoff64_swap_ldhdr_in(bfd *abfd, const PTR s, struct internal_ldhdr *dst)
 {
-  const struct external_ldhdr *src = (const struct external_ldhdr *) s;
+  const struct external_ldhdr *src = (const struct external_ldhdr *)s;
 
-  dst->l_version = bfd_get_32 (abfd, src->l_version);
-  dst->l_nsyms = bfd_get_32 (abfd, src->l_nsyms);
-  dst->l_nreloc = bfd_get_32 (abfd, src->l_nreloc);
-  dst->l_istlen = bfd_get_32 (abfd, src->l_istlen);
-  dst->l_nimpid = bfd_get_32 (abfd, src->l_nimpid);
-  dst->l_stlen = bfd_get_32 (abfd, src->l_stlen);
-  dst->l_impoff = bfd_get_64 (abfd, src->l_impoff);
-  dst->l_stoff = bfd_get_64 (abfd, src->l_stoff);
-  dst->l_symoff = bfd_get_64 (abfd, src->l_symoff);
-  dst->l_rldoff = bfd_get_64 (abfd, src->l_rldoff);
+  dst->l_version = bfd_get_32(abfd, src->l_version);
+  dst->l_nsyms = bfd_get_32(abfd, src->l_nsyms);
+  dst->l_nreloc = bfd_get_32(abfd, src->l_nreloc);
+  dst->l_istlen = bfd_get_32(abfd, src->l_istlen);
+  dst->l_nimpid = bfd_get_32(abfd, src->l_nimpid);
+  dst->l_stlen = bfd_get_32(abfd, src->l_stlen);
+  dst->l_impoff = bfd_get_64(abfd, src->l_impoff);
+  dst->l_stoff = bfd_get_64(abfd, src->l_stoff);
+  dst->l_symoff = bfd_get_64(abfd, src->l_symoff);
+  dst->l_rldoff = bfd_get_64(abfd, src->l_rldoff);
 }
 
-/* Swap out the ldhdr structure.  */
-
+/* Swap out the ldhdr structure: */
 static void
-xcoff64_swap_ldhdr_out (abfd, src, d)
-     bfd *abfd;
-     const struct internal_ldhdr *src;
-     PTR d;
+xcoff64_swap_ldhdr_out(bfd *abfd, const struct internal_ldhdr *src, PTR d)
 {
-  struct external_ldhdr *dst = (struct external_ldhdr *) d;
+  struct external_ldhdr *dst = (struct external_ldhdr *)d;
 
-  bfd_put_32 (abfd, (bfd_vma) src->l_version, dst->l_version);
-  bfd_put_32 (abfd, src->l_nsyms, dst->l_nsyms);
-  bfd_put_32 (abfd, src->l_nreloc, dst->l_nreloc);
-  bfd_put_32 (abfd, src->l_istlen, dst->l_istlen);
-  bfd_put_32 (abfd, src->l_nimpid, dst->l_nimpid);
-  bfd_put_32 (abfd, src->l_stlen, dst->l_stlen);
-  bfd_put_64 (abfd, src->l_impoff, dst->l_impoff);
-  bfd_put_64 (abfd, src->l_stoff, dst->l_stoff);
-  bfd_put_64 (abfd, src->l_symoff, dst->l_symoff);
-  bfd_put_64 (abfd, src->l_rldoff, dst->l_rldoff);
+  bfd_put_32(abfd, (bfd_vma)src->l_version, dst->l_version);
+  bfd_put_32(abfd, src->l_nsyms, dst->l_nsyms);
+  bfd_put_32(abfd, src->l_nreloc, dst->l_nreloc);
+  bfd_put_32(abfd, src->l_istlen, dst->l_istlen);
+  bfd_put_32(abfd, src->l_nimpid, dst->l_nimpid);
+  bfd_put_32(abfd, src->l_stlen, dst->l_stlen);
+  bfd_put_64(abfd, src->l_impoff, dst->l_impoff);
+  bfd_put_64(abfd, src->l_stoff, dst->l_stoff);
+  bfd_put_64(abfd, src->l_symoff, dst->l_symoff);
+  bfd_put_64(abfd, src->l_rldoff, dst->l_rldoff);
 }
 
-/* Swap in the ldsym structure.  */
-
+/* Swap in the ldsym structure: */
 static void
-xcoff64_swap_ldsym_in (abfd, s, dst)
-     bfd *abfd;
-     const PTR s;
-     struct internal_ldsym *dst;
+xcoff64_swap_ldsym_in(bfd *abfd, const PTR s, struct internal_ldsym *dst)
 {
-  const struct external_ldsym *src = (const struct external_ldsym *) s;
+  const struct external_ldsym *src = (const struct external_ldsym *)s;
   /* XCOFF64 does not use l_zeroes like XCOFF32
      Set the internal l_zeroes to 0 so the common 32/64 code uses l_value
      as an offset into the loader symbol table.  */
   dst->_l._l_l._l_zeroes = 0;
-  dst->_l._l_l._l_offset = bfd_get_32 (abfd, src->l_offset);
-  dst->l_value = bfd_get_64 (abfd, src->l_value);
-  dst->l_scnum = bfd_get_16 (abfd, src->l_scnum);
-  dst->l_smtype = bfd_get_8 (abfd, src->l_smtype);
-  dst->l_smclas = bfd_get_8 (abfd, src->l_smclas);
-  dst->l_ifile = bfd_get_32 (abfd, src->l_ifile);
-  dst->l_parm = bfd_get_32 (abfd, src->l_parm);
+  dst->_l._l_l._l_offset = bfd_get_32(abfd, src->l_offset);
+  dst->l_value = bfd_get_64(abfd, src->l_value);
+  dst->l_scnum = bfd_get_16(abfd, src->l_scnum);
+  dst->l_smtype = bfd_get_8(abfd, src->l_smtype);
+  dst->l_smclas = bfd_get_8(abfd, src->l_smclas);
+  dst->l_ifile = bfd_get_32(abfd, src->l_ifile);
+  dst->l_parm = bfd_get_32(abfd, src->l_parm);
 }
 
-/* Swap out the ldsym structure.  */
-
+/* Swap out the ldsym structure: */
 static void
-xcoff64_swap_ldsym_out (abfd, src, d)
-     bfd *abfd;
-     const struct internal_ldsym *src;
-     PTR d;
+xcoff64_swap_ldsym_out(bfd *abfd, const struct internal_ldsym *src, PTR d)
 {
-  struct external_ldsym *dst = (struct external_ldsym *) d;
+  struct external_ldsym *dst = (struct external_ldsym *)d;
 
-  bfd_put_64 (abfd, src->l_value, dst->l_value);
-  bfd_put_32 (abfd, (bfd_vma) src->_l._l_l._l_offset, dst->l_offset);
-  bfd_put_16 (abfd, (bfd_vma) src->l_scnum, dst->l_scnum);
-  bfd_put_8 (abfd, src->l_smtype, dst->l_smtype);
-  bfd_put_8 (abfd, src->l_smclas, dst->l_smclas);
-  bfd_put_32 (abfd, src->l_ifile, dst->l_ifile);
-  bfd_put_32 (abfd, src->l_parm, dst->l_parm);
+  bfd_put_64(abfd, src->l_value, dst->l_value);
+  bfd_put_32(abfd, (bfd_vma)src->_l._l_l._l_offset, dst->l_offset);
+  bfd_put_16(abfd, (bfd_vma)src->l_scnum, dst->l_scnum);
+  bfd_put_8(abfd, src->l_smtype, dst->l_smtype);
+  bfd_put_8(abfd, src->l_smclas, dst->l_smclas);
+  bfd_put_32(abfd, src->l_ifile, dst->l_ifile);
+  bfd_put_32(abfd, src->l_parm, dst->l_parm);
 }
 
 static void
-xcoff64_swap_reloc_in (abfd, s, d)
-     bfd *abfd;
-     PTR s;
-     PTR d;
+xcoff64_swap_reloc_in(bfd *abfd, PTR s, PTR d)
 {
-  struct external_reloc *src = (struct external_reloc *) s;
-  struct internal_reloc *dst = (struct internal_reloc *) d;
+  struct external_reloc *src = (struct external_reloc *)s;
+  struct internal_reloc *dst = (struct internal_reloc *)d;
 
-  memset (dst, 0, sizeof (struct internal_reloc));
+  memset(dst, 0, sizeof(struct internal_reloc));
 
-  dst->r_vaddr = bfd_get_64 (abfd, src->r_vaddr);
-  dst->r_symndx = bfd_get_32 (abfd, src->r_symndx);
-  dst->r_size = bfd_get_8 (abfd, src->r_size);
-  dst->r_type = bfd_get_8 (abfd, src->r_type);
+  dst->r_vaddr = bfd_get_64(abfd, src->r_vaddr);
+  dst->r_symndx = bfd_get_32(abfd, src->r_symndx);
+  dst->r_size = bfd_get_8(abfd, src->r_size);
+  dst->r_type = bfd_get_8(abfd, src->r_type);
 }
 
 static unsigned int
-xcoff64_swap_reloc_out (abfd, s, d)
-     bfd *abfd;
-     PTR s;
-     PTR d;
+xcoff64_swap_reloc_out(bfd *abfd, PTR s, PTR d)
 {
-  struct internal_reloc *src = (struct internal_reloc *) s;
-  struct external_reloc *dst = (struct external_reloc *) d;
+  struct internal_reloc *src = (struct internal_reloc *)s;
+  struct external_reloc *dst = (struct external_reloc *)d;
 
-  bfd_put_64 (abfd, src->r_vaddr, dst->r_vaddr);
-  bfd_put_32 (abfd, src->r_symndx, dst->r_symndx);
-  bfd_put_8 (abfd, src->r_type, dst->r_type);
-  bfd_put_8 (abfd, src->r_size, dst->r_size);
+  bfd_put_64(abfd, src->r_vaddr, dst->r_vaddr);
+  bfd_put_32(abfd, src->r_symndx, dst->r_symndx);
+  bfd_put_8(abfd, src->r_type, dst->r_type);
+  bfd_put_8(abfd, src->r_size, dst->r_size);
 
-  return bfd_coff_relsz (abfd);
+  return bfd_coff_relsz(abfd);
 }
 
-/* Swap in the ldrel structure.  */
-
+/* Swap in the ldrel structure: */
 static void
-xcoff64_swap_ldrel_in (abfd, s, dst)
-     bfd *abfd;
-     const PTR s;
-     struct internal_ldrel *dst;
+xcoff64_swap_ldrel_in(bfd *abfd, const PTR s, struct internal_ldrel *dst)
 {
-  const struct external_ldrel *src = (const struct external_ldrel *) s;
+  const struct external_ldrel *src = (const struct external_ldrel *)s;
 
-  dst->l_vaddr = bfd_get_64 (abfd, src->l_vaddr);
-  dst->l_symndx = bfd_get_32 (abfd, src->l_symndx);
-  dst->l_rtype = bfd_get_16 (abfd, src->l_rtype);
-  dst->l_rsecnm = bfd_get_16 (abfd, src->l_rsecnm);
+  dst->l_vaddr = bfd_get_64(abfd, src->l_vaddr);
+  dst->l_symndx = bfd_get_32(abfd, src->l_symndx);
+  dst->l_rtype = bfd_get_16(abfd, src->l_rtype);
+  dst->l_rsecnm = bfd_get_16(abfd, src->l_rsecnm);
 }
 
-/* Swap out the ldrel structure.  */
-
+/* Swap out the ldrel structure: */
 static void
-xcoff64_swap_ldrel_out (abfd, src, d)
-     bfd *abfd;
-     const struct internal_ldrel *src;
-     PTR d;
+xcoff64_swap_ldrel_out(bfd *abfd, const struct internal_ldrel *src, PTR d)
 {
-  struct external_ldrel *dst = (struct external_ldrel *) d;
+  struct external_ldrel *dst = (struct external_ldrel *)d;
 
-  bfd_put_64 (abfd, src->l_vaddr, dst->l_vaddr);
-  bfd_put_16 (abfd, (bfd_vma) src->l_rtype, dst->l_rtype);
-  bfd_put_16 (abfd, (bfd_vma) src->l_rsecnm, dst->l_rsecnm);
-  bfd_put_32 (abfd, src->l_symndx, dst->l_symndx);
+  bfd_put_64(abfd, src->l_vaddr, dst->l_vaddr);
+  bfd_put_16(abfd, (bfd_vma)src->l_rtype, dst->l_rtype);
+  bfd_put_16(abfd, (bfd_vma)src->l_rsecnm, dst->l_rsecnm);
+  bfd_put_32(abfd, src->l_symndx, dst->l_symndx);
 }
 
 static bfd_boolean
-xcoff64_write_object_contents (abfd)
-     bfd *abfd;
+xcoff64_write_object_contents(bfd *abfd)
 {
   asection *current;
   bfd_boolean hasrelocs = FALSE;
@@ -743,42 +711,42 @@ xcoff64_write_object_contents (abfd)
   unsigned long reloc_size = 0;
   unsigned long lnno_size = 0;
   bfd_boolean long_section_names;
-  asection *text_sec = ((void *) 0);
-  asection *data_sec = ((void *) 0);
-  asection *bss_sec = ((void *) 0);
+  asection *text_sec = ((void *)0);
+  asection *data_sec = ((void *)0);
+  asection *bss_sec = ((void *)0);
   struct internal_filehdr internal_f;
   struct internal_aouthdr internal_a;
 
-  bfd_set_error (bfd_error_system_call);
+  bfd_set_error(bfd_error_system_call);
 
   if (! abfd->output_has_begun)
     {
-      if (! bfd_coff_compute_section_file_positions (abfd))
+      if (! bfd_coff_compute_section_file_positions(abfd))
 	return FALSE;
     }
 
-  /* Work out the size of the reloc and linno areas.  */
-  reloc_base = obj_relocbase (abfd);
+  /* Work out the size of the reloc and linno areas: */
+  reloc_base = obj_relocbase(abfd);
 
   for (current = abfd->sections; current != NULL; current = current->next)
-    reloc_size += current->reloc_count * bfd_coff_relsz (abfd);
+    reloc_size += current->reloc_count * bfd_coff_relsz(abfd);
 
   lineno_base = reloc_base + reloc_size;
 
   /* Make a pass through the symbol table to count line number entries and
      put them into the correct asections.  */
-  lnno_size = coff_count_linenumbers (abfd) * bfd_coff_linesz (abfd);
+  lnno_size = coff_count_linenumbers(abfd) * bfd_coff_linesz(abfd);
 
-  sym_base = lineno_base + lnno_size;
+  sym_base = (lineno_base + lnno_size);
 
-  /* Indicate in each section->line_filepos its actual file address.  */
-  for (current = abfd->sections; current != NULL; current =  current->next)
+  /* Indicate in each section->line_filepos its actual file address: */
+  for (current = abfd->sections; current != NULL; current = current->next)
     {
       if (current->lineno_count)
 	{
 	  current->line_filepos = lineno_base;
 	  current->moving_line_filepos = lineno_base;
-	  lineno_base += current->lineno_count * bfd_coff_linesz (abfd);
+	  lineno_base += (current->lineno_count * bfd_coff_linesz(abfd));
 	}
       else
 	{

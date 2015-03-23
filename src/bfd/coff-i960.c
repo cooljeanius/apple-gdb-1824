@@ -99,15 +99,9 @@ coff_i960_is_local_label_name(bfd *abfd ATTRIBUTE_UNUSED, const char *name)
 #define BAL_MASK 0x00ffffff
 
 static bfd_reloc_status_type
-optcall_callback(abfd, reloc_entry, symbol_in, data,
-		 input_section, ignore_bfd, error_message)
-     bfd *abfd;
-     arelent *reloc_entry;
-     asymbol *symbol_in;
-     PTR data;
-     asection *input_section;
-     bfd *ignore_bfd ATTRIBUTE_UNUSED;
-     char **error_message;
+optcall_callback(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
+                 PTR data, asection *input_section,
+                 bfd *ignore_bfd ATTRIBUTE_UNUSED, char **error_message)
 {
   /* This item has already been relocated correctly, but we may be
    * able to patch in yet better code - done by digging out the
@@ -189,25 +183,20 @@ optcall_callback(abfd, reloc_entry, symbol_in, data,
    COFF specific backend linker.  */
 
 static bfd_reloc_status_type
-coff_i960_relocate(abfd, reloc_entry, symbol, data, input_section,
-		   output_bfd, error_message)
-     bfd *abfd;
-     arelent *reloc_entry;
-     asymbol *symbol;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section ATTRIBUTE_UNUSED;
-     bfd *output_bfd;
-     char **error_message ATTRIBUTE_UNUSED;
+coff_i960_relocate(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+                   PTR data ATTRIBUTE_UNUSED,
+                   asection *input_section ATTRIBUTE_UNUSED,
+		   bfd *output_bfd, char **error_message ATTRIBUTE_UNUSED)
 {
   asection *osec;
 
   if (output_bfd == NULL)
     {
-      /* Not generating relocatable output file.  */
+      /* Not generating relocatable output file: */
       return bfd_reloc_continue;
     }
 
-  if (bfd_is_und_section (bfd_get_section (symbol)))
+  if (bfd_is_und_section(bfd_get_section(symbol)))
     {
       /* Symbol is not defined, so no need to worry about it.  */
       return bfd_reloc_continue;
@@ -317,70 +306,63 @@ coff_i960_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
    necessary symbols.  */
 
 static bfd_boolean
-coff_i960_start_final_link (abfd, info)
-     bfd *abfd;
-     struct bfd_link_info *info;
+coff_i960_start_final_link(bfd *abfd, struct bfd_link_info *info)
 {
-  bfd_size_type symesz = bfd_coff_symesz (abfd);
+  bfd_size_type symesz = bfd_coff_symesz(abfd);
   asection *o;
   bfd_byte *esym;
 
   if (! info->relocatable)
     return TRUE;
 
-  esym = (bfd_byte *) bfd_malloc (symesz);
+  esym = (bfd_byte *)bfd_malloc(symesz);
   if (esym == NULL)
     return FALSE;
 
-  if (bfd_seek (abfd, obj_sym_filepos (abfd), SEEK_SET) != 0)
+  if (bfd_seek(abfd, obj_sym_filepos(abfd), SEEK_SET) != 0)
     return FALSE;
 
   for (o = abfd->sections; o != NULL; o = o->next)
     {
       struct internal_syment isym;
 
-      strncpy (isym._n._n_name, o->name, SYMNMLEN);
+      strncpy(isym._n._n_name, o->name, SYMNMLEN);
       isym.n_value = 0;
       isym.n_scnum = o->target_index;
       isym.n_type = T_NULL;
       isym.n_sclass = C_STAT;
       isym.n_numaux = 0;
 
-      bfd_coff_swap_sym_out (abfd, (PTR) &isym, (PTR) esym);
+      bfd_coff_swap_sym_out(abfd, (PTR)&isym, (PTR)esym);
 
-      if (bfd_bwrite (esym, symesz, abfd) != symesz)
+      if (bfd_bwrite(esym, symesz, abfd) != symesz)
 	{
-	  free (esym);
+	  free(esym);
 	  return FALSE;
 	}
 
-      obj_raw_syment_count (abfd) += 1;
+      obj_raw_syment_count(abfd) += 1;
     }
 
-  free (esym);
+  free(esym);
 
   return TRUE;
 }
 
-/* The reloc processing routine for the optimized COFF linker.  */
-
+/* The reloc processing routine for the optimized COFF linker: */
 static bfd_boolean
-coff_i960_relocate_section (output_bfd, info, input_bfd, input_section,
-			    contents, relocs, syms, sections)
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     struct internal_reloc *relocs;
-     struct internal_syment *syms;
-     asection **sections;
+coff_i960_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
+                           struct bfd_link_info *info, bfd *input_bfd,
+                           asection *input_section, bfd_byte *contents,
+                           struct internal_reloc *relocs,
+                           struct internal_syment *syms,
+                           asection **sections)
 {
   struct internal_reloc *rel;
   struct internal_reloc *relend;
 
   rel = relocs;
-  relend = rel + input_section->reloc_count;
+  relend = (rel + input_section->reloc_count);
   for (; rel < relend; rel++)
     {
       long symndx;
@@ -578,22 +560,20 @@ coff_i960_relocate_section (output_bfd, info, input_bfd, input_section,
  * instead be a reloc against the internal symbol we created specially
  * for the section.  */
 static bfd_boolean
-coff_i960_adjust_symndx (obfd, info, ibfd, sec, irel, adjustedp)
-     bfd *obfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
-     bfd *ibfd;
-     asection *sec ATTRIBUTE_UNUSED;
-     struct internal_reloc *irel;
-     bfd_boolean *adjustedp;
+coff_i960_adjust_symndx(bfd *obfd ATTRIBUTE_UNUSED,
+                        struct bfd_link_info *info ATTRIBUTE_UNUSED,
+                        bfd *ibfd, asection *sec ATTRIBUTE_UNUSED,
+                        struct internal_reloc *irel,
+                        bfd_boolean *adjustedp)
 {
   struct coff_link_hash_entry *h;
 
   *adjustedp = FALSE;
 
-  h = obj_coff_sym_hashes (ibfd)[irel->r_symndx];
-  if (h == NULL
-      || (h->root.type != bfd_link_hash_defined
-	  && h->root.type != bfd_link_hash_defweak))
+  h = obj_coff_sym_hashes(ibfd)[irel->r_symndx];
+  if ((h == NULL)
+      || ((h->root.type != bfd_link_hash_defined)
+	  && (h->root.type != bfd_link_hash_defweak)))
     return TRUE;
 
   irel->r_symndx = h->root.u.def.section->output_section->target_index - 1;

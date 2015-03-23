@@ -317,8 +317,14 @@ union bfd_sym_contained_variables_table_entry
       {
 	unsigned long big_la;                       /* Logical address bytes in constant pool.  */
 	unsigned char big_la_kind;                  /* Eqv. cvte_location.sca_kind.  */
+        /* '-Wpadded': */
+        char padding1; /* should be 1 byte */
+        short padding2; /* should be 2 bytes */
       }
       biglastruct;
+#if 0 /* has no effect on the warning: */
+      short padding; /* should be 2 bytes */
+#endif /* 0 */
     }
     address;
   }

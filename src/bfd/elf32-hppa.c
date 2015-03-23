@@ -649,7 +649,9 @@ hppa_type_of_stub (asection *input_sec,
 
 #define BL_R1		0xe8200000	/* b,l   .+8,%r1		*/
 #define ADDIL_R1	0x28200000	/* addil LR'XXX,%r1,%r1		*/
-#define DEPI_R1		0xd4201c1e	/* depi  0,31,2,%r1		*/
+#ifndef DEPI_R1
+# define DEPI_R1	0xd4201c1e	/* depi  0,31,2,%r1		*/
+#endif /* !DEPI_R1 */
 
 #define ADDIL_DP	0x2b600000	/* addil LR'XXX,%dp,%r1		*/
 #define LDW_R1_R21	0x48350000	/* ldw   RR'XXX(%sr0,%r1),%r21	*/
@@ -657,7 +659,9 @@ hppa_type_of_stub (asection *input_sec,
 #define LDW_R1_R19	0x48330000	/* ldw   RR'XXX(%sr0,%r1),%r19	*/
 
 #define ADDIL_R19	0x2a600000	/* addil LR'XXX,%r19,%r1	*/
-#define LDW_R1_DP	0x483b0000	/* ldw   RR'XXX(%sr0,%r1),%dp	*/
+#ifndef LDW_R1_DP
+# define LDW_R1_DP	0x483b0000	/* ldw   RR'XXX(%sr0,%r1),%dp	*/
+#endif /* !LDW_R1_DP */
 
 #define LDSID_R21_R1	0x02a010a1	/* ldsid (%sr0,%r21),%r1	*/
 #define MTSP_R1		0x00011820	/* mtsp  %r1,%sr0		*/
@@ -672,14 +676,14 @@ hppa_type_of_stub (asection *input_sec,
 #define BE_SR0_RP	0xe0400002	/* be,n  0(%sr0,%rp)		*/
 
 #ifndef R19_STUBS
-#define R19_STUBS 1
-#endif
+# define R19_STUBS 1
+#endif /* !R19_STUBS */
 
 #if R19_STUBS
-#define LDW_R1_DLT	LDW_R1_R19
+# define LDW_R1_DLT	LDW_R1_R19
 #else
-#define LDW_R1_DLT	LDW_R1_DP
-#endif
+# define LDW_R1_DLT	LDW_R1_DP
+#endif /* R19_STUBS */
 
 static bfd_boolean
 hppa_build_one_stub (struct bfd_hash_entry *bh, void *in_arg)
@@ -866,12 +870,16 @@ hppa_build_one_stub (struct bfd_hash_entry *bh, void *in_arg)
 #undef BE_SR4_R1
 #undef BL_R1
 #undef ADDIL_R1
-#undef DEPI_R1
+#ifdef DEPI_R1
+# undef DEPI_R1
+#endif /* DEPI_R1 */
 #undef LDW_R1_R21
 #undef LDW_R1_DLT
 #undef LDW_R1_R19
 #undef ADDIL_R19
-#undef LDW_R1_DP
+#ifdef LDW_R1_DP
+# undef LDW_R1_DP
+#endif /* LDW_R1_DP */
 #undef LDSID_R21_R1
 #undef MTSP_R1
 #undef BE_SR0_R21
@@ -951,13 +959,15 @@ elf32_hppa_object_p (bfd *abfd)
   switch (flags & (EF_PARISC_ARCH | EF_PARISC_WIDE))
     {
     case EFA_PARISC_1_0:
-      return bfd_default_set_arch_mach (abfd, bfd_arch_hppa, 10);
+      return bfd_default_set_arch_mach(abfd, bfd_arch_hppa, 10);
     case EFA_PARISC_1_1:
-      return bfd_default_set_arch_mach (abfd, bfd_arch_hppa, 11);
+      return bfd_default_set_arch_mach(abfd, bfd_arch_hppa, 11);
     case EFA_PARISC_2_0:
-      return bfd_default_set_arch_mach (abfd, bfd_arch_hppa, 20);
+      return bfd_default_set_arch_mach(abfd, bfd_arch_hppa, 20);
     case EFA_PARISC_2_0 | EF_PARISC_WIDE:
-      return bfd_default_set_arch_mach (abfd, bfd_arch_hppa, 25);
+      return bfd_default_set_arch_mach(abfd, bfd_arch_hppa, 25);
+    default:
+      break;
     }
   return TRUE;
 }
@@ -1282,11 +1292,12 @@ elf32_hppa_check_relocs (bfd *abfd,
 		     elf_obj_tdata with another target specific
 		     pointer.  */
 		  size = symtab_hdr->sh_info;
-		  size *= 2 * sizeof (bfd_signed_vma);
-		  local_got_refcounts = bfd_zalloc (abfd, size);
+		  size *= (2UL * sizeof(bfd_signed_vma));
+		  local_got_refcounts = (bfd_signed_vma *)bfd_zalloc(abfd,
+                                                                     size);
 		  if (local_got_refcounts == NULL)
 		    return FALSE;
-		  elf_local_got_refcounts (abfd) = local_got_refcounts;
+		  elf_local_got_refcounts(abfd) = local_got_refcounts;
 		}
 	      local_got_refcounts[r_symndx] += 1;
 	    }
@@ -1320,7 +1331,7 @@ elf32_hppa_check_relocs (bfd *abfd,
 		  bfd_signed_vma *local_got_refcounts;
 		  bfd_signed_vma *local_plt_refcounts;
 
-		  local_got_refcounts = elf_local_got_refcounts (abfd);
+		  local_got_refcounts = elf_local_got_refcounts(abfd);
 		  if (local_got_refcounts == NULL)
 		    {
 		      bfd_size_type size;
@@ -1328,11 +1339,12 @@ elf32_hppa_check_relocs (bfd *abfd,
 		      /* Allocate space for local got offsets and local
 			 plt offsets.  */
 		      size = symtab_hdr->sh_info;
-		      size *= 2 * sizeof (bfd_signed_vma);
-		      local_got_refcounts = bfd_zalloc (abfd, size);
+		      size *= (2UL * sizeof(bfd_signed_vma));
+		      local_got_refcounts = ((bfd_signed_vma *)
+                                             bfd_zalloc(abfd, size));
 		      if (local_got_refcounts == NULL)
 			return FALSE;
-		      elf_local_got_refcounts (abfd) = local_got_refcounts;
+		      elf_local_got_refcounts(abfd) = local_got_refcounts;
 		    }
 		  local_plt_refcounts = (local_got_refcounts
 					 + symtab_hdr->sh_info);
@@ -3176,14 +3188,14 @@ final_link_relocate (asection *input_section,
 	  case R_PARISC_DLTIND21L:
 	    r_type = R_PARISC_DPREL21L;
 	    break;
-
 	  case R_PARISC_DLTIND14R:
 	    r_type = R_PARISC_DPREL14R;
 	    break;
-
 	  case R_PARISC_DLTIND14F:
 	    r_type = R_PARISC_DPREL14F;
 	    break;
+          default:
+            break;
 	}
     }
 
@@ -4290,3 +4302,15 @@ elf32_hppa_elf_get_symbol_type (Elf_Internal_Sym *elf_sym, int type)
 #define TARGET_BIG_NAME			"elf32-hppa-netbsd"
 
 #include "elf32-target.h"
+
+#ifdef DEPI_R1
+# undef DEPI_R1
+#endif /* DEPI_R1 */
+#ifdef LDW_R1_DP
+# undef LDW_R1_DP
+#endif /* LDW_R1_DP */
+#ifdef PLT_STUB_ENTRY
+# undef PLT_STUB_ENTRY
+#endif /* PLT_STUB_ENTRY */
+
+/* EOF */

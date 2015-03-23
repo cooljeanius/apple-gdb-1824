@@ -1141,9 +1141,10 @@ value_binop(struct value *arg1, struct value *arg2, enum exp_opcode op)
 
 	    case BINOP_EXP:
 	      errno = 0;
-	      v = pow (v1, v2);
+	      v = pow((double)v1, (double)v2);
 	      if (errno)
-		error (_("Cannot perform exponentiation: %s"), safe_strerror (errno));
+		error(_("Cannot perform exponentiation: %s"),
+                      safe_strerror(errno));
 	      break;
 
 	    case BINOP_REM:

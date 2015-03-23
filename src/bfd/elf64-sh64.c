@@ -2502,19 +2502,19 @@ sh_elf64_check_relocs (bfd *abfd, struct bfd_link_info *info,
 	    }
 	}
 
-      switch (ELF64_R_TYPE (rel->r_info))
+      switch (ELF64_R_TYPE(rel->r_info))
         {
 	  /* This relocation describes the C++ object vtable hierarchy.
 	     Reconstruct it for later use during GC.  */
         case R_SH_GNU_VTINHERIT:
-          if (!bfd_elf_gc_record_vtinherit (abfd, sec, h, rel->r_offset))
+          if (!bfd_elf_gc_record_vtinherit(abfd, sec, h, rel->r_offset))
             return FALSE;
           break;
 
 	  /* This relocation describes which C++ vtable entries are actually
 	     used.  Record for later use during GC.  */
         case R_SH_GNU_VTENTRY:
-          if (!bfd_elf_gc_record_vtentry (abfd, sec, h, rel->r_addend))
+          if (!bfd_elf_gc_record_vtentry(abfd, sec, h, rel->r_addend))
             return FALSE;
           break;
 
@@ -2793,7 +2793,11 @@ sh_elf64_check_relocs (bfd *abfd, struct bfd_link_info *info,
 	    }
 
 	  break;
+
+        default:
+          break;
         }
+      /* end switch */
     }
 
   return TRUE;

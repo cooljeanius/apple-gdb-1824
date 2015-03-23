@@ -125,9 +125,11 @@ static const bfd_vma ppc_elf_vxworks_pic_plt0_entry
 #define VXWORKS_PLTRESOLVE_RELOCS 2
 /* The number of relocations in the PLTResolve slot when when creating
    a shared library. */
-#define VXWORKS_PLTRESOLVE_RELOCS_SHLIB 0
+#ifndef VXWORKS_PLTRESOLVE_RELOCS_SHLIB
+# define VXWORKS_PLTRESOLVE_RELOCS_SHLIB 0
+#endif /* !VXWORKS_PLTRESOLVE_RELOCS_SHLIB */
 
-/* Some instructions.  */
+/* Some instructions: */
 #define ADDIS_11_11	0x3d6b0000
 #define ADDIS_11_30	0x3d7e0000
 #define ADDIS_12_12	0x3d8c0000
@@ -1941,13 +1943,13 @@ static apuinfo_list *head;
 
 
 static void
-apuinfo_list_init (void)
+apuinfo_list_init(void)
 {
   head = NULL;
 }
 
 static void
-apuinfo_list_add (unsigned long value)
+apuinfo_list_add(unsigned long value)
 {
   apuinfo_list *entry = head;
 
@@ -1958,17 +1960,17 @@ apuinfo_list_add (unsigned long value)
       entry = entry->next;
     }
 
-  entry = bfd_malloc (sizeof (* entry));
+  entry = (apuinfo_list *)bfd_malloc(sizeof(* entry));
   if (entry == NULL)
     return;
 
   entry->value = value;
-  entry->next  = head;
+  entry->next = head;
   head = entry;
 }
 
 static unsigned
-apuinfo_list_length (void)
+apuinfo_list_length(void)
 {
   apuinfo_list *entry;
   unsigned long count;
@@ -1976,33 +1978,33 @@ apuinfo_list_length (void)
   for (entry = head, count = 0;
        entry;
        entry = entry->next)
-    ++ count;
+    ++count;
 
   return count;
 }
 
 static inline unsigned long
-apuinfo_list_element (unsigned long number)
+apuinfo_list_element(unsigned long number)
 {
   apuinfo_list * entry;
 
   for (entry = head;
-       entry && number --;
+       entry && number--;
        entry = entry->next)
     ;
 
-  return entry ? entry->value : 0;
+  return (entry ? entry->value : 0);
 }
 
 static void
-apuinfo_list_finish (void)
+apuinfo_list_finish(void)
 {
   apuinfo_list *entry;
 
   for (entry = head; entry;)
     {
       apuinfo_list *next = entry->next;
-      free (entry);
+      free(entry);
       entry = next;
     }
 
@@ -2016,7 +2018,7 @@ apuinfo_list_finish (void)
    the APUinfo values that will need to be emitted.  */
 
 static void
-ppc_elf_begin_write_processing (bfd *abfd, struct bfd_link_info *link_info)
+ppc_elf_begin_write_processing(bfd *abfd, struct bfd_link_info *link_info)
 {
   bfd *ibfd;
   asection *asec;
@@ -2038,7 +2040,7 @@ ppc_elf_begin_write_processing (bfd *abfd, struct bfd_link_info *link_info)
 
   for (ibfd = link_info->input_bfds; ibfd; ibfd = ibfd->link_next)
     {
-      asec = bfd_get_section_by_name (ibfd, APUINFO_SECTION_NAME);
+      asec = bfd_get_section_by_name(ibfd, APUINFO_SECTION_NAME);
       if (asec)
 	{
 	  ++ num_input_sections;
@@ -2052,7 +2054,7 @@ ppc_elf_begin_write_processing (bfd *abfd, struct bfd_link_info *link_info)
     return;
 
   /* Just make sure that the output section exists as well.  */
-  asec = bfd_get_section_by_name (abfd, APUINFO_SECTION_NAME);
+  asec = bfd_get_section_by_name(abfd, APUINFO_SECTION_NAME);
   if (asec == NULL)
     return;
 
@@ -2679,15 +2681,16 @@ ppc_elf_copy_indirect_symbol (const struct elf_backend_data *bed ATTRIBUTE_UNUSE
     BFD_ASSERT (eind->elf.dynindx == -1);
 }
 
-/* Return 1 if target is one of ours.  */
+/* Removed from the following function for '-Wnested-externs': */
+extern const bfd_target bfd_elf32_powerpc_vec;
+extern const bfd_target bfd_elf32_powerpcle_vec;
 
+/* Return 1 if target is one of ours: */
 static bfd_boolean
-is_ppc_elf_target (const struct bfd_target *targ)
+is_ppc_elf_target(const struct bfd_target *targ)
 {
-  extern const bfd_target bfd_elf32_powerpc_vec;
-  extern const bfd_target bfd_elf32_powerpcle_vec;
-
-  return targ == &bfd_elf32_powerpc_vec || targ == &bfd_elf32_powerpcle_vec;
+  return ((targ == &bfd_elf32_powerpc_vec)
+          || (targ == &bfd_elf32_powerpcle_vec));
 }
 
 /* Hook called by the linker routine which adds symbols from an object
@@ -3408,33 +3411,33 @@ ppc_elf_check_relocs (bfd *abfd,
 		      || !h->def_regular)))
 	    {
 	      struct ppc_elf_dyn_relocs *p;
-	      struct ppc_elf_dyn_relocs **head;
+	      struct ppc_elf_dyn_relocs **lochead;
 
-#ifdef DEBUG
-	      fprintf (stderr,
-		       "ppc_elf_check_relocs needs to "
-		       "create relocation for %s\n",
-		       (h && h->root.root.string
-			? h->root.root.string : "<unknown>"));
-#endif
+#if (defined(DEBUG) || defined(_DEBUG)) && defined(stderr)
+	      fprintf(stderr,
+		      "ppc_elf_check_relocs needs to "
+		      "create relocation for %s\n",
+		      (h && h->root.root.string
+                       ? h->root.root.string : "<unknown>"));
+#endif /* (DEBUG || _DEBUG) && stderr */
 	      if (sreloc == NULL)
 		{
 		  const char *name;
 
 		  name = (bfd_elf_string_from_elf_section
 			  (abfd,
-			   elf_elfheader (abfd)->e_shstrndx,
-			   elf_section_data (sec)->rel_hdr.sh_name));
+			   elf_elfheader(abfd)->e_shstrndx,
+			   elf_section_data(sec)->rel_hdr.sh_name));
 		  if (name == NULL)
 		    return FALSE;
 
-		  BFD_ASSERT (strncmp (name, ".rela", 5) == 0
-			      && strcmp (bfd_get_section_name (abfd, sec),
-					 name + 5) == 0);
+		  BFD_ASSERT((strncmp(name, ".rela", 5) == 0)
+			     && (strcmp(bfd_get_section_name(abfd, sec),
+                                        (name + 5)) == 0));
 
 		  if (htab->elf.dynobj == NULL)
 		    htab->elf.dynobj = abfd;
-		  sreloc = bfd_get_section_by_name (htab->elf.dynobj, name);
+		  sreloc = bfd_get_section_by_name(htab->elf.dynobj, name);
 		  if (sreloc == NULL)
 		    {
 		      flagword flags;
@@ -3442,22 +3445,22 @@ ppc_elf_check_relocs (bfd *abfd,
 		      flags = (SEC_HAS_CONTENTS | SEC_READONLY
 			       | SEC_IN_MEMORY | SEC_LINKER_CREATED
 			       | SEC_ALLOC | SEC_LOAD);
-		      sreloc = bfd_make_section_with_flags (htab->elf.dynobj,
-							    name,
-							    flags);
-		      if (sreloc == NULL
-			  || ! bfd_set_section_alignment (htab->elf.dynobj,
-							  sreloc, 2))
+		      sreloc = bfd_make_section_with_flags(htab->elf.dynobj,
+							   name,
+							   flags);
+		      if ((sreloc == NULL)
+			  || ! bfd_set_section_alignment(htab->elf.dynobj,
+							 sreloc, 2))
 			return FALSE;
 		    }
-		  elf_section_data (sec)->sreloc = sreloc;
+		  elf_section_data(sec)->sreloc = sreloc;
 		}
 
 	      /* If this is a global symbol, we count the number of
 		 relocations we need for this symbol.  */
 	      if (h != NULL)
 		{
-		  head = &ppc_elf_hash_entry (h)->dyn_relocs;
+		  lochead = &ppc_elf_hash_entry(h)->dyn_relocs;
 		}
 	      else
 		{
@@ -3471,25 +3474,26 @@ ppc_elf_check_relocs (bfd *abfd,
 		  if (s == NULL)
 		    return FALSE;
 
-		  head = ((struct ppc_elf_dyn_relocs **)
-			  &elf_section_data(s)->local_dynrel);
+		  lochead = ((struct ppc_elf_dyn_relocs **)
+                             &elf_section_data(s)->local_dynrel);
 		}
 
-	      p = *head;
+	      p = *lochead;
 	      if ((p == NULL) || (p->sec != sec))
 		{
-		  p = bfd_alloc(htab->elf.dynobj, sizeof(*p));
+		  p = ((struct ppc_elf_dyn_relocs *)
+                       bfd_alloc(htab->elf.dynobj, sizeof(*p)));
 		  if (p == NULL)
 		    return FALSE;
-		  p->next = *head;
-		  *head = p;
+		  p->next = *lochead;
+		  *lochead = p;
 		  p->sec = sec;
 		  p->count = 0;
 		  p->pc_count = 0;
 		}
 
 	      p->count += 1;
-	      if (!MUST_BE_DYN_RELOC (r_type))
+	      if (!MUST_BE_DYN_RELOC(r_type))
 		p->pc_count += 1;
 	    }
 
@@ -5551,16 +5555,16 @@ ppc_elf_relocate_section (bfd *output_bfd,
 
 	case R_PPC_GOT_TPREL16:
 	case R_PPC_GOT_TPREL16_LO:
-	  if (tls_mask != 0
-	      && (tls_mask & TLS_TPREL) == 0)
+	  if ((tls_mask != 0)
+	      && ((tls_mask & TLS_TPREL) == 0))
 	    {
 	      bfd_vma insn;
-	      insn = bfd_get_32 (output_bfd, contents + rel->r_offset - 2);
-	      insn &= 31 << 21;
+	      insn = bfd_get_32(output_bfd, contents + rel->r_offset - 2);
+	      insn &= (31 << 21);
 	      insn |= 0x3c020000;	/* addis 0,2,0 */
-	      bfd_put_32 (output_bfd, insn, contents + rel->r_offset - 2);
+	      bfd_put_32(output_bfd, insn, contents + rel->r_offset - 2);
 	      r_type = R_PPC_TPREL16_HA;
-	      rel->r_info = ELF32_R_INFO (r_symndx, r_type);
+	      rel->r_info = ELF32_R_INFO(r_symndx, r_type);
 	    }
 	  break;
 
@@ -7517,3 +7521,9 @@ ppc_elf_vxworks_final_write_processing (bfd *abfd, bfd_boolean linker)
 #define elf32_bed				ppc_elf_vxworks_bed
 
 #include "elf32-target.h"
+
+#ifdef VXWORKS_PLTRESOLVE_RELOCS_SHLIB
+# undef VXWORKS_PLTRESOLVE_RELOCS_SHLIB
+#endif /* VXWORKS_PLTRESOLVE_RELOCS_SHLIB */
+
+/* EOF */

@@ -28,6 +28,8 @@
 # include "defs.h"
 #endif /* !CORE_ADDR_DEFINED */
 
+#include "ansidecl.h"
+
 /* Opaque declarations.  */
 struct ui_file;
 struct frame_info;
@@ -1656,7 +1658,7 @@ struct minimal_symbol **find_equivalent_msymbol (struct minimal_symbol *msymbol)
 /* Global to indicate presence of HP-compiled objects,
    in particular, SOM executable file with SOM debug info
    Defined in symtab.c, used in hppa-tdep.c. */
-extern int deprecated_hp_som_som_object_present;
+extern int deprecated_hp_som_som_object_present ATTRIBUTE_DEPRECATED;
 
 /* APPLE LOCAL begin address ranges  */
 extern void update_inlined_function_line_table_entry (CORE_ADDR, CORE_ADDR,

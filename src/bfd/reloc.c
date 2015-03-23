@@ -4689,6 +4689,9 @@ bfd_generic_get_relocated_section_contents(bfd *abfd,
 		  break;
 		case bfd_reloc_outofrange:
                 case bfd_reloc_notsupported:
+                case bfd_reloc_ok:
+                case bfd_reloc_continue:
+                case bfd_reloc_other:
 		default:
 		  abort();
 #ifndef __clang__

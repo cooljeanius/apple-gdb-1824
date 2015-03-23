@@ -32,7 +32,9 @@ extern PROTO(PTR,memset,(PTR, int,unsigned int));
 #ifndef __GNUC__
 PROTO(PTR, memcpy,(PTR,CONST PTR,unsigned int));
 #else
-/* PROTO(char *, memcpy,(char *,CONST char *,unsigned int)); */
+# if 0
+PROTO(char *, memcpy,(char *,CONST char *,unsigned int));
+# endif /* 0 */
 #endif /* !__GNUC__ */
 
 extern PROTO(int,getuid,());

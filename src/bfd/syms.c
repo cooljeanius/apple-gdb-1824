@@ -543,6 +543,9 @@ struct section_to_type
 {
   const char *section;
   char type;
+  /* '-Wpadded': */
+  char padding1; /* should be 1 byte */
+  short padding2; /* should be 2 bytes */
 };
 
 /* Map section names to POSIX/BSD single-character symbol types.
@@ -550,26 +553,26 @@ struct section_to_type
    adding entries.  Since it is so short, a linear search is used.  */
 static const struct section_to_type stt[] =
 {
-  {".bss", 'b'},
-  {"code", 't'},		/* MRI .text */
-  {".data", 'd'},
-  {"*DEBUG*", 'N'},
-  {".debug", 'N'},              /* MSVC's .debug (non-standard debug syms) */
-  {".drectve", 'i'},            /* MSVC's .drective section */
-  {".edata", 'e'},              /* MSVC's .edata (export) section */
-  {".fini", 't'},		/* ELF fini section */
-  {".idata", 'i'},              /* MSVC's .idata (import) section */
-  {".init", 't'},		/* ELF init section */
-  {".pdata", 'p'},              /* MSVC's .pdata (stack unwind) section */
-  {".rdata", 'r'},		/* Read only data.  */
-  {".rodata", 'r'},		/* Read only data.  */
-  {".sbss", 's'},		/* Small BSS (uninitialized data).  */
-  {".scommon", 'c'},		/* Small common.  */
-  {".sdata", 'g'},		/* Small initialized data.  */
-  {".text", 't'},
-  {"vars", 'd'},		/* MRI .data */
-  {"zerovars", 'b'},		/* MRI .bss */
-  {0, 0}
+  { ".bss", 'b', 0, 0 },
+  { "code", 't', 0, 0 },		/* MRI .text */
+  { ".data", 'd', 0, 0 },
+  { "*DEBUG*", 'N', 0, 0 },
+  { ".debug", 'N', 0, 0 },    /* MSVC's .debug (non-standard debug syms) */
+  { ".drectve", 'i', 0, 0 },            /* MSVC's .drective section */
+  { ".edata", 'e', 0, 0 },             /* MSVC's .edata (export) section */
+  { ".fini", 't', 0, 0 },		/* ELF fini section */
+  { ".idata", 'i', 0, 0 },             /* MSVC's .idata (import) section */
+  { ".init", 't', 0, 0 },		/* ELF init section */
+  { ".pdata", 'p', 0, 0 },       /* MSVC's .pdata (stack unwind) section */
+  { ".rdata", 'r', 0, 0 },		/* Read only data.  */
+  { ".rodata", 'r', 0, 0 },		/* Read only data.  */
+  { ".sbss", 's', 0, 0 },	/* Small BSS (uninitialized data).  */
+  { ".scommon", 'c', 0, 0 },		/* Small common.  */
+  { ".sdata", 'g', 0, 0 },		/* Small initialized data.  */
+  { ".text", 't', 0, 0 },
+  { "vars", 'd', 0, 0 },		/* MRI .data */
+  { "zerovars", 'b', 0, 0 },		/* MRI .bss */
+  { 0, 0, 0, 0 }
 };
 
 /* Return the single-character symbol type corresponding to

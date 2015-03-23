@@ -22,6 +22,8 @@
 #ifndef MIPS_TDEP_H
 #define MIPS_TDEP_H
 
+#include "ansidecl.h"
+
 struct gdbarch;
 
 /* All the possible MIPS ABIs. */
@@ -90,8 +92,9 @@ enum
   MIPS_LAST_EMBED_REGNUM = 89	/* Last one.  */
 };
 
-/* Defined in mips-tdep.c and used in remote-mips.c */
-extern void deprecated_mips_set_processor_regs_hack (void);
+/* Defined in mips-tdep.c and used in remote-mips.c at least: */
+extern void deprecated_mips_set_processor_regs_hack(void)
+  ATTRIBUTE_DEPRECATED;
 
 /* Instruction sizes and other useful constants.  */
 enum

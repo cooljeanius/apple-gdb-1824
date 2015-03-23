@@ -1,4 +1,4 @@
-/* Top level stuff for GDB, the GNU debugger.
+/* event-top.c: Top level stuff for GDB, the GNU debugger.
 
    Copyright 1999, 2000, 2001, 2002, 2004, 2005 Free Software
    Foundation, Inc.
@@ -169,7 +169,7 @@ void (*after_char_processing_hook) ();
 
 
 /* Wrapper function for calling into the readline library. The event
-   loop expects the callback function to have a paramter, while readline 
+   loop expects the callback function to have a paramter, while readline
    expects none. */
 static void
 rl_callback_read_char_wrapper (gdb_client_data client_data)
@@ -454,12 +454,12 @@ stdin_event_handler (int error, gdb_client_data client_data)
 
 /* Re-enable stdin after the end of an execution command in
    synchronous mode, or after an error from the target, and we aborted
-   the exec operation. 
+   the exec operation.
    One tricky point here.  We want to be careful not to stack up
    enables & disables.  This is because we can run the inferior many
    times in one execution command (for instance if a breakpoint command
    restarts the inferior).  And it is not possible a-priori to know when
-   we find that the inferior has been restarted whether 
+   we find that the inferior has been restarted whether
    async_disable_stdin has been called (and thus whether we should re-enable
    it).  If we just make sure that we only do things one level deep here,
    it removes the bookkeeping from callers, which is much better.
@@ -473,7 +473,7 @@ async_enable_stdin (void *dummy)
   if (stdin_enabled)
     return;
 
-  stdin_enabled = 1; 
+  stdin_enabled = 1;
 
   /* See NOTE in async_disable_stdin() */
   /* FIXME: cagney/1999-09-27: Call this before clearing
@@ -542,9 +542,9 @@ command_handler (char *command)
     reinitialize_more_filter ();
   old_chain = make_cleanup (null_cleanup, 0);
 
-  /* If readline returned a NULL command, it means that the 
+  /* If readline returned a NULL command, it means that the
      connection with the terminal is gone. This happens at the
-     end of a testsuite run, after Expect has hung up 
+     end of a testsuite run, after Expect has hung up
      but GDB is still alive. In such a case, we just quit gdb
      killing the inferior program too. */
   if (command == 0)
@@ -710,7 +710,7 @@ command_line_handler (char *rl)
   if (source_file_name != NULL)
     ++source_line_number;
 
-  /* If we are in this case, then command_handler will call quit 
+  /* If we are in this case, then command_handler will call quit
      and exit from gdb. */
   if (!rl || rl == (char *) EOF)
     {
@@ -997,7 +997,7 @@ mark_async_signal_handler_wrapper (void *token)
   mark_async_signal_handler ((struct async_signal_handler *) token);
 }
 
-/* Tell the event loop what to do if SIGINT is received. 
+/* Tell the event loop what to do if SIGINT is received.
    See event-signal.c. */
 void
 handle_sigint (int sig)
@@ -1007,7 +1007,7 @@ handle_sigint (int sig)
   /* We used to set the quit flag in async_request_quit, which is either
      called when immediate_quit is 1, or when we get back to the event
      loop.  This is wrong, because you could be running in a loop reading
-     in symfiles or something, and it could be quite a while before you 
+     in symfiles or something, and it could be quite a while before you
      get to the event loop.  Instead, set quit_flag to 1 here, then mark
      the sigint handler as ready.  Then if somebody calls QUIT before you
      get to the event loop, they will unwind as expected.  */
@@ -1036,7 +1036,7 @@ async_request_quit (gdb_client_data arg)
   /* If the quit_flag has gotten reset back to 0 by the time we get
      back here, that means that an exception was thrown to unwind
      the current command before we got back to the event loop.  So
-     there is no reason to call quit again here. 
+     there is no reason to call quit again here.
      I added the check for immediate quit, since that's what
      prompt_for_continue uses instead of quit_flag to request the
      quit.  Since BOTH quit_flag & immediate_quit get set to
@@ -1051,7 +1051,7 @@ async_request_quit (gdb_client_data arg)
 }
 
 #ifdef SIGQUIT
-/* Tell the event loop what to do if SIGQUIT is received. 
+/* Tell the event loop what to do if SIGQUIT is received.
    See event-signal.c. */
 static void
 handle_sigquit (int sig)
@@ -1069,7 +1069,7 @@ async_do_nothing (gdb_client_data arg)
 }
 
 #ifdef SIGHUP
-/* Tell the event loop what to do if SIGHUP is received. 
+/* Tell the event loop what to do if SIGHUP is received.
    See event-signal.c. */
 static void
 handle_sighup (int sig)
@@ -1127,7 +1127,7 @@ async_stop_sig (gdb_client_data arg)
 }
 #endif /* STOP_SIGNAL */
 
-/* Tell the event loop what to do if SIGFPE is received. 
+/* Tell the event loop what to do if SIGFPE is received.
    See event-signal.c. */
 static void
 handle_sigfpe (int sig)
@@ -1145,7 +1145,7 @@ async_float_handler (gdb_client_data arg)
   error (_("Erroneous arithmetic operation."));
 }
 
-/* Tell the event loop what to do if SIGWINCH is received. 
+/* Tell the event loop what to do if SIGWINCH is received.
    See event-signal.c. */
 #if defined(SIGWINCH) && defined(SIGWINCH_HANDLER)
 static void
@@ -1226,7 +1226,7 @@ gdb_setup_readline (void)
 	 could be overwritten by a command in .gdbinit like 'set
 	 editing on' or 'off'.  */
       async_command_editing_p = 1;
-	  
+
       /* When a character is detected on instream by select or poll,
 	 readline will be invoked via this callback function.  */
       call_readline = rl_callback_read_char_wrapper;
@@ -1236,12 +1236,12 @@ gdb_setup_readline (void)
       async_command_editing_p = 0;
       call_readline = gdb_readline2;
     }
-  
+
   /* When readline has read an end-of-line character, it passes the
      complete line to gdb for processing. command_line_handler is the
      function that does this.  */
   input_handler = command_line_handler;
-      
+
   /* Tell readline to use the same input stream that gdb uses. */
   rl_instream = instream;
 
@@ -1338,10 +1338,10 @@ adjust_prompts_for_optimized_code (void)
    among interpreters anyway... */
 
 void
-_initialize_event_loop (void)
+_initialize_event_loop(void)
 {
   /* Tell gdb to use the cli_command_loop as the main loop. */
 
   if (deprecated_command_loop_hook == NULL)
-    deprecated_command_loop_hook = cli_command_loop;
+    deprecated_command_loop_hook = (void (*)(void))cli_command_loop;
 }

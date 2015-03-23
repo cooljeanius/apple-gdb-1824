@@ -63,10 +63,8 @@ static bfd_boolean lookup_line
    info comes from the file header record (fh-fBigendian).  */
 
 void
-_bfd_ecoff_swap_tir_in (bigend, ext_copy, intern)
-     int bigend;
-     const struct tir_ext *ext_copy;
-     TIR *intern;
+_bfd_ecoff_swap_tir_in(int bigend, const struct tir_ext *ext_copy,
+                       TIR *intern)
 {
   struct tir_ext ext[1];
 
@@ -120,10 +118,8 @@ _bfd_ecoff_swap_tir_in (bigend, ext_copy, intern)
    info comes from the file header record (fh-fBigendian).  */
 
 void
-_bfd_ecoff_swap_tir_out (bigend, intern_copy, ext)
-     int bigend;
-     const TIR *intern_copy;
-     struct tir_ext *ext;
+_bfd_ecoff_swap_tir_out(int bigend, const TIR *intern_copy,
+                        struct tir_ext *ext)
 {
   TIR intern[1];
 
@@ -176,10 +172,8 @@ _bfd_ecoff_swap_tir_out (bigend, intern_copy, ext)
    big-endian or little-endian format.*/
 
 void
-_bfd_ecoff_swap_rndx_in (bigend, ext_copy, intern)
-     int bigend;
-     const struct rndx_ext *ext_copy;
-     RNDXR *intern;
+_bfd_ecoff_swap_rndx_in(int bigend, const struct rndx_ext *ext_copy,
+                        RNDXR *intern)
 {
   struct rndx_ext ext[1];
 
@@ -215,10 +209,8 @@ _bfd_ecoff_swap_rndx_in (bigend, ext_copy, intern)
    big-endian or little-endian format.*/
 
 void
-_bfd_ecoff_swap_rndx_out (bigend, intern_copy, ext)
-     int bigend;
-     const RNDXR *intern_copy;
-     struct rndx_ext *ext;
+_bfd_ecoff_swap_rndx_out(int bigend, const RNDXR *intern_copy,
+                         struct rndx_ext *ext)
 {
   RNDXR intern[1];
 

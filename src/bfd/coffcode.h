@@ -449,7 +449,7 @@ sec_to_styp_flags(const char *sec_name, flagword sec_flags)
       } else {
 	  styp_flags = STYP_DEBUG_INFO;
       }
-  } else if (!strncmp (sec_name, ".stab", 5)) {
+  } else if (!strncmp(sec_name, ".stab", 5UL)) {
       styp_flags = STYP_DEBUG_INFO;
 #ifdef COFF_LONG_SECTION_NAMES
   } else if (!strncmp(sec_name, GNU_LINKONCE_WI,
@@ -686,14 +686,14 @@ styp_to_sec_flags (bfd *abfd ATTRIBUTE_UNUSED,
 #endif /* BSS_NOLOAD_IS_SHARED_LIBRARY */
 	sec_flags |= SEC_ALLOC;
     }
-  else if (strncmp (name, DOT_DEBUG, sizeof (DOT_DEBUG) - 1) == 0
+  else if ((strncmp(name, DOT_DEBUG, (sizeof(DOT_DEBUG) - 1UL)) == 0)
 #ifdef _COMMENT
-	   || strcmp (name, _COMMENT) == 0
+	   || (strcmp(name, _COMMENT) == 0)
 #endif /* _COMMENT */
 #ifdef COFF_LONG_SECTION_NAMES
-	   || strncmp (name, GNU_LINKONCE_WI, sizeof (GNU_LINKONCE_WI) - 1) == 0
+	   || (strncmp(name, GNU_LINKONCE_WI, (sizeof(GNU_LINKONCE_WI) - 1UL)) == 0)
 #endif /* COFF_LONG_SECTION_NAMES */
-	   || strncmp (name, ".stab", 5) == 0)
+	   || (strncmp(name, ".stab", 5UL) == 0))
     {
 #ifdef COFF_PAGE_SIZE
       sec_flags |= SEC_DEBUGGING;
@@ -1512,10 +1512,10 @@ coff_set_custom_section_alignment (bfd *abfd ATTRIBUTE_UNUSED,
     {
       const char *secname = bfd_get_section_name(abfd, section);
 
-      if (alignment_table[i].comparison_length == (unsigned int)-1
-	  ? strcmp (alignment_table[i].name, secname) == 0
-	  : strncmp (alignment_table[i].name, secname,
-		     alignment_table[i].comparison_length) == 0)
+      if ((alignment_table[i].comparison_length == (unsigned int)-1)
+	  ? (strcmp(alignment_table[i].name, secname) == 0)
+	  : (strncmp(alignment_table[i].name, secname,
+		     (size_t)alignment_table[i].comparison_length) == 0))
 	break;
     }
   if (i >= table_size)
@@ -3162,7 +3162,7 @@ coff_compute_section_file_positions(bfd *abfd)
 	      sofar = BFD_ALIGN(sofar, (1 << current->alignment_power));
 
 	      align = (1 << current->alignment_power);
-	      pad = (bfd_vma)(abs((long)((file_ptr)current->vma - sofar))
+	      pad = (bfd_vma)(abs((int)((file_ptr)current->vma - sofar))
                               % (int)align);
 
 	      if (pad)
@@ -3489,7 +3489,7 @@ coff_write_object_contents(bfd * abfd)
 
       internal_f.f_nscns++;
 
-      strncpy(section.s_name, current->name, SCNNMLEN);
+      strncpy(section.s_name, current->name, (size_t)SCNNMLEN);
 
 #ifdef COFF_LONG_SECTION_NAMES
       /* Handle long section names as in PE. This must be compatible
@@ -3732,7 +3732,7 @@ coff_write_object_contents(bfd * abfd)
 	  bfd_size_type amt;
 
 	  internal_f.f_nscns++;
-	  strncpy(&(scnhdr.s_name[0]), current->name, 8);
+	  strncpy(&(scnhdr.s_name[0]), current->name, 8UL);
 	  scnhdr.s_paddr = current->reloc_count;
 	  scnhdr.s_vaddr = current->lineno_count;
 	  scnhdr.s_size = 0;

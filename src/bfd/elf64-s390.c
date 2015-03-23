@@ -562,14 +562,16 @@ elf_s390_is_local_label_name (abfd, name)
 
      Fixup at offset 8: relative address to start of GOT.  */
 
-#define PLT_FIRST_ENTRY_WORD0     (bfd_vma) 0xe310f038
-#define PLT_FIRST_ENTRY_WORD1     (bfd_vma) 0x0024c010
-#define PLT_FIRST_ENTRY_WORD2     (bfd_vma) 0x00000000
-#define PLT_FIRST_ENTRY_WORD3     (bfd_vma) 0xd207f030
-#define PLT_FIRST_ENTRY_WORD4     (bfd_vma) 0x1008e310
-#define PLT_FIRST_ENTRY_WORD5     (bfd_vma) 0x10100004
-#define PLT_FIRST_ENTRY_WORD6     (bfd_vma) 0x07f10700
-#define PLT_FIRST_ENTRY_WORD7     (bfd_vma) 0x07000700
+#define PLT_FIRST_ENTRY_WORD0     (bfd_vma)0xe310f038
+#define PLT_FIRST_ENTRY_WORD1     (bfd_vma)0x0024c010
+#ifndef PLT_FIRST_ENTRY_WORD2
+# define PLT_FIRST_ENTRY_WORD2     (bfd_vma)0x00000000
+#endif /* !PLT_FIRST_ENTRY_WORD2 */
+#define PLT_FIRST_ENTRY_WORD3     (bfd_vma)0xd207f030
+#define PLT_FIRST_ENTRY_WORD4     (bfd_vma)0x1008e310
+#define PLT_FIRST_ENTRY_WORD5     (bfd_vma)0x10100004
+#define PLT_FIRST_ENTRY_WORD6     (bfd_vma)0x07f10700
+#define PLT_FIRST_ENTRY_WORD7     (bfd_vma)0x07000700
 
 /* The s390 linker needs to keep track of the number of relocs that it
    decides to copy as dynamic relocs in check_relocs for each symbol.
@@ -679,23 +681,22 @@ struct elf_s390_link_hash_table
 /* Create an entry in an s390 ELF linker hash table.  */
 
 static struct bfd_hash_entry *
-link_hash_newfunc (entry, table, string)
-     struct bfd_hash_entry *entry;
-     struct bfd_hash_table *table;
-     const char *string;
+link_hash_newfunc(struct bfd_hash_entry *entry,
+                  struct bfd_hash_table *table, const char *string)
 {
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
   if (entry == NULL)
     {
-      entry = bfd_hash_allocate (table,
-				 sizeof (struct elf_s390_link_hash_entry));
+      entry = ((struct bfd_hash_entry *)
+               bfd_hash_allocate(table,
+				 sizeof(struct elf_s390_link_hash_entry)));
       if (entry == NULL)
 	return entry;
     }
 
-  /* Call the allocation method of the superclass.  */
-  entry = _bfd_elf_link_hash_newfunc (entry, table, string);
+  /* Call the allocation method of the superclass: */
+  entry = _bfd_elf_link_hash_newfunc(entry, table, string);
   if (entry != NULL)
     {
       struct elf_s390_link_hash_entry *eh;
@@ -1428,8 +1429,8 @@ elf_s390_gc_sweep_hook (abfd, info, sec, relocs)
 	      }
 	}
 
-      r_type = ELF64_R_TYPE (rel->r_info);
-      r_type = elf_s390_tls_transition (info, r_type, h != NULL);
+      r_type = (unsigned int)ELF64_R_TYPE(rel->r_info);
+      r_type = elf_s390_tls_transition(info, r_type, h != NULL);
       switch (r_type)
 	{
 	case R_390_TLS_LDM64:
@@ -3452,13 +3453,27 @@ const struct elf_size_info s390_elf64_size_info =
 #define elf_backend_finish_dynamic_symbol     elf_s390_finish_dynamic_symbol
 #define elf_backend_gc_mark_hook	      elf_s390_gc_mark_hook
 #define elf_backend_gc_sweep_hook	      elf_s390_gc_sweep_hook
-#define elf_backend_reloc_type_class	      elf_s390_reloc_type_class
+#ifndef elf_backend_reloc_type_class
+# define elf_backend_reloc_type_class	      elf_s390_reloc_type_class
+#endif /* !elf_backend_reloc_type_class */
 #define elf_backend_relocate_section	      elf_s390_relocate_section
 #define elf_backend_size_dynamic_sections     elf_s390_size_dynamic_sections
-#define elf_backend_reloc_type_class	      elf_s390_reloc_type_class
+/* FIXME: we just did this a few lines above: */
+#ifndef elf_backend_reloc_type_class
+# define elf_backend_reloc_type_class	      elf_s390_reloc_type_class
+#endif /* !elf_backend_reloc_type_class */
 #define elf_backend_plt_sym_val		      elf_s390_plt_sym_val
 
 #define bfd_elf64_mkobject		elf_s390_mkobject
 #define elf_backend_object_p		elf_s390_object_p
 
 #include "elf64-target.h"
+
+#ifdef PLT_FIRST_ENTRY_WORD2
+# undef PLT_FIRST_ENTRY_WORD2
+#endif /* PLT_FIRST_ENTRY_WORD2 */
+#ifdef elf_backend_reloc_type_class
+# undef elf_backend_reloc_type_class
+#endif /* elf_backend_reloc_type_class */
+
+/* EOF */

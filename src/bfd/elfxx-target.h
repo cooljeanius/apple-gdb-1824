@@ -849,5 +849,8 @@ const bfd_target TARGET_LITTLE_SYM =
 #ifdef elf_backend_can_gc_sections
 # undef elf_backend_can_gc_sections
 #endif /* elf_backend_can_gc_sections */
+#ifdef M32R_NOP
+# undef M32R_NOP
+#endif /* M32R_NOP */
 
 /* EOF */

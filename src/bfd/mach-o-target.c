@@ -37,7 +37,9 @@
 # ifndef bfd_mach_o_bfd_free_cached_info
 #  define bfd_mach_o_bfd_free_cached_info _bfd_generic_bfd_free_cached_info
 # endif /* !bfd_mach_o_bfd_free_cached_info*/
-# define bfd_mach_o_get_section_contents_in_window _bfd_generic_get_section_contents_in_window
+# ifndef bfd_mach_o_get_section_contents_in_window
+#  define bfd_mach_o_get_section_contents_in_window _bfd_generic_get_section_contents_in_window
+# endif /* !bfd_mach_o_get_section_contents_in_window */
 # define bfd_mach_o_bfd_print_private_bfd_data _bfd_generic_bfd_print_private_bfd_data
 # ifndef bfd_mach_o_bfd_is_target_special_symbol
 #  define bfd_mach_o_bfd_is_target_special_symbol ((bfd_boolean (*)(bfd *, asymbol *))bfd_false)
@@ -45,7 +47,9 @@
 # ifndef bfd_mach_o_bfd_is_local_label_name
 #  define bfd_mach_o_bfd_is_local_label_name bfd_generic_is_local_label_name
 # endif /* !bfd_mach_o_bfd_is_local_label_name */
-# define bfd_mach_o_get_lineno _bfd_nosymbols_get_lineno
+# ifndef bfd_mach_o_get_lineno
+#  define bfd_mach_o_get_lineno _bfd_nosymbols_get_lineno
+# endif /* !bfd_mach_o_get_lineno */
 # define bfd_mach_o_find_inliner_info _bfd_nosymbols_find_inliner_info
 # define bfd_mach_o_get_symbol_version_string _bfd_nosymbols_get_symbol_version_string
 # define bfd_mach_o_bfd_make_debug_symbol _bfd_nosymbols_bfd_make_debug_symbol
@@ -60,7 +64,9 @@
    _bfd_generic_copy_link_hash_symbol_type
 # define bfd_mach_o_bfd_final_link _bfd_generic_final_link
 # define bfd_mach_o_bfd_link_split_section _bfd_generic_link_split_section
-# define bfd_mach_o_bfd_merge_private_bfd_data _bfd_generic_bfd_merge_private_bfd_data
+# ifndef bfd_mach_o_bfd_merge_private_bfd_data
+#  define bfd_mach_o_bfd_merge_private_bfd_data _bfd_generic_bfd_merge_private_bfd_data
+# endif /* !bfd_mach_o_bfd_merge_private_bfd_data */
 # ifndef bfd_mach_o_bfd_set_private_flags
 #  define bfd_mach_o_bfd_set_private_flags bfd_mach_o_bfd_set_private_flags
 # endif /* !bfd_mach_o_bfd_set_private_flags */
@@ -70,7 +76,9 @@
 # define bfd_mach_o_bfd_merge_sections bfd_generic_merge_sections
 # define bfd_mach_o_bfd_is_group_section bfd_generic_is_group_section
 # define bfd_mach_o_bfd_discard_group bfd_generic_discard_group
-# define bfd_mach_o_section_already_linked _bfd_generic_section_already_linked
+# ifndef bfd_mach_o_section_already_linked
+#  define bfd_mach_o_section_already_linked _bfd_generic_section_already_linked
+# endif /* !bfd_mach_o_section_already_linked */
 # define bfd_mach_o_bfd_define_common_symbol bfd_generic_define_common_symbol
 # if !defined(bfd_mach_o_bfd_copy_private_bfd_data) && \
      defined(_bfd_generic_bfd_copy_private_bfd_data) && 0

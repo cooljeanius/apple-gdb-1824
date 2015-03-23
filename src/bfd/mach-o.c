@@ -129,49 +129,71 @@ extern const bfd_target mach_o_fat_vec;
 #ifndef bfd_mach_o_mkarchive
 # define bfd_mach_o_mkarchive _bfd_noarchive_mkarchive
 #endif /* !bfd_mach_o_mkarchive */
-#define bfd_mach_o_read_ar_hdr                        _bfd_noarchive_read_ar_hdr
-#define bfd_mach_o_slurp_armap                        _bfd_noarchive_slurp_armap
-#define bfd_mach_o_slurp_extended_name_table          _bfd_noarchive_slurp_extended_name_table
-#define bfd_mach_o_construct_extended_name_table      _bfd_noarchive_construct_extended_name_table
-#define bfd_mach_o_truncate_arname                    _bfd_noarchive_truncate_arname
-#define bfd_mach_o_write_armap                        _bfd_noarchive_write_armap
-#define bfd_mach_o_get_elt_at_index                   _bfd_noarchive_get_elt_at_index
+#if 0 /* FIXME: only ifdef-ing out for '-Wunused-macros' */
+# define bfd_mach_o_read_ar_hdr _bfd_noarchive_read_ar_hdr
+# define bfd_mach_o_slurp_armap _bfd_noarchive_slurp_armap
+# define bfd_mach_o_slurp_extended_name_table _bfd_noarchive_slurp_extended_name_table
+# define bfd_mach_o_construct_extended_name_table _bfd_noarchive_construct_extended_name_table
+# define bfd_mach_o_truncate_arname _bfd_noarchive_truncate_arname
+# define bfd_mach_o_write_armap _bfd_noarchive_write_armap
+# define bfd_mach_o_get_elt_at_index _bfd_noarchive_get_elt_at_index
+#endif /* 0 */
 #define bfd_mach_o_generic_stat_arch_elt              _bfd_noarchive_generic_stat_arch_elt
-#define bfd_mach_o_update_armap_timestamp             _bfd_noarchive_update_armap_timestamp
+#ifndef bfd_mach_o_update_armap_timestamp
+# define bfd_mach_o_update_armap_timestamp _bfd_noarchive_update_armap_timestamp
+#endif /* !bfd_mach_o_update_armap_timestamp */
 #define bfd_mach_o_close_and_cleanup                  _bfd_generic_close_and_cleanup
 #define bfd_mach_o_new_section_hook                   _bfd_generic_new_section_hook
-#define bfd_mach_o_get_section_contents_in_window     _bfd_generic_get_section_contents_in_window
+#ifndef bfd_mach_o_get_section_contents_in_window
+# define bfd_mach_o_get_section_contents_in_window _bfd_generic_get_section_contents_in_window
+#endif /* !bfd_mach_o_get_section_contents_in_window */
 #define bfd_mach_o_get_section_contents_in_window_with_mode _bfd_generic_get_section_contents_in_window_with_mode
 #define bfd_mach_o_bfd_is_target_special_symbol       ((bfd_boolean (*) (bfd *, asymbol *)) bfd_false)
 #define bfd_mach_o_bfd_is_local_label_name            _bfd_nosymbols_bfd_is_local_label_name
-#define bfd_mach_o_get_lineno                         _bfd_nosymbols_get_lineno
+#ifndef bfd_mach_o_get_lineno
+# define bfd_mach_o_get_lineno _bfd_nosymbols_get_lineno
+#endif /* !bfd_mach_o_get_lineno */
 #define bfd_mach_o_find_nearest_line                  _bfd_nosymbols_find_nearest_line
-#define bfd_mach_o_find_inliner_info                  _bfd_nosymbols_find_inliner_info
-#define bfd_mach_o_bfd_make_debug_symbol              _bfd_nosymbols_bfd_make_debug_symbol
-#define bfd_mach_o_read_minisymbols                   _bfd_generic_read_minisymbols
-#define bfd_mach_o_minisymbol_to_symbol               _bfd_generic_minisymbol_to_symbol
+#if 0 /* FIXME: only ifdef-ing out for '-Wunused-macros' */
+# define bfd_mach_o_find_inliner_info _bfd_nosymbols_find_inliner_info
+# define bfd_mach_o_bfd_make_debug_symbol _bfd_nosymbols_bfd_make_debug_symbol
+# define bfd_mach_o_read_minisymbols _bfd_generic_read_minisymbols
+# define bfd_mach_o_minisymbol_to_symbol _bfd_generic_minisymbol_to_symbol
+#endif /* 0 */
 #define bfd_mach_o_get_reloc_upper_bound              _bfd_norelocs_get_reloc_upper_bound
 #define bfd_mach_o_canonicalize_reloc                 _bfd_norelocs_canonicalize_reloc
 #define bfd_mach_o_bfd_reloc_type_lookup              _bfd_norelocs_bfd_reloc_type_lookup
-#define bfd_mach_o_bfd_get_relocated_section_contents bfd_generic_get_relocated_section_contents
-#define bfd_mach_o_bfd_relax_section                  bfd_generic_relax_section
-#define bfd_mach_o_bfd_link_hash_table_create         _bfd_generic_link_hash_table_create
+#if 0 /* FIXME: only ifdef-ing out for '-Wunused-macros' */
+# define bfd_mach_o_bfd_get_relocated_section_contents bfd_generic_get_relocated_section_contents
+# define bfd_mach_o_bfd_relax_section bfd_generic_relax_section
+# define bfd_mach_o_bfd_link_hash_table_create _bfd_generic_link_hash_table_create
+#endif /* 0 */
 #define bfd_mach_o_bfd_link_hash_table_free           _bfd_generic_link_hash_table_free
-#define bfd_mach_o_bfd_link_add_symbols               _bfd_generic_link_add_symbols
-#define bfd_mach_o_bfd_link_just_syms                 _bfd_generic_link_just_syms
-#define bfd_mach_o_bfd_final_link                     _bfd_generic_final_link
-#define bfd_mach_o_bfd_link_split_section             _bfd_generic_link_split_section
+#if 0 /* FIXME: only ifdef-ing out for '-Wunused-macros' */
+# define bfd_mach_o_bfd_link_add_symbols _bfd_generic_link_add_symbols
+# define bfd_mach_o_bfd_link_just_syms _bfd_generic_link_just_syms
+# define bfd_mach_o_bfd_final_link _bfd_generic_final_link
+# define bfd_mach_o_bfd_link_split_section _bfd_generic_link_split_section
+#endif /* 0 */
 #define bfd_mach_o_set_arch_mach                      bfd_default_set_arch_mach
-#define bfd_mach_o_bfd_merge_private_bfd_data         _bfd_generic_bfd_merge_private_bfd_data
+#ifndef bfd_mach_o_bfd_merge_private_bfd_data
+# define bfd_mach_o_bfd_merge_private_bfd_data _bfd_generic_bfd_merge_private_bfd_data
+#endif /* !bfd_mach_o_bfd_merge_private_bfd_data */
 #define bfd_mach_o_bfd_set_private_flags              _bfd_generic_bfd_set_private_flags
-#define bfd_mach_o_bfd_print_private_bfd_data         _bfd_generic_bfd_print_private_bfd_data
-#define bfd_mach_o_get_section_contents               _bfd_generic_get_section_contents
+#if 0 /* FIXME: only ifdef-ing out for '-Wunused-macros' */
+# define bfd_mach_o_bfd_print_private_bfd_data _bfd_generic_bfd_print_private_bfd_data
+# define bfd_mach_o_get_section_contents _bfd_generic_get_section_contents
+#endif /* 0 */
 #define bfd_mach_o_set_section_contents               _bfd_generic_set_section_contents
-#define bfd_mach_o_bfd_gc_sections                    bfd_generic_gc_sections
-#define bfd_mach_o_bfd_merge_sections                 bfd_generic_merge_sections
-#define bfd_mach_o_bfd_is_group_section               bfd_generic_is_group_section
-#define bfd_mach_o_bfd_discard_group                  bfd_generic_discard_group
-#define bfd_mach_o_section_already_linked             _bfd_generic_section_already_linked
+#if 0 /* FIXME: only ifdef-ing out for '-Wunused-macros' */
+# define bfd_mach_o_bfd_gc_sections bfd_generic_gc_sections
+# define bfd_mach_o_bfd_merge_sections bfd_generic_merge_sections
+# define bfd_mach_o_bfd_is_group_section bfd_generic_is_group_section
+# define bfd_mach_o_bfd_discard_group bfd_generic_discard_group
+#endif /* 0 */
+#ifndef bfd_mach_o_section_already_linked
+# define bfd_mach_o_section_already_linked _bfd_generic_section_already_linked
+#endif /* !bfd_mach_o_section_already_linked */
 #ifndef bfd_mach_o_bfd_copy_private_header_data
 # define bfd_mach_o_bfd_copy_private_header_data _bfd_generic_bfd_copy_private_header_data
 #endif /* !bfd_mach_o_bfd_copy_private_header_data */
@@ -330,10 +352,11 @@ bfd_mach_o_kernel_image(bfd *abfd)
   for (i = 0; i < mdata->header.ncmds; i++)
     {
       bfd_mach_o_load_command *cur = &mdata->commands[i];
-      if (cur->type == BFD_MACH_O_LC_SEGMENT || cur->type == BFD_MACH_O_LC_SEGMENT_64)
+      if ((cur->type == BFD_MACH_O_LC_SEGMENT)
+          || (cur->type == BFD_MACH_O_LC_SEGMENT_64))
         {
 	  bfd_mach_o_segment_command *seg = &mdata->commands[i].command.segment;
-          if (strcmp (seg->segname, "__KLD") == 0)
+          if (strcmp(seg->segname, "__KLD") == 0)
             {
               return 1;
             }
@@ -3462,7 +3485,10 @@ mach_o_bfd_fat_free_cached_info(bfd *input)
 #ifndef bfd_mach_o_generic_stat_arch_elt
 # define bfd_mach_o_generic_stat_arch_elt bfd_mach_o_fat_stat_arch_elt
 #endif /* !bfd_mach_o_generic_stat_arch_elt */
-#define bfd_mach_o_update_armap_timestamp _bfd_noarchive_update_armap_timestamp
+/* FIXME: already done above: */
+#ifndef bfd_mach_o_update_armap_timestamp
+# define bfd_mach_o_update_armap_timestamp _bfd_noarchive_update_armap_timestamp
+#endif /* !bfd_mach_o_update_armap_timestamp */
 
 #define TARGET_NAME 		mach_o_fat_vec
 #define TARGET_STRING 		"mach-o-fat"
@@ -3491,9 +3517,21 @@ mach_o_bfd_fat_free_cached_info(bfd *input)
 #ifdef bfd_mach_o_mkarchive
 # undef bfd_mach_o_mkarchive
 #endif /* bfd_mach_o_mkarchive */
+#ifdef bfd_mach_o_section_already_linked
+# undef bfd_mach_o_section_already_linked
+#endif /* bfd_mach_o_section_already_linked */
 #ifdef bfd_mach_o_bfd_copy_private_header_data
 # undef bfd_mach_o_bfd_copy_private_header_data
 #endif /* bfd_mach_o_bfd_copy_private_header_data */
+#ifdef bfd_mach_o_get_section_contents_in_window
+# undef bfd_mach_o_get_section_contents_in_window
+#endif /* bfd_mach_o_get_section_contents_in_window */
+#ifdef bfd_mach_o_get_lineno
+# undef bfd_mach_o_get_lineno
+#endif /* bfd_mach_o_get_lineno */
+#ifdef bfd_mach_o_bfd_merge_private_bfd_data
+# undef bfd_mach_o_bfd_merge_private_bfd_data
+#endif /* bfd_mach_o_bfd_merge_private_bfd_data */
 #ifdef SECTION_TYPE
 # undef SECTION_TYPE
 #endif /* SECTION_TYPE */

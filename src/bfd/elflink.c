@@ -5118,23 +5118,22 @@ bfd_elf_size_dynamic_sections (bfd *output_bfd,
 	      struct elf_link_hash_entry *newh;
 
 	      name = d->symbol;
-	      namelen = strlen (name);
+	      namelen = strlen(name);
 	      verstr = t->name;
-	      verlen = strlen (verstr);
-	      newlen = namelen + verlen + 3;
+	      verlen = strlen(verstr);
+	      newlen = (namelen + verlen + 3UL);
 
-	      newname = bfd_malloc (newlen);
+	      newname = (char *)bfd_malloc(newlen);
 	      if (newname == NULL)
 		return FALSE;
-	      memcpy (newname, name, namelen);
+	      memcpy(newname, name, namelen);
 
-	      /* Check the hidden versioned definition.  */
+	      /* Check the hidden versioned definition: */
 	      p = newname + namelen;
 	      *p++ = ELF_VER_CHR;
-	      memcpy (p, verstr, verlen + 1);
-	      newh = elf_link_hash_lookup (elf_hash_table (info),
-					   newname, FALSE, FALSE,
-					   FALSE);
+	      memcpy(p, verstr, (verlen + 1UL));
+	      newh = elf_link_hash_lookup(elf_hash_table(info),
+					  newname, FALSE, FALSE, FALSE);
 	      if (newh == NULL
 		  || (newh->root.type != bfd_link_hash_defined
 		      && newh->root.type != bfd_link_hash_defweak))
@@ -5699,18 +5698,18 @@ bfd_elf_size_dynsym_hash_dynstr (bfd *output_bfd, struct bfd_link_info *info)
       dynsymcount = _bfd_elf_link_renumber_dynsyms (output_bfd, info,
 						    &section_sym_count);
 
-      /* Work out the size of the symbol version section.  */
-      s = bfd_get_section_by_name (dynobj, ".gnu.version");
-      BFD_ASSERT (s != NULL);
-      if (dynsymcount != 0
-	  && (s->flags & SEC_EXCLUDE) == 0)
+      /* Work out the size of the symbol version section: */
+      s = bfd_get_section_by_name(dynobj, ".gnu.version");
+      BFD_ASSERT(s != NULL);
+      if ((dynsymcount != 0)
+	  && ((s->flags & SEC_EXCLUDE) == 0))
 	{
-	  s->size = dynsymcount * sizeof (Elf_External_Versym);
-	  s->contents = bfd_zalloc (output_bfd, s->size);
+	  s->size = (dynsymcount * sizeof(Elf_External_Versym));
+	  s->contents = (unsigned char *)bfd_zalloc(output_bfd, s->size);
 	  if (s->contents == NULL)
 	    return FALSE;
 
-	  if (!_bfd_elf_add_dynamic_entry (info, DT_VERSYM, 0))
+	  if (!_bfd_elf_add_dynamic_entry(info, DT_VERSYM, 0))
 	    return FALSE;
 	}
 
@@ -5720,14 +5719,14 @@ bfd_elf_size_dynsym_hash_dynstr (bfd *output_bfd, struct bfd_link_info *info)
 	 the final symbol table, because until then we do not know the
 	 correct value to give the symbols.  We built the .dynstr
 	 section as we went along in elf_link_add_object_symbols.  */
-      s = bfd_get_section_by_name (dynobj, ".dynsym");
-      BFD_ASSERT (s != NULL);
-      bed = get_elf_backend_data (output_bfd);
+      s = bfd_get_section_by_name(dynobj, ".dynsym");
+      BFD_ASSERT(s != NULL);
+      bed = get_elf_backend_data(output_bfd);
       s->size = dynsymcount * bed->s->sizeof_sym;
 
       if (dynsymcount != 0)
 	{
-	  s->contents = bfd_alloc (output_bfd, s->size);
+	  s->contents = (unsigned char *)bfd_alloc(output_bfd, s->size);
 	  if (s->contents == NULL)
 	    return FALSE;
 
@@ -5739,24 +5738,24 @@ bfd_elf_size_dynsym_hash_dynstr (bfd *output_bfd, struct bfd_link_info *info)
 
       /* Compute the size of the hashing table.  As a side effect this
 	 computes the hash values for all the names we export.  */
-      bucketcount = compute_bucket_count (info);
+      bucketcount = compute_bucket_count(info);
 
-      s = bfd_get_section_by_name (dynobj, ".hash");
-      BFD_ASSERT (s != NULL);
-      hash_entry_size = elf_section_data (s)->this_hdr.sh_entsize;
-      s->size = ((2 + bucketcount + dynsymcount) * hash_entry_size);
-      s->contents = bfd_zalloc (output_bfd, s->size);
+      s = bfd_get_section_by_name(dynobj, ".hash");
+      BFD_ASSERT(s != NULL);
+      hash_entry_size = elf_section_data(s)->this_hdr.sh_entsize;
+      s->size = ((2UL + bucketcount + dynsymcount) * hash_entry_size);
+      s->contents = (unsigned char *)bfd_zalloc(output_bfd, s->size);
       if (s->contents == NULL)
 	return FALSE;
 
-      bfd_put (8 * hash_entry_size, output_bfd, bucketcount, s->contents);
-      bfd_put (8 * hash_entry_size, output_bfd, dynsymcount,
-	       s->contents + hash_entry_size);
+      bfd_put(8 * hash_entry_size, output_bfd, bucketcount, s->contents);
+      bfd_put(8 * hash_entry_size, output_bfd, dynsymcount,
+	      s->contents + hash_entry_size);
 
-      elf_hash_table (info)->bucketcount = bucketcount;
+      elf_hash_table(info)->bucketcount = bucketcount;
 
-      s = bfd_get_section_by_name (dynobj, ".dynstr");
-      BFD_ASSERT (s != NULL);
+      s = bfd_get_section_by_name(dynobj, ".dynstr");
+      BFD_ASSERT(s != NULL);
 
       elf_finalize_dynstr (output_bfd, info);
 

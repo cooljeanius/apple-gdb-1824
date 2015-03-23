@@ -1825,6 +1825,12 @@ _bfd_generic_link_add_one_symbol(struct bfd_link_info *info, bfd *abfd,
 		  msec = bfd_ind_section_ptr;
 		  mval = 0;
 		  break;
+                case bfd_link_hash_common: /* fall through to: */
+                case bfd_link_hash_defweak: /* fall through to: */
+                case bfd_link_hash_new: /* fall through to: */
+                case bfd_link_hash_undefined: /* fall through to: */
+                case bfd_link_hash_undefweak: /* fall through to: */
+                case bfd_link_hash_warning: /* fall through to: */
 		default:
 		  abort();
 		}

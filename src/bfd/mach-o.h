@@ -1102,11 +1102,16 @@ bfd_mach_o_backend_data;
  * in the symbol are not yet set, or need validation (where this is
  * possible): */
 #ifndef SYM_MACHO_FIELDS_UNSET
-# define SYM_MACHO_FIELDS_UNSET ((bfd_vma)-1)
+# define SYM_MACHO_FIELDS_UNSET ((bfd_vma)-1L)
 #endif /* !SYM_MACHO_FIELDS_UNSET */
 #ifndef SYM_MACHO_FIELDS_NOT_VALIDATED
-# define SYM_MACHO_FIELDS_NOT_VALIDATED ((bfd_vma)-2)
+# define SYM_MACHO_FIELDS_NOT_VALIDATED ((bfd_vma)-2L)
 #endif /* !SYM_MACHO_FIELDS_NOT_VALIDATED */
+
+/* FIXME: */
+#if defined(bfd_mach_o_section_already_linked) && 0
+# undef bfd_mach_o_section_already_linked
+#endif /* bfd_mach_o_section_already_linked && 0 */
 
 #ifdef __cplusplus
 }

@@ -23,6 +23,8 @@
 #ifndef GDBARCH_UTILS_H
 #define GDBARCH_UTILS_H
 
+#include "ansidecl.h"
+
 struct gdbarch;
 struct frame_info;
 struct minimal_symbol;
@@ -50,7 +52,8 @@ extern gdbarch_store_return_value_ftype legacy_store_return_value;
 
 /* To return any structure or union type by value, store it at the
    address passed as an invisible first argument to the function.  */
-extern gdbarch_deprecated_use_struct_convention_ftype always_use_struct_convention;
+extern gdbarch_deprecated_use_struct_convention_ftype always_use_struct_convention
+  ATTRIBUTE_DEPRECATED;
 
 /* Typical remote_translate_xfer_address */
 extern gdbarch_remote_translate_xfer_address_ftype generic_remote_translate_xfer_address;

@@ -319,7 +319,8 @@ sh64_bfd_elf_copy_private_section_data(bfd *ibfd, asection *isec,
   sh64_sec_data = sh64_elf_section_data(isec)->sh64_info;
   if (sh64_sec_data == NULL)
     {
-      sh64_sec_data = bfd_zmalloc(sizeof(struct sh64_section_data));
+      sh64_sec_data = ((struct sh64_section_data *)
+                       bfd_zmalloc(sizeof(struct sh64_section_data)));
 
       if (sh64_sec_data == NULL)
 	return FALSE;
@@ -581,11 +582,12 @@ shmedia_prepare_reloc (struct bfd_link_info *info, bfd *abfd,
 
   disp = (*relocation & 0xf);
   dropped = 0;
-  switch (ELF32_R_TYPE (rel->r_info))
+  switch (ELF32_R_TYPE(rel->r_info))
     {
-    case R_SH_DIR10SW: dropped = disp & 1; break;
-    case R_SH_DIR10SL: dropped = disp & 3; break;
-    case R_SH_DIR10SQ: dropped = disp & 7; break;
+    case R_SH_DIR10SW: dropped = (disp & 1); break;
+    case R_SH_DIR10SL: dropped = (disp & 3); break;
+    case R_SH_DIR10SQ: dropped = (disp & 7); break;
+    default: break;
     }
   if (dropped != 0)
     {

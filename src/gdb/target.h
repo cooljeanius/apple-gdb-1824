@@ -49,6 +49,7 @@ struct target_ops;
    it goes into the file stratum, which is always below the process
    stratum.  */
 
+#include "ansidecl.h"
 #include "bfd.h"
 #include "symtab.h"
 #include "dcache.h"
@@ -358,10 +359,11 @@ struct target_ops
        NOTE: cagney/2004-10-01: This has been entirely superseeded by
        to_xfer_partial and inferior inheritance.  */
 
-    int (*deprecated_xfer_memory) (CORE_ADDR memaddr, gdb_byte *myaddr,
-				   int len, int write,
-				   struct mem_attrib *attrib,
-				   struct target_ops *target);
+    int (*deprecated_xfer_memory)(CORE_ADDR memaddr, gdb_byte *myaddr,
+				  int len, int write,
+				  struct mem_attrib *attrib,
+				  struct target_ops *target)
+      ATTRIBUTE_DEPRECATED_FOR(to_xfer_partial);
 
     void (*to_files_info) (struct target_ops *);
     int (*to_insert_breakpoint) (CORE_ADDR, gdb_byte *);
@@ -1000,7 +1002,7 @@ void gdb_set_async_override (void *on);
 #define	target_async_mask_value	\
      (current_target.to_async_mask_value)
 
-extern int target_async_mask (int mask);
+extern int target_async_mask(int mask);
 
 /* Converts a process id to a string.  Usually, the string just contains
    `process xyz', but on some systems it may contain
@@ -1045,7 +1047,8 @@ extern char *normal_pid_to_str (ptid_t ptid);
    that way, multiple clients can receive this notification (something
    like with signal handlers).  */
 
-extern void (*deprecated_target_new_objfile_hook) (struct objfile *);
+extern void (*deprecated_target_new_objfile_hook)(struct objfile *)
+  ATTRIBUTE_DEPRECATED;
 
 #ifndef target_pid_or_tid_to_str
 #define target_pid_or_tid_to_str(ID) \
@@ -1411,9 +1414,9 @@ extern void push_remote_macosx_target (char *name, int from_tty);
 void target_ignore (void);
 
 /* APPLE LOCAL update current target: */
-void update_current_target (void);
+void update_current_target(void);
 
-extern struct target_ops deprecated_child_ops;
+extern struct target_ops deprecated_child_ops ATTRIBUTE_DEPRECATED;
 
 /* APPLE LOCAL: Override trust-readonly-sections.  */
 extern int set_trust_readonly(int);

@@ -585,11 +585,8 @@ count_dyn_reloc (abfd, dyn_h, type, sec, sec_symndx, offset, addend)
    referenced symbol needs.  */
 
 static bfd_boolean
-elf64_hppa_check_relocs (abfd, info, sec, relocs)
-     bfd *abfd;
-     struct bfd_link_info *info;
-     asection *sec;
-     const Elf_Internal_Rela *relocs;
+elf64_hppa_check_relocs(bfd *abfd, struct bfd_link_info *info,
+                        asection *sec, const Elf_Internal_Rela *relocs)
 {
   struct elf64_hppa_link_hash_table *hppa_info;
   const Elf_Internal_Rela *relend;
@@ -663,10 +660,10 @@ elf64_hppa_check_relocs (abfd, info, sec, relocs)
 
       /* Now walk the local symbols again.  If we find a section symbol,
 	 record the index of the symbol into the section_syms array.  */
-      for (i = 0, isym = local_syms; isym < isymend; i++, isym++)
+      for (i = 0UL, isym = local_syms; isym < isymend; i++, isym++)
 	{
 	  if (ELF_ST_TYPE(isym->st_info) == STT_SECTION)
-	    hppa_info->section_syms[isym->st_shndx] = i;
+	    hppa_info->section_syms[isym->st_shndx] = (int)i;
 	}
 
       /* We are finished with the local symbols: */

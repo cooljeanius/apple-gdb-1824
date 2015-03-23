@@ -859,6 +859,8 @@ elf_i386_tls_transition (struct bfd_link_info *info, int r_type, int is_local)
       return r_type;
     case R_386_TLS_LDM:
       return R_386_TLS_LE_32;
+    default:
+      break;
     }
 
   return r_type;
@@ -2243,28 +2245,31 @@ elf_i386_relocate_section (bfd *output_bfd,
 		}
 
 	      msec = sec;
-	      addend = _bfd_elf_rel_local_sym (output_bfd, sym, &msec, addend);
+	      addend = _bfd_elf_rel_local_sym(output_bfd, sym, &msec,
+                                              addend);
 	      addend -= relocation;
-	      addend += msec->output_section->vma + msec->output_offset;
+	      addend += (msec->output_section->vma + msec->output_offset);
 
 	      switch (howto->size)
 		{
 		case 0:
-		  /* FIXME: overflow checks.  */
+		  /* FIXME: overflow checks: */
 		  if (howto->pc_relative)
 		    addend -= 1;
-		  bfd_put_8 (input_bfd, addend, where);
+		  bfd_put_8(input_bfd, addend, where);
 		  break;
 		case 1:
 		  if (howto->pc_relative)
 		    addend -= 2;
-		  bfd_put_16 (input_bfd, addend, where);
+		  bfd_put_16(input_bfd, addend, where);
 		  break;
 		case 2:
 		  if (howto->pc_relative)
 		    addend -= 4;
-		  bfd_put_32 (input_bfd, addend, where);
+		  bfd_put_32(input_bfd, addend, where);
 		  break;
+                default:
+                  break;
 		}
 	    }
 	}

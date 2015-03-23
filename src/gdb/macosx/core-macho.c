@@ -178,6 +178,13 @@ core_close(int quitting)
   core_close_1(NULL);
 }
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Woverflow"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 static void
 core_open(char *filename, int from_tty)
 {
@@ -442,6 +449,13 @@ core_open(char *filename, int from_tty)
          "your %s; do ``info files''", target_longname);
     }
 }
+
+/* keep this condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 static void
 core_detach (char *args, int from_tty)

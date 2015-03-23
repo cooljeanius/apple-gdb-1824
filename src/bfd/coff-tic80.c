@@ -372,15 +372,13 @@ static reloc_howto_type tic80_howto_table[] =
    relocations.  */
 
 static bfd_reloc_status_type ATTRIBUTE_NORETURN
-ppbase_reloc(abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
-             error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry ATTRIBUTE_UNUSED;
-     asymbol *symbol_in ATTRIBUTE_UNUSED;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section ATTRIBUTE_UNUSED;
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     char **error_message ATTRIBUTE_UNUSED;
+ppbase_reloc(bfd *abfd ATTRIBUTE_UNUSED,
+             arelent *reloc_entry ATTRIBUTE_UNUSED,
+             asymbol *symbol_in ATTRIBUTE_UNUSED,
+             PTR data ATTRIBUTE_UNUSED,
+             asection *input_section ATTRIBUTE_UNUSED,
+             bfd *output_bfd ATTRIBUTE_UNUSED,
+             char **error_message ATTRIBUTE_UNUSED)
 {
   /* FIXME: */
   abort();
@@ -439,13 +437,11 @@ local16_reloc(abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
    to generate an output file.  */
 
 static void
-rtype2howto (cache_ptr, dst)
-     arelent *cache_ptr;
-     struct internal_reloc *dst;
+rtype2howto(arelent *cache_ptr, struct internal_reloc *dst)
 {
   unsigned int i;
 
-  for (i = 0; i < sizeof tic80_howto_table / sizeof tic80_howto_table[0]; i++)
+  for (i = 0U; i < (sizeof(tic80_howto_table) / sizeof(tic80_howto_table[0])); i++)
     {
       if (tic80_howto_table[i].type == dst->r_type)
 	{
@@ -454,39 +450,37 @@ rtype2howto (cache_ptr, dst)
 	}
     }
 
-  (*_bfd_error_handler) (_("Unrecognized reloc type 0x%x"),
-			 (unsigned int) dst->r_type);
-  cache_ptr->howto = tic80_howto_table + 0;
+  (*_bfd_error_handler)(_("Unrecognized reloc type 0x%x"),
+                        (unsigned int)dst->r_type);
+  cache_ptr->howto = (tic80_howto_table + 0);
 }
 
-#define RTYPE2HOWTO(cache_ptr, dst) rtype2howto (cache_ptr, dst)
+#define RTYPE2HOWTO(cache_ptr, dst) rtype2howto(cache_ptr, dst)
 #define coff_rtype_to_howto coff_tic80_rtype_to_howto
 
 static reloc_howto_type *
-coff_tic80_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     asection *sec;
-     struct internal_reloc *rel;
-     struct coff_link_hash_entry *h ATTRIBUTE_UNUSED;
-     struct internal_syment *sym ATTRIBUTE_UNUSED;
-     bfd_vma *addendp;
+coff_tic80_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
+                          struct internal_reloc *rel,
+                          struct coff_link_hash_entry *h ATTRIBUTE_UNUSED,
+                          struct internal_syment *sym ATTRIBUTE_UNUSED,
+                          bfd_vma *addendp)
 {
   arelent genrel;
 
-  if (rel -> r_symndx == -1 && addendp != NULL)
+  if ((rel->r_symndx == -1) && (addendp != NULL))
     {
       /* This is a TI "internal relocation", which means that the relocation
 	 amount is the amount by which the current section is being relocated
 	 in the output section.  */
-      *addendp = (sec -> output_section -> vma + sec -> output_offset) - sec -> vma;
+      *addendp = ((sec->output_section->vma + sec->output_offset) - sec->vma);
     }
-  RTYPE2HOWTO (&genrel, rel);
+  RTYPE2HOWTO(&genrel, rel);
   return genrel.howto;
 }
 
 #ifndef BADMAG
-#define BADMAG(x) TIC80BADMAG(x)
-#endif
+# define BADMAG(x) TIC80BADMAG(x)
+#endif /* !BADMAG */
 
 #define coff_relocate_section coff_tic80_relocate_section
 
@@ -494,9 +488,9 @@ coff_tic80_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
    of this is a copy of _bfd_coff_generic_relocate_section.  */
 
 static bfd_boolean
-coff_tic80_relocate_section (output_bfd, info, input_bfd,
-			     input_section, contents, relocs, syms,
-			     sections)
+coff_tic80_relocate_section(output_bfd, info, input_bfd,
+			    input_section, contents, relocs, syms,
+			    sections)
      bfd *output_bfd;
      struct bfd_link_info *info;
      bfd *input_bfd;

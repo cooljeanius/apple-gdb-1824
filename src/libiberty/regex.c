@@ -7238,6 +7238,10 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
             UCHAR_T *pdummy = (UCHAR_T *)NULL;
             const CHAR_T *sdummy = (const CHAR_T *)pdummy;
 
+            if (sdummy == NULL) {
+              ; /* this just silences '-Wunused-but-set-variable' */
+            }
+
             DEBUG_PRINT1 ("EXECUTING pop_failure_jump.\n");
             POP_FAILURE_POINT (sdummy, pdummy,
                                dummy_low_reg, dummy_high_reg,

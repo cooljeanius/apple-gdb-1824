@@ -3259,6 +3259,13 @@ mach_kernel_starts_here_p (CORE_ADDR addr, uuid_t *file_uuid, uuid_t *discovered
   return 1;
 }
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Woverflow"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* Search the inferior's memory space for a kernel image.
    INPUT:  OFILE  optional - the mach_kernel objfile.  If we provided, UUID matching is enforced
    OUTPUT:  ADDR  optional - set to the address of mach_kernel in inferior, if found
@@ -3328,12 +3335,12 @@ exhaustive_search_for_kernel_in_mem (struct objfile *ofile, CORE_ADDR *addr, uui
   int wordsize = gdbarch_tdep (current_gdbarch)->wordsize;
   if (wordsize == 4)
     {
-      cur_addr = 1ULL << 31;
+      cur_addr = (1ULL << 31);
       stop_addr = UINT32_MAX;
     }
   else
     {
-      cur_addr = 1ULL << 63;
+      cur_addr = (1ULL << 63);
       stop_addr = UINT64_MAX;
     }
 
@@ -3507,6 +3514,13 @@ exhaustive_search_for_kernel_in_mem (struct objfile *ofile, CORE_ADDR *addr, uui
   do_cleanups (override_trust_readonly);
   return 0;
 }
+
+/* keep this condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* If the user specified the mach_kernel on the command line and we need to
    slide it to the actual location, this is the function.

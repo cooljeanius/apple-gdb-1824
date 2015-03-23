@@ -20,7 +20,7 @@
    have a copy of the license, write to the Free Software Foundation,
    59 Temple Place, Suite 330, Boston, MA 02111 USA. */
 
-#if !defined (_READLINE_H_)
+#if !defined(_READLINE_H_)
 #define _READLINE_H_
 
 #ifdef __cplusplus

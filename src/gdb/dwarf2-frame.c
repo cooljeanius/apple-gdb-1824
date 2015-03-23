@@ -1623,19 +1623,26 @@ add_fde (struct comp_unit *unit, struct dwarf2_fde *fde)
   set_objfile_data (unit->objfile, dwarf2_frame_objfile_data, fde);
 }
 
-#ifdef CC_HAS_LONG_LONG
-#define DW64_CIE_ID 0xffffffffffffffffULL
-#else
-#define DW64_CIE_ID ~0
-#endif
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Woverflow"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
-static gdb_byte *decode_frame_entry (struct comp_unit *unit, gdb_byte *start,
-				     int eh_frame_p);
+#if defined(CC_HAS_LONG_LONG) && !defined(__STRICT_ANSI__)
+# define DW64_CIE_ID 0xffffffffffffffffULL
+#else
+# define DW64_CIE_ID ~0
+#endif /* CC_HAS_LONG_LONG && !__STRICT_ANSI__ */
+
+static gdb_byte *decode_frame_entry(struct comp_unit *unit, gdb_byte *start,
+				    int eh_frame_p);
 
 /* Decode the next CIE or FDE.  Return NULL if invalid input, otherwise
    the next byte to be processed.  */
 static gdb_byte *
-decode_frame_entry_1 (struct comp_unit *unit, gdb_byte *start, int eh_frame_p)
+decode_frame_entry_1(struct comp_unit *unit, gdb_byte *start, int eh_frame_p)
 {
   gdb_byte *buf, *end;
   LONGEST length;
@@ -1885,6 +1892,13 @@ decode_frame_entry_1 (struct comp_unit *unit, gdb_byte *start, int eh_frame_p)
 
   return end;
 }
+
+/* keep this condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* Read a CIE or FDE in BUF and decode it.  */
 static gdb_byte *

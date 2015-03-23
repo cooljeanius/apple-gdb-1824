@@ -43,7 +43,8 @@ Boston, MA 02110-1301, USA.  */
 #endif
 
 #include "libiberty.h"
-extern int mkstemps (char *, int);
+extern const char *choose_tmpdir(void);
+extern int mkstemps(char *, int);
 
 /* '/' works just fine on MS-DOS based systems.  */
 #ifndef DIR_SEPARATOR
@@ -94,7 +95,7 @@ files in.
 */
 
 const char *
-choose_tmpdir (void)
+choose_tmpdir(void)
 {
   const char *base = 0;
   char *tmpdir;

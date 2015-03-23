@@ -2412,15 +2412,16 @@ ppc64_elf_mkobject (bfd *abfd)
   return TRUE;
 }
 
-/* Return 1 if target is one of ours.  */
+/* Removed from the following function for '-Wnested-externs': */
+extern const bfd_target bfd_elf64_powerpc_vec;
+extern const bfd_target bfd_elf64_powerpcle_vec;
 
+/* Return 1 if target is one of ours: */
 static bfd_boolean
-is_ppc64_elf_target (const struct bfd_target *targ)
+is_ppc64_elf_target(const struct bfd_target *targ)
 {
-  extern const bfd_target bfd_elf64_powerpc_vec;
-  extern const bfd_target bfd_elf64_powerpcle_vec;
-
-  return targ == &bfd_elf64_powerpc_vec || targ == &bfd_elf64_powerpcle_vec;
+  return ((targ == &bfd_elf64_powerpc_vec)
+          || (targ == &bfd_elf64_powerpcle_vec));
 }
 
 /* Fix bad default arch selected for a 64 bit input bfd when the
@@ -2684,7 +2685,7 @@ ppc64_elf_get_synthetic_symtab (bfd *abfd,
 
   *ret = NULL;
 
-  opd = bfd_get_section_by_name (abfd, ".opd");
+  opd = bfd_get_section_by_name(abfd, ".opd");
   if (opd == NULL)
     return 0;
 
@@ -2694,11 +2695,11 @@ ppc64_elf_get_synthetic_symtab (bfd *abfd,
   if (symcount == 0)
     return 0;
 
-  syms = bfd_malloc ((symcount + 1) * sizeof (*syms));
+  syms = (asymbol **)bfd_malloc((symcount + 1UL) * sizeof(*syms));
   if (syms == NULL)
     return -1;
 
-  if (!relocatable && static_count != 0 && dyn_count != 0)
+  if (!relocatable && (static_count != 0) && (dyn_count != 0))
     {
       /* Use both symbol tables.  */
       memcpy (syms, static_syms, static_count * sizeof (*syms));
@@ -3524,10 +3525,9 @@ ppc64_elf_init_stub_bfd (bfd *abfd, struct bfd_link_info *info)
 /* Build a name for an entry in the stub hash table.  */
 
 static char *
-ppc_stub_name (const asection *input_section,
-	       const asection *sym_sec,
-	       const struct ppc_link_hash_entry *h,
-	       const Elf_Internal_Rela *rel)
+ppc_stub_name(const asection *input_section, const asection *sym_sec,
+	      const struct ppc_link_hash_entry *h,
+	      const Elf_Internal_Rela *rel)
 {
   char *stub_name;
   bfd_size_type len;
@@ -3535,34 +3535,35 @@ ppc_stub_name (const asection *input_section,
   /* rel->r_addend is actually 64 bit, but who uses more than +/- 2^31
      offsets from a sym as a branch target?  In fact, we could
      probably assume the addend is always zero.  */
-  BFD_ASSERT (((int) rel->r_addend & 0xffffffff) == rel->r_addend);
+  BFD_ASSERT(((int)rel->r_addend & 0xffffffff) == rel->r_addend);
 
   if (h)
     {
-      len = 8 + 1 + strlen (h->elf.root.root.string) + 1 + 8 + 1;
-      stub_name = bfd_malloc (len);
+      len = (8UL + 1UL + strlen(h->elf.root.root.string) + 1UL + 8UL + 1U);
+      stub_name = (char *)bfd_malloc(len);
       if (stub_name == NULL)
 	return stub_name;
 
-      sprintf (stub_name, "%08x.%s+%x",
-	       input_section->id & 0xffffffff,
-	       h->elf.root.root.string,
-	       (int) rel->r_addend & 0xffffffff);
+      sprintf(stub_name, "%08x.%s+%x",
+	      (input_section->id & 0xffffffff),
+	      h->elf.root.root.string,
+	      ((int)rel->r_addend & 0xffffffff));
     }
   else
     {
-      len = 8 + 1 + 8 + 1 + 8 + 1 + 8 + 1;
-      stub_name = bfd_malloc (len);
+      /* The following is equivalent to: (8 * 4) + (1 * 4) == 36 */
+      len = (8UL + 1UL + 8UL + 1UL + 8UL + 1UL + 8UL + 1UL);
+      stub_name = (char *)bfd_malloc(len);
       if (stub_name == NULL)
 	return stub_name;
 
-      sprintf (stub_name, "%08x.%x:%x+%x",
-	       input_section->id & 0xffffffff,
-	       sym_sec->id & 0xffffffff,
-	       (int) ELF64_R_SYM (rel->r_info) & 0xffffffff,
-	       (int) rel->r_addend & 0xffffffff);
+      sprintf(stub_name, "%08x.%x:%x+%x",
+	      (input_section->id & 0xffffffff),
+	      (sym_sec->id & 0xffffffff),
+	      ((int)ELF64_R_SYM(rel->r_info) & 0xffffffff),
+	      ((int)rel->r_addend & 0xffffffff));
     }
-  if (stub_name[len - 2] == '+' && stub_name[len - 1] == '0')
+  if ((stub_name[len - 2] == '+') && (stub_name[len - 1] == '0'))
     stub_name[len - 2] = 0;
   return stub_name;
 }
@@ -10876,70 +10877,70 @@ ppc64_elf_output_symbol_hook(struct bfd_link_info *info,
    dynamic sections here.  */
 
 static bfd_boolean
-ppc64_elf_finish_dynamic_symbol (bfd *output_bfd,
-				 struct bfd_link_info *info,
-				 struct elf_link_hash_entry *h,
-				 Elf_Internal_Sym *sym)
+ppc64_elf_finish_dynamic_symbol(bfd *output_bfd,
+                                struct bfd_link_info *info,
+                                struct elf_link_hash_entry *h,
+                                Elf_Internal_Sym *sym)
 {
   struct ppc_link_hash_table *htab;
   bfd *dynobj;
   struct plt_entry *ent;
-  Elf_Internal_Rela rela;
-  bfd_byte *loc;
+  Elf_Internal_Rela rela0;
+  bfd_byte *loc0;
 
-  htab = ppc_hash_table (info);
+  htab = ppc_hash_table(info);
   dynobj = htab->elf.dynobj;
 
   for (ent = h->plt.plist; ent != NULL; ent = ent->next)
-    if (ent->plt.offset != (bfd_vma) -1)
+    if (ent->plt.offset != (bfd_vma)-1L)
       {
 	/* This symbol has an entry in the procedure linkage
 	   table.  Set it up.  */
 
-	if (htab->plt == NULL
-	    || htab->relplt == NULL
-	    || htab->glink == NULL)
-	  abort ();
+	if ((htab->plt == NULL)
+	    || (htab->relplt == NULL)
+	    || (htab->glink == NULL))
+	  abort();
 
 	/* Create a JMP_SLOT reloc to inform the dynamic linker to
 	   fill in the PLT entry.  */
-	rela.r_offset = (htab->plt->output_section->vma
+	rela0.r_offset = (htab->plt->output_section->vma
 			 + htab->plt->output_offset
 			 + ent->plt.offset);
-	rela.r_info = ELF64_R_INFO (h->dynindx, R_PPC64_JMP_SLOT);
-	rela.r_addend = ent->addend;
+	rela0.r_info = ELF64_R_INFO(h->dynindx, R_PPC64_JMP_SLOT);
+	rela0.r_addend = ent->addend;
 
-	loc = htab->relplt->contents;
-	loc += ((ent->plt.offset - PLT_INITIAL_ENTRY_SIZE) / PLT_ENTRY_SIZE
-		* sizeof (Elf64_External_Rela));
-	bfd_elf64_swap_reloca_out (output_bfd, &rela, loc);
+	loc0 = htab->relplt->contents;
+	loc0 += (((ent->plt.offset - PLT_INITIAL_ENTRY_SIZE)
+                  / PLT_ENTRY_SIZE) * sizeof(Elf64_External_Rela));
+	bfd_elf64_swap_reloca_out(output_bfd, &rela0, loc0);
       }
 
   if (h->needs_copy)
     {
-      Elf_Internal_Rela rela;
-      bfd_byte *loc;
+      Elf_Internal_Rela rela1;
+      bfd_byte *loc1;
 
-      /* This symbol needs a copy reloc.  Set it up.  */
+      /* This symbol needs a copy relo, so set it up: */
 
-      if (h->dynindx == -1
-	  || (h->root.type != bfd_link_hash_defined
-	      && h->root.type != bfd_link_hash_defweak)
-	  || htab->relbss == NULL)
-	abort ();
+      if ((h->dynindx == -1)
+	  || ((h->root.type != bfd_link_hash_defined)
+	      && (h->root.type != bfd_link_hash_defweak))
+	  || (htab->relbss == NULL))
+	abort();
 
-      rela.r_offset = (h->root.u.def.value
-		       + h->root.u.def.section->output_section->vma
-		       + h->root.u.def.section->output_offset);
-      rela.r_info = ELF64_R_INFO (h->dynindx, R_PPC64_COPY);
-      rela.r_addend = 0;
-      loc = htab->relbss->contents;
-      loc += htab->relbss->reloc_count++ * sizeof (Elf64_External_Rela);
-      bfd_elf64_swap_reloca_out (output_bfd, &rela, loc);
+      rela1.r_offset = (h->root.u.def.value
+                        + h->root.u.def.section->output_section->vma
+                        + h->root.u.def.section->output_offset);
+      rela1.r_info = ELF64_R_INFO(h->dynindx, R_PPC64_COPY);
+      rela1.r_addend = 0;
+      loc1 = htab->relbss->contents;
+      loc1 += (htab->relbss->reloc_count++ * sizeof(Elf64_External_Rela));
+      bfd_elf64_swap_reloca_out(output_bfd, &rela1, loc1);
     }
 
-  /* Mark some specially defined symbols as absolute.  */
-  if (strcmp (h->root.root.string, "_DYNAMIC") == 0)
+  /* Mark some specially defined symbols as absolute: */
+  if (strcmp(h->root.root.string, "_DYNAMIC") == 0)
     sym->st_shndx = SHN_ABS;
 
   return TRUE;
@@ -10949,11 +10950,11 @@ ppc64_elf_finish_dynamic_symbol (bfd *output_bfd,
    dynamic linker, before writing them out.  */
 
 static enum elf_reloc_type_class
-ppc64_elf_reloc_type_class (const Elf_Internal_Rela *rela)
+ppc64_elf_reloc_type_class(const Elf_Internal_Rela *rela)
 {
   enum elf_ppc64_reloc_type r_type;
 
-  r_type = ELF64_R_TYPE (rela->r_info);
+  r_type = (enum elf_ppc64_reloc_type)ELF64_R_TYPE(rela->r_info);
   switch (r_type)
     {
     case R_PPC64_RELATIVE:

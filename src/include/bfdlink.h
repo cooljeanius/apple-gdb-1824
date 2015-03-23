@@ -660,6 +660,8 @@ struct bfd_elf_version_expr
 #define BFD_ELF_VERSION_CXX_TYPE	2
 #define BFD_ELF_VERSION_JAVA_TYPE	4
   unsigned int mask : 3;
+  /* '-Wpadded': */
+  unsigned int padding : 27;
 };
 
 struct bfd_elf_version_expr_head

@@ -2188,8 +2188,8 @@ _frvfdpic_emit_got_relocs_plt_entries (struct frvfdpic_relocs_info *entry,
 /* Handle an FRV small data reloc.  */
 
 static bfd_reloc_status_type
-elf32_frv_relocate_gprel12 (info, input_bfd, input_section, relocation,
-			    contents, value)
+elf32_frv_relocate_gprel12(info, input_bfd, input_section, relocation,
+			   contents, value)
      struct bfd_link_info *info;
      bfd *input_bfd;
      asection *input_section;
@@ -2227,8 +2227,8 @@ elf32_frv_relocate_gprel12 (info, input_bfd, input_section, relocation,
 /* Handle an FRV small data reloc. for the u12 field.  */
 
 static bfd_reloc_status_type
-elf32_frv_relocate_gprelu12 (info, input_bfd, input_section, relocation,
-			     contents, value)
+elf32_frv_relocate_gprelu12(info, input_bfd, input_section, relocation,
+			    contents, value)
      struct bfd_link_info *info;
      bfd *input_bfd;
      asection *input_section;
@@ -2261,56 +2261,49 @@ elf32_frv_relocate_gprelu12 (info, input_bfd, input_section, relocation,
   mask = 0x3f03f;
   insn = (insn & ~mask) | ((value & 0xfc0) << 12) | (value & 0x3f);
 
-  bfd_put_32 (input_bfd, insn, contents + relocation->r_offset);
+  bfd_put_32(input_bfd, insn, contents + relocation->r_offset);
 
   return bfd_reloc_ok;
 }
 
-/* Handle an FRV ELF HI16 reloc.  */
-
+/* Handle an FRV ELF HI16 reloc: */
 static bfd_reloc_status_type
-elf32_frv_relocate_hi16 (input_bfd, relhi, contents, value)
-     bfd *input_bfd;
-     Elf_Internal_Rela *relhi;
-     bfd_byte *contents;
-     bfd_vma value;
+elf32_frv_relocate_hi16(bfd *input_bfd, Elf_Internal_Rela *relhi,
+                        bfd_byte *contents, bfd_vma value)
 {
   bfd_vma insn;
 
-  insn = bfd_get_32 (input_bfd, contents + relhi->r_offset);
+  insn = bfd_get_32(input_bfd, contents + relhi->r_offset);
 
   value += relhi->r_addend;
   value = ((value >> 16) & 0xffff);
 
-  insn = (insn & 0xffff0000) | value;
+  insn = ((insn & 0xffff0000) | value);
 
-  if ((long) value > 0xffff || (long) value < -0x10000)
+  if (((long)value > 0xffff) || ((long)value < -0x10000))
     return bfd_reloc_overflow;
 
-  bfd_put_32 (input_bfd, insn, contents + relhi->r_offset);
+  bfd_put_32(input_bfd, insn, (contents + relhi->r_offset));
   return bfd_reloc_ok;
-
 }
+
 static bfd_reloc_status_type
-elf32_frv_relocate_lo16 (input_bfd, rello, contents, value)
-     bfd *input_bfd;
-     Elf_Internal_Rela *rello;
-     bfd_byte *contents;
-     bfd_vma value;
+elf32_frv_relocate_lo16(bfd *input_bfd, Elf_Internal_Rela *rello,
+                        bfd_byte *contents, bfd_vma value)
 {
   bfd_vma insn;
 
-  insn = bfd_get_32 (input_bfd, contents + rello->r_offset);
+  insn = bfd_get_32(input_bfd, contents + rello->r_offset);
 
   value += rello->r_addend;
-  value = value & 0xffff;
+  value = (value & 0xffff);
 
-  insn = (insn & 0xffff0000) | value;
+  insn = ((insn & 0xffff0000) | value);
 
-  if ((long) value > 0xffff || (long) value < -0x10000)
+  if (((long)value > 0xffff) || ((long)value < -0x10000))
     return bfd_reloc_overflow;
 
-  bfd_put_32 (input_bfd, insn, contents + rello->r_offset);
+  bfd_put_32(input_bfd, insn, contents + rello->r_offset);
   return bfd_reloc_ok;
 }
 
@@ -6873,7 +6866,9 @@ frv_elf_print_private_bfd_data (abfd, ptr)
 #define elf_backend_want_got_plt	0
 #define elf_backend_plt_readonly	1
 #define elf_backend_want_plt_sym	0
-#define elf_backend_plt_header_size	0
+#ifndef elf_backend_plt_header_size
+# define elf_backend_plt_header_size	0
+#endif /* !elf_backend_plt_header_size */
 
 #define elf_backend_finish_dynamic_sections \
 		elf32_frv_finish_dynamic_sections
@@ -6939,7 +6934,7 @@ frv_elf_print_private_bfd_data (abfd, ptr)
 #define elf_backend_may_use_rel_p       1
 #undef elf_backend_may_use_rela_p
 #define elf_backend_may_use_rela_p      1
-/* We use REL for dynamic relocations only.  */
+/* We use REL for dynamic relocations only: */
 #undef elf_backend_default_use_rela_p
 #define elf_backend_default_use_rela_p  1
 
@@ -6947,3 +6942,9 @@ frv_elf_print_private_bfd_data (abfd, ptr)
 #define elf_backend_omit_section_dynsym _frvfdpic_link_omit_section_dynsym
 
 #include "elf32-target.h"
+
+#ifdef elf_backend_plt_header_size
+# undef elf_backend_plt_header_size
+#endif /* elf_backend_plt_header_size */
+
+/* EOF */

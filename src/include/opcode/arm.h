@@ -115,7 +115,7 @@
                          | FPU_VFP_EXT_V3 | FPU_NEON_EXT_V1)
 #define FPU_FPA		(FPU_FPA_EXT_V1 | FPU_FPA_EXT_V2)
 
-/* Deprecated */
+/* At the very least, this next macro deprecated: */
 #define FPU_ARCH_VFP	ARM_FEATURE (0, FPU_ENDIAN_PURE)
 
 #define FPU_ARCH_FPE	ARM_FEATURE (0, FPU_FPA_EXT_V1)

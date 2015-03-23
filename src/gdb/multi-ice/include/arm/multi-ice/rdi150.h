@@ -28,6 +28,8 @@
 #ifndef rdi150_h
 #define rdi150_h
 
+#include "ansidecl.h"
+
 #include "toolconf.h"
 
 #if (RDI_VERSION == 150)
@@ -129,7 +131,8 @@ typedef struct RDI_ModuleDesc_Extra
         struct {
             char quote;
             char string[7];
-        } mediumname; /* Use of mediumname to be deprecated where possible */
+        } mediumname ATTRIBUTE_DEPRECATED;
+        /* Use of mediumname to be deprecated where possible */
         struct {
             char s[4];
             char const *string;

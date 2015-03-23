@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -244,7 +244,7 @@ _bfd_xcoff_canonicalize_dynamic_symtab (bfd *abfd, asymbol **psyms)
 	  c = (char *)bfd_alloc(abfd, (bfd_size_type)SYMNMLEN + 1);
 	  if (c == NULL)
 	    return -1;
-	  memcpy (c, ldsym._l._l_name, SYMNMLEN);
+	  memcpy(c, ldsym._l._l_name, (size_t)SYMNMLEN);
 	  c[SYMNMLEN] = '\0';
 	  symbuf->symbol.name = c;
 	}
@@ -252,8 +252,8 @@ _bfd_xcoff_canonicalize_dynamic_symtab (bfd *abfd, asymbol **psyms)
       if (ldsym.l_smclas == XMC_XO)
 	symbuf->symbol.section = bfd_abs_section_ptr;
       else
-	symbuf->symbol.section = coff_section_from_bfd_index (abfd,
-							      ldsym.l_scnum);
+	symbuf->symbol.section = coff_section_from_bfd_index(abfd,
+							     ldsym.l_scnum);
       symbuf->symbol.value = ldsym.l_value - symbuf->symbol.section->vma;
 
       symbuf->symbol.flags = BSF_NO_FLAGS;
@@ -410,7 +410,8 @@ xcoff_link_hash_newfunc(struct bfd_hash_entry *entry,
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
   if (ret == NULL)
-    ret = (struct xcoff_link_hash_entry *)bfd_hash_allocate(table, sizeof(* ret));
+    ret = (struct xcoff_link_hash_entry *)bfd_hash_allocate(table,
+                                                            (unsigned int)sizeof(* ret));
   if (ret == NULL)
     return NULL;
 
@@ -611,9 +612,9 @@ xcoff_link_add_dynamic_symbols (bfd *abfd, struct bfd_link_info *info)
       const char *name;
       struct xcoff_link_hash_entry *h;
 
-      bfd_xcoff_swap_ldsym_in (abfd, elsym, &ldsym);
+      bfd_xcoff_swap_ldsym_in(abfd, elsym, &ldsym);
 
-      /* We are only interested in exported symbols.  */
+      /* We are only interested in exported symbols: */
       if ((ldsym.l_smtype & L_EXPORT) == 0)
 	continue;
 
@@ -621,7 +622,7 @@ xcoff_link_add_dynamic_symbols (bfd *abfd, struct bfd_link_info *info)
 	name = strings + ldsym._l._l_l._l_offset;
       else
 	{
-	  memcpy (nambuf, ldsym._l._l_name, SYMNMLEN);
+	  memcpy(nambuf, ldsym._l._l_name, (size_t)SYMNMLEN);
 	  nambuf[SYMNMLEN] = '\0';
 	  name = nambuf;
 	}
@@ -2008,9 +2009,9 @@ xcoff_link_check_dynamic_ar_symbols (bfd *abfd,
       const char *name;
       struct bfd_link_hash_entry *h;
 
-      bfd_xcoff_swap_ldsym_in (abfd, elsym, &ldsym);
+      bfd_xcoff_swap_ldsym_in(abfd, elsym, &ldsym);
 
-      /* We are only interested in exported symbols.  */
+      /* We are only interested in exported symbols: */
       if ((ldsym.l_smtype & L_EXPORT) == 0)
 	continue;
 
@@ -2018,12 +2019,12 @@ xcoff_link_check_dynamic_ar_symbols (bfd *abfd,
 	name = strings + ldsym._l._l_l._l_offset;
       else
 	{
-	  memcpy (nambuf, ldsym._l._l_name, SYMNMLEN);
+	  memcpy(nambuf, ldsym._l._l_name, (size_t)SYMNMLEN);
 	  nambuf[SYMNMLEN] = '\0';
 	  name = nambuf;
 	}
 
-      h = bfd_link_hash_lookup (info->hash, name, FALSE, FALSE, TRUE);
+      h = bfd_link_hash_lookup(info->hash, name, FALSE, FALSE, TRUE);
 
       /* We are only interested in symbols that are currently
 	 undefined.  At this point we know that we are using an XCOFF
@@ -4265,8 +4266,8 @@ xcoff_link_input_bfd (struct xcoff_final_link_info *finfo,
 	contents = coff_section_data (input_bfd, o)->contents;
       else
 	{
-	  bfd_size_type sz = o->rawsize ? o->rawsize : o->size;
-	  if (!bfd_get_section_contents (input_bfd, o, finfo->contents, 0, sz))
+	  bfd_size_type sz = (o->rawsize ? o->rawsize : o->size);
+	  if (!bfd_get_section_contents(input_bfd, o, finfo->contents, 0L, sz))
 	    return FALSE;
 	  contents = finfo->contents;
 	}
@@ -5528,7 +5529,7 @@ _bfd_xcoff_bfd_final_link(bfd *abfd, struct bfd_link_info *info)
     finfo.section_info = (struct xcoff_link_section_info *)bfd_malloc(amt);
     if (finfo.section_info == NULL)
       goto error_return;
-    for (i = 0; i <= abfd->section_count; i++)
+    for (i = 0U; i <= abfd->section_count; i++)
       {
 	finfo.section_info[i].relocs = NULL;
 	finfo.section_info[i].rel_hashes = NULL;
@@ -5810,19 +5811,19 @@ _bfd_xcoff_bfd_final_link(bfd *abfd, struct bfd_link_info *info)
 	 appear in the symbol table, which is not necessarily by
 	 address.  So we sort them here.  There may be a better way to
 	 do this.  */
-      qsort ((void *) finfo.section_info[o->target_index].relocs,
-	     o->reloc_count, sizeof (struct internal_reloc),
-	     xcoff_sort_relocs);
+      qsort((void *)finfo.section_info[o->target_index].relocs,
+	    (size_t)o->reloc_count, sizeof(struct internal_reloc),
+	    xcoff_sort_relocs);
 
       irel = finfo.section_info[o->target_index].relocs;
-      irelend = irel + o->reloc_count;
+      irelend = (irel + o->reloc_count);
       erel = external_relocs;
       for (; irel < irelend; irel++, rel_hash++, erel += relsz)
-	bfd_coff_swap_reloc_out (abfd, (void *) irel, (void *) erel);
+	bfd_coff_swap_reloc_out(abfd, (void *)irel, (void *)erel);
 
-      rel_size = relsz * o->reloc_count;
-      if (bfd_seek (abfd, o->rel_filepos, SEEK_SET) != 0
-	  || bfd_bwrite ((void *) external_relocs, rel_size, abfd) != rel_size)
+      rel_size = (relsz * o->reloc_count);
+      if ((bfd_seek(abfd, o->rel_filepos, SEEK_SET) != 0)
+	  || (bfd_bwrite((void *)external_relocs, rel_size, abfd) != rel_size))
 	goto error_return;
     }
 

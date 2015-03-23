@@ -21,23 +21,24 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "ansidecl.h"
+
 #include "cleanups.h"
 #include "exceptions.h"
 #include "print-utils.h"
 
-extern void initialize_utils (void);
+extern void initialize_utils(void);
 
-/* String utilities.  */
-
+/* String utilities: */
 extern int sevenbit_strings;
 
-extern char *savestring (const char *, size_t);
+extern char *savestring(const char *, size_t);
 
-extern int strcmp_iw (const char *, const char *);
+extern int strcmp_iw(const char *, const char *);
 
-extern int strcmp_iw_ordered (const char *, const char *);
+extern int strcmp_iw_ordered(const char *, const char *);
 
-extern int streq (const char *, const char *);
+extern int streq(const char *, const char *);
 
 extern int subset_compare (char *, char *);
 
@@ -84,7 +85,7 @@ extern struct cleanup *
   make_cleanup_ui_out_redirect_pop (struct ui_out *uiout);
 
 struct section_addr_info;
-extern struct cleanup *(make_cleanup_free_section_addr_info 
+extern struct cleanup *(make_cleanup_free_section_addr_info
                         (struct section_addr_info *));
 
 extern struct cleanup *make_cleanup_close (int fd);
@@ -271,15 +272,14 @@ extern void fprintf_symbol_filtered (struct ui_file *, const char *,
 
 extern void throw_perror_with_name (enum errors errcode, const char *string)
   ATTRIBUTE_NORETURN;
-extern void perror_with_name (const char *) ATTRIBUTE_NORETURN;
+extern void perror_with_name(const char *) ATTRIBUTE_NORETURN;
 
-extern void perror_warning_with_name (const char *string);
+extern void perror_warning_with_name(const char *string);
 
-extern void print_sys_errmsg (const char *, int);
+extern void print_sys_errmsg(const char *, int);
 
-/* Warnings and error messages.  */
-
-extern void (*deprecated_error_begin_hook) (void);
+/* Warnings and error messages: */
+extern void (*deprecated_error_begin_hook)(void) ATTRIBUTE_DEPRECATED;
 
 /* Message to be printed before the warning message, when a warning occurs.  */
 

@@ -184,82 +184,63 @@ adjust_scnhdr_in_post(bfd *abfd ATTRIBUTE_UNUSED, PTR ext ATTRIBUTE_UNUSED,
 }
 
 static void
-adjust_scnhdr_out_pre  (abfd, in, out)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     PTR in;
-     PTR out ATTRIBUTE_UNUSED;
+adjust_scnhdr_out_pre(bfd *abfd ATTRIBUTE_UNUSED, PTR in,
+                      PTR out ATTRIBUTE_UNUSED)
 {
-  struct internal_scnhdr *scnhdr_int = (struct internal_scnhdr *) in;
+  struct internal_scnhdr *scnhdr_int = (struct internal_scnhdr *)in;
 
-  ADJUST_VAL (scnhdr_int->s_scnptr, -STUBSIZE);
-  ADJUST_VAL (scnhdr_int->s_relptr, -STUBSIZE);
-  ADJUST_VAL (scnhdr_int->s_lnnoptr, -STUBSIZE);
+  ADJUST_VAL(scnhdr_int->s_scnptr, -STUBSIZE);
+  ADJUST_VAL(scnhdr_int->s_relptr, -STUBSIZE);
+  ADJUST_VAL(scnhdr_int->s_lnnoptr, -STUBSIZE);
 }
 
 static void
-adjust_scnhdr_out_post (abfd, in, out)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     PTR in;
-     PTR out ATTRIBUTE_UNUSED;
+adjust_scnhdr_out_post(bfd *abfd ATTRIBUTE_UNUSED, PTR in,
+                       PTR out ATTRIBUTE_UNUSED)
 {
-  struct internal_scnhdr *scnhdr_int = (struct internal_scnhdr *) in;
+  struct internal_scnhdr *scnhdr_int = (struct internal_scnhdr *)in;
 
-  ADJUST_VAL (scnhdr_int->s_scnptr, STUBSIZE);
-  ADJUST_VAL (scnhdr_int->s_relptr, STUBSIZE);
-  ADJUST_VAL (scnhdr_int->s_lnnoptr, STUBSIZE);
+  ADJUST_VAL(scnhdr_int->s_scnptr, STUBSIZE);
+  ADJUST_VAL(scnhdr_int->s_relptr, STUBSIZE);
+  ADJUST_VAL(scnhdr_int->s_lnnoptr, STUBSIZE);
 }
 
 static void
-adjust_aux_in_post  (abfd, ext1, type, class, indx, numaux, in1)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     PTR ext1 ATTRIBUTE_UNUSED;
-     int type;
-     int class;
-     int indx ATTRIBUTE_UNUSED;
-     int numaux ATTRIBUTE_UNUSED;
-     PTR in1;
+adjust_aux_in_post(bfd *abfd ATTRIBUTE_UNUSED, PTR ext1 ATTRIBUTE_UNUSED,
+                   int type, int class, int indx ATTRIBUTE_UNUSED,
+                   int numaux ATTRIBUTE_UNUSED, PTR in1)
 {
-  union internal_auxent *in = (union internal_auxent *) in1;
+  union internal_auxent *in = (union internal_auxent *)in1;
 
-  if (class == C_BLOCK || class == C_FCN || ISFCN (type) || ISTAG (class))
+  if ((class == C_BLOCK) || class == C_FCN || ISFCN(type) || ISTAG(class))
     {
-      ADJUST_VAL (in->x_sym.x_fcnary.x_fcn.x_lnnoptr, STUBSIZE);
+      ADJUST_VAL(in->x_sym.x_fcnary.x_fcn.x_lnnoptr, STUBSIZE);
     }
 }
 
 static void
-adjust_aux_out_pre  (abfd, inp, type, class, indx, numaux, extp)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     PTR inp;
-     int type;
-     int class;
-     int indx ATTRIBUTE_UNUSED;
-     int numaux ATTRIBUTE_UNUSED;
-     PTR extp ATTRIBUTE_UNUSED;
+adjust_aux_out_pre(bfd *abfd ATTRIBUTE_UNUSED, PTR inp, int type,
+                   int class, int indx ATTRIBUTE_UNUSED,
+                   int numaux ATTRIBUTE_UNUSED, PTR extp ATTRIBUTE_UNUSED)
 {
-  union internal_auxent *in = (union internal_auxent *) inp;
+  union internal_auxent *in = (union internal_auxent *)inp;
 
-  if (class == C_BLOCK || class == C_FCN || ISFCN (type) || ISTAG (class))
+  if ((class == C_BLOCK) || class == C_FCN || ISFCN(type) || ISTAG(class))
     {
-      ADJUST_VAL (in->x_sym.x_fcnary.x_fcn.x_lnnoptr, -STUBSIZE);
+      ADJUST_VAL(in->x_sym.x_fcnary.x_fcn.x_lnnoptr, -STUBSIZE);
     }
 }
 
 static void
-adjust_aux_out_post (abfd, inp, type, class, indx, numaux, extp)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     PTR inp;
-     int type;
-     int class;
-     int indx ATTRIBUTE_UNUSED;
-     int numaux ATTRIBUTE_UNUSED;
-     PTR extp ATTRIBUTE_UNUSED;
+adjust_aux_out_post(bfd *abfd ATTRIBUTE_UNUSED, PTR inp, int type,
+                    int class, int indx ATTRIBUTE_UNUSED,
+                    int numaux ATTRIBUTE_UNUSED, PTR extp ATTRIBUTE_UNUSED)
 {
-  union internal_auxent *in = (union internal_auxent *) inp;
+  union internal_auxent *in = (union internal_auxent *)inp;
 
-  if (class == C_BLOCK || class == C_FCN || ISFCN (type) || ISTAG (class))
+  if ((class == C_BLOCK) || class == C_FCN || ISFCN(type) || ISTAG(class))
     {
-      ADJUST_VAL (in->x_sym.x_fcnary.x_fcn.x_lnnoptr, STUBSIZE);
+      ADJUST_VAL(in->x_sym.x_fcnary.x_fcn.x_lnnoptr, STUBSIZE);
     }
 }
 
@@ -276,11 +257,10 @@ adjust_aux_out_post (abfd, inp, type, class, indx, numaux, extp)
    is taken.  */
 
 static void
-create_go32_stub (abfd)
-     bfd *abfd;
+create_go32_stub(bfd *abfd)
 {
-  /* Do it only once.  */
-  if (bfd_coff_go32stub (abfd) == NULL)
+  /* Do it only once: */
+  if (bfd_coff_go32stub(abfd) == NULL)
     {
       char *stub;
       struct stat st;

@@ -575,10 +575,15 @@ REMOTE_OBS = remote.o dcache.o remote-utils.o tracepoint.o ax-general.o ax-gdb.o
 # This is remote-sim.o if a simulator is to be linked in.
 SIM_OBS = @DEFAULT_SIM_OB@
 
-# Host and target-dependent makefile fragments come in here.
+###########################################################################
+## Host-dependent Makefile fragment comes in here:
 @host_makefile_frag@
+## End of host-dependent makefile fragment.
+###########################################################################
+## Target-dependent Makefile fragment comes in here:
 @target_makefile_frag@
-# End of host and target-dependent makefile fragments
+## End of target-dependent makefile fragment.
+###########################################################################
 
 # Possibly ignore the simulator. If the simulator is being ignored,
 # these expand into SIM= and SIM_OBJ=, overriding the entries from

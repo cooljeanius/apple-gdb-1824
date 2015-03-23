@@ -1,4 +1,4 @@
-/* Annotation routines for GDB.
+/* annotate.h: Annotation routines for GDB.
    Copyright 1986, 1989, 1990, 1991, 1992, 1994, 1998, 1999, 2000
    Free Software Foundation, Inc.
 
@@ -18,6 +18,11 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
+
+#ifndef __GDB_ANNOTATE_H__
+#define __GDB_ANNOTATE_H__ 1
+
+#include "ansidecl.h"
 
 #include "symtab.h"
 #include "gdbtypes.h"
@@ -99,8 +104,17 @@ extern void annotate_elt_rep_end (void);
 extern void annotate_elt (void);
 extern void annotate_array_section_end (void);
 
-extern void (*deprecated_annotate_starting_hook) (void);
-extern void (*deprecated_annotate_stopped_hook) (void);
-extern void (*deprecated_annotate_signalled_hook) (void);
-extern void (*deprecated_annotate_signal_hook) (void);
-extern void (*deprecated_annotate_exited_hook) (void);
+extern void (*deprecated_annotate_starting_hook)(void)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_annotate_stopped_hook)(void)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_annotate_signalled_hook)(void)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_annotate_signal_hook)(void)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_annotate_exited_hook)(void)
+  ATTRIBUTE_DEPRECATED;
+
+#endif /* !__GDB_ANNOTATE_H__ */
+
+/* EOF */

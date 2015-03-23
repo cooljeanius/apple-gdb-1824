@@ -270,16 +270,18 @@ extern struct cmd_list_element *lookup_cmd_1 (char **,
 					      int);
 
 extern struct cmd_list_element *
-  deprecate_cmd (struct cmd_list_element *, char * );
+  deprecate_cmd(struct cmd_list_element *, char * );
 
+/* FIXME: should this get ATTRIBUTE_DEPRECATED? Or is the "deprecated" in
+ * its name just part of what it does? */
 extern void
-  deprecated_cmd_warning (char **);
+  deprecated_cmd_warning(char **);
 
 extern int
-  lookup_cmd_composition (char *text,
-                        struct cmd_list_element **alias,
-                        struct cmd_list_element **prefix_cmd,
-                        struct cmd_list_element **cmd);
+  lookup_cmd_composition(char *text,
+                         struct cmd_list_element **alias,
+                         struct cmd_list_element **prefix_cmd,
+                         struct cmd_list_element **cmd);
 
 extern struct cmd_list_element *add_com (char *, enum command_class,
 					 void (*fun) (char *, int), char *);

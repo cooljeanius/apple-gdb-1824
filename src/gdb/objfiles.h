@@ -1,4 +1,4 @@
-/* Definitions for symbol file management in GDB.
+/* objfiles.h: Definitions for symbol file management in GDB.
 
    Copyright 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
    2001, 2002, 2003, 2004 Free Software Foundation, Inc.
@@ -20,8 +20,10 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (OBJFILES_H)
+#if !defined(OBJFILES_H)
 #define OBJFILES_H
+
+#include "ansidecl.h"
 
 #include <uuid/uuid.h>
 
@@ -373,7 +375,7 @@ struct objfile
        an example of how to use this replacement, see "objfile_data"
        in "mips-tdep.c".  */
 
-    struct dbx_symfile_info *deprecated_sym_stab_info;
+    struct dbx_symfile_info *deprecated_sym_stab_info ATTRIBUTE_DEPRECATED;
 
     /* Hook for information for use by the symbol reader (currently used
        for information shared by sym_init and sym_read).  It is
@@ -384,14 +386,14 @@ struct objfile
        an example of how to use this replacement, see "objfile_data"
        in "mips-tdep.c".  */
 
-    void *deprecated_sym_private;
+    void *deprecated_sym_private ATTRIBUTE_DEPRECATED;
 
     /* Hook for target-architecture-specific information.  This must
        point to memory allocated on one of the obstacks in this objfile,
        so that it gets freed automatically when reading a new object
        file. */
 
-    void *deprecated_obj_private;
+    void *deprecated_obj_private ATTRIBUTE_DEPRECATED;
 
     /* Per objfile data-pointers required by other GDB modules.  */
     /* FIXME: kettenis/20030711: This mechanism could replace

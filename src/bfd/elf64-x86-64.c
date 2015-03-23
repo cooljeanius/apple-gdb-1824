@@ -2919,32 +2919,35 @@ elf64_x86_64_section_from_shdr (bfd *abfd,
    of .bss.  */
 
 static bfd_boolean
-elf64_x86_64_add_symbol_hook (bfd *abfd,
-			      struct bfd_link_info *info ATTRIBUTE_UNUSED,
-			      Elf_Internal_Sym *sym,
-			      const char **namep ATTRIBUTE_UNUSED,
-			      flagword *flagsp ATTRIBUTE_UNUSED,
-			      asection **secp, bfd_vma *valp)
+elf64_x86_64_add_symbol_hook(bfd *abfd,
+			     struct bfd_link_info *info ATTRIBUTE_UNUSED,
+			     Elf_Internal_Sym *sym,
+			     const char **namep ATTRIBUTE_UNUSED,
+			     flagword *flagsp ATTRIBUTE_UNUSED,
+			     asection **secp, bfd_vma *valp)
 {
   asection *lcomm;
 
   switch (sym->st_shndx)
     {
     case SHN_X86_64_LCOMMON:
-      lcomm = bfd_get_section_by_name (abfd, "LARGE_COMMON");
+      lcomm = bfd_get_section_by_name(abfd, "LARGE_COMMON");
       if (lcomm == NULL)
 	{
-	  lcomm = bfd_make_section_with_flags (abfd,
-					       "LARGE_COMMON",
-					       (SEC_ALLOC
-						| SEC_IS_COMMON
-						| SEC_LINKER_CREATED));
+	  lcomm = bfd_make_section_with_flags(abfd,
+					      "LARGE_COMMON",
+					      (SEC_ALLOC
+                                               | SEC_IS_COMMON
+                                               | SEC_LINKER_CREATED));
 	  if (lcomm == NULL)
 	    return FALSE;
-	  elf_section_flags (lcomm) |= SHF_X86_64_LARGE;
+	  elf_section_flags(lcomm) |= SHF_X86_64_LARGE;
 	}
       *secp = lcomm;
       *valp = sym->st_size;
+      break;
+
+    default:
       break;
     }
   return TRUE;
@@ -2966,30 +2969,32 @@ elf64_x86_64_elf_section_from_bfd_section(bfd *abfd ATTRIBUTE_UNUSED,
   return FALSE;
 }
 
-/* Process a symbol.  */
-
+/* Process a symbol: */
 static void
-elf64_x86_64_symbol_processing (bfd *abfd ATTRIBUTE_UNUSED,
-				asymbol *asym)
+elf64_x86_64_symbol_processing(bfd *abfd ATTRIBUTE_UNUSED,
+                               asymbol *asym)
 {
-  elf_symbol_type *elfsym = (elf_symbol_type *) asym;
+  elf_symbol_type *elfsym = (elf_symbol_type *)asym;
 
   switch (elfsym->internal_elf_sym.st_shndx)
     {
     case SHN_X86_64_LCOMMON:
       asym->section = &_bfd_elf_large_com_section;
       asym->value = elfsym->internal_elf_sym.st_size;
-      /* Common symbol doesn't set BSF_GLOBAL.  */
+      /* Common symbol does NOT set BSF_GLOBAL.  */
       asym->flags &= ~BSF_GLOBAL;
+      break;
+
+    default:
       break;
     }
 }
 
 static bfd_boolean
-elf64_x86_64_common_definition (Elf_Internal_Sym *sym)
+elf64_x86_64_common_definition(Elf_Internal_Sym *sym)
 {
-  return (sym->st_shndx == SHN_COMMON
-	  || sym->st_shndx == SHN_X86_64_LCOMMON);
+  return ((sym->st_shndx == SHN_COMMON)
+	  || (sym->st_shndx == SHN_X86_64_LCOMMON));
 }
 
 static unsigned int

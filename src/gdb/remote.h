@@ -22,6 +22,8 @@ Boston, MA 02111-1307, USA.  */
 #ifndef REMOTE_H
 #define REMOTE_H
 
+#include "ansidecl.h"
+
 #include <sys/time.h>
 
 /* FIXME?: move this interface down to tgt vector) */
@@ -61,8 +63,10 @@ extern int remote_write_bytes(CORE_ADDR memaddr, const gdb_byte *myaddr,
 
 extern int remote_read_bytes(CORE_ADDR memaddr, char *myaddr, int len);
 
-extern void (*deprecated_target_resume_hook)(void);
-extern void (*deprecated_target_wait_loop_hook)(void);
+extern void (*deprecated_target_resume_hook)(void)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_target_wait_loop_hook)(void)
+  ATTRIBUTE_DEPRECATED;
 
 extern void dump_packets_command(char *unused, int fromtty);
 

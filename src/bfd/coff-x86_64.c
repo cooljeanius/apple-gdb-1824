@@ -1,4 +1,4 @@
-/* BFD back-end for AMD 64 COFF files.
+/* coff-x86_64.c: BFD back-end for AMD 64 COFF files.
    Copyright 2006, 2007, 2008, 2009, 2010, 2011
    Free Software Foundation, Inc.
 
@@ -22,30 +22,32 @@
    Written by Kai Tietz, OneVision Software GmbH&CoKg.  */
 
 #ifndef COFF_WITH_pex64
-#define COFF_WITH_pex64
-#endif
+# define COFF_WITH_pex64
+#endif /* !COFF_WITH_pex64 */
 
 /* Note we have to make sure not to include headers twice.
    Not all headers are wrapped in #ifdef guards, so we define
    PEI_HEADERS to prevent double including here.  */
 #ifndef PEI_HEADERS
-#include "sysdep.h"
-#include "bfd.h"
-#include "libbfd.h"
-#include "coff/x86_64.h"
-#include "coff/internal.h"
-#include "coff/pe.h"
-#include "libcoff.h"
-#include "libiberty.h"
-#endif
+# include "sysdep.h"
+# include "bfd.h"
+# include "libbfd.h"
+# include "coff/x86_64.h"
+# include "coff/internal.h"
+# include "coff/pe.h"
+# include "libcoff.h"
+# include "libiberty.h"
+#endif /* !PEI_HEADERS */
 
 #define BADMAG(x) AMD64BADMAG(x)
 
 #ifdef COFF_WITH_pex64
 # undef  AOUTSZ
 # define AOUTSZ		PEPAOUTSZ
-# define PEAOUTHDR	PEPAOUTHDR
-#endif
+# ifndef PEAOUTHDR
+#  define PEAOUTHDR	PEPAOUTHDR
+# endif /* !PEAOUTHDR */
+#endif /* COFF_WITH_pex64 */
 
 #define COFF_DEFAULT_SECTION_ALIGNMENT_POWER (2)
 
@@ -199,8 +201,8 @@ in_reloc_p (bfd *abfd ATTRIBUTE_UNUSED, reloc_howto_type *howto)
 #endif /* COFF_WITH_PE */
 
 #ifndef PCRELOFFSET
-#define PCRELOFFSET TRUE
-#endif
+# define PCRELOFFSET TRUE
+#endif /* !PCRELOFFSET */
 
 static reloc_howto_type howto_table[] =
 {
@@ -453,7 +455,9 @@ static reloc_howto_type howto_table[] =
 
 #define SELECT_RELOC(x,howto) { x.r_type = howto->type; }
 #define I386  1			/* Customize coffcode.h */
-#define AMD64 1
+#ifndef AMD64
+# define AMD64 1
+#endif /* !AMD64 */
 
 #define RTYPE2HOWTO(cache_ptr, dst)		\
   ((cache_ptr)->howto =				\
@@ -643,43 +647,45 @@ coff_amd64_rtype_to_howto (bfd *abfd ATTRIBUTE_UNUSED,
 }
 
 #define coff_bfd_reloc_type_lookup coff_amd64_reloc_type_lookup
-#define coff_bfd_reloc_name_lookup coff_amd64_reloc_name_lookup
+#ifndef coff_bfd_reloc_name_lookup
+# define coff_bfd_reloc_name_lookup coff_amd64_reloc_name_lookup
+#endif /* !coff_bfd_reloc_name_lookup */
 
 static reloc_howto_type *
-coff_amd64_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED, bfd_reloc_code_real_type code)
+coff_amd64_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED, bfd_reloc_code_real_type code)
 {
   switch (code)
     {
     case BFD_RELOC_RVA:
-      return howto_table + R_AMD64_IMAGEBASE;
+      return (howto_table + R_AMD64_IMAGEBASE);
     case BFD_RELOC_32:
-      return howto_table + R_AMD64_DIR32;
+      return (howto_table + R_AMD64_DIR32);
     case BFD_RELOC_64:
-      return howto_table + R_AMD64_DIR64;
+      return (howto_table + R_AMD64_DIR64);
     case BFD_RELOC_64_PCREL:
 #ifndef DONT_EXTEND_AMD64
-      return howto_table + R_AMD64_PCRQUAD;
+      return (howto_table + R_AMD64_PCRQUAD);
 #else
       /* Fall through.  */
-#endif
+#endif /* !DONT_EXTEND_AMD64 */
     case BFD_RELOC_32_PCREL:
-      return howto_table + R_AMD64_PCRLONG;
+      return (howto_table + R_AMD64_PCRLONG);
     case BFD_RELOC_X86_64_32S:
-      return howto_table + R_RELLONG;
+      return (howto_table + R_RELLONG);
     case BFD_RELOC_16:
-      return howto_table + R_RELWORD;
+      return (howto_table + R_RELWORD);
     case BFD_RELOC_16_PCREL:
-      return howto_table + R_PCRWORD;
+      return (howto_table + R_PCRWORD);
     case BFD_RELOC_8:
-      return howto_table + R_RELBYTE;
+      return (howto_table + R_RELBYTE);
     case BFD_RELOC_8_PCREL:
-      return howto_table + R_PCRBYTE;
+      return (howto_table + R_PCRBYTE);
 #if defined(COFF_WITH_PE)
     case BFD_RELOC_32_SECREL:
-      return howto_table + R_AMD64_SECREL;
-#endif
+      return (howto_table + R_AMD64_SECREL);
+#endif /* COFF_WITH_PE */
     default:
-      BFD_FAIL ();
+      BFD_FAIL();
       return 0;
     }
 }
@@ -731,21 +737,30 @@ coff_amd64_is_local_label_name (bfd *abfd, const char *name)
 #define amd64coff_object_p coff_object_p
 #endif
 
-#define _bfd_generic_find_nearest_line_discriminator \
-	coff_find_nearest_line_discriminator
+#ifndef _bfd_generic_find_nearest_line_discriminator
+# define _bfd_generic_find_nearest_line_discriminator \
+	 coff_find_nearest_line_discriminator
+#endif /* !_bfd_generic_find_nearest_line_discriminator */
+
+#ifndef BFD_COMPRESS
+# define BFD_COMPRESS 0x8000
+#endif /* !BFD_COMPRESS */
+#ifndef BFD_DECOMPRESS
+# define BFD_DECOMPRESS 0x10000
+#endif /* !BFD_DECOMPRESS */
 
 const bfd_target
 #ifdef TARGET_SYM
   TARGET_SYM =
 #else
   x86_64coff_vec =
-#endif
+#endif /* TARGET_SYM */
 {
 #ifdef TARGET_NAME
   TARGET_NAME,
 #else
  "coff-x86-64",			/* Name.  */
-#endif
+#endif /* TARGET_NAME */
   bfd_target_coff_flavour,
   BFD_ENDIAN_LITTLE,		/* Data byte order is little.  */
   BFD_ENDIAN_LITTLE,		/* Header byte order is little.  */
@@ -757,14 +772,14 @@ const bfd_target
   (SEC_HAS_CONTENTS | SEC_ALLOC | SEC_LOAD | SEC_RELOC /* Section flags.  */
 #if defined(COFF_WITH_PE)
    | SEC_LINK_ONCE | SEC_LINK_DUPLICATES | SEC_READONLY | SEC_DEBUGGING
-#endif
+#endif /* COFF_WITH_PE */
    | SEC_CODE | SEC_DATA | SEC_EXCLUDE ),
 
 #ifdef TARGET_UNDERSCORE
   TARGET_UNDERSCORE,		/* Leading underscore.  */
 #else
   0,				/* Leading underscore.  */
-#endif
+#endif /* TARGET_UNDERSCORE */
   '/',				/* Ar_pad_char.  */
   15,				/* Ar_max_namelen.  */
   0,				/* match priority.  */
@@ -798,3 +813,5 @@ const bfd_target
 
   COFF_SWAP_TABLE
 };
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* Data structures associated with breakpoints in GDB.
+/* breakpoint.h: Data structures associated with breakpoints in GDB.
    Copyright 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
    2002, 2003, 2004
    Free Software Foundation, Inc.
@@ -22,6 +22,8 @@
 
 #if !defined(BREAKPOINT_H)
 #define BREAKPOINT_H 1
+
+#include "ansidecl.h"
 
 #include "frame.h"
 #include "value.h"
@@ -903,11 +905,12 @@ void tell_breakpoints_objfile_removed (struct objfile *objfile);
 
 /* Indicator of whether exception catchpoints should be nuked between
    runs of a program.  */
-extern int deprecated_exception_catchpoints_are_fragile;
+extern int deprecated_exception_catchpoints_are_fragile
+  ATTRIBUTE_DEPRECATED;
 
 /* Indicator of when exception catchpoints set-up should be
    reinitialized -- e.g. when program is re-run.  */
-extern int deprecated_exception_support_initialized;
+extern int deprecated_exception_support_initialized ATTRIBUTE_DEPRECATED;
 
 /* APPLE LOCAL begin radar 6366048 search both minsyms & syms for bps.  */
 extern void remove_duplicate_sals (struct symtabs_and_lines *,

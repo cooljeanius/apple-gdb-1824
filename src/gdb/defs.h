@@ -292,12 +292,12 @@ typedef bfd_vma CORE_ADDR;
    rather than replaced.  */
 
 /* DISCLAIMER: cagney/2003-11-23: Simplified definition of these
-   macros so that they just map directly onto strcmp equivalent.  I'm
+   macros so that they just map directly onto strcmp equivalent.  I am
    not responsible for any breakage due to code that relied on the old
    underlying implementation.  */
 
-#define DEPRECATED_STREQ(a,b) (strcmp ((a), (b)) == 0)
-#define DEPRECATED_STREQN(a,b,c) (strncmp ((a), (b), (c)) == 0)
+#define DEPRECATED_STREQ(a,b) (strcmp((a), (b)) == 0)
+#define DEPRECATED_STREQN(a,b,c) (strncmp((a), (b), (c)) == 0)
 
 /* Check if a character is one of the commonly used C++ marker characters.  */
 extern int is_cplus_marker (int);
@@ -800,20 +800,19 @@ extern int gdb_quitting;
 
 extern void set_next_address (CORE_ADDR);
 
-extern void print_address_symbolic (CORE_ADDR, struct ui_file *, int,
-				    char *);
+extern void print_address_symbolic(CORE_ADDR, struct ui_file *, int,
+				   char *);
 
-extern int build_address_symbolic (CORE_ADDR addr,
-				   int do_demangle,
-				   char **name,
-				   int *offset,
-				   char **filename,
-				   int *line,
-				   int *unmapped);
+extern int build_address_symbolic(CORE_ADDR addr, int do_demangle,
+				  char **name, int *offset,
+                                  char **filename, int *line,
+                                  int *unmapped);
 
-extern void deprecated_print_address_numeric (CORE_ADDR, int, struct ui_file *);
+extern void deprecated_print_address_numeric(CORE_ADDR, int,
+                                             struct ui_file *)
+  ATTRIBUTE_DEPRECATED_FOR(paddress);
 
-extern void print_address (CORE_ADDR, struct ui_file *);
+extern void print_address(CORE_ADDR, struct ui_file *);
 
 /* From source.c */
 
@@ -1411,20 +1410,28 @@ typedef enum {
 extern void (*init_ui_hook)(char *argv0);
 extern void (*command_loop_hook)(void);
 /* APPLE LOCAL end hooks */
-extern void (*deprecated_pre_add_symbol_hook)(const char *);
-extern void (*deprecated_post_add_symbol_hook)(void);
-extern void (*selected_frame_level_changed_hook)(int);
-extern int (*deprecated_ui_loop_hook)(int signo);
-extern void (*deprecated_init_ui_hook)(char *argv0);
-extern void (*deprecated_command_loop_hook)(void);
+extern void (*deprecated_pre_add_symbol_hook)(const char *)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_post_add_symbol_hook)(void)
+  ATTRIBUTE_DEPRECATED;
+extern void (*selected_frame_level_changed_hook)(int)
+  ATTRIBUTE_DEPRECATED;
+extern int (*deprecated_ui_loop_hook)(int signo)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_init_ui_hook)(char *argv0)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_command_loop_hook)(void)
+  ATTRIBUTE_DEPRECATED;
 extern void (*deprecated_show_load_progress)(const char *section,
 					     unsigned long section_sent,
 					     unsigned long section_size,
 					     unsigned long total_sent,
-					     unsigned long total_size);
+					     unsigned long total_size)
+  ATTRIBUTE_DEPRECATED;
 extern void (*deprecated_print_frame_info_listing_hook)(struct symtab * s,
                                                         int line, int stopline,
-                                                        int noerror);
+                                                        int noerror)
+  ATTRIBUTE_DEPRECATED;
 /* APPLE LOCAL begin hooks */
 extern void (*print_frame_more_info_hook)(struct ui_out *uiout,
                                           struct symtab_and_line *sal,
@@ -1455,43 +1462,61 @@ extern void (*stepping_command_hook)(void);
 /* APPLE LOCAL end hooks */
 
 extern int (*deprecated_query_hook)(const char *, va_list)
-     ATTRIBUTE_FPTR_PRINTF(1,0);
+     ATTRIBUTE_FPTR_PRINTF(1,0) ATTRIBUTE_DEPRECATED;
 extern void (*deprecated_warning_hook)(const char *, va_list)
-     ATTRIBUTE_FPTR_PRINTF(1,0);
+     ATTRIBUTE_FPTR_PRINTF(1,0) ATTRIBUTE_DEPRECATED;
 
-extern void (*deprecated_flush_hook)(struct ui_file * stream);
-extern void (*deprecated_create_breakpoint_hook)(struct breakpoint * b);
-extern void (*deprecated_delete_breakpoint_hook)(struct breakpoint * bpt);
-extern void (*deprecated_modify_breakpoint_hook)(struct breakpoint * bpt);
-extern void (*deprecated_interactive_hook)(void);
-extern void (*deprecated_registers_changed_hook)(void);
+extern void (*deprecated_flush_hook)(struct ui_file * stream)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_create_breakpoint_hook)(struct breakpoint * b)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_delete_breakpoint_hook)(struct breakpoint * bpt)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_modify_breakpoint_hook)(struct breakpoint * bpt)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_interactive_hook)(void)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_registers_changed_hook)(void)
+  ATTRIBUTE_DEPRECATED;
 extern void (*deprecated_readline_begin_hook)(char *, ...)
-     ATTRIBUTE_FPTR_PRINTF_1;
-extern char *(*deprecated_readline_hook)(char *);
-extern void (*deprecated_readline_end_hook)(void);
-extern void (*deprecated_register_changed_hook)(int regno);
-extern void (*deprecated_memory_changed_hook)(CORE_ADDR addr, int len);
-extern void (*deprecated_context_hook)(int);
+     ATTRIBUTE_FPTR_PRINTF_1 ATTRIBUTE_DEPRECATED;
+extern char *(*deprecated_readline_hook)(char *)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_readline_end_hook)(void)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_register_changed_hook)(int regno)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_memory_changed_hook)(CORE_ADDR addr, int len)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_context_hook)(int)
+  ATTRIBUTE_DEPRECATED;
 extern ptid_t (*deprecated_target_wait_hook)(ptid_t ptid,
 					     /* APPLE LOCAL target wait hook */
 					     struct target_waitstatus * status,
-					     gdb_client_data client_data);
+					     gdb_client_data client_data)
+  ATTRIBUTE_DEPRECATED;
 
-extern void (*deprecated_attach_hook)(void);
-extern void (*deprecated_detach_hook)(void);
+extern void (*deprecated_attach_hook)(void)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_detach_hook)(void)
+  ATTRIBUTE_DEPRECATED;
 extern void (*deprecated_call_command_hook)(struct cmd_list_element * c,
-					    char *cmd, int from_tty);
+					    char *cmd, int from_tty)
+  ATTRIBUTE_DEPRECATED;
 
-extern void (*deprecated_set_hook)(struct cmd_list_element * c);
+extern void (*deprecated_set_hook)(struct cmd_list_element * c)
+  ATTRIBUTE_DEPRECATED;
 
-extern void (*deprecated_error_hook)(void);
+extern void (*deprecated_error_hook)(void)
+  ATTRIBUTE_DEPRECATED;
 
 /* APPLE LOCAL begin hooks */
 /* called when the continue command is issued: */
 extern void (*continue_command_hook)(void);
 /* APPLE LOCAL end hooks */
 
-extern void (*deprecated_error_begin_hook)(void);
+extern void (*deprecated_error_begin_hook)(void)
+  ATTRIBUTE_DEPRECATED;
 
 /* APPLE LOCAL begin hooks */
 /* called when the run command is issued; return 1 means do the run; 0 means do not */
@@ -1500,7 +1525,8 @@ extern void (*hand_call_function_hook)(void);
 /* APPLE LOCAL end hooks */
 
 extern int (*deprecated_ui_load_progress_hook)(const char *section,
-                                               unsigned long num);
+                                               unsigned long num)
+  ATTRIBUTE_DEPRECATED;
 
 
 /* Inhibit window interface if non-zero: */

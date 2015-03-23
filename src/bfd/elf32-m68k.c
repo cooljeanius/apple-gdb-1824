@@ -121,12 +121,10 @@ static reloc_howto_type howto_table[] = {
 };
 
 static void
-rtype_to_howto (abfd, cache_ptr, dst)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *cache_ptr;
-     Elf_Internal_Rela *dst;
+rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+               Elf_Internal_Rela *dst)
 {
-  BFD_ASSERT (ELF32_R_TYPE(dst->r_info) < (unsigned int) R_68K_max);
+  BFD_ASSERT(ELF32_R_TYPE(dst->r_info) < (unsigned int)R_68K_max);
   cache_ptr->howto = &howto_table[ELF32_R_TYPE(dst->r_info)];
 }
 
@@ -166,12 +164,11 @@ static const struct
 };
 
 static reloc_howto_type *
-reloc_type_lookup (abfd, code)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                  bfd_reloc_code_real_type code)
 {
   unsigned int i;
-  for (i = 0; i < sizeof (reloc_map) / sizeof (reloc_map[0]); i++)
+  for (i = 0U; i < (sizeof(reloc_map) / sizeof(reloc_map[0])); i++)
     {
       if (reloc_map[i].bfd_val == code)
 	return &howto_table[reloc_map[i].elf_val];

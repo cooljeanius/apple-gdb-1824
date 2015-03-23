@@ -1,4 +1,4 @@
-/* Target-dependent code for the i386.
+/* i386-tdep.h: Target-dependent code for the i386.
 
    Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
@@ -21,6 +21,8 @@
 
 #ifndef I386_TDEP_H
 #define I386_TDEP_H
+
+#include "ansidecl.h"
 
 struct frame_info;
 struct gdbarch;
@@ -108,8 +110,8 @@ struct gdbarch_tdep
 
   /* Offset of saved PC and SP in `struct sigcontext'.  Usage of these
      is deprecated, please use `sc_reg_offset' instead.  */
-  int sc_pc_offset;
-  int sc_sp_offset;
+  int sc_pc_offset ATTRIBUTE_DEPRECATED_FOR(sc_reg_offset);
+  int sc_sp_offset ATTRIBUTE_DEPRECATED_FOR(sc_reg_offset);
 };
 
 /* Floating-point registers.  */

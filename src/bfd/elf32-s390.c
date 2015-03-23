@@ -728,23 +728,22 @@ struct elf_s390_link_hash_table
 /* Create an entry in an s390 ELF linker hash table.  */
 
 static struct bfd_hash_entry *
-link_hash_newfunc (entry, table, string)
-     struct bfd_hash_entry *entry;
-     struct bfd_hash_table *table;
-     const char *string;
+link_hash_newfunc(struct bfd_hash_entry *entry,
+                  struct bfd_hash_table *table, const char *string)
 {
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
   if (entry == NULL)
     {
-      entry = bfd_hash_allocate (table,
-				 sizeof (struct elf_s390_link_hash_entry));
+      entry = ((struct bfd_hash_entry *)
+               bfd_hash_allocate(table,
+				 sizeof(struct elf_s390_link_hash_entry)));
       if (entry == NULL)
 	return entry;
     }
 
-  /* Call the allocation method of the superclass.  */
-  entry = _bfd_elf_link_hash_newfunc (entry, table, string);
+  /* Call the allocation method of the superclass: */
+  entry = _bfd_elf_link_hash_newfunc(entry, table, string);
   if (entry != NULL)
     {
       struct elf_s390_link_hash_entry *eh;
@@ -3508,7 +3507,9 @@ elf_s390_plt_sym_val (bfd_vma i, const asection *plt,
 #define elf_backend_finish_dynamic_symbol     elf_s390_finish_dynamic_symbol
 #define elf_backend_gc_mark_hook	      elf_s390_gc_mark_hook
 #define elf_backend_gc_sweep_hook	      elf_s390_gc_sweep_hook
-#define elf_backend_reloc_type_class	      elf_s390_reloc_type_class
+#ifndef elf_backend_reloc_type_class
+# define elf_backend_reloc_type_class	      elf_s390_reloc_type_class
+#endif /* !elf_backend_reloc_type_class */
 #define elf_backend_relocate_section	      elf_s390_relocate_section
 #define elf_backend_size_dynamic_sections     elf_s390_size_dynamic_sections
 #define elf_backend_reloc_type_class	      elf_s390_reloc_type_class
@@ -3519,3 +3520,9 @@ elf_s390_plt_sym_val (bfd_vma i, const asection *plt,
 #define elf_backend_object_p		elf_s390_object_p
 
 #include "elf32-target.h"
+
+#ifdef elf_backend_reloc_type_class
+# undef elf_backend_reloc_type_class
+#endif /* elf_backend_reloc_type_class */
+
+/* EOF */

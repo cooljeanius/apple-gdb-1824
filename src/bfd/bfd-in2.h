@@ -1,7 +1,7 @@
-/* DO NOT EDIT!  -*- buffer-read-only: t -*-  This file is automatically 
-   generated from "bfd-in.h", "init.c", "opncls.c", "libbfd.c", 
-   "bfdio.c", "bfdwin.c", "section.c", "cache.c", "archures.c", 
-   "reloc.c", "syms.c", "bfd.c", "archive.c", "corefile.c", "targets.c", 
+/* DO NOT EDIT!  -*- buffer-read-only: t -*-  This file is automatically
+   generated from "bfd-in.h", "init.c", "opncls.c", "libbfd.c",
+   "bfdio.c", "bfdwin.c", "section.c", "cache.c", "archures.c",
+   "reloc.c", "syms.c", "bfd.c", "archive.c", "corefile.c", "targets.c",
    "format.c", "linker.c", "simple.c" and "compress.c".
    Run "make headers" in your build bfd/ to regenerate.  */
 
@@ -371,6 +371,15 @@ typedef enum bfd_print_symbol
   bfd_print_symbol_all
 } bfd_print_symbol_type;
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2))
+#  if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #   pragma GCC diagnostic push
+#  endif /* gcc 4.6+ */
+ #  pragma GCC diagnostic ignored "-Wpadded"
+# endif /* gcc 4.2+ */
+#endif /* any gcc */
+
 /* Information about a symbol that nm needs: */
 typedef struct _symbol_info
 {
@@ -382,6 +391,13 @@ typedef struct _symbol_info
   short stab_desc;             /* Stab desc.  */
   const char *stab_name;       /* String for stab type.  */
 } symbol_info;
+
+/* keep the condition the same as the pushing part: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #   pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* Get the name of a stabs type code: */
 extern const char *bfd_get_stab_name (int);
@@ -517,7 +533,7 @@ extern int bfd_stat (bfd *, struct stat *);
    (warn_deprecated("bfd_write", (const char *)0, 0, (const char *)0),  \
     bfd_bwrite((BUF), (ELTSIZE) * (NITEMS), (ABFD)))
 #endif /* __GNUC__ */
-extern void warn_deprecated (const char *, const char *, int, const char *);
+extern void warn_deprecated(const char *, const char *, int, const char *);
 
 /* Cast from const char * to char * so that caller can assign to
    a char * without a warning.  */
@@ -1102,6 +1118,15 @@ long bfd_get_size (bfd *abfd);
 
 /* Extracted from bfdwin.c.  */
 /* Extracted from section.c.  */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2))
+#  if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #   pragma GCC diagnostic push
+#  endif /* gcc 4.6+ */
+ #  pragma GCC diagnostic ignored "-Wpadded"
+# endif /* gcc 4.2+ */
+#endif /* any gcc */
+
 typedef struct bfd_section
 {
   /* The name of the section; the name isn't a copy, the pointer is
@@ -1462,6 +1487,13 @@ typedef struct bfd_section
     struct bfd_section *s;
   } map_head, map_tail;
 } asection;
+
+ /* keep the condition the same as the pushing part: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #   pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* These sections are global, and are managed by BFD.  The application
    and target back end are not permitted to change the values in

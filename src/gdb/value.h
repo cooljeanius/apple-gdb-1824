@@ -24,6 +24,8 @@
 #if !defined (VALUE_H)
 #define VALUE_H 1
 
+#include "ansidecl.h"
+
 #include "doublest.h"
 
 /* APPLE LOCAL: For check_safe_call.  */
@@ -77,8 +79,9 @@ extern struct type *value_type (struct value *);
    code should instead be creating a new value with the changed type
    (but possibly shared content).  */
 
-extern void deprecated_set_value_type (struct value *value,
-				       struct type *type);
+extern void deprecated_set_value_type(struct value *value,
+				      struct type *type)
+  ATTRIBUTE_DEPRECATED;
 
 /* Only used for bitfields; number of bits contained in them.  */
 
@@ -105,9 +108,11 @@ extern void set_value_offset (struct value *, int offset);
    relevant if lval != not_lval.''.  Shouldn't the value instead be
    not_lval and be done with it?  */
 
-extern int deprecated_value_modifiable (struct value *value);
-extern void deprecated_set_value_modifiable (struct value *value,
-					     int modifiable);
+extern int deprecated_value_modifiable(struct value *value)
+  ATTRIBUTE_DEPRECATED;
+extern void deprecated_set_value_modifiable(struct value *value,
+					    int modifiable)
+  ATTRIBUTE_DEPRECATED;
 
 /* If a value represents a C++ object, then the `type' field gives the
    object's compile-time type.  If the object actually belongs to some
@@ -221,27 +226,32 @@ extern void set_value_optimized_out (struct value *value, enum opt_state val);
    limited to just the first PIECE.  Expect further change.  */
 /* Type of value; either not an lval, or one of the various different
    possible kinds of lval.  */
-extern enum lval_type *deprecated_value_lval_hack (struct value *);
-#define VALUE_LVAL(val) (*deprecated_value_lval_hack (val))
+extern enum lval_type *deprecated_value_lval_hack(struct value *)
+  ATTRIBUTE_DEPRECATED;
+#define VALUE_LVAL(val) (*deprecated_value_lval_hack(val))
 
 /* If lval == lval_memory, this is the address in the inferior.  If
    lval == lval_register, this is the byte offset into the registers
    structure.  */
-extern CORE_ADDR *deprecated_value_address_hack (struct value *);
-#define VALUE_ADDRESS(val) (*deprecated_value_address_hack (val))
+extern CORE_ADDR *deprecated_value_address_hack(struct value *)
+  ATTRIBUTE_DEPRECATED;
+#define VALUE_ADDRESS(val) (*deprecated_value_address_hack(val))
 
-/* Pointer to internal variable.  */
-extern struct internalvar **deprecated_value_internalvar_hack (struct value *);
-#define VALUE_INTERNALVAR(val) (*deprecated_value_internalvar_hack (val))
+/* Pointer to internal variable: */
+extern struct internalvar **deprecated_value_internalvar_hack(struct value *)
+  ATTRIBUTE_DEPRECATED;
+#define VALUE_INTERNALVAR(val) (*deprecated_value_internalvar_hack(val))
 
 /* Frame register value is relative to.  This will be described in the
    lval enum above as "lval_register".  */
-extern struct frame_id *deprecated_value_frame_id_hack (struct value *);
-#define VALUE_FRAME_ID(val) (*deprecated_value_frame_id_hack (val))
+extern struct frame_id *deprecated_value_frame_id_hack(struct value *)
+  ATTRIBUTE_DEPRECATED;
+#define VALUE_FRAME_ID(val) (*deprecated_value_frame_id_hack(val))
 
-/* Register number if the value is from a register.  */
-extern short *deprecated_value_regnum_hack (struct value *);
-#define VALUE_REGNUM(val) (*deprecated_value_regnum_hack (val))
+/* Register number if the value is from a register: */
+extern short *deprecated_value_regnum_hack(struct value *)
+  ATTRIBUTE_DEPRECATED;
+#define VALUE_REGNUM(val) (*deprecated_value_regnum_hack(val))
 
 /* Convert a REF to the object referenced.  */
 

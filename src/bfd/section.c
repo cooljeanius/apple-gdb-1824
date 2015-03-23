@@ -150,6 +150,15 @@ SUBSECTION
 
 CODE_FRAGMENT
 .
+.#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+.# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2))
+.#  if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+. #   pragma GCC diagnostic push
+.#  endif {* gcc 4.6+ *}
+. #  pragma GCC diagnostic ignored "-Wpadded"
+.# endif {* gcc 4.2+ *}
+.#endif {* any gcc *}
+.
 .typedef struct bfd_section
 .{
 .  {* The name of the section; the name isn't a copy, the pointer is
@@ -510,6 +519,13 @@ CODE_FRAGMENT
 .    struct bfd_section *s;
 .  } map_head, map_tail;
 .} asection;
+.
+. {* keep the condition the same as the pushing part: *}
+.#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+.# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+. #   pragma GCC diagnostic pop
+.# endif {* gcc 4.6+ *}
+.#endif {* any gcc *}
 .
 .{* These sections are global, and are managed by BFD.  The application
 .   and target back end are not permitted to change the values in

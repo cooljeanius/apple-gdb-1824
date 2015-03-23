@@ -1,4 +1,4 @@
-/* AArch64 assembler/disassembler support.
+/* aarch64.h: AArch64 assembler/disassembler support.
 
    Copyright 2009, 2010, 2011, 2012, 2013  Free Software Foundation, Inc.
    Contributed by ARM Ltd.
@@ -22,6 +22,7 @@
 #ifndef OPCODE_AARCH64_H
 #define OPCODE_AARCH64_H
 
+#include "ansidecl.h"
 #include "bfd.h"
 #include "bfd_stdint.h"
 #include <assert.h>
@@ -53,18 +54,14 @@ typedef unsigned long aarch64_feature_set;
   (((CPU) & (FEAT)) != 0)
 
 #define AARCH64_MERGE_FEATURE_SETS(TARG,F1,F2)	\
-  do						\
-    {						\
-      (TARG) = (F1) | (F2);			\
-    }						\
-  while (0)
+  do {						\
+    (TARG) = (F1) | (F2);			\
+  } while (0)
 
 #define AARCH64_CLEAR_FEATURE(TARG,F1,F2)	\
-  do						\
-    { 						\
-      (TARG) = (F1) &~ (F2);			\
-    }						\
-  while (0)
+  do { 						\
+    (TARG) = (F1) &~ (F2);			\
+  } while (0)
 
 #define AARCH64_FEATURE(core,coproc) ((core) | (coproc))
 
@@ -622,8 +619,9 @@ typedef struct
   uint32_t	flags;
 } aarch64_sys_reg;
 
-extern const aarch64_sys_reg aarch64_sys_regs [];
-extern bfd_boolean aarch64_sys_reg_deprecated_p (const aarch64_sys_reg *);
+extern const aarch64_sys_reg aarch64_sys_regs[];
+extern bfd_boolean aarch64_sys_reg_deprecated_p(const aarch64_sys_reg *)
+  ATTRIBUTE_DEPRECATED;
 
 typedef struct
 {
@@ -632,10 +630,10 @@ typedef struct
   int has_xt;
 } aarch64_sys_ins_reg;
 
-extern const aarch64_sys_ins_reg aarch64_sys_regs_ic [];
-extern const aarch64_sys_ins_reg aarch64_sys_regs_dc [];
-extern const aarch64_sys_ins_reg aarch64_sys_regs_at [];
-extern const aarch64_sys_ins_reg aarch64_sys_regs_tlbi [];
+extern const aarch64_sys_ins_reg aarch64_sys_regs_ic[];
+extern const aarch64_sys_ins_reg aarch64_sys_regs_dc[];
+extern const aarch64_sys_ins_reg aarch64_sys_regs_at[];
+extern const aarch64_sys_ins_reg aarch64_sys_regs_tlbi[];
 
 /* Shift/extending operator kinds.
    N.B. order is important; keep aarch64_operand_modifiers synced.  */

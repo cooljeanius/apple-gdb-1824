@@ -1,4 +1,4 @@
-/* Include file cached obstack implementation.
+/* bcache.h: Include file cached obstack implementation.
    Written by Fred Fish <fnf@cygnus.com>
    Rewritten by Jim Blandy <jimb@cygnus.com>
 
@@ -23,6 +23,8 @@
 
 #ifndef BCACHE_H
 #define BCACHE_H 1
+
+#include "ansidecl.h"
 
 /* A bcache is a data structure for factoring out duplication in
    read-only structures.  You give the bcache some string of bytes S.
@@ -135,7 +137,7 @@
    Mind you, looking at the wall clock, the same GDB debugging GDB
    showed only marginal speed up (0.780 vs 0.773s).  Seems GDB is too
    busy doing something else :-(
-  
+
 */
 
 
@@ -146,22 +148,22 @@ struct bcache;
    either case, return a pointer to BCACHE's copy of that string.
    Since the cached value is ment to be read-only, return a const
    buffer.  */
-extern void *deprecated_bcache (const void *addr, int length,
-				struct bcache *bcache);
-extern const void *bcache (const void *addr, int length,
-			   struct bcache *bcache);
+extern void *deprecated_bcache(const void *addr, int length,
+                               struct bcache *bcache) ATTRIBUTE_DEPRECATED;
+extern const void *bcache(const void *addr, int length,
+			  struct bcache *bcache);
 
 /* Free all the storage used by BCACHE.  */
-extern void bcache_xfree (struct bcache *bcache);
+extern void bcache_xfree(struct bcache *bcache);
 
 /* APPLE LOCAL begin bcache pool */
 extern void bcache_specify_allocation_with_arg (struct bcache *b,
-						void * (* alloc) (void *, size_t),
-						void (* free) (void *, void *),
+						void *(* alloc)(void *, size_t),
+						void (* free)(void *, void *),
 						void *arg);
-extern void bcache_specify_allocation (struct bcache *b,
-				       void * (* alloc) (size_t),
-				       void (* free) (void *));
+extern void bcache_specify_allocation(struct bcache *b,
+				      void *(* alloc)(size_t),
+				      void (* free)(void *));
 /* APPLE LOCAL end bcache pool */
 
 /* Create a new bcache object.  */

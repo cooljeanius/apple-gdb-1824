@@ -178,7 +178,8 @@ struct traceback_table_anchors
 struct traceback_table_routine
 {
   unsigned short name_len;	/* Length of name that follows.  */
-  char name[1];			/* Name starts here (NOT null terminated).  */
+  char name[1];		/* Name starts here (NOT null terminated).  */
+  char padding; /* should be 1 byte */
 };
 
 /* The following are present only if uses_alloca (in flags2) in fixed

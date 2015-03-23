@@ -512,8 +512,8 @@ tui_setup_io(int mode)
       /* Redirect readline to TUI: */
       tui_old_rl_redisplay_function = rl_redisplay_function;
       tui_old_rl_deprep_terminal = rl_deprep_term_function;
-      tui_old_rl_prep_terminal = rl_prep_term_function;
-      tui_old_rl_getc_function = rl_getc_function;
+      tui_old_rl_prep_terminal = (VFunction *)rl_prep_term_function;
+      tui_old_rl_getc_function = (Function *)rl_getc_function;
       tui_old_rl_outstream = rl_outstream;
       tui_old_readline_echoing_p = readline_echoing_p;
       rl_redisplay_function = tui_redisplay_readline;
@@ -553,8 +553,8 @@ tui_setup_io(int mode)
       /* Restore readline: */
       rl_redisplay_function = tui_old_rl_redisplay_function;
       rl_deprep_term_function = tui_old_rl_deprep_terminal;
-      rl_prep_term_function = tui_old_rl_prep_terminal;
-      rl_getc_function = tui_old_rl_getc_function;
+      rl_prep_term_function = (rl_vintfunc_t *)tui_old_rl_prep_terminal;
+      rl_getc_function = (rl_getc_func_t *)tui_old_rl_getc_function;
       rl_outstream = tui_old_rl_outstream;
       rl_completion_display_matches_hook = 0;
       readline_echoing_p = tui_old_readline_echoing_p;

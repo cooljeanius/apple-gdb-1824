@@ -330,6 +330,9 @@ struct internal_scnhdr
   long s_flags;			/* flags			*/
   long s_align;			/* used on I960			*/
   unsigned char s_page;         /* TI COFF load page            */
+  /* '-Wpadded': */
+  char padding1; /* should be 1 byte */
+  short padding2; /* should be 2 bytes */
 };
 
 /* s_flags "type".  */
@@ -460,7 +463,6 @@ union internal_auxent
 {
   struct
   {
-
     union
     {
       long l;			/* str, un, or enum tag indx */
@@ -496,6 +498,7 @@ union internal_auxent
     }     x_fcnary;
 
     unsigned short x_tvndx;	/* tv index */
+    short padding; /* should be 2 bytes */
   }      x_sym;
 
   union
@@ -506,6 +509,9 @@ union internal_auxent
       long x_zeroes;
       long x_offset;
     }      x_n;
+#if 0 /* has no effect on the warning: */
+    short padding; /* should be 2 bytes */
+#endif /* 0 */
   }     x_file;
 
   struct
@@ -516,6 +522,7 @@ union internal_auxent
     unsigned long x_checksum;	/* section COMDAT checksum for PE */
     unsigned short x_associated; /* COMDAT associated section index for PE */
     unsigned char x_comdat;	/* COMDAT selection number for PE */
+    char padding; /* should be 1 byte */
   }      x_scn;
 
   struct
@@ -523,6 +530,7 @@ union internal_auxent
     long x_tvfill;		/* tv fill value */
     unsigned short x_tvlen;	/* length of .tv */
     unsigned short x_tvran[2];	/* tv range */
+    short padding; /* should be 2 bytes */
   }      x_tv;			/* info about .tv section (in auxent of symbol .tv)) */
 
   /******************************************
@@ -543,6 +551,7 @@ union internal_auxent
     unsigned char x_smclas;	/* storage mapping class */
     long x_stab;		/* dbx stab info index */
     unsigned short x_snstab;	/* sect num with dbx stab */
+    short padding; /* should be 2 bytes */
   }      x_csect;		/* csect definition information */
 
 /* x_smtyp values:  */

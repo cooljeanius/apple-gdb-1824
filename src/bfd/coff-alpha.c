@@ -750,21 +750,19 @@ alpha_adjust_reloc_out(bfd *abfd ATTRIBUTE_UNUSED, const arelent *rel,
    assembler is going to handle this.  */
 
 static bfd_byte *
-alpha_ecoff_get_relocated_section_contents (abfd, link_info, link_order,
-					    data, relocatable, symbols)
-     bfd *abfd;
-     struct bfd_link_info *link_info;
-     struct bfd_link_order *link_order;
-     bfd_byte *data;
-     bfd_boolean relocatable;
-     asymbol **symbols;
+alpha_ecoff_get_relocated_section_contents(bfd *abfd,
+                                           struct bfd_link_info *link_info,
+                                           struct bfd_link_order *link_order,
+					   bfd_byte *data,
+                                           bfd_boolean relocatable,
+                                           asymbol **symbols)
 {
   bfd *input_bfd = link_order->u.indirect.section->owner;
   asection *input_section = link_order->u.indirect.section;
-  long reloc_size = bfd_get_reloc_upper_bound (input_bfd, input_section);
+  long reloc_size = bfd_get_reloc_upper_bound(input_bfd, input_section);
   arelent **reloc_vector = NULL;
   long reloc_count;
-  bfd *output_bfd = relocatable ? abfd : (bfd *) NULL;
+  bfd *output_bfd = (relocatable ? abfd : (bfd *)NULL);
   bfd_vma gp;
   bfd_size_type sz;
   bfd_boolean gp_undefined;
@@ -1229,20 +1227,18 @@ alpha_bfd_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
    relocation amount.  */
 
 static bfd_vma
-alpha_convert_external_reloc (output_bfd, info, input_bfd, ext_rel, h)
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     struct external_reloc *ext_rel;
-     struct ecoff_link_hash_entry *h;
+alpha_convert_external_reloc(bfd *output_bfd ATTRIBUTE_UNUSED,
+                             struct bfd_link_info *info, bfd *input_bfd,
+                             struct external_reloc *ext_rel,
+                             struct ecoff_link_hash_entry *h)
 {
   unsigned long r_symndx;
   bfd_vma relocation;
 
-  BFD_ASSERT (info->relocatable);
+  BFD_ASSERT(info->relocatable);
 
-  if (h->root.type == bfd_link_hash_defined
-      || h->root.type == bfd_link_hash_defweak)
+  if ((h->root.type == bfd_link_hash_defined)
+      || (h->root.type == bfd_link_hash_defweak))
     {
       asection *hsec;
       const char *name;
@@ -1348,14 +1344,9 @@ alpha_convert_external_reloc (output_bfd, info, input_bfd, ext_rel, h)
    could be combined somehow.  */
 
 static bfd_boolean
-alpha_relocate_section (output_bfd, info, input_bfd, input_section,
-			contents, external_relocs)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     PTR external_relocs;
+alpha_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+                       bfd *input_bfd, asection *input_section,
+                       bfd_byte *contents, PTR external_relocs)
 {
   asection **symndx_to_section, *lita_sec;
   struct ecoff_link_hash_entry **sym_hashes;
@@ -1370,8 +1361,8 @@ alpha_relocate_section (output_bfd, info, input_bfd, input_section,
   /* We keep a table mapping the symndx found in an internal reloc to
      the appropriate section.  This is faster than looking up the
      section by name each time.  */
-  symndx_to_section = ecoff_data (input_bfd)->symndx_to_section;
-  if (symndx_to_section == (asection **) NULL)
+  symndx_to_section = ecoff_data(input_bfd)->symndx_to_section;
+  if (symndx_to_section == (asection **)NULL)
     {
       amt = NUM_RELOC_SECTIONS * sizeof (asection *);
       symndx_to_section = (asection **) bfd_alloc (input_bfd, amt);
@@ -2008,10 +1999,8 @@ alpha_relocate_section (output_bfd, info, input_bfd, input_section,
    sets the dynamic bits in the file header.  */
 
 static bfd_boolean
-alpha_adjust_headers (abfd, fhdr, ahdr)
-     bfd *abfd;
-     struct internal_filehdr *fhdr;
-     struct internal_aouthdr *ahdr ATTRIBUTE_UNUSED;
+alpha_adjust_headers(bfd *abfd, struct internal_filehdr *fhdr,
+                     struct internal_aouthdr *ahdr ATTRIBUTE_UNUSED)
 {
   if ((abfd->flags & (DYNAMIC | EXEC_P)) == (DYNAMIC | EXEC_P))
     fhdr->f_flags |= F_ALPHA_CALL_SHARED;
@@ -2035,26 +2024,24 @@ alpha_adjust_headers (abfd, fhdr, ahdr)
 #define alpha_ecoff_generic_stat_arch_elt _bfd_ecoff_generic_stat_arch_elt
 #define alpha_ecoff_update_armap_timestamp _bfd_ecoff_update_armap_timestamp
 
-/* A compressed file uses this instead of ARFMAG.  */
-
+/* A compressed file uses this instead of ARFMAG: */
 #define ARFZMAG "Z\012"
 
 /* Read an archive header.  This is like the standard routine, but it
    also accepts ARFZMAG.  */
 
 static PTR
-alpha_ecoff_read_ar_hdr (abfd)
-     bfd *abfd;
+alpha_ecoff_read_ar_hdr(bfd *abfd)
 {
   struct areltdata *ret;
   struct ar_hdr *h;
 
-  ret = (struct areltdata *) _bfd_generic_read_ar_hdr_mag (abfd, ARFZMAG);
+  ret = (struct areltdata *)_bfd_generic_read_ar_hdr_mag(abfd, ARFZMAG);
   if (ret == NULL)
     return NULL;
 
-  h = (struct ar_hdr *) ret->arch_header;
-  if (strncmp (h->ar_fmag, ARFZMAG, 2) == 0)
+  h = (struct ar_hdr *)ret->arch_header;
+  if (strncmp(h->ar_fmag, ARFZMAG, 2) == 0)
     {
       bfd_byte ab[8];
 
@@ -2196,21 +2183,18 @@ alpha_ecoff_get_elt_at_filepos(bfd *archive, file_ptr filepos)
 
  error_return:
   if (nbfd != NULL)
-    bfd_close (nbfd);
+    bfd_close(nbfd);
   return NULL;
 }
 
-/* Open the next archived file.  */
-
+/* Open the next archived file: */
 static bfd *
-alpha_ecoff_openr_next_archived_file (archive, last_file)
-     bfd *archive;
-     bfd *last_file;
+alpha_ecoff_openr_next_archived_file(bfd *archive, bfd *last_file)
 {
   file_ptr filestart;
 
   if (last_file == NULL)
-    filestart = bfd_ardata (archive)->first_file_filepos;
+    filestart = bfd_ardata(archive)->first_file_filepos;
   else
     {
       struct areltdata *t;
@@ -2219,9 +2203,9 @@ alpha_ecoff_openr_next_archived_file (archive, last_file)
 
       /* We can't use arelt_size here, because that uses parsed_size,
          which is the uncompressed size.  We need the compressed size.  */
-      t = (struct areltdata *) last_file->arelt_data;
-      h = (struct ar_hdr *) t->arch_header;
-      size = strtol (h->ar_size, (char **) NULL, 10);
+      t = (struct areltdata *)last_file->arelt_data;
+      h = (struct ar_hdr *)t->arch_header;
+      size = strtol(h->ar_size, (char **)NULL, 10);
 
       /* Pad to an even boundary...
 	 Note that last_file->origin can be odd in the case of

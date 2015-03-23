@@ -275,28 +275,28 @@ coff_swap_filehdr_in(bfd * abfd, void * src, void * dst)
 }
 
 static  unsigned int
-coff_swap_filehdr_out (bfd *abfd, void * in, void * out)
+coff_swap_filehdr_out(bfd *abfd, void *in, void * out)
 {
-  struct internal_filehdr *filehdr_in = (struct internal_filehdr *) in;
-  FILHDR *filehdr_out = (FILHDR *) out;
+  struct internal_filehdr *filehdr_in = (struct internal_filehdr *)in;
+  FILHDR *filehdr_out = (FILHDR *)out;
 
 #ifdef COFF_ADJUST_FILEHDR_OUT_PRE
-  COFF_ADJUST_FILEHDR_OUT_PRE (abfd, in, out);
-#endif
-  H_PUT_16 (abfd, filehdr_in->f_magic, filehdr_out->f_magic);
-  H_PUT_16 (abfd, filehdr_in->f_nscns, filehdr_out->f_nscns);
-  H_PUT_32 (abfd, filehdr_in->f_timdat, filehdr_out->f_timdat);
-  PUT_FILEHDR_SYMPTR (abfd, filehdr_in->f_symptr, filehdr_out->f_symptr);
-  H_PUT_32 (abfd, filehdr_in->f_nsyms, filehdr_out->f_nsyms);
-  H_PUT_16 (abfd, filehdr_in->f_opthdr, filehdr_out->f_opthdr);
-  H_PUT_16 (abfd, filehdr_in->f_flags, filehdr_out->f_flags);
+  COFF_ADJUST_FILEHDR_OUT_PRE(abfd, in, out);
+#endif /* COFF_ADJUST_FILEHDR_IN_PRE */
+  H_PUT_16(abfd, (bfd_vma)filehdr_in->f_magic, filehdr_out->f_magic);
+  H_PUT_16(abfd, (bfd_vma)filehdr_in->f_nscns, filehdr_out->f_nscns);
+  H_PUT_32(abfd, (bfd_vma)filehdr_in->f_timdat, filehdr_out->f_timdat);
+  PUT_FILEHDR_SYMPTR(abfd, filehdr_in->f_symptr, filehdr_out->f_symptr);
+  H_PUT_32(abfd, (bfd_vma)filehdr_in->f_nsyms, filehdr_out->f_nsyms);
+  H_PUT_16(abfd, (bfd_vma)filehdr_in->f_opthdr, filehdr_out->f_opthdr);
+  H_PUT_16(abfd, (bfd_vma)filehdr_in->f_flags, filehdr_out->f_flags);
 #ifdef TIC80_TARGET_ID
-  H_PUT_16 (abfd, filehdr_in->f_target_id, filehdr_out->f_target_id);
-#endif
+  H_PUT_16(abfd, filehdr_in->f_target_id, filehdr_out->f_target_id);
+#endif /* TIC80_TARGET_ID */
 
 #ifdef COFF_ADJUST_FILEHDR_OUT_POST
-  COFF_ADJUST_FILEHDR_OUT_POST (abfd, in, out);
-#endif
+  COFF_ADJUST_FILEHDR_OUT_POST(abfd, in, out);
+#endif /* COFF_ADJUST_FILEHDR_IN_POST */
   return bfd_coff_filhsz(abfd);
 }
 
@@ -561,13 +561,13 @@ coff_swap_lineno_in(bfd * abfd, void * ext1, void * in1)
 }
 
 static unsigned int
-coff_swap_lineno_out (bfd * abfd, void * inp, void * outp)
+coff_swap_lineno_out(bfd *abfd, void *inp, void *outp)
 {
-  struct internal_lineno *in = (struct internal_lineno *) inp;
-  struct external_lineno *ext = (struct external_lineno *) outp;
-  H_PUT_32 (abfd, in->l_addr.l_symndx, ext->l_addr.l_symndx);
+  struct internal_lineno *in = (struct internal_lineno *)inp;
+  struct external_lineno *ext = (struct external_lineno *)outp;
+  H_PUT_32(abfd, (bfd_vma)in->l_addr.l_symndx, ext->l_addr.l_symndx);
 
-  PUT_LINENO_LNNO (abfd, in->l_lnno, ext);
+  PUT_LINENO_LNNO(abfd, in->l_lnno, ext);
   return LINESZ;
 }
 
@@ -651,19 +651,19 @@ coff_swap_aouthdr_in(bfd * abfd, void * aouthdr_ext1, void * aouthdr_int1)
 }
 
 static unsigned int
-coff_swap_aouthdr_out (bfd * abfd, void * in, void * out)
+coff_swap_aouthdr_out(bfd * abfd, void * in, void * out)
 {
-  struct internal_aouthdr *aouthdr_in = (struct internal_aouthdr *) in;
-  AOUTHDR *aouthdr_out = (AOUTHDR *) out;
+  struct internal_aouthdr *aouthdr_in = (struct internal_aouthdr *)in;
+  AOUTHDR *aouthdr_out = (AOUTHDR *)out;
 
-  H_PUT_16 (abfd, aouthdr_in->magic, aouthdr_out->magic);
-  H_PUT_16 (abfd, aouthdr_in->vstamp, aouthdr_out->vstamp);
-  PUT_AOUTHDR_TSIZE (abfd, aouthdr_in->tsize, aouthdr_out->tsize);
-  PUT_AOUTHDR_DSIZE (abfd, aouthdr_in->dsize, aouthdr_out->dsize);
-  PUT_AOUTHDR_BSIZE (abfd, aouthdr_in->bsize, aouthdr_out->bsize);
-  PUT_AOUTHDR_ENTRY (abfd, aouthdr_in->entry, aouthdr_out->entry);
-  PUT_AOUTHDR_TEXT_START (abfd, aouthdr_in->text_start,
-			  aouthdr_out->text_start);
+  H_PUT_16(abfd, (bfd_vma)aouthdr_in->magic, aouthdr_out->magic);
+  H_PUT_16(abfd, (bfd_vma)aouthdr_in->vstamp, aouthdr_out->vstamp);
+  PUT_AOUTHDR_TSIZE(abfd, aouthdr_in->tsize, aouthdr_out->tsize);
+  PUT_AOUTHDR_DSIZE(abfd, aouthdr_in->dsize, aouthdr_out->dsize);
+  PUT_AOUTHDR_BSIZE(abfd, aouthdr_in->bsize, aouthdr_out->bsize);
+  PUT_AOUTHDR_ENTRY(abfd, aouthdr_in->entry, aouthdr_out->entry);
+  PUT_AOUTHDR_TEXT_START(abfd, aouthdr_in->text_start,
+			 aouthdr_out->text_start);
   /* as previously, when being included from coff-ia64.c, AOUTHDR is defined
    * in coff/ia64.h, and there it only has member 'data_start'
    * when BFD64 is undefined: */
@@ -678,31 +678,31 @@ coff_swap_aouthdr_out (bfd * abfd, void * in, void * out)
 
 #ifdef RS6000COFF_C
 #ifdef XCOFF64
-  H_PUT_64 (abfd, aouthdr_in->o_toc, aouthdr_out->o_toc);
+  H_PUT_64(abfd, aouthdr_in->o_toc, aouthdr_out->o_toc);
 #else
-  H_PUT_32 (abfd, aouthdr_in->o_toc, aouthdr_out->o_toc);
+  H_PUT_32(abfd, aouthdr_in->o_toc, aouthdr_out->o_toc);
 #endif
-  H_PUT_16 (abfd, aouthdr_in->o_snentry, aouthdr_out->o_snentry);
-  H_PUT_16 (abfd, aouthdr_in->o_sntext, aouthdr_out->o_sntext);
-  H_PUT_16 (abfd, aouthdr_in->o_sndata, aouthdr_out->o_sndata);
-  H_PUT_16 (abfd, aouthdr_in->o_sntoc, aouthdr_out->o_sntoc);
-  H_PUT_16 (abfd, aouthdr_in->o_snloader, aouthdr_out->o_snloader);
-  H_PUT_16 (abfd, aouthdr_in->o_snbss, aouthdr_out->o_snbss);
-  H_PUT_16 (abfd, aouthdr_in->o_algntext, aouthdr_out->o_algntext);
-  H_PUT_16 (abfd, aouthdr_in->o_algndata, aouthdr_out->o_algndata);
-  H_PUT_16 (abfd, aouthdr_in->o_modtype, aouthdr_out->o_modtype);
-  H_PUT_16 (abfd, aouthdr_in->o_cputype, aouthdr_out->o_cputype);
+  H_PUT_16(abfd, (bfd_vma)aouthdr_in->o_snentry, aouthdr_out->o_snentry);
+  H_PUT_16(abfd, (bfd_vma)aouthdr_in->o_sntext, aouthdr_out->o_sntext);
+  H_PUT_16(abfd, (bfd_vma)aouthdr_in->o_sndata, aouthdr_out->o_sndata);
+  H_PUT_16(abfd, (bfd_vma)aouthdr_in->o_sntoc, aouthdr_out->o_sntoc);
+  H_PUT_16(abfd, (bfd_vma)aouthdr_in->o_snloader, aouthdr_out->o_snloader);
+  H_PUT_16(abfd, (bfd_vma)aouthdr_in->o_snbss, aouthdr_out->o_snbss);
+  H_PUT_16(abfd, (bfd_vma)aouthdr_in->o_algntext, aouthdr_out->o_algntext);
+  H_PUT_16(abfd, (bfd_vma)aouthdr_in->o_algndata, aouthdr_out->o_algndata);
+  H_PUT_16(abfd, (bfd_vma)aouthdr_in->o_modtype, aouthdr_out->o_modtype);
+  H_PUT_16(abfd, (bfd_vma)aouthdr_in->o_cputype, aouthdr_out->o_cputype);
 #ifdef XCOFF64
-  H_PUT_64 (abfd, aouthdr_in->o_maxstack, aouthdr_out->o_maxstack);
-  H_PUT_64 (abfd, aouthdr_in->o_maxdata, aouthdr_out->o_maxdata);
+  H_PUT_64(abfd, aouthdr_in->o_maxstack, aouthdr_out->o_maxstack);
+  H_PUT_64(abfd, aouthdr_in->o_maxdata, aouthdr_out->o_maxdata);
 #else
-  H_PUT_32 (abfd, aouthdr_in->o_maxstack, aouthdr_out->o_maxstack);
-  H_PUT_32 (abfd, aouthdr_in->o_maxdata, aouthdr_out->o_maxdata);
+  H_PUT_32(abfd, aouthdr_in->o_maxstack, aouthdr_out->o_maxstack);
+  H_PUT_32(abfd, aouthdr_in->o_maxdata, aouthdr_out->o_maxdata);
 #endif
-  memset (aouthdr_out->o_resv2, 0, sizeof aouthdr_out->o_resv2);
+  memset(aouthdr_out->o_resv2, 0, sizeof(aouthdr_out->o_resv2));
 #ifdef XCOFF64
-  memset (aouthdr_out->o_debugger, 0, sizeof aouthdr_out->o_debugger);
-  memset (aouthdr_out->o_resv3, 0, sizeof aouthdr_out->o_resv3);
+  memset(aouthdr_out->o_debugger, 0, sizeof(aouthdr_out->o_debugger));
+  memset(aouthdr_out->o_resv3, 0, sizeof(aouthdr_out->o_resv3));
 #endif
 #endif
 
@@ -776,7 +776,7 @@ coff_swap_scnhdr_out(bfd * abfd, void *inp, void *outp)
   PUT_SCNHDR_SCNPTR(abfd, scnhdr_int->s_scnptr, scnhdr_ext->s_scnptr);
   PUT_SCNHDR_RELPTR(abfd, scnhdr_int->s_relptr, scnhdr_ext->s_relptr);
   PUT_SCNHDR_LNNOPTR(abfd, scnhdr_int->s_lnnoptr, scnhdr_ext->s_lnnoptr);
-  PUT_SCNHDR_FLAGS(abfd, scnhdr_int->s_flags, scnhdr_ext->s_flags);
+  PUT_SCNHDR_FLAGS(abfd, (bfd_vma)scnhdr_int->s_flags, scnhdr_ext->s_flags);
 #if defined(M88)
   H_PUT_32(abfd, scnhdr_int->s_nlnno, scnhdr_ext->s_nlnno);
   H_PUT_32(abfd, scnhdr_int->s_nreloc, scnhdr_ext->s_nreloc);
@@ -793,7 +793,7 @@ coff_swap_scnhdr_out(bfd * abfd, void *inp, void *outp)
 	(_("%s: warning: %s: line number overflow: 0x%lx > 0xffff"),
 	 bfd_get_filename(abfd),
 	 buf, scnhdr_int->s_nlnno);
-      PUT_SCNHDR_NLNNO(abfd, 0xffff, scnhdr_ext->s_nlnno);
+      PUT_SCNHDR_NLNNO(abfd, (bfd_vma)0xffff, scnhdr_ext->s_nlnno);
     }
 
   if (scnhdr_int->s_nreloc <= MAX_SCNHDR_NRELOC)
@@ -808,7 +808,7 @@ coff_swap_scnhdr_out(bfd * abfd, void *inp, void *outp)
                             bfd_get_filename(abfd),
                             buf, scnhdr_int->s_nreloc);
       bfd_set_error(bfd_error_file_truncated);
-      PUT_SCNHDR_NRELOC(abfd, 0xffff, scnhdr_ext->s_nreloc);
+      PUT_SCNHDR_NRELOC(abfd, (bfd_vma)0xffff, scnhdr_ext->s_nreloc);
       ret = 0;
     }
 #endif /* M88 */

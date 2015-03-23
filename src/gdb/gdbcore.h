@@ -23,8 +23,10 @@
 
 /* Interface routines for core, executable, etc.  */
 
-#if !defined (GDBCORE_H)
+#if !defined(GDBCORE_H)
 #define GDBCORE_H 1
+
+#include "ansidecl.h"
 
 struct type;
 
@@ -49,8 +51,8 @@ extern int have_core_file_p (void);
    the get_frame_memory methods, code reading from an exec can use the
    target methods.  */
 
-extern int deprecated_read_memory_nobpt (CORE_ADDR memaddr, gdb_byte *myaddr,
-					 unsigned len);
+extern int deprecated_read_memory_nobpt(CORE_ADDR memaddr, gdb_byte *myaddr,
+                                        unsigned len) ATTRIBUTE_DEPRECATED;
 
 /* Report a memory error with error().  */
 
@@ -102,14 +104,15 @@ extern void generic_search (int len, char *data, char *mask,
 			    CORE_ADDR lorange, CORE_ADDR hirange,
 			    CORE_ADDR * addr_found, char *data_found);
 
-/* Hook for `exec_file_command' command to call.  */
-
-extern void (*deprecated_exec_file_display_hook) (char *filename);
+/* Hook for `exec_file_command' command to call: */
+extern void (*deprecated_exec_file_display_hook)(char *filename)
+  ATTRIBUTE_DEPRECATED;
 
 /* Hook for "file_command", which is more useful than above
    (because it is invoked AFTER symbols are read, not before).  */
 
-extern void (*deprecated_file_changed_hook) (char *filename);
+extern void (*deprecated_file_changed_hook)(char *filename)
+  ATTRIBUTE_DEPRECATED;
 
 extern void specify_exec_file_hook (void (*hook) (char *filename));
 
@@ -215,8 +218,11 @@ struct core_fns
 
 /* NOTE: cagney/2004-04-05: Replaced by "regset.h" and
    regset_from_core_section().  */
-extern void deprecated_add_core_fns (struct core_fns *cf);
-extern int default_core_sniffer (struct core_fns *cf, bfd * abfd);
-extern int default_check_format (bfd * abfd);
+extern void deprecated_add_core_fns(struct core_fns *cf)
+  ATTRIBUTE_DEPRECATED_FOR(regset_from_core_section);
+extern int default_core_sniffer(struct core_fns *cf, bfd * abfd);
+extern int default_check_format(bfd * abfd);
 
 #endif /* !defined (GDBCORE_H) */
+
+/* EOF */

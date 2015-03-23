@@ -182,6 +182,41 @@ AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
   AC_REQUIRE([AM_OUTPUT_DEPENDENCY_COMMANDS])dnl
   AC_REQUIRE([AM_MAKE_INCLUDE])dnl
   AC_REQUIRE([AM_DEP_TRACK])dnl
+
+  dnl######################################################################
+  dnl# Port to Automake 1.11.
+  dnl# This section can be removed once we assume Automake 1.14 or later.
+  #### check arg val for silent rules:
+  if test "x${enable_silent_rules}" = "xno"; then
+    : ${V=1}
+    : ${AM_DEFAULT_VERBOSITY=1}
+  elif test "x${enable_silent_rules}" = "xyes"; then
+    : ${V=0}
+    : ${AM_DEFAULT_VERBOSITY=0}
+  else
+    : ${V=0}
+    : ${AM_DEFAULT_VERBOSITY=1}
+  fi
+  : ${AM_DEFAULT_VERBOSITY=1}
+  : ${AM_V=${AM_DEFAULT_VERBOSITY}}
+  : ${AM_DEFAULT_V=${AM_DEFAULT_VERBOSITY}}
+  dnl# now subst:
+  AC_SUBST([V])dnl
+  AM_SUBST_NOTMAKE([V])dnl
+  AC_SUBST([AM_V])dnl
+  AM_SUBST_NOTMAKE([AM_V])dnl
+  AC_SUBST([AM_DEFAULT_V])dnl
+  AM_SUBST_NOTMAKE([AM_DEFAULT_V])dnl
+  AC_SUBST([AM_DEFAULT_VERBOSITY])dnl
+
+  dnl## from configmake prep:
+  dnl# Added in autoconf 2.70:
+  if test "x${runstatedir}" = "x"; then
+    AC_SUBST([runstatedir],['${localstatedir}/run'])
+  fi
+  dnl# Automake 1.9.6 only lacks pkglibexecdir; and since 1.11 merely
+  dnl# provides it without AC_SUBST, this blind use of AC_SUBST is safe.
+  AC_SUBST([pkglibexecdir],['${libexecdir}/${PACKAGE}'])dnl
 ])dnl
 AM_INIT_MY_AUTOMAKE_LITE
 
@@ -255,7 +290,7 @@ AC_PROG_MKDIR_P
 dnl# FIXME: actually check whether these are supported:
 AC_MSG_CHECKING([warning flags to use])
 if test "x${GCC}" = "xyes"; then
-  ac_libiberty_warn_cflags='-Wall -Wextra -pedantic -Wwrite-strings -Wc++-compat -Wstrict-prototypes -Wold-style-definition -Wundef'
+  ac_libiberty_warn_cflags='-Wall -Wextra -pedantic -Wwrite-strings -Wc++-compat -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition -Wundef'
 else
   ac_libiberty_warn_cflags=''
 fi
@@ -436,7 +471,7 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
 AC_REQUIRE_HEADER_STDC
 AC_HEADER_STAT
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
-AC_CHECK_HEADERS([alloca.h assert.h ctype.h fcntl.h float.h \
+AC_CHECK_HEADERS([alloca.h assert.h ctype.h fcntl.h float.h getopt.h \
   langinfo.h libgen.h libintl.h limits.h locale.h \
   locale/coll-lookup.h locale/elem-hash.h locale/localeinfo.h \
   locale/weight.h locale/weightwc.h \

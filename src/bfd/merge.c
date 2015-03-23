@@ -93,6 +93,9 @@ struct sec_merge_sec_info
   struct sec_merge_hash_entry *first_str;
   /* Original section content.  */
   unsigned char contents[1];
+  /* '-Wpadded': */
+  char padding1; /* should be 1 byte */
+  short padding2; /* should be 2 bytes */
 };
 
 

@@ -115,7 +115,7 @@ elf64_sparc_slurp_one_reloc_table(bfd *abfd, asection *asect,
 
       relent->addend = rela.r_addend;
 
-      r_type = ELF64_R_TYPE_ID(rela.r_info);
+      r_type = (unsigned int)ELF64_R_TYPE_ID(rela.r_info);
       if (r_type == R_SPARC_OLO10)
 	{
 	  relent->howto = _bfd_sparc_elf_info_to_howto_ptr(R_SPARC_LO10);
@@ -129,7 +129,7 @@ elf64_sparc_slurp_one_reloc_table(bfd *abfd, asection *asect,
 	relent->howto = _bfd_sparc_elf_info_to_howto_ptr(r_type);
     }
 
-  canon_reloc_count(asect) += (relent - relents);
+  canon_reloc_count(asect) += (unsigned int)(relent - relents);
 
   if (allocated != NULL)
     free (allocated);
@@ -145,10 +145,10 @@ elf64_sparc_slurp_one_reloc_table(bfd *abfd, asection *asect,
 /* Read in and swap the external relocs.  */
 
 static bfd_boolean
-elf64_sparc_slurp_reloc_table (bfd *abfd, asection *asect,
-			       asymbol **symbols, bfd_boolean dynamic)
+elf64_sparc_slurp_reloc_table(bfd *abfd, asection *asect,
+			      asymbol **symbols, bfd_boolean dynamic)
 {
-  struct bfd_elf_section_data * const d = elf_section_data (asect);
+  struct bfd_elf_section_data * const d = elf_section_data(asect);
   Elf_Internal_Shdr *rel_hdr;
   Elf_Internal_Shdr *rel_hdr2;
   bfd_size_type amt;
@@ -158,15 +158,15 @@ elf64_sparc_slurp_reloc_table (bfd *abfd, asection *asect,
 
   if (! dynamic)
     {
-      if ((asect->flags & SEC_RELOC) == 0
-	  || asect->reloc_count == 0)
+      if (((asect->flags & SEC_RELOC) == 0)
+	  || (asect->reloc_count == 0))
 	return TRUE;
 
       rel_hdr = &d->rel_hdr;
       rel_hdr2 = d->rel_hdr2;
 
-      BFD_ASSERT (asect->rel_filepos == rel_hdr->sh_offset
-		  || (rel_hdr2 && asect->rel_filepos == rel_hdr2->sh_offset));
+      BFD_ASSERT((asect->rel_filepos == rel_hdr->sh_offset)
+		 || (rel_hdr2 && (asect->rel_filepos == rel_hdr2->sh_offset)));
     }
   else
     {
@@ -178,27 +178,27 @@ elf64_sparc_slurp_reloc_table (bfd *abfd, asection *asect,
 	return TRUE;
 
       rel_hdr = &d->this_hdr;
-      asect->reloc_count = NUM_SHDR_ENTRIES (rel_hdr);
+      asect->reloc_count = (unsigned int)NUM_SHDR_ENTRIES(rel_hdr);
       rel_hdr2 = NULL;
     }
 
   amt = asect->reloc_count;
-  amt *= 2 * sizeof (arelent);
-  asect->relocation = (arelent *) bfd_alloc (abfd, amt);
+  amt *= (2UL * sizeof(arelent));
+  asect->relocation = (arelent *)bfd_alloc(abfd, amt);
   if (asect->relocation == NULL)
     return FALSE;
 
   /* The elf64_sparc_slurp_one_reloc_table routine increments
      canon_reloc_count.  */
-  canon_reloc_count (asect) = 0;
+  canon_reloc_count(asect) = 0;
 
-  if (!elf64_sparc_slurp_one_reloc_table (abfd, asect, rel_hdr, symbols,
-					  dynamic))
+  if (!elf64_sparc_slurp_one_reloc_table(abfd, asect, rel_hdr, symbols,
+					 dynamic))
     return FALSE;
 
   if (rel_hdr2
-      && !elf64_sparc_slurp_one_reloc_table (abfd, asect, rel_hdr2, symbols,
-					     dynamic))
+      && !elf64_sparc_slurp_one_reloc_table(abfd, asect, rel_hdr2, symbols,
+					    dynamic))
     return FALSE;
 
   return TRUE;
@@ -483,7 +483,7 @@ elf64_sparc_add_symbol_hook (bfd *abfd, struct bfd_link_info *info,
 		}
 
 	      p->name = (char *)bfd_hash_allocate(&info->hash->table,
-                                                  strlen(*namep) + 1);
+                                                  (unsigned int)(strlen(*namep) + 1U));
 	      if (!p->name)
 		return FALSE;
 
@@ -625,23 +625,23 @@ elf64_sparc_symbol_processing (bfd *abfd ATTRIBUTE_UNUSED, asymbol *asym)
    object file when linking.  */
 
 static bfd_boolean
-elf64_sparc_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
+elf64_sparc_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
   bfd_boolean error;
   flagword new_flags, old_flags;
   int new_mm, old_mm;
 
-  if (bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+  if ((bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
+      || (bfd_get_flavour(obfd) != bfd_target_elf_flavour))
     return TRUE;
 
-  new_flags = elf_elfheader (ibfd)->e_flags;
-  old_flags = elf_elfheader (obfd)->e_flags;
+  new_flags = (flagword)elf_elfheader(ibfd)->e_flags;
+  old_flags = (flagword)elf_elfheader(obfd)->e_flags;
 
-  if (!elf_flags_init (obfd))   /* First call, no flags set */
+  if (!elf_flags_init(obfd))   /* First call, no flags set */
     {
-      elf_flags_init (obfd) = TRUE;
-      elf_elfheader (obfd)->e_flags = new_flags;
+      elf_flags_init(obfd) = TRUE;
+      elf_elfheader(obfd)->e_flags = new_flags;
     }
 
   else if (new_flags == old_flags)      /* Compatible flags are ok */
@@ -730,33 +730,33 @@ elf64_sparc_fake_sections (bfd *abfd ATTRIBUTE_UNUSED,
 /* Print a STT_REGISTER symbol to file FILE.  */
 
 static const char *
-elf64_sparc_print_symbol_all (bfd *abfd ATTRIBUTE_UNUSED, PTR filep,
-			      asymbol *symbol)
+elf64_sparc_print_symbol_all(bfd *abfd ATTRIBUTE_UNUSED, PTR filep,
+			     asymbol *symbol)
 {
-  FILE *file = (FILE *) filep;
+  FILE *file = (FILE *)filep;
   int reg, type;
 
-  if (ELF_ST_TYPE (((elf_symbol_type *) symbol)->internal_elf_sym.st_info)
+  if (ELF_ST_TYPE(((elf_symbol_type *)symbol)->internal_elf_sym.st_info)
       != STT_REGISTER)
     return NULL;
 
-  reg = ((elf_symbol_type *) symbol)->internal_elf_sym.st_value;
+  reg = (int)((elf_symbol_type *)symbol)->internal_elf_sym.st_value;
   type = symbol->flags;
-  fprintf (file, "REG_%c%c%11s%c%c    R", "GOLI" [reg / 8], '0' + (reg & 7), "",
-		 ((type & BSF_LOCAL)
-		  ? (type & BSF_GLOBAL) ? '!' : 'l'
-	          : (type & BSF_GLOBAL) ? 'g' : ' '),
-	         (type & BSF_WEAK) ? 'w' : ' ');
-  if (symbol->name == NULL || symbol->name [0] == '\0')
+  fprintf(file, "REG_%c%c%11s%c%c    R", "GOLI" [reg / 8], '0' + (reg & 7),
+          "", ((type & BSF_LOCAL)
+               ? ((type & BSF_GLOBAL) ? '!' : 'l')
+               : ((type & BSF_GLOBAL) ? 'g' : ' ')),
+          ((type & BSF_WEAK) ? 'w' : ' '));
+  if ((symbol->name == NULL) || (symbol->name [0] == '\0'))
     return "#scratch";
   else
     return symbol->name;
 }
 
 static enum elf_reloc_type_class
-elf64_sparc_reloc_type_class (const Elf_Internal_Rela *rela)
+elf64_sparc_reloc_type_class(const Elf_Internal_Rela *rela)
 {
-  switch ((int) ELF64_R_TYPE (rela->r_info))
+  switch ((int)ELF64_R_TYPE(rela->r_info))
     {
     case R_SPARC_RELATIVE:
       return reloc_class_relative;
@@ -776,14 +776,14 @@ elf64_sparc_reloc_type_class (const Elf_Internal_Rela *rela)
 
 const struct elf_size_info elf64_sparc_size_info =
 {
-  sizeof (Elf64_External_Ehdr),
-  sizeof (Elf64_External_Phdr),
-  sizeof (Elf64_External_Shdr),
-  sizeof (Elf64_External_Rel),
-  sizeof (Elf64_External_Rela),
-  sizeof (Elf64_External_Sym),
-  sizeof (Elf64_External_Dyn),
-  sizeof (Elf_External_Note),
+  sizeof(Elf64_External_Ehdr),
+  sizeof(Elf64_External_Phdr),
+  sizeof(Elf64_External_Shdr),
+  sizeof(Elf64_External_Rel),
+  sizeof(Elf64_External_Rela),
+  sizeof(Elf64_External_Sym),
+  sizeof(Elf64_External_Dyn),
+  sizeof(Elf_External_Note),
   4,		/* hash-table entry size.  */
   /* Internal relocations per external relocations.
      For link purposes we use just 1 internal per

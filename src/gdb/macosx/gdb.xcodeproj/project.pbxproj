@@ -65,7 +65,7 @@
 		61D22089192D613F00FA979E /* coff-or32.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE8E0E82C407008125DE /* coff-or32.c */; };
 		61D2208A192D613F00FA979E /* coff-pmac.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE8F0E82C407008125DE /* coff-pmac.c */; };
 		61D2208B192D613F00FA979E /* coff-ppc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE900E82C407008125DE /* coff-ppc.c */; settings = {COMPILER_FLAGS = "-Wno-unused-function"; }; };
-		61D2208C192D613F00FA979E /* coff-rs6000.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE910E82C407008125DE /* coff-rs6000.c */; };
+		61D2208C192D613F00FA979E /* coff-rs6000.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE910E82C407008125DE /* coff-rs6000.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D2208D192D613F00FA979E /* coff-sh.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE920E82C407008125DE /* coff-sh.c */; };
 		61D2208E192D613F00FA979E /* coff-sparc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE930E82C407008125DE /* coff-sparc.c */; };
 		61D2208F192D613F00FA979E /* coff-stgo32.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE940E82C407008125DE /* coff-stgo32.c */; };
@@ -87,7 +87,7 @@
 		61D2209F192D613F00FA979E /* cpu-a29k.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEAB0E82C407008125DE /* cpu-a29k.c */; };
 		61D220A0192D613F00FA979E /* cpu-alpha.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEAC0E82C407008125DE /* cpu-alpha.c */; };
 		61D220A1192D613F00FA979E /* cpu-arc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEAD0E82C407008125DE /* cpu-arc.c */; };
-		61D220A2192D613F00FA979E /* cpu-arm.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEAE0E82C407008125DE /* cpu-arm.c */; };
+		61D220A2192D613F00FA979E /* cpu-arm.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEAE0E82C407008125DE /* cpu-arm.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D220A3192D613F00FA979E /* cpu-avr.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEAF0E82C407008125DE /* cpu-avr.c */; };
 		61D220A4192D613F00FA979E /* cpu-cr16c.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEB00E82C407008125DE /* cpu-cr16c.c */; };
 		61D220A5192D613F00FA979E /* cpu-cris.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEB10E82C407008125DE /* cpu-cris.c */; };
@@ -356,7 +356,7 @@
 		61D221B8192D61C300FA979E /* vms.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609D0040E82C408008125DE /* vms.c */; };
 		61D221B9192D61C300FA979E /* vms.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609D0050E82C408008125DE /* vms.h */; };
 		61D221BA192D61C300FA979E /* xcoff-target.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609D0070E82C408008125DE /* xcoff-target.h */; };
-		61D221BB192D61C300FA979E /* xcofflink.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609D0080E82C408008125DE /* xcofflink.c */; };
+		61D221BB192D61C300FA979E /* xcofflink.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609D0080E82C408008125DE /* xcofflink.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D221BC192D61C300FA979E /* xsym.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609D0090E82C408008125DE /* xsym.c */; };
 		61D221BD192D61C300FA979E /* xsym.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609D00A0E82C408008125DE /* xsym.h */; };
 		61D221BE192D61C300FA979E /* xtensa-isa.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609D00B0E82C408008125DE /* xtensa-isa.c */; };
@@ -4318,6 +4318,8 @@
 		A5924B5B1ABB368F00050903 /* tilegx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tilegx.h; path = "/Users/ericgallager/apple-gdb-1824/src/include/opcode/tilegx.h"; sourceTree = "<absolute>"; };
 		A5924B5C1ABB368F00050903 /* tilepro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tilepro.h; path = "/Users/ericgallager/apple-gdb-1824/src/include/opcode/tilepro.h"; sourceTree = "<absolute>"; };
 		A5924B5D1ABB369500050903 /* xgate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xgate.h; path = "/Users/ericgallager/apple-gdb-1824/src/include/opcode/xgate.h"; sourceTree = "<absolute>"; };
+		A5924F601ABFA13200050903 /* coff-x86_64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "coff-x86_64.c"; path = "/Users/ericgallager/apple-gdb-1824/src/bfd/coff-x86_64.c"; sourceTree = "<absolute>"; };
+		A5924F7D1ABFAB8E00050903 /* cpu-plugin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "cpu-plugin.c"; path = "/Users/ericgallager/apple-gdb-1824/src/bfd/cpu-plugin.c"; sourceTree = "<absolute>"; };
 		A5965978198732D100404B03 /* djcheck.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = djcheck.sh; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/djgpp/djcheck.sh"; sourceTree = "<absolute>"; };
 		A5965979198732D100404B03 /* djconfig.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = djconfig.sh; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/djgpp/djconfig.sh"; sourceTree = "<absolute>"; };
 		A596597B198732D100404B03 /* langinfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = langinfo.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/djgpp/langinfo.h"; sourceTree = "<absolute>"; };
@@ -4988,6 +4990,8 @@
 		A5AFD2051A58B6DD006C21FE /* CodeFragmentTypes.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; name = CodeFragmentTypes.r; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/CodeFragmentTypes.r"; sourceTree = "<absolute>"; };
 		A5AFD2061A58B6F1006C21FE /* c-exp.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; name = "c-exp.y"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/c-exp.y"; sourceTree = "<absolute>"; };
 		A5C4A6571A7A950900DBC833 /* cli-logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "cli-logging.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/cli/cli-logging.h"; sourceTree = "<absolute>"; };
+		A5CA6A8D1AC081B100716574 /* libiberty_deprecated.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libiberty_deprecated.h; path = "/Users/ericgallager/apple-gdb-1824/src/include/libiberty_deprecated.h"; sourceTree = "<absolute>"; };
+		A5CA6A8E1AC088E100716574 /* memmem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = memmem.c; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/memmem.c"; sourceTree = "<absolute>"; };
 		A5FE698F1A9E935D005583F9 /* macosx-nat-info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "macosx-nat-info.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/macosx/macosx-nat-info.h"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
@@ -5126,6 +5130,7 @@
 				2609CE9A0E82C407008125DE /* coff-u68k.c */,
 				2609CE9B0E82C407008125DE /* coff-w65.c */,
 				2609CE9C0E82C407008125DE /* coff-we32k.c */,
+				A5924F601ABFA13200050903 /* coff-x86_64.c */,
 				2609CE9D0E82C407008125DE /* coff-z8k.c */,
 				2609CE9E0E82C407008125DE /* coff64-rs6000.c */,
 				2609CE9F0E82C407008125DE /* coffcode.h */,
@@ -5176,6 +5181,7 @@
 				2609CED30E82C407008125DE /* cpu-or32.c */,
 				2609CED40E82C407008125DE /* cpu-pdp11.c */,
 				2609CED50E82C407008125DE /* cpu-pj.c */,
+				A5924F7D1ABFAB8E00050903 /* cpu-plugin.c */,
 				2609CED60E82C407008125DE /* cpu-powerpc.c */,
 				2609CED70E82C407008125DE /* cpu-rs6000.c */,
 				2609CED80E82C407008125DE /* cpu-s390.c */,
@@ -7676,6 +7682,7 @@
 				2609DD7E0E82C410008125DE /* ieee.h */,
 				A5924B171ABB34AB00050903 /* leb128.h */,
 				2609DD7F0E82C410008125DE /* libiberty.h */,
+				A5CA6A8D1AC081B100716574 /* libiberty_deprecated.h */,
 				A5924B181ABB34C100050903 /* longlong.h */,
 				A5924B191ABB34C100050903 /* lto-symtab.h */,
 				2609DD810E82C410008125DE /* md5.h */,
@@ -8067,6 +8074,7 @@
 				2609DE2D0E82C411008125DE /* memchr.c */,
 				2609DE2E0E82C411008125DE /* memcmp.c */,
 				2609DE2F0E82C411008125DE /* memcpy.c */,
+				A5CA6A8E1AC088E100716574 /* memmem.c */,
 				2609DE300E82C411008125DE /* memmove.c */,
 				2609DE310E82C411008125DE /* mempcpy.c */,
 				2609DE320E82C411008125DE /* memset.c */,

@@ -45,16 +45,20 @@
 
 #define ELF_DYNAMIC_INTERPRETER "/usr/lib/libc.so.1"
 
-/* The nop opcode we use.  */
-
-#define M32R_NOP 0x7000f000
+/* The nop opcode we use: */
+#ifndef M32R_NOP
+# define M32R_NOP 0x7000f000
+#endif /* !M32R_NOP */
 
 #define PLT_EMPTY   0x10101010  /* RIE  -> RIE */
 
-/* The size in bytes of an entry in the procedure linkage table.  */
-
-#define PLT_ENTRY_SIZE 20
-#define PLT_HEADER_SIZE 20
+/* The size in bytes of an entry in the procedure linkage table: */
+#ifndef PLT_ENTRY_SIZE
+# define PLT_ENTRY_SIZE 20
+#endif /* !PLT_ENTRY_SIZE */
+#ifndef PLT_HEADER_SIZE
+# define PLT_HEADER_SIZE 20
+#endif /* !PLT_HEADER_SIZE */
 
 /* The first one entries in a procedure linkage table are reserved,
    and the initial contents are unimportant (we zero them out).
@@ -4168,3 +4172,14 @@ m32r_elf_reloc_type_class (const Elf_Internal_Rela *rela)
 
 #include "elf32-target.h"
 
+#ifdef M32R_NOP
+# undef M32R_NOP
+#endif /* M32R_NOP */
+#ifdef PLT_ENTRY_SIZE
+# undef PLT_ENTRY_SIZE
+#endif /* PLT_ENTRY_SIZE */
+#ifdef PLT_HEADER_SIZE
+# undef PLT_HEADER_SIZE
+#endif /* PLT_HEADER_SIZE */
+
+/* EOF */

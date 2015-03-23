@@ -35,24 +35,25 @@ rename(from, to)
 }
 
 /*
- * Might not need these. Leave them out for now.
- *
-#include <string.h>
-#define index(s,c)		strchr(s,c)
-#define rindex(s,c)		strrchr(s,c)
+ * Might not need these; ifdef them out for now:
+ */
+#ifdef ALLOW_UNNEEDED
+# include <string.h>
+# define index(s,c)		strchr(s,c)
+# define rindex(s,c)	strrchr(s,c)
 
-#ifdef SEEK_SET
+# ifdef SEEK_SET
 #	ifndef L_SET
 #		define L_SET SEEK_SET
-#	endif
-# endif
+#	endif /* !L_SET */
+# endif /* SEEK_SET */
 
-#ifdef SEEK_CUR
+# ifdef SEEK_CUR
 #	ifndef L_INCR
 #		define L_INCR SEEK_CUR
-#	endif
-# endif
- */
+#	endif /* !L_INCR */
+# endif /* SEEK_CUR */
+#endif /* ALLOW_UNNEEDED */
 
 /* EXACT TYPES */
 typedef char int8e_type;
@@ -69,4 +70,6 @@ typedef short int16_type;
 typedef unsigned short uint16_type;
 typedef int int32_type;
 typedef unsigned int uint32_type;
+
+/* EOF */
 

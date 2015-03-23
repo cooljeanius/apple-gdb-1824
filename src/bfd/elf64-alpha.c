@@ -48,8 +48,7 @@
 #include "ecoffswap.h"
 
 
-/* Instruction data for plt generation and relaxation.  */
-
+/* Instruction data for plt generation and relaxation: */
 #define OP_LDA		0x08
 #define OP_LDAH		0x09
 #define OP_LDQ		0x29
@@ -71,7 +70,9 @@
 #define INSN_JMP	0x68000000
 #define INSN_JSR_MASK	0xfc00c000
 
-#define INSN_A(I,A)		(I | (A << 21))
+#ifndef INSN_A
+# define INSN_A(I,A)		(I | (A << 21))
+#endif /* !INSN_A */
 #define INSN_AB(I,A,B)		(I | (A << 21) | (B << 16))
 #define INSN_ABC(I,A,B,C)	(I | (A << 21) | (B << 16) | C)
 #define INSN_ABO(I,A,B,O)	(I | (A << 21) | (B << 16) | ((O) & 0xffff))
@@ -1804,13 +1805,13 @@ elf64_alpha_check_relocs (bfd *abfd, struct bfd_link_info *info,
 
       need = 0;
       gotent_flags = 0;
-      r_type = ELF64_R_TYPE (rel->r_info);
+      r_type = ELF64_R_TYPE(rel->r_info);
       addend = rel->r_addend;
 
       switch (r_type)
 	{
 	case R_ALPHA_LITERAL:
-	  need = NEED_GOT | NEED_GOT_ENTRY;
+	  need = (NEED_GOT | NEED_GOT_ENTRY);
 
 	  /* Remember how this literal is used from its LITUSEs.
 	     This will be important when it comes to decide if we can
@@ -1866,7 +1867,11 @@ elf64_alpha_check_relocs (bfd *abfd, struct bfd_link_info *info,
 	  if (info->shared)
 	    info->flags |= DF_STATIC_TLS;
 	  break;
+
+        default:
+          break;
 	}
+      /* end switch on 'r_type' */
 
       if (need & NEED_GOT)
 	{
@@ -3781,15 +3786,15 @@ elf64_alpha_relax_section (bfd *abfd, asection *sec,
 	  /* If there exist LITUSE relocations immediately following, this
 	     opens up all sorts of interesting optimizations, because we
 	     now know every location that this address load is used.  */
-	  if (irel+1 < irelend
-	      && ELF64_R_TYPE (irel[1].r_info) == R_ALPHA_LITUSE)
+	  if (((irel + 1) < irelend)
+	      && (ELF64_R_TYPE(irel[1].r_info) == R_ALPHA_LITUSE))
 	    {
-	      if (!elf64_alpha_relax_with_lituse (&info, symval, irel))
+	      if (!elf64_alpha_relax_with_lituse(&info, symval, irel))
 		goto error_return;
 	    }
 	  else
 	    {
-	      if (!elf64_alpha_relax_got_load (&info, symval, irel, r_type))
+	      if (!elf64_alpha_relax_got_load(&info, symval, irel, r_type))
 		goto error_return;
 	    }
 	  break;
@@ -3797,18 +3802,22 @@ elf64_alpha_relax_section (bfd *abfd, asection *sec,
 	case R_ALPHA_GOTDTPREL:
 	case R_ALPHA_GOTTPREL:
 	  BFD_ASSERT(info.gotent != NULL);
-	  if (!elf64_alpha_relax_got_load (&info, symval, irel, r_type))
+	  if (!elf64_alpha_relax_got_load(&info, symval, irel, r_type))
 	    goto error_return;
 	  break;
 
 	case R_ALPHA_TLSGD:
 	case R_ALPHA_TLSLDM:
 	  BFD_ASSERT(info.gotent != NULL);
-	  if (!elf64_alpha_relax_tls_get_addr (&info, symval, irel,
-					       r_type == R_ALPHA_TLSGD))
+	  if (!elf64_alpha_relax_tls_get_addr(&info, symval, irel,
+					      r_type == R_ALPHA_TLSGD))
 	    goto error_return;
 	  break;
+
+        default:
+          break;
 	}
+      /* end switch on 'r_type' */
     }
 
   if (!elf64_alpha_size_plt_section (link_info))
@@ -4781,21 +4790,20 @@ elf64_alpha_finish_dynamic_sections (bfd *output_bfd,
 	{
 	  Elf_Internal_Dyn dyn;
 
-	  bfd_elf64_swap_dyn_in (dynobj, dyncon, &dyn);
+	  bfd_elf64_swap_dyn_in(dynobj, dyncon, &dyn);
 
 	  switch (dyn.d_tag)
 	    {
 	    case DT_PLTGOT:
-	      dyn.d_un.d_ptr
-		= elf64_alpha_use_secureplt ? gotplt_vma : plt_vma;
+	      dyn.d_un.d_ptr =
+                (elf64_alpha_use_secureplt ? gotplt_vma : plt_vma);
 	      break;
 	    case DT_PLTRELSZ:
-	      dyn.d_un.d_val = srelaplt ? srelaplt->size : 0;
+	      dyn.d_un.d_val = (srelaplt ? srelaplt->size : 0);
 	      break;
 	    case DT_JMPREL:
-	      dyn.d_un.d_ptr = srelaplt ? srelaplt->vma : 0;
+	      dyn.d_un.d_ptr = (srelaplt ? srelaplt->vma : 0);
 	      break;
-
 	    case DT_RELASZ:
 	      /* My interpretation of the TIS v1.1 ELF document indicates
 		 that RELASZ should not include JMPREL.  This is not what
@@ -4805,6 +4813,8 @@ elf64_alpha_finish_dynamic_sections (bfd *output_bfd,
 	      if (srelaplt)
 		dyn.d_un.d_val -= srelaplt->size;
 	      break;
+            default:
+              break;
 	    }
 
 	  bfd_elf64_swap_dyn_out (output_bfd, &dyn, dyncon);
@@ -5339,15 +5349,21 @@ elf64_alpha_fbsd_post_process_headers (bfd * abfd,
   i_ehdrp->e_ident[EI_OSABI] = ELFOSABI_FREEBSD;
 #ifdef OLD_FREEBSD_ABI_LABEL
   /* The ABI label supported by FreeBSD <= 4.0 is quite nonstandard.  */
-  memcpy (&i_ehdrp->e_ident[EI_ABIVERSION], "FreeBSD", 8);
-#endif
+  memcpy(&i_ehdrp->e_ident[EI_ABIVERSION], "FreeBSD", 8);
+#endif /* OLD_FREEBSD_ABI_LABEL */
 }
 
 #undef elf_backend_post_process_headers
 #define elf_backend_post_process_headers \
   elf64_alpha_fbsd_post_process_headers
 
-#undef  elf64_bed
+#undef elf64_bed
 #define elf64_bed elf64_alpha_fbsd_bed
 
 #include "elf64-target.h"
+
+#ifdef INSN_A
+# undef INSN_A
+#endif /* INSN_A */
+
+/* EOF */

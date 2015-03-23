@@ -261,7 +261,7 @@ So instead we use the macro below and test it against specific values.  */
 /* Attribute __malloc__ on functions was valid as of gcc 2.96. */
 #ifndef ATTRIBUTE_MALLOC
 # if (GCC_VERSION >= 2096)
-#  define ATTRIBUTE_MALLOC __attribute__ ((__malloc__))
+#  define ATTRIBUTE_MALLOC __attribute__((__malloc__))
 # else
 #  define ATTRIBUTE_MALLOC
 # endif /* GNUC >= 2.96 */
@@ -285,12 +285,34 @@ So instead we use the macro below and test it against specific values.  */
 # endif /* !__cplusplus */
 #endif /* !ATTRIBUTE_UNUSED_LABEL */
 
+/* FIXME: verify the gcc versions in which this is available: */
+#ifndef ATTRIBUTE_DEPRECATED
+# if GCC_VERSION >= 3002
+#  define ATTRIBUTE_DEPRECATED __attribute__((__deprecated__))
+# else
+#  define ATTRIBUTE_DEPRECATED
+# endif /* gcc 3.2+ */
+#endif /* ATTRIBUTE_DEPRECATED */
+
+/* This part is based on <glib-2.0/glib/gmacros.h>: */
+#ifndef ATTRIBUTE_DEPRECATED_FOR
+# if GCC_VERSION >= 4005
+#  define ATTRIBUTE_DEPRECATED_FOR(f) __attribute__((__deprecated__("Use '" #f "' instead")))
+# else
+#  if defined(_MSC_FULL_VER) && (_MSC_FULL_VER > 140050320)
+#   define ATTRIBUTE_DEPRECATED_FOR(f) __declspec(deprecated("is deprecated. Use '" #f "' instead"))
+#  else
+#   define ATTRIBUTE_DEPRECATED_FOR(f) ATTRIBUTE_DEPRECATED
+#  endif /* MSVC */
+# endif /* gcc 4.5+ */
+#endif /* ATTRIBUTE_DEPRECATED_FOR */
+
 /* Similarly to ARG_UNUSED below.  Prior to GCC 3.4, the C++ frontend
    could NOT parse attributes placed after the identifier name, and now
    the entire compiler is built with C++.  */
 #ifndef ATTRIBUTE_UNUSED
 # if GCC_VERSION >= 3004
-#  define ATTRIBUTE_UNUSED __attribute__ ((__unused__))
+#  define ATTRIBUTE_UNUSED __attribute__((__unused__))
 # else
 #  define ATTRIBUTE_UNUSED
 # endif /* gcc 3.4+ */
@@ -305,13 +327,13 @@ So instead we use the macro below and test it against specific values.  */
 #endif /* !__cplusplus || GNUC >= 3.4 */
 
 #ifndef ATTRIBUTE_NORETURN
-# define ATTRIBUTE_NORETURN __attribute__ ((__noreturn__))
+# define ATTRIBUTE_NORETURN __attribute__((__noreturn__))
 #endif /* ATTRIBUTE_NORETURN */
 
 /* Attribute `nonnull' was valid as of gcc 3.3.  */
 #ifndef ATTRIBUTE_NONNULL
 # if (GCC_VERSION >= 3003)
-#  define ATTRIBUTE_NONNULL(m) __attribute__ ((__nonnull__ (m)))
+#  define ATTRIBUTE_NONNULL(m) __attribute__((__nonnull__(m)))
 # else
 #  define ATTRIBUTE_NONNULL(m)
 # endif /* GNUC >= 3.3 */
@@ -320,7 +342,7 @@ So instead we use the macro below and test it against specific values.  */
 /* Attribute `pure' was valid as of gcc 3.0.  */
 #ifndef ATTRIBUTE_PURE
 # if (GCC_VERSION >= 3000)
-#  define ATTRIBUTE_PURE __attribute__ ((__pure__))
+#  define ATTRIBUTE_PURE __attribute__((__pure__))
 # else
 #  define ATTRIBUTE_PURE
 # endif /* GNUC >= 3.0 */
@@ -331,7 +353,7 @@ So instead we use the macro below and test it against specific values.  */
    before GCC 3.3, but as of 3.3 we need to add the `nonnull'
    attribute to retain this behavior.  */
 #ifndef ATTRIBUTE_PRINTF
-#define ATTRIBUTE_PRINTF(m, n) __attribute__ ((__format__ (__printf__, m, n))) ATTRIBUTE_NONNULL(m)
+#define ATTRIBUTE_PRINTF(m, n) __attribute__((__format__(__printf__, m, n))) ATTRIBUTE_NONNULL(m)
 #define ATTRIBUTE_PRINTF_1 ATTRIBUTE_PRINTF(1, 2)
 #define ATTRIBUTE_PRINTF_2 ATTRIBUTE_PRINTF(2, 3)
 #define ATTRIBUTE_PRINTF_3 ATTRIBUTE_PRINTF(3, 4)
@@ -359,7 +381,7 @@ So instead we use the macro below and test it against specific values.  */
    NULL format specifier was allowed as of gcc 3.3.  */
 #ifndef ATTRIBUTE_NULL_PRINTF
 # if (GCC_VERSION >= 3003)
-#  define ATTRIBUTE_NULL_PRINTF(m, n) __attribute__ ((__format__ (__printf__, m, n)))
+#  define ATTRIBUTE_NULL_PRINTF(m, n) __attribute__((__format__(__printf__, m, n)))
 # else
 #  define ATTRIBUTE_NULL_PRINTF(m, n)
 # endif /* GNUC >= 3.3 */
@@ -373,7 +395,7 @@ So instead we use the macro below and test it against specific values.  */
 /* Attribute `sentinel' was valid as of gcc 3.5.  */
 #ifndef ATTRIBUTE_SENTINEL
 # if (GCC_VERSION >= 3005)
-#  define ATTRIBUTE_SENTINEL __attribute__ ((__sentinel__))
+#  define ATTRIBUTE_SENTINEL __attribute__((__sentinel__))
 # else
 #  define ATTRIBUTE_SENTINEL
 # endif /* GNUC >= 3.5 */
@@ -382,7 +404,7 @@ So instead we use the macro below and test it against specific values.  */
 
 #ifndef ATTRIBUTE_ALIGNED_ALIGNOF
 # if (GCC_VERSION >= 3000)
-#  define ATTRIBUTE_ALIGNED_ALIGNOF(m) __attribute__ ((__aligned__ (__alignof__ (m))))
+#  define ATTRIBUTE_ALIGNED_ALIGNOF(m) __attribute__((__aligned__(__alignof__(m))))
 # else
 #  define ATTRIBUTE_ALIGNED_ALIGNOF(m)
 # endif /* GNUC >= 3.0 */
@@ -391,20 +413,20 @@ So instead we use the macro below and test it against specific values.  */
 /* Useful for structures whose layout must much some binary specification
    regardless of the alignment and padding qualities of the compiler.  */
 #ifndef ATTRIBUTE_PACKED
-# define ATTRIBUTE_PACKED __attribute__ ((packed))
-#endif
+# define ATTRIBUTE_PACKED __attribute__((packed))
+#endif /* ATTRIBUTE_PACKED */
 
   /* Attribute `hot' and `cold' was valid as of gcc 4.3.  */
 #ifndef ATTRIBUTE_COLD
 # if (GCC_VERSION >= 4003)
-#  define ATTRIBUTE_COLD __attribute__ ((__cold__))
+#  define ATTRIBUTE_COLD __attribute__((__cold__))
 # else
 #  define ATTRIBUTE_COLD
 # endif /* GNUC >= 4.3 */
 #endif /* ATTRIBUTE_COLD */
 #ifndef ATTRIBUTE_HOT
 # if (GCC_VERSION >= 4003)
-#  define ATTRIBUTE_HOT __attribute__ ((__hot__))
+#  define ATTRIBUTE_HOT __attribute__((__hot__))
 # else
 #  define ATTRIBUTE_HOT
 # endif /* GNUC >= 4.3 */

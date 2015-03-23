@@ -38,6 +38,7 @@
 #ifndef GDB_EVENTS_H
 #define GDB_EVENTS_H
 
+#include "ansidecl.h"
 
 /* COMPAT: pointer variables for old, unconverted events.
    A call to set_gdb_events() will automatically update these. */
@@ -85,14 +86,15 @@ extern void tracepoint_delete_event (int number);
 extern void tracepoint_modify_event (int number);
 extern void architecture_changed_event (void);
 
-/* Install custom gdb-events hooks.  */
-extern struct gdb_events *deprecated_set_gdb_event_hooks (struct gdb_events *vector);
+/* Install custom gdb-events hooks: */
+extern struct gdb_events *deprecated_set_gdb_event_hooks(struct gdb_events *vector)
+  ATTRIBUTE_DEPRECATED;
 
-/* Deliver any pending events.  */
-extern void gdb_events_deliver (struct gdb_events *vector);
+/* Deliver any pending events: */
+extern void gdb_events_deliver(struct gdb_events *vector);
 
-/* Clear event handlers.  */
-extern void clear_gdb_event_hooks (void);
+/* Clear event handlers: */
+extern void clear_gdb_event_hooks(void);
 
 #endif /* !GDB_EVENTS_H */
 

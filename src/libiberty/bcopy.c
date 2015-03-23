@@ -9,10 +9,12 @@ Copies @var{length} bytes from memory region @var{in} to region
 
 */
 
+#include "libiberty_deprecated.h"
+
 #include <stddef.h>
 
 void
-bcopy (const void *src, void *dest, size_t len)
+bcopy(const void *src, void *dest, size_t len)
 {
   if (dest < src)
     {
@@ -29,3 +31,5 @@ bcopy (const void *src, void *dest, size_t len)
         *lastd-- = *lasts--;
     }
 }
+
+/* EOF */

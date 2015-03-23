@@ -2938,3 +2938,9 @@ mmix_elf_relax_section (abfd, sec, link_info, again)
 #define bfd_elf64_bfd_relax_section	mmix_elf_relax_section
 
 #include "elf64-target.h"
+
+#ifdef FATAL_DEBUG
+# undef FATAL_DEBUG
+#endif /* FATAL_DEBUG */
+
+/* EOF */

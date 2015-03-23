@@ -190,14 +190,13 @@ static const struct mn10200_reloc_map mn10200_reloc_map[] = {
 };
 
 static reloc_howto_type *
-bfd_elf32_bfd_reloc_type_lookup (abfd, code)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+bfd_elf32_bfd_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                                bfd_reloc_code_real_type code)
 {
   unsigned int i;
 
-  for (i = 0;
-       i < sizeof (mn10200_reloc_map) / sizeof (struct mn10200_reloc_map);
+  for (i = 0U;
+       i < (sizeof(mn10200_reloc_map) / sizeof(struct mn10200_reloc_map));
        i++)
     {
       if (mn10200_reloc_map[i].bfd_reloc_val == code)
@@ -207,27 +206,23 @@ bfd_elf32_bfd_reloc_type_lookup (abfd, code)
   return NULL;
 }
 
-/* Set the howto pointer for an MN10200 ELF reloc.  */
-
+/* Set the howto pointer for an MN10200 ELF reloc: */
 static void
-mn10200_info_to_howto (abfd, cache_ptr, dst)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *cache_ptr;
-     Elf_Internal_Rela *dst;
+mn10200_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+                      Elf_Internal_Rela *dst)
 {
   unsigned int r_type;
 
-  r_type = ELF32_R_TYPE (dst->r_info);
-  BFD_ASSERT (r_type < (unsigned int) R_MN10200_MAX);
+  r_type = ELF32_R_TYPE(dst->r_info);
+  BFD_ASSERT(r_type < (unsigned int)R_MN10200_MAX);
   cache_ptr->howto = &elf_mn10200_howto_table[r_type];
 }
 
-/* Perform a relocation as part of a final link.  */
-
+/* Perform a relocation as part of a final link: */
 static bfd_reloc_status_type
-mn10200_elf_final_link_relocate (howto, input_bfd, output_bfd,
-				 input_section, contents, offset, value,
-				 addend, info, sym_sec, is_local)
+mn10200_elf_final_link_relocate(howto, input_bfd, output_bfd,
+                                input_section, contents, offset, value,
+                                addend, info, sym_sec, is_local)
      reloc_howto_type *howto;
      bfd *input_bfd;
      bfd *output_bfd ATTRIBUTE_UNUSED;
@@ -328,8 +323,8 @@ mn10200_elf_final_link_relocate (howto, input_bfd, output_bfd,
 
 /* Relocate an MN10200 ELF section.  */
 static bfd_boolean
-mn10200_elf_relocate_section (output_bfd, info, input_bfd, input_section,
-			      contents, relocs, local_syms, local_sections)
+mn10200_elf_relocate_section(output_bfd, info, input_bfd, input_section,
+			     contents, relocs, local_syms, local_sections)
      bfd *output_bfd;
      struct bfd_link_info *info;
      bfd *input_bfd;
@@ -346,8 +341,8 @@ mn10200_elf_relocate_section (output_bfd, info, input_bfd, input_section,
   if (info->relocatable)
     return TRUE;
 
-  symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (input_bfd);
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(input_bfd);
 
   rel = relocs;
   relend = relocs + input_section->reloc_count;
@@ -482,11 +477,9 @@ mn10200_elf_relocate_section (output_bfd, info, input_bfd, input_section,
 	and somewhat more difficult to support.  */
 
 static bfd_boolean
-mn10200_elf_relax_section (abfd, sec, link_info, again)
-     bfd *abfd;
-     asection *sec;
-     struct bfd_link_info *link_info;
-     bfd_boolean *again;
+mn10200_elf_relax_section(bfd *abfd, asection *sec,
+                          struct bfd_link_info *link_info,
+                          bfd_boolean *again)
 {
   Elf_Internal_Shdr *symtab_hdr;
   Elf_Internal_Rela *internal_relocs;
@@ -494,7 +487,7 @@ mn10200_elf_relax_section (abfd, sec, link_info, again)
   bfd_byte *contents = NULL;
   Elf_Internal_Sym *isymbuf = NULL;
 
-  /* Assume nothing changes.  */
+  /* Assume nothing changes: */
   *again = FALSE;
 
   /* We don't have to do anything for a relocatable link, if
@@ -1159,14 +1152,10 @@ mn10200_elf_relax_section (abfd, sec, link_info, again)
   return FALSE;
 }
 
-/* Delete some bytes from a section while relaxing.  */
-
+/* Delete some bytes from a section while relaxing: */
 static bfd_boolean
-mn10200_elf_relax_delete_bytes (abfd, sec, addr, count)
-     bfd *abfd;
-     asection *sec;
-     bfd_vma addr;
-     int count;
+mn10200_elf_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr,
+                               int count)
 {
   Elf_Internal_Shdr *symtab_hdr;
   unsigned int sec_shndx;
@@ -1242,11 +1231,8 @@ mn10200_elf_relax_delete_bytes (abfd, sec, addr, count)
 /* Return TRUE if a symbol exists at the given address, else return
    FALSE.  */
 static bfd_boolean
-mn10200_elf_symbol_address_p (abfd, sec, isym, addr)
-     bfd *abfd;
-     asection *sec;
-     Elf_Internal_Sym *isym;
-     bfd_vma addr;
+mn10200_elf_symbol_address_p(bfd *abfd, asection *sec,
+                             Elf_Internal_Sym *isym, bfd_vma addr)
 {
   Elf_Internal_Shdr *symtab_hdr;
   unsigned int sec_shndx;
@@ -1255,7 +1241,7 @@ mn10200_elf_symbol_address_p (abfd, sec, isym, addr)
   struct elf_link_hash_entry **end_hashes;
   unsigned int symcount;
 
-  sec_shndx = _bfd_elf_section_from_bfd_section (abfd, sec);
+  sec_shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
 
   /* Examine all the local symbols.  */
   symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
@@ -1287,8 +1273,8 @@ mn10200_elf_symbol_address_p (abfd, sec, isym, addr)
    which uses mn10200_elf_relocate_section.  */
 
 static bfd_byte *
-mn10200_elf_get_relocated_section_contents (output_bfd, link_info, link_order,
-					    data, relocatable, symbols)
+mn10200_elf_get_relocated_section_contents(output_bfd, link_info, link_order,
+					   data, relocatable, symbols)
      bfd *output_bfd;
      struct bfd_link_info *link_info;
      struct bfd_link_order *link_order;

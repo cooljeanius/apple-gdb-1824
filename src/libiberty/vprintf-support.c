@@ -34,10 +34,12 @@ Floor, Boston, MA 02110-1301, USA.  */
 # include <stdlib.h>
 #else
 # if !defined(PROTOTYPES) && !defined(__PROTOTYPES)
-extern unsigned long strtoul ();
+extern unsigned long strtoul();
 # endif /* !PROTOTYPES && !__PROTOTYPES */
 #endif /* HAVE_STDLIB_H || STDC_HEADERS */
 #include "libiberty.h"
+
+#include "vprintf-support.h"
 
 int
 libiberty_vprintf_buffer_size(const char *format, va_list args)

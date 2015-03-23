@@ -249,8 +249,8 @@ static reloc_howto_type fr30_elf_howto_table [] =
 /* Utility to actually perform an R_FR30_20 reloc.  */
 
 static bfd_reloc_status_type
-fr30_elf_i20_reloc (abfd, reloc_entry, symbol, data,
-		    input_section, output_bfd, error_message)
+fr30_elf_i20_reloc(abfd, reloc_entry, symbol, data,
+		   input_section, output_bfd, error_message)
      bfd *abfd;
      arelent *reloc_entry;
      asymbol *symbol;
@@ -295,8 +295,8 @@ fr30_elf_i20_reloc (abfd, reloc_entry, symbol, data,
 /* Utility to actually perform a R_FR30_48 reloc.  */
 
 static bfd_reloc_status_type
-fr30_elf_i32_reloc (abfd, reloc_entry, symbol, data,
-		    input_section, output_bfd, error_message)
+fr30_elf_i32_reloc(abfd, reloc_entry, symbol, data,
+		   input_section, output_bfd, error_message)
      bfd *abfd;
      arelent *reloc_entry;
      asymbol *symbol;
@@ -358,16 +358,15 @@ static const struct fr30_reloc_map fr30_reloc_map [] =
 };
 
 static reloc_howto_type *
-fr30_reloc_type_lookup (abfd, code)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+fr30_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                       bfd_reloc_code_real_type code)
 {
   unsigned int i;
 
-  for (i = sizeof (fr30_reloc_map) / sizeof (fr30_reloc_map[0]);
+  for (i = (sizeof(fr30_reloc_map) / sizeof(fr30_reloc_map[0]));
        --i;)
     if (fr30_reloc_map [i].bfd_reloc_val == code)
-      return & fr30_elf_howto_table [fr30_reloc_map[i].fr30_reloc_val];
+      return &fr30_elf_howto_table[fr30_reloc_map[i].fr30_reloc_val];
 
   return NULL;
 }
@@ -714,20 +713,23 @@ fr30_elf_check_relocs (abfd, info, sec, relocs)
 	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
 	}
 
-      switch (ELF32_R_TYPE (rel->r_info))
+      switch (ELF32_R_TYPE(rel->r_info))
         {
         /* This relocation describes the C++ object vtable hierarchy.
            Reconstruct it for later use during GC.  */
         case R_FR30_GNU_VTINHERIT:
-          if (!bfd_elf_gc_record_vtinherit (abfd, sec, h, rel->r_offset))
+          if (!bfd_elf_gc_record_vtinherit(abfd, sec, h, rel->r_offset))
             return FALSE;
           break;
 
         /* This relocation describes which C++ vtable entries are actually
            used.  Record for later use during GC.  */
         case R_FR30_GNU_VTENTRY:
-          if (!bfd_elf_gc_record_vtentry (abfd, sec, h, rel->r_addend))
+          if (!bfd_elf_gc_record_vtentry(abfd, sec, h, rel->r_addend))
             return FALSE;
+          break;
+
+        default:
           break;
         }
     }
