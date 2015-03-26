@@ -112,33 +112,37 @@ CORE_ADDR kernel_slide = INVALID_ADDRESS;
 static char *find_info_plist_filename_from_bundle_name(const char *bundle,
                                                      const char *bundle_suffix);
 
-#if USE_DEBUG_SYMBOLS_FRAMEWORK
+#if defined(USE_DEBUG_SYMBOLS_FRAMEWORK) && USE_DEBUG_SYMBOLS_FRAMEWORK
 extern CFArrayRef DBGCopyMatchingUUIDsForURL(CFURLRef path,
                                              int /* cpu_type_t */ cpuType,
                                            int /* cpu_subtype_t */ cpuSubtype);
-extern CFURLRef DBGCopyDSYMURLForUUID (CFUUIDRef uuid);
-extern CFDictionaryRef DBGCopyDSYMPropertyLists (CFURLRef dsym_url);
+extern CFURLRef DBGCopyDSYMURLForUUID(CFUUIDRef uuid);
+extern CFDictionaryRef DBGCopyDSYMPropertyLists(CFURLRef dsym_url);
 #endif /* USE_DEBUG_SYMBOLS_FRAMEWORK */
 
-static void get_uuid_t_for_uuidref (CFUUIDRef uuid_in, uuid_t *uuid_out);
+static void get_uuid_t_for_uuidref(CFUUIDRef uuid_in, uuid_t *uuid_out);
 
 static const char dsym_extension[] = ".dSYM";
 static const char dsym_bundle_subdir[] = "Contents/Resources/DWARF/";
-static const int  dsym_extension_len = (sizeof (dsym_extension) - 1);
-static const int  dsym_bundle_subdir_len = (sizeof (dsym_bundle_subdir) - 1);
+static const int dsym_extension_len = (sizeof(dsym_extension) - 1);
+static const int dsym_bundle_subdir_len = (sizeof(dsym_bundle_subdir) - 1);
 static int dsym_locate_enabled = 1;
 static int kaslr_memory_search_enabled = 1;
 #define APPLE_DSYM_EXT_AND_SUBDIRECTORY ".dSYM/Contents/Resources/DWARF/"
 
 int
 actually_do_stack_frame_prologue(unsigned int count_limit,
-				unsigned int print_start,
-				unsigned int print_end,
-				unsigned int wordsize,
-				unsigned int *count,
-				struct frame_info **out_fi,
-				void (print_fun)(struct ui_out * uiout, int *frame_num,
-						 CORE_ADDR pc, CORE_ADDR fp));
+                                 unsigned int print_start,
+                                 unsigned int print_end,
+                                 unsigned int wordsize,
+                                 unsigned int *count,
+                                 struct frame_info **out_fi,
+                                 void (print_fun)(struct ui_out *uiout,
+                                                  int *frame_num,
+                                                  CORE_ADDR pc,
+                                                  CORE_ADDR fp));
+
+extern void _initialize_macosx_tdep(void);
 
 /* When we are doing native debugging, and we attach to a process,
    we start out by finding the in-memory dyld -- the osabi of that
@@ -160,11 +164,11 @@ struct deprecated_complaint unsupported_indirect_symtype_complaint =
 #endif /* 0 */
 
 #define BFD_GETB16(addr) ((addr[0] << 8) | addr[1])
-#define BFD_GETB32(addr) ((((((uint32_t) addr[0] << 8) | addr[1]) << 8) | addr[2]) << 8 | addr[3])
-#define BFD_GETB64(addr) ((((((((((uint64_t) addr[0] << 8) | addr[1]) << 8) | addr[2]) << 8 | addr[3]) << 8 | addr[4]) << 8 | addr[5]) << 8 | addr[6]) << 8 | addr[7])
+#define BFD_GETB32(addr) ((((((uint32_t)addr[0] << 8) | addr[1]) << 8) | addr[2]) << 8 | addr[3])
+#define BFD_GETB64(addr) ((((((((((uint64_t)addr[0] << 8) | addr[1]) << 8) | addr[2]) << 8 | addr[3]) << 8 | addr[4]) << 8 | addr[5]) << 8 | addr[6]) << 8 | addr[7])
 #define BFD_GETL16(addr) ((addr[1] << 8) | addr[0])
-#define BFD_GETL32(addr) ((((((uint32_t) addr[3] << 8) | addr[2]) << 8) | addr[1]) << 8 | addr[0])
-#define BFD_GETL64(addr) ((((((((((uint64_t) addr[7] << 8) | addr[6]) << 8) | addr[5]) << 8 | addr[4]) << 8 | addr[3]) << 8 | addr[2]) << 8 | addr[1]) << 8 | addr[0])
+#define BFD_GETL32(addr) ((((((uint32_t)addr[3] << 8) | addr[2]) << 8) | addr[1]) << 8 | addr[0])
+#define BFD_GETL64(addr) ((((((((((uint64_t)addr[7] << 8) | addr[6]) << 8) | addr[5]) << 8 | addr[4]) << 8 | addr[3]) << 8 | addr[2]) << 8 | addr[1]) << 8 | addr[0])
 
 unsigned char macosx_symbol_types[256];
 
@@ -230,10 +234,10 @@ macosx_symbol_type_base(unsigned char macho_type)
 }
 
 static void
-macosx_symbol_types_init ()
+macosx_symbol_types_init(void)
 {
   unsigned int i;
-  for (i = 0; i < 256; i++)
+  for (i = 0U; i < 256U; i++)
     {
       macosx_symbol_types[i] = macosx_symbol_type_base (i);
     }
@@ -349,69 +353,68 @@ dyld_symbol_stub_function_address(CORE_ADDR pc, const char **name)
   struct minimal_symbol *msym = NULL;
   const char *lname = NULL;
 
-  lname = dyld_symbol_stub_function_name (pc);
+  lname = dyld_symbol_stub_function_name(pc);
   if (name)
     *name = lname;
 
   if (lname == NULL)
     return 0;
 
-  /* found a name, now find a symbol and address */
-
-  sym = lookup_symbol_global (lname, lname, VAR_DOMAIN, 0);
+  /* found a name; now find a symbol and address: */
+  sym = lookup_symbol_global(lname, lname, VAR_DOMAIN, 0);
   if ((sym == NULL) && (lname[0] == '_'))
-    sym = lookup_symbol_global (lname + 1, lname + 1, VAR_DOMAIN, 0);
-  if (sym != NULL && SYMBOL_BLOCK_VALUE (sym) != NULL)
+    sym = lookup_symbol_global((lname + 1), (lname + 1), VAR_DOMAIN, 0);
+  if ((sym != NULL) && (SYMBOL_BLOCK_VALUE(sym) != NULL))
     /* APPLE LOCAL begin address ranges  */
-    return BLOCK_LOWEST_PC (SYMBOL_BLOCK_VALUE (sym));
+    return BLOCK_LOWEST_PC(SYMBOL_BLOCK_VALUE(sym));
     /* APPLE LOCAL end address ranges  */
 
-  msym = lookup_minimal_symbol (lname, NULL, NULL);
+  msym = lookup_minimal_symbol(lname, NULL, NULL);
   if ((msym == 0) && (lname[0] == '_'))
-    msym = lookup_minimal_symbol (lname + 1, NULL, NULL);
+    msym = lookup_minimal_symbol((lname + 1), NULL, NULL);
   if (msym != NULL)
-    return SYMBOL_VALUE_ADDRESS (msym);
+    return SYMBOL_VALUE_ADDRESS(msym);
 
   return 0;
 }
 
 const char *
-dyld_symbol_stub_function_name (CORE_ADDR pc)
+dyld_symbol_stub_function_name(CORE_ADDR pc)
 {
   struct minimal_symbol *msymbol = NULL;
   const char *DYLD_PREFIX = "dyld_stub_";
 
-  msymbol = lookup_minimal_symbol_by_pc (pc);
+  msymbol = lookup_minimal_symbol_by_pc(pc);
 
   if (msymbol == NULL)
     return NULL;
 
-  if (SYMBOL_VALUE_ADDRESS (msymbol) != pc)
+  if (SYMBOL_VALUE_ADDRESS(msymbol) != pc)
     return NULL;
 
-  if (strncmp
-      (SYMBOL_LINKAGE_NAME (msymbol), DYLD_PREFIX, strlen (DYLD_PREFIX)) != 0)
+  if (strncmp(SYMBOL_LINKAGE_NAME(msymbol), DYLD_PREFIX,
+              strlen(DYLD_PREFIX)) != 0)
     return NULL;
 
-  return SYMBOL_LINKAGE_NAME (msymbol) + strlen (DYLD_PREFIX);
+  return SYMBOL_LINKAGE_NAME(msymbol) + strlen(DYLD_PREFIX);
 }
 
 CORE_ADDR
-macosx_skip_trampoline_code (CORE_ADDR pc)
+macosx_skip_trampoline_code(CORE_ADDR pc)
 {
   CORE_ADDR newpc;
 
-  newpc = dyld_symbol_stub_function_address (pc, NULL);
+  newpc = dyld_symbol_stub_function_address(pc, NULL);
   if (newpc != 0)
     return newpc;
 
 #if defined(TARGET_I386)
-  newpc = x86_cxx_virtual_override_thunk_trampline (pc);
+  newpc = x86_cxx_virtual_override_thunk_trampline(pc);
   if (newpc != 0)
     return newpc;
 #endif /* TARGET_I386 */
 
-  newpc = decode_fix_and_continue_trampoline (pc);
+  newpc = decode_fix_and_continue_trampoline(pc);
   if (newpc != 0)
     return newpc;
 
@@ -425,36 +428,38 @@ macosx_skip_trampoline_code (CORE_ADDR pc)
    N_SECT.  */
 
 int
-macosx_record_symbols_from_sect_p (bfd *abfd, unsigned char macho_type,
-				   unsigned char macho_sect)
+macosx_record_symbols_from_sect_p(bfd *abfd, unsigned char macho_type ATTRIBUTE_UNUSED,
+				  unsigned char macho_sect)
 {
   const bfd_mach_o_section *sect;
   /* We sometimes get malformed symbols which are of type N_SECT, but
      with a section number of NO_SECT.  */
-  if (macho_sect <= 0 || macho_sect > abfd->tdata.mach_o_data->nsects)
+  if ((macho_sect <= 0) || (macho_sect > abfd->tdata.mach_o_data->nsects))
     {
-      warning ("Bad symbol - type is N_SECT but section is %d in file '%s'", macho_sect, abfd->filename);
+      warning("Bad symbol - type is N_SECT but section is %d in file '%s'",
+              macho_sect, abfd->filename);
       return 0;
     }
 
   sect = abfd->tdata.mach_o_data->sections[macho_sect - 1];
-  if ((sect->flags & BFD_MACH_O_SECTION_TYPE_MASK) ==
-      BFD_MACH_O_S_SYMBOL_STUBS)
+  if ((sect->flags & BFD_MACH_O_SECTION_TYPE_MASK)
+      == BFD_MACH_O_S_SYMBOL_STUBS)
     return 0;
   else
     return 1;
 }
 
 int
-macosx_in_solib_return_trampoline (CORE_ADDR pc, char *name)
+macosx_in_solib_return_trampoline(CORE_ADDR pc ATTRIBUTE_UNUSED,
+                                  char *name ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
 int
-macosx_in_solib_call_trampoline (CORE_ADDR pc, char *name)
+macosx_in_solib_call_trampoline(CORE_ADDR pc, char *name ATTRIBUTE_UNUSED)
 {
-  if (macosx_skip_trampoline_code (pc) != 0)
+  if (macosx_skip_trampoline_code(pc) != 0)
     {
       return 1;
     }
@@ -462,7 +467,7 @@ macosx_in_solib_call_trampoline (CORE_ADDR pc, char *name)
 }
 
 static void
-info_trampoline_command (char *exp, int from_tty)
+info_trampoline_command(char *exp, int from_tty ATTRIBUTE_UNUSED)
 {
   struct expression *expr;
   struct value *val;
@@ -470,23 +475,24 @@ info_trampoline_command (char *exp, int from_tty)
   CORE_ADDR trampoline;
   CORE_ADDR objc;
 
-  expr = parse_expression (exp);
-  val = evaluate_expression (expr);
-  if (TYPE_CODE (value_type (val)) == TYPE_CODE_REF)
-    val = value_ind (val);
-  if ((TYPE_CODE (value_type (val)) == TYPE_CODE_FUNC)
-      && (VALUE_LVAL (val) == lval_memory))
-    address = VALUE_ADDRESS (val);
+  expr = parse_expression(exp);
+  val = evaluate_expression(expr);
+  if (TYPE_CODE(value_type(val)) == TYPE_CODE_REF)
+    val = value_ind(val);
+  if ((TYPE_CODE(value_type(val)) == TYPE_CODE_FUNC)
+      && (VALUE_LVAL(val) == lval_memory))
+    address = VALUE_ADDRESS(val);
   else
-    address = value_as_address (val);
+    address = value_as_address(val);
 
-  trampoline = macosx_skip_trampoline_code (address);
+  trampoline = macosx_skip_trampoline_code(address);
 
-  find_objc_msgcall (trampoline, &objc);
+  find_objc_msgcall(trampoline, &objc);
 
-  fprintf_filtered
-    (gdb_stderr, "Function at 0x%s becomes 0x%s becomes 0x%s\n",
-     paddr_nz (address), paddr_nz (trampoline), paddr_nz (objc));
+  fprintf_filtered(gdb_stderr,
+                   "Function at 0x%s becomes 0x%s becomes 0x%s\n",
+                   paddr_nz(address), paddr_nz(trampoline),
+                   paddr_nz(objc));
 }
 
 struct sal_chain
@@ -500,7 +506,8 @@ struct sal_chain
    to hit the catchpoints for exceptions.  Not on Mac OS X. */
 
 int
-macosx_enable_exception_callback (enum exception_event_kind kind, int enable)
+macosx_enable_exception_callback(enum exception_event_kind kind ATTRIBUTE_UNUSED,
+                                 int enable ATTRIBUTE_UNUSED)
 {
   return 1;
 }
@@ -510,8 +517,8 @@ macosx_enable_exception_callback (enum exception_event_kind kind, int enable)
    __cxa_begin_catch functions from libsupc++.  */
 
 struct symtabs_and_lines *
-macosx_find_exception_catchpoints (enum exception_event_kind kind,
-                                   struct objfile *restrict_objfile)
+macosx_find_exception_catchpoints(enum exception_event_kind kind,
+                                  struct objfile *restrict_objfile ATTRIBUTE_UNUSED)
 {
   struct symtabs_and_lines *return_sals;
   char *symbol_name;
@@ -529,38 +536,37 @@ macosx_find_exception_catchpoints (enum exception_event_kind kind,
       symbol_name = "__cxa_begin_catch";
       break;
     default:
-      error ("We currently only handle \"throw\" and \"catch\"");
+      error("We currently only handle \"throw\" and \"catch\"");
     }
 
-  hash = msymbol_hash (symbol_name) % MINIMAL_SYMBOL_HASH_SIZE;
+  hash = (msymbol_hash(symbol_name) % MINIMAL_SYMBOL_HASH_SIZE);
 
-  ALL_OBJFILES (objfile)
+  ALL_OBJFILES(objfile)
   {
     for (msymbol = objfile->msymbol_hash[hash];
          msymbol != NULL; msymbol = msymbol->hash_next)
-      if (MSYMBOL_TYPE (msymbol) == mst_text
-          && (strcmp_iw (SYMBOL_LINKAGE_NAME (msymbol), symbol_name) == 0))
+      if ((MSYMBOL_TYPE(msymbol) == mst_text)
+          && (strcmp_iw(SYMBOL_LINKAGE_NAME(msymbol), symbol_name) == 0))
         {
           /* We found one, add it here... */
           CORE_ADDR catchpoint_address;
           CORE_ADDR past_prologue;
 
           struct sal_chain *next
-            = (struct sal_chain *) alloca (sizeof (struct sal_chain));
+            = (struct sal_chain *)alloca(sizeof(struct sal_chain));
 
           next->next = sal_chain;
-          init_sal (&next->sal);
+          init_sal(&next->sal);
           next->sal.symtab = NULL;
 
-          catchpoint_address = SYMBOL_VALUE_ADDRESS (msymbol);
-          past_prologue = SKIP_PROLOGUE (catchpoint_address);
+          catchpoint_address = SYMBOL_VALUE_ADDRESS(msymbol);
+          past_prologue = SKIP_PROLOGUE(catchpoint_address);
 
           next->sal.pc = past_prologue;
           next->sal.line = 0;
           next->sal.end = past_prologue;
 
           sal_chain = next;
-
         }
   }
 
@@ -572,12 +578,12 @@ macosx_find_exception_catchpoints (enum exception_event_kind kind,
       for (temp = sal_chain; temp != NULL; temp = temp->next)
         index++;
 
-      return_sals = (struct symtabs_and_lines *)
-        xmalloc (sizeof (struct symtabs_and_lines));
+      return_sals = ((struct symtabs_and_lines *)
+                     xmalloc(sizeof(struct symtabs_and_lines)));
       return_sals->nelts = index;
-      return_sals->sals =
-        (struct symtab_and_line *) xmalloc (index *
-                                            sizeof (struct symtab_and_line));
+      return_sals->sals = ((struct symtab_and_line *)
+                           xmalloc(index *
+                                   sizeof(struct symtab_and_line)));
 
       for (index = 0; sal_chain; sal_chain = sal_chain->next, index++)
         return_sals->sals[index] = sal_chain->sal;
@@ -588,10 +594,9 @@ macosx_find_exception_catchpoints (enum exception_event_kind kind,
 
 }
 
-/* Returns data about the current exception event */
-
+/* Returns data about the current exception event: */
 struct exception_event_record *
-macosx_get_current_exception_event ()
+macosx_get_current_exception_event(void)
 {
   static struct exception_event_record *exception_event = NULL;
   struct frame_info *curr_frame;
@@ -603,28 +608,28 @@ macosx_get_current_exception_event ()
 
   if (exception_event == NULL)
     {
-      exception_event = (struct exception_event_record *)
-        xmalloc (sizeof (struct exception_event_record));
+      exception_event = ((struct exception_event_record *)
+                         xmalloc(sizeof(struct exception_event_record)));
       exception_event->exception_type = NULL;
     }
 
-  curr_frame = get_current_frame ();
+  curr_frame = get_current_frame();
   if (!curr_frame)
-    return (struct exception_event_record *) NULL;
+    return (struct exception_event_record *)NULL;
 
   pc = get_frame_pc (curr_frame);
-  stop_func_found = find_pc_partial_function (pc, &stop_name, NULL, NULL);
+  stop_func_found = find_pc_partial_function(pc, &stop_name, NULL, NULL);
   if (!stop_func_found)
-    return (struct exception_event_record *) NULL;
+    return (struct exception_event_record *)NULL;
 
-  if (strcmp (stop_name, "__cxa_throw") == 0)
+  if (strcmp(stop_name, "__cxa_throw") == 0)
     {
 
-      fi = get_prev_frame (curr_frame);
+      fi = get_prev_frame(curr_frame);
       if (!fi)
-        return (struct exception_event_record *) NULL;
+        return (struct exception_event_record *)NULL;
 
-      exception_event->throw_sal = find_pc_line (get_frame_pc (fi), 1);
+      exception_event->throw_sal = find_pc_line(get_frame_pc(fi), 1);
 
       /* FIXME: We do NOT know the catch location when we
          have just intercepted the throw. Can we walk the
@@ -636,13 +641,13 @@ macosx_get_current_exception_event ()
       exception_event->kind = EX_EVENT_THROW;
 
     }
-  else if (strcmp (stop_name, "__cxa_begin_catch") == 0)
+  else if (strcmp(stop_name, "__cxa_begin_catch") == 0)
     {
-      fi = get_prev_frame (curr_frame);
+      fi = get_prev_frame(curr_frame);
       if (!fi)
-        return (struct exception_event_record *) NULL;
+        return (struct exception_event_record *)NULL;
 
-      exception_event->catch_sal = find_pc_line (get_frame_pc (fi), 1);
+      exception_event->catch_sal = find_pc_line(get_frame_pc(fi), 1);
 
       /* By the time we get here, we have totally forgotten
          where we were thrown from... */
@@ -650,19 +655,17 @@ macosx_get_current_exception_event ()
       exception_event->throw_sal.line = 0;
 
       exception_event->kind = EX_EVENT_CATCH;
-
-
     }
 
 #ifdef THROW_CATCH_FIND_TYPEINFO
   typeinfo_str =
-    THROW_CATCH_FIND_TYPEINFO (curr_frame, exception_event->kind);
+    THROW_CATCH_FIND_TYPEINFO(curr_frame, exception_event->kind);
 #else
   typeinfo_str = NULL;
 #endif /* THROW_CATCH_FIND_TYPEINFO */
 
   if (exception_event->exception_type != NULL)
-    xfree (exception_event->exception_type);
+    xfree(exception_event->exception_type);
 
   if (typeinfo_str == NULL)
     {
@@ -670,21 +673,21 @@ macosx_get_current_exception_event ()
     }
   else
     {
-      exception_event->exception_type = xstrdup (typeinfo_str);
+      exception_event->exception_type = xstrdup(typeinfo_str);
     }
 
   return exception_event;
 }
 
 void
-update_command (char *args, int from_tty)
+update_command(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
   registers_changed();
   reinit_frame_cache();
 }
 
 void
-stack_flush_command(char *args, int from_tty)
+stack_flush_command(char *args ATTRIBUTE_UNUSED, int from_tty)
 {
   reinit_frame_cache();
   if (from_tty)
@@ -697,17 +700,17 @@ stack_flush_command(char *args, int from_tty)
    open the that file & try to put the selection on that line.  */
 
 static void
-open_command (char *args, int from_tty)
+open_command(char *args, int from_tty ATTRIBUTE_UNUSED)
 {
   const char *filename = NULL;  /* Possibly directory-less filename */
   const char *fullname = NULL;  /* Fully qualified on-disk filename */
   struct stat sb;
   int line_no = 0;
 
-  warning ("open command no longer supported - may be back in a future build.");
+  warning("open command no longer supported - may be back in a future build.");
   return;
 
-  if (args == NULL || args[0] == '\0')
+  if ((args == NULL) || (args[0] == '\0'))
     {
       filename = NULL;
       line_no = 0;
@@ -715,12 +718,12 @@ open_command (char *args, int from_tty)
 
   else
     {
-      char *colon_pos = strrchr (args, ':');
+      char *colon_pos = strrchr(args, ':');
       if (colon_pos == NULL)
 	line_no = 0;
       else
 	{
-	  line_no = atoi (colon_pos + 1);
+	  line_no = atoi(colon_pos + 1);
 	  *colon_pos = '\0';
 	}
       filename = args;
@@ -728,17 +731,16 @@ open_command (char *args, int from_tty)
 
   if (filename == NULL)
     {
-      struct symtab_and_line cursal = get_current_source_symtab_and_line ();
+      struct symtab_and_line cursal = get_current_source_symtab_and_line();
       if (cursal.symtab)
-        fullname = symtab_to_fullname (cursal.symtab);
+        fullname = symtab_to_fullname(cursal.symtab);
       else
-        error ("No currently selected source file available; "
-               "please specify one.");
-      /* The cursal is actually set to the list-size bracket around
-	   * the current line, so we have to add that back in to get the
-	   * real source line.  */
-
-      line_no = cursal.line + get_lines_to_list () / 2;
+        error("No currently selected source file available; "
+              "please specify one.");
+      /* The cursal is actually set to the list-size bracket around the
+       * current line, so we have to add that back in to get the real
+       * source line: */
+      line_no = (cursal.line + (get_lines_to_list() / 2));
     }
 
   if (fullname == NULL)
@@ -746,21 +748,20 @@ open_command (char *args, int from_tty)
        /* lookup_symtab will give us the first match; should we use
         * the Apple local variant, lookup_symtab_all?  And what
         * would we do with the results; open all of them?  */
-       struct symtab *s = lookup_symtab (filename);
+       struct symtab *s = lookup_symtab(filename);
        if (s)
-         fullname = symtab_to_fullname (s);
+         fullname = symtab_to_fullname(s);
        else
-         error ("Filename '%s' not found in this program's debug information.",
-                filename);
+         error("Filename '%s' not found in this program's debug information.",
+               filename);
     }
 
-  /* Prefer the fully qualified FULLNAME over whatever FILENAME might have.  */
-
-  if (stat (fullname, &sb) == 0)
+  /* Prefer the fully qualified FULLNAME over whatever FILENAME might have: */
+  if (stat(fullname, &sb) == 0)
     filename = fullname;
   else
-    if (stat (filename, &sb) != 0)
-      error ("File '%s' not found.", filename);
+    if (stat(filename, &sb) != 0)
+      error("File '%s' not found.", filename);
 }
 
 
@@ -774,17 +775,18 @@ open_command (char *args, int from_tty)
    NULL is returned if we do not find a LC_UUID for any reason.  */
 
 static CFUUIDRef
-get_uuidref_for_bfd (struct bfd *abfd)
+get_uuidref_for_bfd(struct bfd *abfd)
 {
  uint8_t uuid[16];
  if (abfd == NULL)
    return NULL;
 
- if (bfd_mach_o_get_uuid (abfd, uuid, sizeof (uuid)))
-   return CFUUIDCreateWithBytes (kCFAllocatorDefault,
-             uuid[0], uuid[1], uuid[2], uuid[3], uuid[4], uuid[5],
-             uuid[6], uuid[7], uuid[8], uuid[9], uuid[10], uuid[11],
-             uuid[12], uuid[13], uuid[14], uuid[15]);
+ if (bfd_mach_o_get_uuid(abfd, uuid, sizeof(uuid)))
+   return CFUUIDCreateWithBytes(kCFAllocatorDefault, uuid[0], uuid[1],
+                                uuid[2], uuid[3], uuid[4], uuid[5],
+                                uuid[6], uuid[7], uuid[8], uuid[9],
+                                uuid[10], uuid[11], uuid[12], uuid[13],
+                                uuid[14], uuid[15]);
 
  return NULL;
 }
@@ -795,29 +797,31 @@ get_uuidref_for_bfd (struct bfd *abfd)
    It is the caller's responsibility to release the memory via CFRelease. */
 
 CFUUIDRef
-get_uuidref_for_uuid_t (uint8_t *uuid)
+get_uuidref_for_uuid_t(uint8_t *uuid)
 {
  if (uuid == NULL)
    return NULL;
 
- return CFUUIDCreateWithBytes (kCFAllocatorDefault,
-           uuid[0], uuid[1], uuid[2], uuid[3], uuid[4], uuid[5],
-           uuid[6], uuid[7], uuid[8], uuid[9], uuid[10], uuid[11],
-           uuid[12], uuid[13], uuid[14], uuid[15]);
+ return CFUUIDCreateWithBytes(kCFAllocatorDefault, uuid[0], uuid[1],
+                              uuid[2], uuid[3], uuid[4], uuid[5],
+                              uuid[6], uuid[7], uuid[8], uuid[9],
+                              uuid[10], uuid[11], uuid[12], uuid[13],
+                              uuid[14], uuid[15]);
 }
 
 /* Given a CFUUIDRef return that uuid in a uuid_t.
    UUID_OUT is a pointer to allocated memory uuid_t large.  */
 
 static void
-get_uuid_t_for_uuidref (CFUUIDRef uuid_in, uuid_t *uuid_out)
+get_uuid_t_for_uuidref(CFUUIDRef uuid_in, uuid_t *uuid_out)
 {
-  assert (sizeof (uuid_t) == sizeof (CFUUIDBytes));
-
   CFUUIDBytes ret;
+
+  assert(sizeof(uuid_t) == sizeof(CFUUIDBytes));
+
   ret = CFUUIDGetUUIDBytes (uuid_in);
 
-  memcpy ((uint8_t *) uuid_out, (uint8_t *) &ret, sizeof (uuid_t));
+  memcpy((uint8_t *)uuid_out, (uint8_t *)&ret, sizeof(uuid_t));
 }
 
 
@@ -830,129 +834,137 @@ get_uuid_t_for_uuidref (CFUUIDRef uuid_in, uuid_t *uuid_out)
    "add-dsym" command to continue to work without it. */
 
 static CFMutableArrayRef
-gdb_DBGCopyMatchingUUIDsForURL (const char *path)
+gdb_DBGCopyMatchingUUIDsForURL(const char *path)
 {
-  if (path == NULL || path[0] == '\0')
+  CFAllocatorRef alloc;
+  CFMutableArrayRef uuid_array;
+  struct gdb_exception e;
+  bfd *abfd;
+
+  if ((path == NULL) || (path[0] == '\0'))
     return NULL;
 
-  CFAllocatorRef alloc = kCFAllocatorDefault;
-  CFMutableArrayRef uuid_array = NULL;
-  struct gdb_exception e;
-  bfd *abfd = NULL;
+  alloc = kCFAllocatorDefault;
+  uuid_array = (CFMutableArrayRef)NULL;
+  abfd = (bfd *)NULL;
 
-  TRY_CATCH (e, RETURN_MASK_ERROR)
+  TRY_CATCH(e, RETURN_MASK_ERROR)
   {
-    abfd = symfile_bfd_open (path, 0, GDB_OSABI_UNKNOWN);
+    abfd = symfile_bfd_open(path, 0, GDB_OSABI_UNKNOWN);
   }
 
-  if (abfd == NULL || e.reason == RETURN_ERROR)
+  if ((abfd == NULL) || (e.reason == RETURN_ERROR))
     return NULL;
-  if (bfd_check_format (abfd, bfd_archive)
-      && strcmp (bfd_get_target (abfd), "mach-o-fat") == 0)
+  if (bfd_check_format(abfd, bfd_archive)
+      && (strcmp(bfd_get_target(abfd), "mach-o-fat") == 0))
     {
       bfd *nbfd = NULL;
       for (;;)
         {
-          nbfd = bfd_openr_next_archived_file (abfd, nbfd);
+          CFUUIDRef nbfd_uuid;
+          nbfd = bfd_openr_next_archived_file(abfd, nbfd);
           if (nbfd == NULL)
             break;
-          if (!bfd_check_format (nbfd, bfd_object)
-              && !bfd_check_format (nbfd, bfd_archive))
+          if (!bfd_check_format(nbfd, bfd_object)
+              && !bfd_check_format(nbfd, bfd_archive))
             continue;
-          CFUUIDRef nbfd_uuid = get_uuidref_for_bfd (nbfd);
+          nbfd_uuid = get_uuidref_for_bfd(nbfd);
           if (nbfd_uuid != NULL)
             {
               if (uuid_array == NULL)
                 uuid_array = CFArrayCreateMutable(alloc, 0, &kCFTypeArrayCallBacks);
               if (uuid_array)
-                CFArrayAppendValue (uuid_array, nbfd_uuid);
-              CFRelease (nbfd_uuid);
+                CFArrayAppendValue(uuid_array, nbfd_uuid);
+              CFRelease(nbfd_uuid);
             }
         }
-      bfd_free_cached_info (abfd);
+      bfd_free_cached_info(abfd);
     }
   else
    {
-      CFUUIDRef abfd_uuid = get_uuidref_for_bfd (abfd);
+      CFUUIDRef abfd_uuid = get_uuidref_for_bfd(abfd);
       if (abfd_uuid != NULL)
         {
           if (uuid_array == NULL)
             uuid_array = CFArrayCreateMutable(alloc, 0, &kCFTypeArrayCallBacks);
           if (uuid_array)
-            CFArrayAppendValue (uuid_array, abfd_uuid);
-          CFRelease (abfd_uuid);
+            CFArrayAppendValue(uuid_array, abfd_uuid);
+          CFRelease(abfd_uuid);
         }
     }
 
-  bfd_close (abfd);
+  bfd_close(abfd);
   return uuid_array;
 }
 
 
 CFMutableDictionaryRef
-create_dsym_uuids_for_path (char *dsym_bundle_path)
+create_dsym_uuids_for_path(char *dsym_bundle_path)
 {
   char path[PATH_MAX];
   struct dirent* dp = NULL;
-  DIR* dirp = NULL;
-  char* dsym_path = NULL;
+  DIR *dirp = NULL;
+  char *dsym_path = NULL;
   CFMutableDictionaryRef paths_and_uuids;
+  size_t path_len;
 
-  /* Copy the base dSYM bundle directory path into our new path.  */
-  strncpy (path, dsym_bundle_path, sizeof (path));
+  /* Copy the base dSYM bundle directory path into our new path: */
+  strncpy(path, dsym_bundle_path, sizeof(path));
 
-  if (path[sizeof (path) - 1])
+  if (path[sizeof(path) - 1UL])
     return NULL;  /* Path is too large.  */
 
-  int path_len = strlen (path);
+  path_len = strlen(path);
 
-  if (path_len > 0)
+  if (path_len > 0UL)
     {
       /* Add directory delimiter to end of bundle path if
 	 needed to normalize the path.  */
-      if (path[path_len-1] != '/')
+      if (path[path_len - 1UL] != '/')
 	{
 	  path[path_len] = '/';
-	  if (path_len + 1 < sizeof (path))
+	  if ((path_len + 1UL) < sizeof(path))
 	    path[++path_len] = '\0';
 	  else
 	    return NULL; /* Path is too large.  */
 	}
     }
 
-  /* Append the bundle subdirectory path.  */
-  if (dsym_bundle_subdir_len + 1 > sizeof (path) - path_len)
+  /* Append the bundle subdirectory path: */
+  if ((dsym_bundle_subdir_len + 1) > (sizeof(path) - path_len))
     return NULL; /* Path is too large.  */
 
-  strncat (path, dsym_bundle_subdir, sizeof (path) - path_len - 1);
+  strncat(path, dsym_bundle_subdir, (sizeof(path) - path_len - 1UL));
 
-  if (path[sizeof (path) - 1])
+  if (path[sizeof(path) - 1])
     return NULL;  /* Path is too large.  */
 
-  dirp = opendir (path);
+  dirp = opendir(path);
   if (dirp == NULL)
     return NULL;
 
-  path_len = strlen (path);
+  path_len = strlen(path);
 
   /* Leave room for a NULL at the end in case strncpy
      does not NULL terminate.  */
-  paths_and_uuids = CFDictionaryCreateMutable (kCFAllocatorDefault, 0,
-					       &kCFTypeDictionaryKeyCallBacks,
-					       &kCFTypeDictionaryValueCallBacks);
+  paths_and_uuids = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+					      &kCFTypeDictionaryKeyCallBacks,
+					      &kCFTypeDictionaryValueCallBacks);
 
-  while (dsym_path == NULL && (dp = readdir (dirp)) != NULL)
+  while ((dsym_path == NULL) && ((dp = readdir(dirp)) != NULL))
     {
-      /* Do NOT search directories. Note, some servers return DT_UNKNOWN
-	   * for everything, so you canot assume this test will keep you from
-	   * trying to read directories...  */
+      size_t full_path_len;
+
+      /* Do NOT search directories.  Note: some servers return DT_UNKNOWN
+       * for everything, so you cannot assume this test will keep you from
+       * trying to read directories...  */
       if (dp->d_type == DT_DIR)
 	continue;
 
       /* Full path length to each file in the dSYM's
-	   * ./Contents/Resources/DWARF/ directory.  */
-      int full_path_len = path_len + dp->d_namlen + 1;
-      if (sizeof (path) > full_path_len)
+       * ./Contents/Resources/DWARF/ directory: */
+      full_path_len = (path_len + dp->d_namlen + 1UL);
+      if (sizeof(path) > full_path_len)
 	{
 	  CFURLRef path_url = NULL;
 	  CFArrayRef uuid_array = NULL;
@@ -961,34 +973,34 @@ create_dsym_uuids_for_path (char *dsym_bundle_path)
 	     directory entry name just past the
 	     ".../Contents/Resources/DWARF/" part of PATH.  */
 	  strcpy(&path[path_len], dp->d_name);
-	  path_cfstr = CFStringCreateWithCString (NULL, path,
-						  kCFStringEncodingUTF8);
-	  path_url = CFURLCreateWithFileSystemPath (NULL, path_cfstr,
-                                                    kCFURLPOSIXPathStyle, 0);
+	  path_cfstr = CFStringCreateWithCString(NULL, path,
+						 kCFStringEncodingUTF8);
+	  path_url = CFURLCreateWithFileSystemPath(NULL, path_cfstr,
+                                                   kCFURLPOSIXPathStyle, 0);
 
-	  CFRelease (path_cfstr), path_cfstr = NULL;
+	  CFRelease(path_cfstr), path_cfstr = NULL;
 	  if (path_url == NULL)
 	    continue;
 
-	  uuid_array = gdb_DBGCopyMatchingUUIDsForURL (path);
+	  uuid_array = gdb_DBGCopyMatchingUUIDsForURL(path);
 	  if (uuid_array != NULL)
-	    CFDictionarySetValue (paths_and_uuids, path_url, uuid_array);
+	    CFDictionarySetValue(paths_and_uuids, path_url, uuid_array);
 
 	  /* We are done with PATH_URL.  */
-	  CFRelease (path_url);
+	  CFRelease(path_url);
 	  path_url = NULL;
 
 	  /* Skip to next while loop iteration if we did NOT get any matches.  */
-	  /* Release the UUID array.  */
+	  /* Release the UUID array: */
 	  if (uuid_array != NULL)
-	    CFRelease (uuid_array);
+	    CFRelease(uuid_array);
 	  uuid_array = NULL;
 	}
     }
-  closedir (dirp);
-  if (CFDictionaryGetCount (paths_and_uuids) == 0)
+  closedir(dirp);
+  if (CFDictionaryGetCount(paths_and_uuids) == 0)
     {
-      CFRelease (paths_and_uuids);
+      CFRelease(paths_and_uuids);
       return NULL;
     }
   else
@@ -1003,26 +1015,26 @@ struct search_baton
 };
 
 void
-paths_and_uuids_map_func (const void *in_url,
-			  const void *in_array,
-			  void *in_results)
+paths_and_uuids_map_func(const void *in_url, const void *in_array,
+			 void *in_results)
 {
-  const CFURLRef path_url = (CFURLRef) in_url;
-  const CFArrayRef uuid_array = (CFArrayRef) in_array;
-  struct search_baton *results = (struct search_baton *) in_results;
+  const CFURLRef path_url = (CFURLRef)in_url;
+  const CFArrayRef uuid_array = (CFArrayRef)in_array;
+  struct search_baton *results = (struct search_baton *)in_results;
 
-  const CFIndex count = CFArrayGetCount (uuid_array);
+  const CFIndex count = CFArrayGetCount(uuid_array);
   CFIndex i;
 
   if (results->found_it)
     return;
-  for (i = 0; i < count; i++)
+  for (i = 0L; i < count; i++)
     {
-      CFUUIDRef tmp_uuid = CFArrayGetValueAtIndex (uuid_array, i);
-      if (CFEqual (tmp_uuid, results->test_uuid))
+      CFUUIDRef tmp_uuid;
+      tmp_uuid = (CFUUIDRef)CFArrayGetValueAtIndex(uuid_array, i);
+      if (CFEqual(tmp_uuid, results->test_uuid))
 	{
 	  results->path_url = path_url;
-	  CFRetain (path_url);
+	  CFRetain(path_url);
 	  results->found_it = 1;
 	  break;
 	}
@@ -1038,12 +1050,12 @@ paths_and_uuids_map_func (const void *in_url,
    profile). The returned string has been xmalloc()'ed and it is the
    responsibility of the caller to xfree it. */
 static char *
-locate_dsym_mach_in_bundle (CFUUIDRef uuid_ref, char *dsym_bundle_path)
+locate_dsym_mach_in_bundle(CFUUIDRef uuid_ref, char *dsym_bundle_path)
 {
   CFMutableDictionaryRef paths_and_uuids;
   struct search_baton results;
 
-  paths_and_uuids = create_dsym_uuids_for_path (dsym_bundle_path);
+  paths_and_uuids = create_dsym_uuids_for_path(dsym_bundle_path);
 
   if (paths_and_uuids == NULL)
     return NULL;
@@ -1051,18 +1063,18 @@ locate_dsym_mach_in_bundle (CFUUIDRef uuid_ref, char *dsym_bundle_path)
   results.found_it = 0;
   results.test_uuid = uuid_ref;
 
-  CFDictionaryApplyFunction (paths_and_uuids, paths_and_uuids_map_func,
-			     &results);
+  CFDictionaryApplyFunction(paths_and_uuids, paths_and_uuids_map_func,
+			    &results);
 
-  CFRelease (paths_and_uuids);
+  CFRelease(paths_and_uuids);
 
   if (results.found_it)
     {
       char path[PATH_MAX];
-      path[PATH_MAX-1] = '\0';
-      if (CFURLGetFileSystemRepresentation (results.path_url, 1,
-						(UInt8 *)path, sizeof (path)))
-	return xstrdup (path);
+      path[PATH_MAX - 1] = '\0';
+      if (CFURLGetFileSystemRepresentation(results.path_url, 1,
+                                           (UInt8 *)path, sizeof(path)))
+	return xstrdup(path);
       else
 	return NULL;
     }
@@ -1071,7 +1083,8 @@ locate_dsym_mach_in_bundle (CFUUIDRef uuid_ref, char *dsym_bundle_path)
 
 }
 
-#if USE_DEBUG_SYMBOLS_FRAMEWORK
+/* keep this condition the same as in the header: */
+#if defined(USE_DEBUG_SYMBOLS_FRAMEWORK) && USE_DEBUG_SYMBOLS_FRAMEWORK
 
 struct plist_filenames_search_baton {
   CFPropertyListRef plist;
@@ -1080,15 +1093,18 @@ struct plist_filenames_search_baton {
 };
 
 static void
-plist_filenames_and_uuids_map_func (const void *in_key, const void *in_value,
-                                    void *context)
+plist_filenames_and_uuids_map_func(const void *in_key, const void *in_value,
+                                   void *context)
 {
-  struct plist_filenames_search_baton *baton = (struct plist_filenames_search_baton *) context;
-  CFStringRef searching_for = baton->searching_for;
-  CFStringRef key = (CFStringRef) in_key;
-  CFPropertyListRef value = (CFPropertyListRef) in_value;
+  struct plist_filenames_search_baton *baton;
+  CFStringRef searching_for;
+  CFStringRef key = (CFStringRef)in_key;
+  CFPropertyListRef value = (CFPropertyListRef)in_value;
 
-  if (CFStringCompare (key, searching_for, 0))
+  baton = (struct plist_filenames_search_baton *)context;
+  searching_for = baton->searching_for;
+
+  if (CFStringCompare(key, searching_for, 0))
     {
       baton->found_it = 1;
       baton->plist = value;
@@ -1097,39 +1113,40 @@ plist_filenames_and_uuids_map_func (const void *in_key, const void *in_value,
 }
 
 static void
-find_source_path_mappings (CFUUIDRef uuid, CFURLRef dsym)
+find_source_path_mappings(CFUUIDRef uuid, CFURLRef dsym)
 {
-  CFDictionaryRef plists = DBGCopyDSYMPropertyLists (dsym);
-  CFStringRef uuid_str = CFUUIDCreateString (kCFAllocatorDefault, uuid);
+  CFDictionaryRef plists = DBGCopyDSYMPropertyLists(dsym);
+  CFStringRef uuid_str = CFUUIDCreateString(kCFAllocatorDefault, uuid);
   if (plists && uuid_str)
     {
       struct plist_filenames_search_baton results;
       results.found_it = 0;
       results.searching_for = uuid_str;
-      CFDictionaryApplyFunction (plists, plist_filenames_and_uuids_map_func,
-                                 &results);
+      CFDictionaryApplyFunction(plists, plist_filenames_and_uuids_map_func,
+                                &results);
       if (results.found_it)
         {
-          const char *build_src_path = macosx_get_plist_posix_value
-                                          (results.plist, "DBGBuildSourcePath");
-          const char *src_path = macosx_get_plist_posix_value
-                                               (results.plist, "DBGSourcePath");
+          const char *build_src_path =
+            macosx_get_plist_posix_value(results.plist,
+                                         "DBGBuildSourcePath");
+          const char *src_path =
+            macosx_get_plist_posix_value(results.plist, "DBGSourcePath");
           if (src_path)
             {
-              const char *src_path_tilde_expanded = tilde_expand (src_path);
-              xfree ((char *) src_path);
+              const char *src_path_tilde_expanded = tilde_expand(src_path);
+              xfree((char *)src_path);
               src_path = src_path_tilde_expanded;
             }
           if (build_src_path && src_path)
             {
-              add_one_pathname_substitution (build_src_path, src_path);
+              add_one_pathname_substitution(build_src_path, src_path);
             }
         }
     }
   if (uuid_str)
-    CFRelease (uuid_str);
+    CFRelease(uuid_str);
   if (plists)
-    CFRelease (plists);
+    CFRelease(plists);
 }
 
 /* Given an OBJFILE, we have found a matching dSYM bundle at pathname DSYM
@@ -1140,70 +1157,72 @@ find_source_path_mappings (CFUUIDRef uuid, CFURLRef dsym)
    the dSYM bundle), those will be ignored.  */
 
 void
-find_source_path_mappings_posix (struct objfile *objfile, const char *dsym)
+find_source_path_mappings_posix(struct objfile *objfile, const char *dsym)
 {
   unsigned char uuid[16];
   CFURLRef dsym_ref;
   CFStringRef dsym_str_ref;
+  CFUUIDRef uuid_ref;
+  const char *j, *i;
 
-  /* Extract the UUID from the objfile.  */
-  if (!bfd_mach_o_get_uuid (objfile->obfd, uuid, sizeof (uuid)))
+  /* Extract the UUID from the objfile: */
+  if (!bfd_mach_o_get_uuid(objfile->obfd, uuid, sizeof(uuid)))
     return;
 
-  /* Create a CFUUID object for use with DebugSymbols framework.  */
-  CFUUIDRef uuid_ref = CFUUIDCreateWithBytes (kCFAllocatorDefault, uuid[0],
-                                              uuid[1], uuid[2], uuid[3],
-                                              uuid[4], uuid[5], uuid[6],
-                                              uuid[7], uuid[8], uuid[9],
-                                              uuid[10], uuid[11], uuid[12],
-                                              uuid[13], uuid[14], uuid[15]);
+  /* Create a CFUUID object for use with DebugSymbols framework: */
+  uuid_ref = CFUUIDCreateWithBytes(kCFAllocatorDefault, uuid[0], uuid[1],
+                                   uuid[2], uuid[3], uuid[4], uuid[5],
+                                   uuid[6], uuid[7], uuid[8], uuid[9],
+                                   uuid[10], uuid[11], uuid[12], uuid[13],
+                                   uuid[14], uuid[15]);
   if (uuid_ref == NULL)
     return;
 
   /* If the DSYM pathname passed in has stuff after the ".dSYM" component,
-     get rid of it. Find the last ".dSYM" in the string, copy the string to
-     a local buffer.  */
-
-  const char *j, *i = strstr (dsym, ".dSYM");
+   * then get rid of it.  Find the last ".dSYM" in the string, and then
+   * copy the string to a local buffer: */
+  i = strstr(dsym, ".dSYM");
   if (i == NULL)
     {
-      CFRelease (uuid_ref);
+      CFRelease(uuid_ref);
       return;
     }
-  while ((j = strstr (i + 1, ".dSYM")) != NULL)
+  while ((j = strstr((i + 1), ".dSYM")) != NULL)
     i = j;
 
   if (i[5] != '\0')
     {
+      size_t len;
+      char *n;
       i += 5;  /* i now points past the ".dSYM" characters */
-      int len = i - dsym + 1;
-      char *n = alloca (len);
-      strlcpy (n, dsym, len);
+      len = (i - dsym + 1UL);
+      n = (char *)alloca(len);
+      strlcpy(n, dsym, len);
       dsym = n;
     }
 
-  dsym_str_ref = CFStringCreateWithCString (NULL, dsym,
-                                            kCFStringEncodingUTF8);
+  dsym_str_ref = CFStringCreateWithCString(NULL, dsym,
+                                           kCFStringEncodingUTF8);
   if (dsym_str_ref == NULL)
     {
-      CFRelease (uuid_ref);
+      CFRelease(uuid_ref);
       return;
     }
 
-  dsym_ref = CFURLCreateWithFileSystemPath (NULL, dsym_str_ref,
-                                            kCFURLPOSIXPathStyle, 0);
-  CFRelease (dsym_str_ref);
+  dsym_ref = CFURLCreateWithFileSystemPath(NULL, dsym_str_ref,
+                                           kCFURLPOSIXPathStyle, 0);
+  CFRelease(dsym_str_ref);
 
   if (dsym_ref == NULL)
     {
-      CFRelease (uuid_ref);
+      CFRelease(uuid_ref);
       return;
     }
 
-  find_source_path_mappings (uuid_ref, dsym_ref);
+  find_source_path_mappings(uuid_ref, dsym_ref);
 
-  CFRelease (uuid_ref);
-  CFRelease (dsym_ref);
+  CFRelease(uuid_ref);
+  CFRelease(dsym_ref);
 }
 
 /* Locate a full path to the dSYM Mach-O file within the dSYM bundle using
@@ -1215,25 +1234,25 @@ find_source_path_mappings_posix (struct objfile *objfile, const char *dsym)
    does not fully specify the dSYM Mach-O file. The returned string has been
    xmalloc()'ed and it is the responsibility of the caller to xfree it. */
 static char *
-locate_dsym_using_framework (struct objfile *objfile)
+locate_dsym_using_framework(struct objfile *objfile)
 {
   CFURLRef dsym_bundle_url = NULL;
-  char* dsym_path = NULL;
-  CFUUIDRef uuid_ref = get_uuidref_for_bfd (objfile->obfd);
+  char *dsym_path = NULL;
+  CFUUIDRef uuid_ref = get_uuidref_for_bfd(objfile->obfd);
   if (uuid_ref == NULL)
     return NULL;
 
   /* Use DebugSymbols framework to search for the dSYM.  */
-  dsym_bundle_url = DBGCopyDSYMURLForUUID (uuid_ref);
+  dsym_bundle_url = DBGCopyDSYMURLForUUID(uuid_ref);
   if (dsym_bundle_url)
     {
       /* Get the path for the URL in 8 bit format.  */
       char path[PATH_MAX];
-      path[PATH_MAX-1] = '\0';
-      if (CFURLGetFileSystemRepresentation (dsym_bundle_url, 1,
-            (UInt8 *)path, sizeof (path)))
+      path[PATH_MAX - 1] = '\0';
+      if (CFURLGetFileSystemRepresentation(dsym_bundle_url, 1,
+                                           (UInt8 *)path, sizeof(path)))
         {
-          char *dsym_ext = strcasestr (path, dsym_extension);
+          char *dsym_ext = strcasestr(path, dsym_extension);
           /* Check the dsym path to see if it is a full path to a dSYM
              Mach-O file in the dSYM bundle. We do this by checking:
              1 - If there is no dSYM extension in the path
@@ -1254,14 +1273,14 @@ locate_dsym_using_framework (struct objfile *objfile)
               /* Do NOT mess with the path if it was fully specified. PATH
                  should be a full path to the dSYM Mach-O file within the
                  dSYM bundle directory.  */
-              dsym_path = xstrdup (path);
+              dsym_path = xstrdup(path);
             }
         }
-      find_source_path_mappings (uuid_ref, dsym_bundle_url);
-      CFRelease (dsym_bundle_url);
+      find_source_path_mappings(uuid_ref, dsym_bundle_url);
+      CFRelease(dsym_bundle_url);
       dsym_bundle_url = NULL;
     }
-  CFRelease (uuid_ref);
+  CFRelease(uuid_ref);
   uuid_ref = NULL;
   return dsym_path;
 }
@@ -1276,7 +1295,7 @@ locate_dsym_using_framework (struct objfile *objfile)
    DebugSymbols.framework defaults from com.apple.DebugSymbols.plist.  */
 
 char *
-macosx_locate_dsym (struct objfile *objfile)
+macosx_locate_dsym(struct objfile *objfile)
 {
   char *basename_str;
   char *dot_ptr;
@@ -1305,75 +1324,74 @@ macosx_locate_dsym (struct objfile *objfile)
      will end up with an infinite loop where after we add a dSYM symbol file,
      it will then enter this function asking if there is a debug file for the
      dSYM file itself.  */
-  if (strcasestr (executable_name, ".dSYM") == NULL)
+  if (strcasestr(executable_name, ".dSYM") == NULL)
     {
-      /* Check for the existence of a .dSYM file for a given executable.  */
-      basename_str = basename ((char *) executable_name);
-      dsymfile = alloca (strlen (executable_name)
-			       + strlen (APPLE_DSYM_EXT_AND_SUBDIRECTORY)
-			       + strlen (basename_str)
-			       + 1);
+      /* Check for the existence of a .dSYM file for a given executable: */
+      basename_str = basename((char *)executable_name);
+      dsymfile = (char *)alloca(strlen(executable_name)
+                                + strlen(APPLE_DSYM_EXT_AND_SUBDIRECTORY)
+                                + strlen(basename_str) + 1UL);
 
-      /* First try for the dSYM in the same directory as the original file.  */
-      strcpy (dsymfile, executable_name);
-      strcat (dsymfile, APPLE_DSYM_EXT_AND_SUBDIRECTORY);
-      strcat (dsymfile, basename_str);
+      /* First try for the dSYM in the same directory as the original file: */
+      strcpy(dsymfile, executable_name);
+      strcat(dsymfile, APPLE_DSYM_EXT_AND_SUBDIRECTORY);
+      strcat(dsymfile, basename_str);
 
-      if (file_exists_p (dsymfile))
+      if (file_exists_p(dsymfile))
         {
 #if USE_DEBUG_SYMBOLS_FRAMEWORK
-          find_source_path_mappings_posix (objfile, dsymfile);
+          find_source_path_mappings_posix(objfile, dsymfile);
 #endif /* USE_DEBUG_SYMBOLS_FRAMEWORK */
-          return xstrdup (dsymfile);
+          return xstrdup(dsymfile);
         }
 
-      /* Now search for any parent directory that has a '.' in it so we can find
-	   * Mac OS X applications, bundles, plugins, and any other kinds of files.
-	   * Mac OS X application bundles wil have their program in
-	   * "/some/path/MyApp.app/Contents/MacOS/MyApp" (or replace ".app" with
-	   * ".bundle" or ".plugin" for other types of bundles).  So we look for any
-	   * prior '.' character and try appending the apple dSYM extension and
-	   * subdirectory and see if we find an existing dSYM file (in the above
-       * MyApp example the dSYM would be at either:
-	   * "/some/path/MyApp.app.dSYM/Contents/Resources/DWARF/MyApp" or
-	   * "/some/path/MyApp.dSYM/Contents/Resources/DWARF/MyApp".  */
-      strcpy (dsymfile, dirname ((char *) executable_name));
-      /* Append a directory delimiter so we do not miss shallow bundles that
-       * have the dSYM appended on like "/some/path/MacApp.app.dSYM" when
-	   * we start with "/some/path/MyApp.app/MyApp".  */
-      strcat (dsymfile, "/");
-      while ((dot_ptr = strrchr (dsymfile, '.')))
+      /* Now search for any parent directory that has a '.' in it so we can
+       * find Mac OS X applications, bundles, plugins, and any other kinds
+       * of files.  Mac OS X application bundles wil have their program in
+       * "/some/path/MyApp.app/Contents/MacOS/MyApp" (or replace ".app"
+       * with ".bundle" or ".plugin" for other types of bundles).  So we
+       * look for any prior '.' character and try appending the Apple dSYM
+       * extension and subdirectory and see if we find an existing dSYM
+       * file (in the above MyApp example the dSYM would be at either:
+       * "/some/path/MyApp.app.dSYM/Contents/Resources/DWARF/MyApp" or
+       * "/some/path/MyApp.dSYM/Contents/Resources/DWARF/MyApp": */
+      strcpy(dsymfile, dirname((char *)executable_name));
+      /* Append a directory delimiter so we do not miss shallow bundles
+       * that have the dSYM appended on like "/some/path/MacApp.app.dSYM"
+       * when we start with "/some/path/MyApp.app/MyApp": */
+      strcat(dsymfile, "/");
+      while ((dot_ptr = strrchr(dsymfile, '.')))
 	{
 	  /* Find the directory delimiter that follows the '.' character since
 	     we now look for a .dSYM that follows any bundle extension.  */
-	  slash_ptr = strchr (dot_ptr, '/');
+	  slash_ptr = strchr(dot_ptr, '/');
 	  if (slash_ptr)
 	    {
 	      /* NULL terminate the string at the '/' character and append
 	         the path down to the dSYM file.  */
 	      *slash_ptr = '\0';
-	      strcat (slash_ptr, APPLE_DSYM_EXT_AND_SUBDIRECTORY);
-	      strcat (slash_ptr, basename_str);
-	      if (file_exists_p (dsymfile))
+	      strcat(slash_ptr, APPLE_DSYM_EXT_AND_SUBDIRECTORY);
+	      strcat(slash_ptr, basename_str);
+	      if (file_exists_p(dsymfile))
                 {
 #if USE_DEBUG_SYMBOLS_FRAMEWORK
-                  find_source_path_mappings_posix (objfile, dsymfile);
+                  find_source_path_mappings_posix(objfile, dsymfile);
 #endif /* USE_DEBUG_SYMBOLS_FRAMEWORK */
-		  return xstrdup (dsymfile);
+		  return xstrdup(dsymfile);
                 }
 	    }
 
 	  /* NULL terminate the string at the '.' character and append
 	     the path down to the dSYM file.  */
 	  *dot_ptr = '\0';
-	  strcat (dot_ptr, APPLE_DSYM_EXT_AND_SUBDIRECTORY);
-	  strcat (dot_ptr, basename_str);
-	  if (file_exists_p (dsymfile))
+	  strcat(dot_ptr, APPLE_DSYM_EXT_AND_SUBDIRECTORY);
+	  strcat(dot_ptr, basename_str);
+	  if (file_exists_p(dsymfile))
             {
 #if USE_DEBUG_SYMBOLS_FRAMEWORK
-              find_source_path_mappings_posix (objfile, dsymfile);
+              find_source_path_mappings_posix(objfile, dsymfile);
 #endif /* USE_DEBUG_SYMBOLS_FRAMEWORK */
-              return xstrdup (dsymfile);
+              return xstrdup(dsymfile);
             }
 
 	  /* NULL terminate the string at the '.' locatated by the strrchr()
@@ -1384,10 +1402,10 @@ macosx_locate_dsym (struct objfile *objfile)
 	   * dSYM file so now find previous directory delimiter so we do not
 	   * try multiple times on a file name that may have a version number
 	   * in it such as "/some/path/MyApp.6.0.4.app".  */
-	  slash_ptr = strrchr (dsymfile, '/');
-		if (!slash_ptr) {
-			break;
-		}
+	  slash_ptr = strrchr(dsymfile, '/');
+          if (!slash_ptr) {
+            break;
+          }
 	  /* NULL terminate the string at the previous directory character
 	   * and search again.  */
 	  *slash_ptr = '\0';
@@ -1396,7 +1414,7 @@ macosx_locate_dsym (struct objfile *objfile)
       /* Check to see if configure detected the DebugSymbols framework, and
 	 try to use it to locate the dSYM files if it was detected.  */
       if (dsym_locate_enabled)
-	return locate_dsym_using_framework (objfile);
+	return locate_dsym_using_framework(objfile);
 #endif /* USE_DEBUG_SYMBOLS_FRAMEWORK */
     }
   return NULL;
@@ -1405,35 +1423,36 @@ macosx_locate_dsym (struct objfile *objfile)
 /* Returns 1 if the directory is found.  0 if error or not found.
    Files return 0. */
 int
-dir_exists_p (const char *dir)
+dir_exists_p(const char *dir)
 {
   struct stat sb;
-  return (stat (dir, &sb) == 0) && S_ISDIR (sb.st_mode);
+  return (stat(dir, &sb) == 0) && S_ISDIR(sb.st_mode);
 }
 
 /* Searches a string for a substring. If the substring is found, the
    string is truncated at the end of the substring, and the string
    is returned. If the substring is not found, NULL is retuned. */
 char *
-strtrunc (char *str, const char *substr)
+strtrunc(char *str, const char *substr)
 {
   char *match;
   u_long len;
+  char *best_match;
 
-  match = strcasestr (str, substr);
+  match = strcasestr(str, substr);
   if (!match)
     return NULL;
 
-  /* Try to find the LAST occurrence of substr */
-  char *best_match = match;
-  while (match && *match != '\0' && *(match + 1) != '\0')
+  /* Try to find the LAST occurrence of substr: */
+  best_match = match;
+  while (match && (*match != '\0') && (*(match + 1) != '\0'))
     {
-      match = strcasestr (match + 1, substr);
+      match = strcasestr(match + 1, substr);
       if (match)
         best_match = match;
     }
 
-  len = (best_match - str) + strlen (substr);
+  len = ((best_match - str) + strlen(substr));
   str[len] = '\0';
   return str;
 }
@@ -1463,54 +1482,57 @@ strtrunc (char *str, const char *substr)
   The caller is responsible for freeing it.  On failure, NULL is returned.  */
 
 static char *
-get_dbg_shell_command ()
+get_dbg_shell_command(void)
 {
-  CFTypeRef shell_cmd = CFPreferencesCopyAppValue (CFSTR ("DBGShellCommands"), CFSTR ("com.apple.DebugSymbols"));
-  if (shell_cmd == NULL || CFGetTypeID (shell_cmd) != CFStringGetTypeID())
+  CFTypeRef shell_cmd;
+  char shell_cmd_cstr[PATH_MAX];
+
+  shell_cmd = CFPreferencesCopyAppValue(CFSTR("DBGShellCommands"),
+                                        CFSTR("com.apple.DebugSymbols"));
+  if ((shell_cmd == NULL) || CFGetTypeID(shell_cmd) != CFStringGetTypeID())
     {
       if (shell_cmd)
-        CFRelease (shell_cmd);
+        CFRelease(shell_cmd);
       return NULL;
     }
 
-  char shell_cmd_cstr[PATH_MAX];
-  if (!CFStringGetCString ((CFStringRef) shell_cmd, shell_cmd_cstr, sizeof (shell_cmd_cstr), kCFStringEncodingUTF8))
+  if (!CFStringGetCString((CFStringRef)shell_cmd, shell_cmd_cstr,
+                          sizeof(shell_cmd_cstr), kCFStringEncodingUTF8))
     return NULL;
-  CFRelease (shell_cmd);
+  CFRelease(shell_cmd);
 
-  if (file_exists_p (shell_cmd_cstr))
-    return xstrdup (shell_cmd_cstr);
+  if (file_exists_p(shell_cmd_cstr))
+    return xstrdup(shell_cmd_cstr);
   return NULL;
 }
 
 
 /* Given a path to a kext binary, run it through tilde expansion,
- * realpath expansion, and return an xmalloc'ed string of the resolved name.
- * Caller must free the returned memory.
- */
-
+ * realpath expansion, & return an xmalloc'ed string of the resolved name.
+ * Caller must free the returned memory: */
 char *
-expand_kext_cstr (const char *kext_path)
+expand_kext_cstr(const char *kext_path)
 {
   char pathbuf[PATH_MAX];
-
-  if (file_exists_p (kext_path))
-    return xstrdup (kext_path);
-
-  const char *tilde_expanded_path = tilde_expand (kext_path);
-  if (file_exists_p (tilde_expanded_path))
-    return xstrdup (tilde_expanded_path);
-  strlcpy (pathbuf, tilde_expanded_path, sizeof (pathbuf));
-
+  const char *tilde_expanded_path;
   char real_path[PATH_MAX];
+
+  if (file_exists_p(kext_path))
+    return xstrdup(kext_path);
+
+  tilde_expanded_path = tilde_expand(kext_path);
+  if (file_exists_p(tilde_expanded_path))
+    return xstrdup(tilde_expanded_path);
+  strlcpy(pathbuf, tilde_expanded_path, sizeof(pathbuf));
+
   real_path[0] = '\0';
-  if (realpath (kext_path, real_path))
+  if (realpath(kext_path, real_path))
     {
-      if (file_exists_p (real_path))
-        return xstrdup (real_path);
+      if (file_exists_p(real_path))
+        return xstrdup(real_path);
     }
 
-  return xstrdup (kext_path);
+  return xstrdup(kext_path);
 }
 
 
@@ -1532,89 +1554,110 @@ expand_kext_cstr (const char *kext_path)
    of the caller to free it.  */
 
 char *
-macosx_locate_executable_by_dbg_shell_command (CFStringRef uuid)
+macosx_locate_executable_by_dbg_shell_command(CFStringRef uuid)
 {
+  char *shell_cmd_cstr;
+  char uuid_cstr[80];
+  char command[PATH_MAX];
+  size_t data_buffer_size;
+  char *data_buffer;
+  FILE *input;
+  char one_line[PATH_MAX];
+  CFDataRef plist_data;
+  CFPropertyListRef plist;
+  CFDictionaryRef per_arch_kv;
+  CFStringRef sym_rich_exe;
+  char tempbuf[PATH_MAX];
+  char *return_path;
+  char *possibly_expanded_path;
+
   if (uuid == NULL)
     return NULL;
 
-  char *shell_cmd_cstr = get_dbg_shell_command ();
+  shell_cmd_cstr = get_dbg_shell_command();
 
   if (shell_cmd_cstr == NULL)
     return NULL;
 
-  char uuid_cstr[80];
-  if (!CFStringGetCString (uuid, uuid_cstr, sizeof (uuid_cstr), kCFStringEncodingUTF8))
+  if (!CFStringGetCString(uuid, uuid_cstr, sizeof(uuid_cstr), kCFStringEncodingUTF8))
     return NULL;
 
-  char command[PATH_MAX];
-  strlcpy (command, shell_cmd_cstr, sizeof (command));
-  strlcat (command, " ", sizeof (command));
-  strlcat (command, uuid_cstr, sizeof (command));
+  strlcpy(command, shell_cmd_cstr, sizeof(command));
+  strlcat(command, " ", sizeof(command));
+  strlcat(command, uuid_cstr, sizeof(command));
 
-  int data_buffer_size = 80 * PATH_MAX;
-  char *data_buffer = (char *) xmalloc (data_buffer_size);
+  data_buffer_size = (80UL * PATH_MAX);
+  data_buffer = (char *)xmalloc(data_buffer_size);
   data_buffer[0] = '\0';
 
-  FILE *input = popen (command, "r");
-	if (input == NULL) {
-		return NULL;
-	}
+  input = popen(command, "r");
+  if (input == NULL) {
+    return NULL;
+  }
 
-  char one_line[PATH_MAX];
-  while (fgets (one_line, sizeof (one_line), input) != NULL)
-    strlcat (data_buffer, one_line, data_buffer_size);
-  pclose (input);
+  while (fgets(one_line, sizeof(one_line), input) != NULL)
+    strlcat(data_buffer, one_line, data_buffer_size);
+  pclose(input);
 
   data_buffer[data_buffer_size - 1] = '\0';
 
-  CFDataRef plist_data = CFDataCreate (kCFAllocatorDefault, (const UInt8 *) data_buffer, strlen (data_buffer) + 1);
+  plist_data = CFDataCreate(kCFAllocatorDefault,
+                            (const UInt8 *)data_buffer,
+                            (CFIndex)(strlen(data_buffer) + 1L));
 
-	if (plist_data == NULL) {
-		return NULL;
-	}
+  if (plist_data == NULL) {
+    return NULL;
+  }
 
-  CFPropertyListRef plist = CFPropertyListCreateWithData (kCFAllocatorDefault, plist_data, kCFPropertyListImmutable, NULL, NULL);
+  plist = CFPropertyListCreateWithData(kCFAllocatorDefault, plist_data,
+                                       kCFPropertyListImmutable,
+                                       NULL, NULL);
 
-  if (plist == NULL || CFGetTypeID (plist) != CFDictionaryGetTypeID())
+  if ((plist == NULL) || (CFGetTypeID(plist) != CFDictionaryGetTypeID()))
     {
-      CFRelease (plist_data);
-      xfree (data_buffer);
-      xfree (shell_cmd_cstr);
+      CFRelease(plist_data);
+      xfree(data_buffer);
+      xfree(shell_cmd_cstr);
       return NULL;
     }
 
-  /* Get the dictionary value under the UUID key */
-  CFDictionaryRef per_arch_kv = CFDictionaryGetValue (plist, uuid);
-  if (per_arch_kv == NULL || CFGetTypeID (per_arch_kv) != CFDictionaryGetTypeID())
+  /* Get the dictionary value under the UUID key: */
+  per_arch_kv = ((CFDictionaryRef)
+                 CFDictionaryGetValue((CFDictionaryRef)plist, uuid));
+  if ((per_arch_kv == NULL)
+      || (CFGetTypeID(per_arch_kv) != CFDictionaryGetTypeID()))
     {
-      CFRelease (plist_data);
-      xfree (data_buffer);
-      xfree (shell_cmd_cstr);
+      CFRelease(plist_data);
+      xfree(data_buffer);
+      xfree(shell_cmd_cstr);
       return NULL;
     }
 
-  CFStringRef sym_rich_exe = CFDictionaryGetValue (per_arch_kv, CFSTR ("DBGSymbolRichExecutable"));
-  if (sym_rich_exe == NULL || CFGetTypeID (sym_rich_exe) != CFStringGetTypeID())
+  sym_rich_exe = ((CFStringRef)
+                  CFDictionaryGetValue(per_arch_kv,
+                                       CFSTR("DBGSymbolRichExecutable")));
+  if ((sym_rich_exe == NULL)
+      || (CFGetTypeID(sym_rich_exe) != CFStringGetTypeID()))
     {
-      CFRelease (plist_data);
-      xfree (data_buffer);
-      xfree (shell_cmd_cstr);
+      CFRelease(plist_data);
+      xfree(data_buffer);
+      xfree(shell_cmd_cstr);
       return NULL;
     }
 
-  char tempbuf[PATH_MAX];
-  char *return_path = NULL;
-  if (CFStringGetCString ((CFStringRef) sym_rich_exe, tempbuf, sizeof (tempbuf), kCFStringEncodingUTF8))
-    return_path = xstrdup (tempbuf);
+  return_path = NULL;
+  if (CFStringGetCString((CFStringRef)sym_rich_exe, tempbuf,
+                         sizeof(tempbuf), kCFStringEncodingUTF8))
+    return_path = xstrdup(tempbuf);
 
-  CFRelease (plist_data);
-  xfree (data_buffer);
-  xfree (shell_cmd_cstr);
+  CFRelease(plist_data);
+  xfree(data_buffer);
+  xfree(shell_cmd_cstr);
 
-  char *possibly_expanded_path = expand_kext_cstr (return_path);
+  possibly_expanded_path = expand_kext_cstr(return_path);
   if (possibly_expanded_path != return_path)
     {
-      xfree (return_path);
+      xfree(return_path);
       return_path = possibly_expanded_path;
     }
 
@@ -1628,83 +1671,90 @@ const CFStringRef kSymbolRichExecutable = CFSTR("DBGSymbolRichExecutable");
    responsible for freeing the returned xmalloc'd filename. */
 
 char *
-locate_kext_executable_by_dsym_plist (CFDictionaryRef dsym_info, CFUUIDRef uuid_ref)
+locate_kext_executable_by_dsym_plist(CFDictionaryRef dsym_info,
+                                     CFUUIDRef uuid_ref)
 {
   CFDictionaryRef uuid_info = NULL;
   CFStringRef kext_path = NULL;
   CFStringRef uuid_string = NULL;
   CFStringRef alt_exe_path = NULL;
   char *path = NULL;
+  char temp_pathbuf[PATH_MAX];
 
   uuid_string = CFUUIDCreateString(kCFAllocatorDefault, uuid_ref);
   if (!uuid_string)
     {
-      warning ("could not convert CFUUIDRef into string");
+      warning("Failed to convert CFUUIDRef into string");
       goto finish;
     }
 
-  uuid_info = CFDictionaryGetValue(dsym_info, uuid_string);
+  uuid_info = (CFDictionaryRef)CFDictionaryGetValue(dsym_info,
+                                                    uuid_string);
   if (!uuid_info)
     {
-      warning ("could not find UUID key in dSYM Info.plist");
+      warning("Failed to find UUID key in dSYM Info.plist");
       goto finish;
     }
 
-  kext_path = CFDictionaryGetValue (uuid_info, kSymbolRichExecutable);
+  kext_path = (CFStringRef)CFDictionaryGetValue(uuid_info,
+                                                kSymbolRichExecutable);
 
   /* Try calling dsymForUUID to possibly get a more up-to-date location
-   * for the symbol rich executable if looking in the dSYM's Info.plist failed
-   */
-  if (!kext_path || CFGetTypeID (kext_path) != CFStringGetTypeID())
+   * for the symbol rich executable, if looking in the dSYM's Info.plist
+   * failed on us: */
+  if (!kext_path || (CFGetTypeID(kext_path) != CFStringGetTypeID()))
     {
-      char *alt_exe_path = macosx_locate_executable_by_dbg_shell_command (uuid_string);
+      char *alt_exe_path;
+      alt_exe_path = macosx_locate_executable_by_dbg_shell_command(uuid_string);
       if (alt_exe_path)
         {
-          CFRelease (uuid_string);
-          char *final_path = expand_kext_cstr (alt_exe_path);
-          xfree (alt_exe_path);
+          char *final_path;
+          CFRelease(uuid_string);
+          final_path = expand_kext_cstr(alt_exe_path);
+          xfree(alt_exe_path);
           return final_path;
         }
     }
 
-  if (!kext_path || CFGetTypeID (kext_path) != CFStringGetTypeID())
+  if (!kext_path || (CFGetTypeID(kext_path) != CFStringGetTypeID()))
     {
-      warning ("could not find DBGSymbolRichExecutable key in dSYM Info.plist");
+      warning("Failed to find DBGSymbolRichExecutable key in dSYM Info.plist");
       goto finish;
     }
 
-  char temp_pathbuf[PATH_MAX];
-  if (!CFStringGetFileSystemRepresentation (kext_path, temp_pathbuf, sizeof (temp_pathbuf)))
+  if (!CFStringGetFileSystemRepresentation(kext_path, temp_pathbuf,
+                                           sizeof(temp_pathbuf)))
     goto finish;
 
-  path = expand_kext_cstr (temp_pathbuf);
+  path = expand_kext_cstr(temp_pathbuf);
 
-  if (!file_exists_p (path))
+  if (!file_exists_p(path))
     {
-      char *alt_exe_path = macosx_locate_executable_by_dbg_shell_command (uuid_string);
+      char *alt_exe_path;
+      alt_exe_path = macosx_locate_executable_by_dbg_shell_command(uuid_string);
       if (alt_exe_path)
         {
-          char *expanded_path = expand_kext_cstr (alt_exe_path);
-          xfree (alt_exe_path);
-          if (file_exists_p (expanded_path))
+          char *expanded_path = expand_kext_cstr(alt_exe_path);
+          xfree(alt_exe_path);
+          if (file_exists_p(expanded_path))
             {
               if (path)
-                xfree (path);
-              CFRelease (uuid_string);
+                xfree(path);
+              CFRelease(uuid_string);
               return expanded_path;
             }
-          xfree (expanded_path);
+          xfree(expanded_path);
         }
     }
 
-  if (!file_exists_p (path))
+  if (!file_exists_p(path))
     {
-      warning ("No kext binary found at '%s' from dSYM's Info.plist", path);
+      warning("No kext binary found at '%s' from dSYM's Info.plist", path);
     }
 
 finish:
   if (uuid_string)
-    CFRelease (uuid_string);
+    CFRelease(uuid_string);
 
   return path;
 }
@@ -1715,61 +1765,61 @@ finish:
    filename. */
 
 char *
-locate_kext_executable_by_dsym_url (CFURLRef dsym_url)
+locate_kext_executable_by_dsym_url(CFURLRef dsym_url)
 {
-  char * result = NULL;
+  char *result = NULL;
   char path[PATH_MAX];
-  const char * identifier_name = NULL;
-  const char * exec_name = NULL;
-  char * bundle_path = NULL;
-  char * tmp;
+  const char *identifier_name = NULL;
+  const char *exec_name = NULL;
+  char *bundle_path = NULL;
+  char *tmp;
 
-  if (!CFURLGetFileSystemRepresentation (dsym_url, 1, (UInt8 *) path, sizeof(path)))
+  if (!CFURLGetFileSystemRepresentation(dsym_url, 1, (UInt8 *)path, sizeof(path)))
     {
       goto finish;
     }
 
-  tmp = strtrunc (path, ".kext");
+  tmp = strtrunc(path, ".kext");
   if (!tmp)
     {
       goto finish;
     }
 
-  if (!dir_exists_p (path))
+  if (!dir_exists_p(path))
     {
       if (*path != '\0')
-        warning ("No kext at path '%s'", path);
+        warning("No kext at path '%s'", path);
       goto finish;
     }
 
-  bundle_path = macosx_kext_info (path, &exec_name, &identifier_name);
+  bundle_path = macosx_kext_info(path, &exec_name, &identifier_name);
   if (!bundle_path)
     {
       goto finish;
     }
 
-  strlcat (path, "/Contents/MacOS/", sizeof(path));
-  strlcat (path, exec_name, sizeof(path));
+  strlcat(path, "/Contents/MacOS/", sizeof(path));
+  strlcat(path, exec_name, sizeof(path));
   if (!file_exists_p (path))
     {
-      strtrunc (path, ".kext");
-      strlcat (path, "/", sizeof(path));
-      strlcat (path, exec_name, sizeof(path));
+      strtrunc(path, ".kext");
+      strlcat(path, "/", sizeof(path));
+      strlcat(path, exec_name, sizeof(path));
 
-      if (!file_exists_p (path))
+      if (!file_exists_p(path))
         {
           goto finish;
         }
     }
 
-  result = xstrdup (path);
+  result = xstrdup(path);
 finish:
   if (bundle_path)
-    xfree (bundle_path);
+    xfree(bundle_path);
   if (exec_name)
-    xfree ((char *) exec_name);
+    xfree((char *)exec_name);
   if (identifier_name)
-    xfree ((char *) identifier_name);
+    xfree((char *)identifier_name);
 
   return result;
 }
@@ -1790,44 +1840,46 @@ finish:
  */
 
 static char *
-look_for_kext_binary_next_to_dsym (const char *dsym_path, CFUUIDRef kext_uuid)
+look_for_kext_binary_next_to_dsym(const char *dsym_path, CFUUIDRef kext_uuid)
 {
-  if (dsym_path == NULL || kext_uuid == NULL || dsym_path[0] == '\0')
+  char kextpath[PATH_MAX];
+  uint8_t uuid[16];
+  uint8_t **file_uuids;
+  uint8_t **i;
+
+  if ((dsym_path == NULL) || (kext_uuid == NULL) || (dsym_path[0] == '\0'))
     return NULL;
 
   /* does the dsym_path end in ".kext.dSYM" ? */
-	if (strlen (dsym_path) < 11) {
-		return NULL;
-	}
+  if (strlen(dsym_path) < 11UL) {
+    return NULL;
+  }
 
-  char kextpath[PATH_MAX];
-  strlcpy (kextpath, dsym_path, sizeof (kextpath));
-  if (strcmp (kextpath + strlen (kextpath) - 10, ".kext.dSYM") != 0)
+  strlcpy(kextpath, dsym_path, sizeof(kextpath));
+  if (strcmp(kextpath + strlen(kextpath) - 10, ".kext.dSYM") != 0)
     return NULL;
 
   /* chop off the ".kext.dSYM" part from the pathname */
-  kextpath[strlen (kextpath) - 10] = '\0';
-  if (kextpath[0] == '\0' || !file_exists_p (kextpath))
+  kextpath[strlen(kextpath) - 10] = '\0';
+  if ((kextpath[0] == '\0') || !file_exists_p(kextpath))
     return NULL;
 
-  uint8_t uuid[16];
-  get_uuid_t_for_uuidref (kext_uuid, &uuid);
-  uint8_t **file_uuids = get_binary_file_uuids (kextpath);
-  uint8_t **i;
+  get_uuid_t_for_uuidref(kext_uuid, &uuid);
+  file_uuids = get_binary_file_uuids(kextpath);
 
   if (file_uuids == NULL)
     return NULL;
 
-  for (i = file_uuids ; *i != NULL; i++)
+  for (i = file_uuids; *i != NULL; i++)
     {
-      if (memcmp (*i, uuid, sizeof (uuid_t)) == 0)
+      if (memcmp(*i, uuid, sizeof(uuid_t)) == 0)
         {
-          free_uuids_array (file_uuids);
-          return xstrdup (kextpath);
+          free_uuids_array(file_uuids);
+          return xstrdup(kextpath);
         }
     }
 
-  free_uuids_array (file_uuids);
+  free_uuids_array(file_uuids);
   return NULL;
 }
 
@@ -1839,8 +1891,8 @@ look_for_kext_binary_next_to_dsym (const char *dsym_path, CFUUIDRef kext_uuid)
    Caller is responsible for freeing the returned xmalloc'd filename. */
 
 static char *
-macosx_locate_kext_executable_by_symfile_helper (CFUUIDRef kext_uuid,
-                                                 const char *kext_name)
+macosx_locate_kext_executable_by_symfile_helper(CFUUIDRef kext_uuid,
+                                                const char *kext_name)
 {
 #if USE_DEBUG_SYMBOLS_FRAMEWORK
   char *result = NULL;
@@ -1853,37 +1905,40 @@ macosx_locate_kext_executable_by_symfile_helper (CFUUIDRef kext_uuid,
   CFUUIDBytes kext_executable_uuid_bytes;
 
   uuid_t uuid;
-  get_uuid_t_for_uuidref (kext_uuid, &uuid); /* Convert CFUUIDRef to uuid_t */
 
-  /* Find the dSYM using the DebugSymbols framework */
+  char dsym_path[PATH_MAX];
 
-  dsym_url = DBGCopyDSYMURLForUUID (kext_uuid);
+  char *kext_next_to_dsym = NULL;
+
+  get_uuid_t_for_uuidref(kext_uuid, &uuid); /* Convert CFUUIDRef to uuid_t */
+
+  /* Find the dSYM using the DebugSymbols framework: */
+  dsym_url = DBGCopyDSYMURLForUUID(kext_uuid);
   if (!dsym_url)
     {
-      const char *basep = strrchr (kext_name, '/');
+      const char *basep = strrchr(kext_name, '/');
       const char *name = kext_name;
-      if (basep && *basep != '\0' && *(basep + 1) != '\0')
+      if (basep && (*basep != '\0') && (*(basep + 1) != '\0'))
         name = ++basep;
-      warning ("Cannot find dSYM for %s (%s)", name, puuid (uuid));
+      warning("Cannot find dSYM for %s (%s)", name, puuid(uuid));
       goto finish;
     }
 
-  char dsym_path[PATH_MAX];
-  if (dsym_url == NULL
-      || CFGetTypeID (dsym_url) != CFURLGetTypeID()
-      || !CFURLGetFileSystemRepresentation (dsym_url, 1, (UInt8 *) dsym_path, sizeof (dsym_path)))
+  if ((dsym_url == NULL)
+      || (CFGetTypeID(dsym_url) != CFURLGetTypeID())
+      || !CFURLGetFileSystemRepresentation(dsym_url, 1, (UInt8 *)dsym_path,
+                                           sizeof(dsym_path)))
     {
       dsym_path[0] = '\0';
     }
 
   /* Before we go searching for the kext binary too far, see if it is sitting next
-   * to the dSYM as a bare file (not a bundle).
-   */
-  char *kext_next_to_dsym = look_for_kext_binary_next_to_dsym (dsym_path, kext_uuid);
-  if (file_exists_p (kext_next_to_dsym))
+   * to the dSYM as a bare file (not a bundle): */
+  kext_next_to_dsym = look_for_kext_binary_next_to_dsym(dsym_path, kext_uuid);
+  if (file_exists_p(kext_next_to_dsym))
     {
       if (dsym_url)
-        CFRelease (dsym_url);
+        CFRelease(dsym_url);
       return kext_next_to_dsym;
     }
 
@@ -1893,53 +1948,53 @@ macosx_locate_kext_executable_by_symfile_helper (CFUUIDRef kext_uuid,
    */
 
   /* This returns the Info.plist in the .dSYM bundle parsed into a CFDictionary */
-  dsym_info = DBGCopyDSYMPropertyLists (dsym_url);
+  dsym_info = DBGCopyDSYMPropertyLists(dsym_url);
   if (dsym_info)
     {
-      kext_executable_name = locate_kext_executable_by_dsym_plist (dsym_info, kext_uuid);
+      kext_executable_name = locate_kext_executable_by_dsym_plist(dsym_info, kext_uuid);
     }
   else
     {
-      kext_executable_name = locate_kext_executable_by_dsym_url (dsym_url);
+      kext_executable_name = locate_kext_executable_by_dsym_url(dsym_url);
     }
   if (!kext_executable_name)
     {
       char path[PATH_MAX];
-      /* print a specific warning message if we have a dSYM pathname */
-      if (CFURLGetFileSystemRepresentation (dsym_url, 1, (UInt8 *) path, sizeof (path)))
+      /* print a specific warning message if we have a dSYM pathname: */
+      if (CFURLGetFileSystemRepresentation(dsym_url, 1, (UInt8 *)path, sizeof(path)))
         {
-          path[sizeof (path) - 1] = '\0';
-          warning ("Unable to locate symbol-rich-executable for dSYM at %s (%s)",
-                    path, puuid (uuid));
+          path[sizeof(path) - 1] = '\0';
+          warning("Unable to locate symbol-rich-executable for dSYM at %s (%s)",
+                  path, puuid(uuid));
         }
       goto finish;
     }
 
-  if (!file_exists_p (kext_executable_name))
+  if (!file_exists_p(kext_executable_name))
     {
-      warning ("The needed symbol-rich-executable at '%s' does not exist.",
-               kext_executable_name);
+      warning("The needed symbol-rich-executable at '%s' does not exist.",
+              kext_executable_name);
       goto finish;
     }
 
   /* Ensure the symfile's UUID matches the symbol-rich executable's */
 
-  kext_executable_bfd = symfile_bfd_open (kext_executable_name, 0, GDB_OSABI_UNKNOWN);
+  kext_executable_bfd = symfile_bfd_open(kext_executable_name, 0, GDB_OSABI_UNKNOWN);
   if (!kext_executable_bfd)
     {
-      warning ("Unable to open symbol-rich-executable for reading at '%s'.",
-               kext_executable_name);
+      warning("Unable to open symbol-rich-executable for reading at '%s'.",
+              kext_executable_name);
       goto finish;
     }
 
-  kext_executable_uuid = get_uuidref_for_bfd (kext_executable_bfd);
+  kext_executable_uuid = get_uuidref_for_bfd(kext_executable_bfd);
   if (!kext_executable_uuid)
     goto finish;
 
-  kext_uuid_bytes = CFUUIDGetUUIDBytes (kext_uuid);
-  kext_executable_uuid_bytes = CFUUIDGetUUIDBytes (kext_executable_uuid);
-  if (memcmp (&kext_uuid_bytes, &kext_executable_uuid_bytes,
-              sizeof (CFUUIDBytes)))
+  kext_uuid_bytes = CFUUIDGetUUIDBytes(kext_uuid);
+  kext_executable_uuid_bytes = CFUUIDGetUUIDBytes(kext_executable_uuid);
+  if (memcmp(&kext_uuid_bytes, &kext_executable_uuid_bytes,
+             sizeof(CFUUIDBytes)))
     {
       goto finish;
     }
@@ -1948,16 +2003,16 @@ macosx_locate_kext_executable_by_symfile_helper (CFUUIDRef kext_uuid,
   kext_executable_name = NULL;
 finish:
   if (dsym_url)
-    CFRelease (dsym_url);
+    CFRelease(dsym_url);
   if (dsym_info)
-    CFRelease (dsym_info);
+    CFRelease(dsym_info);
 
   if (kext_executable_name)
-    xfree (kext_executable_name);
+    xfree(kext_executable_name);
   if (kext_executable_bfd)
-    bfd_close (kext_executable_bfd);
+    bfd_close(kext_executable_bfd);
   if (kext_executable_uuid)
-    CFRelease (kext_executable_uuid);
+    CFRelease(kext_executable_uuid);
 
   return result;
 #else
@@ -1971,70 +2026,72 @@ finish:
    responsible for freeing the returned xmalloc'd filename. */
 
 char *
-macosx_locate_kext_executable_by_symfile (bfd *abfd)
+macosx_locate_kext_executable_by_symfile(bfd *abfd)
 {
+  CFUUIDRef symfile_uuid;
+  char *ret;
+
   if (abfd == NULL)
     return NULL;
-  CFUUIDRef symfile_uuid = get_uuidref_for_bfd (abfd);
+  symfile_uuid = get_uuidref_for_bfd(abfd);
   if (symfile_uuid == NULL)
     return NULL;
 
-  char *ret;
-  ret = macosx_locate_kext_executable_by_symfile_helper (symfile_uuid,
-                                                         abfd->filename);
-  CFRelease (symfile_uuid);
+  ret = macosx_locate_kext_executable_by_symfile_helper(symfile_uuid,
+                                                        abfd->filename);
+  CFRelease(symfile_uuid);
   return ret;
 }
 
 struct objfile *
-macosx_find_objfile_matching_dsym_in_bundle (char *dsym_bundle_path, char **out_full_path)
+macosx_find_objfile_matching_dsym_in_bundle(char *dsym_bundle_path, char **out_full_path)
 {
   CFMutableDictionaryRef paths_and_uuids;
   struct search_baton results;
   struct objfile *objfile;
   struct objfile *out_objfile = NULL;
 
-  paths_and_uuids = create_dsym_uuids_for_path (dsym_bundle_path);
+  paths_and_uuids = create_dsym_uuids_for_path(dsym_bundle_path);
   if (paths_and_uuids == NULL)
     return NULL;
 
   results.found_it = 0;
   *out_full_path = NULL;
 
-  ALL_OBJFILES (objfile)
+  ALL_OBJFILES(objfile)
   {
-    /* Extract the UUID from the objfile.  */
-    CFUUIDRef uuid_ref = get_uuidref_for_bfd (objfile->obfd);
+    /* Extract the UUID from the objfile: */
+    CFUUIDRef uuid_ref = get_uuidref_for_bfd(objfile->obfd);
     if (uuid_ref == NULL)
       continue;
     results.test_uuid = uuid_ref;
-    CFDictionaryApplyFunction (paths_and_uuids, paths_and_uuids_map_func,
-        &results);
-    CFRelease (uuid_ref);
+    CFDictionaryApplyFunction(paths_and_uuids, paths_and_uuids_map_func,
+                              &results);
+    CFRelease(uuid_ref);
 
     if (results.found_it)
     {
-      *out_full_path = xmalloc (PATH_MAX);
+      *out_full_path = (char *)xmalloc(PATH_MAX);
       *(*out_full_path) = '\0';
-      if (CFURLGetFileSystemRepresentation (results.path_url, 1,
-            (UInt8 *) (*out_full_path), PATH_MAX - 1))
+      if (CFURLGetFileSystemRepresentation(results.path_url, 1,
+                                           (UInt8 *)(*out_full_path),
+                                           (PATH_MAX - 1)))
         {
           out_objfile = objfile;
         }
       else
         {
-          warning ("Could not get file system representation for URL:");
-          CFShow (results.path_url);
+          warning("Could not get file system representation for URL:");
+          CFShow(results.path_url);
           *out_full_path = NULL;
           out_objfile = NULL;
         }
-      CFRelease (results.path_url);
+      CFRelease(results.path_url);
       goto cleanup_and_return;
-
     }
   }
 cleanup_and_return:
-  CFRelease (paths_and_uuids);
+  CFRelease(paths_and_uuids);
   return out_objfile;
 }
 
@@ -2054,41 +2111,42 @@ cleanup_and_return:
    to xfree them.  */
 
 char *
-macosx_kext_info (const char *filename,
-                  const char **bundle_executable_name_from_plist,
-                  const char **bundle_identifier_name_from_plist)
+macosx_kext_info(const char *filename,
+                 const char **bundle_executable_name_from_plist,
+                 const char **bundle_identifier_name_from_plist)
 {
   char *info_plist_name;
   char *t;
+  const void *plist;
   *bundle_executable_name_from_plist = NULL;
   *bundle_identifier_name_from_plist = NULL;
-  const void *plist = NULL;
+  plist = NULL;
 
-  info_plist_name = find_info_plist_filename_from_bundle_name
-                                                      (filename, ".kext");
+  info_plist_name =
+    find_info_plist_filename_from_bundle_name(filename, ".kext");
   if (info_plist_name == NULL)
     return NULL;
 
-  plist = macosx_parse_plist (info_plist_name);
+  plist = macosx_parse_plist(info_plist_name);
 
-  *bundle_executable_name_from_plist = macosx_get_plist_posix_value (plist,
-						      "CFBundleExecutable");
-  *bundle_identifier_name_from_plist = macosx_get_plist_string_value (plist,
-						      "CFBundleIdentifier");
+  *bundle_executable_name_from_plist =
+    macosx_get_plist_posix_value(plist, "CFBundleExecutable");
+  *bundle_identifier_name_from_plist =
+    macosx_get_plist_string_value(plist, "CFBundleIdentifier");
   macosx_free_plist (&plist);
 
   /* Was there a /Contents directory in the bundle?  */
-  t = strstr (info_plist_name, "/Contents");
+  t = strstr(info_plist_name, "/Contents");
   if (t != NULL)
     t[0] = '\0';
 
   /* Or is it a flat bundle with the Info.plist at the top level?  */
-  t = strstr (info_plist_name, "/Info.plist");
+  t = strstr(info_plist_name, "/Info.plist");
   if (t != NULL)
     t[0] = '\0';
 
-  if (*bundle_executable_name_from_plist == NULL
-      || *bundle_identifier_name_from_plist == NULL)
+  if ((*bundle_executable_name_from_plist == NULL)
+      || (*bundle_identifier_name_from_plist == NULL))
     return NULL;
   else
     return info_plist_name;
@@ -2104,101 +2162,102 @@ macosx_kext_info (const char *filename,
    responsibility to free it.  */
 
 static char *
-find_info_plist_filename_from_bundle_name (const char *bundle,
-                                           const char *bundle_suffix)
+find_info_plist_filename_from_bundle_name(const char *bundle,
+                                          const char *bundle_suffix)
 {
   char *t;
   char *bundle_copy;
   char tmp_path[PATH_MAX];
   char realpath_buf[PATH_MAX];
   char *retval = NULL;
+  /* FIXME: this is a bad name for a variable; it looks like a type: */
+  char *best_t;
 
-  /* Make a local copy of BUNDLE so it may be modified below.  */
-  bundle_copy = tilde_expand (bundle);
+  /* Make a local copy of BUNDLE so it may be modified below: */
+  bundle_copy = tilde_expand(bundle);
   tmp_path[0] = '\0';
 
   /* Is BUNDLE in the form "/a/b/c/Foo.kext/Contents/MacOS/Foo"?  */
-  t = strstr (bundle_copy, bundle_suffix);
+  t = strstr(bundle_copy, bundle_suffix);
 
-  /* Find the last possible ".kext" or ".app" in the path */
-  char *best_t = t;
+  /* Find the last possible ".kext" or ".app" in the path: */
+  best_t = t;
   while (t)
     {
-      t = strstr (t + 1, bundle_suffix);
+      t = strstr((t + 1), bundle_suffix);
       if (t)
         best_t = t;
     }
   t = best_t;
 
-  if (t != NULL && t > bundle_copy)
+  if ((t != NULL) && (t > bundle_copy))
     {
-      t += strlen (bundle_suffix);
+      t += strlen(bundle_suffix);
       /* Do we have a / character after the bundle suffix?  */
       if (t[0] == '/')
         {
-          strncpy (tmp_path, bundle_copy, t - bundle_copy);
+          strncpy(tmp_path, bundle_copy, (t - bundle_copy));
           tmp_path[t - bundle_copy] = '\0';
         }
     }
 
-   /* Is BUNDLE in the form "/a/b/c/Foo.kext"?  */
-   t = strstr (bundle_copy, bundle_suffix);
+  /* Is BUNDLE in the form "/a/b/c/Foo.kext"?  */
+  t = strstr(bundle_copy, bundle_suffix);
 
   /* Find the last possible ".kext" or ".app" in the path */
-   best_t = t;
-   while (t)
-     {
-       t = strstr (t + 1, bundle_suffix);
-       if (t)
-         best_t = t;
-     }
-   t = best_t;
+  best_t = t;
+  while (t)
+    {
+      t = strstr(t + 1, bundle_suffix);
+      if (t)
+        best_t = t;
+    }
+  t = best_t;
 
-   if (t != NULL && t > bundle_copy && t[strlen (bundle_suffix)] == '\0')
-     {
-          strcpy (tmp_path, bundle_copy);
-     }
+  if ((t != NULL) && (t > bundle_copy) && t[strlen(bundle_suffix)] == '\0')
+    {
+      strcpy(tmp_path, bundle_copy);
+    }
 
-   if (tmp_path[0] == '\0')
-     {
-       if (bundle && *bundle != '\0')
-         warning ("No Info.plist found under %s", bundle);
-       return NULL;
-     }
+  if (tmp_path[0] == '\0')
+    {
+      if (bundle && (*bundle != '\0'))
+        warning("No Info.plist found under %s", bundle);
+      return NULL;
+    }
 
-   /* Now let us find the Info.plist in the bundle.  */
+  /* Now let us find the Info.plist in the bundle: */
+  strcpy(realpath_buf, tmp_path);
+  strcat(realpath_buf, "/Contents/Info.plist");
+  if (file_exists_p(realpath_buf))
+    {
+      retval = realpath_buf;
+    }
+  else
+    {
+      strcpy(realpath_buf, tmp_path);
+      strcat(realpath_buf, "/Info.plist");
+      if (file_exists_p(realpath_buf))
+        {
+          retval = realpath_buf;
+        }
+    }
 
-   strcpy (realpath_buf, tmp_path);
-   strcat (realpath_buf, "/Contents/Info.plist");
-   if (file_exists_p (realpath_buf))
-     {
-       retval = realpath_buf;
-     }
-   else
-     {
-       strcpy (realpath_buf, tmp_path);
-       strcat (realpath_buf, "/Info.plist");
-       if (file_exists_p (realpath_buf))
-         {
-           retval = realpath_buf;
-         }
-     }
+  if (retval == NULL)
+    {
+      if (*tmp_path != '\0')
+        warning("No Info.plist found under %s", tmp_path);
+      return retval;
+    }
 
-   if (retval == NULL)
-     {
-       if (*tmp_path != '\0')
-         warning ("No Info.plist found under %s", tmp_path);
-       return retval;
-     }
+  tmp_path[0] = '\0';  /* Not necessary; just to make it clear. */
 
-   tmp_path[0] = '\0';  /* Not necessary; just to make it clear. */
+  if (realpath(realpath_buf, tmp_path) == NULL)
+    retval = xstrdup(realpath_buf);
+  else
+    retval = xstrdup(tmp_path);
 
-    if (realpath (realpath_buf, tmp_path) == NULL)
-        retval = xstrdup (realpath_buf);
-    else
-        retval = xstrdup (tmp_path);
-
-   xfree (bundle_copy);
+  xfree(bundle_copy);
   return retval;
 }
 
@@ -2233,55 +2292,56 @@ extern const bfd_arch_info_type *bfd_default_compatible
 */
 
 static enum gdb_osabi
-generic_mach_o_osabi_sniffer_use_dyld_hint (bfd *abfd,
-					    enum bfd_architecture arch,
-					    unsigned long mach_32,
-					    unsigned long mach_64)
+generic_mach_o_osabi_sniffer_use_dyld_hint(bfd *abfd,
+					   enum bfd_architecture arch,
+					   unsigned long mach_32,
+					   unsigned long mach_64)
 {
+  bfd *nbfd;
   if (osabi_seen_in_attached_dyld == GDB_OSABI_UNKNOWN)
     return GDB_OSABI_UNKNOWN;
 
-  bfd *nbfd = NULL;
+  nbfd = (bfd *)NULL;
 
   for (;;)
     {
-      nbfd = bfd_openr_next_archived_file (abfd, nbfd);
+      nbfd = bfd_openr_next_archived_file(abfd, nbfd);
 
       if (nbfd == NULL)
         break;
 
       /* We do NOT deal with FAT archives here. So just skip it if we were
          handed a fat archive.  */
-      if (bfd_check_format (nbfd, bfd_archive))
+      if (bfd_check_format(nbfd, bfd_archive))
         return GDB_OSABI_UNKNOWN;
 
-      if (!bfd_check_format (nbfd, bfd_object))
+      if (!bfd_check_format(nbfd, bfd_object))
         continue;
-      if (bfd_default_compatible (bfd_get_arch_info (nbfd),
-                                  bfd_lookup_arch (arch,
-                                                   mach_64))
-          && osabi_seen_in_attached_dyld == GDB_OSABI_DARWIN64)
-        return GDB_OSABI_DARWIN64;
-
-      else if (bfd_default_compatible (bfd_get_arch_info (nbfd),
-                                  bfd_lookup_arch (arch,
-                                                   mach_32))
-          && osabi_seen_in_attached_dyld == GDB_OSABI_DARWIN)
-        return GDB_OSABI_DARWIN;
-
+      if (bfd_default_compatible(bfd_get_arch_info(nbfd),
+                                 bfd_lookup_arch(arch, mach_64))
+          && (osabi_seen_in_attached_dyld == GDB_OSABI_DARWIN64))
+        {
+          return GDB_OSABI_DARWIN64;
+        }
+      else if (bfd_default_compatible(bfd_get_arch_info(nbfd),
+                                      bfd_lookup_arch(arch, mach_32))
+               && (osabi_seen_in_attached_dyld == GDB_OSABI_DARWIN))
+        {
+          return GDB_OSABI_DARWIN;
+        }
     }
 
   return GDB_OSABI_UNKNOWN;
 }
 
 enum gdb_osabi
-generic_mach_o_osabi_sniffer (bfd *abfd, enum bfd_architecture arch,
-			      unsigned long mach_32,
-			      unsigned long mach_64,
-			      int (*query_64_bit_fn) ())
+generic_mach_o_osabi_sniffer(bfd *abfd, enum bfd_architecture arch,
+			     unsigned long mach_32,
+			     unsigned long mach_64,
+			     int (*query_64_bit_fn)(void))
 {
   enum gdb_osabi ret;
-  ret = generic_mach_o_osabi_sniffer_use_dyld_hint (abfd, arch, mach_32, mach_64);
+  ret = generic_mach_o_osabi_sniffer_use_dyld_hint(abfd, arch, mach_32, mach_64);
 
   if (ret == GDB_OSABI_DARWIN64 || ret == GDB_OSABI_DARWIN)
     return ret;
@@ -2302,18 +2362,18 @@ generic_mach_o_osabi_sniffer (bfd *abfd, enum bfd_architecture arch,
 
 	      if (nbfd == NULL)
 		break;
-	      /* We can check the architecture of objects, and
-           * "ar" archives. Do that here.  */
+              /* We can check the architecture of objects, and
+               * "ar" archives, so do that here.  */
 
-	      if (!bfd_check_format (nbfd, bfd_object)
-		  && !bfd_check_format (nbfd, bfd_archive))
+	      if (!bfd_check_format(nbfd, bfd_object)
+		  && !bfd_check_format(nbfd, bfd_archive))
 		continue;
 
-	      cur = generic_mach_o_osabi_sniffer (nbfd, arch,
-						  mach_32, mach_64,
-						  query_64_bit_fn);
+	      cur = generic_mach_o_osabi_sniffer(nbfd, arch,
+						 mach_32, mach_64,
+						 query_64_bit_fn);
 	      if (cur == GDB_OSABI_DARWIN64 &&
-		  best != GDB_OSABI_DARWIN64 && query_64_bit_fn ())
+		  best != GDB_OSABI_DARWIN64 && query_64_bit_fn())
 		best = cur;
 
 	      if (cur == GDB_OSABI_DARWIN
@@ -2526,20 +2586,24 @@ fast_show_stack_trace_prologue (unsigned int count_limit,
 
 
 int
-actually_do_stack_frame_prologue (unsigned int count_limit,
-				unsigned int print_start,
-				unsigned int print_end,
-				unsigned int wordsize,
-				unsigned int *count,
-				struct frame_info **out_fi,
-				void (print_fun) (struct ui_out * uiout, int *frame_num,
-						  CORE_ADDR pc, CORE_ADDR fp))
+actually_do_stack_frame_prologue(unsigned int count_limit,
+                                 unsigned int print_start,
+                                 unsigned int print_end,
+                                 unsigned int wordsize ATTRIBUTE_UNUSED,
+                                 unsigned int *count,
+                                 struct frame_info **out_fi,
+                                 void (print_fun)(struct ui_out * uiout, int *frame_num,
+                                                  CORE_ADDR pc, CORE_ADDR fp))
 {
   CORE_ADDR fp;
   ULONGEST pc;
   struct frame_info *fi = NULL;
   int more_frames;
   int old_load_state;
+
+  int frames_printed = 0;
+
+  int jj;
 
   /* Get the first few frames. If anything funky is going on, it will
      be here. The second frame helps us get above frameless functions
@@ -2548,12 +2612,12 @@ actually_do_stack_frame_prologue (unsigned int count_limit,
 
  start_again:
   if (print_fun)
-    ui_out_begin (uiout, ui_out_type_list, "frames");
+    ui_out_begin(uiout, ui_out_type_list, "frames");
 
   more_frames = 1;
   pc = 0;
 
-  fi = get_current_frame ();
+  fi = get_current_frame();
   if (fi == NULL)
     {
       more_frames = -1;
@@ -2563,18 +2627,18 @@ actually_do_stack_frame_prologue (unsigned int count_limit,
   /* Sometimes we can backtrace more accurately when we read in
      debug information. So let us do that here for the first frame.  */
 
-  old_load_state = pc_set_load_state (get_frame_pc (fi), OBJF_SYM_ALL, 0);
-  if (old_load_state >= 0 && old_load_state != OBJF_SYM_ALL && print_fun == NULL)
+  old_load_state = pc_set_load_state(get_frame_pc(fi), OBJF_SYM_ALL, 0);
+  if ((old_load_state >= 0) && (old_load_state != OBJF_SYM_ALL) && (print_fun == NULL))
     {
-      flush_cached_frames ();
+      flush_cached_frames();
       goto start_again;
     }
 
-  int frames_printed = 0;
+  frames_printed = 0;
 
   /* Print the first frame (and any inlined frames that may be at this point) */
-  if (print_fun && 0 >= print_start && 0 < print_end)
-    print_fun (uiout, &frames_printed, get_frame_pc (fi), get_frame_base (fi));
+  if (print_fun && (0 >= print_start) && (0 < print_end))
+    print_fun(uiout, &frames_printed, get_frame_pc(fi), get_frame_base(fi));
 
   /* if print_fun() listed inlined function psuedo-frames, "frames_printed" will
      be incremented from its initial value (always 0 here). e.g.
@@ -2588,9 +2652,9 @@ actually_do_stack_frame_prologue (unsigned int count_limit,
          frames already. Therefore, we need to bring 'fi' up to our
          currently printed frame location, then increment i and
          proceed into the loop (if we are not already done). */
-      int j;
-      for (j = 0; j < (frames_printed - 1) && fi != NULL; j++)
-        fi = get_prev_frame (fi);
+      int ij;
+      for (ij = 0; ij < (frames_printed - 1) && (fi != NULL); ij++)
+        fi = get_prev_frame(fi);
 
       /* At the top of the stack? Then we are done here. */
       if (fi == NULL)
@@ -2600,60 +2664,57 @@ actually_do_stack_frame_prologue (unsigned int count_limit,
         }
     }
 
-  do
-    {
-      if (frames_printed >= count_limit)
-	{
-	  more_frames = 0;
-	  goto count_finish;
-	}
+  do {
+    if ((unsigned int)frames_printed >= count_limit)
+      {
+        more_frames = 0;
+        goto count_finish;
+      }
 
-      fi = get_prev_frame (fi);
-      if (fi == NULL)
-	{
-	  more_frames = 0;
-	  goto count_finish;
-	}
+    fi = get_prev_frame(fi);
+    if (fi == NULL)
+      {
+        more_frames = 0;
+        goto count_finish;
+      }
 
-      pc = get_frame_pc (fi);
-      fp = get_frame_base (fi);
+    pc = get_frame_pc(fi);
+    fp = get_frame_base(fi);
 
-  /* Sometimes we can backtrace more accurately when we read
-     in debug information. So let us do that here.  */
+    /* Sometimes we can backtrace more accurately when we read in debug
+     * information.  So let us do that here: */
+    old_load_state = pc_set_load_state(pc, OBJF_SYM_ALL, 0);
+    if ((old_load_state >= 0) && (old_load_state != OBJF_SYM_ALL)
+        && (print_fun == NULL))
+      {
+        flush_cached_frames();
+        goto start_again;
+      }
 
-      old_load_state = pc_set_load_state (pc, OBJF_SYM_ALL, 0);
-      if (old_load_state >= 0 && old_load_state != OBJF_SYM_ALL && print_fun == NULL)
-	{
-	  flush_cached_frames ();
-	  goto start_again;
-	}
+    if (print_fun && ((unsigned int)frames_printed >= print_start)
+        && ((unsigned int)frames_printed < print_end))
+      print_fun(uiout, &frames_printed, pc, fp);
+    frames_printed++;
 
-      if (print_fun && frames_printed >= print_start && frames_printed < print_end)
-        print_fun (uiout, &frames_printed, pc, fp);
-      frames_printed++;
+    /* If we printed out multiple frames (because of inlining), then we
+     * need to update fi appropriately)  */
+    for (jj = frame_relative_level(fi); (jj < (frames_printed - 1)) && (fi != NULL); jj++)
+      fi = get_prev_frame(fi);
 
-      /* If we printed out multiple frames (because of inlining) then we
-         need to update fi appropriately)  */
+    if (fi == NULL)
+      {
+        more_frames = 0;
+        goto count_finish;
+      }
 
-      int j;
-      for (j = frame_relative_level (fi); j < (frames_printed - 1) && fi != NULL; j++)
-        fi = get_prev_frame (fi);
-
-      if (fi == NULL)
-        {
-          more_frames = 0;
-          goto count_finish;
-        }
-
-      if (!backtrace_past_main
-          && inside_main_func (fi)
-	  && get_frame_type (fi) != INLINED_FRAME)
-	{
-	  more_frames = 0;
-	  goto count_finish;
-	}
-    }
-  while (frames_printed < 5);
+    if (!backtrace_past_main
+        && inside_main_func(fi)
+        && (get_frame_type(fi) != INLINED_FRAME))
+      {
+        more_frames = 0;
+        goto count_finish;
+      }
+  } while (frames_printed < 5);
 
  count_finish:
   *out_fi = fi;
@@ -2661,147 +2722,139 @@ actually_do_stack_frame_prologue (unsigned int count_limit,
   return more_frames;
 }
 
-struct loaded_kext_info {
-  char     name[KMOD_MAX_NAME];
-  uuid_t   uuid;
-  uint64_t address;
-};
-
-struct loaded_kexts_table {
-  uint32_t  version;
-  uint32_t  entry_size;   /* the size of the OSKextLoadedKextSummary struct */
-  uint32_t  count;
-  struct loaded_kext_info *kexts;
-};
+/* the structs that were once here have now been moved to "macosx-tdep.h"
+ * for use in prototypes and such */
 
 struct loaded_kexts_table *
-get_list_of_loaded_kexts ()
+get_list_of_loaded_kexts(void)
 {
   struct loaded_kexts_table *kext_table;
   ULONGEST val;
-  struct minimal_symbol *msym = lookup_minimal_symbol ("gLoadedKextSummaries", NULL, NULL);
+  struct minimal_symbol *msym;
+  CORE_ADDR p;
+  uint8_t *tmpbuf;
+  uint8_t *raw_kext_p;
+  unsigned int i;
+
+  msym = lookup_minimal_symbol("gLoadedKextSummaries", NULL, NULL);
   if (msym == NULL)
     return NULL;
 
   /* gLoadedKextSummaries points to a
-   * OSKextLoadedKextSummaryHeader structure.
-   */
-  if (!safe_read_memory_unsigned_integer (SYMBOL_VALUE_ADDRESS (msym), TARGET_PTR_BIT / 8, &val))
+   * OSKextLoadedKextSummaryHeader structure: */
+  if (!safe_read_memory_unsigned_integer(SYMBOL_VALUE_ADDRESS(msym),
+                                         (TARGET_PTR_BIT / 8), &val))
     return NULL;
 
   if (val == 0)
-    error ("gLoadedKextSummaries has an address of 0x0 - you must be attached to a live kernel or debugging with a core file.");
+    error("gLoadedKextSummaries has an address of 0x0 - you must be attached to a live kernel or debugging with a core file.");
 
-  kext_table = (struct loaded_kexts_table*) xmalloc (sizeof (struct loaded_kexts_table));
+  kext_table = (struct loaded_kexts_table*)xmalloc(sizeof(struct loaded_kexts_table));
   if (kext_table == NULL)
     return NULL;
 
-  /* p has the address of the OSKextLoadedKextSummaryHeader struct. */
-  CORE_ADDR p = val;
+  /* p has the address of the OSKextLoadedKextSummaryHeader struct: */
+  p = val;
 
-  /* Read the uint32_t version field */
-  if (!safe_read_memory_unsigned_integer (p, 4, &val))
+  /* Read the uint32_t version field: */
+  if (!safe_read_memory_unsigned_integer(p, 4, &val))
     {
-      xfree (kext_table);
+      xfree(kext_table);
       return NULL;
     }
-  kext_table->version = (uint32_t) val;
-  p += sizeof (uint32_t);
+  kext_table->version = (uint32_t)val;
+  p += sizeof(uint32_t);
 
-  /* version 1 does not include an entry_size field.
-   * versions 2 and later do.
-   */
+  /* version 1 does not include an entry_size field;
+   * versions 2 and later do: */
   if (kext_table->version == 1)
     {
       /* The version 1 OSKextLoadedKextSummary struct was
-       * 64 + 16 + 8 + 8 + 8 + 4 + 4
-	   */
+       * (64 + 16 + 8 + 8 + 8 + 4 + 4) == 112: */
       kext_table->entry_size = 112;
     }
   else
     {
-      if (!safe_read_memory_unsigned_integer (p, 4, &val))
+      if (!safe_read_memory_unsigned_integer(p, 4, &val))
         {
-          xfree (kext_table);
+          xfree(kext_table);
           return NULL;
         }
-      kext_table->entry_size = (uint32_t) val;
-      p += sizeof (uint32_t);
+      kext_table->entry_size = (uint32_t)val;
+      p += sizeof(uint32_t);
     }
 
-  /* Read the uint32_t kext count field */
-  if (!safe_read_memory_unsigned_integer (p, 4, &val))
+  /* Read the uint32_t kext count field: */
+  if (!safe_read_memory_unsigned_integer(p, 4, &val))
     {
-      xfree (kext_table);
+      xfree(kext_table);
       return NULL;
     }
-  kext_table->count = (uint32_t) val;
-  p += sizeof (uint32_t);
+  kext_table->count = (uint32_t)val;
+  p += sizeof(uint32_t);
 
 
-  /* Skip a 4-byte reserved field on v2-and-later tables. */
+  /* Skip a 4-byte reserved field on v2-and-later tables: */
   if (kext_table->version > 1)
-    p += sizeof (uint32_t);
+    p += sizeof(uint32_t);
 
   /* quick sanity check on the off chance we are looking at uninitialized
-   * memory - do NOT do anything crazy.
-   */
-  if (kext_table->count == 0 || kext_table->count > 65535)
+   * memory - do NOT do anything crazy: */
+  if ((kext_table->count == 0) || (kext_table->count > 65535))
     return NULL;
 
-  uint8_t *tmpbuf = (uint8_t*) xmalloc (kext_table->entry_size * kext_table->count);
-  kext_table->kexts = (struct loaded_kext_info *) xmalloc
-                (sizeof (struct loaded_kext_info) * kext_table->count);
+  tmpbuf = (uint8_t *)xmalloc(kext_table->entry_size * kext_table->count);
+  kext_table->kexts = ((struct loaded_kext_info *)
+                       xmalloc(sizeof(struct loaded_kext_info)
+                               * kext_table->count));
 
-  if (kext_table->kexts == NULL || tmpbuf == NULL)
+  if ((kext_table->kexts == NULL) || (tmpbuf == NULL))
     {
-      xfree (kext_table);
-      xfree (tmpbuf);
-      error ("Unable to allocate space to load kext infos.");
+      xfree(kext_table);
+      xfree(tmpbuf);
+      error("Unable to allocate space to load kext infos.");
     }
 
   /* Read the kext entries from kernel memory into TMPBUF. */
-  if (target_read_memory (p, (uint8_t *) tmpbuf,
-                        kext_table->entry_size * kext_table->count))
+  if (target_read_memory(p, (uint8_t *)tmpbuf,
+                         (kext_table->entry_size * kext_table->count)))
     {
-      xfree (tmpbuf);
-      xfree (kext_table->kexts);
-      xfree (kext_table);
-      error ("Unable to read kext infos from kernel.");
+      xfree(tmpbuf);
+      xfree(kext_table->kexts);
+      xfree(kext_table);
+      error("Unable to read kext infos from kernel.");
     }
 
   /* Copy the fields we care about (swapping as we go) into our internal
-   * representation.
-   */
-
-  uint8_t *raw_kext_p = tmpbuf;
-  int i;
-  for (i = 0; i < kext_table->count; i++)
+   * representation: */
+  raw_kext_p = tmpbuf;
+  for (i = 0U; i < kext_table->count; i++)
     {
       uint8_t *start_of_kext_entry = raw_kext_p;
 
-      strlcpy ((char *) kext_table->kexts[i].name, (char *) raw_kext_p, KMOD_MAX_NAME);
+      strlcpy((char *)kext_table->kexts[i].name, (char *)raw_kext_p,
+              KMOD_MAX_NAME);
       raw_kext_p += KMOD_MAX_NAME;
 
-      memcpy (kext_table->kexts[i].uuid, raw_kext_p, sizeof (uuid_t));
-      raw_kext_p += sizeof (uuid_t);
+      memcpy(kext_table->kexts[i].uuid, raw_kext_p, sizeof(uuid_t));
+      raw_kext_p += sizeof(uuid_t);
 
-      kext_table->kexts[i].address = (uint64_t) extract_unsigned_integer (raw_kext_p, 8);
+      kext_table->kexts[i].address = (uint64_t)extract_unsigned_integer(raw_kext_p, 8);
 
-      raw_kext_p = start_of_kext_entry + kext_table->entry_size;
+      raw_kext_p = (start_of_kext_entry + kext_table->entry_size);
     }
-  xfree (tmpbuf);
+  xfree(tmpbuf);
 
   return kext_table;
 }
 
 void
-free_list_of_loaded_kexts (struct loaded_kexts_table *lks)
+free_list_of_loaded_kexts(struct loaded_kexts_table *lks)
 {
   if (lks && lks->kexts)
-    xfree (lks->kexts);
+    xfree(lks->kexts);
   if (lks)
-    xfree (lks);
+    xfree(lks);
 }
 
 /* Given the address of a Mach-O file header in memory, iterate over
@@ -2814,10 +2867,11 @@ free_list_of_loaded_kexts (struct loaded_kexts_table *lks)
    Returns NULL if there was a problem or no matching kext was found. */
 
 struct section_addr_info *
-get_section_addresses_for_macho_in_memory (CORE_ADDR mh_addr)
+get_section_addresses_for_macho_in_memory(CORE_ADDR mh_addr)
 {
   struct section_addr_info *addrs = NULL;
-  if (!get_information_about_macho (NULL, mh_addr, NULL, 0, 1, NULL, NULL, NULL, NULL, NULL, &addrs))
+  if (!get_information_about_macho(NULL, mh_addr, NULL, 0, 1, NULL, NULL,
+                                   NULL, NULL, NULL, &addrs))
     return NULL;
   return addrs;
 }
@@ -2828,10 +2882,11 @@ get_section_addresses_for_macho_in_memory (CORE_ADDR mh_addr)
    NULL is returned if thee was a problem.  */
 
 struct section_addr_info *
-get_section_addrs_of_macho_on_disk (const char *filename)
+get_section_addrs_of_macho_on_disk(const char *filename)
 {
   struct section_addr_info *addrs;
-  if (!get_information_about_macho (filename, 0, NULL, 0, 0, NULL, NULL, NULL, NULL, NULL, &addrs))
+  if (!get_information_about_macho(filename, 0, NULL, 0, 0, NULL, NULL,
+                                   NULL, NULL, NULL, &addrs))
     addrs = NULL;
 
   return addrs;
@@ -2839,19 +2894,21 @@ get_section_addrs_of_macho_on_disk (const char *filename)
 
 
 struct section_addr_info *
-get_section_addresses_for_bfd (bfd *abfd)
+get_section_addresses_for_bfd(bfd *abfd)
 {
   struct bfd_section *sect;
   int section_count = 0;
+  struct section_addr_info *sect_addrs;
+  int sectnum;
   for (sect = abfd->sections; sect; sect = sect->next)
     if (sect->name)
       section_count++;
 
-  struct section_addr_info *sect_addrs = alloc_section_addr_info (section_count);
+  sect_addrs = alloc_section_addr_info(section_count);
   sect_addrs->num_sections = section_count;
   sect_addrs->addrs_are_offsets = 0;
 
-  int sectnum = 0;
+  sectnum = 0;
   for (sect = abfd->sections; sect; sect = sect->next)
     {
       sect_addrs->other[sectnum].sectindex = sect->index;
@@ -2871,21 +2928,24 @@ get_section_addresses_for_bfd (bfd *abfd)
    Returns the __TEXT segment address or INVALID_ADDRESS if there was an error. */
 
 CORE_ADDR
-get_load_addr_of_macho_on_disk (const char *filename, enum gdb_osabi osabi)
+get_load_addr_of_macho_on_disk(const char *filename, enum gdb_osabi osabi)
 {
-  if (filename == NULL || filename[0] == '\0' || !file_exists_p (filename))
+  bfd *abfd;
+  CORE_ADDR addr;
+  if (filename == NULL || filename[0] == '\0' || !file_exists_p(filename))
     return INVALID_ADDRESS;
 
-  bfd *abfd = symfile_bfd_open_safe (filename, 0, osabi);
+  abfd = symfile_bfd_open_safe(filename, 0, osabi);
   if (abfd == NULL)
     return INVALID_ADDRESS;
 
-  CORE_ADDR addr = INVALID_ADDRESS;
+  addr = INVALID_ADDRESS;
 
-  if (!get_information_about_macho (NULL, 0, abfd, 0, 0, NULL, NULL, NULL, &addr, NULL, NULL))
+  if (!get_information_about_macho(NULL, 0, abfd, 0, 0, NULL, NULL, NULL,
+                                   &addr, NULL, NULL))
     addr = INVALID_ADDRESS;
 
-  bfd_close (abfd);
+  bfd_close(abfd);
 
   return addr;
 }
@@ -2918,35 +2978,36 @@ get_load_addr_of_macho_on_disk (const char *filename, enum gdb_osabi osabi)
     returns 0 if there was a problem.  */
 
 int
-get_information_about_macho (const char *filename, CORE_ADDR mh_addr, bfd *abfd,
-                             int require_kernel, int force_live_memory_reads,
-                             uuid_t *uuid, enum gdb_osabi *osabi,
-                             int *wordsize, CORE_ADDR *intended_load_address, CORE_ADDR *slide,
-                             struct section_addr_info **addrs)
+get_information_about_macho(const char *filename, CORE_ADDR mh_addr, bfd *abfd,
+                            int require_kernel, int force_live_memory_reads,
+                            uuid_t *uuid, enum gdb_osabi *osabi,
+                            int *wordsize, CORE_ADDR *intended_load_address, CORE_ADDR *slide,
+                            struct section_addr_info **addrs)
 {
   bfd *mem_bfd = NULL;
-  struct cleanup *bfd_cleanups = make_cleanup (null_cleanup, NULL);
+  struct cleanup *bfd_cleanups = make_cleanup(null_cleanup, NULL);
   struct mach_header h;
+  int file_exists;
 
   if (mh_addr == 0)
     mh_addr = INVALID_ADDRESS;
 
-  int file_exists = file_exists_p (filename);
+  file_exists = file_exists_p(filename);
 
-  if (file_exists == 0
-      && mh_addr == INVALID_ADDRESS
-      && abfd == NULL)
+  if ((file_exists == 0) && (mh_addr == INVALID_ADDRESS)
+      && (abfd == NULL))
     {
       return 0;
     }
 
-  /* If we are called with multiple mach-o file methods specified, eliminate one of the extras */
-  if (file_exists && (mh_addr != INVALID_ADDRESS || abfd != NULL))
+  /* If we are called with multiple mach-o file methods specified, then
+   * eliminate one of the extras: */
+  if (file_exists && ((mh_addr != INVALID_ADDRESS) || (abfd != NULL)))
     {
       filename = NULL;
       file_exists = 0;
     }
-  if (mh_addr != INVALID_ADDRESS && abfd != NULL)
+  if ((mh_addr != INVALID_ADDRESS) && (abfd != NULL))
     {
       mh_addr = INVALID_ADDRESS;
     }
@@ -2954,41 +3015,49 @@ get_information_about_macho (const char *filename, CORE_ADDR mh_addr, bfd *abfd,
 
   if (file_exists)
     {
-      abfd = symfile_bfd_open_safe (filename, 0, gdbarch_osabi (current_gdbarch));
+      abfd = symfile_bfd_open_safe(filename, 0,
+                                   gdbarch_osabi(current_gdbarch));
       if (abfd == NULL)
         return 0;
-      make_cleanup_bfd_close (abfd);
+      make_cleanup_bfd_close(abfd);
 
-      /* we have got a bfd at this point, we are not going to refer to the file any longer */
+      /* we have got a bfd at this point, we are not going to refer to the
+       * file any longer: */
       filename = NULL;
       file_exists = 0;
     }
 
   if (abfd == NULL)
     {
-      if (mh_addr == 0 || mh_addr == INVALID_ADDRESS)
+      int header_size;
+      gdb_byte *buf;
+
+      if ((mh_addr == 0) || (mh_addr == INVALID_ADDRESS))
         return 0;
 
       if (force_live_memory_reads)
         {
-          /* Force this to be read out of real memory */
-          make_cleanup (set_trust_readonly_cleanup, (void *) set_trust_readonly (0));
-          make_cleanup (set_only_read_from_live_memory_cleanup, (void *) set_only_read_from_live_memory (1));
+          /* Force this to be read out of real memory: */
+          make_cleanup(set_trust_readonly_cleanup,
+                       (void *)set_trust_readonly(0));
+          make_cleanup(set_only_read_from_live_memory_cleanup,
+                       (void *)set_only_read_from_live_memory(1));
         }
 
-      if (target_read_mach_header (mh_addr, &h) != 0)
+      if (target_read_mach_header(mh_addr, &h) != 0)
         return 0;
-      if (h.magic != MH_MAGIC && h.magic != MH_MAGIC_64)
+      if ((h.magic != MH_MAGIC) && (h.magic != MH_MAGIC_64))
         return 0;
-      if (h.sizeofcmds > 15000)   /* Sanity check to avoid reading non-macho data as mach-o */
+      /* Sanity check to avoid reading non-macho data as mach-o: */
+      if (h.sizeofcmds > 15000)
          return 0;
 
-      int header_size = target_get_mach_header_size (&h);
-      gdb_byte *buf = (gdb_byte *) xmalloc (h.sizeofcmds + header_size);
-      make_cleanup (xfree, buf);
-      if (target_read_memory (mh_addr, buf, h.sizeofcmds + header_size))
+      header_size = target_get_mach_header_size(&h);
+      buf = (gdb_byte *)xmalloc(h.sizeofcmds + header_size);
+      make_cleanup(xfree, buf);
+      if (target_read_memory(mh_addr, buf, h.sizeofcmds + header_size))
         {
-          do_cleanups (bfd_cleanups);
+          do_cleanups(bfd_cleanups);
           return 0;
         }
 
@@ -3065,23 +3134,25 @@ get_information_about_macho (const char *filename, CORE_ADDR mh_addr, bfd *abfd,
    Returns NULL if there was a problem or no matching kext was found.  */
 
 struct section_addr_info *
-macosx_get_kext_sect_addrs_from_kernel (const char *filename,
-                                        uint8_t **kext_uuids,
-                                        const char *kext_bundle_ident)
+macosx_get_kext_sect_addrs_from_kernel(const char *filename ATTRIBUTE_UNUSED,
+                                       uint8_t **kext_uuids,
+                                       const char *kext_bundle_ident ATTRIBUTE_UNUSED)
 {
-  struct loaded_kexts_table *loaded_kexts = get_list_of_loaded_kexts ();
+  CORE_ADDR mh_addr = INVALID_ADDRESS;
+  int found_match;
+  unsigned int i;
+
+  struct loaded_kexts_table *loaded_kexts = get_list_of_loaded_kexts();
   if (loaded_kexts == NULL)
     return NULL;
 
-  CORE_ADDR mh_addr = INVALID_ADDRESS;
-  int found_match;
-  int i;
-  for (found_match = 0, i = 0; i < loaded_kexts->count && found_match == 0; i++)
+  mh_addr = INVALID_ADDRESS;
+  for (found_match = 0, i = 0U; (i < loaded_kexts->count) && (found_match == 0); i++)
     {
       int j = 0;
       while (kext_uuids[j] != 0)
         {
-          if (memcmp (kext_uuids[j], loaded_kexts->kexts[i].uuid, sizeof (uuid_t)) == 0)
+          if (memcmp(kext_uuids[j], loaded_kexts->kexts[i].uuid, sizeof(uuid_t)) == 0)
             {
               mh_addr = loaded_kexts->kexts[i].address;
               found_match = 1;
@@ -3090,66 +3161,71 @@ macosx_get_kext_sect_addrs_from_kernel (const char *filename,
           j++;
         }
     }
-	if (mh_addr == INVALID_ADDRESS) {
-		return NULL;
-	}
+  if (mh_addr == INVALID_ADDRESS) {
+    return NULL;
+  }
 
-  free_list_of_loaded_kexts (loaded_kexts);
+  free_list_of_loaded_kexts(loaded_kexts);
 
   /* We found a matching UUID.
    * Now look at the load commands in memory (create a temporary
    * memory bfd) to get the load addresses of each text/data section.
    */
 
-  return get_section_addresses_for_macho_in_memory (mh_addr);
+  return get_section_addresses_for_macho_in_memory(mh_addr);
 }
 
 static void
-add_all_kexts_command (char *args, int from_tty)
+add_all_kexts_command(char *args ATTRIBUTE_UNUSED, int from_tty)
 {
 #if !defined(USE_DEBUG_SYMBOLS_FRAMEWORK)
-  error ("DebugSymbols framework not available, add-all-kexts command not unavailable.");
+  error("DebugSymbols framework not available, add-all-kexts command not unavailable.");
 #else /* USE_DEBUG_SYMBOLS_FRAMEWORK */
-  struct loaded_kexts_table *lks = get_list_of_loaded_kexts ();
+  unsigned int i;
+  struct loaded_kexts_table *lks = get_list_of_loaded_kexts();
   if (lks == NULL)
-    error ("Unable to read list of kexts from the kernel memroy.");
+    error("Unable to read list of kexts from the kernel memroy.");
 
-  int i;
-  for (i = 0; i < lks->count; i++)
+  for (i = 0U; i < lks->count; i++)
     {
-      /* If we have already added the kext, do NOT add it a second time */
-      if (find_objfile_by_uuid (lks->kexts[i].uuid))
+      CFUUIDRef kext_uuid_ref;
+      const char *symbol_rich;
+      int have_symbol_rich_exe;
+      CFURLRef dsym_url;
+      char dsym_path[PATH_MAX];
+      int have_dsym_path;
+      struct section_addr_info *sect_addrs;
+
+      /* If we already added the kext, then do NOT add it a 2nd time: */
+      if (find_objfile_by_uuid(lks->kexts[i].uuid))
         continue;
 
-      CFUUIDRef kext_uuid_ref = get_uuidref_for_uuid_t (lks->kexts[i].uuid);
+      kext_uuid_ref = get_uuidref_for_uuid_t(lks->kexts[i].uuid);
       if (kext_uuid_ref == NULL)
         continue;
-      const char *symbol_rich = macosx_locate_kext_executable_by_symfile_helper
-                                           (kext_uuid_ref, lks->kexts[i].name);
-      int have_symbol_rich_exe = 0;
-      if (symbol_rich && file_exists_p (symbol_rich))
+      symbol_rich = macosx_locate_kext_executable_by_symfile_helper(kext_uuid_ref,
+                                                                    lks->kexts[i].name);
+      have_symbol_rich_exe = 0;
+      if (symbol_rich && file_exists_p(symbol_rich))
         have_symbol_rich_exe = 1;
 
-      CFURLRef dsym_url = DBGCopyDSYMURLForUUID (kext_uuid_ref);
-      char dsym_path[PATH_MAX];
+      dsym_url = DBGCopyDSYMURLForUUID(kext_uuid_ref);
       dsym_path[0] = '\0';
-      int have_dsym_path = 0;
+      have_dsym_path = 0;
       if (dsym_url)
-        if (CFURLGetFileSystemRepresentation (dsym_url, 1, (UInt8*) dsym_path, PATH_MAX))
+        if (CFURLGetFileSystemRepresentation(dsym_url, 1, (UInt8*)dsym_path, PATH_MAX))
           {
             dsym_path[PATH_MAX - 1] = '\0';
-            if (file_exists_p (dsym_path))
+            if (file_exists_p(dsym_path))
               have_dsym_path = 1;
           }
-      CFRelease (kext_uuid_ref);
+      CFRelease(kext_uuid_ref);
 
       /* At this point we may have the pathanme to the kext bundle executable
        * file (the "symbol rich executable") and we may have the pathname to
-       * a dSYM ("dsym_path").
-	   */
+       * a dSYM ("dsym_path").  */
 
-      struct section_addr_info *sect_addrs;
-      sect_addrs = get_section_addresses_for_macho_in_memory (lks->kexts[i].address);
+      sect_addrs = get_section_addresses_for_macho_in_memory(lks->kexts[i].address);
       if (sect_addrs == NULL)
         continue;
 
@@ -3157,11 +3233,12 @@ add_all_kexts_command (char *args, int from_tty)
         {
           struct section_offsets *sect_offsets;
           int num_offsets;
-          sect_offsets = convert_sect_addrs_to_offsets_via_on_disk_file
-                        (sect_addrs, symbol_rich,
-                         &num_offsets);
-          symbol_file_add_name_with_addrs_or_offsets (symbol_rich, from_tty, NULL, sect_offsets, num_offsets, 0, OBJF_USERLOADED, OBJF_SYM_ALL, 0, NULL, NULL);
-           xfree (sect_offsets);
+          sect_offsets =
+            convert_sect_addrs_to_offsets_via_on_disk_file(sect_addrs,
+                                                           symbol_rich,
+                                                           &num_offsets);
+          symbol_file_add_name_with_addrs_or_offsets(symbol_rich, from_tty, NULL, sect_offsets, num_offsets, 0, OBJF_USERLOADED, OBJF_SYM_ALL, 0, NULL, NULL);
+           xfree(sect_offsets);
         }
       else
         {
@@ -3177,51 +3254,51 @@ add_all_kexts_command (char *args, int from_tty)
  * slow.
  */
 # if 0
-          uint8_t *buf = (uint8_t*) xmalloc (lks->kexts[i].size);
+          uint8_t *buf = (uint8_t *)xmalloc(lks->kexts[i].size);
           if (buf == NULL)
             {
-              free_section_addr_info (sect_addrs);
+              free_section_addr_info(sect_addrs);
               continue;
             }
-           if (target_read_memory (lks->kexts[i].address, buf, lks->kexts[i].size))
+           if (target_read_memory(lks->kexts[i].address, buf, lks->kexts[i].size))
             {
-              free_section_addr_info (sect_addrs);
+              free_section_addr_info(sect_addrs);
               continue;
             }
           const char *bfd_target_name = NULL;
-          if (gdbarch_byte_order (current_gdbarch) == BFD_ENDIAN_LITTLE)
+          if (gdbarch_byte_order(current_gdbarch) == BFD_ENDIAN_LITTLE)
             bfd_target_name = "mach-o-le";
-          if (gdbarch_byte_order (current_gdbarch) == BFD_ENDIAN_BIG)
+          if (gdbarch_byte_order(current_gdbarch) == BFD_ENDIAN_BIG)
             bfd_target_name = "mach-o-be";
 
           /* note that we never free the kext memory we just transferred... */
-          bfd *abfd = bfd_memopenr (lks->kexts[i].name, bfd_target_name,
-                                    buf, lks->kexts[i].size);
-          if (abfd == NULL || !bfd_check_format (abfd, bfd_object))
+          bfd *abfd = bfd_memopenr(lks->kexts[i].name, bfd_target_name,
+                                   buf, lks->kexts[i].size);
+          if ((abfd == NULL) || !bfd_check_format(abfd, bfd_object))
             {
-              free_section_addr_info (sect_addrs);
-              xfree (buf);
+              free_section_addr_info(sect_addrs);
+              xfree(buf);
               continue;
             }
-          symbol_file_add_bfd_safe (abfd, 0,
-                                    0, NULL, 0,
-                                    OBJF_USERLOADED,
-                                    OBJF_SYM_ALL,
-                                    0, NULL, NULL);
+          symbol_file_add_bfd_safe(abfd, 0,
+                                   0, NULL, 0,
+                                   OBJF_USERLOADED,
+                                   OBJF_SYM_ALL,
+                                   0, NULL, NULL);
 # endif /* 0 */
         }
-      free_section_addr_info (sect_addrs);
+      free_section_addr_info(sect_addrs);
     }
 
-  update_section_tables ();
-  update_current_target ();
-  breakpoint_update ();
+  update_section_tables();
+  update_current_target();
+  breakpoint_update();
 
   /* Getting new symbols may change our opinion about what is
      frameless.  */
-  reinit_frame_cache ();
+  reinit_frame_cache();
 
-  free_list_of_loaded_kexts (lks);
+  free_list_of_loaded_kexts(lks);
 #endif /* USE_DEBUG_SYMBOLS_FRAMEWORK */
 }
 
@@ -3282,10 +3359,11 @@ mach_kernel_starts_here_p (CORE_ADDR addr, uuid_t *file_uuid, uuid_t *discovered
 */
 
 int
-exhaustive_search_for_kernel_in_mem (struct objfile *ofile, CORE_ADDR *addr, uuid_t *uuid_output)
+exhaustive_search_for_kernel_in_mem(struct objfile *ofile, CORE_ADDR *addr,
+                                    uuid_t *uuid_output)
 {
-
-  /* If this is a kernel, it may have been slid by the booter, try to find where it is in memory. */
+  /* If this is a kernel, then it may have been slid by the booter, so try
+   * to find where it is in memory: */
   uuid_t kernel_uuid;
   uuid_t *uuid = NULL; /* NULL means we do NOT have an ABFD or could not find a UUID in ABFD */
 
@@ -3294,6 +3372,18 @@ exhaustive_search_for_kernel_in_mem (struct objfile *ofile, CORE_ADDR *addr, uui
 
   struct cleanup *override_trust_readonly;
 
+  CORE_ADDR cur_addr;
+  CORE_ADDR stop_addr;
+  CORE_ADDR stride;
+  CORE_ADDR offset;
+
+  int wordsize;
+
+  int found_kernel;
+  uint64_t file_address;
+
+  ULONGEST val;
+
   /* If we are handed a pointer to a struct object_file which does not have a BFD in it,
    * just ignore it altogether */
   if (ofile && !ofile->obfd)
@@ -3301,10 +3391,9 @@ exhaustive_search_for_kernel_in_mem (struct objfile *ofile, CORE_ADDR *addr, uui
 
   /* If we are given a symbol file and it IS NOT a kernel, this is not a kernel debug session.
    * If we are NOT given a symbol file we shall try to search around memory to find one ...
-   * FIXME this will be a problem if people use 'target remote' without a symbol file in
-   * non-kernel situations.
-   */
-  if (ofile && !bfd_mach_o_kernel_image (ofile->obfd))
+   * FIXME: this will be a problem if people use 'target remote' without a symbol file in
+   * non-kernel situations: */
+  if (ofile && !bfd_mach_o_kernel_image(ofile->obfd))
     return 0;
 
   if (kaslr_memory_search_enabled == 0)
@@ -3313,78 +3402,80 @@ exhaustive_search_for_kernel_in_mem (struct objfile *ofile, CORE_ADDR *addr, uui
   /* We need to read data directly out of memory, we cannot "trust" the read-only sections
      and read anything out of the symbol files (which may be at the wrong address at this
      point). */
-  override_trust_readonly = make_cleanup (set_trust_readonly_cleanup,
-                                          (void *) set_trust_readonly (0));
-  make_cleanup (set_only_read_from_live_memory_cleanup,
-                (void *) set_only_read_from_live_memory (1));
+  override_trust_readonly = make_cleanup(set_trust_readonly_cleanup,
+                                         (void *)set_trust_readonly(0));
+  make_cleanup(set_only_read_from_live_memory_cleanup,
+               (void *)set_only_read_from_live_memory(1));
 
-  if (ofile && bfd_mach_o_kernel_image (ofile->obfd) && bfd_get_section_by_name (ofile->obfd, TEXT_SEGMENT_NAME))
+  if (ofile && bfd_mach_o_kernel_image(ofile->obfd) && bfd_get_section_by_name(ofile->obfd, TEXT_SEGMENT_NAME))
     {
-      if (bfd_mach_o_get_uuid (ofile->obfd, kernel_uuid, sizeof (uuid_t)))
+      if (bfd_mach_o_get_uuid(ofile->obfd, kernel_uuid, sizeof(uuid_t)))
         {
           /* The provided kernel bfd has a uuid, set UUID to point to it */
           uuid = &kernel_uuid;
         }
     }
 
-  CORE_ADDR cur_addr;
-  CORE_ADDR stop_addr;
-  CORE_ADDR stride = 0x100000;
-  CORE_ADDR offset = 0x1000;
+  stride = 0x100000;
+  offset = 0x1000;
 
-  int wordsize = gdbarch_tdep (current_gdbarch)->wordsize;
-  if (wordsize == 4)
+  wordsize = gdbarch_tdep(current_gdbarch)->wordsize;
+  if (wordsize == 4) /* 32-bit */
     {
-      cur_addr = (1ULL << 31);
+      cur_addr = (1ULL << 31UL);
       stop_addr = UINT32_MAX;
     }
-  else
+  else if (wordsize == 8) /* 64-bit */
     {
-      cur_addr = (1ULL << 63);
+      cur_addr = (1ULL << 63UL);
       stop_addr = UINT64_MAX;
     }
 
   /* First, if we have a symbol file, see if the kernel was loaded unslid */
 
-  int found_kernel = 0;
-  uint64_t file_address = INVALID_ADDRESS;
-  if (ofile && bfd_get_section_by_name (ofile->obfd, TEXT_SEGMENT_NAME))
+  found_kernel = 0;
+  file_address = INVALID_ADDRESS;
+  if (ofile && bfd_get_section_by_name(ofile->obfd, TEXT_SEGMENT_NAME))
     {
-      file_address = bfd_section_vma (ofile->obfd, bfd_get_section_by_name (ofile->obfd, TEXT_SEGMENT_NAME));
+      file_address = bfd_section_vma(ofile->obfd, bfd_get_section_by_name(ofile->obfd, TEXT_SEGMENT_NAME));
 
-      if (mach_kernel_starts_here_p (file_address, uuid, &in_memory_uuid, &in_memory_osabi))
+      if (mach_kernel_starts_here_p(file_address, uuid, &in_memory_uuid, &in_memory_osabi))
         {
           cur_addr = file_address;
           found_kernel = 1;
         }
       else if (file_address != INVALID_ADDRESS)
         {
-           offset = file_address & 0xfffff;
+           offset = (file_address & 0xfffff);
         }
     }
 
   /* Second, when the appropriate boot-args are set, the load
      address of the kernel is written at a fixed address in
      the kernel's low globals page.  See what is there.  */
-  ULONGEST val = 0;
+  /* fG! - this code will generate an error most of the time in
+   * Mountain Lion; we could probably just get rid of it.
+   * The reason is kernel aslr slide is usually too big, so this address
+   * is NOT valid anymore: */
+  val = 0UL;
   if (!found_kernel
-      && wordsize == 4
-      && !safe_read_memory_unsigned_integer (0xffff0110, 4, &val)
-      && val > cur_addr
-      && val < stop_addr
-      && mach_kernel_starts_here_p (val, uuid, &in_memory_uuid, &in_memory_osabi))
+      && (wordsize == 4)
+      && !safe_read_memory_unsigned_integer(0xffff0110, 4, &val)
+      && (val > cur_addr)
+      && (val < stop_addr)
+      && mach_kernel_starts_here_p(val, uuid, &in_memory_uuid, &in_memory_osabi))
       {
         found_kernel = 1;
-        cur_addr = val & 0xffffffff;
+        cur_addr = (val & 0xffffffff);
       }
 
   val = 0;
   if (!found_kernel
-      && wordsize == 8
-      && !safe_read_memory_unsigned_integer (0xffffff8000002010ULL, 8, &val)
-      && val > cur_addr
-      && val < stop_addr
-      && mach_kernel_starts_here_p (val, uuid, &in_memory_uuid, &in_memory_osabi))
+      && (wordsize == 8)
+      && !safe_read_memory_unsigned_integer(0xffffff8000002010ULL, 8, &val)
+      && (val > cur_addr)
+      && (val < stop_addr)
+      && mach_kernel_starts_here_p(val, uuid, &in_memory_uuid, &in_memory_osabi))
       {
         found_kernel = 1;
         cur_addr = val;
@@ -3397,28 +3488,28 @@ exhaustive_search_for_kernel_in_mem (struct objfile *ofile, CORE_ADDR *addr, uui
   val = 0;
   /* Read the uint32_t address of 'version' */
   if (!found_kernel
-      && wordsize == 4
-      && !safe_read_memory_unsigned_integer (0xffff011c, 4, &val)
-      && val > cur_addr
-      && val < stop_addr)
+      && (wordsize == 4)
+      && !safe_read_memory_unsigned_integer(0xffff011c, 4, &val)
+      && (val > cur_addr)
+      && (val < stop_addr))
     {
       /* Start at 16MB before the version string */
       /* & ~0xfffff == round down to the nearest 1MB boundary
          0x1000000 == 16MB */
-      CORE_ADDR try_this_addr = (val & ~0xfffff) - 0x1000000;
+      CORE_ADDR try_this_addr = ((val & ~0xfffff) - 0x1000000);
 
       /* Do NOT try to examine anything before the lowest valid addr range for the kernel */
-		if (try_this_addr < cur_addr) {
-			try_this_addr = cur_addr;
-		}
+      if (try_this_addr < cur_addr) {
+        try_this_addr = cur_addr;
+      }
 
       while (!found_kernel && try_this_addr < val)
         {
-          if (mach_kernel_starts_here_p (try_this_addr, uuid, &in_memory_uuid, &in_memory_osabi))
+          if (mach_kernel_starts_here_p(try_this_addr, uuid, &in_memory_uuid, &in_memory_osabi))
             {
               found_kernel = 1;
             }
-          else if (mach_kernel_starts_here_p (try_this_addr + offset, uuid, &in_memory_uuid, &in_memory_osabi))
+          else if (mach_kernel_starts_here_p(try_this_addr + offset, uuid, &in_memory_uuid, &in_memory_osabi))
             {
               found_kernel = 1;
               try_this_addr += offset;
@@ -3435,25 +3526,25 @@ exhaustive_search_for_kernel_in_mem (struct objfile *ofile, CORE_ADDR *addr, uui
   /* Fourth, maybe the current pc value is kernel code that is running.
      If so, we can search a much smaller section of memory.  */
 
-  if (!found_kernel && stop_pc != 0 && stop_pc != INVALID_ADDRESS
-      && stop_pc >= cur_addr && stop_pc < stop_addr)
+  if (!found_kernel && (stop_pc != 0) && (stop_pc != INVALID_ADDRESS)
+      && (stop_pc >= cur_addr) && (stop_pc < stop_addr))
     {
       /* Start at 32MB before the current pc value */
       /* & ~0xfffff == round down to the nearest 1MB boundary
          0x2000000 == 32MB */
-      CORE_ADDR try_this_addr = (stop_pc & ~0xfffff) - 0x2000000;
+      CORE_ADDR try_this_addr = ((stop_pc & ~0xfffff) - 0x2000000);
 
       /* Do NOT try to examine anything before the lowest valid addr range for the kernel */
       if (try_this_addr < cur_addr)
         try_this_addr = cur_addr;
 
-      while (!found_kernel && try_this_addr < stop_pc)
+      while (!found_kernel && (try_this_addr < stop_pc))
         {
-          if (mach_kernel_starts_here_p (try_this_addr, uuid, &in_memory_uuid, &in_memory_osabi))
+          if (mach_kernel_starts_here_p(try_this_addr, uuid, &in_memory_uuid, &in_memory_osabi))
             {
               found_kernel = 1;
             }
-          else if (mach_kernel_starts_here_p (try_this_addr + offset, uuid, &in_memory_uuid, &in_memory_osabi))
+          else if (mach_kernel_starts_here_p(try_this_addr + offset, uuid, &in_memory_uuid, &in_memory_osabi))
             {
               found_kernel = 1;
               try_this_addr += offset;
@@ -3471,16 +3562,16 @@ exhaustive_search_for_kernel_in_mem (struct objfile *ofile, CORE_ADDR *addr, uui
   /* Fifth, start iterating from the beginning of the possible kernel region of memory
      until we run out of address space or find a kernel.  */
 
-  if (wordsize == 4 && !found_kernel)
+  if ((wordsize == 4) && !found_kernel)
     {
-      printf_filtered ("Starting exhaustive search for kernel in memory, do 'set kaslr-memory-search 0' to disable this in the future.\n");
-      while (!found_kernel && cur_addr != 0 && cur_addr < stop_addr)
+      printf_filtered("Starting exhaustive search for kernel in memory, do 'set kaslr-memory-search 0' to disable this in the future.\n");
+      while (!found_kernel && (cur_addr != 0) && (cur_addr < stop_addr))
         {
-          if (mach_kernel_starts_here_p (cur_addr, uuid, &in_memory_uuid, &in_memory_osabi))
+          if (mach_kernel_starts_here_p(cur_addr, uuid, &in_memory_uuid, &in_memory_osabi))
             {
               found_kernel = 1;
             }
-          else if (mach_kernel_starts_here_p (cur_addr + offset, uuid, &in_memory_uuid, &in_memory_osabi))
+          else if (mach_kernel_starts_here_p(cur_addr + offset, uuid, &in_memory_uuid, &in_memory_osabi))
             {
               found_kernel = 1;
               cur_addr += offset;
@@ -3492,26 +3583,65 @@ exhaustive_search_for_kernel_in_mem (struct objfile *ofile, CORE_ADDR *addr, uui
         }
     }
 
+  /* Sixth way to try:
+   * fG! - 03-06-2013
+   * Add bruteforcing search for 64 bits kernel
+   * I have no idea why Apple failed to implement this.
+   * We do not need to search the whole 64 bits space, since we have base
+   * search address from the __TEXT segment.
+   * Starting there we can find it very quickly!  */
+  if ((wordsize == 8) && !found_kernel)
+    {
+      printf_filtered("Starting exhaustive search for kernel in memory, do 'set kaslr-memory-search 0' to disable this in the future.\n");
+      /* if valid file_address will contain the __TEXT address from disk image */
+      if (file_address != INVALID_ADDRESS)
+        {
+          cur_addr = file_address;
+          /* start searching the address space from kernel __TEXT address
+           * on disk till UINT64_MAX: */
+          while (!found_kernel && (cur_addr != 0) && cur_addr < stop_addr)
+            {
+              if (mach_kernel_starts_here_p(cur_addr, uuid,
+                                            &in_memory_uuid,
+                                            &in_memory_osabi))
+                {
+                  found_kernel = 1;
+                }
+              else if (mach_kernel_starts_here_p((cur_addr + offset), uuid,
+                                                 &in_memory_uuid,
+                                                 &in_memory_osabi))
+                {
+                  found_kernel = 1;
+                  cur_addr += offset;
+                }
+              else
+                {
+                  cur_addr += stride;
+                }
+            }
+        }
+    }
+
   if (found_kernel)
     {
       int succeeded = 0;
       if (ofile)
-        succeeded = slide_kernel_objfile (ofile, cur_addr, in_memory_uuid, in_memory_osabi);
+        succeeded = slide_kernel_objfile(ofile, cur_addr, in_memory_uuid, in_memory_osabi);
       if (!succeeded)
-        succeeded = try_to_find_and_load_kernel_via_uuid (cur_addr, in_memory_uuid, in_memory_osabi);
+        succeeded = try_to_find_and_load_kernel_via_uuid(cur_addr, in_memory_uuid, in_memory_osabi);
 
       if (succeeded)
         {
-          do_cleanups (override_trust_readonly);
+          do_cleanups(override_trust_readonly);
           if (uuid_output)
-            memcpy (*uuid_output, &in_memory_uuid, sizeof (uuid_t));
+            memcpy(*uuid_output, &in_memory_uuid, sizeof(uuid_t));
           if (addr)
             *addr = cur_addr;
           return 1;
         }
     }
 
-  do_cleanups (override_trust_readonly);
+  do_cleanups(override_trust_readonly);
   return 0;
 }
 
@@ -3527,57 +3657,61 @@ exhaustive_search_for_kernel_in_mem (struct objfile *ofile, CORE_ADDR *addr, uui
    Returns 1 if kernel was slid successfully (or no slide was needed).  */
 
 int
-slide_kernel_objfile (struct objfile *o, CORE_ADDR in_memory_addr, uuid_t in_memory_uuid, enum gdb_osabi osabi)
+slide_kernel_objfile(struct objfile *o, CORE_ADDR in_memory_addr,
+                     uuid_t in_memory_uuid, enum gdb_osabi osabi)
 {
   CORE_ADDR file_load_addr = INVALID_ADDRESS;
-  if (o == NULL || o->obfd == NULL || in_memory_addr == 0 || in_memory_addr == INVALID_ADDRESS)
+  if ((o == NULL) || (o->obfd == NULL) || (in_memory_addr == 0)
+      || (in_memory_addr == INVALID_ADDRESS))
     return 0;
-  if (!get_information_about_macho (NULL, INVALID_ADDRESS, o->obfd, 1, 0, NULL, NULL, NULL, &file_load_addr, NULL, NULL))
+  if (!get_information_about_macho(NULL, INVALID_ADDRESS, o->obfd, 1, 0,
+                                   NULL, NULL, NULL, &file_load_addr,
+                                   NULL, NULL))
     return 0;
-  if (file_load_addr == 0 || file_load_addr == INVALID_ADDRESS)
+  if ((file_load_addr == 0) || (file_load_addr == INVALID_ADDRESS))
     return 0;
 
   if (osabi != GDB_OSABI_UNKNOWN)
     {
-      const char *osabi_name = gdbarch_osabi_name (osabi);
-#if defined (TARGET_I386)
-      if (strcmp (osabi_name, "Darwin") == 0)
+      const char *osabi_name = gdbarch_osabi_name(osabi);
+#if defined(TARGET_I386)
+      if (strcmp(osabi_name, "Darwin") == 0)
         set_architecture_from_string ("i386");
-      else if (strcmp (osabi_name, "Darwin64") == 0)
-        set_architecture_from_string ("i386:x86-64");
+      else if (strcmp(osabi_name, "Darwin64") == 0)
+        set_architecture_from_string("i386:x86-64");
 #endif /* TARGET_I386 */
-#if defined (TARGET_ARM)
-      if (strcmp (osabi_name, "Darwin") == 0)
-        set_architecture_from_string ("armv7");
-      else if (strcmp (osabi_name, "DarwinV7") == 0)
-        set_architecture_from_string ("armv7");
-      else if (strcmp (osabi_name, "DarwinV7S") == 0)
-        set_architecture_from_string ("armv7s");
+#if defined(TARGET_ARM)
+      if (strcmp(osabi_name, "Darwin") == 0)
+        set_architecture_from_string("armv7");
+      else if (strcmp(osabi_name, "DarwinV7") == 0)
+        set_architecture_from_string("armv7");
+      else if (strcmp(osabi_name, "DarwinV7S") == 0)
+        set_architecture_from_string("armv7s");
 #endif /* TARGET_ARM */
-      set_osabi_option (osabi_name);
+      set_osabi_option(osabi_name);
     }
 
   if (in_memory_addr != file_load_addr)
     {
-      kernel_slide = in_memory_addr - file_load_addr;
-      slide_objfile (symfile_objfile, kernel_slide, NULL);
-      update_section_tables ();
-      update_current_target ();
-      breakpoint_update ();
+      kernel_slide = (in_memory_addr - file_load_addr);
+      slide_objfile(symfile_objfile, kernel_slide, NULL);
+      update_section_tables();
+      update_current_target();
+      breakpoint_update();
 
       /* Getting new symbols may change our opinion about what is
          frameless.  */
-      reinit_frame_cache ();
-      flush_cached_frames ();
+      reinit_frame_cache();
+      flush_cached_frames();
     }
   else
    kernel_slide = 0;
 
-  printf_filtered ("Kernel is located in memory at 0x%s with uuid of %s\n",
-                 paddr_nz (in_memory_addr), puuid (in_memory_uuid));
+  printf_filtered("Kernel is located in memory at 0x%s with uuid of %s\n",
+                  paddr_nz(in_memory_addr), puuid(in_memory_uuid));
   if (kernel_slide != 0)
     {
-      printf_filtered ("Kernel slid 0x%s in memory.\n", paddr_nz (kernel_slide));
+      printf_filtered("Kernel slid 0x%s in memory.\n", paddr_nz(kernel_slide));
     }
 
   return 1;
@@ -3591,135 +3725,149 @@ slide_kernel_objfile (struct objfile *o, CORE_ADDR in_memory_addr, uuid_t in_mem
    Returns 0 if it did not load a kernel.  */
 
 int
-try_to_find_and_load_kernel_via_uuid (CORE_ADDR in_memory_addr, uuid_t in_memory_uuid, enum gdb_osabi osabi)
+try_to_find_and_load_kernel_via_uuid(CORE_ADDR in_memory_addr,
+                                     uuid_t in_memory_uuid,
+                                     enum gdb_osabi osabi)
 {
+  int loaded_kernel_for_user;
+  CFUUIDRef uuidref;
+  CFStringRef uuid_string;
 
   if (osabi != GDB_OSABI_UNKNOWN)
     {
-      const char *osabi_name = gdbarch_osabi_name (osabi);
-#if defined (TARGET_I386)
-      if (strcmp (osabi_name, "Darwin") == 0)
-        set_architecture_from_string ("i386");
-      else if (strcmp (osabi_name, "Darwin64") == 0)
-        set_architecture_from_string ("i386:x86-64");
+      const char *osabi_name = gdbarch_osabi_name(osabi);
+#if defined(TARGET_I386)
+      if (strcmp(osabi_name, "Darwin") == 0)
+        set_architecture_from_string("i386");
+      else if (strcmp(osabi_name, "Darwin64") == 0)
+        set_architecture_from_string("i386:x86-64");
 #endif /* TARGET_I386 */
-#if defined (TARGET_ARM)
-      if (strcmp (osabi_name, "Darwin") == 0)
+#if defined(TARGET_ARM)
+      if (strcmp(osabi_name, "Darwin") == 0)
+        set_architecture_from_string("armv7");
+      else if (strcmp(osabi_name, "DarwinV7") == 0)
         set_architecture_from_string ("armv7");
-      else if (strcmp (osabi_name, "DarwinV7") == 0)
-        set_architecture_from_string ("armv7");
-      else if (strcmp (osabi_name, "DarwinV7S") == 0)
-        set_architecture_from_string ("armv7s");
+      else if (strcmp(osabi_name, "DarwinV7S") == 0)
+        set_architecture_from_string("armv7s");
 #endif /* TARGET_ARM */
-      set_osabi_option (osabi_name);
+      set_osabi_option(osabi_name);
     }
 
-  int loaded_kernel_for_user = 0;
-  CFUUIDRef uuidref = get_uuidref_for_uuid_t (in_memory_uuid);
-  CFStringRef uuid_string = CFUUIDCreateString(kCFAllocatorDefault, uuidref);
+  loaded_kernel_for_user = 0;
+  uuidref = get_uuidref_for_uuid_t(in_memory_uuid);
+  uuid_string = CFUUIDCreateString(kCFAllocatorDefault, uuidref);
   if (uuid_string)
     {
-      char *kernel_path = macosx_locate_executable_by_dbg_shell_command (uuid_string);
-      if (!file_exists_p (kernel_path))
+      char *kernel_path;
+      CORE_ADDR on_disk_load_addr;
+      kernel_path = macosx_locate_executable_by_dbg_shell_command(uuid_string);
+      if (!file_exists_p(kernel_path))
         {
           /* If we could NOT find the executable by calling the DBGShellCommands command,
              try looking up the dSYM via UUID and seeing if there is a binary sitting next
              to it.  */
           if (kernel_path != NULL)
-            xfree (kernel_path);
-          kernel_path = macosx_locate_kext_executable_by_symfile_helper (uuidref, "mach kernel");
+            xfree(kernel_path);
+          kernel_path =
+            macosx_locate_kext_executable_by_symfile_helper(uuidref,
+                                                            "mach kernel");
         }
-      CORE_ADDR on_disk_load_addr;
-      if (get_information_about_macho (kernel_path, 0, NULL, 1, 0, NULL, NULL, NULL, &on_disk_load_addr, NULL, NULL))
+      if (get_information_about_macho(kernel_path, 0, NULL, 1, 0, NULL, NULL, NULL,
+                                      &on_disk_load_addr, NULL, NULL))
         {
+          struct objfile *o;
           kernel_slide = in_memory_addr - on_disk_load_addr;
 
-          struct objfile *o = symbol_file_add_name_with_addrs_or_offsets (kernel_path, 1, NULL, NULL, 0, 1,
-                                                      OBJF_USERLOADED, OBJF_SYM_ALL, 0, NULL, NULL);
-          xfree (kernel_path);
+          o = symbol_file_add_name_with_addrs_or_offsets(kernel_path, 1, NULL, NULL,
+                                                         0, 1, OBJF_USERLOADED,
+                                                         OBJF_SYM_ALL, 0,
+                                                         NULL, NULL);
+          xfree(kernel_path);
 
           if (o == NULL)
             {
-              CFRelease (uuid_string);
-              CFRelease (uuidref);
+              CFRelease(uuid_string);
+              CFRelease(uuidref);
               return 0;
             }
 
           loaded_kernel_for_user = 1;
 
           if (kernel_slide != 0 && kernel_slide != INVALID_ADDRESS)
-            slide_objfile (o, kernel_slide, NULL);
+            slide_objfile(o, kernel_slide, NULL);
 
-          /* This is our main executable.  */
+          /* This is our main executable: */
           exec_bfd = o->obfd;
 
-          update_section_tables ();
-          update_current_target ();
-          breakpoint_update ();
+          update_section_tables();
+          update_current_target();
+          breakpoint_update();
 
-              /* Getting new symbols may change our opinion about what is
-             frameless.  */
-          reinit_frame_cache ();
-          flush_cached_frames ();
+          /* Getting new symbols may change our opinion about what is
+           * frameless: */
+          reinit_frame_cache();
+          flush_cached_frames();
         }
-      CFRelease (uuid_string);
+      CFRelease(uuid_string);
     }
-  CFRelease (uuidref);
+  CFRelease(uuidref);
 
-  printf_filtered ("Kernel is located in memory at 0x%s with uuid of %s\n",
-                 paddr_nz (in_memory_addr), puuid (in_memory_uuid));
+  printf_filtered("Kernel is located in memory at 0x%s with uuid of %s\n",
+                  paddr_nz(in_memory_addr), puuid(in_memory_uuid));
 
-  if (kernel_slide != 0 && kernel_slide != INVALID_ADDRESS)
+  if ((kernel_slide != 0) && (kernel_slide != INVALID_ADDRESS))
     {
-      printf_filtered ("Kernel slid 0x%s in memory.\n", paddr_nz (kernel_slide));
+      printf_filtered("Kernel slid 0x%s in memory.\n", paddr_nz(kernel_slide));
     }
 
   if (loaded_kernel_for_user)
     {
-      char *exe_for_uuid_cmd = get_dbg_shell_command ();
+      char *exe_for_uuid_cmd = get_dbg_shell_command();
       char *cmd_for_printing = exe_for_uuid_cmd;
       if (exe_for_uuid_cmd)
         {
-          char *bname = basename (exe_for_uuid_cmd);
+          char *bname = basename(exe_for_uuid_cmd);
           if (bname != NULL)
             cmd_for_printing = bname;
         }
       if (cmd_for_printing)
-        printf_filtered ("Kernel binary has been loaded into gdb via %s.\n", cmd_for_printing);
+        printf_filtered("Kernel binary has been loaded into gdb via %s.\n", cmd_for_printing);
       else
-        printf_filtered ("Kernel binary has been loaded into gdb.\n");
+        printf_filtered("Kernel binary has been loaded into gdb.\n");
     }
 
   return 1;
 }
 
 static void
-maintenance_list_kexts (char *arg, int from_tty)
+maintenance_list_kexts(char *arg ATTRIBUTE_UNUSED,
+                       int from_tty ATTRIBUTE_UNUSED)
 {
-  struct loaded_kexts_table *kexts = get_list_of_loaded_kexts ();
+  struct loaded_kexts_table *kexts = get_list_of_loaded_kexts();
+  int padcount;
+  unsigned int i;
 
-	if (kexts == NULL) {
-		return;
-	}
+  if (kexts == NULL) {
+    return;
+  }
 
-  int padcount = 0;
-	if (kexts->count > 9) {
-		padcount = 2;
-	}
-	if (kexts->count > 99) {
-		padcount = 3;
-	}
+  padcount = 0;
+  if (kexts->count > 9) {
+    padcount = 2;
+  }
+  if (kexts->count > 99) {
+    padcount = 3;
+  }
 
-  int i;
-	for (i = 0; i < kexts->count; i++) {
-		printf_filtered ("%*d 0x%s %s %s\n",
-                     padcount, i,
-                     paddr_nz (kexts->kexts[i].address),
-                     puuid (kexts->kexts[i].uuid),
-                     kexts->kexts[i].name);
-	}
+  for (i = 0U; i < kexts->count; i++) {
+    printf_filtered("%*d 0x%s %s %s\n",
+                    padcount, i,
+                    paddr_nz(kexts->kexts[i].address),
+                    puuid(kexts->kexts[i].uuid),
+                    kexts->kexts[i].name);
+  }
 
-  free_list_of_loaded_kexts (kexts);
+  free_list_of_loaded_kexts(kexts);
 }
 
 
@@ -3734,9 +3882,11 @@ macosx_pid_or_tid_to_str (ptid_t ptid)
 {
   static char buf[64];
 #ifdef NM_NEXTSTEP
-  xsnprintf (buf, sizeof buf, "process %d thread 0x%x", ptid_get_pid (ptid), get_application_thread_port ((thread_t) ptid_get_tid (ptid)));
+  xsnprintf(buf, sizeof(buf), "process %d thread 0x%x", ptid_get_pid(ptid),
+            get_application_thread_port((thread_t)ptid_get_tid(ptid)));
 #else
-  xsnprintf (buf, sizeof buf, "process %d thread 0x%x", ptid_get_pid (ptid), (unsigned int) ptid_get_tid (ptid));
+  xsnprintf(buf, sizeof(buf), "process %d thread 0x%x", ptid_get_pid(ptid),
+            (unsigned int)ptid_get_tid(ptid));
 #endif /* NM_NEXTSTEP */
   return buf;
 }
@@ -3897,8 +4047,9 @@ get_dyld_shared_cache_local_syms(void)
 struct gdb_copy_dyld_cache_local_symbols_entry *
 get_dyld_shared_cache_entry(CORE_ADDR intended_load_addr)
 {
+  int i;
   get_dyld_shared_cache_local_syms();
-  int i = 0;
+  i = 0;
   while (i < dyld_shared_cache_entries_count)
     {
       if (dyld_shared_cache_entries[i].dylibOffset == (intended_load_addr - 0x30000000))

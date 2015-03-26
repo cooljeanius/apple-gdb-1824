@@ -1,4 +1,4 @@
-/* Modula 2 language support routines for GDB, the GNU debugger.
+/* m2-lang.c: Modula 2 language support routines for GDB, the GNU debugger.
 
    Copyright 1992, 1993, 1994, 1995, 1996, 1998, 2000, 2002, 2003,
    2004, 2005 Free Software Foundation, Inc.
@@ -194,11 +194,11 @@ m2_printstr (struct ui_file *stream, const gdb_byte *string,
    by an experienced Modula programmer. */
 
 static struct type *
-m2_create_fundamental_type (struct objfile *objfile, int typeid)
+m2_create_fundamental_type(struct objfile *objfile, int mtypeid)
 {
   struct type *type = NULL;
 
-  switch (typeid)
+  switch (mtypeid)
     {
     default:
       /* FIXME:  For now, if we are asked to produce a type not in this
@@ -208,7 +208,7 @@ m2_create_fundamental_type (struct objfile *objfile, int typeid)
       type = init_type (TYPE_CODE_INT,
 			TARGET_INT_BIT / TARGET_CHAR_BIT,
 			0, "<?type?>", objfile);
-      warning (_("internal error: no Modula fundamental type %d"), typeid);
+      warning(_("internal error: no Modula fundamental type %d"), mtypeid);
       break;
     case FT_VOID:
       type = init_type (TYPE_CODE_VOID,
@@ -384,7 +384,7 @@ static const struct op_print m2_op_print_tab[] =
   {"MIN", UNOP_MIN, PREC_BUILTIN_FUNCTION, 0},
   {"ODD", UNOP_ODD, PREC_BUILTIN_FUNCTION, 0},
   {"TRUNC", UNOP_TRUNC, PREC_BUILTIN_FUNCTION, 0},
-  {NULL, 0, 0, 0}
+  {NULL, (enum exp_opcode)0, (enum precedence)0, 0}
 };
 
 /* The built-in types of Modula-2.  */

@@ -197,36 +197,41 @@ struct dyld_objfile_entry *dyld_objfile_entry_alloc (struct dyld_objfile_info *i
 void dyld_print_shlib_info (struct dyld_objfile_info *s,
                             unsigned int reason_mask, int header, char *args);
 
-int dyld_resolve_shlib_num (struct dyld_objfile_info *s, int num,
-                            struct dyld_objfile_entry **eptr,
-                            struct objfile ** optr);
+int dyld_resolve_shlib_num(struct dyld_objfile_info *s, int num,
+                           struct dyld_objfile_entry **eptr,
+                           struct objfile ** optr);
 
-int dyld_objfile_info_compare (struct dyld_objfile_info *a,
-                               struct dyld_objfile_info *b);
+int dyld_objfile_entry_compare(struct dyld_objfile_entry *a,
+                               struct dyld_objfile_entry *b);
 
-void dyld_convert_entry (struct objfile *o, struct dyld_objfile_entry *e);
+int dyld_objfile_info_compare(struct dyld_objfile_info *a,
+                              struct dyld_objfile_info *b);
 
-void dyld_entry_info (struct dyld_objfile_entry *e, int print_basenames,
-                      char **in_name, char **in_objname, char **in_symname,
-                      char **in_auxobjname, char **in_auxsymname, char **in_dsymobjname,
-		      char **addr, char **slide, char **prefix);
+void dyld_convert_entry(struct objfile *o, struct dyld_objfile_entry *e);
+
+void dyld_entry_info(struct dyld_objfile_entry *e, int print_basenames,
+                     char **in_name, char **in_objname, char **in_symname,
+                     char **in_auxobjname, char **in_auxsymname, char **in_dsymobjname,
+		     char **addr, char **slide, char **prefix);
 
 void dyld_print_entry_info(struct dyld_objfile_entry *j, int shlibnum,
                            size_t baselen);
 
 int dyld_shlib_info_basename_length (struct dyld_objfile_info *, unsigned int);
 
-int dyld_entry_shlib_num (struct dyld_objfile_info *s,
-                          struct dyld_objfile_entry *eptr,
-                          int *numptr);
+int dyld_entry_shlib_num(struct dyld_objfile_info *s,
+                         struct dyld_objfile_entry *eptr,
+                         int *numptr);
 
-int dyld_entry_shlib_num_matches (int shlibnum, char *args, int verbose);
+int dyld_entry_shlib_num_matches(int shlibnum, char *args, int verbose);
 
-int dyld_next_allocated_shlib (struct dyld_objfile_info *info, int n);
+int dyld_next_allocated_shlib(struct dyld_objfile_info *info, int n);
 
-int dyld_objfile_entry_in_shared_cache (struct dyld_objfile_entry *e);
+void dyld_check_entry(struct dyld_objfile_entry *e);
 
-enum gdb_osabi dyld_objfile_entry_osabi (const struct dyld_objfile_entry *e);
+int dyld_objfile_entry_in_shared_cache(struct dyld_objfile_entry *e);
+
+enum gdb_osabi dyld_objfile_entry_osabi(const struct dyld_objfile_entry *e);
 
 
 /* The one-per-inferior INFO structure has an array of dyld_objfile_entry

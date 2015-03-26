@@ -64,6 +64,23 @@ MAKEINFOFLAGS = @MAKEINFOFLAGS@
 MAKEINFO_EXTRA_FLAGS = @MAKEINFO_EXTRA_FLAGS@
 MAKEINFO_CMD = $(CONFIGURED_MAKEINFO) $(MAKEINFOFLAGS) $(MAKEINFO_EXTRA_FLAGS)
 
+## automake-style verbosity control:
+V = @V@
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
+am__v_v_0 =
+am__v_v_1 = -v
+
+AM_V_redir = $(am__v_redir_@AM_V@)
+am__v_redir_ = $(am__v_redir_@AM_DEFAULT_V@)
+am__v_redir_0 = >
+am__v_redir_1 = | tee
+
+AM_V_redir_a = $(am__v_redir_a_@AM_V@)
+am__v_redir_a_ = $(am__v_redir_a_@AM_DEFAULT_V@)
+am__v_redir_a_0 = >>
+am__v_redir_a_1 = | tee -a
+
 # Note that texinfo 4.0's makeinfo --html can only generate a
 # single file, which would be too large, so continue to use
 # texi2html. -sts 2000-03-28
@@ -229,19 +246,19 @@ doxy:	doxy/index.html \
 	doxy/gdbserver/index.html
 
 doxy/index.html: $(srcdir)/doxy-index.in
-	-$(MKDIR_P) -v doxy
-	cp -v $(srcdir)/doxy-index.in doxy/index.html
+	-$(MKDIR_P) $(AM_V_v) doxy
+	cp $(AM_V_v) $(srcdir)/doxy-index.in doxy/index.html
 
 doxy/gdb-api/index.html: Doxyfile-gdb-api Doxyfile-base
-	-$(MKDIR_P) -v doxy
+	-$(MKDIR_P) $(AM_V_v) doxy
 	$(DOXYGEN) Doxyfile-gdb-api
 
 doxy/gdb-xref/index.html: Doxyfile-gdb-xref Doxyfile-base
-	-$(MKDIR_P) -v doxy
+	-$(MKDIR_P) $(AM_V_v) doxy
 	$(DOXYGEN) Doxyfile-gdb-xref
 
 doxy/gdbserver/index.html: Doxyfile-gdbserver Doxyfile-base
-	-$(MKDIR_P) -v doxy
+	-$(MKDIR_P) $(AM_V_v) doxy
 	$(DOXYGEN) Doxyfile-gdbserver
 
 Doxyfile-base:	$(srcdir)/Doxyfile-base.in 
@@ -258,7 +275,7 @@ Doxyfile-gdbserver:	$(srcdir)/Doxyfile-gdbserver.in
 
 all-doc: info dvi ps @MAINT@ pdf
 diststuff: info man
-	rm -fv gdb-cfg.texi GDBvn.texi
+	rm -f $(AM_V_v) gdb-cfg.texi GDBvn.texi
 
 install-info: $(INFO_DEPS)
 	$(SHELL) $(srcdir)/../../mkinstalldirs $(DESTDIR)$(infodir)
@@ -294,7 +311,7 @@ uninstall-info:
 	$(NORMAL_UNINSTALL)
 	list='$(INFO_DEPS)'; \
 	for file in $${list}; do \
-	  (cd $(DESTDIR)$(infodir) && rm -fv $${file} $$file-[0-9] $$file-[0-9][0-9]); \
+	  (cd $(DESTDIR)$(infodir) && rm -f $(AM_V_v) $${file} $$file-[0-9] $$file-[0-9][0-9]); \
 	done
 
 html__strip_dir = `echo $${p} | $(SED) -e 's|^.*/||'`;
@@ -372,8 +389,8 @@ uninstall-man1:
 	} | $(SED) -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
 	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
 	test -z "$${files}" || { \
-	  echo " ( cd '$(DESTDIR)$(man1dir)' && rm -fv" $${files} ")"; \
-	  cd "$(DESTDIR)$(man1dir)" && rm -fv $${files}; }
+	  echo " ( cd '$(DESTDIR)$(man1dir)' && rm -f $(AM_V_v)" $${files} ")"; \
+	  cd "$(DESTDIR)$(man1dir)" && rm -f $(AM_V_v) $${files}; }
 
 uninstall-man5:
 	@test -n "$(man5dir)" || exit 0; \
@@ -382,23 +399,23 @@ uninstall-man5:
 	} | $(SED) -e 's,.*/,,;h;s,.*\.,,;s,^[^5][0-9a-z]*$$,5,;x' \
 	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
 	test -z "$${files}" || { \
-	  echo " ( cd '$(DESTDIR)$(man5dir)' && rm -fv" $${files} ")"; \
-	  cd "$(DESTDIR)$(man5dir)" && rm -fv $${files}; }
+	  echo " ( cd '$(DESTDIR)$(man5dir)' && rm -f $(AM_V_v)" $${files} ")"; \
+	  cd "$(DESTDIR)$(man5dir)" && rm -f $(AM_V_v) $${files}; }
 
 STAGESTUFF = *.info* gdb-all.texi GDBvn.texi *.ps *.dvi *.pdf *.1 *.5
 
 # Copy the object files from a particular stage into a subdirectory.
 stage1: force
-	-mkdir -v stage1
-	-mv -v $(STAGESTUFF) stage1
+	-mkdir $(AM_V_v) stage1
+	-mv $(AM_V_v) $(STAGESTUFF) stage1
 
 stage2: force
-	-mkdir -v stage2
-	-mv -v $(STAGESTUFF) stage2
+	-mkdir $(AM_V_v) stage2
+	-mv $(AM_V_v) $(STAGESTUFF) stage2
 
 stage3: force
-	-mkdir -v stage3
-	-mv -v $(STAGESTUFF) stage3
+	-mkdir $(AM_V_v) stage3
+	-mv $(AM_V_v) $(STAGESTUFF) stage3
 
 against=stage2
 
@@ -406,69 +423,69 @@ comparison: force
 	for i in $(STAGESTUFF) ; do cmp $${i} $(against)/$${i}; done
 
 de-stage1: force
-	-(cd stage1 ; mv -fv * ..)
+	-(cd stage1 ; mv -f $(AM_V_v) * ..)
 	-rmdir stage1
 
 de-stage2: force
-	-(cd stage2 ; mv -fv * ..)
+	-(cd stage2 ; mv -f $(AM_V_v) * ..)
 	-rmdir stage2
 
 de-stage3: force
-	-(cd stage3 ; mv -fv * ..)
+	-(cd stage3 ; mv -f $(AM_V_v) * ..)
 	-rmdir stage3
 
 # GDB QUICK REFERENCE (dvi output)
 refcard.dvi : refcard.tex $(REFEDITS)
-	echo "" | tee tmp.sed
+	echo "" $(AM_V_redir) tmp.sed
 	for f in x $(REFEDITS); do \
 		test "x$${f}" = "xx" && continue; \
-		cat $(srcdir)/$${f} | tee -a tmp.sed; \
+		cat $(srcdir)/$${f} $(AM_V_redir_a) tmp.sed; \
 	done
-	$(SED) -f tmp.sed $(srcdir)/refcard.tex | tee sedref.tex
+	$(SED) -f tmp.sed $(srcdir)/refcard.tex $(AM_V_redir) sedref.tex
 	$(SET_TEXINPUTS) $(TEX) sedref.tex
-	mv -v sedref.dvi refcard.dvi
-	rm -fv sedref.log sedref.tex tmp.sed
+	mv $(AM_V_v) sedref.dvi refcard.dvi
+	rm -f $(AM_V_v) sedref.log sedref.tex tmp.sed
 
 refcard.ps : refcard.dvi
 	$(DVIPS) -t landscape -o $@ $?
 
 refcard.pdf : refcard.tex $(REFEDITS)
-	echo "" | tee tmp.sed
+	echo "" $(AM_V_redir) tmp.sed
 	for f in x $(REFEDITS); do \
 		test "x$${f}" = "xx" && continue; \
-		cat $(srcdir)/$${f} | tee -a tmp.sed; \
+		cat $(srcdir)/$${f} $(AM_V_redir_a) tmp.sed; \
 	done
-	$(SED) -f tmp.sed $(srcdir)/refcard.tex | tee sedref.tex
+	$(SED) -f tmp.sed $(srcdir)/refcard.tex $(AM_V_redir) sedref.tex
 	$(SET_TEXINPUTS) $(PDFTEX) sedref.tex
-	mv -v sedref.pdf refcard.pdf
-	rm -fv sedref.log sedref.tex tmp.sed
+	mv $(AM_V_v) sedref.pdf refcard.pdf
+	rm -f $(AM_V_v) sedref.log sedref.tex tmp.sed
 
 # File to record current GDB version number
 # (copied from main dir version.in)
 GDBvn.texi : ${gdbdir}/version.in version.subst
 	if [ -e version.subst ]; then \
-	  echo "@set GDBVN `$(SED) q version.subst`" | tee ./GDBvn.new; \
+	  echo "@set GDBVN `$(SED) q version.subst`" $(AM_V_redir) ./GDBvn.new; \
 	else \
-	  echo "@set GDBVN `$(SED) q $(srcdir)/../version.in`" | tee ./GDBvn.new; \
+	  echo "@set GDBVN `$(SED) q $(srcdir)/../version.in`" $(AM_V_redir) ./GDBvn.new; \
 	fi
 	if [ -n "$(PKGVERSION)" ]; then \
-	  echo "@set VERSION_PACKAGE $(PKGVERSION)" | tee -a ./GDBvn.new; \
+	  echo "@set VERSION_PACKAGE $(PKGVERSION)" $(AM_V_redir_a) ./GDBvn.new; \
 	fi
-	echo "@set BUGURL $(BUGURL_TEXI)" | tee -a ./GDBvn.new
+	echo "@set BUGURL $(BUGURL_TEXI)" $(AM_V_redir_a) ./GDBvn.new
 	if [ "$(BUGURL_TEXI)" = "@uref{http://www.gnu.org/software/gdb/bugs/}" ]; then \
-	  echo "@set BUGURL_DEFAULT" | tee -a ./GDBvn.new; \
+	  echo "@set BUGURL_DEFAULT" $(AM_V_redir_a) ./GDBvn.new; \
 	fi
 	if test -z "$(READLINE_TEXI_INCFLAG)"; then \
-	  echo "@set SYSTEM_READLINE" | tee -a ./GDBvn.new; \
+	  echo "@set SYSTEM_READLINE" $(AM_V_redir_a) ./GDBvn.new; \
 	fi
 	if [ -n "$(SYSTEM_GDBINIT)" ]; then \
-	  echo "@set SYSTEM_GDBINIT $(SYSTEM_GDBINIT)" | tee -a ./GDBvn.new; \
+	  echo "@set SYSTEM_GDBINIT $(SYSTEM_GDBINIT)" $(AM_V_redir_a) ./GDBvn.new; \
 	fi
-	mv -v GDBvn.new GDBvn.texi
+	mv $(AM_V_v) GDBvn.new GDBvn.texi
 
 version.subst: $(gdbdir)/version.in $(gdbdir)/../bfd/version.h
 	date=`$(SED) -n -e 's/^.* BFD_VERSION_DATE \(.*\)$$/\1/p' $(gdbdir)/../bfd/version.h`; \
-	$(SED) -e "s/DATE/$${date}/" < $(gdbdir)/version.in | tee version.subst
+	$(SED) -e "s/DATE/$${date}/" < $(gdbdir)/version.in $(AM_V_redir) version.subst
 
 # Updated atomically:
 .PRECIOUS: GDBvn.texi
@@ -479,9 +496,9 @@ version.subst: $(gdbdir)/version.in $(gdbdir)/../bfd/version.h
 # defined anyways).
 gdb-cfg.texi: ${srcdir}/${DOC_CONFIG}-cfg.texi
 	(test "x$(LN_S)" = "xln -s" && \
-	  $(LN_S) -v ${srcdir}/${DOC_CONFIG}-cfg.texi gdb-cfg.texi) || \
-	ln -v ${srcdir}/${DOC_CONFIG}-cfg.texi gdb-cfg.texi || \
-	cp -v ${srcdir}/${DOC_CONFIG}-cfg.texi gdb-cfg.texi
+	  $(LN_S) $(AM_V_v) ${srcdir}/${DOC_CONFIG}-cfg.texi gdb-cfg.texi) || \
+	ln $(AM_V_v) ${srcdir}/${DOC_CONFIG}-cfg.texi gdb-cfg.texi || \
+	cp $(AM_V_v) ${srcdir}/${DOC_CONFIG}-cfg.texi gdb-cfg.texi
 
 # GDB MANUAL: texinfo source, using @set/@clear/@value/@ifset/@ifclear
 # If your texinfo or makeinfo do NOT support these, get a new texinfo
@@ -503,13 +520,13 @@ GDB_TEX_TMPS = gdb.aux gdb.cp* gdb.fn* gdb.ky* gdb.log gdb.pg* gdb.toc \
 gdb.dvi: ${GDB_DOC_FILES}
 	if [ ! -f ./GDBvn.texi ]; then \
 	  (test "x$(LN_S)" = "xln -s" && \
-	    $(LN_S) -v $(srcdir)/GDBvn.texi .) || \
-	  ln -v $(srcdir)/GDBvn.texi . || \
-	  cp -v $(srcdir)/GDBvn.texi . ; \
+	    $(LN_S) $(AM_V_v) $(srcdir)/GDBvn.texi .) || \
+	  ln $(AM_V_v) $(srcdir)/GDBvn.texi . || \
+	  cp $(AM_V_v) $(srcdir)/GDBvn.texi . ; \
 	else \
 	  echo "avoiding doing anything with GDBvn.texi"; \
 	fi
-	rm -fv $(GDB_TEX_TMPS)
+	rm -f $(AM_V_v) $(GDB_TEX_TMPS)
 	if [ ! -f ./gdb.dvi ]; then \
 	  if [ -n "${GDBMI_DIR}" -a -d ../../readline/doc ]; then \
 	    echo "using new rules to make $@"; \
@@ -527,13 +544,13 @@ gdb.ps: gdb.dvi
 gdb.pdf: ${GDB_DOC_FILES}
 	if [ ! -f ./GDBvn.texi ]; then \
 	  (test "x$(LN_S)" = "xln -s" &&  \
-	    $(LN_S) -v $(srcdir)/GDBvn.texi .) || \
-	  ln -v $(srcdir)/GDBvn.texi . || \
-	  cp -v $(srcdir)/GDBvn.texi . ; \
+	    $(LN_S) $(AM_V_v) $(srcdir)/GDBvn.texi .) || \
+	  ln $(AM_V_v) $(srcdir)/GDBvn.texi . || \
+	  cp $(AM_V_v) $(srcdir)/GDBvn.texi . ; \
 	else \
 	  echo "avoiding doing anything with GDBvn.texi"; \
 	fi
-	rm -fv $(GDB_TEX_TMPS)
+	rm -f $(AM_V_v) $(GDB_TEX_TMPS)
 	if [ ! -f ./gdb.pdf ]; then \
 	  if [ -n "${GDBMI_DIR}" -a -d ../../readline/doc ]; then \
 	    echo "using new rules to make $@"; \
@@ -567,9 +584,9 @@ gdb.info: ${GDB_DOC_FILES}
 links2roff: $(GDB_DOC_SOURCE_INCLUDES)
 	if [ ! -f gdb.texinfo ]; then \
 	  (test "x$(LN_S)" = "xln -s" &&  \
-	    $(LN_S) -v $(GDB_DOC_SOURCE_INCLUDES) .) || \
-	  ln -v $(GDB_DOC_SOURCE_INCLUDES) . || \
-	  cp -v $(GDB_DOC_SOURCE_INCLUDES) . ; \
+	    $(LN_S) $(AM_V_v) $(GDB_DOC_SOURCE_INCLUDES) .) || \
+	  ln $(AM_V_v) $(GDB_DOC_SOURCE_INCLUDES) . || \
+	  cp $(AM_V_v) $(GDB_DOC_SOURCE_INCLUDES) . ; \
 	fi
 	touch links2roff
 
@@ -586,7 +603,7 @@ gdb.me: $(GDB_DOC_FILES) links2roff
 		$(srcdir)/gdb.texinfo | \
 	$(TEXI2ROFF) -me | \
 	$(SED) -e 's/---/\\(em/g' \
-	| tee gdb.me 
+	$(AM_V_redir) gdb.me 
 
 # gdb manual suitable for [gtn]roff -ms
 gdb.ms: $(GDB_DOC_FILES) links2roff
@@ -601,7 +618,7 @@ gdb.ms: $(GDB_DOC_FILES) links2roff
 		$(srcdir)/gdb.texinfo | \
 	$(TEXI2ROFF) -ms | \
 	$(SED) -e 's/---/\\(em/g' \
-	| tee gdb.ms 
+	$(AM_V_redir) gdb.ms 
 
 # gdb manual suitable for [tn]roff -mm
 # '@noindent's removed due to texi2roff-2 mm bug; if yours is newer, 
@@ -619,7 +636,7 @@ gdb.mm: $(GDB_DOC_FILES) links2roff
 		$(srcdir)/gdb.texinfo | \
 	$(TEXI2ROFF) -mm | \
 	$(SED) -e 's/---/\\(em/g' \
-	| tee gdb.mm 
+	$(AM_V_redir) gdb.mm 
 
 # GDB MANUAL: HTML file
 
@@ -634,7 +651,7 @@ GDBINT_TEX_TMPS = gdbint.aux gdbint.cp* gdbint.fn* gdbint.ky* \
 
 # GDB INTERNALS MANUAL: TeX dvi file
 gdbint.dvi: $(GDBINT_DOC_FILES)
-	rm -fv $(GDBINT_TEX_TMPS)
+	rm -f $(AM_V_v) $(GDBINT_TEX_TMPS)
 	if [ ! -f ./gdbint.dvi ]; then \
 	  $(SET_TEXINPUTS) $(TEXI2DVI) $(srcdir)/gdbint.texinfo; \
 	fi
@@ -643,7 +660,7 @@ gdbint.ps : gdbint.dvi
 	$(DVIPS) -o $@ $?
 
 gdbint.pdf: $(GDBINT_DOC_FILES)
-	rm -fv $(GDBINT_TEX_TMPS)
+	rm -f $(AM_V_v) $(GDBINT_TEX_TMPS)
 	if [ ! -f ./gdbint.pdf ]; then \
 	  $(SET_TEXINPUTS) $(TEXI2DVI) --pdf $(srcdir)/gdbint.texinfo; \
 	fi
@@ -659,7 +676,7 @@ gdbint_toc.html: $(GDBINT_DOC_FILES)
 	$(MAKEHTML) $(MAKEHTMLFLAGS) $(srcdir)/gdbint.texinfo
 
 gdb/index.html: ${GDB_DOC_FILES}
-	if [ ! -d gdb ]; then mkdir -v gdb; fi
+	if [ ! -d gdb ]; then mkdir $(AM_V_v) gdb; fi
 	$(MAKEHTML_LIKE_INFO) $(MAKEHTMLNEWFLAGS) $(READLINE_TEXI_INCFLAG) -I ${GDBMI_DIR} -I $(srcdir) $(srcdir)/gdb.texinfo || touch $@
 
 stabs.info: $(STABS_DOC_FILES)
@@ -671,7 +688,7 @@ stabs_toc.html: $(STABS_DOC_FILES)
 	$(MAKEHTML) $(MAKEHTMLFLAGS) $(srcdir)/stabs.texinfo
 
 stabs/index.html: $(STABS_DOC_FILES)
-	if [ ! -d stabs ]; then mkdir -v stabs; fi
+	if [ ! -d stabs ]; then mkdir $(AM_V_v) stabs; fi
 	$(MAKEHTML_LIKE_INFO) $(MAKEHTMLNEWFLAGS) -I $(srcdir) $(srcdir)/stabs.texinfo || touch $@
 
 # Clean these up before each run.  Avoids a catch 22 with not being
@@ -682,7 +699,7 @@ STABS_TEX_TMPS = stabs.aux stabs.cp* stabs.fn* stabs.ky* \
 
 # STABS DOCUMENTATION: TeX dvi file
 stabs.dvi : $(STABS_DOC_FILES)
-	rm -fv $(STABS_TEX_TMPS)
+	rm -f $(AM_V_v) $(STABS_TEX_TMPS)
 	if [ ! -f ./stabs.dvi ]; then \
 	  $(SET_TEXINPUTS) $(TEXI2DVI) $(srcdir)/stabs.texinfo; \
 	fi
@@ -691,7 +708,7 @@ stabs.ps: stabs.dvi
 	$(DVIPS) -o $@ $?
 
 stabs.pdf: $(STABS_DOC_FILES)
-	rm -fv $(STABS_TEX_TMPS)
+	rm -f $(AM_V_v) $(STABS_TEX_TMPS)
 	if [ ! -f ./stabs.pdf ]; then \
 	  $(SET_TEXINPUTS) $(TEXI2DVI) --pdf $(srcdir)/stabs.texinfo; \
 	fi
@@ -704,14 +721,14 @@ ANNOTATE_TEX_TMPS = annotate.aux annotate.cp* annotate.fn* annotate.ky* \
 
 # ANNOTATE DOCUMENTATION: TeX dvi file
 annotate.dvi : $(ANNOTATE_DOC_FILES)
-	rm -fv $(ANNOTATE_TEX_TMPS)
+	rm -f $(AM_V_v) $(ANNOTATE_TEX_TMPS)
 	$(SET_TEXINPUTS) $(TEXI2DVI) $(srcdir)/annotate.texinfo
 
 annotate.ps: annotate.dvi
 	$(DVIPS) -o $@ $?
 
 annotate.pdf: $(ANNOTATE_DOC_FILES)
-	rm -fv $(ANNOTATE_TEX_TMPS)
+	rm -f $(AM_V_v) $(ANNOTATE_TEX_TMPS)
 	$(SET_TEXINPUTS) $(TEXI2DVI) --pdf $(srcdir)/annotate.texinfo
 
 annotate.info: $(ANNOTATE_DOC_FILES)
@@ -721,37 +738,37 @@ annotate_toc.html: $(ANNOTATE_DOC_FILES)
 	$(MAKEHTML) $(MAKEHTMLFLAGS) $(srcdir)/annotate.texinfo
 
 annotate/index.html: $(ANNOTATE_DOC_FILES)
-	if [ ! -d annotate ]; then mkdir -v annotate; fi
+	if [ ! -d annotate ]; then mkdir $(AM_V_v) annotate; fi
 	$(MAKEHTML_LIKE_INFO) $(MAKEHTMLNEWFLAGS) -I $(srcdir) $(srcdir)/annotate.texinfo || touch $@
 
 # Man pages:
 gdb.1: $(GDB_DOC_FILES)
 	touch $@
-	-$(TEXI2POD) $(MANCONF) -Dgdb < $(srcdir)/gdb.texinfo | tee gdb.pod
+	-$(TEXI2POD) $(MANCONF) -Dgdb < $(srcdir)/gdb.texinfo $(AM_V_redir) gdb.pod
 	-($(POD2MAN1) gdb.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -fv $@.T$$$$ && exit 1)
-	rm -fv gdb.pod
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $(AM_V_v) $@.T$$$$ && exit 1)
+	rm -f $(AM_V_v) gdb.pod
 
 gdbserver.1: $(GDB_DOC_FILES)
 	touch $@
-	-$(TEXI2POD) $(MANCONF) -Dgdbserver < $(srcdir)/gdb.texinfo | tee gdbserver.pod
+	-$(TEXI2POD) $(MANCONF) -Dgdbserver < $(srcdir)/gdb.texinfo $(AM_V_redir) gdbserver.pod
 	-($(POD2MAN1) gdbserver.pod | $(SED) -e '/^.if n .na/d' >$@.T$$$$ \
-		&& mv -fv $@.T$$$$ $@) || (rm -fv $@.T$$$$ && exit 1)
-	rm -fv gdbserver.pod
+		&& mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $(AM_V_v) $@.T$$$$ && exit 1)
+	rm -f $(AM_V_v) gdbserver.pod
 
 gcore.1: $(GDB_DOC_FILES)
 	touch $@
-	-$(TEXI2POD) $(MANCONF) -Dgcore < $(srcdir)/gdb.texinfo | tee gcore.pod
+	-$(TEXI2POD) $(MANCONF) -Dgcore < $(srcdir)/gdb.texinfo $(AM_V_redir) gcore.pod
 	-($(POD2MAN1) gcore.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ && \
-		mv -fv $@.T$$$$ $@) || (rm -fv $@.T$$$$ && exit 1)
-	rm -fv gcore.pod
+		mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $(AM_V_v) $@.T$$$$ && exit 1)
+	rm -f $(AM_V_v) gcore.pod
 
 gdbinit.5: $(GDB_DOC_FILES)
 	touch $@
-	-$(TEXI2POD) $(MANCONF) -Dgdbinit < $(srcdir)/gdb.texinfo | tee gdbinit.pod
+	-$(TEXI2POD) $(MANCONF) -Dgdbinit < $(srcdir)/gdb.texinfo $(AM_V_redir) gdbinit.pod
 	-($(POD2MAN5) gdbinit.pod | $(SED) -e '/^.if n .na/d' > $@.T$$$$ \
-		&& mv -fv $@.T$$$$ $@) || (rm -fv $@.T$$$$ && exit 1)
-	rm -fv gdbinit.pod
+		&& mv -f $(AM_V_v) $@.T$$$$ $@) || (rm -f $(AM_V_v) $@.T$$$$ && exit 1)
+	rm -f $(AM_V_v) gdbinit.pod
 
 force:
 
@@ -762,35 +779,37 @@ Makefile: Makefile.in $(both_makefile_frags) config.status
 
 
 # The "least clean" level of cleaning.  Get rid of files which are
-# automatically generated files that are just intermediate files,
-
+# automatically generated files that are just intermediate files, and such:
 mostlyclean:
-	rm -fv gdb.mm gdb.ms gdb.me links2roff
-	rm -fv $(GDB_TEX_TMPS)
-	rm -fv $(GDBINT_TEX_TMPS)
-	rm -fv $(STABS_TEX_TMPS)
-	rm -fv $(ANNOTATE_TEX_TMPS)
-	rm -fv sedref.dvi sedref.tex tmp.sed
-	rm -fv version.subst
+	rm -f $(AM_V_v) gdb.mm gdb.ms gdb.me links2roff
+	rm -f $(AM_V_v) $(GDB_TEX_TMPS)
+	rm -f $(AM_V_v) $(GDBINT_TEX_TMPS)
+	rm -f $(AM_V_v) $(STABS_TEX_TMPS)
+	rm -f $(AM_V_v) $(ANNOTATE_TEX_TMPS)
+	rm -f $(AM_V_v) sedref.dvi sedref.tex tmp.sed
+	rm -f $(AM_V_v) version.subst
 
+# The "normal" level of cleaning to do after builds:
 clean: mostlyclean
-	rm -fv gdb-cfg.texi GDBvn.texi
+	rm -f $(AM_V_v) gdb-cfg.texi GDBvn.texi
 	rm -rf annotate || rmdir annotate
 	rm -rf doxy || rmdir doxy
 	rm -rf gdb || rmdir gdb
 	rm -rf gdbint || rmdir gdbint
 	rm -rf stabs || rmdir stabs
 
+# The level of cleaning to use for distributions, and to verify that the
+# .gitignore file ignores the correct things:
 distclean: clean
-	rm -fv Makefile config.status config.log
-	rm -rfv autom4te.cache || rmdir autom4te.cache
+	rm -f $(AM_V_v) Makefile *.status config.log autoscan.log .DS_Store
+	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 
 # GDBvn.texi, the dvi files, the info files, and the postscript files, 
 # are all part of the distribution, so it should not be removed by
 # "clean" or "distclean".  Use maintainer-clean to remove them.
 
 maintainer-clean realclean: distclean
-	rm -fv GDBvn.texi *.info* *.dvi *.ps *.html *.pdf $(MANS)
+	rm -f $(AM_V_v) GDBvn.texi *.info* *.dvi *.ps *.html *.pdf $(MANS)
 
 install: install-info install-man
 

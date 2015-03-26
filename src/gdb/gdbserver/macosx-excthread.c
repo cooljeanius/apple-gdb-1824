@@ -129,17 +129,17 @@ kern_return_t
 macosx_restore_exception_ports (task_t task,
                                 struct macosx_exception_info *info)
 {
-  int i;
+  unsigned int i;
   kern_return_t kret;
 
-  for (i = 0; i < info->count; i++)
+  for (i = 0U; i < info->count; i++)
     {
-      kret = task_set_exception_ports
-        (task, info->masks[i], info->ports[i], info->behaviors[i],
-         info->flavors[i]);
-		if (kret != KERN_SUCCESS) {
-			return kret;
-		}
+      kret =
+        task_set_exception_ports(task, info->masks[i], info->ports[i],
+                                 info->behaviors[i], info->flavors[i]);
+      if (kret != KERN_SUCCESS) {
+        return kret;
+      }
     }
 
   return KERN_SUCCESS;
@@ -437,11 +437,11 @@ macosx_exception_thread_destroy (macosx_exception_thread_status *s)
   msg_data = NULL;
   msg_data_size = MACOSX_EXCEPTION_ARRAY_SIZE;
 
-  macosx_exception_thread_init (s);
+  macosx_exception_thread_init(s);
 }
 
 static void
-macosx_exception_thread (void *arg)
+macosx_exception_thread(void *arg)
 {
   int next_msg_ctr;
   macosx_exception_thread_status *s = (macosx_exception_thread_status *)arg;

@@ -152,29 +152,30 @@ dyld_add_inserted_libraries(struct dyld_objfile_info *info,
     {
 
       struct dyld_objfile_entry *e = NULL;
-      char *tmp_name, *real_name;
+      char *tmp_name, *real_name, *fixed_name;
 
-      s2 = strchr (s1, ':');
+      s2 = strchr(s1, ':');
       if (s2 == NULL)
         {
-          s2 = strchr (s1, '\0');
+          s2 = strchr(s1, '\0');
         }
-      CHECK_FATAL (s2 != NULL);
+      CHECK_FATAL(s2 != NULL);
 
-      tmp_name = savestring (s1, (s2 - s1));
-      char *fixed_name = dyld_fix_path (tmp_name);
-      xfree (tmp_name);
+      tmp_name = savestring(s1, (s2 - s1));
+      fixed_name = dyld_fix_path(tmp_name);
+      xfree(tmp_name);
       tmp_name = fixed_name;
 
-      real_name = xmalloc (PATH_MAX + 1);
-      if (realpath (tmp_name, real_name) != NULL)
+      real_name = (char *)xmalloc(PATH_MAX + 1);
+      if (realpath(tmp_name, real_name) != NULL)
 	{
-	  e = dyld_objfile_entry_alloc (info);
+	  e = dyld_objfile_entry_alloc(info);
 	  e->user_name = real_name;
 	  e->reason = dyld_reason_init;
 	}
       else
-	warning ("Could NOT get real path for inserted library %s\n", tmp_name);
+	warning("Could NOT get real path for inserted library %s\n",
+                tmp_name);
 
       xfree (tmp_name);
       s1 = s2;
@@ -189,19 +190,19 @@ dyld_add_inserted_libraries(struct dyld_objfile_info *info,
    dylibs/framework load commands; create dyld_objfile_entries for those.  */
 
 void
-dyld_add_image_libraries (struct dyld_objfile_info *info, bfd *abfd)
+dyld_add_image_libraries(struct dyld_objfile_info *info, bfd *abfd)
 {
   struct mach_o_data_struct *mdata = NULL;
-  int i;
+  unsigned int i;
 
-  CHECK_FATAL (info != NULL);
+  CHECK_FATAL(info != NULL);
 
   if (abfd == NULL)
     {
       return;
     }
 
-  if (!bfd_mach_o_valid (abfd))
+  if (!bfd_mach_o_valid(abfd))
     {
       return;
     }
@@ -210,11 +211,11 @@ dyld_add_image_libraries (struct dyld_objfile_info *info, bfd *abfd)
 
   if (mdata == NULL)
     {
-      dyld_debug ("dyld_add_image_libraries: mdata == NULL\n");
+      dyld_debug("dyld_add_image_libraries: mdata == NULL\n");
       return;
     }
 
-  for (i = 0; i < mdata->header.ncmds; i++)
+  for (i = 0U; i < mdata->header.ncmds; i++)
     {
       struct bfd_mach_o_load_command *cmd = &mdata->commands[i];
       switch (cmd->type)
@@ -225,7 +226,6 @@ dyld_add_image_libraries (struct dyld_objfile_info *info, bfd *abfd)
         case BFD_MACH_O_LC_LOAD_DYLIB:
         case BFD_MACH_O_LC_LOAD_UPWARD_DYLIB:
           {
-
             struct dyld_objfile_entry *e = NULL;
             char *name = NULL;
 	    char *fixed_name = NULL;
@@ -236,19 +236,19 @@ dyld_add_image_libraries (struct dyld_objfile_info *info, bfd *abfd)
                 {
                   bfd_mach_o_dylinker_command *dcmd = &cmd->command.dylinker;
 
-                  name = xmalloc (dcmd->name_len + 1);
+                  name = (char *)xmalloc(dcmd->name_len + 1);
 
-                  bfd_seek (abfd, dcmd->name_offset, SEEK_SET);
-                  if (bfd_bread (name, dcmd->name_len, abfd) != dcmd->name_len)
+                  bfd_seek(abfd, dcmd->name_offset, SEEK_SET);
+                  if (bfd_bread(name, dcmd->name_len, abfd) != dcmd->name_len)
                     {
                       warning
                         ("Unable to find library name for LC_LOAD_DYLINKER command; ignoring");
-                      xfree (name);
+                      xfree(name);
                       continue;
                     }
 		  name[dcmd->name_len] = '\0';
-		  fixed_name = dyld_fix_path (name);
-                  xfree (name);
+		  fixed_name = dyld_fix_path(name);
+                  xfree(name);
                   name = fixed_name;
                   break;
                 }
@@ -259,14 +259,14 @@ dyld_add_image_libraries (struct dyld_objfile_info *info, bfd *abfd)
                 {
                   bfd_mach_o_dylib_command *dcmd = &cmd->command.dylib;
 
-                  name = xmalloc (dcmd->name_len + 1);
+                  name = (char *)xmalloc(dcmd->name_len + 1);
 
-                  bfd_seek (abfd, dcmd->name_offset, SEEK_SET);
-                  if (bfd_bread (name, dcmd->name_len, abfd) != dcmd->name_len)
+                  bfd_seek(abfd, dcmd->name_offset, SEEK_SET);
+                  if (bfd_bread(name, dcmd->name_len, abfd) != dcmd->name_len)
                     {
                       warning
                         ("Unable to find library name for LC_LOAD_DYLIB, LC_LOAD_UPWARD_DYLIB, LC_LOAD_WEAK_DYLIB or LC_REEXPORT_DYLIB command; ignoring");
-                      xfree (name);
+                      xfree(name);
                       name = NULL;
                       continue;
                     }
@@ -277,22 +277,22 @@ dyld_add_image_libraries (struct dyld_objfile_info *info, bfd *abfd)
                      people who want to put breakpoints in one of these
                      dylibs will have to use a future-breakpoint instead;
                      not the end of the world.  Ditto for @loader_path.  */
-                  if (name[0] == '@'
-		      && (strncmp (name, "@rpath", 6) == 0
-			  || strncmp (name, "@loader_path", 12) == 0))
+                  if ((name[0] == '@')
+		      && ((strncmp(name, "@rpath", 6) == 0)
+			  || (strncmp(name, "@loader_path", 12) == 0)))
                     {
-                      xfree (name);
+                      xfree(name);
                       name = NULL;
                       break;
                     }
 
-		  fixed_name = dyld_fix_path (name);
-                  xfree (name);
+		  fixed_name = dyld_fix_path(name);
+                  xfree(name);
                   name = fixed_name;
                   break;
                 }
               default:
-                abort ();
+                abort();
               }
 
             /* If NAME is null, this is an @rpath dylib that
@@ -304,7 +304,7 @@ dyld_add_image_libraries (struct dyld_objfile_info *info, bfd *abfd)
               {
                 warning
                   ("No image name specified by LC_LOAD command; ignoring");
-                xfree (name);
+                xfree(name);
                 name = NULL;
               }
 
@@ -321,10 +321,10 @@ dyld_add_image_libraries (struct dyld_objfile_info *info, bfd *abfd)
             {
               char buf[PATH_MAX];
 
-              if (realpath (name, buf) != NULL)
+              if (realpath(name, buf) != NULL)
                 {
-                  xfree (name);
-                  name = xstrdup (buf);
+                  xfree(name);
+                  name = xstrdup(buf);
                 }
             }
 
@@ -338,28 +338,29 @@ dyld_add_image_libraries (struct dyld_objfile_info *info, bfd *abfd)
             if (name)
               {
                 int j, skip_this_dylib = 0;
-                DYLD_ALL_OBJFILE_INFO_ENTRIES (info, e, j)
+                DYLD_ALL_OBJFILE_INFO_ENTRIES(info, e, j)
                   {
-                    if (e->reason == dyld_reason_init && e->text_name_valid == 1
-                        && e->text_name && strcmp (e->text_name, name) == 0)
+                    if ((e->reason == dyld_reason_init)
+                        && (e->text_name_valid == 1)
+                        && e->text_name
+                        && (strcmp(e->text_name, name) == 0))
                       skip_this_dylib = 1;
                   }
                 if (skip_this_dylib)
                   {
-                    xfree (name);
+                    xfree(name);
                     name = NULL;
                     continue;
                   }
               }
 
-            e = dyld_objfile_entry_alloc (info);
+            e = dyld_objfile_entry_alloc(info);
             e->text_name = name;
             e->text_name_valid = 1;
             e->reason = dyld_reason_init;
 
             /* Do NOT accidentally xfree() this now that e->text_name
-             * is holding a pointer to it
-			 */
+             * is holding a pointer to it: */
             name = NULL;
 
             switch (cmd->type)
@@ -372,10 +373,10 @@ dyld_add_image_libraries (struct dyld_objfile_info *info, bfd *abfd)
               case BFD_MACH_O_LC_REEXPORT_DYLIB:
                 break;
               case BFD_MACH_O_LC_LOAD_WEAK_DYLIB:
-                e->reason |= dyld_reason_weak_mask;
+                e->reason |= (enum dyld_objfile_reason)dyld_reason_weak_mask;
                 break;
               default:
-                abort ();
+                abort();
               };
           }
         default:
@@ -385,11 +386,11 @@ dyld_add_image_libraries (struct dyld_objfile_info *info, bfd *abfd)
 }
 
 void
-dyld_resolve_filename_image (const struct macosx_dyld_thread_status *s,
-                             struct dyld_objfile_entry *e)
+dyld_resolve_filename_image(const struct macosx_dyld_thread_status *s,
+                            struct dyld_objfile_entry *e)
 {
   struct mach_header header;
-  CHECK_FATAL (e->allocated);
+  CHECK_FATAL(e->allocated);
   if (e->image_name_valid)
     {
       return;
@@ -433,16 +434,16 @@ dyld_resolve_filename_image (const struct macosx_dyld_thread_status *s,
    CPUTYPE is the cpu_type_t of the binary image.  */
 
 char *
-dyld_find_dylib_name (CORE_ADDR addr, int cputype, int ncmds)
+dyld_find_dylib_name(CORE_ADDR addr, int cputype, int ncmds)
 {
   CORE_ADDR curpos;
   int i;
   char *image_name = NULL;
 
-  if (cputype == CPU_TYPE_X86_64 || cputype == CPU_TYPE_POWERPC64)
-    curpos = addr + sizeof (struct mach_header_64);
+  if ((cputype == CPU_TYPE_X86_64) || (cputype == CPU_TYPE_POWERPC64))
+    curpos = (addr + sizeof(struct mach_header_64));
   else
-    curpos = addr + sizeof (struct mach_header);
+    curpos = (addr + sizeof(struct mach_header));
 
   for (i = 0; i < ncmds; i++)
     {
@@ -477,25 +478,25 @@ dyld_find_dylib_name (CORE_ADDR addr, int cputype, int ncmds)
 }
 
 void
-dyld_resolve_filenames (const struct macosx_dyld_thread_status *s,
-                        struct dyld_objfile_info *new)
+dyld_resolve_filenames(const struct macosx_dyld_thread_status *s,
+                       struct dyld_objfile_info *newinfo)
 {
   int i;
   struct dyld_objfile_entry *e;
 
-  CHECK_FATAL (s != NULL);
-  CHECK_FATAL (new != NULL);
+  CHECK_FATAL(s != NULL);
+  CHECK_FATAL(newinfo != NULL);
 
-  DYLD_ALL_OBJFILE_INFO_ENTRIES (new, e, i)
+  DYLD_ALL_OBJFILE_INFO_ENTRIES(newinfo, e, i)
     {
       if (e->dyld_name_valid)
         continue;
-      dyld_resolve_filename_image (s, e);
+      dyld_resolve_filename_image(s, e);
     }
 }
 
 static CORE_ADDR
-library_offset (struct dyld_objfile_entry *e)
+library_offset(struct dyld_objfile_entry *e)
 {
   int wordsize = gdbarch_tdep (current_gdbarch)->wordsize;
   CHECK_FATAL (e != NULL);
@@ -539,20 +540,20 @@ dyld_parse_load_level (const char *s)
     {
       return OBJF_SYM_EXTERN;
     }
-  else if (strcmp (s, "none") == 0)
+  else if (strcmp(s, "none") == 0)
     {
       return OBJF_SYM_NONE;
     }
   else
     {
-      warning ("unknown setting \"%s\"; using \"none\"\n", s);
+      warning("unknown setting \"%s\"; using \"none\"\n", s);
       return OBJF_SYM_NONE;
     }
 }
 
 int
-dyld_resolve_load_flag (const struct dyld_path_info *d,
-                        struct dyld_objfile_entry *e, const char *rules)
+dyld_resolve_load_flag(const struct dyld_path_info *d,
+                       struct dyld_objfile_entry *e, const char *rules)
 {
   const char *name = NULL;
   const char *leaf = NULL;
@@ -854,16 +855,17 @@ scan_bfd_for_memory_groups (struct bfd *abfd, struct pre_run_memory_map *map)
      least bucket_size in size.  */
   if (seg1addr_set != 0)
     {
+      CORE_ADDR recalculated_endaddr;
       fp->groups[fp->num].length =
-                   (current_bucket_end_addr - current_bucket_start_addr) /
-                    map->bucket_size;
+        ((current_bucket_end_addr - current_bucket_start_addr)
+         / map->bucket_size);
 
       /* Does this grouping overflow?  We do NOT round current_bucket_start_addr
          down  to a bucket boundary so if it is right near the top of memory,
          current_bucket_start_addr + bucket_size may overflow.  If so, remember
          to add one to the bucket calculation.  */
-      CORE_ADDR recalculated_endaddr = current_bucket_start_addr +
-                             (map->bucket_size * fp->groups[fp->num].length);
+      recalculated_endaddr = (current_bucket_start_addr
+                              + (map->bucket_size * fp->groups[fp->num].length));
       if (recalculated_endaddr < current_bucket_end_addr)
         fp->groups[fp->num].length += 1;
 
@@ -1108,8 +1110,9 @@ slide_bfd_in_pre_run_memory_map (struct bfd *abfd,
     }
 
 
-  /* No open slot found; return the dylib's originally intended loadaddr.  */
-  free_memory_footprint (fp);
+  /* No open slot found, so return the originally intended loadaddr of the
+   * dylib: */
+  free_memory_footprint(fp);
   return 0;
 }
 
@@ -1411,7 +1414,7 @@ dyld_load_library(const struct dyld_path_info *d,
                * would be if the binaries were the same.  If that works,
                * then we are done.  Otherwise, look through the in-memory
                * version directly for the LC_UUID.  */
-	      if ((exc.reason == NO_ERROR) && (error == 0))
+	      if ((exc.reason == (int)NO_ERROR) && (error == 0))
 		matches = (memcmp(mem_uuid, file_uuid, sizeof(file_uuid)) == 0);
 
 	      if (!matches)
@@ -1503,31 +1506,30 @@ dyld_load_library(const struct dyld_path_info *d,
 }
 
 void
-dyld_load_libraries (const struct dyld_path_info *d,
-                     struct dyld_objfile_info *result)
+dyld_load_libraries(const struct dyld_path_info *d,
+                    struct dyld_objfile_info *result)
 {
   int i;
   struct dyld_objfile_entry *e;
-  CHECK_FATAL (result != NULL);
+  CHECK_FATAL(result != NULL);
 
-  DYLD_ALL_OBJFILE_INFO_ENTRIES (result, e, i)
+  DYLD_ALL_OBJFILE_INFO_ENTRIES(result, e, i)
     {
       if (e->load_flag < 0)
         {
           e->load_flag =
-            dyld_default_load_flag (d, e) | dyld_minimal_load_flag (d, e);
+            (dyld_default_load_flag(d, e) | dyld_minimal_load_flag(d, e));
         }
       if (e->load_flag)
         {
-          dyld_load_library (d, e);
+          dyld_load_library(d, e);
         }
     }
 }
 
 void
-dyld_symfile_loaded_hook (struct objfile *o)
+dyld_symfile_loaded_hook(struct objfile *o)
 {
-
   /* I have to do this here as well as in macosx_dyld_update or
      this will NOT get re-initialized if you originally saw
      /usr/lib/libobjc.A.dylib, THEN set DYLD_LIBRARY_PATH to point to an
@@ -1782,26 +1784,26 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
 }
 
 void
-dyld_load_symfile (struct dyld_objfile_entry *e)
+dyld_load_symfile(struct dyld_objfile_entry *e)
 {
-  dyld_load_symfile_internal (e, 0);
+  dyld_load_symfile_internal(e, 0);
 }
 
 void
-dyld_load_symfile_preserving_objfile (struct dyld_objfile_entry *e)
+dyld_load_symfile_preserving_objfile(struct dyld_objfile_entry *e)
 {
-  dyld_load_symfile_internal (e, 1);
+  dyld_load_symfile_internal(e, 1);
 }
 
 void
-dyld_load_symfiles (struct dyld_objfile_info *result)
+dyld_load_symfiles(struct dyld_objfile_info *result)
 {
   int i;
   int first = 1;
   struct dyld_objfile_entry *e;
-  CHECK_FATAL (result != NULL);
+  CHECK_FATAL(result != NULL);
 
-  DYLD_ALL_OBJFILE_INFO_ENTRIES (result, e, i)
+  DYLD_ALL_OBJFILE_INFO_ENTRIES(result, e, i)
     {
       char load_char;
 
@@ -1852,11 +1854,11 @@ dyld_load_symfiles (struct dyld_objfile_info *result)
    by a lower level of GDB, return NULL. */
 
 struct objfile *
-dyld_lookup_objfile_safe (struct dyld_objfile_entry *e)
+dyld_lookup_objfile_safe(struct dyld_objfile_entry *e)
 {
   struct objfile *o, *temp;
 
-  ALL_OBJFILES_SAFE (o, temp)
+  ALL_OBJFILES_SAFE(o, temp)
     if (e->objfile == o)
       return o;
 
@@ -1864,11 +1866,11 @@ dyld_lookup_objfile_safe (struct dyld_objfile_entry *e)
 }
 
 int
-dyld_objfile_allocated (struct objfile *o)
+dyld_objfile_allocated(struct objfile *o)
 {
   struct objfile *objfile, *temp;
 
-  ALL_OBJFILES_SAFE (objfile, temp)
+  ALL_OBJFILES_SAFE(objfile, temp)
   {
     if (o == objfile)
       {
@@ -1879,22 +1881,22 @@ dyld_objfile_allocated (struct objfile *o)
 }
 
 void
-dyld_purge_objfiles (struct dyld_objfile_info *info)
+dyld_purge_objfiles(struct dyld_objfile_info *info)
 {
   struct dyld_objfile_entry *e;
   int i;
 
-  DYLD_ALL_OBJFILE_INFO_ENTRIES (info, e, i)
+  DYLD_ALL_OBJFILE_INFO_ENTRIES(info, e, i)
     if (e->objfile != NULL)
-      if (dyld_lookup_objfile_safe (e) == NULL)
-        dyld_remove_objfile (e);
+      if (dyld_lookup_objfile_safe(e) == NULL)
+        dyld_remove_objfile(e);
 }
 
 /* Return the dyld_objfile_entry for a given objfile.  If no
    dyld_objfile_entry claims the specified objfile, return NULL. */
 
 struct dyld_objfile_entry *
-dyld_lookup_objfile_entry (struct dyld_objfile_info *info, struct objfile *o)
+dyld_lookup_objfile_entry(struct dyld_objfile_info *info, struct objfile *o)
 {
   int i;
   struct dyld_objfile_entry *e;
@@ -2012,46 +2014,46 @@ dyld_is_objfile_loaded(struct objfile *obj)
 }
 
 void
-dyld_remove_objfile_internal (struct dyld_objfile_entry *e,
-		     int delete_p)
+dyld_remove_objfile_internal(struct dyld_objfile_entry *e,
+                             int delete_p)
 {
   char *s = NULL;
 
-  CHECK_FATAL (e->allocated);
+  CHECK_FATAL(e->allocated);
 
   if (e->reason & dyld_reason_executable_mask)
-    CHECK_FATAL (e->objfile == symfile_objfile);
+    CHECK_FATAL(e->objfile == symfile_objfile);
 
   if (e->objfile == NULL)
     {
       return;
     }
 
-  CHECK_FATAL (dyld_objfile_allocated (e->objfile));
+  CHECK_FATAL(dyld_objfile_allocated(e->objfile));
 
-  s = dyld_entry_string (e, dyld_print_basenames_flag);
+  s = dyld_entry_string(e, dyld_print_basenames_flag);
   if (info_verbose)
     {
-      printf_filtered ("Removing symbols for %s\n", s);
+      printf_filtered("Removing symbols for %s\n", s);
     }
-  xfree (s);
-  gdb_flush (gdb_stdout);
+  xfree(s);
+  gdb_flush(gdb_stdout);
 
   if (delete_p)
     {
-      free_objfile (e->objfile);
+      free_objfile(e->objfile);
       e->objfile = NULL;
     }
   else
-    clear_objfile (e->objfile);
+    clear_objfile(e->objfile);
 
   if (e->abfd != NULL)
-    bfd_close (e->abfd);
+    bfd_close(e->abfd);
   e->abfd = NULL;
 
   if (e->dyld_section_offsets != NULL)
     {
-      xfree (e->dyld_section_offsets);
+      xfree(e->dyld_section_offsets);
       e->dyld_section_offsets = NULL;
     }
 
@@ -2063,14 +2065,14 @@ dyld_remove_objfile_internal (struct dyld_objfile_entry *e,
 
       if (delete_p)
 	{
-	  free_objfile (e->commpage_objfile);
+	  free_objfile(e->commpage_objfile);
 	  e->commpage_objfile = NULL;
 	}
       else
-	clear_objfile (e->commpage_objfile);
+	clear_objfile(e->commpage_objfile);
 
       if (e->commpage_bfd != NULL)
-        bfd_close (e->commpage_bfd);
+        bfd_close(e->commpage_bfd);
       e->commpage_bfd = NULL;
     }
 
@@ -2078,7 +2080,7 @@ dyld_remove_objfile_internal (struct dyld_objfile_entry *e,
   e->loaded_memaddr = 0;
   e->pre_run_slide_addr_valid = 0;
   e->pre_run_slide_addr = 0;
-  gdb_flush (gdb_stdout);
+  gdb_flush(gdb_stdout);
 
   if (e->reason & dyld_reason_executable_mask)
     {
@@ -2309,14 +2311,14 @@ dyld_libraries_compatible (struct dyld_path_info *d,
    Upon completion, SRC will NOT have any of its load data fields set.  */
 
 void
-dyld_objfile_move_load_data (struct dyld_objfile_entry *src,
-                             struct dyld_objfile_entry *dst)
+dyld_objfile_move_load_data(struct dyld_objfile_entry *src,
+                            struct dyld_objfile_entry *dst)
 {
   bfd *dst_bfd = NULL;
   bfd *src_bfd = NULL;
   int reload = 0;
   enum gdb_osabi reload_osabi = GDB_OSABI_UNKNOWN;
-  gdb_assert (dst->commpage_bfd == NULL);
+  gdb_assert(dst->commpage_bfd == NULL);
 
   /* dyld_info_process_raw will open the bfd for the objfile and it
      so we try to reuse it.  But when the library was read at startup,
@@ -2371,8 +2373,8 @@ dyld_objfile_move_load_data (struct dyld_objfile_entry *src,
       && src->pre_run_slide_addr != 0)
     {
       /* FIXME: Why do we have to relocate differently if we are
-	   * using the pre_run_slide_addr? This should just be another
-	   * step in the relocating process.  */
+       * using the pre_run_slide_addr? This should just be another
+       * step in the relocating process.  */
 
       slide_objfile (dst->objfile, dst->dyld_slide, 0);
     }

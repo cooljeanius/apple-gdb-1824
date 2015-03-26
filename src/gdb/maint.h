@@ -1,4 +1,4 @@
-/* Support for GDB maintenance commands.
+/* maint.h: Support for GDB maintenance commands.
    Copyright (C) 2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -19,13 +19,19 @@
 #ifndef MAINT_H
 #define MAINT_H
 
-extern void set_per_command_time (int);
+extern void set_per_command_time(int);
 
-extern void set_per_command_space (int);
+extern void set_per_command_space(int);
 
-/* Note: There's no set_per_command_symtab on purpose.
-   Symtab stats aren't yet as useful for --statistics output.  */
+/* Note: There is no set_per_command_symtab on purpose.
+   Symtab stats are NOT yet as useful for --statistics output.  */
 
-extern struct cleanup *make_command_stats_cleanup (int);
+extern struct cleanup *make_command_stats_cleanup(int);
+
+extern void pop_timer(void);
+
+extern int find_timer(char *name);
 
 #endif /* MAINT_H */
+
+/* EOF */

@@ -10007,19 +10007,24 @@ fi
 
 
 
-build_warnings="-Wdeclaration-after-statement -Wmissing-parameter-type \
--Wstrict-prototypes -Wold-style-declaration -Wold-style-definition -Wmain \
--Wpointer-arith -Wformat-nonliteral -Wno-char-subscripts -Wempty-body \
--Wnested-externs -Wno-unused-parameter -Wundef -Wno-sign-compare -Wswitch \
--Wparentheses -Winline -Wvolatile-register-var -Wabi -Warray-bounds \
--Wdiv-by-zero -Wdouble-promotion -Wfree-nonheap-object -pedantic \
--Winvalid-memory-model -Wmissing-braces -Wmissing-include-dirs -Woverflow \
--Woverlength-strings -Woverride-init -Wreturn-local-addr -Wsequence-point \
--Wsizeof-pointer-memaccess -Wunsuffixed-float-constants -Wstrict-overflow \
--Wtrampolines -Wjump-misses-init -Wcoverage-mismatch -Wno-strict-aliasing"
+build_warnings="-Wmain -Wpointer-arith -Wformat-nonliteral \
+-Wno-char-subscripts -Wempty-body -Wnested-externs -Wno-unused-parameter \
+-Wundef -Wswitch -Wparentheses -Winline -Wvolatile-register-var \
+-Warray-bounds -Wdiv-by-zero -Wdouble-promotion -Wfree-nonheap-object \
+-pedantic -Winvalid-memory-model -Wmissing-braces -Wmissing-include-dirs \
+-Woverflow -Woverlength-strings -Woverride-init -Wreturn-local-addr \
+-Wsequence-point -Wsizeof-pointer-memaccess -Wunsuffixed-float-constants \
+-Wstrict-overflow -Wtrampolines -Wjump-misses-init -Wcoverage-mismatch \
+-Wno-strict-aliasing"
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
-  build_warnings="${build_warnings} -fpermissive"
+  cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo \
+-Wno-sign-compare -Wno-write-strings -Wno-narrowing"
+  build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
+else
+  c_warnings="-Wdeclaration-after-statement -Wmissing-parameter-type \
+-Wstrict-prototypes -Wold-style-declaration -Wold-style-definition"
+  build_warnings="${build_warnings} ${c_warnings}"
 fi
 
 # left out on purpose:
@@ -10074,6 +10079,21 @@ $as_echo_n "checking compiler warning flags... " >&6; }
 	case ${w} in
 	-Werr*)
 	    	    ;;
+        -Wold-style-definition|-Wstrict-prototypes)
+	    saved_CFLAGS="${CFLAGS}"
+	    CFLAGS="${CFLAGS} ${w} -Werror"
+                        	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"; then :
+  WARN_CFLAGS="${WARN_CFLAGS} ${w}"
+else
+  BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+	    CFLAGS="${saved_CFLAGS}"
+            ;;
 	*) # Check that GCC accepts it:
 	    saved_CFLAGS="${CFLAGS}"
 	    CFLAGS="${CFLAGS} ${w} -Werror"

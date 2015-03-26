@@ -27,7 +27,7 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --lib=libgnu --source-base=import --m4-base=import/m4 --doc-base=doc --tests-base=tests --aux-dir=import/extra --with-obsolete --avoid=lock --avoid=msvc-nothrow --avoid=threadlib --no-conditional-dependencies --no-libtool --macro-prefix=gl --no-vc-files absolute-header alignof alloca alloca-opt ansi-c++-opt assure autobuild configmake dirent dirfd dosname double-slash-root errno error exitfail extensions extern-inline fileblocks float fnmatch fnmatch-gnu fpieee fpucw frexp frexpl fts gettext-h gettimeofday git-version-gen gitlog-to-changelog gnu-make havelib host-cpu-c-abi host-os include_next inline intprops inttypes inttypes-incomplete isnand-nolibm isnanl-nolibm iswctype largefile ldd localcharset lstat malloc-gnu malloc-posix manywarnings math mbrtowc mbsinit mbsrtowcs memchr memcmp memmem memmem-simple mempcpy memrchr mkdtemp multiarch nextafter no-c++ nocrash obstack openmp pathmax readlink realloc-gnu realloc-posix rmdir snippet/_Noreturn snippet/arg-nonnull snippet/c++defs snippet/link-warning snippet/warn-on-use ssize_t stat stat-macros stat-size stat-time stdbool stddef stdint stdlib streq strerror strerror-override strerror_r-posix string strnlen strnlen1 strstr strstr-simple sys_stat sys_time sys_types tempname time unistd unlink unlink-busy update-copyright vc-list-files verify warnings wchar wcsncasecmp wctype-h xalloc xalloc-die xalloc-oversized
+#   gnulib-tool --import --dir=. --lib=libgnu --source-base=import --m4-base=import/m4 --doc-base=doc --tests-base=tests --aux-dir=import/extra --with-obsolete --avoid=lock --avoid=msvc-nothrow --avoid=threadlib --no-conditional-dependencies --no-libtool --macro-prefix=gl --no-vc-files absolute-header alignof alloca alloca-opt ansi-c++-opt assure autobuild closedir configmake dirent dirfd dosname double-slash-root errno error exitfail extensions extern-inline fileblocks float fnmatch fnmatch-gnu fpieee fpucw frexp frexpl fts gettext-h gettimeofday git-version-gen gitlog-to-changelog gnu-make havelib host-cpu-c-abi host-os include_next inline intprops inttypes inttypes-incomplete isnand-nolibm isnanl-nolibm iswctype largefile ldd localcharset lstat malloc-gnu malloc-posix manywarnings math mbrtowc mbsinit mbsrtowcs memchr memcmp memmem memmem-simple mempcpy memrchr mkdtemp multiarch nextafter no-c++ nocrash obstack openmp pathmax pclose popen readdir readlink realloc-gnu realloc-posix rmdir snippet/_Noreturn snippet/arg-nonnull snippet/c++defs snippet/link-warning snippet/warn-on-use ssize_t stat stat-macros stat-size stat-time stdbool stddef stdint stdlib streq strerror strerror-override strerror_r-posix string strnlen strnlen1 strstr strstr-simple sys_stat sys_time sys_types tempname time unistd unlink unlink-busy update-copyright vc-list-files verify warnings wchar wcsncasecmp wctype-h xalloc xalloc-die xalloc-oversized
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([])
@@ -39,6 +39,7 @@ gl_MODULES([
   ansi-c++-opt
   assure
   autobuild
+  closedir
   configmake
   dirent
   dirfd
@@ -99,6 +100,9 @@ gl_MODULES([
   obstack
   openmp
   pathmax
+  pclose
+  popen
+  readdir
   readlink
   realloc-gnu
   realloc-posix

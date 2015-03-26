@@ -981,11 +981,11 @@ language_str (enum language lang)
 }
 
 static void
-set_check (char *ignore, int from_tty)
+set_check(char *ignore, int from_tty)
 {
-  printf_unfiltered (
-     "\"set check\" must be followed by the name of a check subcommand.\n");
-  help_list (setchecklist, "set check ", -1, gdb_stdout);
+  printf_unfiltered("\"set check\" must be followed by the name of a check subcommand.\n");
+  help_list(setchecklist, "set check ", (enum command_class)-1,
+            gdb_stdout);
 }
 
 static void
@@ -1077,7 +1077,7 @@ language_class_name_from_physname (const struct language_defn *current_language,
 /* APPLE LOCAL: Don't include '/' in this list.  See also the copy of this
    string in completer.c:gdb_completer_command_word_break_characters().  */
 char *
-default_word_break_characters (void)
+default_word_break_characters(void)
 {
   return " \t\n!@#$%^&*()+=|~`}{[]\"';:?>.<,-";
 }
@@ -1085,66 +1085,67 @@ default_word_break_characters (void)
 /* Define the language that is no language.  */
 
 static int
-unk_lang_parser (void)
+unk_lang_parser(void)
 {
   return 1;
 }
 
 static void
-unk_lang_error (char *msg)
+unk_lang_error(char *msg ATTRIBUTE_UNUSED)
 {
-  error (_("Attempted to parse an expression with unknown language"));
+  error(_("Attempted to parse an expression with unknown language"));
 }
 
 static void
-unk_lang_emit_char (int c, struct ui_file *stream, int quoter)
+unk_lang_emit_char(int c, struct ui_file *stream, int quoter)
 {
-  error (_("internal error - unimplemented function unk_lang_emit_char called."));
+  error(_("internal error - unimplemented function unk_lang_emit_char called."));
 }
 
 static void
-unk_lang_printchar (int c, struct ui_file *stream)
+unk_lang_printchar(int c, struct ui_file *stream)
 {
   error (_("internal error - unimplemented function unk_lang_printchar called."));
 }
 
 static void
-unk_lang_printstr (struct ui_file *stream, const gdb_byte *string,
-		   unsigned int length, int width, int force_ellipses)
+unk_lang_printstr(struct ui_file *stream, const gdb_byte *string,
+		  unsigned int length, int width, int force_ellipses)
 {
-  error (_("internal error - unimplemented function unk_lang_printstr called."));
+  error(_("internal error - unimplemented function unk_lang_printstr called."));
 }
 
 static struct type *
-unk_lang_create_fundamental_type (struct objfile *objfile, int typeid)
+unk_lang_create_fundamental_type(struct objfile *objfile ATTRIBUTE_UNUSED,
+                                 int unktypeid ATTRIBUTE_UNUSED)
 {
-  error (_("internal error - unimplemented function unk_lang_create_fundamental_type called."));
+  error(_("internal error - unimplemented function unk_lang_create_fundamental_type called."));
 }
 
 static void
 unk_lang_print_type (struct type *type, char *varstring, struct ui_file *stream,
 		     int show, int level)
 {
-  error (_("internal error - unimplemented function unk_lang_print_type called."));
+  error(_("internal error - unimplemented function unk_lang_print_type called."));
 }
 
 static int
-unk_lang_val_print (struct type *type, const gdb_byte *valaddr,
-		    int embedded_offset, CORE_ADDR address,
-		    struct ui_file *stream, int format,
-		    int deref_ref, int recurse, enum val_prettyprint pretty)
+unk_lang_val_print(struct type *type, const gdb_byte *valaddr,
+		   int embedded_offset, CORE_ADDR address,
+		   struct ui_file *stream, int format,
+		   int deref_ref, int recurse, enum val_prettyprint pretty)
 {
-  error (_("internal error - unimplemented function unk_lang_val_print called."));
+  error(_("internal error - unimplemented function unk_lang_val_print called."));
 }
 
 static int
-unk_lang_value_print (struct value *val, struct ui_file *stream, int format,
-		      enum val_prettyprint pretty)
+unk_lang_value_print(struct value *val, struct ui_file *stream, int format,
+		     enum val_prettyprint pretty)
 {
   error (_("internal error - unimplemented function unk_lang_value_print called."));
 }
 
-static CORE_ADDR unk_lang_trampoline (CORE_ADDR pc)
+static CORE_ADDR unk_lang_trampoline(CORE_ADDR pc)
 {
   return 0;
 }
@@ -1422,3 +1423,5 @@ For Fortran the default is off; for other languages the default is on."),
   /* Have the above take effect */
   set_language (language_auto);
 }
+
+/* EOF */

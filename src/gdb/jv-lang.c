@@ -203,51 +203,51 @@ java_lookup_class (char *name)
    a name given by NAME (which has type Utf8Const*). */
 
 char *
-get_java_utf8_name (struct obstack *obstack, struct value *name)
+get_java_utf8_name(struct obstack *obstack, struct value *name)
 {
   char *chrs;
   struct value *temp = name;
   int name_length;
   CORE_ADDR data_addr;
-  temp = value_struct_elt (&temp, NULL, "length", NULL, "structure");
-  name_length = (int) value_as_long (temp);
-  data_addr = VALUE_ADDRESS (temp) + value_offset (temp)
-    + TYPE_LENGTH (value_type (temp));
-  chrs = obstack_alloc (obstack, name_length + 1);
+  temp = value_struct_elt(&temp, NULL, "length", NULL, "structure");
+  name_length = (int)value_as_long(temp);
+  data_addr = (VALUE_ADDRESS(temp) + value_offset(temp)
+               + TYPE_LENGTH(value_type(temp)));
+  chrs = (char *)obstack_alloc(obstack, name_length + 1);
   chrs[name_length] = '\0';
-  read_memory (data_addr, (gdb_byte *) chrs, name_length);
+  read_memory(data_addr, (gdb_byte *)chrs, name_length);
   return chrs;
 }
 
 struct value *
-java_class_from_object (struct value *obj_val)
+java_class_from_object(struct value *obj_val)
 {
   /* This is all rather inefficient, since the offsets of vtable and
      class are fixed.  FIXME */
   struct value *vtable_val;
 
-  if (TYPE_CODE (value_type (obj_val)) == TYPE_CODE_PTR
-      && TYPE_LENGTH (TYPE_TARGET_TYPE (value_type (obj_val))) == 0)
-    obj_val = value_at (get_java_object_type (),
-			value_as_address (obj_val));
+  if ((TYPE_CODE(value_type(obj_val)) == TYPE_CODE_PTR)
+      && (TYPE_LENGTH(TYPE_TARGET_TYPE(value_type(obj_val))) == 0))
+    obj_val = value_at(get_java_object_type(),
+                       value_as_address(obj_val));
 
-  vtable_val = value_struct_elt (&obj_val, NULL, "vtable", NULL, "structure");
-  return value_struct_elt (&vtable_val, NULL, "class", NULL, "structure");
+  vtable_val = value_struct_elt(&obj_val, NULL, "vtable", NULL, "structure");
+  return value_struct_elt(&vtable_val, NULL, "class", NULL, "structure");
 }
 
 /* Check if CLASS_IS_PRIMITIVE(value of clas): */
 static int
-java_class_is_primitive (struct value *clas)
+java_class_is_primitive(struct value *clas)
 {
-  struct value *vtable = value_struct_elt (&clas, NULL, "vtable", NULL, "struct");
-  CORE_ADDR i = value_as_address (vtable);
-  return (int) (i & 0x7fffffff) == (int) 0x7fffffff;
+  struct value *vtable = value_struct_elt(&clas, NULL, "vtable", NULL, "struct");
+  CORE_ADDR i = value_as_address(vtable);
+  return (int)(i & 0x7fffffff) == (int)0x7fffffff;
 }
 
 /* Read a GCJ Class object, and generated a gdb (TYPE_CODE_STRUCT) type. */
 
 struct type *
-type_from_class (struct value *clas)
+type_from_class(struct value *clas)
 {
   struct type *type;
   char *name;
@@ -258,59 +258,60 @@ type_from_class (struct value *clas)
   CORE_ADDR addr;
   int is_array = 0;
 
-  type = check_typedef (value_type (clas));
-  if (TYPE_CODE (type) == TYPE_CODE_PTR)
+  type = check_typedef(value_type(clas));
+  if (TYPE_CODE(type) == TYPE_CODE_PTR)
     {
-      if (value_logical_not (clas))
+      if (value_logical_not(clas))
 	return NULL;
-      clas = value_ind (clas);
+      clas = value_ind(clas);
     }
-  addr = VALUE_ADDRESS (clas) + value_offset (clas);
+  addr = VALUE_ADDRESS(clas) + value_offset(clas);
 
 #if 0
-  get_java_class_symtab ();
-  bl = BLOCKVECTOR_BLOCK (BLOCKVECTOR (class_symtab), GLOBAL_BLOCK);
-  ALL_BLOCK_SYMBOLS (block, iter, sym)
+  get_java_class_symtab();
+  bl = BLOCKVECTOR_BLOCK(BLOCKVECTOR(class_symtab), GLOBAL_BLOCK);
+  ALL_BLOCK_SYMBOLS(block, iter, sym)
     {
-      if (SYMBOL_VALUE_ADDRESS (sym) == addr)
-	return SYMBOL_TYPE (sym);
+      if (SYMBOL_VALUE_ADDRESS(sym) == addr)
+	return SYMBOL_TYPE(sym);
     }
-#endif
+#endif /* 0 */
 
-  objfile = get_dynamics_objfile ();
-  if (java_class_is_primitive (clas))
+  objfile = get_dynamics_objfile();
+  if (java_class_is_primitive(clas))
     {
       struct value *sig;
       temp = clas;
-      sig = value_struct_elt (&temp, NULL, "method_count", NULL, "structure");
-      return java_primitive_type (value_as_long (sig));
+      sig = value_struct_elt(&temp, NULL, "method_count", NULL, "structure");
+      return java_primitive_type(value_as_long(sig));
     }
 
   /* Get Class name. */
   /* if clasloader non-null, prepend loader address. FIXME */
   temp = clas;
-  utf8_name = value_struct_elt (&temp, NULL, "name", NULL, "structure");
-  name = get_java_utf8_name (&objfile->objfile_obstack, utf8_name);
+  utf8_name = value_struct_elt(&temp, NULL, "name", NULL, "structure");
+  name = get_java_utf8_name(&objfile->objfile_obstack, utf8_name);
   for (nptr = name; *nptr != 0; nptr++)
     {
       if (*nptr == '/')
 	*nptr = '.';
     }
 
-  type = java_lookup_class (name);
+  type = java_lookup_class(name);
   if (type != NULL)
     return type;
 
-  type = alloc_type (objfile);
-  TYPE_CODE (type) = TYPE_CODE_STRUCT;
-  INIT_CPLUS_SPECIFIC (type);
+  type = alloc_type(objfile);
+  TYPE_CODE(type) = TYPE_CODE_STRUCT;
+  INIT_CPLUS_SPECIFIC(type);
 
   if (name[0] == '[')
     {
       char *signature = name;
       size_t namelen = java_demangled_signature_length(signature);
       if (namelen > strlen(name))
-	name = obstack_alloc(&objfile->objfile_obstack, namelen + 1);
+	name = (char *)obstack_alloc(&objfile->objfile_obstack,
+                                     (namelen + 1));
       java_demangled_signature_copy(name, signature);
       name[namelen] = '\0';
       is_array = 1;
@@ -321,21 +322,20 @@ type_from_class (struct value *clas)
       TYPE_TARGET_TYPE(type) = type_from_class(temp);
     }
 
-  ALLOCATE_CPLUS_STRUCT_TYPE (type);
-  TYPE_TAG_NAME (type) = name;
+  ALLOCATE_CPLUS_STRUCT_TYPE(type);
+  TYPE_TAG_NAME(type) = name;
 
-  add_class_symtab_symbol (add_class_symbol (type, addr));
-  return java_link_class_type (type, clas);
+  add_class_symtab_symbol(add_class_symbol(type, addr));
+  return java_link_class_type(type, clas);
 }
 
-/* Fill in class TYPE with data from the CLAS value. */
-
+/* Fill in class TYPE with data from the CLAS value: */
 struct type *
-java_link_class_type (struct type *type, struct value *clas)
+java_link_class_type(struct type *type, struct value *clas)
 {
   struct value *temp;
   char *unqualified_name;
-  char *name = TYPE_TAG_NAME (type);
+  char *name = TYPE_TAG_NAME(type);
   int ninterfaces, nfields, nmethods;
   int type_is_object = 0;
   struct fn_field *fn_fields;
@@ -936,15 +936,15 @@ evaluate_subexp_java (struct type *expect_type, struct expression *exp,
       break;
     }
 standard:
-  return evaluate_subexp_standard (expect_type, exp, pos, noside);
+  return evaluate_subexp_standard(expect_type, exp, pos, noside);
 nosideret:
-  return value_from_longest (builtin_type_long, (LONGEST) 1);
+  return value_from_longest(builtin_type_long, (LONGEST)1L);
 }
 
 static struct type *
-java_create_fundamental_type (struct objfile *objfile, int typeid)
+java_create_fundamental_type(struct objfile *objfile, int jtypeid)
 {
-  switch (typeid)
+  switch (jtypeid)
     {
     case FT_VOID:
       return java_void_type;
@@ -969,12 +969,12 @@ java_create_fundamental_type (struct objfile *objfile, int typeid)
     case FT_SIGNED_LONG:
       return java_long_type;
     }
-  return c_create_fundamental_type (objfile, typeid);
+  return c_create_fundamental_type(objfile, jtypeid);
 }
 
-static char *java_demangle (const char *mangled, int options)
+static char *java_demangle(const char *mangled, int options)
 {
-  return cplus_demangle (mangled, options | DMGL_JAVA);
+  return cplus_demangle(mangled, (options | DMGL_JAVA));
 }
 
 /* Find the member function name of the demangled name NAME.  NAME
@@ -986,18 +986,18 @@ static char *java_demangle (const char *mangled, int options)
    expected form.  */
 
 static const char *
-java_find_last_component (const char *name)
+java_find_last_component(const char *name)
 {
   const char *p;
 
-  /* Find argument list.  */
-  p = strchr (name, '(');
+  /* Find argument list: */
+  p = strchr(name, '(');
 
   if (p == NULL)
     return NULL;
 
-  /* Back up and find first dot prior to argument list.  */
-  while (p > name && *p != '.')
+  /* Back up and find first dot prior to argument list: */
+  while ((p > name) && (*p != '.'))
     p--;
 
   if (p == name)
@@ -1006,23 +1006,22 @@ java_find_last_component (const char *name)
   return p;
 }
 
-/* Return the name of the class containing method PHYSNAME.  */
-
+/* Return the name of the class containing method PHYSNAME: */
 static char *
-java_class_name_from_physname (const char *physname)
+java_class_name_from_physname(const char *physname)
 {
   char *ret = NULL;
   const char *end;
-  char *demangled_name = java_demangle (physname, DMGL_PARAMS | DMGL_ANSI);
+  char *demangled_name = java_demangle(physname, DMGL_PARAMS | DMGL_ANSI);
 
   if (demangled_name == NULL)
     return NULL;
 
-  end = java_find_last_component (demangled_name);
+  end = java_find_last_component(demangled_name);
   if (end != NULL)
     {
-      ret = xmalloc (end - demangled_name + 1);
-      memcpy (ret, demangled_name, end - demangled_name);
+      ret = (char *)xmalloc(end - demangled_name + 1);
+      memcpy(ret, demangled_name, (end - demangled_name));
       ret[end - demangled_name] = '\0';
     }
 
@@ -1052,7 +1051,7 @@ const struct op_print java_op_print_tab[] =
   {"<<", BINOP_LSH, PREC_SHIFT, 0},
 #if 0
   {">>>", BINOP_ ? ? ?, PREC_SHIFT, 0},
-#endif
+#endif /* 0 */
   {"+", BINOP_ADD, PREC_ADD, 0},
   {"-", BINOP_SUB, PREC_ADD, 0},
   {"*", BINOP_MUL, PREC_MUL, 0},
@@ -1064,10 +1063,10 @@ const struct op_print java_op_print_tab[] =
   {"*", UNOP_IND, PREC_PREFIX, 0},
 #if 0
   {"instanceof", ? ? ?, ? ? ?, 0},
-#endif
+#endif /* 0 */
   {"++", UNOP_PREINCREMENT, PREC_PREFIX, 0},
   {"--", UNOP_PREDECREMENT, PREC_PREFIX, 0},
-  {NULL, 0, 0, 0}
+  {NULL, (enum exp_opcode)0, (enum precedence)0, 0}
 };
 
 const struct exp_descriptor exp_descriptor_java =
@@ -1115,40 +1114,41 @@ const struct language_defn java_language_defn =
 };
 
 void
-_initialize_java_language (void)
+_initialize_java_language(void)
 {
+  java_int_type = init_type(TYPE_CODE_INT, 4, 0, "int", NULL);
+  java_short_type = init_type(TYPE_CODE_INT, 2, 0, "short", NULL);
+  java_long_type = init_type(TYPE_CODE_INT, 8, 0, "long", NULL);
+  java_byte_type = init_type(TYPE_CODE_INT, 1, 0, "byte", NULL);
+  java_boolean_type = init_type(TYPE_CODE_BOOL, 1, 0, "boolean", NULL);
+  java_char_type = init_type(TYPE_CODE_CHAR, 2, TYPE_FLAG_UNSIGNED, "char", NULL);
+  java_float_type = init_type(TYPE_CODE_FLT, 4, 0, "float", NULL);
+  java_double_type = init_type(TYPE_CODE_FLT, 8, 0, "double", NULL);
+  java_void_type = init_type(TYPE_CODE_VOID, 1, 0, "void", NULL);
 
-  java_int_type = init_type (TYPE_CODE_INT, 4, 0, "int", NULL);
-  java_short_type = init_type (TYPE_CODE_INT, 2, 0, "short", NULL);
-  java_long_type = init_type (TYPE_CODE_INT, 8, 0, "long", NULL);
-  java_byte_type = init_type (TYPE_CODE_INT, 1, 0, "byte", NULL);
-  java_boolean_type = init_type (TYPE_CODE_BOOL, 1, 0, "boolean", NULL);
-  java_char_type = init_type (TYPE_CODE_CHAR, 2, TYPE_FLAG_UNSIGNED, "char", NULL);
-  java_float_type = init_type (TYPE_CODE_FLT, 4, 0, "float", NULL);
-  java_double_type = init_type (TYPE_CODE_FLT, 8, 0, "double", NULL);
-  java_void_type = init_type (TYPE_CODE_VOID, 1, 0, "void", NULL);
-
-  add_language (&java_language_defn);
+  add_language(&java_language_defn);
 }
 
 /* Cleanup code that should be run on every "run".
    We should use make_run_cleanup to have this be called.
    But will that mess up values in value histry?  FIXME */
 
-extern void java_rerun_cleanup (void);
+extern void java_rerun_cleanup(void);
 void
-java_rerun_cleanup (void)
+java_rerun_cleanup(void)
 {
   if (class_symtab != NULL)
     {
-      free_symtab (class_symtab);	/* ??? */
+      free_symtab(class_symtab);	/* ??? */
       class_symtab = NULL;
     }
   if (dynamics_objfile != NULL)
     {
-      free_objfile (dynamics_objfile);
+      free_objfile(dynamics_objfile);
       dynamics_objfile = NULL;
     }
 
   java_object_type = NULL;
 }
+
+/* EOF */

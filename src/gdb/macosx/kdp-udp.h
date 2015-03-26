@@ -49,40 +49,43 @@ struct kdp_connection
 
 typedef struct kdp_connection kdp_connection;
 
-kdp_return_t kdp_transmit_fd (kdp_connection *c, kdp_pkt_t * packet, int fd);
+void kdp_log_packetbuf(kdp_log_function *f, kdp_log_level l, char *prefix,
+                       const char *buf, size_t len);
+
+kdp_return_t kdp_transmit_fd(kdp_connection *c, kdp_pkt_t * packet, int fd);
 
 kdp_return_t kdp_receive_fd
-  (kdp_connection *c, kdp_pkt_t * packet, int fd, int timeout);
+  (kdp_connection *c, kdp_pkt_t *packet, int fd, int timeout);
 
-kdp_return_t kdp_transmit_debug (kdp_connection *c, kdp_pkt_t * packet);
+kdp_return_t kdp_transmit_debug(kdp_connection *c, kdp_pkt_t *packet);
 
-kdp_return_t kdp_transmit_exception (kdp_connection *c, kdp_pkt_t * packet);
+kdp_return_t kdp_transmit_exception(kdp_connection *c, kdp_pkt_t *packet);
 
 kdp_return_t kdp_receive_debug
-  (kdp_connection *c, kdp_pkt_t * packet, int timeout);
+  (kdp_connection *c, kdp_pkt_t *packet, int timeout);
 
 kdp_return_t kdp_receive_exception
-  (kdp_connection *c, kdp_pkt_t * packet, int timeout);
+  (kdp_connection *c, kdp_pkt_t *packet, int timeout);
 
-kdp_return_t kdp_receive (kdp_connection *c, kdp_pkt_t * packet, int timeout);
+kdp_return_t kdp_receive(kdp_connection *c, kdp_pkt_t *packet, int timeout);
 
-const char *kdp_return_string (kdp_return_t error);
+const char *kdp_return_string(kdp_return_t error);
 
 kdp_return_t kdp_create
-  (kdp_connection *c, kdp_log_function * logger,
+  (kdp_connection *c, kdp_log_function *logger,
    const char *target, unsigned int port, int timeout, int retries);
 
-kdp_return_t kdp_destroy (kdp_connection *c);
+kdp_return_t kdp_destroy(kdp_connection *c);
 
-void kdp_set_timeouts (kdp_connection *c, int timeout, int retries);
+void kdp_set_timeouts(kdp_connection *c, int timeout, int retries);
 
-void kdp_set_big_endian (kdp_connection *c);
-void kdp_set_little_endian (kdp_connection *c);
+void kdp_set_big_endian(kdp_connection *c);
+void kdp_set_little_endian(kdp_connection *c);
 
-void kdp_reset (kdp_connection *c);
+void kdp_reset(kdp_connection *c);
 
-int kdp_is_bound (kdp_connection *c);
-int kdp_is_connected (kdp_connection *c);
+int kdp_is_bound(kdp_connection *c);
+int kdp_is_connected(kdp_connection *c);
 
 #endif /* __GDB_KDP_UDP_H__ */
 

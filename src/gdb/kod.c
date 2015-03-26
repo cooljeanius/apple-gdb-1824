@@ -84,9 +84,9 @@ gdb_kod_display (char *arg)
 
 /* Queries the target on behalf of the module: */
 static void
-gdb_kod_query (char *arg, char *result, int *maxsiz)
+gdb_kod_query(char *arg, char *result, int *maxsiz)
 {
-  LONGEST bufsiz = 0;
+  LONGEST bufsiz = 0L;
 
   /* Check if current target has remote_query capabilities.  If not,
      it does not have kod either.  */
@@ -115,7 +115,7 @@ gdb_kod_query (char *arg, char *result, int *maxsiz)
 
   /* See if buffer can hold the query (usually it can, as the query is
      short).  */
-  if (strlen(arg) >= bufsiz)
+  if (strlen(arg) >= (size_t)bufsiz)
     error(_("kod: query argument too long"));
 
   /* Send actual request: */

@@ -34,6 +34,7 @@
 #include "gdbcore.h"
 #include "expression.h"		/* For language.h */
 #include "language.h"
+#include "maint.h"
 #include "symfile.h"
 #include "objfiles.h"
 #include "value.h"
@@ -42,27 +43,27 @@
 
 #include "objc-lang.h"
 
-extern void _initialize_maint_cmds (void);
+extern void _initialize_maint_cmds(void);
 
-static void maintenance_command (char *, int);
+static void maintenance_command(char *, int);
 
-static void maintenance_dump_me (char *, int);
+static void maintenance_dump_me(char *, int);
 
-static void maintenance_internal_error (char *args, int from_tty);
+static void maintenance_internal_error(char *args, int from_tty);
 
-static void maintenance_demangle (char *, int);
+static void maintenance_demangle(char *, int);
 
-static void maintenance_time_display (char *, int);
+static void maintenance_time_display(char *, int);
 
-static void maintenance_space_display (char *, int);
+static void maintenance_space_display(char *, int);
 
-static void maintenance_info_command (char *, int);
+static void maintenance_info_command(char *, int);
 
-static void maintenance_info_sections (char *, int);
+static void maintenance_info_sections(char *, int);
 
-static void maintenance_print_command (char *, int);
+static void maintenance_print_command(char *, int);
 
-static void maintenance_do_deprecate (char *, int);
+static void maintenance_do_deprecate(char *, int);
 
 /* Set this to the maximum number of seconds to wait instead of waiting forever
    in target_wait().  If this timer times out, then it generates an error and
@@ -72,14 +73,13 @@ static void maintenance_do_deprecate (char *, int);
 
 int watchdog = 0;
 static void
-show_watchdog (struct ui_file *file, int from_tty,
-	       struct cmd_list_element *c, const char *value)
+show_watchdog(struct ui_file *file, int from_tty,
+	      struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("Watchdog timer is %s.\n"), value);
+  fprintf_filtered(file, _("Watchdog timer is %s.\n"), value);
 }
 
 /*
-
    LOCAL FUNCTION
 
    maintenance_command -- access the maintenance subcommands
@@ -89,33 +89,33 @@ show_watchdog (struct ui_file *file, int from_tty,
    void maintenance_command (char *args, int from_tty)
 
    DESCRIPTION
-
  */
 
 static void
-maintenance_command (char *args, int from_tty)
+maintenance_command(char *args, int from_tty)
 {
-  printf_unfiltered (_("\"maintenance\" must be followed by the name of a maintenance command.\n"));
-  help_list (maintenancelist, "maintenance ", -1, gdb_stdout);
+  printf_unfiltered(_("\"maintenance\" must be followed by the name of a maintenance command.\n"));
+  help_list(maintenancelist, "maintenance ",
+            (enum command_class)-1, gdb_stdout);
 }
 
 #ifndef _WIN32
 static void
-maintenance_dump_me (char *args, int from_tty)
+maintenance_dump_me(char *args, int from_tty)
 {
-  if (query ("Should GDB dump core? "))
+  if (query("Should GDB dump core? "))
     {
-#ifdef __DJGPP__
-      /* SIGQUIT by default is ignored, so use SIGABRT instead.  */
-      signal (SIGABRT, SIG_DFL);
-      kill (getpid (), SIGABRT);
-#else
-      signal (SIGQUIT, SIG_DFL);
-      kill (getpid (), SIGQUIT);
-#endif
+# ifdef __DJGPP__
+      /* SIGQUIT by default is ignored, so use SIGABRT instead: */
+      signal(SIGABRT, SIG_DFL);
+      kill(getpid(), SIGABRT);
+# else
+      signal(SIGQUIT, SIG_DFL);
+      kill(getpid(), SIGQUIT);
+# endif /* __DJGPP__ */
     }
 }
-#endif
+#endif /* !_WIN32 */
 
 /* Stimulate the internal error mechanism that GDB uses when an
    internal problem is detected.  Allows testing of the mechanism.
@@ -217,21 +217,22 @@ maintenance_space_display (char *args, int from_tty)
    "maintenance info" with no args.  */
 
 static void
-maintenance_info_command (char *arg, int from_tty)
+maintenance_info_command(char *arg, int from_tty)
 {
-  printf_unfiltered (_("\"maintenance info\" must be followed by the name of an info command.\n"));
-  help_list (maintenanceinfolist, "maintenance info ", -1, gdb_stdout);
+  printf_unfiltered(_("\"maintenance info\" must be followed by the name of an info command.\n"));
+  help_list(maintenanceinfolist, "maintenance info ",
+            (enum command_class)-1, gdb_stdout);
 }
 
 /* Mini tokenizing lexer for 'maint info sections' command.  */
 
 static int
-match_substring (const char *string, const char *substr)
+match_substring(const char *string, const char *substr)
 {
-  int substr_len = strlen(substr);
+  size_t substr_len = strlen(substr);
   const char *tok;
 
-  while ((tok = strstr (string, substr)) != NULL)
+  while ((tok = strstr(string, substr)) != NULL)
     {
       /* Got a partial match.  Is it a whole word? */
       if (tok == string
@@ -297,57 +298,55 @@ match_bfd_flags (char *string, flagword flags)
 }
 
 static void
-print_bfd_flags (flagword flags)
+print_bfd_flags(flagword flags)
 {
   if (flags & SEC_ALLOC)
-    printf_filtered (" ALLOC");
+    printf_filtered(" ALLOC");
   if (flags & SEC_LOAD)
-    printf_filtered (" LOAD");
+    printf_filtered(" LOAD");
   if (flags & SEC_RELOC)
-    printf_filtered (" RELOC");
+    printf_filtered(" RELOC");
   if (flags & SEC_READONLY)
-    printf_filtered (" READONLY");
+    printf_filtered(" READONLY");
   if (flags & SEC_CODE)
-    printf_filtered (" CODE");
+    printf_filtered(" CODE");
   if (flags & SEC_DATA)
-    printf_filtered (" DATA");
+    printf_filtered(" DATA");
   if (flags & SEC_ROM)
-    printf_filtered (" ROM");
+    printf_filtered(" ROM");
   if (flags & SEC_CONSTRUCTOR)
-    printf_filtered (" CONSTRUCTOR");
+    printf_filtered(" CONSTRUCTOR");
   if (flags & SEC_HAS_CONTENTS)
-    printf_filtered (" HAS_CONTENTS");
+    printf_filtered(" HAS_CONTENTS");
   if (flags & SEC_NEVER_LOAD)
-    printf_filtered (" NEVER_LOAD");
+    printf_filtered(" NEVER_LOAD");
   if (flags & SEC_COFF_SHARED_LIBRARY)
-    printf_filtered (" COFF_SHARED_LIBRARY");
+    printf_filtered(" COFF_SHARED_LIBRARY");
   if (flags & SEC_IS_COMMON)
-    printf_filtered (" IS_COMMON");
+    printf_filtered(" IS_COMMON");
 }
 
 static void
-maint_print_section_info (const char *name, flagword flags,
-			  CORE_ADDR addr, CORE_ADDR endaddr,
-			  unsigned long filepos)
+maint_print_section_info(const char *name, flagword flags,
+			 CORE_ADDR addr, CORE_ADDR endaddr,
+			 unsigned long filepos)
 {
   /* FIXME-32x64: Need deprecated_print_address_numeric with field
      width.  */
-  printf_filtered ("    0x%s", paddr (addr));
-  printf_filtered ("->0x%s", paddr (endaddr));
-  printf_filtered (" at %s",
-		   hex_string_custom ((unsigned long) filepos, 8));
-  printf_filtered (": %s", name);
-  print_bfd_flags (flags);
-  printf_filtered ("\n");
+  printf_filtered("    0x%s", paddr(addr));
+  printf_filtered("->0x%s", paddr(endaddr));
+  printf_filtered(" at %s",
+		  hex_string_custom((unsigned long)filepos, 8));
+  printf_filtered(": %s", name);
+  print_bfd_flags(flags);
+  printf_filtered("\n");
 }
 
 static void
-print_bfd_section_info (bfd *abfd,
-			asection *asect,
-			void *arg)
+print_bfd_section_info(bfd *abfd, asection *asect, void *arg)
 {
-  flagword flags = bfd_get_section_flags (abfd, asect);
-  const char *name = bfd_section_name (abfd, asect);
+  flagword flags = bfd_get_section_flags(abfd, asect);
+  const char *name = bfd_section_name(abfd, asect);
 
   if (arg == NULL || *((char *) arg) == '\0'
       || match_substring ((char *) arg, name)
@@ -450,10 +449,11 @@ maintenance_print_architecture (char *args, int from_tty)
    "maintenance print" with no args.  */
 
 static void
-maintenance_print_command (char *arg, int from_tty)
+maintenance_print_command(char *arg, int from_tty)
 {
-  printf_unfiltered (_("\"maintenance print\" must be followed by the name of a print command.\n"));
-  help_list (maintenanceprintlist, "maintenance print ", -1, gdb_stdout);
+  printf_unfiltered(_("\"maintenance print\" must be followed by the name of a print command.\n"));
+  help_list(maintenanceprintlist, "maintenance print ",
+            (enum command_class)-1, gdb_stdout);
 }
 
 /* The "maintenance translate-address" command converts a section and address
@@ -640,10 +640,11 @@ struct cmd_list_element *maintenance_set_cmdlist;
 struct cmd_list_element *maintenance_show_cmdlist;
 
 static void
-maintenance_set_cmd (char *args, int from_tty)
+maintenance_set_cmd(char *args, int from_tty)
 {
-  printf_unfiltered (_("\"maintenance set\" must be followed by the name of a set command.\n"));
-  help_list (maintenance_set_cmdlist, "maintenance set ", -1, gdb_stdout);
+  printf_unfiltered(_("\"maintenance set\" must be followed by the name of a set command.\n"));
+  help_list(maintenance_set_cmdlist, "maintenance set ",
+            (enum command_class)-1, gdb_stdout);
 }
 
 static void
@@ -826,17 +827,17 @@ push_timer (struct gdb_timer *timer)
    also charges it's time to the next timer's child_time.  */
 
 void
-pop_timer (void)
+pop_timer(void)
 {
   struct gdb_timer_stack *this_timer = timer_stack;
   struct gdb_timer_stack *next_timer = timer_stack->next;
 
   if (next_timer != NULL)
-    next_timer->timer->child_times += this_timer->timer->last_interval
-      + this_timer->timer->child_times;
+    next_timer->timer->child_times += (this_timer->timer->last_interval
+                                       + this_timer->timer->child_times);
 
   timer_stack = next_timer;
-  xfree (this_timer);
+  xfree(this_timer);
 }
 
 /* This gets the current interval for TIMER, and charges it
@@ -866,13 +867,16 @@ report_timer_internal(struct gdb_timer *timer, int last_interval_p)
       ui_out_field_string(uiout, "mssg", timer->last_mssg);
     }
   ui_out_text(uiout, " total: ");
-  ui_out_field_fmt(uiout, "total", "%0.5f", (timer->total_time / 1000000.0f));
+  ui_out_field_fmt(uiout, "total", "%0.5f",
+                   (double)(timer->total_time / 1000000.0f));
   if (last_interval_p)
     {
       ui_out_text(uiout, " interval: ");
-      ui_out_field_fmt(uiout, "interval", "%0.5f", (timer->last_interval / 1000000.0f));
+      ui_out_field_fmt(uiout, "interval", "%0.5f",
+                       (double)(timer->last_interval / 1000000.0f));
       ui_out_text(uiout, " child times: ");
-      ui_out_field_fmt(uiout, "child", "%0.5f", (timer->child_times / 1000000.0f));
+      ui_out_field_fmt(uiout, "child", "%0.5f",
+                       (double)(timer->child_times / 1000000.0f));
     }
   ui_out_text(uiout, " *-*-*\n");
 
@@ -929,17 +933,17 @@ make_cleanup_start_report_timer (int timer_id, char *string)
   if (string == NULL)
     string = "<Unknown>";
 
-  timer->last_mssg = xstrdup (string);
+  timer->last_mssg = xstrdup(string);
   timer->last_interval = 0;
   timer->child_times = 0;
-  return make_cleanup (stop_report_timer, timer);
+  return make_cleanup(stop_report_timer, timer);
 }
 
 /* Finds the timer NAME or creates a new one if
    one doesn't already exist.  Returns the timer token.  */
 
 int
-find_timer (char *name)
+find_timer(char *name)
 {
   int i;
   if (maint_use_timers == 0)
@@ -947,17 +951,18 @@ find_timer (char *name)
 
   if (active_timer_list != NULL)
     {
-      if (strstr (name, active_timer_list) == NULL)
+      if (strstr(name, active_timer_list) == NULL)
 	return -1;
     }
 
   for (i = 0; i < n_timers; i++)
     {
-      if (strcmp (timer_list[i].name, name) == 0)
+      if (strcmp(timer_list[i].name, name) == 0)
 	return i;
     }
-  return init_timer (name);
+  return init_timer(name);
 }
+
 /* This is the easiest way to start "interval timers".  Pass in
    a pointer to timer id TIMER_VAR.  First time you call this pass
    in TIMER_VAR set to -1 and it will find the timer TIMER_NAME and
@@ -968,7 +973,7 @@ find_timer (char *name)
    use to stop the timer.  */
 
 struct cleanup *
-start_timer (int *timer_var, char *timer_name, char *this_mssg)
+start_timer(int *timer_var, char *timer_name, char *this_mssg)
 {
   if (*timer_var == -1)
     *timer_var = find_timer (timer_name);
@@ -982,7 +987,7 @@ start_timer (int *timer_var, char *timer_name, char *this_mssg)
 /* END APPLE LOCAL */
 
 void
-_initialize_maint_cmds (void)
+_initialize_maint_cmds(void)
 {
   add_prefix_cmd ("maintenance", class_maintenance, maintenance_command, _("\
 Commands for use by GDB maintainers.\n\
@@ -1032,12 +1037,12 @@ Configure variables internal to GDB that aid in GDB's maintenance"),
 		  &maintenancelist);
 
 #ifndef _WIN32
-  add_cmd ("dump-me", class_maintenance, maintenance_dump_me, _("\
+  add_cmd("dump-me", class_maintenance, maintenance_dump_me, _("\
 Get fatal error; make debugger dump its core.\n\
 GDB sets its handling of SIGQUIT back to SIG_DFL and then sends\n\
 itself a SIGQUIT signal."),
-	   &maintenancelist);
-#endif
+          &maintenancelist);
+#endif /* !_WIN32 */
 
   add_cmd ("internal-error", class_maintenance,
 	   maintenance_internal_error, _("\
@@ -1161,13 +1166,15 @@ of time passes without a response from the target, an error occurs."),
 			    show_watchdog,
 			    &setlist, &showlist);
 
-  add_setshow_boolean_cmd ("profile", class_maintenance,
-			   &maintenance_profile_p, _("\
+  add_setshow_boolean_cmd("profile", class_maintenance,
+			  &maintenance_profile_p, _("\
 Set internal profiling."), _("\
 Show internal profiling."), _("\
 When enabled GDB is profiled."),
-			   maintenance_set_profile_cmd,
-			   show_maintenance_profile_p,
-			   &maintenance_set_cmdlist,
-			   &maintenance_show_cmdlist);
+			  maintenance_set_profile_cmd,
+			  show_maintenance_profile_p,
+			  &maintenance_set_cmdlist,
+			  &maintenance_show_cmdlist);
 }
+
+/* EOF */

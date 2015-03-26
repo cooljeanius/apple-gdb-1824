@@ -3639,7 +3639,7 @@ minsym_found (int funfirstline, int equivalencies,
     }
 
   values.nelts = nsymbols;
-  do_cleanups (equiv_cleanup);
+  do_cleanups(equiv_cleanup);
   /* APPLE LOCAL end equivalences */
   return values;
 }
@@ -3650,8 +3650,10 @@ minsym_found (int funfirstline, int equivalencies,
    error occurs. */
 
 void
-reset_allow_objc_selectors_flag (PTR dummy)
+reset_allow_objc_selectors_flag(PTR dummy)
 {
   allow_objc_selectors_flag = 1;
 }
 /* APPLE LOCAL end */
+
+/* EOF */

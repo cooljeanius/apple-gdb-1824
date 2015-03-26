@@ -253,6 +253,12 @@
 /* Define to 1 when the gnulib module opendir should be tested. */
 #undef GNULIB_TEST_OPENDIR
 
+/* Define to 1 when the gnulib module pclose should be tested. */
+#undef GNULIB_TEST_PCLOSE
+
+/* Define to 1 when the gnulib module popen should be tested. */
+#undef GNULIB_TEST_POPEN
+
 /* Define to 1 when the gnulib module readdir should be tested. */
 #undef GNULIB_TEST_READDIR
 
@@ -599,8 +605,14 @@
 /* Define to 1 if you have the <OS.h> header file. */
 #undef HAVE_OS_H
 
+/* Define to 1 if you have the `pclose' function. */
+#undef HAVE_PCLOSE
+
 /* Define to 1 if you have the `pipe' function. */
 #undef HAVE_PIPE
+
+/* Define to 1 if you have the `popen' function. */
+#undef HAVE_POPEN
 
 /* Define to 1 if the system has the type `ptrdiff_t'. */
 #undef HAVE_PTRDIFF_T

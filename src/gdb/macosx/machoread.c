@@ -73,29 +73,40 @@ struct macho_symfile_info
   long nsyms;
 };
 
-static int macho_read_indirect_symbols (bfd *abfd,
-                                        struct bfd_mach_o_dysymtab_command
-                                        *dysymtab,
-                                        struct bfd_mach_o_symtab_command
-                                        *symtab, struct objfile *objfile);
+static int macho_read_indirect_symbols(bfd *abfd,
+                                       struct bfd_mach_o_dysymtab_command
+                                       *dysymtab,
+                                       struct bfd_mach_o_symtab_command
+                                       *symtab, struct objfile *objfile);
+
+extern void macho_build_psymtabs(struct objfile *objfile, int mainline,
+                                 char *stab_name, char *stabstr_name,
+                                 char *text_name, char *local_stab_name,
+                                 char *nonlocal_stab_name,
+                                 char *coalesced_text_name,
+                                 char *data_name, char *bss_name);
+
+extern void _initialize_machoread(void);
 
 static void
-macho_new_init (struct objfile *objfile)
+macho_new_init(struct objfile *objfile ATTRIBUTE_UNUSED)
 {
+  return;
 }
 
 static void
-macho_symfile_init (struct objfile *objfile)
+macho_symfile_init(struct objfile *objfile)
 {
   objfile->deprecated_sym_stab_info =
-    xmmalloc (objfile->md, sizeof (struct dbx_symfile_info));
+    (struct dbx_symfile_info *)xmmalloc(objfile->md,
+                                        sizeof(struct dbx_symfile_info));
 
-  memset ((PTR) objfile->deprecated_sym_stab_info, 0, sizeof (struct dbx_symfile_info));
+  memset((PTR)objfile->deprecated_sym_stab_info, 0, sizeof(struct dbx_symfile_info));
 
   objfile->deprecated_sym_private =
-    xmmalloc (objfile->md, sizeof (struct macho_symfile_info));
+    xmmalloc(objfile->md, sizeof(struct macho_symfile_info));
 
-  memset (objfile->deprecated_sym_private, 0, sizeof (struct macho_symfile_info));
+  memset(objfile->deprecated_sym_private, 0, sizeof(struct macho_symfile_info));
 
   objfile->flags |= OBJF_REORDERED;
 }
@@ -117,15 +128,15 @@ macho_symfile_init (struct objfile *objfile)
 
    This routine is mostly copied from dbx_symfile_init and dbx_symfile_read. */
 
-void dbx_symfile_read (struct objfile *objfile, int mainline);
+void dbx_symfile_read(struct objfile *objfile, int mainline);
 
 void
-macho_build_psymtabs (struct objfile *objfile, int mainline,
-                      char *stab_name, char *stabstr_name,
-                      char *text_name,
-                      char *local_stab_name, char *nonlocal_stab_name,
-                      char *coalesced_text_name,
-                      char *data_name, char *bss_name)
+macho_build_psymtabs(struct objfile *objfile, int mainline,
+                     char *stab_name, char *stabstr_name,
+                     char *text_name,
+                     char *local_stab_name, char *nonlocal_stab_name,
+                     char *coalesced_text_name,
+                     char *data_name, char *bss_name)
 {
   int val;
   bfd *sym_bfd = objfile->obfd;
@@ -372,19 +383,18 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
       /* currently breaks mapped symbol files (string table does NOT end up in objfile) */
 
       bfd_window w;
-      bfd_init_window (&w);
+      bfd_init_window(&w);
 
       /* APPLE LOCAL: Open the string table read only if possible. Should
          be more efficient.  */
 
       val = bfd_get_section_contents_in_window_with_mode
-        (sym_bfd, stabstrsect, &w, 0, DBX_STRINGTAB_SIZE (objfile), 0);
+        (sym_bfd, stabstrsect, &w, 0, DBX_STRINGTAB_SIZE(objfile), 0);
 
       if (!val)
-        perror_with_name (name);
+        perror_with_name(name);
 
-      DBX_STRINGTAB (objfile) = w.data;
-
+      DBX_STRINGTAB(objfile) = (char *)w.data;
     }
   else
     {
@@ -753,25 +763,25 @@ macho_read_indirect_symbols (bfd *abfd,
 }
 
 static void
-macho_symfile_finish (struct objfile *objfile)
+macho_symfile_finish(struct objfile *objfile ATTRIBUTE_UNUSED)
 {
+  return;
 }
 
 static void
-macho_symfile_offsets (struct objfile *objfile,
-                       struct section_addr_info *addrs)
+macho_symfile_offsets(struct objfile *objfile,
+                      struct section_addr_info *addrs)
 {
   unsigned int i;
   unsigned int num_sections;
   struct obj_section *osect;
 
-
   objfile->num_sections = objfile->sections_end - objfile->sections;
   objfile->section_offsets = (struct section_offsets *)
-    obstack_alloc (&objfile->objfile_obstack,
-                   SIZEOF_N_SECTION_OFFSETS (objfile->num_sections));
-  memset (objfile->section_offsets, 0,
-          SIZEOF_N_SECTION_OFFSETS (objfile->num_sections));
+    obstack_alloc(&objfile->objfile_obstack,
+                  SIZEOF_N_SECTION_OFFSETS(objfile->num_sections));
+  memset(objfile->section_offsets, 0,
+         SIZEOF_N_SECTION_OFFSETS(objfile->num_sections));
 
   /* This code is run when we first add the objfile with
      symfile_add_with_addrs_or_offsets, when "addrs" not "offsets" are passed
@@ -784,14 +794,14 @@ macho_symfile_offsets (struct objfile *objfile,
   if (addrs->other[0].addr != 0)
     {
       num_sections = objfile->sections_end - objfile->sections;
-      for (i = 0; i < num_sections; i++)
+      for (i = 0U; i < num_sections; i++)
         {
           objfile->sections[i].addr += addrs->other[0].addr;
           objfile->sections[i].endaddr += addrs->other[0].addr;
         }
     }
 
-  for (i = 0; i < objfile->num_sections; i++)
+  for (i = 0U; i < (unsigned int)objfile->num_sections; i++)
     {
       objfile->section_offsets->offsets[i] = addrs->other[0].addr;
     }
@@ -870,21 +880,22 @@ macho_calculate_dsym_offset (bfd *exe_bfd, bfd *sym_bfd)
    potential offset between the dSYM and the objfile's load addresses.  */
 
 void
-macho_calculate_offsets_for_dsym (struct objfile *main_objfile,
-				  bfd *sym_bfd,
-				  struct section_addr_info *addrs,
-				  struct section_offsets *in_offsets,
-				  int in_num_offsets,
-				  struct section_offsets **sym_offsets,
-				  int *sym_num_offsets)
+macho_calculate_offsets_for_dsym(struct objfile *main_objfile,
+				 bfd *sym_bfd,
+				 struct section_addr_info *addrs,
+				 struct section_offsets *in_offsets,
+				 int in_num_offsets,
+				 struct section_offsets **sym_offsets,
+				 int *sym_num_offsets)
 {
   bfd_boolean in_mem_shared_cache;
   int i;
-  in_mem_shared_cache = bfd_mach_o_in_shared_cached_memory (main_objfile->obfd);
+  CORE_ADDR dsym_offset;
+  in_mem_shared_cache = bfd_mach_o_in_shared_cached_memory(main_objfile->obfd);
 
   if (in_mem_shared_cache)
     {
-      gdb_assert (in_offsets);
+      gdb_assert(in_offsets);
       if (in_offsets)
 	{
 	 /* When we have a main_objfile that is in the shared cache and is
@@ -898,9 +909,9 @@ macho_calculate_offsets_for_dsym (struct objfile *main_objfile,
 	  bfd *exe_bfd = main_objfile->obfd;
 
 	  *sym_offsets = (struct section_offsets *)
-	    xmalloc (SIZEOF_N_SECTION_OFFSETS (in_num_offsets));
-	  memset (*sym_offsets, 0,
-		  SIZEOF_N_SECTION_OFFSETS (in_num_offsets));
+	    xmalloc(SIZEOF_N_SECTION_OFFSETS(in_num_offsets));
+	  memset(*sym_offsets, 0,
+		 SIZEOF_N_SECTION_OFFSETS(in_num_offsets));
 
 	  i = 0;
 	  exe_sect = exe_bfd->sections;
@@ -937,8 +948,8 @@ macho_calculate_offsets_for_dsym (struct objfile *main_objfile,
     }
 
 
-  CORE_ADDR dsym_offset = macho_calculate_dsym_offset (main_objfile->obfd,
-						       sym_bfd);
+  dsym_offset = macho_calculate_dsym_offset(main_objfile->obfd,
+                                            sym_bfd);
   if (in_offsets)
     {
       *sym_offsets = (struct section_offsets *)
@@ -992,8 +1003,8 @@ macho_calculate_offsets_for_dsym (struct objfile *main_objfile,
 	     I am not going to fix this right now. */
 
 	  *sym_offsets = (struct section_offsets *)
-	  xmalloc (SIZEOF_N_SECTION_OFFSETS (addrs->num_sections));
-	  for (i = 0; i < addrs->num_sections; i++)
+            xmalloc(SIZEOF_N_SECTION_OFFSETS(addrs->num_sections));
+	  for (i = 0; i < (int)addrs->num_sections; i++)
 	    {
 	      (*sym_offsets)->offsets[i] = dsym_offset;
 	      if (addrs->addrs_are_offsets)

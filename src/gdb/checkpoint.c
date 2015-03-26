@@ -186,7 +186,8 @@ load_helpers(void)
    but not harmful either.  */
 
 static void
-create_checkpoint_command(char *args, int from_tty)
+create_checkpoint_command(char *args ATTRIBUTE_UNUSED,
+                          int from_tty ATTRIBUTE_UNUSED)
 {
   struct checkpoint *cp;
 
@@ -400,7 +401,7 @@ prune_checkpoint_list(void)
       cp2->keep = 1;
       ++numtokeep;
     }
-  /* Now scan last-to-first in general list.  */
+  /* Now scan last-to-first in general list: */
   for (cp2 = last_checkpoint; cp2 != NULL; cp2 = cp2->prev)
     {
       if (cp2->keep)
@@ -507,7 +508,7 @@ end_inferior_call_checkpoints(void)
 }
 
 static void
-rollback_to_checkpoint_command (char *args, int from_tty)
+rollback_to_checkpoint_command(char *args, int from_tty ATTRIBUTE_UNUSED)
 {
   char *p;
   int num = 1;
@@ -515,37 +516,36 @@ rollback_to_checkpoint_command (char *args, int from_tty)
 
   if (!checkpoint_list)
     {
-      error ("No checkpoints to roll back to!\n");
+      error("No checkpoints to roll back to!\n");
       return;
     }
 
   if (args)
     {
       p = args;
-      num = atoi (p);
+      num = atoi(p);
     }
 
-  cp = find_checkpoint (num);
+  cp = find_checkpoint(num);
 
   if (cp == NULL)
     {
-      error ("checkpoint %d not found\n", num);
+      error("checkpoint %d not found\n", num);
       return;
     }
 
-  rollback_to_checkpoint (cp);
+  rollback_to_checkpoint(cp);
 }
 
-/* Given a checkpoint, make it the current state.  */
-
+/* Given a checkpoint, make it the current state: */
 void
-rollback_to_checkpoint (struct checkpoint *cp)
+rollback_to_checkpoint(struct checkpoint *cp)
 {
-  regcache_cpy (current_regcache, cp->regs);
+  regcache_cpy(current_regcache, cp->regs);
 
-  memcache_put (cp);
+  memcache_put(cp);
 
-  /* Prevent a bit of recursion.  */
+  /* Prevent a bit of recursion: */
   rolling_back = 1;
 
   /* This bit calls a function to roll CoreGraphics windows back to a
@@ -553,18 +553,18 @@ rollback_to_checkpoint (struct checkpoint *cp)
   if (subsystem_checkpointing) {
     struct value *cgfn, *arg, *val;
 
-    arg = value_from_longest (builtin_type_int, (LONGEST) cp->number);
-    if (lookup_minimal_symbol (CP_CG_ROLLBACK_NAME, 0, 0)
-	&& (cgfn = find_function_in_inferior (CP_CG_ROLLBACK_NAME, builtin_type_int)))
+    arg = value_from_longest(builtin_type_int, (LONGEST)cp->number);
+    if (lookup_minimal_symbol(CP_CG_ROLLBACK_NAME, 0, 0)
+	&& (cgfn = find_function_in_inferior(CP_CG_ROLLBACK_NAME, builtin_type_int)))
       {
-	val = call_function_by_hand_expecting_type (cgfn,
-						    builtin_type_int, 1, &arg, 1);
+	val = call_function_by_hand_expecting_type(cgfn,
+						   builtin_type_int, 1, &arg, 1);
       }
     else
       {
 	if (!warned_cg)
 	  {
-	    warning (CP_CG_ROLLBACK_NAME " not found");
+	    warning(CP_CG_ROLLBACK_NAME " not found");
 	    warned_cg = 1;
 	  }
       }
@@ -602,7 +602,8 @@ find_checkpoint(int num)
 }
 
 /* static */ void
-checkpoints_info(char *args, int from_tty)
+checkpoints_info(char *args ATTRIBUTE_UNUSED,
+                 int from_tty ATTRIBUTE_UNUSED)
 {
   struct checkpoint *cp;
 
@@ -638,67 +639,67 @@ print_checkpoint_info(struct checkpoint *cp)
       printf("[%d/%d] ", tot, blocks);
     }
 
-  printf ("%c%c%c%d: pc=0x%s",
-	  cp->type,
-	  (current_checkpoint == cp ? '*' : ' '),
-	  (original_latest_checkpoint == cp ? '!' : ' '),
-	  cp->number, paddr_nz (pc));
+  printf("%c%c%c%d: pc=0x%s",
+	 cp->type,
+	 ((current_checkpoint == cp) ? '*' : ' '),
+	 ((original_latest_checkpoint == cp) ? '!' : ' '),
+	 cp->number, paddr_nz(pc));
 
-  printf (" (");
+  printf(" (");
   if (cp->lprev)
-    printf ("%d", cp->lprev->number);
+    printf("%d", cp->lprev->number);
   else
-    printf (" ");
-  printf ("<-)");
-  printf (" (->");
+    printf(" ");
+  printf("<-)");
+  printf(" (->");
   if (cp->lnext)
-    printf ("%d", cp->lnext->number);
+    printf("%d", cp->lnext->number);
   else
-    printf (" ");
-  printf (")");
+    printf(" ");
+  printf(")");
 
   if (sal.symtab)
     {
-      printf (" -- ");
-      print_source_lines (sal.symtab, sal.line, 1, 0);
+      printf(" -- ");
+      print_source_lines(sal.symtab, sal.line, 1, 0);
     }
   else
     {
-      printf ("\n");
+      printf("\n");
     }
 }
 
 /* Checkpoint commands.  */
 
 static void
-undo_command (char *args, int from_tty)
+undo_command(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
   if (current_checkpoint == NULL)
-    error ("No current checkpoint");
+    error("No current checkpoint");
   else if (current_checkpoint->lprev == NULL)
-    error ("No previous checkpoint to roll back to");
+    error("No previous checkpoint to roll back to");
   else
-    rollback_to_checkpoint (current_checkpoint->lprev);
+    rollback_to_checkpoint(current_checkpoint->lprev);
 }
 
 static void
-redo_command (char *args, int from_tty)
+redo_command(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
   if (current_checkpoint == NULL)
-    error ("No current checkpoint");
+    error("No current checkpoint");
   else if (current_checkpoint->lnext == NULL)
-    error ("No next checkpoint to roll forward to");
+    error("No next checkpoint to roll forward to");
   else
-    rollback_to_checkpoint (current_checkpoint->lnext);
+    rollback_to_checkpoint(current_checkpoint->lnext);
 }
 
 static void
-now_command (char *args, int from_tty)
+now_command(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
   if (original_latest_checkpoint == NULL)
-    error ("No original latest checkpoint");
+    error("No original latest checkpoint");
 
-  rollback_to_checkpoint (original_latest_checkpoint);
+  rollback_to_checkpoint(original_latest_checkpoint);
 }
 
 /* Given a checkpoint, scrub it out of the system: */
@@ -901,16 +902,17 @@ clear_all_checkpoints(void)
 }
 
 void
-set_max_checkpoints(char *args, int from_tty,
-		    struct cmd_list_element *c)
+set_max_checkpoints(char *args ATTRIBUTE_UNUSED,
+                    int from_tty ATTRIBUTE_UNUSED,
+		    struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
   prune_checkpoint_list();
 }
 
-/* Catch SIGTERM so we can be sure to get rid of any checkpoint forks that are
-   hanging around.  */
+/* Catch SIGTERM so we can be sure to get rid of any checkpoint forks that
+ * are hanging around: */
 static void
-sigterm_handler(int signo)
+sigterm_handler(int signo ATTRIBUTE_UNUSED)
 {
   struct checkpoint *cp;
 

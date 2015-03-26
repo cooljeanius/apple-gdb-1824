@@ -37,74 +37,73 @@
 /* Local functions */
 
 int
-java_value_print (struct value *val, struct ui_file *stream, int format,
-		  enum val_prettyprint pretty)
+java_value_print(struct value *val, struct ui_file *stream, int format,
+		 enum val_prettyprint pretty)
 {
   struct type *type;
   CORE_ADDR address;
   int i;
   char *name;
 
-  type = value_type (val);
-  address = VALUE_ADDRESS (val) + value_offset (val);
+  type = value_type(val);
+  address = (VALUE_ADDRESS(val) + value_offset(val));
 
-  if (is_object_type (type))
+  if (is_object_type(type))
     {
       CORE_ADDR obj_addr;
 
-      /* Get the run-time type, and cast the object into that */
-
-      obj_addr = unpack_pointer (type, value_contents (val));
+      /* Get the run-time type, and cast the object into that: */
+      obj_addr = unpack_pointer(type, value_contents(val));
 
       if (obj_addr != 0)
 	{
-	  type = type_from_class (java_class_from_object (val));
-	  type = lookup_pointer_type (type);
+	  type = type_from_class(java_class_from_object(val));
+	  type = lookup_pointer_type(type);
 
-	  val = value_at (type, address);
+	  val = value_at(type, address);
 	}
     }
 
-  if (TYPE_CODE (type) == TYPE_CODE_PTR && !value_logical_not (val))
-    type_print (TYPE_TARGET_TYPE (type), "", stream, -1);
+  if ((TYPE_CODE(type) == TYPE_CODE_PTR) && !value_logical_not(val))
+    type_print(TYPE_TARGET_TYPE(type), "", stream, -1);
 
-  name = TYPE_TAG_NAME (type);
-  if (TYPE_CODE (type) == TYPE_CODE_STRUCT && name != NULL
-      && (i = strlen (name), name[i - 1] == ']'))
+  name = TYPE_TAG_NAME(type);
+  if ((TYPE_CODE(type) == TYPE_CODE_STRUCT) && (name != NULL)
+      && ((i = strlen(name)), (name[i - 1] == ']')))
     {
       gdb_byte buf4[4];
       long length;
-      unsigned int things_printed = 0;
+      unsigned int things_printed = 0U;
       int reps;
-      struct type *el_type = java_primitive_type_from_name (name, i - 2);
+      struct type *el_type = java_primitive_type_from_name(name, i - 2);
 
       i = 0;
-      read_memory (address + JAVA_OBJECT_SIZE, buf4, 4);
+      read_memory(address + JAVA_OBJECT_SIZE, buf4, 4);
 
-      length = (long) extract_signed_integer (buf4, 4);
-      fprintf_filtered (stream, "{length: %ld", length);
+      length = (long)extract_signed_integer(buf4, 4);
+      fprintf_filtered(stream, "{length: %ld", length);
 
       if (el_type == NULL)
 	{
 	  CORE_ADDR element;
 	  CORE_ADDR next_element = -1; /* dummy initial value */
 
-	  address += JAVA_OBJECT_SIZE + 4;	/* Skip object header and length. */
+	  address += (JAVA_OBJECT_SIZE + 4); /* Skip object header and length. */
 
 	  while (i < length && things_printed < print_max)
 	    {
 	      gdb_byte *buf;
 
-	      buf = alloca (TARGET_PTR_BIT / HOST_CHAR_BIT);
-	      fputs_filtered (", ", stream);
-	      wrap_here (n_spaces (2));
+	      buf = (gdb_byte *)alloca(TARGET_PTR_BIT / HOST_CHAR_BIT);
+	      fputs_filtered(", ", stream);
+	      wrap_here(n_spaces(2));
 
 	      if (i > 0)
 		element = next_element;
 	      else
 		{
-		  read_memory (address, buf, sizeof (buf));
-		  address += TARGET_PTR_BIT / HOST_CHAR_BIT;
+		  read_memory(address, buf, sizeof(buf));
+		  address += (TARGET_PTR_BIT / HOST_CHAR_BIT);
 		  /* FIXME: cagney/2003-05-24: Bogus or what.  It
                      pulls a host sized pointer out of the target and
                      then extracts that as an address (while assuming

@@ -31,7 +31,7 @@
 # The list of gnulib modules we are importing in GDB.
 IMPORTED_GNULIB_MODULES="\
     absolute-header alignof alloca alloca-opt ansi-c++-opt assure autobuild \
-    configmake \
+    configmake closedir \
     dirent dirfd dosname double-slash-root \
     errno error exitfail extensions extern-inline \
     fileblocks float fnmatch fnmatch-gnu fpieee fpucw frexp frexpl fts \
@@ -45,8 +45,8 @@ IMPORTED_GNULIB_MODULES="\
     mempcpy memrchr mkdtemp multiarch \
     nextafter no-c++ nocrash \
     obstack openmp \
-    pathmax \
-    readlink realloc-gnu realloc-posix rmdir \
+    pathmax pclose popen \
+    readdir readlink realloc-gnu realloc-posix rmdir \
     snippet/_Noreturn snippet/arg-nonnull snippet/c++defs snippet/link-warning \
     snippet/warn-on-use \
     ssize_t stat stat-macros stat-size stat-time stdbool stddef stdint stdlib \

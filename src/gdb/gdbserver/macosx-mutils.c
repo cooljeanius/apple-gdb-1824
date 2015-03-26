@@ -169,7 +169,7 @@
  * in a int. We cannot just use -INT_MIN, as that would implicitly be a int,
  * not an unsigned int, and would overflow on 2's complement machines. */
 
-#define MINUS_INT_MIN (((unsigned int) (- (INT_MAX + INT_MIN))) + INT_MAX)
+#define MINUS_INT_MIN (((unsigned int)(-(INT_MAX + INT_MIN))) + INT_MAX)
 
 #ifdef DEBUG_MACOSX_MUTILS
 static FILE *mutils_stderr = NULL;
@@ -201,7 +201,7 @@ vm_size_t child_get_pagesize(void)
   kern_return_t status;
   static vm_size_t g_cached_child_page_size = 0;
 
-  if (g_cached_child_page_size == -1)
+  if (g_cached_child_page_size == (vm_size_t)-1)
     {
       status = host_page_size(mach_host_self(), &g_cached_child_page_size);
       /* This is probably being over-careful, since if we
@@ -359,9 +359,9 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
 #endif /* DEBUG_MACOSX_MUTILS */
           return 0;
         }
-      if (memcopied != len)
+      if (memcopied != (mach_msg_type_number_t)len)
         {
-          kret = vm_deallocate (mach_task_self (), mempointer, memcopied);
+          kret = vm_deallocate(mach_task_self(), mempointer, memcopied);
           if (kret != KERN_SUCCESS)
             {
               warning
@@ -697,9 +697,10 @@ mach_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
   kern_return_t kret;
   int ret;
 
-  /* check for out-of-range address */
+  /* check for out-of-range address: */
   r_start = memaddr;
-  if (r_start != memaddr)
+  /* FIXME: did I cast the correct one? */
+  if (r_start != (mach_vm_address_t)memaddr)
     {
       errno = EINVAL;
       return 0;
@@ -723,7 +724,7 @@ mach_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
         return 0;
       }
 
-    if (r_start > memaddr)
+    if (r_start > (mach_vm_address_t)memaddr)
       {
         if ((r_start - memaddr) <= MINUS_INT_MIN)
           {
@@ -756,10 +757,10 @@ mach_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
 
       /* We want the inner-most map containing our address, so set
 	 the recurse depth to some high value, and call mach_vm_region_recurse.  */
-      kret = macosx_get_region_info (task, cur_memaddr, &r_start, &r_size,
-				     &orig_protection, &max_orig_protection);
+      kret = macosx_get_region_info(task, cur_memaddr, &r_start, &r_size,
+				    &orig_protection, &max_orig_protection);
 
-      if (r_start > cur_memaddr)
+      if (r_start > (mach_vm_address_t)cur_memaddr)
         {
 #ifdef DEBUG_MACOSX_MUTILS
           mutils_debug
@@ -790,7 +791,7 @@ mach_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
               mach_vm_size_t prot_size;
 	      changed_protections = 1;
 
-	      if (cur_len < (r_size - (cur_memaddr - r_start)))
+	      if (cur_len < (int)(r_size - (cur_memaddr - r_start)))
 		prot_size = cur_len;
 	      else
 		prot_size = (cur_memaddr - r_start);
@@ -823,15 +824,15 @@ mach_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
 
       r_end = (r_start + r_size);
 
-      CHECK_FATAL(r_start <= cur_memaddr);
-      CHECK_FATAL(r_end >= cur_memaddr);
+      CHECK_FATAL(r_start <= (mach_vm_address_t)cur_memaddr);
+      CHECK_FATAL(r_end >= (mach_vm_address_t)cur_memaddr);
       CHECK_FATAL((r_start % pagesize) == 0);
       CHECK_FATAL((r_end % pagesize) == 0);
       CHECK_FATAL(r_end >= (r_start + pagesize));
 
       if ((cur_memaddr % pagesize) != 0)
         {
-          int max_len = pagesize - (cur_memaddr % pagesize);
+          int max_len = (pagesize - (cur_memaddr % pagesize));
           int op_len = cur_len;
           if (op_len > max_len)
             {
@@ -840,7 +841,7 @@ mach_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
           ret = mach_xfer_memory_remainder(cur_memaddr, cur_myaddr, op_len,
                                            write, task);
         }
-      else if (cur_len >= pagesize)
+      else if (cur_len >= (int)pagesize)
         {
           int max_len = (r_end - cur_memaddr);
           int op_len = cur_len;
@@ -889,7 +890,7 @@ mach_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
 	  if (changed_protections)
 	    {
 	      mach_vm_size_t prot_size;
-	      if (cur_len < (r_size - (cur_memaddr - r_start)))
+	      if (cur_len < (int)(r_size - (cur_memaddr - r_start)))
 		prot_size = cur_len;
 	      else
 		prot_size = (cur_memaddr - r_start);

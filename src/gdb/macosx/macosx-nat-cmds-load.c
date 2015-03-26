@@ -41,6 +41,8 @@
 
 #include <mach-o/dyld.h>
 
+#include "macosx-nat-cmds-load.h"
+
 struct plugin_state
 {
   char **names;
@@ -53,6 +55,10 @@ void *_plugin_global_data;
 static struct plugin_state pstate;
 
 static int debug_plugins_flag = 0;
+
+extern void _initialize_load_plugin(void);
+
+extern void **_plugin_private_data(char *plugin_name);
 
 void
 load_plugin(char *arg, int from_tty)
@@ -104,18 +110,19 @@ load_plugin(char *arg, int from_tty)
     }
 
   {
+    void *ret;
     if (debug_plugins_flag)
       {
         printf_unfiltered("Linking GDB module from \"%s\"\n", path);
       }
 
-    void *ret = dlopen(path, (RTLD_LOCAL | RTLD_NOW));
+    ret = dlopen(path, (RTLD_LOCAL | RTLD_NOW));
     if (ret == NULL)
       {
         error("Unable to dlopen plugin \"%s\", reason: %s",
               path, dlerror());
       }
-    fptr = dlsym(ret, init_func_name);
+    fptr = (void (*)(void))dlsym(ret, init_func_name);
     if (fptr == NULL)
       {
         dlclose(ret);
@@ -133,11 +140,13 @@ load_plugin(char *arg, int from_tty)
   /* Make sure the names and data arrays are updated BEFORE calling
      init_func_name() so that the plugin can use _plugin_private_data()  */
 
-  pstate.plugin_data =
-    xrealloc(pstate.plugin_data, (pstate.num + 1) * sizeof(void *));
+  pstate.plugin_data = ((void **)
+                        xrealloc(pstate.plugin_data,
+                                 (pstate.num + 1) * sizeof(void *)));
   pstate.plugin_data[pstate.num] = NULL;
 
-  pstate.names = xrealloc(pstate.names, (pstate.num + 1) * sizeof(char *));
+  pstate.names = (char **)xrealloc(pstate.names,
+                                   (pstate.num + 1) * sizeof(char *));
   pstate.names[pstate.num] = xstrdup(path);
   pstate.num++;
 
@@ -148,14 +157,14 @@ void
 info_plugins_command(char *arg, int from_tty)
 {
   size_t i;
-  for (i = 0; i < pstate.num; i++)
+  for (i = 0UL; i < pstate.num; i++)
     {
-      printf_unfiltered ("%s\n", pstate.names[i]);
+      printf_unfiltered("%s\n", pstate.names[i]);
     }
 }
 
 void
-_initialize_load_plugin (void)
+_initialize_load_plugin(void)
 {
   struct cmd_list_element *cmd;
 
@@ -163,20 +172,22 @@ _initialize_load_plugin (void)
   pstate.num = 0;
   pstate.plugin_data = NULL;
 
-  cmd = add_cmd ("load-plugin", class_obscure, load_plugin,
-                 "Usage: load-plugin <plugin>\n"
-                 "Load a plugin from the specified path.", &cmdlist);
-  set_cmd_completer (cmd, filename_completer);
-  /* cmd->completer_word_break_characters = gdb_completer_filename_word_break_characters; *//* FIXME */
+  cmd = add_cmd("load-plugin", class_obscure, load_plugin,
+                "Usage: load-plugin <plugin>\n"
+                "Load a plugin from the specified path.", &cmdlist);
+  set_cmd_completer(cmd, filename_completer);
+#if 0
+  cmd->completer_word_break_characters = gdb_completer_filename_word_break_characters; /* FIXME */
+#endif /* 0 */
 
-  add_setshow_boolean_cmd ("plugins", class_obscure,
-			   &debug_plugins_flag, _("\
+  add_setshow_boolean_cmd("plugins", class_obscure,
+			  &debug_plugins_flag, _("\
 Set if tracing of plugin loading is enabled"), _("\
 Show if tracing of plugin loading is enabled"), NULL,
-			   NULL, NULL,
-			   &setdebuglist, &showdebuglist);
+			  NULL, NULL,
+			  &setdebuglist, &showdebuglist);
 
-  add_info ("plugins", info_plugins_command, "Show current plug-ins state.");
+  add_info("plugins", info_plugins_command, "Show current plug-ins state.");
 }
 
 /* Search for a loaded plugin by name and return a pointer to its private data
@@ -184,7 +195,7 @@ Show if tracing of plugin loading is enabled"), NULL,
    If NULL is passed for a plugin name then a pointer to a global data pointer
    is returned.  */
 void **
-_plugin_private_data (char *plugin_name)
+_plugin_private_data(char *plugin_name)
 {
   size_t i;
   char *p;
@@ -194,13 +205,13 @@ _plugin_private_data (char *plugin_name)
 
   for (i = 0; i < pstate.num; i++)
     {
-      p = strrchr (pstate.names[i], '/');
+      p = strrchr(pstate.names[i], '/');
       if (p)
         {
-          if (strcmp (plugin_name, p + 1) != 0)
+          if (strcmp(plugin_name, p + 1) != 0)
             continue;
         }
-      else if (strcmp (plugin_name, pstate.names[i]) != 0)
+      else if (strcmp(plugin_name, pstate.names[i]) != 0)
         continue;
       return &pstate.plugin_data[i];
     }

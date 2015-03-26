@@ -591,7 +591,7 @@ init_child_ops(void)
   deprecated_child_ops.to_post_attach = child_post_attach;
   deprecated_child_ops.to_detach = child_detach;
   deprecated_child_ops.to_resume = child_resume;
-  deprecated_child_ops.to_wait = child_wait;
+  deprecated_child_ops.to_wait = child_wait; /* FIXME: casting fails */
   deprecated_child_ops.to_fetch_registers = fetch_inferior_registers;
   deprecated_child_ops.to_store_registers = store_inferior_registers;
   deprecated_child_ops.to_prepare_to_store = child_prepare_to_store;

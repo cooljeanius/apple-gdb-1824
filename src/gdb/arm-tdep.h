@@ -283,7 +283,7 @@ enum {
   arm_single_step_mode_hardware = 2
 };
 
-int get_arm_single_step_mode();
+int get_arm_single_step_mode(void);
 int set_arm_single_step_mode(struct gdbarch *gdbarch, int single_step_mode);
 
 #endif /* !__GDB_ARM_TDEP_H__ */

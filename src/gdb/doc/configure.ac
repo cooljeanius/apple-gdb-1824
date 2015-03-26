@@ -44,6 +44,29 @@ fi
 AC_SUBST([REPORT_BUGS_TEXI])dnl
 ])dnl
 AM_MAINTAINER_MODE
+AM_SILENT_RULES
+#### check arg val for silent rules:
+if test "x${enable_silent_rules}" = "xno"; then
+  : ${V=1}
+  : ${AM_DEFAULT_VERBOSITY=1}
+elif test "x${enable_silent_rules}" = "xyes"; then
+  : ${V=0}
+  : ${AM_DEFAULT_VERBOSITY=0}
+else
+  : ${V=0}
+  : ${AM_DEFAULT_VERBOSITY=1}
+fi
+: ${AM_DEFAULT_VERBOSITY=1}
+: ${AM_V=${AM_DEFAULT_VERBOSITY}}
+: ${AM_DEFAULT_V=${AM_DEFAULT_VERBOSITY}}
+dnl# now subst:
+AC_SUBST([V])dnl
+AM_SUBST_NOTMAKE([V])dnl
+AC_SUBST([AM_V])dnl
+AM_SUBST_NOTMAKE([AM_V])dnl
+AC_SUBST([AM_DEFAULT_V])dnl
+AM_SUBST_NOTMAKE([AM_DEFAULT_V])dnl
+AC_SUBST([AM_DEFAULT_VERBOSITY])dnl
 
 # Checks for programs.
 AC_PROG_CPP

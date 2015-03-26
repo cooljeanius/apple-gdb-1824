@@ -1557,12 +1557,8 @@ normalize_filename(bfd *abfd)
 
 /* Write out an XCOFF armap: */
 static bfd_boolean
-xcoff_write_armap_old(abfd, elength, map, orl_count, stridx)
-     bfd *abfd;
-     unsigned int elength ATTRIBUTE_UNUSED;
-     struct orl *map;
-     unsigned int orl_count;
-     int stridx;
+xcoff_write_armap_old(bfd *abfd, unsigned int elength ATTRIBUTE_UNUSED,
+                      struct orl *map, unsigned int orl_count, int stridx)
 {
   struct xcoff_ar_hdr hdr;
   char *p;
@@ -1571,18 +1567,18 @@ xcoff_write_armap_old(abfd, elength, map, orl_count, stridx)
   file_ptr fileoff;
   unsigned int i;
 
-  memset (&hdr, 0, sizeof hdr);
-  sprintf (hdr.size, "%ld", (long) (4 + orl_count * 4 + stridx));
-  sprintf (hdr.nextoff, "%d", 0);
-  memcpy (hdr.prevoff, xcoff_ardata (abfd)->memoff, (size_t)XCOFFARMAG_ELEMENT_SIZE);
-  sprintf (hdr.date, "%d", 0);
-  sprintf (hdr.uid, "%d", 0);
-  sprintf (hdr.gid, "%d", 0);
-  sprintf (hdr.mode, "%d", 0);
-  sprintf (hdr.namlen, "%d", 0);
+  memset(&hdr, 0, sizeof(hdr));
+  sprintf(hdr.size, "%ld", (long)(4 + orl_count * 4 + stridx));
+  sprintf(hdr.nextoff, "%d", 0);
+  memcpy(hdr.prevoff, xcoff_ardata(abfd)->memoff, (size_t)XCOFFARMAG_ELEMENT_SIZE);
+  sprintf(hdr.date, "%d", 0);
+  sprintf(hdr.uid, "%d", 0);
+  sprintf(hdr.gid, "%d", 0);
+  sprintf(hdr.mode, "%d", 0);
+  sprintf(hdr.namlen, "%d", 0);
 
   /* We need spaces, not null bytes, in the header.  */
-  for (p = (char *) &hdr; p < (char *) &hdr + SIZEOF_AR_HDR; p++)
+  for (p = (char *)&hdr; p < (char *)&hdr + SIZEOF_AR_HDR; p++)
     if (*p == '\0')
       *p = ' ';
 
@@ -1744,12 +1740,8 @@ do_shared_object_padding(bfd *out_bfd, bfd *in_bfd, file_ptr *offset,
 }
 
 static bfd_boolean
-xcoff_write_armap_big(abfd, elength, map, orl_count, stridx)
-     bfd *abfd;
-     unsigned int elength ATTRIBUTE_UNUSED;
-     struct orl *map;
-     unsigned int orl_count;
-     int stridx;
+xcoff_write_armap_big(bfd *abfd, unsigned int elength ATTRIBUTE_UNUSED,
+                      struct orl *map, unsigned int orl_count, int stridx)
 {
   struct xcoff_ar_file_hdr_big *fhdr;
   bfd_vma i, sym_32, sym_64, str_32, str_64;
@@ -2011,12 +2003,8 @@ xcoff_write_armap_big(abfd, elength, map, orl_count, stridx)
 }
 
 bfd_boolean
-_bfd_xcoff_write_armap(abfd, elength, map, orl_count, stridx)
-     bfd *abfd;
-     unsigned int elength ATTRIBUTE_UNUSED;
-     struct orl *map;
-     unsigned int orl_count;
-     int stridx;
+_bfd_xcoff_write_armap(bfd *abfd, unsigned int elength ATTRIBUTE_UNUSED,
+                       struct orl *map, unsigned int orl_count, int stridx)
 {
   if (! xcoff_big_format_p(abfd))
     return xcoff_write_armap_old(abfd, elength, map, orl_count, stridx);
@@ -2679,18 +2667,16 @@ xcoff_swap_ldrel_out(bfd *abfd, const struct internal_ldrel *src, PTR d)
 
 
 bfd_boolean
-xcoff_reloc_type_noop(input_bfd, input_section, output_bfd, rel, sym, howto,
-		      val, addend, relocation, contents)
-     bfd *input_bfd ATTRIBUTE_UNUSED;
-     asection *input_section ATTRIBUTE_UNUSED;
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     struct internal_reloc *rel ATTRIBUTE_UNUSED;
-     struct internal_syment *sym ATTRIBUTE_UNUSED;
-     struct reloc_howto_struct *howto ATTRIBUTE_UNUSED;
-     bfd_vma val ATTRIBUTE_UNUSED;
-     bfd_vma addend ATTRIBUTE_UNUSED;
-     bfd_vma *relocation ATTRIBUTE_UNUSED;
-     bfd_byte *contents ATTRIBUTE_UNUSED;
+xcoff_reloc_type_noop(bfd *input_bfd ATTRIBUTE_UNUSED,
+                      asection *input_section ATTRIBUTE_UNUSED,
+                      bfd *output_bfd ATTRIBUTE_UNUSED,
+                      struct internal_reloc *rel ATTRIBUTE_UNUSED,
+                      struct internal_syment *sym ATTRIBUTE_UNUSED,
+                      struct reloc_howto_struct *howto ATTRIBUTE_UNUSED,
+		      bfd_vma val ATTRIBUTE_UNUSED,
+                      bfd_vma addend ATTRIBUTE_UNUSED,
+                      bfd_vma *relocation ATTRIBUTE_UNUSED,
+                      bfd_byte *contents ATTRIBUTE_UNUSED)
 {
   return TRUE;
 }
@@ -2711,8 +2697,8 @@ xcoff_reloc_type_fail(input_bfd, input_section, output_bfd, rel, sym, howto,
 {
   (*_bfd_error_handler)
     (_("%s: unsupported relocation type 0x%02x"),
-     bfd_get_filename (input_bfd), (unsigned int) rel->r_type);
-  bfd_set_error (bfd_error_bad_value);
+     bfd_get_filename(input_bfd), (unsigned int)rel->r_type);
+  bfd_set_error(bfd_error_bad_value);
   return FALSE;
 }
 
@@ -2949,21 +2935,18 @@ xcoff_reloc_type_crel(input_bfd, input_section, output_bfd, rel, sym, howto,
 }
 
 static bfd_boolean
-xcoff_complain_overflow_dont_func(input_bfd, val, relocation, howto)
-     bfd *input_bfd ATTRIBUTE_UNUSED;
-     bfd_vma val ATTRIBUTE_UNUSED;
-     bfd_vma relocation ATTRIBUTE_UNUSED;
-     struct reloc_howto_struct *howto ATTRIBUTE_UNUSED;
+xcoff_complain_overflow_dont_func(bfd *input_bfd ATTRIBUTE_UNUSED,
+                                  bfd_vma val ATTRIBUTE_UNUSED,
+                                  bfd_vma relocation ATTRIBUTE_UNUSED,
+                                  struct reloc_howto_struct *howto ATTRIBUTE_UNUSED)
 {
   return FALSE;
 }
 
 static bfd_boolean
-xcoff_complain_overflow_bitfield_func(input_bfd, val, relocation, howto)
-     bfd *input_bfd;
-     bfd_vma val;
-     bfd_vma relocation;
-     struct reloc_howto_struct *howto;
+xcoff_complain_overflow_bitfield_func(bfd *input_bfd, bfd_vma val,
+                                      bfd_vma relocation,
+                                      struct reloc_howto_struct *howto)
 {
   bfd_vma addrmask, fieldmask, signmask, ss;
   bfd_vma a, b, sum;
@@ -3035,11 +3018,9 @@ xcoff_complain_overflow_bitfield_func(input_bfd, val, relocation, howto)
 }
 
 static bfd_boolean
-xcoff_complain_overflow_signed_func(input_bfd, val, relocation, howto)
-     bfd *input_bfd;
-     bfd_vma val;
-     bfd_vma relocation;
-     struct reloc_howto_struct *howto;
+xcoff_complain_overflow_signed_func(bfd *input_bfd, bfd_vma val,
+                                    bfd_vma relocation,
+                                    struct reloc_howto_struct *howto)
 {
   bfd_vma addrmask, fieldmask, signmask, ss;
   bfd_vma a, b, sum;
@@ -3097,11 +3078,9 @@ xcoff_complain_overflow_signed_func(input_bfd, val, relocation, howto)
 }
 
 static bfd_boolean
-xcoff_complain_overflow_unsigned_func(input_bfd, val, relocation, howto)
-     bfd *input_bfd;
-     bfd_vma val;
-     bfd_vma relocation;
-     struct reloc_howto_struct *howto;
+xcoff_complain_overflow_unsigned_func(bfd *input_bfd, bfd_vma val,
+                                      bfd_vma relocation,
+                                      struct reloc_howto_struct *howto)
 {
   bfd_vma addrmask, fieldmask;
   bfd_vma a, b, sum;
@@ -3110,8 +3089,8 @@ xcoff_complain_overflow_unsigned_func(input_bfd, val, relocation, howto)
      relocations, we assume that all values should be truncated to
      the size of an address.  For bitfields, all the bits matter.
      See also bfd_check_overflow.  */
-  fieldmask = N_ONES (howto->bitsize);
-  addrmask = N_ONES (bfd_arch_bits_per_address (input_bfd)) | fieldmask;
+  fieldmask = N_ONES(howto->bitsize);
+  addrmask = (N_ONES(bfd_arch_bits_per_address(input_bfd)) | fieldmask);
   a = relocation;
   b = val & howto->src_mask;
 

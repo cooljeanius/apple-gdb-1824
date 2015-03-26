@@ -800,19 +800,24 @@ AC_SUBST([CPPFLAGS])dnl
 
 dnl# warning flags get set at the bottom, to try to prevent them from
 dnl# messing with the other conftets:
-build_warnings="-Wdeclaration-after-statement -Wmissing-parameter-type \
--Wstrict-prototypes -Wold-style-declaration -Wold-style-definition -Wmain \
--Wpointer-arith -Wformat-nonliteral -Wno-char-subscripts -Wempty-body \
--Wnested-externs -Wno-unused-parameter -Wundef -Wno-sign-compare -Wswitch \
--Wparentheses -Winline -Wvolatile-register-var -Wabi -Warray-bounds \
--Wdiv-by-zero -Wdouble-promotion -Wfree-nonheap-object -pedantic \
--Winvalid-memory-model -Wmissing-braces -Wmissing-include-dirs -Woverflow \
--Woverlength-strings -Woverride-init -Wreturn-local-addr -Wsequence-point \
--Wsizeof-pointer-memaccess -Wunsuffixed-float-constants -Wstrict-overflow \
--Wtrampolines -Wjump-misses-init -Wcoverage-mismatch -Wno-strict-aliasing"
+build_warnings="-Wmain -Wpointer-arith -Wformat-nonliteral \
+-Wno-char-subscripts -Wempty-body -Wnested-externs -Wno-unused-parameter \
+-Wundef -Wswitch -Wparentheses -Winline -Wvolatile-register-var \
+-Warray-bounds -Wdiv-by-zero -Wdouble-promotion -Wfree-nonheap-object \
+-pedantic -Winvalid-memory-model -Wmissing-braces -Wmissing-include-dirs \
+-Woverflow -Woverlength-strings -Woverride-init -Wreturn-local-addr \
+-Wsequence-point -Wsizeof-pointer-memaccess -Wunsuffixed-float-constants \
+-Wstrict-overflow -Wtrampolines -Wjump-misses-init -Wcoverage-mismatch \
+-Wno-strict-aliasing"
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
-  build_warnings="${build_warnings} -fpermissive"
+  cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo \
+-Wno-sign-compare -Wno-write-strings -Wno-narrowing"
+  build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
+else
+  c_warnings="-Wdeclaration-after-statement -Wmissing-parameter-type \
+-Wstrict-prototypes -Wold-style-declaration -Wold-style-definition"
+  build_warnings="${build_warnings} ${c_warnings}"
 fi
 
 # left out on purpose:
@@ -862,6 +867,16 @@ then
 	-Werr*)
 	    dnl# (just ignoring this completely for now)
 	    ;;
+        -Wold-style-definition|-Wstrict-prototypes)
+	    saved_CFLAGS="${CFLAGS}"
+	    CFLAGS="${CFLAGS} ${w} -Werror"
+            dnl# Use "_SOURCE" instead of "_PROGRAM" here to keep us from
+            dnl# having a bad "main()" function:
+	    AC_COMPILE_IFELSE([AC_LANG_SOURCE([[]])],
+                              [WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
+                              [BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
+	    CFLAGS="${saved_CFLAGS}"
+            ;;
 	*) # Check that GCC accepts it:
 	    saved_CFLAGS="${CFLAGS}"
 	    CFLAGS="${CFLAGS} ${w} -Werror"

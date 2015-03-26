@@ -250,7 +250,7 @@ handle_v_cont (char *own_buf, char *status, int *signal)
 	}
       else if (p[0] == ':')
 	{
-	  unsigned int gdb_id = strtoul (p + 1, &q, 16);
+	  unsigned int gdb_id = strtoul(p + 1, &q, 16);
 	  unsigned long thread_id;
 
 	  if (p == q)
@@ -271,25 +271,25 @@ handle_v_cont (char *own_buf, char *status, int *signal)
 
   resume_info[i] = default_action;
 
-  /* Still used in occasional places in the backend.  */
-  if (n == 1 && resume_info[0].thread != -1)
+  /* Still used in occasional places in the backend: */
+  if ((n == 1) && (resume_info[0].thread != (unsigned long)-1L))
     cont_thread = resume_info[0].thread;
   else
     cont_thread = -1;
-  set_desired_inferior (0);
+  set_desired_inferior(0);
 
-  (*the_target->resume) (resume_info);
+  (*the_target->resume)(resume_info);
 
-  free (resume_info);
+  free(resume_info);
 
-  *signal = mywait (status, 1);
-  prepare_resume_reply (own_buf, *status, *signal);
+  *signal = mywait(status, 1);
+  prepare_resume_reply(own_buf, *status, *signal);
   return;
 
 err:
   /* No other way to report an error... */
-  strcpy (own_buf, "");
-  free (resume_info);
+  strcpy(own_buf, "");
+  free(resume_info);
   return;
 }
 
@@ -316,15 +316,16 @@ handle_v_requests (char *own_buf, char *status, int *signal)
 }
 
 void
-myresume (int step, int sig)
+myresume(int step, int sig)
 {
   struct thread_resume resume_info[2];
   int n = 0;
 
-  if (step || sig || (cont_thread != 0 && cont_thread != -1))
+  if (step || sig || ((cont_thread != 0)
+                      && (cont_thread != (unsigned long)-1L)))
     {
       resume_info[0].thread
-	= ((struct inferior_list_entry *) current_inferior)->id;
+	= ((struct inferior_list_entry *)current_inferior)->id;
       resume_info[0].step = step;
       resume_info[0].sig = sig;
       resume_info[0].leave_stopped = 0;
@@ -333,9 +334,10 @@ myresume (int step, int sig)
   resume_info[n].thread = -1;
   resume_info[n].step = 0;
   resume_info[n].sig = 0;
-  resume_info[n].leave_stopped = (cont_thread != 0 && cont_thread != -1);
+  resume_info[n].leave_stopped = ((cont_thread != 0)
+                                  && (cont_thread != (unsigned long)-1L));
 
-  (*the_target->resume) (resume_info);
+  (*the_target->resume)(resume_info);
 }
 
 static int attached;

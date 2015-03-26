@@ -27,34 +27,34 @@
 struct target_ops *the_target;
 
 void
-set_desired_inferior (int use_general)
+set_desired_inferior(int use_general)
 {
   struct thread_info *found;
 
   if (use_general == 1)
     {
-      found = (struct thread_info *) find_inferior_id (&all_threads,
-						       general_thread);
+      found = (struct thread_info *)find_inferior_id(&all_threads,
+                                                     general_thread);
     }
   else
     {
       found = NULL;
 
       /* If we are continuing any (all) thread(s), use step_thread
-	   * to decide which thread to step and/or send the specified
-	   * signal to.  */
-      if ((step_thread != 0 && step_thread != -1)
-	  && (cont_thread == 0 || cont_thread == -1))
-	found = (struct thread_info *) find_inferior_id (&all_threads,
-							 step_thread);
+       * to decide which thread to step and/or send the specified
+       * signal to.  */
+      if (((step_thread != 0) && (step_thread != (unsigned long)-1L))
+	  && ((cont_thread == 0) || (cont_thread == (unsigned long)-1L)))
+	found = (struct thread_info *)find_inferior_id(&all_threads,
+                                                       step_thread);
 
       if (found == NULL)
-	found = (struct thread_info *) find_inferior_id (&all_threads,
-							 cont_thread);
+	found = (struct thread_info *)find_inferior_id(&all_threads,
+                                                       cont_thread);
     }
 
   if (found == NULL)
-    current_inferior = (struct thread_info *) all_threads.head;
+    current_inferior = (struct thread_info *)all_threads.head;
   else
     current_inferior = found;
 }

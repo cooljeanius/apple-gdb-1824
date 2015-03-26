@@ -148,6 +148,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module opendir:
   # Code from module openmp:
   # Code from module pathmax:
+  # Code from module pclose:
+  # Code from module popen:
   # Code from module readdir:
   # Code from module readlink:
   # Code from module realloc-gnu:
@@ -499,6 +501,18 @@ AC_DEFUN([gl_INIT],
   gl_DIRENT_MODULE_INDICATOR([opendir])
   AC_OPENMP
   gl_PATHMAX
+  gl_FUNC_PCLOSE
+  if test $HAVE_PCLOSE = 0; then
+    AC_LIBOBJ([pclose])
+    gl_PREREQ_PCLOSE
+  fi
+  gl_STDIO_MODULE_INDICATOR([pclose])
+  gl_FUNC_POPEN
+  if test $HAVE_POPEN = 0 || test $REPLACE_POPEN = 1; then
+    AC_LIBOBJ([popen])
+    gl_PREREQ_POPEN
+  fi
+  gl_STDIO_MODULE_INDICATOR([popen])
   gl_FUNC_READDIR
   if test $HAVE_READDIR = 0; then
     AC_LIBOBJ([readdir])
@@ -883,7 +897,9 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/opendir-safer.c
   lib/opendir.c
   lib/pathmax.h
+  lib/pclose.c
   lib/pipe-safer.c
+  lib/popen.c
   lib/readdir.c
   lib/readlink.c
   lib/realloc.c
@@ -1037,6 +1053,8 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/opendir.m4
   m4/openmp.m4
   m4/pathmax.m4
+  m4/pclose.m4
+  m4/popen.m4
   m4/readdir.m4
   m4/readlink.m4
   m4/realloc.m4

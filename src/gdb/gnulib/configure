@@ -718,6 +718,19 @@ NEXT_AS_FIRST_DIRECTIVE_STDLIB_H
 NEXT_STDLIB_H
 NEXT_AS_FIRST_DIRECTIVE_STDIO_H
 NEXT_STDIO_H
+NEXT_AS_FIRST_DIRECTIVE_STDDEF_H
+NEXT_STDDEF_H
+GL_GENERATE_STDDEF_H_FALSE
+GL_GENERATE_STDDEF_H_TRUE
+STDDEF_H
+HAVE_WCHAR_T
+HAVE_MAX_ALIGN_T
+REPLACE_NULL
+HAVE__BOOL
+GL_GENERATE_STDBOOL_H_FALSE
+GL_GENERATE_STDBOOL_H_TRUE
+STDBOOL_H
+HAVE_FEATURES_H
 REPLACE_VSPRINTF
 REPLACE_VSNPRINTF
 REPLACE_VPRINTF
@@ -819,19 +832,6 @@ GNULIB_FFLUSH
 GNULIB_FDOPEN
 GNULIB_FCLOSE
 GNULIB_DPRINTF
-NEXT_AS_FIRST_DIRECTIVE_STDDEF_H
-NEXT_STDDEF_H
-GL_GENERATE_STDDEF_H_FALSE
-GL_GENERATE_STDDEF_H_TRUE
-STDDEF_H
-HAVE_WCHAR_T
-HAVE_MAX_ALIGN_T
-REPLACE_NULL
-HAVE__BOOL
-GL_GENERATE_STDBOOL_H_FALSE
-GL_GENERATE_STDBOOL_H_TRUE
-STDBOOL_H
-HAVE_FEATURES_H
 OPENMP_CFLAGS
 NO_CXX
 NEXTAFTER_LIBM
@@ -3706,6 +3706,8 @@ gl_func_list="${gl_func_list} mbrtowc"
 gl_header_list="${gl_header_list} sys/mman.h"
 gl_func_list="${gl_func_list} mprotect"
 gl_func_list="${gl_func_list} memchr"
+gl_func_list="${gl_func_list} pclose"
+gl_func_list="${gl_func_list} popen"
 gl_func_list="${gl_func_list} readlink"
 gl_func_list="${gl_func_list} secure_getenv"
 gl_header_list="${gl_header_list} features.h"
@@ -6016,6 +6018,8 @@ $as_echo "$as_me: autobuild timestamp... $date" >&6;}
   # Code from module opendir:
   # Code from module openmp:
   # Code from module pathmax:
+  # Code from module pclose:
+  # Code from module popen:
   # Code from module readdir:
   # Code from module readlink:
   # Code from module realloc-gnu:
@@ -12367,6 +12371,119 @@ _ACEOF
 
 
 
+  GNULIB_DPRINTF=0;
+  GNULIB_FCLOSE=0;
+  GNULIB_FDOPEN=0;
+  GNULIB_FFLUSH=0;
+  GNULIB_FGETC=0;
+  GNULIB_FGETS=0;
+  GNULIB_FOPEN=0;
+  GNULIB_FPRINTF=0;
+  GNULIB_FPRINTF_POSIX=0;
+  GNULIB_FPURGE=0;
+  GNULIB_FPUTC=0;
+  GNULIB_FPUTS=0;
+  GNULIB_FREAD=0;
+  GNULIB_FREOPEN=0;
+  GNULIB_FSCANF=0;
+  GNULIB_FSEEK=0;
+  GNULIB_FSEEKO=0;
+  GNULIB_FTELL=0;
+  GNULIB_FTELLO=0;
+  GNULIB_FWRITE=0;
+  GNULIB_GETC=0;
+  GNULIB_GETCHAR=0;
+  GNULIB_GETDELIM=0;
+  GNULIB_GETLINE=0;
+  GNULIB_OBSTACK_PRINTF=0;
+  GNULIB_OBSTACK_PRINTF_POSIX=0;
+  GNULIB_PCLOSE=0;
+  GNULIB_PERROR=0;
+  GNULIB_POPEN=0;
+  GNULIB_PRINTF=0;
+  GNULIB_PRINTF_POSIX=0;
+  GNULIB_PUTC=0;
+  GNULIB_PUTCHAR=0;
+  GNULIB_PUTS=0;
+  GNULIB_REMOVE=0;
+  GNULIB_RENAME=0;
+  GNULIB_RENAMEAT=0;
+  GNULIB_SCANF=0;
+  GNULIB_SNPRINTF=0;
+  GNULIB_SPRINTF_POSIX=0;
+  GNULIB_STDIO_H_NONBLOCKING=0;
+  GNULIB_STDIO_H_SIGPIPE=0;
+  GNULIB_TMPFILE=0;
+  GNULIB_VASPRINTF=0;
+  GNULIB_VFSCANF=0;
+  GNULIB_VSCANF=0;
+  GNULIB_VDPRINTF=0;
+  GNULIB_VFPRINTF=0;
+  GNULIB_VFPRINTF_POSIX=0;
+  GNULIB_VPRINTF=0;
+  GNULIB_VPRINTF_POSIX=0;
+  GNULIB_VSNPRINTF=0;
+  GNULIB_VSPRINTF_POSIX=0;
+    HAVE_DECL_FPURGE=1;
+  HAVE_DECL_FSEEKO=1;
+  HAVE_DECL_FTELLO=1;
+  HAVE_DECL_GETDELIM=1;
+  HAVE_DECL_GETLINE=1;
+  HAVE_DECL_OBSTACK_PRINTF=1;
+  HAVE_DECL_SNPRINTF=1;
+  HAVE_DECL_VSNPRINTF=1;
+  HAVE_DPRINTF=1;
+  HAVE_FSEEKO=1;
+  HAVE_FTELLO=1;
+  HAVE_PCLOSE=1;
+  HAVE_POPEN=1;
+  HAVE_RENAMEAT=1;
+  HAVE_VASPRINTF=1;
+  HAVE_VDPRINTF=1;
+  REPLACE_DPRINTF=0;
+  REPLACE_FCLOSE=0;
+  REPLACE_FDOPEN=0;
+  REPLACE_FFLUSH=0;
+  REPLACE_FOPEN=0;
+  REPLACE_FPRINTF=0;
+  REPLACE_FPURGE=0;
+  REPLACE_FREOPEN=0;
+  REPLACE_FSEEK=0;
+  REPLACE_FSEEKO=0;
+  REPLACE_FTELL=0;
+  REPLACE_FTELLO=0;
+  REPLACE_GETDELIM=0;
+  REPLACE_GETLINE=0;
+  REPLACE_OBSTACK_PRINTF=0;
+  REPLACE_PERROR=0;
+  REPLACE_POPEN=0;
+  REPLACE_PRINTF=0;
+  REPLACE_REMOVE=0;
+  REPLACE_RENAME=0;
+  REPLACE_RENAMEAT=0;
+  REPLACE_SNPRINTF=0;
+  REPLACE_SPRINTF=0;
+  REPLACE_STDIO_READ_FUNCS=0;
+  REPLACE_STDIO_WRITE_FUNCS=0;
+  REPLACE_TMPFILE=0;
+  REPLACE_VASPRINTF=0;
+  REPLACE_VDPRINTF=0;
+  REPLACE_VFPRINTF=0;
+  REPLACE_VPRINTF=0;
+  REPLACE_VSNPRINTF=0;
+  REPLACE_VSPRINTF=0;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -12520,109 +12637,6 @@ $as_echo "$gt_cv_c_wchar_t" >&6; }
 $as_echo "#define HAVE_WCHAR_T 1" >>confdefs.h
 
   fi
-
-
-  GNULIB_DPRINTF=0;
-  GNULIB_FCLOSE=0;
-  GNULIB_FDOPEN=0;
-  GNULIB_FFLUSH=0;
-  GNULIB_FGETC=0;
-  GNULIB_FGETS=0;
-  GNULIB_FOPEN=0;
-  GNULIB_FPRINTF=0;
-  GNULIB_FPRINTF_POSIX=0;
-  GNULIB_FPURGE=0;
-  GNULIB_FPUTC=0;
-  GNULIB_FPUTS=0;
-  GNULIB_FREAD=0;
-  GNULIB_FREOPEN=0;
-  GNULIB_FSCANF=0;
-  GNULIB_FSEEK=0;
-  GNULIB_FSEEKO=0;
-  GNULIB_FTELL=0;
-  GNULIB_FTELLO=0;
-  GNULIB_FWRITE=0;
-  GNULIB_GETC=0;
-  GNULIB_GETCHAR=0;
-  GNULIB_GETDELIM=0;
-  GNULIB_GETLINE=0;
-  GNULIB_OBSTACK_PRINTF=0;
-  GNULIB_OBSTACK_PRINTF_POSIX=0;
-  GNULIB_PCLOSE=0;
-  GNULIB_PERROR=0;
-  GNULIB_POPEN=0;
-  GNULIB_PRINTF=0;
-  GNULIB_PRINTF_POSIX=0;
-  GNULIB_PUTC=0;
-  GNULIB_PUTCHAR=0;
-  GNULIB_PUTS=0;
-  GNULIB_REMOVE=0;
-  GNULIB_RENAME=0;
-  GNULIB_RENAMEAT=0;
-  GNULIB_SCANF=0;
-  GNULIB_SNPRINTF=0;
-  GNULIB_SPRINTF_POSIX=0;
-  GNULIB_STDIO_H_NONBLOCKING=0;
-  GNULIB_STDIO_H_SIGPIPE=0;
-  GNULIB_TMPFILE=0;
-  GNULIB_VASPRINTF=0;
-  GNULIB_VFSCANF=0;
-  GNULIB_VSCANF=0;
-  GNULIB_VDPRINTF=0;
-  GNULIB_VFPRINTF=0;
-  GNULIB_VFPRINTF_POSIX=0;
-  GNULIB_VPRINTF=0;
-  GNULIB_VPRINTF_POSIX=0;
-  GNULIB_VSNPRINTF=0;
-  GNULIB_VSPRINTF_POSIX=0;
-    HAVE_DECL_FPURGE=1;
-  HAVE_DECL_FSEEKO=1;
-  HAVE_DECL_FTELLO=1;
-  HAVE_DECL_GETDELIM=1;
-  HAVE_DECL_GETLINE=1;
-  HAVE_DECL_OBSTACK_PRINTF=1;
-  HAVE_DECL_SNPRINTF=1;
-  HAVE_DECL_VSNPRINTF=1;
-  HAVE_DPRINTF=1;
-  HAVE_FSEEKO=1;
-  HAVE_FTELLO=1;
-  HAVE_PCLOSE=1;
-  HAVE_POPEN=1;
-  HAVE_RENAMEAT=1;
-  HAVE_VASPRINTF=1;
-  HAVE_VDPRINTF=1;
-  REPLACE_DPRINTF=0;
-  REPLACE_FCLOSE=0;
-  REPLACE_FDOPEN=0;
-  REPLACE_FFLUSH=0;
-  REPLACE_FOPEN=0;
-  REPLACE_FPRINTF=0;
-  REPLACE_FPURGE=0;
-  REPLACE_FREOPEN=0;
-  REPLACE_FSEEK=0;
-  REPLACE_FSEEKO=0;
-  REPLACE_FTELL=0;
-  REPLACE_FTELLO=0;
-  REPLACE_GETDELIM=0;
-  REPLACE_GETLINE=0;
-  REPLACE_OBSTACK_PRINTF=0;
-  REPLACE_PERROR=0;
-  REPLACE_POPEN=0;
-  REPLACE_PRINTF=0;
-  REPLACE_REMOVE=0;
-  REPLACE_RENAME=0;
-  REPLACE_RENAMEAT=0;
-  REPLACE_SNPRINTF=0;
-  REPLACE_SPRINTF=0;
-  REPLACE_STDIO_READ_FUNCS=0;
-  REPLACE_STDIO_WRITE_FUNCS=0;
-  REPLACE_TMPFILE=0;
-  REPLACE_VASPRINTF=0;
-  REPLACE_VDPRINTF=0;
-  REPLACE_VFPRINTF=0;
-  REPLACE_VPRINTF=0;
-  REPLACE_VSNPRINTF=0;
-  REPLACE_VSPRINTF=0;
 
 
 
@@ -20974,6 +20988,139 @@ $as_echo "$ac_cv_prog_c_openmp" >&6; }
 
 
 
+  :
+
+
+
+
+
+  if test $ac_cv_func_pclose = no; then
+    HAVE_PCLOSE=0
+  fi
+
+  if test $HAVE_PCLOSE = 0; then
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS pclose.$ac_objext"
+
+
+  :
+
+  fi
+
+
+
+
+
+          GNULIB_PCLOSE=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_PCLOSE 1" >>confdefs.h
+
+
+
+
+
+
+  :
+
+
+
+
+
+  if test $ac_cv_func_popen = no; then
+    HAVE_POPEN=0
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether popen works with closed stdin" >&5
+$as_echo_n "checking whether popen works with closed stdin... " >&6; }
+if ${gl_cv_func_popen_works+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+        if test "$cross_compiling" = yes; then :
+            gl_cv_func_popen_works='guessing yes'
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdio.h>
+int
+main ()
+{
+int result = 0;
+               FILE *child;
+               fclose (stdin);
+               fclose (stdout);
+               child = popen ("echo a", "r");
+               if (fgetc (child) != 'a')
+                 result |= 1;
+               if (pclose (child) != 0)
+                 result |= 2;
+               return result;
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gl_cv_func_popen_works=yes
+else
+  gl_cv_func_popen_works=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_popen_works" >&5
+$as_echo "$gl_cv_func_popen_works" >&6; }
+    if test "$gl_cv_func_popen_works" = no; then
+      REPLACE_POPEN=1
+    fi
+  fi
+
+  if test $HAVE_POPEN = 0 || test $REPLACE_POPEN = 1; then
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS popen.$ac_objext"
+
+
+  :
+
+  fi
+
+
+
+
+
+          GNULIB_POPEN=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_POPEN 1" >>confdefs.h
+
+
+
+
+
+
   for ac_func in readdir
 do :
   ac_fn_c_check_func "$LINENO" "readdir" "ac_cv_func_readdir"
@@ -24490,6 +24637,29 @@ $as_echo "#define HAVE_MBRTOWC 1" >>confdefs.h
 
 
    ## set up libobj if needed:
+if test ${HAVE_CLOSEDIR} = 0 || test ${REPLACE_CLOSEDIR} = 1; then
+  case " $LIBOBJS " in
+  *" closedir.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS closedir.$ac_objext"
+ ;;
+esac
+  ## end libobj
+fi
+
+
+
+
+
+          GNULIB_CLOSEDIR=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_CLOSEDIR 1" >>confdefs.h
+
+
+  ## set up libobj if needed:
 if test "x${ac_cv_func_dirfd}" = "xno" && test "x${gl_cv_func_dirfd_macro}" = "xno"; then
   case " $LIBOBJS " in
   *" dirfd.$ac_objext "* ) ;;
@@ -25238,6 +25408,79 @@ fi
 
 
 $as_echo "#define GNULIB_TEST_MEMRCHR 1" >>confdefs.h
+
+
+  ## set up libobj if needed:
+if test ${HAVE_PCLOSE} = 0; then
+  case " $LIBOBJS " in
+  *" pclose.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS pclose.$ac_objext"
+ ;;
+esac
+
+  :
+
+fi
+
+
+
+
+
+          GNULIB_PCLOSE=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_PCLOSE 1" >>confdefs.h
+
+
+  ## set up libobj if needed:
+if test ${HAVE_POPEN} = 0 || test ${REPLACE_POPEN} = 1; then
+  case " $LIBOBJS " in
+  *" popen.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS popen.$ac_objext"
+ ;;
+esac
+
+  :
+
+fi
+
+
+
+
+
+          GNULIB_POPEN=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_POPEN 1" >>confdefs.h
+
+
+  ## set up libobj if needed:
+if test ${HAVE_READDIR} = 0; then
+  case " $LIBOBJS " in
+  *" readdir.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS readdir.$ac_objext"
+ ;;
+esac
+  ## end libobj
+fi
+
+
+
+
+
+          GNULIB_READDIR=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_READDIR 1" >>confdefs.h
 
 
   ## set up libobj if needed:

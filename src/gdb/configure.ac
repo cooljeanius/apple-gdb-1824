@@ -1373,16 +1373,18 @@ AC_SUBST([EXTRA_DEFS])dnl
 AC_CHECK_HEADERS([stdarg.h varargs.h])dnl
 # even more header checks:
 AC_HEADER_ASSERT
-AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h assert.h \
+AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h \
+                  CoreFoundation/CFPropertyList.h \
+                  CoreFoundation/CFURLAccess.h assert.h \
                   architecture/byte_order.h bits/endian.h \
                   libgen.h libgettext.h linux/byteorder/big_endian.h \
                   linux/byteorder/little_endian.h mach.h mach_error.h \
-                  mach/kern_return.h mach/mach_error.h mach/mach_init.h \
-                  mach/mach_port.h mach/message.h mach/port.h \
-                  mach/thread_info.h mach/thread_status.h \
+                  mach/kern_return.h mach/kmod.h mach/mach_error.h \
+                  mach/mach_init.h mach/mach_port.h mach/message.h \
+                  mach/port.h mach/thread_info.h mach/thread_status.h \
                   mach-o/loader.h mach-o/nlist.h memory.h pc.h pthread.h \
                   rpc/rpc.h servers/netname.h servers/netname_defs.h \
-                  setjmp.h sys/uio.h sys/utsname.h])dnl
+                  setjmp.h sys/uio.h sys/utsname.h uuid/uuid.h])dnl
   ## be careful in case we find the in-tree one:
 AC_CHECK_HEADERS([gettext.h],[],[],[
 #ifndef HAVE_CONFDEFS_H
@@ -1555,6 +1557,19 @@ AC_TYPE_MODE_T
 AC_TYPE_PID_T
 AC_TYPE_SSIZE_T
 AC_TYPE_UID_T
+AC_CHECK_TYPES([uuid_t],[],[],[
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#else
+# ifdef HAVE_UUID_UUID_H
+#  include <uuid/uuid.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "Missing a header that might be needed for uuid_t"
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_UUID_UUID_H */
+#endif /* HAVE_UNISTD_H */
+])dnl
 AC_TYPE_UINT8_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
@@ -1660,6 +1675,25 @@ dnl# The "x86_debug_state32_t" type is checked for in an APPLE_LOCAL
 dnl# section below.
 dnl# "long long" support is also checked farther below.
 
+dnl### CoreFoundation types that we use:
+dnl## FIXME: there are too many; just choose a few of them:
+dnl# * CFAllocatorRef
+dnl# * CFArrayRef
+dnl# * CFDataRef
+dnl# * CFDictionaryRef
+dnl# * CFIndex
+dnl# * CFMutableArrayRef
+dnl# * CFMutableDictionaryRef
+dnl# * CFPropertyListRef
+dnl# * CFStringRef
+dnl# * CFUUIDBytes
+dnl# * CFUUIDRef
+dnl# * CFURLRef
+dnl## And, remember, once writing the actual conftest for whichever of the
+dnl## above types we eventually choose, make sure:
+dnl## <CoreFoundation/CoreFoundation.h>
+dnl## is in the "includes" part...
+
 # ------------------------------------- #
 # Checks for compiler characteristics.  #
 # ------------------------------------- #
@@ -1735,6 +1769,7 @@ AC_FUNC_STRNLEN
 AC_FUNC_STRTOD
 AC_FUNC_VPRINTF
 AC_FUNC_WAIT3
+dnl# (why is 'realpath' up here, instead of in its alphabetical location?)
 AC_CHECK_FUNCS([canonicalize_file_name realpath])dnl
 AC_CHECK_FUNCS([getrusage])dnl
 AC_CHECK_FUNCS([getuid getgid])dnl
@@ -1765,7 +1800,7 @@ m4_ifdef([AM_LANGINFO_CODESET],[
   AC_CHECK_FUNCS([langinfo codeset])dnl
 ])dnl
 
-# Other functions (that autoscan complains about missing):
+# Other functions (that autoscan might complain about missing):
 unset ac_cv_func_getcwd
 unset ac_cv_func_gethostbyname
 unset ac_cv_func_strcasecmp
@@ -1774,11 +1809,12 @@ AC_CHECK_FUNCS([alarm assert atexit bzero dup2 exit fflush fgets fprintf \
                 fwrite getcwd gethostbyaddr gethostbyname gethostname \
                 getpass gets gettimeofday inet_ntoa isascii \
                 mach_error_string memchr memcmp memcpy memmove mempcpy \
-                memset mkdir netname_look_up nl_langinfo pathconf pow \
-                re_comp regcomp select socket strcasecmp strcat strchr \
-                strcpy strcspn strdup strerror strlen strncasecmp \
-                strncat strncmp strncpy strndup strpbrk strrchr \
-                strspn strstr strtok strtol strtoul uname wcwidth])dnl
+                memset mkdir netname_look_up nl_langinfo pathconf pclose \
+                popen pow readdir re_comp regcomp select socket \
+                strcasecmp strcat strchr strcpy strcspn strdup strerror \
+                strlcat strlcpy strlen strncasecmp strncat strncmp \
+                strncpy strndup strpbrk strrchr strspn strstr strtok \
+                strtol strtoul uname wcwidth])dnl
 
 # ----- #
 # Other #
@@ -2681,35 +2717,42 @@ AC_ARG_WITH([sysroot],
 ],[
  TARGET_SYSTEM_ROOT=""
  TARGET_SYSTEM_ROOT_DEFINE='-DTARGET_SYSTEM_ROOT=\"\"'
-])
+])dnl
 AC_SUBST([TARGET_SYSTEM_ROOT])dnl
 AC_SUBST([TARGET_SYSTEM_ROOT_DEFINE])dnl
 
 # NOTE: Do NOT add -Wall or -Wunused, they both include
 # -Wunused-parameter which reports bogus warnings.
+## (they are easy enough to fix though; just put ATTRIBUTE_UNUSED
+##  everywhere...)
 # NOTE: If you add to this list, remember to update
 # gdb/doc/gdbint.texinfo.
 build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
--Wparentheses -Wdeclaration-after-statement -Wc++-compat \
--Wpointer-arith -Wpointer-sign \
+-Wparentheses -Wpointer-arith \
 -Wno-unused -Wunused-value -Wunused-label -Wunused-result \
--Wempty-body -Wmissing-parameter-type -Wmissing-declarations \
+-Wempty-body -Wmissing-declarations \
 -Wno-format-security -Wno-format \
--Wold-style-declaration -Wold-style-definition -Wstrict-prototypes \
--Wmissing-noreturn -Waddress -Warray-bounds -Wattributes \
+-Wmissing-noreturn -Waddress -Wattributes \
 -Wswitch -Wclobbered -Wcoverage-mismatch -Wdiv-by-zero \
 -Wdouble-promotion -Wfree-nonheap-object -Wsign-compare \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
 -Wmissing-include-dirs -Woverflow -Woverlength-strings -Woverride-init \
 -Wpragmas -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
 -Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc \
--Wunsuffixed-float-constants -Wfloat-conversion -Wjump-misses-init"
+-Wunsuffixed-float-constants -Wfloat-conversion -Wjump-misses-init \
+-Wno-deprecated-declarations"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
   ## Special warnings only for C++ compilations:
-  cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo"
+  cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo \
+-Wno-write-strings -Wno-narrowing"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
+else
+  c_warnings="-Wpointer-sign -Wdeclaration-after-statement -Wc++-compat \
+-Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
+-Wstrict-prototypes"
+  build_warnings="${build_warnings} ${c_warnings}"
 fi
 
 # If compiler does NOT support the long long data type, see if it can
@@ -2728,7 +2771,7 @@ case "${host}" in
     # FSF gcc, but it only makes sense on Apple platforms.
     build_warnings="${build_warnings} -Wmost -Wformat-nonliteral -Wextra-tokens -Wnewline-eof -std=gnu99 -Wnonportable-cfstrings -Wendif-labels"
     case "${host}" in
-      *64*-apple-darwin9* | *64*-apple-darwin-1[[0123456789]].*)
+      *64*-apple-darwin9* | *64*-apple-darwin1[[0123456789]].*.*)
         build_warnings="${build_warnings} -Wshorten-64-to-32"
       ;;
     esac
@@ -2758,12 +2801,18 @@ opt_warnings="-Wuninitialized -Winit-self -Wvolatile-register-var \
 -Wdisabled-optimization -Waggressive-loop-optimizations \
 -Wvector-operation-performance -Wmaybe-uninitialized \
 -Wstrict-overflow=1 -Wunsafe-loop-optimizations"
+# -Warray-bounds is only for -O2 and up, or when -ftree-vrp is active, so
+# use a separate variable for it:
+opt_warnings_plus="${opt_warnings} -Warray-bounds"
 if test x${CFLAGS+set} = xset; then
   case "${CFLAGS}" in
     *"-O0"* )
       ## we will miss out on warnings about signed integer overflow in this
       ## case, so turn them into runtime errors instead, for debugging:
       build_warnings="${build_warnings} -ftrapv"
+    ;;
+    *"-O2"* )
+      build_warnings="${build_warnings} ${opt_warnings_plus}"
     ;;
     *"-O"* )
       build_warnings="${build_warnings} ${opt_warnings}"
@@ -2783,7 +2832,7 @@ fi
 #  * -Wwrite-strings (would require a lot of const-ifying)
 #  * -Wconversion (would require a lot of casting)
 #  * -Wsign-conversion (likewise)
-#  * -Wmissing-prototypes (I like this one, but redundant with other flag)
+#  * -Wmissing-prototypes (C-only; redundant with other flag)
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
 #  * -Winline (I can never tell if the compiler is right or not with this)
 #  * -Wformat (currently we explicitly disable this)
@@ -2812,11 +2861,18 @@ fi
 #  * -Wvolatile-register-var (kinda pointless)
 #  * -Wswitch (I like this one, but others might not)
 #  * -Wc++-compat (noisy in some headers, but upstream is moving to C++)
+#  * -Wunsuffixed-float-constants (broken for regular doubles, which
+#    require a non-standard suffix)
+#  * -Wno-deprecated-declarations (I recently marked a bunch of functions
+#    as deprecated, but that made things too noisy... will eventually want
+#    the warnings back though.)
 # Up for debate in some other way:
 #  * -Wstrict-overflow (i.e., could change the value assigned to it. We use
 #    "1" now because that is the default for "-Wall", but "2" is the
 #    default when no value is used with it with an "=", and the max is "5")
 #  * -Wabi (currently only used for C++, but sometimes accepted for just C)
+#  * -Wdouble-promotion (could be moved to the same place as -Wlong-long if
+#    we get rid of -Wunsuffixed-float-constants some time...)
 # NOT actually up for debate:
 #  * -Werror (never add this)
 #  * -pedantic-errors (likewise, never add this)

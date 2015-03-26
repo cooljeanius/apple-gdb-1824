@@ -178,8 +178,8 @@ alphacoff_locate_sections (bfd *ignore_abfd, asection *sectp, void *sip)
    them to the minimal symbol table.  */
 
 static void
-read_alphacoff_dynamic_symtab (struct section_offsets *section_offsets,
-			       struct objfile *objfile)
+read_alphacoff_dynamic_symtab(struct section_offsets *section_offsets,
+			      struct objfile *objfile)
 {
   bfd *abfd = objfile->obfd;
   struct alphacoff_dynsecinfo si;
@@ -203,77 +203,77 @@ read_alphacoff_dynamic_symtab (struct section_offsets *section_offsets,
   struct cleanup *cleanups;
 
   /* We currently only know how to handle alpha dynamic symbols.  */
-  if (bfd_get_arch (abfd) != bfd_arch_alpha)
+  if (bfd_get_arch(abfd) != bfd_arch_alpha)
     return;
 
   /* Locate the dynamic symbols sections and read them in.  */
-  memset ((char *) &si, 0, sizeof (si));
-  bfd_map_over_sections (abfd, alphacoff_locate_sections, (void *) & si);
-  if (si.sym_sect == NULL || si.str_sect == NULL
-      || si.dyninfo_sect == NULL || si.got_sect == NULL)
+  memset((char *)&si, 0, sizeof(si));
+  bfd_map_over_sections(abfd, alphacoff_locate_sections, (void *)&si);
+  if ((si.sym_sect == NULL) || (si.str_sect == NULL)
+      || (si.dyninfo_sect == NULL) || (si.got_sect == NULL))
     return;
 
-  sym_secsize = bfd_get_section_size (si.sym_sect);
-  str_secsize = bfd_get_section_size (si.str_sect);
-  dyninfo_secsize = bfd_get_section_size (si.dyninfo_sect);
-  got_secsize = bfd_get_section_size (si.got_sect);
-  sym_secptr = xmalloc (sym_secsize);
-  cleanups = make_cleanup (free, sym_secptr);
-  str_secptr = xmalloc (str_secsize);
-  make_cleanup (free, str_secptr);
-  dyninfo_secptr = xmalloc (dyninfo_secsize);
-  make_cleanup (free, dyninfo_secptr);
-  got_secptr = xmalloc (got_secsize);
-  make_cleanup (free, got_secptr);
+  sym_secsize = bfd_get_section_size(si.sym_sect);
+  str_secsize = bfd_get_section_size(si.str_sect);
+  dyninfo_secsize = bfd_get_section_size(si.dyninfo_sect);
+  got_secsize = bfd_get_section_size(si.got_sect);
+  sym_secptr = (char *)xmalloc(sym_secsize);
+  cleanups = make_cleanup(free, sym_secptr);
+  str_secptr = (char *)xmalloc(str_secsize);
+  make_cleanup(free, str_secptr);
+  dyninfo_secptr = (char *)xmalloc(dyninfo_secsize);
+  make_cleanup(free, dyninfo_secptr);
+  got_secptr = (char *)xmalloc(got_secsize);
+  make_cleanup(free, got_secptr);
 
-  if (!bfd_get_section_contents (abfd, si.sym_sect, sym_secptr,
-				 (file_ptr) 0, sym_secsize))
+  if (!bfd_get_section_contents(abfd, si.sym_sect, sym_secptr,
+                                (file_ptr)0L, sym_secsize))
     return;
-  if (!bfd_get_section_contents (abfd, si.str_sect, str_secptr,
-				 (file_ptr) 0, str_secsize))
+  if (!bfd_get_section_contents(abfd, si.str_sect, str_secptr,
+                                (file_ptr)0L, str_secsize))
     return;
-  if (!bfd_get_section_contents (abfd, si.dyninfo_sect, dyninfo_secptr,
-				 (file_ptr) 0, dyninfo_secsize))
+  if (!bfd_get_section_contents(abfd, si.dyninfo_sect, dyninfo_secptr,
+                                (file_ptr)0L, dyninfo_secsize))
     return;
-  if (!bfd_get_section_contents (abfd, si.got_sect, got_secptr,
-				 (file_ptr) 0, got_secsize))
+  if (!bfd_get_section_contents(abfd, si.got_sect, got_secptr,
+                                (file_ptr)0L, got_secsize))
     return;
 
   /* Find the number of local GOT entries and the index for the the
      first dynamic symbol in the GOT.  */
-  for (dyninfo_p = dyninfo_secptr, dyninfo_end = dyninfo_p + dyninfo_secsize;
+  for (dyninfo_p = dyninfo_secptr, dyninfo_end = (dyninfo_p + dyninfo_secsize);
        dyninfo_p < dyninfo_end;
-       dyninfo_p += sizeof (Elfalpha_External_Dyn))
+       dyninfo_p += sizeof(Elfalpha_External_Dyn))
     {
-      Elfalpha_External_Dyn *x_dynp = (Elfalpha_External_Dyn *) dyninfo_p;
+      Elfalpha_External_Dyn *x_dynp = (Elfalpha_External_Dyn *)dyninfo_p;
       long dyn_tag;
 
-      dyn_tag = bfd_h_get_32 (abfd, (bfd_byte *) x_dynp->d_tag);
+      dyn_tag = bfd_h_get_32(abfd, (bfd_byte *)x_dynp->d_tag);
       if (dyn_tag == DT_NULL)
 	break;
       else if (dyn_tag == DT_MIPS_LOCAL_GOTNO)
 	{
 	  if (dt_mips_local_gotno < 0)
 	    dt_mips_local_gotno
-	      = bfd_h_get_32 (abfd, (bfd_byte *) x_dynp->d_un.d_val);
+	      = bfd_h_get_32(abfd, (bfd_byte *)x_dynp->d_un.d_val);
 	}
       else if (dyn_tag == DT_MIPS_GOTSYM)
 	{
 	  if (dt_mips_gotsym < 0)
 	    dt_mips_gotsym
-	      = bfd_h_get_32 (abfd, (bfd_byte *) x_dynp->d_un.d_val);
+	      = bfd_h_get_32(abfd, (bfd_byte *)x_dynp->d_un.d_val);
 	}
     }
-  if (dt_mips_local_gotno < 0 || dt_mips_gotsym < 0)
+  if ((dt_mips_local_gotno < 0) || (dt_mips_gotsym < 0))
     return;
 
   /* Scan all dynamic symbols and enter them into the minimal symbol
      table if appropriate.  */
-  sym_count = sym_secsize / sizeof (Elfalpha_External_Sym);
-  stripped = (bfd_get_symcount (abfd) == 0);
+  sym_count = (sym_secsize / sizeof(Elfalpha_External_Sym));
+  stripped = (bfd_get_symcount(abfd) == 0);
 
-  /* Skip first symbol, which is a null dummy.  */
-  for (i = 1, x_symp = (Elfalpha_External_Sym *) sym_secptr + 1;
+  /* Skip first symbol, which is a null dummy: */
+  for (i = 1, x_symp = ((Elfalpha_External_Sym *)sym_secptr + 1);
        i < sym_count;
        i++, x_symp++)
     {
@@ -285,24 +285,24 @@ read_alphacoff_dynamic_symtab (struct section_offsets *section_offsets,
       int isglobal;
       enum minimal_symbol_type ms_type;
 
-      strx = bfd_h_get_32 (abfd, (bfd_byte *) x_symp->st_name);
+      strx = bfd_h_get_32(abfd, (bfd_byte *)x_symp->st_name);
       if (strx >= str_secsize)
 	continue;
       name = str_secptr + strx;
-      if (*name == '\0' || *name == '.')
+      if ((*name == '\0') || (*name == '.'))
 	continue;
 
-      sym_value = bfd_h_get_64 (abfd, (bfd_byte *) x_symp->st_value);
-      sym_info = bfd_h_get_8 (abfd, (bfd_byte *) x_symp->st_info);
-      sym_shndx = bfd_h_get_16 (abfd, (bfd_byte *) x_symp->st_shndx);
-      isglobal = (ELF_ST_BIND (sym_info) == STB_GLOBAL);
+      sym_value = bfd_h_get_64(abfd, (bfd_byte *)x_symp->st_value);
+      sym_info = bfd_h_get_8(abfd, (bfd_byte *)x_symp->st_info);
+      sym_shndx = bfd_h_get_16(abfd, (bfd_byte *)x_symp->st_shndx);
+      isglobal = (ELF_ST_BIND(sym_info) == STB_GLOBAL);
 
       if (sym_shndx == SHN_UNDEF)
 	{
 	  /* Handle undefined functions which are defined in a shared
 	     library.  */
-	  if (ELF_ST_TYPE (sym_info) != STT_FUNC
-	      || ELF_ST_BIND (sym_info) != STB_GLOBAL)
+	  if ((ELF_ST_TYPE(sym_info) != STT_FUNC)
+	      || (ELF_ST_BIND(sym_info) != STB_GLOBAL))
 	    continue;
 
 	  ms_type = mst_solib_trampoline;
@@ -324,7 +324,7 @@ read_alphacoff_dynamic_symtab (struct section_offsets *section_offsets,
 	     them.  */
 	  if (sym_value == 0)
 	    {
-	      int got_entry_offset =
+	      bfd_size_type got_entry_offset =
 		((i - dt_mips_gotsym + dt_mips_local_gotno) * got_entry_size);
 
 	      if ((got_entry_offset < 0) || (got_entry_offset >= got_secsize))

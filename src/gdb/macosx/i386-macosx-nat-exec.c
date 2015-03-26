@@ -37,6 +37,7 @@
 #include "gdbarch.h"
 #include "arch-utils.h"
 
+#include "i386-macosx-nat-exec.h"
 #include "i386-macosx-tdep.h"
 
 #include "macosx-nat-mutils.h"
@@ -91,9 +92,9 @@ i386_sse_regnum_p (struct gdbarch *gdbarch, int regnum)
    jmolenda/2004-05-17  */
 
 static int
-i386_mxcsr_regnum_p (struct gdbarch *gdbarch, int regnum)
+i386_mxcsr_regnum_p(struct gdbarch *gdbarch, int regnum)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
 
 #define I387_ST0_REGNUM tdep->st0_regnum
 #define I387_NUM_XMM_REGS tdep->num_xmm_regs
@@ -380,8 +381,8 @@ i386_macosx_dr_set(int regnum, uint64_t value)
 
           if (ret != KERN_SUCCESS)
             {
-              printf_unfiltered ("Error reading debug registers thread 0x%x via thread_get_state\n", (int) current_thread);
-              MACH_CHECK_ERROR (ret);
+              printf_unfiltered("Error reading debug registers thread 0x%x via thread_get_state\n", (int) current_thread);
+              MACH_CHECK_ERROR(ret);
             }
 
           switch (regnum)
@@ -588,50 +589,52 @@ i386_macosx_dr_get (int regnum)
 }
 
 void
-i386_macosx_dr_set_control (unsigned long control)
+i386_macosx_dr_set_control(unsigned long control)
 {
-  i386_macosx_dr_set (DR_CONTROL, control);
+  i386_macosx_dr_set(DR_CONTROL, control);
 }
 
 void
-i386_macosx_dr_set_addr (int regnum, CORE_ADDR addr)
+i386_macosx_dr_set_addr(int regnum, CORE_ADDR addr)
 {
-  gdb_assert (regnum >= 0 && regnum <= DR_LASTADDR - DR_FIRSTADDR);
+  gdb_assert((regnum >= 0) && (regnum <= (DR_LASTADDR - DR_FIRSTADDR)));
 
-  i386_macosx_dr_set (DR_FIRSTADDR + regnum, addr);
+  i386_macosx_dr_set((DR_FIRSTADDR + regnum), addr);
 }
 
 void
-i386_macosx_dr_reset_addr (int regnum)
+i386_macosx_dr_reset_addr(int regnum)
 {
-  gdb_assert (regnum >= 0 && regnum <= DR_LASTADDR - DR_FIRSTADDR);
+  gdb_assert((regnum >= 0) && (regnum <= (DR_LASTADDR - DR_FIRSTADDR)));
 
-  i386_macosx_dr_set (DR_FIRSTADDR + regnum, 0L);
+  i386_macosx_dr_set((DR_FIRSTADDR + regnum), 0L);
 }
 
 unsigned long
-i386_macosx_dr_get_status (void)
+i386_macosx_dr_get_status(void)
 {
-  return i386_macosx_dr_get (DR_STATUS);
+  return i386_macosx_dr_get(DR_STATUS);
 }
 
 /* I have no idea why this target vector entry gets passed in the target.
    That seems REALLY whacky...  */
 
 int
-i386_macosx_target_stopped_data_address (struct target_ops *target,
-                                         CORE_ADDR *addr)
+i386_macosx_target_stopped_data_address(struct target_ops *target ATTRIBUTE_UNUSED,
+                                        CORE_ADDR *addr)
 {
-  return i386_stopped_data_address (addr);
+  return i386_stopped_data_address(addr);
 }
 
 int
-i386_macosx_can_use_hw_breakpoint (int unused1, int unused2, int unused3)
+i386_macosx_can_use_hw_breakpoint(int unused1 ATTRIBUTE_UNUSED,
+                                  int unused2 ATTRIBUTE_UNUSED,
+                                  int unused3 ATTRIBUTE_UNUSED)
 {
   return 1;
 }
 
-void i386_macosx_child_post_startup_inferior(ptid_t pid)
+void i386_macosx_child_post_startup_inferior(ptid_t pid ATTRIBUTE_UNUSED)
 {
   i386_cleanup_dregs();
 }

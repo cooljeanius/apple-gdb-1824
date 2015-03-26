@@ -823,7 +823,7 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 
 struct token
 {
-  char *operator;
+  char *joperator;
   int token;
   enum exp_opcode opcode;
 };
@@ -875,8 +875,8 @@ yylex(void)
 
   tokstart = lexptr;
   /* See if it is a special token of length 3.  */
-  for (i = 0; i < sizeof tokentab3 / sizeof tokentab3[0]; i++)
-    if (strncmp (tokstart, tokentab3[i].operator, 3) == 0)
+  for (i = 0; i < (sizeof(tokentab3) / sizeof(tokentab3[0])); i++)
+    if (strncmp(tokstart, tokentab3[i].joperator, 3) == 0)
       {
 	lexptr += 3;
 	yylval.opcode = tokentab3[i].opcode;
@@ -884,8 +884,8 @@ yylex(void)
       }
 
   /* See if it is a special token of length 2.  */
-  for (i = 0; i < sizeof tokentab2 / sizeof tokentab2[0]; i++)
-    if (strncmp (tokstart, tokentab2[i].operator, 2) == 0)
+  for (i = 0; i < (sizeof(tokentab2) / sizeof(tokentab2[0])); i++)
+    if (strncmp(tokstart, tokentab2[i].joperator, 2) == 0)
       {
 	lexptr += 2;
 	yylval.opcode = tokentab2[i].opcode;
@@ -1192,11 +1192,11 @@ yylex(void)
   /* Input names that aren't symbols but ARE valid hex numbers,
      when the input radix permits them, can be names or numbers
      depending on the parse.  Note we support radixes > 16 here.  */
-  if (((tokstart[0] >= 'a' && tokstart[0] < 'a' + input_radix - 10) ||
-       (tokstart[0] >= 'A' && tokstart[0] < 'A' + input_radix - 10)))
+  if ((((tokstart[0] >= 'a') && (tokstart[0] < (char)('a' + input_radix - 10)))
+       || ((tokstart[0] >= 'A') && (tokstart[0] < (char)('A' + input_radix - 10)))))
     {
       YYSTYPE newlval;	/* Its value is ignored.  */
-      int hextype = parse_number (tokstart, namelen, 0, &newlval);
+      int hextype = parse_number(tokstart, namelen, 0, &newlval);
       if (hextype == INTEGER_LITERAL)
 	return NAME_OR_INT;
     }
@@ -1425,39 +1425,40 @@ static struct expression *
 copy_exp(struct expression *expr, int endpos)
 {
   int len = length_of_subexp(expr, endpos);
-  struct expression *new
-    = (struct expression *)malloc(sizeof(*new) + EXP_ELEM_TO_BYTES(len));
-  new->nelts = len;
-  memcpy(new->elts, expr->elts + endpos - len, EXP_ELEM_TO_BYTES(len));
-  new->language_defn = 0;
+  struct expression *newexp =
+    (struct expression *)malloc(sizeof(*newexp) + EXP_ELEM_TO_BYTES(len));
+  newexp->nelts = len;
+  memcpy(newexp->elts, expr->elts + endpos - len, EXP_ELEM_TO_BYTES(len));
+  newexp->language_defn = 0;
 
-  return new;
+  return newexp;
 }
 
 /* Insert the expression NEW into the current expression (expout) at POS: */
 static void
-insert_exp(int pos, struct expression *new)
+insert_exp(int pos, struct expression *newexpr)
 {
-  int newlen = new->nelts;
+  int newlen = newexpr->nelts;
 
   /* Grow expout if necessary.  In this function's only use at present,
      this should never be necessary.  */
-  if (expout_ptr + newlen > expout_size)
+  if ((expout_ptr + newlen) > expout_size)
     {
-      expout_size = max (expout_size * 2, expout_ptr + newlen + 10);
-      expout = (struct expression *)
-	realloc ((char *) expout, (sizeof (struct expression)
-				    + EXP_ELEM_TO_BYTES (expout_size)));
+      expout_size = max((expout_size * 2), (expout_ptr + newlen + 10));
+      expout = ((struct expression *)
+                realloc((char *)expout,
+                        (sizeof(struct expression)
+                         + EXP_ELEM_TO_BYTES(expout_size))));
     }
 
   {
     int i;
 
-    for (i = expout_ptr - 1; i >= pos; i--)
+    for (i = (expout_ptr - 1); i >= pos; i--)
       expout->elts[i + newlen] = expout->elts[i];
   }
 
-  memcpy(expout->elts + pos, new->elts, EXP_ELEM_TO_BYTES (newlen));
+  memcpy((expout->elts + pos), newexpr->elts, EXP_ELEM_TO_BYTES(newlen));
   expout_ptr += newlen;
 }
 

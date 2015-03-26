@@ -32,25 +32,22 @@ struct pending;
 /* The foilowing structure is used to keep track of the current state for
    inlined subroutines in the inferior.  */
 
-struct inlined_function_data 
+struct inlined_function_data
 {
-  /* The value of stop_pc, the last time this struct was updated.  */
+  /* The value of stop_pc, the last time this struct was updated: */
+  CORE_ADDR last_pc;
 
-  CORE_ADDR last_pc; 
-
-  /* The last stop_pc value that was in an inlined subroutine. */
-
+  /* The last stop_pc value that was in an inlined subroutine: */
   CORE_ADDR last_inlined_pc;
 
-  /* The current maximum number of malloc'd records.  */
-
+  /* The current maximum number of malloc'd records: */
   int max_array_size;
 
 /* The number of "valid" records.  The zero'th record is always valid
    (and blank). The first record with real data will be at position
    one.  */
 
-  int nelts;               
+  int nelts;
 
  /* The user's current position in the stack (array) of valid inlined
     subroutine records.  This can be tricky because the user may be at
@@ -68,7 +65,7 @@ struct inlined_function_data
     call stack will be at position '1', and the top of the inlined
     call stack will be at position 'current_pos'.  */
 
-  struct inlined_call_stack_record *records; 
+  struct inlined_call_stack_record *records;
 };
 
 
@@ -77,12 +74,10 @@ struct inlined_function_data
 
 struct inlined_call_stack_record
 {
-  /* The PC value at which the inlined subroutine begins.  */
-
+  /* The PC value at which the inlined subroutine begins: */
   CORE_ADDR start_pc;
 
-  /* The first PC value beyond where the inlined subroutine ends.  */
-
+  /* The first PC value beyond where the inlined subroutine ends: */
   CORE_ADDR end_pc;
 
   /* Ranges of address for the inlined subroutine, if it has multiple
@@ -94,7 +89,7 @@ struct inlined_call_stack_record
      occurred.  */
 
   int call_site_line;
-  
+
   /* The source column position of the call site where the inlining
      occurred.  */
 
@@ -105,21 +100,18 @@ struct inlined_call_stack_record
 
   struct symtab *s;
 
-  /* The name of the subroutine that was inlined (callee).  */
-
+  /* The name of the subroutine that was inlined (callee): */
   char *fn_name;
 
-  /* The name of the subroutine where the inlining occurred (caller).  */
-
+  /* The name of the subroutine where the inlining occurred (caller): */
   char *calling_fn_name;
 
-  /* The file name containing the calling function.  */
-
+  /* The file name containing the calling function: */
   char *call_site_filename;
 
   /* APPLE LOCAL begin radar 6545149  */
   /* The function symbol gdb generates for the inlined subroutine instance.  */
-  
+
   struct symbol *func_sym;
   /* APPLE LOCAL end radar 6545149  */
 
@@ -202,101 +194,105 @@ extern const struct frame_unwind *const inlined_frame_unwind;
 /* Externally visible functions for accessing/manipulating the
    global_inlined_call_stack.  */
 
-extern void inlined_function_reset_frame_stack (void);
+extern void inlined_function_reset_frame_stack(void);
 
-extern void inlined_function_initialize_call_stack (void);
+extern void inlined_function_initialize_call_stack(void);
 
-extern void inlined_function_reinitialize_call_stack (void);
+extern void inlined_function_reinitialize_call_stack(void);
 
-extern int inlined_function_call_stack_initialized_p (void);
+extern int inlined_function_call_stack_initialized_p(void);
 
-extern void inlined_function_update_call_stack (CORE_ADDR);
+extern void inlined_function_update_call_stack(CORE_ADDR);
 
-extern void inlined_function_add_function_names (struct objfile *,
-						 CORE_ADDR, CORE_ADDR, int, 
-						 int, const char *, 
-                                                 const char *, 
-						 struct address_range_list *,
-						 /* APPLE LOCAL radar 6545149 */
-						 struct symbol *);
+void inlined_function_update_call_stack_pc(CORE_ADDR new_pc);
 
-extern int at_inlined_call_site_p (char **, int *, int *);
+extern void inlined_function_add_function_names(struct objfile *,
+                                                CORE_ADDR, CORE_ADDR, int,
+                                                int, const char *,
+                                                const char *,
+                                                struct address_range_list*,
+                                                /* APPLE LOCAL radar 6545149 */
+                                                struct symbol *);
 
-extern int in_inlined_function_call_p (CORE_ADDR *);
+extern int at_inlined_call_site_p(char **, int *, int *);
 
-extern void adjust_current_inlined_subroutine_stack_position (int);
+extern int in_inlined_function_call_p(CORE_ADDR *);
 
-extern int current_inlined_subroutine_stack_position (void);
+extern void adjust_current_inlined_subroutine_stack_position(int);
 
-extern CORE_ADDR inlined_function_call_stack_pc (void);
+extern int current_inlined_subroutine_stack_position(void);
 
-extern int current_inlined_subroutine_stack_size (void);
+extern CORE_ADDR inlined_function_call_stack_pc(void);
 
-extern struct symtab * current_inlined_subroutine_stack_symtab (void);
+extern int current_inlined_subroutine_stack_size(void);
 
-extern CORE_ADDR current_inlined_subroutine_call_stack_start_pc (void);
+extern struct symtab *current_inlined_subroutine_stack_symtab(void);
 
-extern CORE_ADDR current_inlined_subroutine_call_stack_end_pc (void);
+extern CORE_ADDR current_inlined_subroutine_call_stack_start_pc(void);
 
-extern char * current_inlined_subroutine_function_name (void);
+extern CORE_ADDR current_inlined_subroutine_call_stack_eof_pc(void);
 
-extern char * current_inlined_subroutine_calling_function_name (void);
+extern CORE_ADDR current_inlined_subroutine_call_stack_end_pc(void);
 
-extern int current_inlined_subroutine_call_site_line (void);
+extern char *current_inlined_subroutine_function_name(void);
 
-extern int inlined_function_end_of_inlined_code_p (CORE_ADDR);
+extern char *current_inlined_subroutine_calling_function_name(void);
 
-extern struct frame_info * get_current_inlined_frame (void);
+extern int current_inlined_subroutine_call_site_line(void);
 
-extern void inlined_frame_prev_register (struct frame_info *, void **, int, 
-					 enum opt_state *, enum lval_type *, 
-                                         CORE_ADDR *, 
-					 int *, gdb_byte *);
+extern int inlined_function_end_of_inlined_code_p(CORE_ADDR);
 
-void restore_thread_inlined_call_stack (ptid_t ptid);
+extern struct frame_info *get_current_inlined_frame(void);
 
-void save_thread_inlined_call_stack (ptid_t ptid);
+extern void inlined_frame_prev_register(struct frame_info *, void **, int,
+                                        enum opt_state *, enum lval_type *,
+                                        CORE_ADDR *,
+                                        int *, gdb_byte *);
 
-extern void flush_inlined_subroutine_frames (void);
+void restore_thread_inlined_call_stack(ptid_t ptid);
 
-extern void clear_inlined_subroutine_print_frames (void);
+void save_thread_inlined_call_stack(ptid_t ptid);
 
-extern void step_into_current_inlined_subroutine (void);
+extern void flush_inlined_subroutine_frames(void);
 
-extern int current_inlined_bottom_call_site_line (void);
+extern void clear_inlined_subroutine_print_frames(void);
+
+extern void step_into_current_inlined_subroutine(void);
+
+extern int current_inlined_bottom_call_site_line(void);
 
 extern struct symtabs_and_lines
-check_for_additional_inlined_breakpoint_locations (struct symtabs_and_lines,
-						   char **, struct expression **,
-						   char **, char ***,
-						   struct expression ***,
-						   char ***);
+check_for_additional_inlined_breakpoint_locations(struct symtabs_and_lines,
+						  char **, struct expression **,
+						  char **, char ***,
+						  struct expression ***,
+						  char ***);
 
-extern void 
-inlined_subroutine_adjust_position_for_breakpoint (struct breakpoint *);
+extern void
+inlined_subroutine_adjust_position_for_breakpoint(struct breakpoint *);
 
-extern void inlined_subroutine_save_before_dummy_call (void);
+extern void inlined_subroutine_save_before_dummy_call(void);
 
-extern void inlined_subroutine_restore_after_dummy_call (void);
+extern void inlined_subroutine_restore_after_dummy_call(void);
 
-extern int rest_of_line_contains_inlined_subroutine (CORE_ADDR *);
+extern int rest_of_line_contains_inlined_subroutine(CORE_ADDR *);
 
-void inlined_update_frame_sal (struct frame_info *fi, struct symtab_and_line *sal);
+void inlined_update_frame_sal(struct frame_info *fi, struct symtab_and_line *sal);
 
-extern void find_next_inlined_subroutine (CORE_ADDR, CORE_ADDR *, CORE_ADDR);
+extern void find_next_inlined_subroutine(CORE_ADDR, CORE_ADDR *, CORE_ADDR);
 
-void set_current_sal_from_inlined_frame (struct frame_info *fi, int center);
+void set_current_sal_from_inlined_frame(struct frame_info *fi, int center);
 
-extern void print_inlined_frame (struct frame_info *, int, enum print_what,
-				 int, struct symtab_and_line, int);
+extern void print_inlined_frame(struct frame_info *, int, enum print_what,
+                                int, struct symtab_and_line, int);
 
-extern void print_inlined_frames_lite (struct ui_out *uiout, int with_names, 
-                                       int *frame_num, CORE_ADDR pc,
-                                       CORE_ADDR fp);
+extern void print_inlined_frames_lite(struct ui_out *uiout, int with_names,
+                                      int *frame_num, CORE_ADDR pc,
+                                      CORE_ADDR fp);
 
-extern int is_within_stepping_ranges (CORE_ADDR);
+extern int is_within_stepping_ranges(CORE_ADDR);
 
-extern int is_at_stepping_ranges_end (CORE_ADDR);
+extern int is_at_stepping_ranges_end(CORE_ADDR);
 
 extern int dwarf2_allow_inlined_stepping;
 extern int dwarf2_debug_inlined_stepping;
@@ -312,46 +308,46 @@ enum rb_tree_colors { RED, BLACK, UNINIT };
    all three keys.  */
 
 struct rb_tree_node {
-  CORE_ADDR  key;             /* Primary sorting key                       */
-  int secondary_key;          /* Secondary sorting key                     */
-  CORE_ADDR third_key;        /* Third sorting key                         */
-  void *data;                 /* Main data; varies between different apps  */
-  enum rb_tree_colors color;  /* Color of the tree node (for balancing)    */
-  struct rb_tree_node *parent; /* Parent in the red-black tree             */
-  struct rb_tree_node *left;   /* Left child in the red-black tree         */
-  struct rb_tree_node *right;  /* Right child in the red-black tree        */
+  CORE_ADDR  key;             /* Primary sorting key                     */
+  int secondary_key;          /* Secondary sorting key                   */
+  CORE_ADDR third_key;        /* Third sorting key                       */
+  void *data;                /* Main data; varies between different apps */
+  enum rb_tree_colors color;  /* Color of the tree node (for balancing)  */
+  struct rb_tree_node *parent; /* Parent in the red-black tree           */
+  struct rb_tree_node *left;   /* Left child in the red-black tree       */
+  struct rb_tree_node *right;  /* Right child in the red-black tree      */
 };
 
-extern struct rb_tree_node *rb_tree_find_node (struct rb_tree_node *, 
-						long long, int);
+extern struct rb_tree_node *rb_tree_find_node(struct rb_tree_node *,
+                                              long long, int);
 
-extern struct rb_tree_node *rb_tree_find_node_all_keys (struct rb_tree_node *,
-							long long, int,
-							long long);
+extern struct rb_tree_node *rb_tree_find_node_all_keys(struct rb_tree_node *,
+                                                       long long, int,
+                                                       long long);
 
-extern void rb_tree_insert (struct rb_tree_node **, struct rb_tree_node *, 
-			    struct rb_tree_node *);
+extern void rb_tree_insert(struct rb_tree_node **, struct rb_tree_node *,
+			   struct rb_tree_node *);
 
-extern void inlined_subroutine_free_objfile_data (struct rb_tree_node *);
-extern void inlined_subroutine_free_objfile_call_sites (struct rb_tree_node *);
+extern void inlined_subroutine_free_objfile_data(struct rb_tree_node *);
+extern void inlined_subroutine_free_objfile_call_sites(struct rb_tree_node *);
 
-extern void inlined_subroutine_objfile_relocate (struct objfile *,
-						 struct rb_tree_node *,
-						 struct section_offsets *);
+extern void inlined_subroutine_objfile_relocate(struct objfile *,
+                                                struct rb_tree_node *,
+                                                struct section_offsets *);
 
-extern int inlined_function_find_first_line (struct symtab_and_line);
-extern char *last_inlined_call_site_filename (struct frame_info *);
+extern int inlined_function_find_first_line(struct symtab_and_line);
+extern char *last_inlined_call_site_filename(struct frame_info *);
 /* APPLE LOCAL begin inlined function symbols & blocks  */
-extern void add_symbol_to_inlined_subroutine_list (struct symbol *, 
-						   struct pending **);
+extern void add_symbol_to_inlined_subroutine_list(struct symbol *,
+						  struct pending **);
 /* APPLE LOCAL radar 6381384  add section to symtab lookups  */
-extern struct symbol *block_inlined_function (struct block *, 
-					      struct bfd_section *);
+extern struct symbol *block_inlined_function(struct block *,
+					     struct bfd_section *);
 /* APPLE LOCAL end inlined function symbols & blocks  */
 
-extern int func_sym_has_inlining (struct symbol *, struct frame_info *);
+extern int func_sym_has_inlining(struct symbol *, struct frame_info *);
 
-extern int func_sym_is_inlined_function (struct symbol *);
+extern int func_sym_is_inlined_function(struct symbol *);
 
 #endif /* !defined(INLINE_H) */
 /* APPLE LOCAL end subroutine inlining (entire file) */

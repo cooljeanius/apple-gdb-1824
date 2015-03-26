@@ -153,26 +153,26 @@ struct mach_thread_list
 
 void check_native_thread_exists(struct inferior_list_entry *entry, void *data)
 {
-  struct mach_thread_list *threads = (struct mach_thread_list *) data;
-  int i;
+  struct mach_thread_list *threads = (struct mach_thread_list *)data;
+  unsigned int i;
   int found_it = 0;
-  for ((i = 0); (i < threads->nthreads); i++) {
-      if (entry->id == threads->thread_list[i]) {
-		  found_it = 1;
-		  break;
-	  }
+  for ((i = 0U); (i < threads->nthreads); i++) {
+    if (entry->id == threads->thread_list[i]) {
+      found_it = 1;
+      break;
+    }
   }
   if (!found_it) {
-      remove_thread((struct thread_info *)entry);
+    remove_thread((struct thread_info *)entry);
   }
 }
 
 void macosx_check_new_threads(struct macosx_process_info *process)
 {
   thread_array_t thread_list = NULL;
-  unsigned int nthreads = 0;
+  unsigned int nthreads = 0U;
   kern_return_t kret;
-  int i;
+  unsigned int i;
   struct mach_thread_list threads;
 
   /* We will need to free THREAD_LIST with a call to VM_DEALLOCATE.  */
@@ -185,18 +185,18 @@ void macosx_check_new_threads(struct macosx_process_info *process)
   for_each_inferior_data(&all_threads, &threads,  check_native_thread_exists);
 
   /* Then add the new threads: */
-  for ((i = 0); (i < nthreads); i++) {
-      if (find_inferior_id(&all_threads, thread_list[i]) == NULL) {
-		struct macosx_thread_info *new_thread =
-	    (struct macosx_thread_info *)malloc(sizeof(struct macosx_thread_info));
-		new_thread->process = process;
-		/* FIXME - should probably get the user thread id too...
-		 * FIXME: The FSF added this "gdb_id" argument, which seems to be
-		 * the pid. But it also looks like they use it to match what is sent
-		 * with the vCont message. But that is supposed to be a TID. So I am
-		 * redundantly supplying the thread id. */
-		add_thread (thread_list[i], new_thread, thread_list[i]);
-	  }
+  for ((i = 0U); (i < nthreads); i++) {
+    if (find_inferior_id(&all_threads, thread_list[i]) == NULL) {
+      struct macosx_thread_info *new_thread =
+        (struct macosx_thread_info *)malloc(sizeof(struct macosx_thread_info));
+      new_thread->process = process;
+      /* FIXME - should probably get the user thread id too...
+       * FIXME: The FSF added this "gdb_id" argument, which seems to be
+       * the pid. But it also looks like they use it to match what is sent
+       * with the vCont message. But that is supposed to be a TID. So I am
+       * redundantly supplying the thread id. */
+      add_thread(thread_list[i], new_thread, thread_list[i]);
+    }
   }
   /* Free the memory given to use by the TASK_THREADS kernel call: */
   kret = vm_deallocate(mach_task_self(), (vm_address_t)thread_list,
@@ -333,87 +333,86 @@ macosx_thread_alive (unsigned long tid)
 struct thread_resume *resume_ptr;
 
 static void
-macosx_process_resume_requests (struct inferior_list_entry *entry)
+macosx_process_resume_requests(struct inferior_list_entry *entry)
 {
-  struct thread_info *thread = (struct thread_info *) entry;
+  struct thread_info *thread = (struct thread_info *)entry;
   struct macosx_process_info *process;
-  struct macosx_thread_info *macosx_thread
-    = inferior_target_data (thread);
+  struct macosx_thread_info *macosx_thread = inferior_target_data(thread);
   int index = 0;
   int ret;
 
-  process = get_thread_process (thread);
+  process = get_thread_process(thread);
 
   /* Why do the upper layers NOT do this?  */
-  regcache_invalidate_one (entry);
+  regcache_invalidate_one(entry);
 
 
   /* We only call ptrace to update the thread if we were stopped by
      a soft signal. Otherwise we will get an error from the kernel.
      FIXME: How do we continue a thread with a signal if we were NOT
      originally stopped in softexc?  */
-  if (process->status->stopped_in_softexc && process->stopped_thread == entry->id)
+  if (process->status->stopped_in_softexc
+      && (process->stopped_thread == entry->id))
     {
       int sig;
 
       /* Only one resume_ptr entry with thread of -1 means apply this
 	 to all threads. Otherwise, if the thread is not in the resume
 	 request, continue it with a signal of 0.  */
-      if (resume_ptr[0].thread == -1)
+      if (resume_ptr[0].thread == (unsigned long)-1L)
 	sig = resume_ptr[0].sig;
       else
 	{
-	  while (resume_ptr[index].thread != -1
-		 && resume_ptr[index].thread != entry->id)
+	  while ((resume_ptr[index].thread != (unsigned long)-1L)
+		 && (resume_ptr[index].thread != entry->id))
 	    index++;
-	  if (resume_ptr[index].thread == -1)
+	  if (resume_ptr[index].thread == (unsigned long)-1L)
 	    sig = 0;
 	  else
 	    sig = resume_ptr[index].sig;
 	}
 
-      macosx_low_debug (6, "Updating 0x%x with signal %d\n", entry->id, sig);
-      ret = ptrace (PT_THUPDATE, process->pid, (caddr_t) entry->id,
-		    sig);
+      macosx_low_debug(6, "Updating 0x%x with signal %d\n", entry->id, sig);
+      ret = ptrace(PT_THUPDATE, process->pid, (caddr_t)entry->id,
+		   sig);
       if (ret != 0)
-	perror ("Error calling PT_THUPDATE");
+	perror("Error calling PT_THUPDATE");
     }
 
   if (process->stepping)
     {
       if (process->thread_to_step != entry->id)
 	{
-	  macosx_low_debug (6, "Suspending thread 0x%x\n", entry->id);
-	  thread_suspend (entry->id);
+	  macosx_low_debug(6, "Suspending thread 0x%x\n", entry->id);
+	  thread_suspend(entry->id);
 	  macosx_thread->suspend_count++;
 	}
       else
 	{
-	  macosx_low_debug (6, "Single stepping thread 0x%x\n", entry->id);
-	  the_low_target.low_single_step_thread (entry->id, 1);
+	  macosx_low_debug(6, "Single stepping thread 0x%x\n", entry->id);
+	  the_low_target.low_single_step_thread(entry->id, 1);
 	  /* Make sure this thread is not suspended... */
 	  while (macosx_thread->suspend_count > 0)
 	    {
-	      thread_resume (entry->id);
+	      thread_resume(entry->id);
 	      macosx_thread->suspend_count--;
 	    }
 	}
     }
   else
     {
-      /* Make sure this thread is not suspended.  */
+      /* Make sure this thread is not suspended: */
       while (macosx_thread->suspend_count > 0)
 	{
-	  thread_resume (entry->id);
+	  thread_resume(entry->id);
 	  macosx_thread->suspend_count--;
 	}
-      the_low_target.low_single_step_thread (entry->id, 0);
-
+      the_low_target.low_single_step_thread(entry->id, 0);
     }
 }
 
 void
-macosx_resume (struct thread_resume *resume_info)
+macosx_resume(struct thread_resume *resume_info)
 {
 
   struct macosx_process_info *process;
@@ -422,7 +421,7 @@ macosx_resume (struct thread_resume *resume_info)
 
   resume_ptr = resume_info;
 
-  process = get_thread_process (current_inferior);
+  process = get_thread_process(current_inferior);
 
 
   /* Go through the resume info and figure out if we are stepping
@@ -431,9 +430,12 @@ macosx_resume (struct thread_resume *resume_info)
 
   index = 0;
   process->stepping = 0;
-  while (resume_info[index].thread != -1)
+  while (resume_info[index].thread != (unsigned long)-1L)
     {
-      macosx_low_debug (6, "macosx_resume resume_info[%d] T%8.8x leave_stopped=%d, step=%d, signal=%d\n", index, resume_info[index].thread, resume_info[index].leave_stopped, resume_info[index].step, resume_info[index].sig);
+      macosx_low_debug(6, "macosx_resume resume_info[%d] T%8.8x leave_stopped=%d, step=%d, signal=%d\n",
+                       index, resume_info[index].thread,
+                       resume_info[index].leave_stopped,
+                       resume_info[index].step, resume_info[index].sig);
       if (resume_info[index].step == 1)
 	{
 	  if (process->stepping == 1)
@@ -451,40 +453,42 @@ macosx_resume (struct thread_resume *resume_info)
 	}
       index++;
     }
-  macosx_low_debug (6, "macosx_resume resume_info[%d] T%8.8x leave_stopped=%d, step=%d, signal=%d\n", index, resume_info[index].thread, resume_info[index].step, resume_info[index].sig);
+  macosx_low_debug(6, "macosx_resume resume_info[%d] T%8.8x leave_stopped=%d, step=%d, signal=%d\n",
+                   index, resume_info[index].thread,
+                   resume_info[index].step, resume_info[index].sig);
 
-  terminal_inferior ();
-  block_async_io ();
-  enable_async_io ();
-  for_each_inferior (&all_threads, macosx_process_resume_requests);
+  terminal_inferior();
+  block_async_io();
+  enable_async_io();
+  for_each_inferior(&all_threads, macosx_process_resume_requests);
   /* If we got a step request, suspend all the other threads.  */
 
-  write (process->status->transmit_to_fd, charbuf, 1);
+  write(process->status->transmit_to_fd, charbuf, 1);
 
 
   process->status->stopped_in_softexc = 0;
-  macosx_low_debug (6, "Called macosx_resume\n");
+  macosx_low_debug(6, "Called macosx_resume\n");
 }
 
 
 static void
-macosx_add_to_port_set (struct macosx_exception_thread_status *excthread,
-                        fd_set * fds)
+macosx_add_to_port_set(struct macosx_exception_thread_status *excthread,
+                       fd_set * fds)
 {
-  FD_ZERO (fds);
+  FD_ZERO(fds);
 
   if (excthread->receive_from_fd > 0)
     {
-      FD_SET (excthread->receive_from_fd, fds);
+      FD_SET(excthread->receive_from_fd, fds);
     }
   if (excthread->error_receive_fd > 0)
     {
-      FD_SET (excthread->error_receive_fd, fds);
+      FD_SET(excthread->error_receive_fd, fds);
     }
 }
 
 static unsigned char
-macosx_translate_exception (struct macosx_exception_thread_message *msg)
+macosx_translate_exception(struct macosx_exception_thread_message *msg)
 {
   /* FIXME: We should check for new threads here.  */
 

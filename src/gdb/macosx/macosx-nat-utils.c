@@ -366,14 +366,14 @@ macosx_get_plist_string_value(const void *plist, const char* key)
 		  /* We failed to get a file system representation
 		     of the bundle executable, just free the buffer
 		     we malloc'ed.  */
-		  xfree (value);
+		  xfree(value);
 		  value = NULL;
 		}
 	    }
 	}
     }
   if (cf_key)
-    CFRelease (cf_key);
+    CFRelease(cf_key);
   return value;
 }
 
@@ -562,9 +562,9 @@ static char *macosx_unsafe_regexes[] = {"(^(m|c|re|v)?alloca*)|(::[^ ]*allocator
 					"(_class_lookup)|(^objc_lookUpClass)|(^look_up_class)",
                                         "(^__spin_lock)|(^pthread_mutex_lock)|(^pthread_mutex_unlock)|(^__spin_unlock)"};
 
-/* This is the Mac OS X implementation of target_check_safe_call.  */
+/* This is the Mac OS X implementation of target_check_safe_call: */
 int
-macosx_check_safe_call (int which, enum check_which_threads thread_mode)
+macosx_check_safe_call(int which, enum check_which_threads thread_mode)
 {
   int retval = 1;
   regex_t unsafe_patterns[LAST_SUBSYSTEM_INDEX];
@@ -903,34 +903,35 @@ macosx_load_dylib (char *name, char *flags)
 
 	  struct cleanup *scheduler_cleanup;
 
-		if (dlerror_function == NULL) {
-			error ("dlopen got an error, but dlerror is NOT available to report the error.");
-		}
+          if (dlerror_function == NULL) {
+            error("dlopen got an error, but dlerror is NOT available to report the error.");
+          }
 
 	  scheduler_cleanup =
-	    make_cleanup_set_restore_scheduler_locking_mode (scheduler_locking_on);
+	    make_cleanup_set_restore_scheduler_locking_mode(scheduler_locking_on);
 
-	  ret_val = call_function_by_hand (lookup_cached_function (dlerror_function),
-								   0, NULL);
-	  /* Now read the string out of the target.  */
-	  error_addr = value_as_address (ret_val);
-	  error_str_len = target_read_string (error_addr, &error_str, INT_MAX,
-					      &read_error);
+	  ret_val = call_function_by_hand(lookup_cached_function(dlerror_function),
+                                          0, NULL);
+	  /* Now read the string out of the target: */
+	  error_addr = value_as_address(ret_val);
+	  error_str_len = target_read_string(error_addr, &error_str, INT_MAX,
+					     &read_error);
 	  if (read_error == 0)
 	    {
-	      make_cleanup (xfree, error_str);
-	      error ("Error calling dlopen for: \"%s\": \"%s\"", name, error_str);
+	      make_cleanup(xfree, error_str);
+	      error("Error calling dlopen for: \"%s\": \"%s\"", name, error_str);
 	    }
 	  else
-	    error ("Error calling dlopen for \"%s\", could not fetch error string.",
-		   name);
+	    error("Error calling dlopen for \"%s\", could not fetch error string.",
+		  name);
 
 	}
       else
 	{
-	  ui_out_field_core_addr (uiout, "handle", value_as_address (ret_val));
+	  ui_out_field_core_addr(uiout, "handle", value_as_address(ret_val));
 	  if (info_verbose)
-	    printf_unfiltered("Return token was: %s.\n", paddr_nz (value_as_address (ret_val)));
+	    printf_unfiltered("Return token was: %s.\n",
+                              paddr_nz(value_as_address(ret_val)));
 	}
     }
   else if (info_verbose)

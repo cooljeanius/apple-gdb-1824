@@ -20,6 +20,14 @@ dnl# from gnulib module autobuild:
 AC_REQUIRE([AB_INIT])dnl
 dnl# from gnulib module configmake:
 AC_REQUIRE([gl_CONFIGMAKE_PREP])dnl
+dnl# from gnulib module closedir:
+AC_REQUIRE([gl_FUNC_CLOSEDIR])dnl
+  ## set up libobj if needed:
+if test ${HAVE_CLOSEDIR} = 0 || test ${REPLACE_CLOSEDIR} = 1; then
+  AC_LIBOBJ([closedir])dnl
+  ## end libobj
+fi
+gl_DIRENT_MODULE_INDICATOR([closedir])dnl
 dnl# from gnulib module dirent:
 AC_REQUIRE([gl_DIRENT_H])dnl
 dnl# from gnulib module dirfd:
@@ -256,6 +264,30 @@ dnl# from gnulib module openmp:
 AC_REQUIRE([AC_OPENMP])dnl
 dnl# from gnulib module pathmax:
 AC_REQUIRE([gl_PATHMAX])dnl
+dnl# from gnulib module pclose:
+AC_REQUIRE([gl_FUNC_PCLOSE])dnl
+  ## set up libobj if needed:
+if test ${HAVE_PCLOSE} = 0; then
+  AC_LIBOBJ([pclose])dnl
+  gl_PREREQ_PCLOSE
+fi
+gl_STDIO_MODULE_INDICATOR([pclose])dnl
+dnl# from gnulib module popen:
+AC_REQUIRE([gl_FUNC_POPEN])dnl
+  ## set up libobj if needed:
+if test ${HAVE_POPEN} = 0 || test ${REPLACE_POPEN} = 1; then
+  AC_LIBOBJ([popen])dnl
+  gl_PREREQ_POPEN
+fi
+gl_STDIO_MODULE_INDICATOR([popen])dnl
+dnl# from gnulib module readdir:
+AC_REQUIRE([gl_FUNC_READDIR])dnl
+  ## set up libobj if needed:
+if test ${HAVE_READDIR} = 0; then
+  AC_LIBOBJ([readdir])dnl
+  ## end libobj
+fi
+gl_DIRENT_MODULE_INDICATOR([readdir])dnl
 dnl# from gnulib module realloc-gnu:
 AC_REQUIRE([gl_FUNC_REALLOC_GNU])dnl
   ## set up libobj if needed:

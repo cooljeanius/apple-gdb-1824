@@ -1,7 +1,7 @@
-/* DO NOT EDIT!  -*- buffer-read-only: t -*-  This file is automatically
-   generated from "bfd-in.h", "init.c", "opncls.c", "libbfd.c",
-   "bfdio.c", "bfdwin.c", "section.c", "cache.c", "archures.c",
-   "reloc.c", "syms.c", "bfd.c", "archive.c", "corefile.c", "targets.c",
+/* DO NOT EDIT!  -*- buffer-read-only: t -*-  This file is automatically 
+   generated from "bfd-in.h", "init.c", "opncls.c", "libbfd.c", 
+   "bfdio.c", "bfdwin.c", "section.c", "cache.c", "archures.c", 
+   "reloc.c", "syms.c", "bfd.c", "archive.c", "corefile.c", "targets.c", 
    "format.c", "linker.c", "simple.c" and "compress.c".
    Run "make headers" in your build bfd/ to regenerate.  */
 
@@ -537,7 +537,7 @@ extern void warn_deprecated(const char *, const char *, int, const char *);
 
 /* Cast from const char * to char * so that caller can assign to
    a char * without a warning.  */
-#define bfd_get_filename(abfd) ((char *) (abfd)->filename)
+#define bfd_get_filename(abfd) ((char *)(abfd)->filename)
 #define bfd_get_cacheable(abfd) ((abfd)->cacheable)
 #define bfd_get_format(abfd) ((abfd)->format)
 #define bfd_get_target(abfd) ((abfd)->xvec->name)

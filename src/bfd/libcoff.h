@@ -241,6 +241,15 @@ struct pei_section_tdata
 #define pei_section_data(abfd, sec) \
   ((struct pei_section_tdata *) coff_section_data ((abfd), (sec))->tdata)
 
+/* temporary, until I am ready to deal with all of the fallout that would
+ * result from fixing these warnings in this header: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 /* COFF linker hash table entries: */
 struct coff_link_hash_entry
 {
@@ -394,6 +403,13 @@ struct coff_debug_merge_type
   /* List of elements: */
   struct coff_debug_merge_element *elements;
 };
+
+  /* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 /* Information we store in the debug merge hash table: */
 struct coff_debug_merge_hash_entry

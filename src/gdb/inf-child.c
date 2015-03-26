@@ -29,11 +29,13 @@
 #include "inferior.h"
 #include "gdb_string.h"
 
+#include "inf-child.h"
+
 /* Fetch register REGNUM from the inferior.  If REGNUM is -1, do this
    for all registers.  */
 
 static void
-inf_child_fetch_inferior_registers (int regnum)
+inf_child_fetch_inferior_registers(int regnum)
 {
   if (regnum == -1)
     {
@@ -144,31 +146,31 @@ inf_child_remove_exec_catchpoint (int pid)
 }
 
 static int
-inf_child_reported_exec_events_per_exec_call (void)
+inf_child_reported_exec_events_per_exec_call(void)
 {
-  /* This version of Unix doesn't support notification of exec
+  /* This version of Unix does NOT support notification of exec
      events.  */
   return 1;
 }
 
 static int
-inf_child_can_run (void)
+inf_child_can_run(void)
 {
   return 1;
 }
 
 /* APPLE LOCAL */
 int
-inf_child_enable_exception_callback (enum exception_event_kind kind,
-				     int enable)
+inf_child_enable_exception_callback(enum exception_event_kind kind ATTRIBUTE_UNUSED,
+				    int enable ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
 static struct exception_event_record *
-inf_child_get_current_exception_event (void)
+inf_child_get_current_exception_event(void)
 {
-  return (struct exception_event_record *) NULL;
+  return (struct exception_event_record *)NULL;
 }
 
 static char *
@@ -180,9 +182,9 @@ inf_child_pid_to_exec_file (int pid)
 }
 
 struct target_ops *
-inf_child_target (void)
+inf_child_target(void)
 {
-  struct target_ops *t = XZALLOC (struct target_ops);
+  struct target_ops *t = XZALLOC(struct target_ops);
   t->to_shortname = "child";
   t->to_longname = "Unix child process";
   t->to_doc = "Unix child process (started by the \"run\" command).";
@@ -223,3 +225,5 @@ inf_child_target (void)
   t->to_magic = OPS_MAGIC;
   return t;
 }
+
+/* EOF */

@@ -17,6 +17,7 @@
 
 #include "defs.h"
 #include "target.h"
+#include "checkpoint.h"
 
 #include <mach/mach.h>
 
@@ -50,9 +51,19 @@ struct macosx_inferior_status
   macosx_exception_thread_status exception_status;
 #if defined(WITH_CFM) && WITH_CFM
   macosx_cfm_thread_status cfm_status;
-#endif                          /* WITH_CFM */
+#endif /* WITH_CFM */
 };
 typedef struct macosx_inferior_status macosx_inferior_status;
+
+/* A list of processes already running at gdb-startup with the same
+ * name.  Used for the "-waitfor" command line option so we can ignore
+ * existing zombies/running copies of the process/etc and detect a newly
+ * launched version: */
+struct pid_list
+{
+  int count;
+  pid_t *pids;
+};
 
 struct private_thread_info
 {
@@ -62,44 +73,52 @@ struct private_thread_info
   int gdb_dont_suspend_stepping;
 };
 
-void macosx_check_new_threads (thread_array_t thread_list, unsigned int nthreads);
-ptid_t macosx_wait (struct macosx_inferior_status *inferior,
-                    struct target_waitstatus *status,
-                    gdb_client_data client_data);
+void macosx_check_new_threads(thread_array_t thread_list, unsigned int nthreads);
+ptid_t macosx_wait(struct macosx_inferior_status *inferior,
+                   struct target_waitstatus *status,
+                   gdb_client_data client_data);
 
 extern int inferior_bind_exception_port_flag;
 extern int inferior_bind_notify_port_flag;
 
 /* from rhapsody-nat.c and macosx-nat.c */
 
-void macosx_create_inferior_for_task (struct macosx_inferior_status *inferior,
-                                      task_t task, int pid);
+void macosx_create_inferior_for_task(struct macosx_inferior_status *inferior,
+                                     task_t task, int pid);
 
-void macosx_fetch_task_info (struct kinfo_proc ** info, size_t * count);
+void macosx_fetch_task_info(struct kinfo_proc ** info, size_t * count);
 
-char **macosx_process_completer (char *text, char *word);
+char **macosx_process_completer(char *text, char *word);
 
-int create_private_thread_info (struct thread_info *thrd_info);
-void delete_private_thread_info (struct thread_info *thrd_info);
-int create_core_thread_state_cache (struct thread_info *thrd_info);
-void delete_core_thread_state_cache (struct thread_info *thrd_info);
+int create_private_thread_info(struct thread_info *thrd_info);
+void delete_private_thread_info(struct thread_info *thrd_info);
+int create_core_thread_state_cache(struct thread_info *thrd_info);
+void delete_core_thread_state_cache(struct thread_info *thrd_info);
 
 /* This should probably go in a separate machoread.h, but since it is
    only one function, I will wait on that:  */
 void
-macho_calculate_offsets_for_dsym (struct objfile *main_objfile,
-				  bfd *sym_bfd,
-				  struct section_addr_info *addrs,
-				  struct section_offsets *in_offsets,
-				  int in_num_offsets,
-				  struct section_offsets **sym_offsets,
-				  int *sym_num_offsets);
+macho_calculate_offsets_for_dsym(struct objfile *main_objfile,
+                                 bfd *sym_bfd,
+				 struct section_addr_info *addrs,
+				 struct section_offsets *in_offsets,
+				 int in_num_offsets,
+				 struct section_offsets **sym_offsets,
+				 int *sym_num_offsets);
 
-/* This one is called in macosx-nat-inferior.c, but needs to be provided by the
-   platform specific nat code.  It allows each platform to add platform specific
-   stuff to the macosx_child_target.  */
-void macosx_complete_child_target (struct target_ops *target);
-int macosx_get_task_for_pid_rights (void);
+/* This one is called in macosx-nat-inferior.c, but needs to be provided by
+ * the platform-specific nat code.  It allows each platform to add platform
+ * specific stuff to the macosx_child_target: */
+void macosx_complete_child_target(struct target_ops *target);
+int macosx_get_task_for_pid_rights(void);
+/* Miscellaneous other silencing of '-Wmissing-declarations' in
+ * macosx-nat-inferior.c: */
+int macosx_service_one_other_event(struct target_waitstatus *status);
+struct macosx_pending_event *macosx_backup_before_break(int ignore);
+char **macosx_process_completer_quoted(char *text, char *word, int quote,
+                                       struct pid_list *ignorepids);
+void direct_memcache_get(struct checkpoint *cp);
+void fork_memcache_put(struct checkpoint *cp);
 #endif /* __GDB_MACOSX_NAT_INFERIOR_H__ */
 
 /* EOF */

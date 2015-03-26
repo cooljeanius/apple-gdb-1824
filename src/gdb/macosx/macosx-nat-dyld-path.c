@@ -71,36 +71,36 @@ look_back_for_slash (const char *name, const char *p)
    this returns NULL.  */
 
 static char *
-build_suffix_name (const char *name, const char *suffix)
+build_suffix_name(const char *name, const char *suffix)
 {
-  int suffixlen = strlen (suffix);
-  int namelen = strlen (name);
+  size_t suffixlen = strlen(suffix);
+  size_t namelen = strlen(name);
   char *name_with_suffix;
 
   if (suffixlen > 0)
     {
       char *tmp;
-      name_with_suffix = xmalloc (namelen + suffixlen + 1);
+      name_with_suffix = (char *)xmalloc(namelen + suffixlen + 1UL);
       if (namelen < 7)
         tmp = NULL;
       else
-        tmp = strrchr (name, '.');
+        tmp = strrchr(name, '.');
 
-      if (tmp != NULL && strcmp (tmp, ".dylib") == 0)
+      if ((tmp != NULL) && (strcmp(tmp, ".dylib") == 0))
         {
-          int baselen = namelen - 6;
-          memcpy (name_with_suffix, name, baselen);
-          tmp = name_with_suffix + baselen;
-          memcpy (tmp, suffix, suffixlen);
+          size_t baselen = (namelen - 6UL);
+          memcpy(name_with_suffix, name, baselen);
+          tmp = (name_with_suffix + baselen);
+          memcpy(tmp, suffix, suffixlen);
           tmp += suffixlen;
-          memcpy (tmp, ".dylib", 6);
+          memcpy(tmp, ".dylib", 6);
           *(tmp + 6) = '\0';
         }
       else
         {
-          memcpy (name_with_suffix, name, namelen);
-          tmp = name_with_suffix + namelen;
-          memcpy (tmp, suffix, suffixlen);
+          memcpy(name_with_suffix, name, namelen);
+          tmp = (name_with_suffix + namelen);
+          memcpy(tmp, suffix, suffixlen);
           *(tmp + suffixlen) = '\0';
         }
       return name_with_suffix;
@@ -117,7 +117,7 @@ build_suffix_name (const char *name, const char *suffix)
   or NULL if none exists.  */
 
 static char *
-search_for_name_in_path (const char *name, const char *path, const char *suffix)
+search_for_name_in_path(const char *name, const char *path, const char *suffix)
 {
   char *dylib_name;
   char *name_with_suffix;
@@ -128,21 +128,21 @@ search_for_name_in_path (const char *name, const char *path, const char *suffix)
   int pathlen;
   struct stat stat_buf;
 
-  namelen = strlen (name);
-  pathlen = strlen (path);
+  namelen = strlen(name);
+  pathlen = strlen(path);
 
-  /* Prebuild the name with suffix */
+  /* Prebuild the name with suffix: */
   if (suffix)
     {
-      name_with_suffix = build_suffix_name (name, suffix);
-      name_with_suffix_len = strlen (name_with_suffix);
-      dylib_name = xmalloc (name_with_suffix_len + pathlen + 2);
+      name_with_suffix = build_suffix_name(name, suffix);
+      name_with_suffix_len = strlen(name_with_suffix);
+      dylib_name = (char *)xmalloc(name_with_suffix_len + pathlen + 2);
     }
   else
     {
       name_with_suffix = NULL;
       name_with_suffix_len = 0;
-      dylib_name = xmalloc (namelen + pathlen + 2);
+      dylib_name = (char *)xmalloc(namelen + pathlen + 2);
     }
 
 
@@ -577,26 +577,27 @@ dyld_resolve_image (const struct dyld_path_info *d, const char *dylib_name)
       if (exec_bfd != NULL && exec_bfd->filename != NULL)
         {
           int relative_name_len = strlen (relative_name);
-          char *executable_path_end = strrchr (exec_bfd->filename, '/');
+          char *executable_path_end = strrchr(exec_bfd->filename, '/');
           if (executable_path_end != NULL)
             {
               int executable_path_len =
                 executable_path_end - exec_bfd->filename;
               char *final_name =
-                xmalloc (relative_name_len + executable_path_len + 1);
-              memcpy (final_name, exec_bfd->filename, executable_path_len);
-              memcpy (final_name + executable_path_len, relative_name,
-                      relative_name_len);
+                (char *)xmalloc(relative_name_len + executable_path_len
+                                + 1UL);
+              memcpy(final_name, exec_bfd->filename, executable_path_len);
+              memcpy(final_name + executable_path_len, relative_name,
+                     relative_name_len);
               final_name[executable_path_len + relative_name_len] = '\0';
-              if (stat (final_name, &stat_buf) == 0)
+              if (stat(final_name, &stat_buf) == 0)
                 return final_name;
               else
-                xfree (final_name);
+                xfree(final_name);
             }
           else
             {
-              warning ("Executable filename not a path, "
-                       "can't resolve \"@executable_path load command.");
+              warning("Executable filename not a path, "
+                      "cannot resolve \"@executable_path load command.");
               return NULL;
             }
         }
@@ -694,20 +695,21 @@ dyld_init_paths (dyld_path_info * d)
   if (d->fallback_framework_path == NULL)
     {
       d->fallback_framework_path =
-        xmalloc (strlen (default_fallback_framework_path)
-                 + strlen (home) + 1);
-      sprintf (d->fallback_framework_path, default_fallback_framework_path,
-               home);
+        (char *)xmalloc(strlen(default_fallback_framework_path)
+                        + strlen(home) + 1UL);
+      sprintf(d->fallback_framework_path, default_fallback_framework_path,
+              home);
     }
 
   if (d->fallback_library_path == NULL)
     {
       d->fallback_library_path =
-        xmalloc (strlen (default_fallback_library_path) + strlen (home) + 1);
-      sprintf (d->fallback_library_path, default_fallback_library_path, home);
+        (char *)xmalloc(strlen(default_fallback_library_path)
+                        + strlen(home) + 1UL);
+      sprintf(d->fallback_library_path, default_fallback_library_path, home);
     }
 
-  xfree (home);
+  xfree(home);
 }
 
 /* EOF */
