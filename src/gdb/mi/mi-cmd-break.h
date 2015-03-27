@@ -21,10 +21,13 @@
 #ifndef MI_CMD_BREAK_H
 #define MI_CMD_BREAK_H
 
+#include "defs.h"
 
 /* Setup the reporting of the insertion of a new breakpoint or
    catchpoint.  */
-struct cleanup *setup_breakpoint_reporting (void);
+struct cleanup *setup_breakpoint_reporting(void);
 
-#endif
+#endif /* !MI_CMD_BREAK_H */
+
+/* EOF */
 

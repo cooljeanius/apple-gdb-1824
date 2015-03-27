@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # define _NSIG NSIG
 #endif /* !_NSIG && NSIG */
 
-/* is this logic correct? */
+/* FIXME: is this logic correct? */
 #if !defined(NS_TARGET_MAJOR) || (defined(NS_TARGET_MAJOR) && (NS_TARGET_MAJOR < 5))
 # ifdef HAVE_TERMIOS_H
 #  undef HAVE_TERMIOS_H
@@ -47,12 +47,20 @@ extern void macosx_resize_window(int *width, int *height);
 #define	SIGWINCH_HANDLER macosx_resize_window_handler
 
 #define	SIGWINCH_HANDLER_BODY \
-void macosx_resize_window_handler(void *d) \
+extern void macosx_resize_window_handler(void *d ATTRIBUTE_UNUSED) \
 { \
   macosx_resize_window((int *)&lines_per_page, (int *)&chars_per_line); \
 }
 
+#if !defined(_STRING_H_)
+# if !defined(HAVE_DECL_STRCHR) || !HAVE_DECL_STRCHR
 char *strchr(const char *s, int c);
+# endif /* !HAVE_DECL_STRCHR */
+# if !defined(HAVE_DECL_STRPBRK) || !HAVE_DECL_STRPBRK
 char *strpbrk(const char *s1, const char *s2);
+# endif /* !HAVE_DECL_STRPBRK */
+#endif /* !_STRING_H_ */
 
 #endif /* _XM_MACOSX_H_ */
+
+/* EOF */

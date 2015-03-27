@@ -33,11 +33,11 @@
 
 #include "gdb_stat.h"
 #include "obstack.h"
-#if 0
+#if defined(USE_MMALLOC) && USE_MMALLOC
 # include "mmprivate.h"
 #else
 # include "../mmalloc/mmprivate.h"
-#endif /* 0 */
+#endif /* USE_MMALLOC */
 
 #include <fcntl.h>
 
@@ -46,9 +46,13 @@
 #include "macosx-nat-inferior.h"
 #include "macosx-nat-inferior-debug.h"
 #include "macosx-nat-mutils.h"
-#include "macosx-nat-dyld.h"
+#ifndef __GDB_MACOSX_NAT_DYLD_H__
+# include "macosx-nat-dyld.h"
+#endif /* !__GDB_MACOSX_NAT_DYLD_H__ */
 #include "macosx-nat-dyld-info.h"
-#include "macosx-nat-dyld-path.h"
+#ifndef __GDB_MACOSX_NAT_DYLD_PATH_H__
+# include "macosx-nat-dyld-path.h"
+#endif /* !__GDB_MACOSX_NAT_DYLD_PATH_H__ */
 #include "macosx-nat-dyld-process.h"
 #include "cached-symfile.h"
 

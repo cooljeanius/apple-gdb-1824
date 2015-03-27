@@ -146,6 +146,9 @@
 /* Define to 1 if you have the `atexit' function. */
 #undef HAVE_ATEXIT
 
+/* Define to 1 if you have the `atof' function. */
+#undef HAVE_ATOF
+
 /* Define to 1 if you have the <a.out.h> header file. */
 #undef HAVE_A_OUT_H
 
@@ -205,6 +208,10 @@
    don't. */
 #undef HAVE_DECL_ASPRINTF
 
+/* Define to 1 if you have the declaration of `atof', and to 0 if you don't.
+   */
+#undef HAVE_DECL_ATOF
+
 /* Define to 1 if you have the declaration of `basename', and to 0 if you
    don't. */
 #undef HAVE_DECL_BASENAME
@@ -244,9 +251,17 @@
    don't. */
 #undef HAVE_DECL_SNPRINTF
 
+/* Define to 1 if you have the declaration of `strchr', and to 0 if you don't.
+   */
+#undef HAVE_DECL_STRCHR
+
 /* Define to 1 if you have the declaration of `strerror', and to 0 if you
    don't. */
 #undef HAVE_DECL_STRERROR
+
+/* Define to 1 if you have the declaration of `strpbrk', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRPBRK
 
 /* Define to 1 if you have the declaration of `strstr', and to 0 if you don't.
    */

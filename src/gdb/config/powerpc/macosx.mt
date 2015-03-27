@@ -1,4 +1,4 @@
-# APPLE LOCAL file (macosx.mt) for Darwin
+# APPLE LOCAL file (powerpc/macosx.mt) for Darwin
 # Target: PowerPC running Mac OS X
 
 MT_CFLAGS = \

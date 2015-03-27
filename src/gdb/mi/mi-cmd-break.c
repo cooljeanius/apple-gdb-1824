@@ -34,6 +34,8 @@
 #include "gdbcmd.h" /* For print_command_lines.  */
 #include "filenames.h"
 
+#include "mi-cmd-break.h"
+
 enum
   {
     FROM_TTY = 0

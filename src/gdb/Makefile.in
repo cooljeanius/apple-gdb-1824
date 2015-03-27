@@ -216,7 +216,8 @@ LIBIBERTY = -L$(LIBIBERTY_DIR) -liberty
 LIBIBERTY_CFLAGS = -I$(LIBIBERTY_DIR)
 
 # Configured by the --with-mmalloc option to configure.
-WITH_MMALLOC_DEP = ../mmalloc/libmmalloc.a
+MMALLOC_DIR = ../mmalloc
+WITH_MMALLOC_DEP = $(MMALLOC_DIR)/libmmalloc.a
 WITH_MMALLOC = @MMALLOC@
 WITH_MMALLOC_CFLAGS = @MMALLOC_CFLAGS@
 MMALLOC_CFLAGS = $(WITH_MMALLOC_CFLAGS)
@@ -738,42 +739,60 @@ LINTFILES = $(SFILES) $(YYFILES) $(CONFIG_SRCS) init.c
 # (Why would we not want to depend on them?  If one of these changes in a
 # non-binary-compatible way, it is a real pain to remake the right stuff
 # without these dependencies -kingdon, 13 Mar 1994)
+ansidecl_h = $(INCLUDE_DIR)/ansidecl.h
 aout_aout64_h =	$(INCLUDE_DIR)/aout/aout64.h
 aout_stabs_gnu_h =	$(INCLUDE_DIR)/aout/stabs_gnu.h
 getopt_h =	$(INCLUDE_DIR)/getopt.h
-floatformat_h =	$(INCLUDE_DIR)/floatformat.h
-bfd_h =		$(BFD_DIR)/bfd.h
+floatformat_h =	$(INCLUDE_DIR)/floatformat.h $(ansidecl_h)
+bfd_h =		$(BFD_DIR)/bfd.h $(ansidecl_h) $(symcat_h)
+bfdlink_h = $(INCLUDE_DIR)/bfdlink.h
 coff_sym_h =	$(INCLUDE_DIR)/coff/sym.h
 coff_symconst_h =	$(INCLUDE_DIR)/coff/symconst.h
 coff_ecoff_h =	$(INCLUDE_DIR)/coff/ecoff.h
 coff_internal_h =	$(INCLUDE_DIR)/coff/internal.h
 dis_asm_h =	$(INCLUDE_DIR)/dis-asm.h $(bfd_h)
 elf_reloc_macros_h =	$(INCLUDE_DIR)/elf/reloc-macros.h
-elf_sh_h =	$(INCLUDE_DIR)/elf/sh.h
+elf_sh_h =	$(INCLUDE_DIR)/elf/sh.h $(elf_reloc_macros_h)
 elf_arm_h =	$(INCLUDE_DIR)/elf/arm.h $(elf_reloc_macros_h)
-elf_bfd_h =	$(BFD_SRC)/elf-bfd.h
+elf_bfd_h = $(BFD_SRC)/elf-bfd.h $(bfd_h) $(elf_common_h) \
+  $(elf_internal_h) $(elf_external_h) $(bfdlink_h)
+elf_common_h =  $(INCLUDE_DIR)/elf/common.h
+elf_external_h = $(INCLUDE_DIR)/elf/external.h
 elf_frv_h =	$(INCLUDE_DIR)/elf/frv.h $(elf_reloc_macros_h)
-libaout_h =	$(BFD_SRC)/libaout.h
-libiberty_h =	$(INCLUDE_DIR)/libiberty.h
-libbfd_h =	$(BFD_SRC)/libbfd.h
+elf_internal_h = $(INCLUDE_DIR)/elf/internal.h
+filenames_h = $(INCLUDE_DIR)/filenames.h
+libaout_h =	$(BFD_SRC)/libaout.h $(bfdlink_h)
+libiberty_h =	$(INCLUDE_DIR)/libiberty.h $(ansidecl_h)
+libbfd_h =	$(BFD_SRC)/libbfd.h $(hashtab_h)
 remote_sim_h =	$(INCLUDE_DIR)/gdb/remote-sim.h
-demangle_h =    $(INCLUDE_DIR)/demangle.h
+demangle_h =    $(INCLUDE_DIR)/demangle.h $(libiberty_h)
 obstack_h =     $(INCLUDE_DIR)/obstack.h
+opcode_cgen_h = $(INCLUDE_DIR)/opcode/cgen.h
 opcode_m68hc11_h = $(INCLUDE_DIR)/opcode/m68hc11.h
-readline_h = 	$(READLINE_SRC)/readline.h
+readline_h = $(READLINE_SRC)/readline.h $(rlstdc_h) $(rltypedefs_h) \
+  $(readline_tilde_h) $(readline_keymaps_h) $(readline_tilde_h)
+readline_chardefs_h = $(READLINE_SRC)/chardefs.h
+readline_keymaps_h = $(READLINE_SRC)/keymaps.h $(rlstdc_h) \
+  $(readline_chardefs_h) $(rltypedefs.h)
 readline_tilde_h =	$(READLINE_SRC)/tilde.h
 readline_history_h =	$(READLINE_SRC)/history.h
-frv_desc_h =	$(OPCODES_SRC)/frv-desc.h
-sh_opc_h = 	$(OPCODES_SRC)/sh-opc.h
-gdb_callback_h = $(INCLUDE_DIR)/gdb/callback.h
+rlstdc_h = $(READLINE_SRC)/rlstdc.h
+rltypedefs_h = $(READLINE_SRC)/rltypedefs.h
+frv_desc_h =	$(OPCODES_SRC)/frv-desc.h $(opcode_cgen_h)
+sh_opc_h = 	$(OPCODES_SRC)/sh-opc.h $(bfd_h)
+gdb_callback_h = $(INCLUDE_DIR)/gdb/callback.h $(bfd_h)
 gdb_sim_arm_h =	$(INCLUDE_DIR)/gdb/sim-arm.h
 gdb_sim_d10v_h = $(INCLUDE_DIR)/gdb/sim-d10v.h
 gdb_sim_frv_h = $(INCLUDE_DIR)/gdb/sim-frv.h
 gdb_sim_ppc_h =	$(INCLUDE_DIR)/gdb/sim-ppc.h
 gdb_sim_sh_h =	$(INCLUDE_DIR)/gdb/sim-sh.h
-splay_tree_h =  $(INCLUDE_DIR)/splay-tree.h
+splay_tree_h =  $(INCLUDE_DIR)/splay-tree.h $(ansidecl_h)
 safe_ctype_h =  $(INCLUDE_DIR)/safe-ctype.h
-hashtab_h =	$(INCLUDE_DIR)/hashtab.h
+symcat_h = $(INCLUDE_DIR)/symcat.h
+hashtab_h =	$(INCLUDE_DIR)/hashtab.h $(ansidecl_h)
+mmalloc_h = $(MMALLOC_DIR)/mmalloc.h $(ansidecl_h)
+mmprivate_h = $(MMALLOC_DIR)/mmprivate.h $(config_h) $(mmalloc_h)
+mach_o_h = $(BFD_SRC)/mach-o.h $(bfd_h)
 
 #
 # ${BUILD}/ headers
@@ -809,7 +828,7 @@ amd64_nat_h = amd64-nat.h
 amd64_tdep_h = amd64-tdep.h $(i386_tdep_h)
 annotate_h = annotate.h $(symtab_h) $(gdbtypes_h)
 arch_utils_h = arch-utils.h
-arm_tdep_h = arm-tdep.h
+arm_tdep_h = arm-tdep.h $(defs_h) $(gdbarch_h) $(reggroups_h)
 auxv_h = auxv.h
 ax_gdb_h = ax-gdb.h
 ax_h = ax.h $(doublest_h)
@@ -823,6 +842,7 @@ buildsym_h = buildsym.h
 call_cmds_h = call-cmds.h
 charset_h = charset.h
 c_lang_h = c-lang.h $(value_h) $(macroexp_h)
+checkpoint_h = checkpoint.h
 cli_out_h = cli-out.h
 coff_pe_read_h = coff-pe-read.h
 coff_solib_h = coff-solib.h
@@ -851,9 +871,6 @@ expression_h = expression.h $(symtab_h) $(doublest_h)
 fbsd_nat_h = fbsd-nat.h
 f_lang_h = f-lang.h
 frame_base_h = frame-base.h
-# APPLE LOCAL header:
-x86_shared_tdep_h = x86-shared-tdep.h
-# END APPLE LOCAL header
 frame_h = frame.h
 frame_unwind_h = frame-unwind.h $(frame_h)
 frv_tdep_h = frv-tdep.h
@@ -971,6 +988,7 @@ typeprint_h = typeprint.h
 ui_file_h = ui-file.h
 ui_out_h = ui-out.h
 user_regs_h = user-regs.h
+utils_h = utils.h
 valprint_h = valprint.h
 value_h = value.h $(doublest_h) $(frame_h) $(symtab_h) $(gdbtypes_h) \
   $(expression_h)
@@ -979,51 +997,95 @@ vax_tdep_h = vax-tdep.h
 version_h = version.h
 wince_stub_h = wince-stub.h
 wrapper_h = wrapper.h $(gdb_h)
+# APPLE LOCAL header:
+x86_shared_tdep_h = x86-shared-tdep.h
+# END APPLE LOCAL header
 xcoffsolib_h = xcoffsolib.h
 
 #
 # gdb/cli/ headers
 #
 
-cli_cmds_h = $(srcdir)/cli/cli-cmds.h
-cli_decode_h = $(srcdir)/cli/cli-decode.h $(command_h)
-cli_dump_h = $(srcdir)/cli/cli-dump.h
-cli_logging_h = $(srcdir)/cli/cli-logging.h
-cli_script_h = $(srcdir)/cli/cli-script.h
-cli_setshow_h = $(srcdir)/cli/cli-setshow.h
-cli_utils_h = $(srcdir)/cli/cli-utils.h
+cli_srcdir = $(srcdir)/cli
+cli_cmds_h = $(cli_srcdir)/cli-cmds.h
+cli_decode_h = $(cli_srcdir)/cli-decode.h $(command_h)
+cli_dump_h = $(cli_srcdir)/cli-dump.h
+cli_logging_h = $(cli_srcdir)/cli-logging.h
+cli_script_h = $(cli_srcdir)/cli-script.h
+cli_setshow_h = $(cli_srcdir)/cli-setshow.h
+cli_utils_h = $(cli_srcdir)/cli-utils.h
+
+#
+# gdb/macosx/ headers
+#
+
+macosx_srcdir = $(srcdir)/macosx
+arm_macosx_thread_status_h = $(macosx_srcdir)/arm-macosx-thread-status.h
+arm_macosx_regnums_h = $(macosx_srcdir)/arm-macosx-regnums.h
+arm_macosx_tdep_h = $(macosx_srcdir)/arm-macosx-tdep.h $(defs_h) \
+  $(arm_macosx_thread_status_h) $(arm_macosx_regnums_h) $(macosx_tdep_h)
+cached_symfile_h = $(macosx_srcdir)/cached-symfile.h $(defs_h)
+kdp_protocol_h = $(macosx_srcdir)/kdp-protocol.h
+kdp_transactions_h = $(macosx_srcdir)/kdp-transactions.h $(kdp_udp_h)
+kdp_udp_h = $(macosx_srcdir)/kdp-udp.h $(kdp_protocol_h)
+macosx_nat_dyld_h = $(macosx_srcdir)/macosx-nat-dyld.h $(defs_h) \
+  $(macosx_nat_mutils_h) $(macosx_nat_threads_h)
+macosx_nat_dyld_info_h = $(macosx_srcdir)/macosx-nat-dyld-info.h $(defs_h)
+macosx_nat_dyld_path_h = $(macosx_srcdir)/macosx-nat-dyld-path.h $(defs_h)
+macosx_nat_dyld_process_h = $(macosx_srcdir)/macosx-nat-dyld-process.h \
+  $(defs_h)
+macosx_nat_excthread_h = $(macosx_srcdir)/macosx-nat-excthread.h \
+  $(defs_h) $(macosx_nat_mutils_h) $(macosx_nat_threads_h)
+macosx_nat_inferior_h = $(macosx_srcdir)/macosx-nat-inferior.h \
+  $(macosx_nat_threads_h) $(macosx_nat_sigthread_h) \
+  $(macosx_nat_excthread_h) $(macosx_nat_dyld_h) \
+  $(macosx_nat_dyld_info_h) $(defs_h) $(target_h) $(checkpoint_h)
+macosx_nat_inferior_debug_h = $(macosx_srcdir)/macosx-nat-inferior-debug.h
+macosx_nat_infthread_h = $(macosx_srcdir)/macosx-nat-infthread.h
+macosx_nat_mutils_h = $(macosx_srcdir)/macosx-nat-mutils.h $(defs_h) \
+  $(memattr_h) $(target_h) $(inferior_h) $(macosx_nat_utils_h)
+macosx_nat_sigthread_h = $(macosx_srcdir)/macosx-nat-sigthread.h \
+  $(defs_h) $(macosx_nat_mutils_h) $(macosx_nat_threads_h)
+macosx_nat_threads_h = $(macosx_srcdir)/macosx-nat-threads.h
+macosx_nat_utils_h = $(macosx_srcdir)/macosx-nat-utils.h
+macosx_tdep_h = $(macosx_srcdir)/macosx-tdep.h $(defs_h) $(symtab_h)
+tm_arm_macosx_h = $(macosx_srcdir)/tm-arm-macosx.h $(tm_macosx_h)
+tm_macosx_h = $(macosx_srcdir)/tm-macosx.h $(macosx_tdep_h)
 
 #
 # gdb/mi/ headers
 #
 
-mi_cmds_h = $(srcdir)/mi/mi-cmds.h
-mi_console_h = $(srcdir)/mi/mi-console.h
-mi_getopt_h = $(srcdir)/mi/mi-getopt.h
-mi_main_h = $(srcdir)/mi/mi-main.h
-mi_out_h = $(srcdir)/mi/mi-out.h
-mi_parse_h = $(srcdir)/mi/mi-parse.h
-mi_common_h = $(srcdir)/mi/mi-common.h
+mi_srcdir = $(srcdir)/mi
+mi_cmd_break_h = $(mi_srcdir)/mi-cmd-break.h $(defs_h)
+mi_cmds_h = $(mi_srcdir)/mi-cmds.h
+mi_common_h = $(mi_srcdir)/mi-common.h
+mi_console_h = $(mi_srcdir)/mi-console.h
+mi_getopt_h = $(mi_srcdir)/mi-getopt.h
+mi_main_h = $(mi_srcdir)/mi-main.h
+mi_out_h = $(mi_srcdir)/mi-out.h
+mi_parse_h = $(mi_srcdir)/mi-parse.h
 
 #
 # gdb/tui/ headers
 #
 
-tui_command_h = $(srcdir)/tui/tui-command.h
-tui_data_h = $(srcdir)/tui/tui-data.h $(tui_h) $(gdb_curses_h)
-tui_disasm_h = $(srcdir)/tui/tui-disasm.h $(tui_h) $(tui_data_h)
-tui_file_h = $(srcdir)/tui/tui-file.h
-tui_h = $(srcdir)/tui/tui.h
-tui_hooks_h = $(srcdir)/tui/tui-hooks.h
-tui_io_h = $(srcdir)/tui/tui-io.h
-tui_layout_h = $(srcdir)/tui/tui-layout.h $(tui_h) $(tui_data_h)
-tui_regs_h = $(srcdir)/tui/tui-regs.h $(tui_data_h)
-tui_source_h = $(srcdir)/tui/tui-source.h $(tui_data_h)
-tui_stack_h = $(srcdir)/tui/tui-stack.h
-tui_windata_h = $(srcdir)/tui/tui-windata.h $(tui_data_h)
-tui_wingeneral_h = $(srcdir)/tui/tui-wingeneral.h
-tui_win_h = $(srcdir)/tui/tui-win.h $(tui_data_h)
-tui_winsource_h = $(srcdir)/tui/tui-winsource.h $(tui_data_h)
+tui_srcdir = $(srcdir)/tui
+tui_command_h = $(tui_srcdir)/tui-command.h
+tui_data_h = $(tui_srcdir)/tui-data.h $(tui_h) $(gdb_curses_h)
+tui_disasm_h = $(tui_srcdir)/tui-disasm.h $(tui_h) $(tui_data_h)
+tui_file_h = $(tui_srcdir)/tui-file.h
+tui_h = $(tui_srcdir)/tui.h
+tui_hooks_h = $(tui_srcdir)/tui-hooks.h
+tui_io_h = $(tui_srcdir)/tui-io.h
+tui_layout_h = $(tui_srcdir)/tui-layout.h $(tui_h) $(tui_data_h)
+tui_regs_h = $(tui_srcdir)/tui-regs.h $(tui_data_h)
+tui_source_h = $(tui_srcdir)/tui-source.h $(tui_data_h)
+tui_stack_h = $(tui_srcdir)/tui-stack.h
+tui_windata_h = $(tui_srcdir)/tui-windata.h $(tui_data_h)
+tui_wingeneral_h = $(tui_srcdir)/tui-wingeneral.h
+tui_win_h = $(tui_srcdir)/tui-win.h $(tui_data_h)
+tui_winsource_h = $(tui_srcdir)/tui-winsource.h $(tui_data_h)
 
 # Header files that need to have srcdir added.  Note that in the cases
 # where we use a macro like $(gdbcmd_h), things are carefully arranged
@@ -1473,7 +1535,7 @@ TAGS: $(TAGFILES_NO_SRCDIR) $(TAGFILES_WITH_SRCDIR)
 	`(for i in $(DEPFILES) $(TAGFILES_NO_SRCDIR); do \
 	    j=$${i/\.o/\.c}; \
 	    if [ -f $(srcdir)/$${j} ] ; then \
-	      echo $(srcdir)/$${j}; else echo $(srcdir)/macosx/$${j}; fi; \
+	      echo $(srcdir)/$${j}; else echo $(macosx_srcdir)/$${j}; fi; \
 	done; for i in $(TAGFILES_WITH_SRCDIR); do \
 		echo $${i}; \
 	done)` \
@@ -2059,11 +2121,11 @@ armnbsd-nat.o: armnbsd-nat.c $(defs_h) $(gdbcore_h) $(inferior_h) \
 armnbsd-tdep.o: armnbsd-tdep.c $(defs_h) $(osabi_h) $(gdb_string_h) \
   $(arm_tdep_h) $(nbsd_tdep_h) $(solib_svr4_h)
 arm-tdep.o: arm-tdep.c $(defs_h) $(frame_h) $(inferior_h) $(gdbcmd_h) \
-  $(gdbcore_h) $(gdb_string_h) $(dis_asm_h) $(regcache_h) $(doublest_h) \
-  $(value_h) $(arch_utils_h) $(osabi_h) $(frame_unwind_h) $(frame_base_h) \
-  $(trad_frame_h) $(arm_tdep_h) $(gdb_sim_arm_h) $(elf_bfd_h) \
-  $(coff_internal_h) $(elf_arm_h) $(gdb_assert_h) $(bfd_in2_h) \
-  $(libcoff_h) $(objfiles_h) $(dwarf2_frame_h)
+  $(gdbcore_h) $(gdb_string_h) $(dis_asm_h) $(regcache_h) $(reggroups_h) \
+  $(doublest_h) $(value_h) $(arch_utils_h) $(osabi_h) $(frame_unwind_h) \
+  $(frame_base_h) $(trad_frame_h) $(objfiles_h) $(dwarf2_frame_h) \
+  $(arm_tdep_h) $(gdb_sim_arm_h) $(elf_bfd_h) $(coff_internal_h) \
+  $(elf_arm_h) $(gdb_assert_h) $(bfd_in2_h) $(libcoff_h)
 auxv.o: auxv.c $(defs_h) $(target_h) $(gdbtypes_h) $(command_h) \
   $(inferior_h) $(valprint_h) $(gdb_assert_h) $(auxv_h) $(elf_common_h)
 avr-tdep.o: avr-tdep.c $(defs_h) $(frame_h) $(frame_unwind_h) \
@@ -2421,7 +2483,7 @@ ia64-tdep.o: ia64-tdep.c $(defs_h) $(inferior_h) $(gdbcore_h) \
 infcall.o: infcall.c $(defs_h) $(breakpoint_h) $(target_h) $(regcache_h) \
   $(inferior_h) $(gdb_assert_h) $(block_h) $(gdbcore_h) $(language_h) \
   $(objfiles_h) $(gdbcmd_h) $(command_h) $(gdb_string_h) $(infcall_h) \
-  $(dummy_frame_h) $(srcdir)/macosx/macosx-nat-infthread.h
+  $(dummy_frame_h) $(macosx_srcdir)/macosx-nat-infthread.h
 inf-child.o: inf-child.c $(defs_h) $(regcache_h) $(memattr_h) $(symtab_h) \
   $(target_h) $(inferior_h) $(gdb_string_h)
 # APPLE LOCAL begin subroutine inlining:
@@ -3025,10 +3087,11 @@ ui-out.o: ui-out.c $(defs_h) $(gdb_string_h) $(expression_h) \
 user-regs.o: user-regs.c $(defs_h) $(user_regs_h) $(gdbtypes_h) \
   $(gdb_string_h) $(gdb_assert_h) $(frame_h)
 utils.o: utils.c $(defs_h) $(gdb_assert_h) $(gdb_string_h) $(event_top_h) \
-  $(exceptions_h) $(tui_h) $(gdbcmd_h) $(serial_h) $(bfd_h) $(target_h) \
+  $(exceptions_h) $(bfd_h) $(tui_h) $(gdbcmd_h) $(serial_h) $(target_h) \
   $(demangle_h) $(expression_h) $(language_h) $(charset_h) $(annotate_h) \
-  $(filenames_h) $(symfile_h) $(inferior_h) $(gdb_curses_h) $(readline_h) \
-  $(srcdir)/macosx/macosx-xdep.c $(srcdir)/macosx/xm-macosx.h \
+  $(filenames_h) $(symfile_h) $(inferior_h) $(gdb_curses_h) $(ui_out_h) \
+  $(cli_out_h) $(readline_h) $(mmalloc_h) $(mach_o_h) $(utils_h) \
+  $(macosx_srcdir)/macosx-xdep.c $(macosx_srcdir)/xm-macosx.h \
   $(srcdir)/config/xm-macosx.h macosx-xdep.o
 uw-thread.o: uw-thread.c $(defs_h) $(gdbthread_h) $(target_h) \
   $(inferior_h) $(regcache_h) $(gregset_h)
@@ -3044,7 +3107,7 @@ valops.o: valops.c $(defs_h) $(symtab_h) $(gdbtypes_h) $(value_h) \
   $(language_h) $(gdbcmd_h) $(regcache_h) $(cp_abi_h) $(block_h) \
   $(infcall_h) $(dictionary_h) $(cp_support_h) $(gdb_string_h) \
   $(gdb_assert_h) $(cp_support_h) $(observer_h) \
-  $(srcdir)/macosx/macosx-nat-infthread.h
+  $(macosx_srcdir)/macosx-nat-infthread.h
 valprint.o: valprint.c $(defs_h) $(gdb_string_h) $(symtab_h) \
   $(gdbtypes_h) $(value_h) $(gdbcore_h) $(gdbcmd_h) $(target_h) \
   $(language_h) $(annotate_h) $(valprint_h) $(floatformat_h) $(doublest_h)
@@ -3089,7 +3152,7 @@ fix-and-continue.o: fix-and-continue.c $(defs_h) $(value_h) \
   $(gdbcmd_h) $(language_h) macosx/ppc-macosx-frameinfo.h \
   macosx/ppc-macosx-tdep.h macosx/macosx-nat-dyld-process.h
 # APPLE LOCAL checkpoints:
-checkpoint.o: checkpoint.c checkpoint.h macosx-nat-inferior.o
+checkpoint.o: checkpoint.c $(checkpoint_h) macosx-nat-inferior.o
 # END APPLE LOCAL target
 xstormy16-tdep.o: xstormy16-tdep.c $(defs_h) $(frame_h) $(frame_base_h) \
   $(frame_unwind_h) $(dwarf2_frame_h) $(symtab_h) $(gdbtypes_h) \
@@ -3103,39 +3166,39 @@ xstormy16-tdep.o: xstormy16-tdep.c $(defs_h) $(frame_h) $(frame_base_h) \
 # Need to explicitly specify the compile rule as make will do nothing
 # or try to compile the object file into the sub-directory.
 
-cli-cmds.o: $(srcdir)/cli/cli-cmds.c $(defs_h) $(readline_h) \
+cli-cmds.o: $(cli_srcdir)/cli-cmds.c $(defs_h) $(readline_h) \
   $(readline_tilde_h) $(completer_h) $(target_h) $(gdb_wait_h) \
   $(gdb_string_h) $(gdb_vfork_h) $(linespec_h) \
   $(expression_h) $(frame_h) $(value_h) $(language_h) $(filenames_h) \
   $(objfiles_h) $(source_h) $(disasm_h) $(ui_out_h) $(top_h) \
   $(cli_decode_h) $(cli_script_h) $(cli_setshow_h) $(cli_cmds_h) \
   $(tui_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-cmds.c
-cli-decode.o: $(srcdir)/cli/cli-decode.c $(defs_h) $(symtab_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-cmds.c
+cli-decode.o: $(cli_srcdir)/cli-decode.c $(defs_h) $(symtab_h) \
   $(gdb_string_h) $(ui_out_h) $(cli_cmds_h) \
   $(cli_decode_h) $(tui_h) $(gdb_assert_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-decode.c
-cli-dump.o: $(srcdir)/cli/cli-dump.c $(defs_h) $(gdb_string_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-decode.c
+cli-dump.o: $(cli_srcdir)/cli-dump.c $(defs_h) $(gdb_string_h) \
   $(cli_decode_h) $(cli_cmds_h) $(value_h) $(completer_h) \
   $(cli_dump_h) $(gdb_assert_h) $(target_h) $(readline_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-dump.c
-cli-interp.o: $(srcdir)/cli/cli-interp.c $(defs_h) $(interps_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-dump.c
+cli-interp.o: $(cli_srcdir)/cli-interp.c $(defs_h) $(interps_h) \
   $(wrapper_h) $(event_top_h) $(ui_out_h) $(cli_out_h) $(top_h) \
   $(gdb_string_h) $(exceptions_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-interp.c
-cli-logging.o: $(srcdir)/cli/cli-logging.c $(defs_h) $(gdbcmd_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-interp.c
+cli-logging.o: $(cli_srcdir)/cli-logging.c $(defs_h) $(gdbcmd_h) \
   $(ui_out_h) $(gdb_string_h) $(cli_logging_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-logging.c
-cli-script.o: $(srcdir)/cli/cli-script.c $(defs_h) $(value_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-logging.c
+cli-script.o: $(cli_srcdir)/cli-script.c $(defs_h) $(value_h) \
   $(language_h) $(ui_out_h) $(gdb_string_h) $(exceptions_h) $(top_h) \
   $(cli_cmds_h) $(cli_decode_h) $(cli_script_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-script.c
-cli-setshow.o: $(srcdir)/cli/cli-setshow.c $(defs_h) $(readline_tilde_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-script.c
+cli-setshow.o: $(cli_srcdir)/cli-setshow.c $(defs_h) $(readline_tilde_h) \
   $(value_h) $(gdb_string_h) $(ui_out_h) $(cli_decode_h) $(cli_cmds_h) \
   $(cli_setshow_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-setshow.c
-cli-utils.o: $(srcdir)/cli/cli-utils.c $(defs_h) $(cli_utils_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/cli/cli-utils.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-setshow.c
+cli-utils.o: $(cli_srcdir)/cli-utils.c $(defs_h) $(cli_utils_h)
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-utils.c
 
 #
 # GDBTK sub-directory
@@ -3293,69 +3356,117 @@ gdbtk-wrapper.o: $(srcdir)/gdbtk/generic/gdbtk-wrapper.c \
 	  $(GDBTK_CFLAGS) $(srcdir)/gdbtk/generic/gdbtk-wrapper.c
 
 #
+# gdb/macosx/ dependencies
+#
+# No need to explicitly specify the compile rule for this subdir, because
+# we use a vpath hack for it, unlike the rest of them.
+
+arm-macosx-nat-exec.o: $(macosx_srcdir)/arm-macosx-nat-exec.c $(defs_h) \
+  $(frame_h) $(inferior_h) $(symtab_h) $(target_h) $(gdbcore_h) \
+  $(symfile_h) $(objfiles_h) $(regcache_h) $(gdbarch_h) $(arch_utils_h) \
+  $(arm_tdep_h) $(arm_macosx_thread_status_h) $(arm_macosx_tdep_h)
+arm-macosx-tdep.o: $(macosx_srcdir)/arm-macosx-tdep.c $(config_h) \
+  $(defs_h) $(frame_h) $(inferior_h) $(symtab_h) $(target_h) $(gdbcore_h) \
+  $(symfile_h) $(objfiles_h) $(gdbcmd_h) $(arch_utils_h) $(floatformat_h) \
+  $(gdbtypes_h) $(regcache_h) $(reggroups_h) $(frame_base_h) \
+  $(frame_unwind_h) $(dummy_frame_h) $(libbfd_h) $(arm_tdep_h) \
+  $(elf_bfd_h) $(dis_asm_h) $(gdbarch_h) $(osabi_h) $(mach_o_h) \
+  $(macosx_tdep_h) $(arm_macosx_regnums_h) $(arm_macosx_tdep_h) \
+  $(tm_arm_macosx_h)
+cached-symfile.o: $(macosx_srcdir)/cached-symfile.c $(defs_h) $(bfd_h) \
+  $(symtab_h) $(symfile_h) $(objfiles_h) $(gdb_stabs_h) $(target_h) \
+  $(gdbcmd_h) $(gdb_stat_h) $(obstack_h) $(mmprivate_h) \
+  $(macosx_nat_dyld_h) $(macosx_nat_dyld_path_h) $(macosx_nat_inferior_h) \
+  $(macosx_nat_inferior_debug_h) $(macosx_nat_mutils_h) \
+  $(macosx_nat_dyld_info_h) $(macosx_nat_dyld_process_h) \
+  $(cached_symfile_h)
+core-macho.o: $(macosx_srcdir)/core-macho.c $(defs_h) $(gdb_string_h) \
+  $(frame_h) $(inferior_h) $(symtab_h) $(command_h) $(bfd_h) $(target_h) \
+  $(gdbcore_h) $(gdbthread_h) $(regcache_h) $(exec_h) $(readline_h) \
+  $(mach_o_h) $(inlining_h) $(gdb_assert_h) $(osabi_h) $(gdbarch_h) \
+  $(objfiles_h) $(ui_out_h)
+darwin-kernel.o: $(macosx_srcdir)/darwin-kernel.c $(defs_h) $(inferior_h) \
+  $(gdbcmd_h) $(event_loop_h) $(event_top_h) $(inf_loop_h) $(regcache_h) \
+  $(infcall_h)
+macosx-tdep.o: $(macosx_srcdir)/macosx-tdep.c $(defs_h) $(inferior_h) \
+  $(target_h) $(symfile_h) $(symtab_h) $(objfiles_h) $(gdbcmd_h) \
+  $(language_h) $(block_h) $(libaout_h) $(aout_aout64_h) $(complaints_h) \
+  $(mach_o_h) $(objc_lang_h) $(macosx_tdep_h) $(regcache_h) $(source_h) \
+  $(completer_h) $(exceptions_h) $(gdbcmd_h) $(gdbcore_h) $(exec_h) \
+  $(readline_tilde_h) $(arch_utils_h) $(macosx_nat_utils_h) \
+  $(x86_shared_tdep_h) $(osabi_h) $(macosx_nat_dyld_h) $(gdbarch_h) \
+  $(macosx_nat_infthread_h)
+remote-kdp.o: $(macosx_srcdir)/remote-kdp.c $(defs_h) $(value_h) \
+  $(infcall_h) $(gdbarch_h) $(arch_utils_h) $(gdbcore_h) $(bfd_h) \
+  $(mach_o_h) $(objfiles_h) $(inferior_h) $(gdbcmd_h) $(event_loop_h) \
+  $(event_top_h) $(inf_loop_h) $(regcache_h) $(exceptions_h) $(osabi_h) \
+  $(kdp_udp_h) $(kdp_transactions_h)
+
+#
 # gdb/mi/ dependencies
 #
 # Need to explicitly specify the compile rule as make will do nothing
 # or try to compile the object file into the sub-directory.
 
-mi-cmd-break.o: $(srcdir)/mi/mi-cmd-break.c $(defs_h) $(mi_cmds_h) \
-  $(ui_out_h) $(mi_out_h) $(breakpoint_h) $(gdb_string_h) \
-  $(mi_getopt_h) $(gdb_events_h) $(gdb_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-break.c
-mi-cmd-disas.o: $(srcdir)/mi/mi-cmd-disas.c $(defs_h) $(target_h) \
+mi-cmd-break.o: $(mi_srcdir)/mi-cmd-break.c $(defs_h) $(target_h) \
+  $(mi_cmds_h) $(ui_out_h) $(mi_out_h) $(breakpoint_h) $(gdb_string_h) \
+  $(mi_getopt_h) $(mi_main_h) $(gdb_events_h) $(interps_h) $(gdb_h) \
+  $(gdbcmd_h) $(filenames_h) $(mi_cmd_break_h)
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-break.c
+mi-cmd-disas.o: $(mi_srcdir)/mi-cmd-disas.c $(defs_h) $(target_h) \
   $(value_h) $(mi_cmds_h) $(mi_getopt_h) $(gdb_string_h) $(ui_out_h) \
   $(disasm_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-disas.c
-mi-cmd-env.o: $(srcdir)/mi/mi-cmd-env.c $(defs_h) $(inferior_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-disas.c
+mi-cmd-env.o: $(mi_srcdir)/mi-cmd-env.c $(defs_h) $(inferior_h) \
   $(value_h) $(mi_out_h) $(mi_cmds_h) $(mi_getopt_h) $(symtab_h) \
   $(target_h) $(environ_h) $(command_h) $(ui_out_h) $(top_h) \
   $(gdb_string_h) $(gdb_stat_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-env.c
-mi-cmd-file.o: $(srcdir)/mi/mi-cmd-file.c $(defs_h) $(mi_cmds_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-env.c
+mi-cmd-file.o: $(mi_srcdir)/mi-cmd-file.c $(defs_h) $(mi_cmds_h) \
   $(mi_getopt_h) $(ui_out_h) $(symtab_h) $(source_h) $(objfiles_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-file.c
-mi-cmds.o: $(srcdir)/mi/mi-cmds.c $(defs_h) $(top_h) $(mi_cmds_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-file.c
+mi-cmds.o: $(mi_srcdir)/mi-cmds.c $(defs_h) $(top_h) $(mi_cmds_h) \
   $(gdb_string_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmds.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmds.c
 # APPLE LOCAL begin subroutine inlining:
-mi-cmd-stack.o: $(srcdir)/mi/mi-cmd-stack.c $(defs_h) $(target_h) \
+mi-cmd-stack.o: $(mi_srcdir)/mi-cmd-stack.c $(defs_h) $(target_h) \
   $(frame_h) $(value_h) $(mi_cmds_h) $(ui_out_h) $(symtab_h) $(block_h) \
   $(stack_h) $(dictionary_h) $(gdb_string_h) $(inlining_h) \
   $(srcdir)/config/i386/tm-i386-macosx.h
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-stack.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-stack.c
 # APPLE LOCAL end subroutine inlining
-mi-cmd-var.o: $(srcdir)/mi/mi-cmd-var.c $(defs_h) $(mi_cmds_h) \
+mi-cmd-var.o: $(mi_srcdir)/mi-cmd-var.c $(defs_h) $(mi_cmds_h) \
   $(ui_out_h) $(mi_out_h) $(varobj_h) $(value_h) $(gdb_string_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-var.c
-mi-console.o: $(srcdir)/mi/mi-console.c $(defs_h) $(mi_console_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-var.c
+mi-console.o: $(mi_srcdir)/mi-console.c $(defs_h) $(mi_console_h) \
   $(gdb_string_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-console.c
-mi-getopt.o: $(srcdir)/mi/mi-getopt.c $(defs_h) $(mi_getopt_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-console.c
+mi-getopt.o: $(mi_srcdir)/mi-getopt.c $(defs_h) $(mi_getopt_h) \
   $(gdb_string_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-getopt.c
-mi-interp.o: $(srcdir)/mi/mi-interp.c $(defs_h) $(gdb_string_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-getopt.c
+mi-interp.o: $(mi_srcdir)/mi-interp.c $(defs_h) $(gdb_string_h) \
   $(interps_h) $(event_top_h) $(event_loop_h) $(inferior_h) $(ui_out_h) \
   $(top_h) $(exceptions_h) $(mi_main_h) $(mi_cmds_h) $(mi_out_h) \
   $(mi_console_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-interp.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-interp.c
 # APPLE LOCAL begin subroutine inlining:
-mi-main.o: $(srcdir)/mi/mi-main.c $(defs_h) $(target_h) $(inferior_h) \
+mi-main.o: $(mi_srcdir)/mi-main.c $(defs_h) $(target_h) $(inferior_h) \
   $(gdb_string_h) $(exceptions_h) $(top_h) $(gdbthread_h) $(mi_cmds_h) \
   $(mi_parse_h) $(mi_getopt_h) $(mi_console_h) $(ui_out_h) $(mi_out_h) \
   $(interps_h) $(event_loop_h) $(event_top_h) $(gdbcore_h) $(value_h) \
   $(regcache_h) $(gdb_h) $(frame_h) $(mi_main_h) $(inlining_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-main.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-main.c
 # APPLE LOCAL end subroutine inlining
-mi-out.o: $(srcdir)/mi/mi-out.c $(defs_h) $(ui_out_h) $(mi_out_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-out.c
-mi-parse.o: $(srcdir)/mi/mi-parse.c $(defs_h) $(mi_cmds_h) $(mi_parse_h) \
+mi-out.o: $(mi_srcdir)/mi-out.c $(defs_h) $(ui_out_h) $(mi_out_h)
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-out.c
+mi-parse.o: $(mi_srcdir)/mi-parse.c $(defs_h) $(mi_cmds_h) $(mi_parse_h) \
   $(gdb_string_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-parse.c
-mi-symbol-cmds.o: $(srcdir)/mi/mi-symbol-cmds.c $(defs_h) $(mi_cmds_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-parse.c
+mi-symbol-cmds.o: $(mi_srcdir)/mi-symbol-cmds.c $(defs_h) $(mi_cmds_h) \
   $(symtab_h) $(ui_out_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-symbol-cmds.c
-mi-common.o: $(srcdir)/mi/mi-common.c $(mi_common_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-common.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-symbol-cmds.c
+mi-common.o: $(mi_srcdir)/mi-common.c $(defs_h) $(mi_common_h)
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-common.c
 
 #
 # rdi-share sub-directory
@@ -3389,92 +3500,92 @@ signals.o: $(srcdir)/signals/signals.c $(server_h) $(defs_h) $(target_h) \
 # Need to explicitly specify the compile rule as make will do nothing
 # or try to compile the object file into the sub-directory.
 
-tui.o: $(srcdir)/tui/tui.c $(defs_h) $(gdbcmd_h) $(tui_h) $(tui_hooks_h) \
+tui.o: $(tui_srcdir)/tui.c $(defs_h) $(gdbcmd_h) $(tui_h) $(tui_hooks_h) \
   $(tui_data_h) $(tui_layout_h) $(tui_io_h) $(tui_regs_h) $(tui_stack_h) \
   $(tui_win_h) $(tui_winsource_h) $(tui_windata_h) $(target_h) $(frame_h) \
   $(breakpoint_h) $(inferior_h) $(symtab_h) $(source_h) $(gdb_curses_h) \
   $(readline_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui.c
-tui-command.o: $(srcdir)/tui/tui-command.c $(defs_h) $(tui_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui.c
+tui-command.o: $(tui_srcdir)/tui-command.c $(defs_h) $(tui_h) \
   $(tui_data_h) $(tui_win_h) $(tui_io_h) $(gdb_curses_h) $(gdb_string_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-command.c
-tui-data.o: $(srcdir)/tui/tui-data.c $(defs_h) $(symtab_h) $(tui_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-command.c
+tui-data.o: $(tui_srcdir)/tui-data.c $(defs_h) $(symtab_h) $(tui_h) \
   $(tui_data_h) $(tui_wingeneral_h) $(gdb_string_h) $(gdb_curses_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-data.c
-tui-disasm.o: $(srcdir)/tui/tui-disasm.c $(defs_h) $(symtab_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-data.c
+tui-disasm.o: $(tui_srcdir)/tui-disasm.c $(defs_h) $(symtab_h) \
   $(breakpoint_h) $(frame_h) $(value_h) $(source_h) $(disasm_h) \
   $(gdb_string_h) $(tui_h) $(tui_data_h) $(tui_win_h) $(tui_layout_h) \
   $(tui_winsource_h) $(tui_stack_h) $(tui_file_h) $(gdb_curses_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-disasm.c
-tui-file.o: $(srcdir)/tui/tui-file.c $(defs_h) $(ui_file_h) $(tui_file_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-disasm.c
+tui-file.o: $(tui_srcdir)/tui-file.c $(defs_h) $(ui_file_h) $(tui_file_h) \
   $(tui_io_h) $(tui_h) $(gdb_string_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-file.c
-tui-hooks.o: $(srcdir)/tui/tui-hooks.c $(defs_h) $(symtab_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-file.c
+tui-hooks.o: $(tui_srcdir)/tui-hooks.c $(defs_h) $(symtab_h) \
   $(inferior_h) $(command_h) $(bfd_h) $(symfile_h) $(objfiles_h) \
   $(target_h) $(gdbcore_h) $(event_loop_h) $(event_top_h) $(frame_h) \
   $(breakpoint_h) $(gdb_events_h) $(ui_out_h) $(top_h) $(tui_h) \
   $(tui_hooks_h) $(tui_data_h) $(tui_layout_h) $(tui_io_h) \
   $(tui_regs_h) $(tui_win_h) $(tui_stack_h) $(tui_windata_h) \
   $(tui_winsource_h) $(gdb_curses_h) $(readline_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-hooks.c
-tui-interp.o: $(srcdir)/tui/tui-interp.c $(defs_h) $(interps_h) $(top_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-hooks.c
+tui-interp.o: $(tui_srcdir)/tui-interp.c $(defs_h) $(interps_h) $(top_h) \
   $(event_top_h) $(event_loop_h) $(ui_out_h) $(cli_out_h) \
   $(tui_data_h) $(readline_h) $(tui_win_h) $(tui_h) $(tui_io_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-interp.c
-tui-io.o: $(srcdir)/tui/tui-io.c $(defs_h) $(target_h) $(event_loop_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-interp.c
+tui-io.o: $(tui_srcdir)/tui-io.c $(defs_h) $(target_h) $(event_loop_h) \
   $(event_top_h) $(command_h) $(top_h) $(tui_h) $(tui_data_h) $(tui_io_h) \
   $(tui_command_h) $(tui_win_h) $(tui_wingeneral_h) $(tui_file_h) \
   $(ui_out_h) $(cli_out_h) $(gdb_curses_h) $(readline_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-io.c
-tui-layout.o: $(srcdir)/tui/tui-layout.c $(defs_h) $(command_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-io.c
+tui-layout.o: $(tui_srcdir)/tui-layout.c $(defs_h) $(command_h) \
   $(symtab_h) $(frame_h) $(source_h) $(tui_h) $(tui_data_h) \
   $(tui_windata_h) $(tui_wingeneral_h) $(tui_stack_h) $(tui_regs_h) \
   $(tui_win_h) $(tui_winsource_h) $(tui_disasm_h) $(gdb_string_h) \
   $(gdb_curses_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-layout.c
-tui-main.o: $(srcdir)/tui/tui-main.c $(defs_h) $(main_h) $(gdb_string_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-layout.c
+tui-main.o: $(tui_srcdir)/tui-main.c $(defs_h) $(main_h) $(gdb_string_h) \
   $(interps_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-main.c
-tui-out.o: $(srcdir)/tui/tui-out.c $(defs_h) $(ui_out_h) $(tui_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-main.c
+tui-out.o: $(tui_srcdir)/tui-out.c $(defs_h) $(ui_out_h) $(tui_h) \
   $(gdb_string_h) $(gdb_assert_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-out.c
-tui-regs.o: $(srcdir)/tui/tui-regs.c $(defs_h) $(tui_h) $(tui_data_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-out.c
+tui-regs.o: $(tui_srcdir)/tui-regs.c $(defs_h) $(tui_h) $(tui_data_h) \
   $(symtab_h) $(gdbtypes_h) $(gdbcmd_h) $(frame_h) $(regcache_h) \
   $(inferior_h) $(target_h) $(gdb_string_h) $(tui_layout_h) \
   $(tui_win_h) $(tui_windata_h) $(tui_wingeneral_h) $(tui_file_h) \
   $(reggroups_h) $(gdb_curses_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-regs.c
-tui-source.o: $(srcdir)/tui/tui-source.c $(defs_h) $(symtab_h) $(frame_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-regs.c
+tui-source.o: $(tui_srcdir)/tui-source.c $(defs_h) $(symtab_h) $(frame_h) \
   $(breakpoint_h) $(source_h) $(symtab_h) $(tui_h) $(tui_data_h) \
   $(tui_stack_h) $(tui_winsource_h) $(tui_source_h) $(gdb_string_h) \
   $(gdb_curses_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-source.c
-tui-stack.o: $(srcdir)/tui/tui-stack.c $(defs_h) $(symtab_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-source.c
+tui-stack.o: $(tui_srcdir)/tui-stack.c $(defs_h) $(symtab_h) \
   $(breakpoint_h) $(frame_h) $(command_h) $(inferior_h) $(target_h) \
   $(top_h) $(gdb_string_h) $(tui_h) $(tui_data_h) $(tui_stack_h) \
   $(tui_wingeneral_h) $(tui_source_h) $(tui_winsource_h) $(tui_file_h) \
   $(gdb_curses_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-stack.c
-tui-win.o: $(srcdir)/tui/tui-win.c $(defs_h) $(command_h) $(symtab_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-stack.c
+tui-win.o: $(tui_srcdir)/tui-win.c $(defs_h) $(command_h) $(symtab_h) \
   $(breakpoint_h) $(frame_h) $(cli_cmds_h) $(top_h) $(source_h) \
   $(tui_h) $(tui_data_h) $(tui_wingeneral_h) $(tui_stack_h) \
   $(tui_regs_h) $(tui_disasm_h) $(tui_source_h) $(tui_winsource_h) \
   $(tui_windata_h) $(gdb_curses_h) $(gdb_string_h) $(readline_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-win.c
-tui-windata.o: $(srcdir)/tui/tui-windata.c $(defs_h) $(tui_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-win.c
+tui-windata.o: $(tui_srcdir)/tui-windata.c $(defs_h) $(tui_h) \
   $(tui_data_h) $(tui_wingeneral_h) $(tui_regs_h) $(gdb_string_h) \
   $(gdb_curses_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-windata.c
-tui-wingeneral.o: $(srcdir)/tui/tui-wingeneral.c $(defs_h) $(tui_h) \
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-windata.c
+tui-wingeneral.o: $(tui_srcdir)/tui-wingeneral.c $(defs_h) $(tui_h) \
   $(tui_data_h) $(tui_wingeneral_h) $(tui_win_h) $(gdb_curses_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) \
-	  $(srcdir)/tui/tui-wingeneral.c
-tui-winsource.o: $(srcdir)/tui/tui-winsource.c $(defs_h) $(symtab_h) \
+	  $(tui_srcdir)/tui-wingeneral.c
+tui-winsource.o: $(tui_srcdir)/tui-winsource.c $(defs_h) $(symtab_h) \
   $(frame_h) $(breakpoint_h) $(value_h) $(source_h) $(tui_h) \
   $(tui_data_h) $(tui_stack_h) $(tui_win_h) $(tui_wingeneral_h) \
   $(tui_winsource_h) $(tui_source_h) $(tui_disasm_h) $(gdb_string_h) \
   $(gdb_curses_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/tui/tui-winsource.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-winsource.c
 
 ### end of the gdb Makefile.in.
 
@@ -3501,9 +3612,9 @@ stamp-framework-headers:
 	cp -p $(AM_V_v) $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
 	cp -p $(AM_V_v) *.h $(FRAMEWORK).framework/Versions/Current/Headers/
 	mkdir $(AM_V_v) $(FRAMEWORK).framework/Versions/Current/Headers/mi
-	cp -p $(AM_V_v) $(srcdir)/mi/*.h $(FRAMEWORK).framework/Versions/Current/Headers/mi/
+	cp -p $(AM_V_v) $(mi_srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/mi/
 	mkdir $(AM_V_v) $(FRAMEWORK).framework/Versions/Current/Headers/cli
-	cp -p $(AM_V_v) $(srcdir)/cli/*.h $(FRAMEWORK).framework/Versions/Current/Headers/cli/
+	cp -p $(AM_V_v) $(cli_srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/cli/
 
 stamp-framework:
 	$(MAKE) $(FRAMEWORK_OFILES)

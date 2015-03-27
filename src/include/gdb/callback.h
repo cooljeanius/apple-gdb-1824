@@ -49,7 +49,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning not including "config.h"
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning not including "config.h"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 /* ??? The reason why we check for va_start here should be documented.  */

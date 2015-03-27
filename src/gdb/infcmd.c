@@ -51,15 +51,26 @@
 #include "solib.h"
 #include <ctype.h>
 #include "gdb_assert.h"
+#include "infcmd.h"
 /* APPLE LOCAL - subroutine inlining  */
 #include "inlining.h"
 #include "macosx/macosx-nat-dyld.h"
 
 #if defined(NM_NEXTSTEP) || defined(TM_NEXTSTEP)
-# include "nm-macosx.h"
 # include "macosx-nat-inferior.h"
-# include "config/nm-macosx.h"
-# include "macosx/nm-macosx.h"
+# if !defined(TARGET_CAN_USE_HARDWARE_WATCHPOINT) && \
+     !defined(STOPPED_BY_WATCHPOINT) && \
+     !defined(HAVE_NONSTEPPABLE_WATCHPOINT) && \
+     !defined(target_insert_watchpoint) && \
+     !defined(target_remove_watchpoint)
+#  include "nm-macosx.h"
+#  ifndef NM_NEXTSTEP
+#   include "config/nm-macosx.h"
+#  endif /* !NM_NEXTSTEP */
+#  ifndef _NM_NEXTSTEP_H_
+#   include "macosx/nm-macosx.h"
+#  endif /* !_NM_NEXTSTEP_H_ */
+# endif /* !(multiple things) */
 # include "macosx/macosx-nat-inferior.h"
 #else
 # define INFCMD_C_NOT_ON_NEXTSTEP 1
@@ -73,69 +84,69 @@
 # define PROCESS_COMPLETER noop_completer
 #endif /* !PROCESS_COMPLETER */
 
-extern char **process_completer (char *, char *);
+extern char **process_completer(char *, char *);
 /* APPLE LOCAL end process completer */
 
 /* Functions exported for general use, in inferior.h: */
 
-void all_registers_info (char *, int);
+void all_registers_info(char *, int);
 
-void registers_info (char *, int);
+void registers_info(char *, int);
 
-void nexti_command (char *, int);
+void nexti_command(char *, int);
 
-void stepi_command (char *, int);
+void stepi_command(char *, int);
 
-void continue_command (char *, int);
+void continue_command(char *, int);
 
-void interrupt_target_command (char *args, int from_tty);
+void interrupt_target_command(char *args, int from_tty);
 
 /* Local functions: */
 
-static void nofp_registers_info (char *, int);
+static void nofp_registers_info(char *, int);
 
-static void print_return_value (int struct_return, struct type *value_type);
+static void print_return_value(int struct_return, struct type *value_type);
 
-static void finish_command_continuation (struct continuation_arg *);
+static void finish_command_continuation(struct continuation_arg *);
 
-static void until_next_command (int);
+static void until_next_command(int);
 
-static void until_command (char *, int);
+static void until_command(char *, int);
 
-static void path_info (char *, int);
+static void path_info(char *, int);
 
-static void path_command (char *, int);
+static void path_command(char *, int);
 
-static void unset_command (char *, int);
+static void unset_command(char *, int);
 
-static void float_info (char *, int);
+static void float_info(char *, int);
 
-static void detach_command (char *, int);
+static void detach_command(char *, int);
 
-static void disconnect_command (char *, int);
+static void disconnect_command(char *, int);
 
-static void unset_environment_command (char *, int);
+static void unset_environment_command(char *, int);
 
-static void set_environment_command (char *, int);
+static void set_environment_command(char *, int);
 
-static void environment_info (char *, int);
+static void environment_info(char *, int);
 
-static void program_info (char *, int);
+static void program_info(char *, int);
 
 /* APPLE LOCAL pid info */
-void pid_info (char *, int);
+void pid_info(char *, int);
 
-static void finish_command (char *, int);
+static void finish_command(char *, int);
 
-static void signal_command (char *, int);
+static void signal_command(char *, int);
 
-static void jump_command (char *, int);
+static void jump_command(char *, int);
 
-static void step_1 (int, int, char *);
-static void step_1_inlining (int, int, char *);
-static void step_1_no_inlining (int, int, char *);
+static void step_1(int, int, char *);
+static void step_1_inlining(int, int, char *);
+static void step_1_no_inlining(int, int, char *);
 /* APPLE LOCAL make step_once globally visible */
-static void step_1_continuation (struct continuation_arg *arg);
+static void step_1_continuation(struct continuation_arg *arg);
 
 /* APPLE LOCAL begin checkpoints */
 void re_exec_1(void);
@@ -143,24 +154,24 @@ void re_exec_1_continuation(struct continuation_arg *arg);
 void re_exec_once(int count);
 /* APPLE LOCAL end checkpoints */
 
-static void next_command (char *, int);
+static void next_command(char *, int);
 
-static void step_command (char *, int);
+static void step_command(char *, int);
 
-static void run_command (char *, int);
+static void run_command(char *, int);
 
-static void run_no_args_command (char *args, int from_tty);
+static void run_no_args_command(char *args, int from_tty);
 
-static void go_command (char *line_no, int from_tty);
+static void go_command(char *line_no, int from_tty);
 
-int strip_bg_char (char **);
+int strip_bg_char(char **);
 
-void _initialize_infcmd (void);
+void _initialize_infcmd(void);
 
 #define GO_USAGE   "Usage: go <location>\n"
 
 #define ERROR_NO_INFERIOR \
-   if (!target_has_execution) error (_("The program is not being run."));
+   if (!target_has_execution) error(_("The program is not being run."));
 
 /* String containing arguments to give to the program, separated by spaces.
    Empty string (pointer to '\0') means no args.  */
@@ -472,22 +483,22 @@ tty_command (char *file, int from_tty)
    the program being debugged when FROM_TTY is non-null.  */
 
 void
-kill_if_already_running (int from_tty)
+kill_if_already_running(int from_tty)
 {
-  if (! ptid_equal (inferior_ptid, null_ptid) && target_has_execution)
+  if (! ptid_equal(inferior_ptid, null_ptid) && target_has_execution)
     {
       if (from_tty
-	  && !query ("The program being debugged has been started already.\n\
+	  && !query("The program being debugged has been started already.\n\
 Start it from the beginning? "))
-	error (_("Program not restarted."));
-      target_kill ();
+	error(_("Program not restarted."));
+      target_kill();
 #if defined(SOLIB_RESTART)
-      SOLIB_RESTART ();
-#endif
+      SOLIB_RESTART();
+#endif /* SOLIB_RESTART */
       /* APPLE LOCAL checkpoints */
-      clear_all_checkpoints ();
+      clear_all_checkpoints();
 
-      init_wait_for_inferior ();
+      init_wait_for_inferior();
     }
 }
 
@@ -3261,11 +3272,11 @@ float_info (char *args, int from_tty)
 }
 
 static void
-unset_command (char *args, int from_tty)
+unset_command(char *args, int from_tty)
 {
-  printf_filtered (_("\
+  printf_filtered(_("\
 \"unset\" must be followed by the name of an unset subcommand.\n"));
-  help_list (unsetlist, "unset ", -1, gdb_stdout);
+  help_list(unsetlist, "unset ", (enum command_class)-1, gdb_stdout);
 }
 
 void

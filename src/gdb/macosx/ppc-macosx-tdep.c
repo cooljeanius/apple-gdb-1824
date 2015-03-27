@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* ppc-macosx-tdep.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -63,18 +63,18 @@
 #include <mach/machine.h>
 
 /* static */ void
-rs6000_value_to_register (struct frame_info *frame,
-                          int regnum,
-                          struct type *type,
-                          const gdb_byte *from);
+rs6000_value_to_register(struct frame_info *frame,
+                         int regnum,
+                         struct type *type,
+                         const gdb_byte *from);
 /* static */ void
-rs6000_register_to_value (struct frame_info *frame,
-                          int regnum,
-                          struct type *type,
-                          gdb_byte *to);
+rs6000_register_to_value(struct frame_info *frame,
+                         int regnum,
+                         struct type *type,
+                         gdb_byte *to);
 
 #undef XMALLOC
-#define XMALLOC(TYPE) ((TYPE*) xmalloc (sizeof (TYPE)))
+#define XMALLOC(TYPE) ((TYPE*)xmalloc(sizeof(TYPE)))
 
 /*
    0x030     c linkage
@@ -122,33 +122,36 @@ const unsigned int PPC_SIGCONTEXT_SP_OFFSET = 0x9c;
 static int ppc_debugflag = 0;
 static unsigned int ppc_max_frame_size = UINT_MAX;
 
-static void ppc_macosx_init_abi (struct gdbarch_info info,
-                                 struct gdbarch *gdbarch);
+static void ppc_macosx_init_abi(struct gdbarch_info info,
+                                struct gdbarch *gdbarch);
 
-static void ppc_macosx_init_abi_64 (struct gdbarch_info info,
-                                    struct gdbarch *gdbarch);
+static void ppc_macosx_init_abi_64(struct gdbarch_info info,
+                                   struct gdbarch *gdbarch);
 
-static int ppc_macosx_get_longjmp_target (CORE_ADDR * pc);
-static int ppc_64_macosx_get_longjmp_target (CORE_ADDR * pc);
-static struct value *ppc_value_of_builtin_frame_fp_reg (struct frame_info *);
+static int ppc_macosx_get_longjmp_target(CORE_ADDR *pc);
+static int ppc_64_macosx_get_longjmp_target(CORE_ADDR *pc);
+static struct value *ppc_value_of_builtin_frame_fp_reg(struct frame_info *);
 
 CORE_ADDR
-ppc_frame_unwind_sp_for_dereferencing (struct frame_info *next_frame, 
-                                       void **this_cache);
+ppc_frame_unwind_sp_for_dereferencing(struct frame_info *next_frame,
+                                      void **this_cache);
+
+extern void _initialize_ppc_tdep(void);
+
 void
-ppc_debug (const char *fmt, ...)
+ppc_debug(const char *fmt, ...)
 {
   va_list ap;
   if (ppc_debugflag)
     {
-      va_start (ap, fmt);
-      vfprintf (stderr, fmt, ap);
-      va_end (ap);
+      va_start(ap, fmt);
+      vfprintf(stderr, fmt, ap);
+      va_end(ap);
     }
 }
 
 void
-ppc_print_extra_frame_info (struct frame_info *next_frame, void **this_cache)
+ppc_print_extra_frame_info(struct frame_info *next_frame, void **this_cache)
 {
   struct ppc_frame_cache *cache;
   struct ppc_function_boundaries *bounds;
@@ -224,51 +227,52 @@ ppc_alloc_frame_cache (void)
   return cache;
 }
 
+extern int frame_debug;
+
 struct ppc_frame_cache *
-ppc_frame_cache (struct frame_info *next_frame, void **this_cache)
+ppc_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct ppc_frame_cache *cache;
 
   if (*this_cache)
     {
-      cache = *this_cache;
-      gdb_assert (cache->magic == PPC_FRAME_MAGIC);
+      cache = (struct ppc_frame_cache *)*this_cache;
+      gdb_assert(cache->magic == PPC_FRAME_MAGIC);
       return cache;
     }
 
-  cache = ppc_alloc_frame_cache ();
+  cache = ppc_alloc_frame_cache();
   *this_cache = cache;
 
-  cache->sp = ppc_frame_unwind_sp (next_frame, this_cache);
+  cache->sp = ppc_frame_unwind_sp(next_frame, this_cache);
   if (cache->sp == 0)
     return cache;
 
-  cache->fp = ppc_frame_unwind_fp (next_frame, this_cache);
+  cache->fp = ppc_frame_unwind_fp(next_frame, this_cache);
 
   /* The PC field has the value of the function start unless we can't
      determine a function start address, e.g. in a completely stripped
      executable.  In that case we'll use the current PC value.  */
 
-  cache->pc = frame_func_unwind (next_frame);
+  cache->pc = frame_func_unwind(next_frame);
   if (cache->pc == 0)
-    cache->pc = frame_pc_unwind (next_frame);
+    cache->pc = frame_pc_unwind(next_frame);
 
   /* A stack pointer which can be dereferenced to find the caller's
      stack pointer and follow the chain.  */
 
-  cache->sp_for_dereferencing = ppc_frame_unwind_sp_for_dereferencing (next_frame, this_cache);
+  cache->sp_for_dereferencing = ppc_frame_unwind_sp_for_dereferencing(next_frame, this_cache);
 
-  extern int frame_debug;
   if (frame_debug)
     {
-      fprintf_unfiltered (gdb_stdlog, "\
+      fprintf_unfiltered(gdb_stdlog, "\
 {{ ppc_frame_cache (nxframe=%d) ",
-			  frame_relative_level (next_frame));
-      fprintf_unfiltered (gdb_stdlog, "->");
-      fprintf_unfiltered (gdb_stdlog, " pc=0x%s", paddr_nz (cache->pc));
-      fprintf_unfiltered (gdb_stdlog, " sp=0x%s", paddr_nz (cache->sp));
-      fprintf_unfiltered (gdb_stdlog, " fp=0x%s", paddr_nz (cache->fp));
-      fprintf_unfiltered (gdb_stdlog, " }}\n");
+			 frame_relative_level(next_frame));
+      fprintf_unfiltered(gdb_stdlog, "->");
+      fprintf_unfiltered(gdb_stdlog, " pc=0x%s", paddr_nz(cache->pc));
+      fprintf_unfiltered(gdb_stdlog, " sp=0x%s", paddr_nz(cache->sp));
+      fprintf_unfiltered(gdb_stdlog, " fp=0x%s", paddr_nz(cache->fp));
+      fprintf_unfiltered(gdb_stdlog, " }}\n");
     }
 
   return cache;
@@ -313,7 +317,7 @@ ppc_frame_find_prev_pc (struct frame_info *next_frame, void **this_cache)
     }
 }
 
-/* Given NEXT_FRAME, find the fp for NEXT_FRAME->prev, i.e. the 'this' frame. 
+/* Given NEXT_FRAME, find the fp for NEXT_FRAME->prev, i.e. the 'this' frame.
    If this function is in its prologue, the address of what the frame pointer
    WILL be set to is returned.  This gives you a consistent fp as you stepi
    through the function prologue/body but it means that you can't dereference
@@ -339,10 +343,10 @@ ppc_frame_unwind_fp (struct frame_info *next_frame, void **this_cache)
   this_func = frame_func_unwind (next_frame);
 
   /* The stack pointer (r1) hasn't yet been changed, but it will be moved
-     a little while later.  Compute its final address and return that as 
-     the frame ptr value.  
+     a little while later.  Compute its final address and return that as
+     the frame ptr value.
      It is desirable that the frame pointer's value not change while
-     stepping through a function so the user doesn't see spurious 
+     stepping through a function so the user doesn't see spurious
      "function stepped into" type messages from gdb.  */
 
   if (props->stack_offset_pc != INVALID_ADDRESS
@@ -356,7 +360,7 @@ ppc_frame_unwind_fp (struct frame_info *next_frame, void **this_cache)
 
   /* No frame pointer is used in this function, so return the stack pointer's
      value.  To get to this conditional, the stack pointer (r1) has already
-     been adjusted for this function's stack frame so no additional adjustment 
+     been adjusted for this function's stack frame so no additional adjustment
      is necessary.  */
 
   if (props->frameptr_used == 0)
@@ -387,15 +391,15 @@ ppc_frame_unwind_fp (struct frame_info *next_frame, void **this_cache)
 	 consistently... */
 
       next_sp = get_frame_register_unsigned (next_frame, SP_REGNUM);
-      this_fp = frame_unwind_register_unsigned (next_frame, 
+      this_fp = frame_unwind_register_unsigned (next_frame,
                                                 props->frameptr_reg);
       if (this_fp >= next_sp && this_fp - next_sp < 0xfffff)
           return this_fp;
-      complaint (&symfile_complaints, 
+      complaint (&symfile_complaints,
                                   "sanity check failed in ppc_frame_unwind_fp");
     }
 
-  /* And if all else fails, return the value of the stack pointer (r1) 
+  /* And if all else fails, return the value of the stack pointer (r1)
      register.  */
 
   return frame_unwind_register_unsigned (next_frame, SP_REGNUM);
@@ -444,7 +448,7 @@ ppc_frame_unwind_sp (struct frame_info *next_frame, void **this_cache)
       && props->stack_offset_pc != INVALID_ADDRESS
       && this_pc <= props->stack_offset_pc)
     {
-      return frame_unwind_register_unsigned 
+      return frame_unwind_register_unsigned
                                     (next_frame, SP_REGNUM) - props->offset;
     }
 
@@ -543,11 +547,11 @@ const char *gdb_register_names[] = {
 };
 
 const char *
-ppc_register_name (int reg_nr)
+ppc_register_name(int reg_nr)
 {
   if (reg_nr < 0)
     return NULL;
-  if (reg_nr >= (sizeof (gdb_register_names) / sizeof (*gdb_register_names)))
+  if ((size_t)reg_nr >= (sizeof(gdb_register_names) / sizeof(*gdb_register_names)))
     return NULL;
   return gdb_register_names[reg_nr];
 }
@@ -589,8 +593,8 @@ ppc_register_virtual_type (struct gdbarch *gdbarch, int n)
 }
 
 int
-ppc_register_reggroup_p (struct gdbarch *gdbarch, int regnum,
-                         struct reggroup *group)
+ppc_register_reggroup_p(struct gdbarch *gdbarch, int regnum,
+                        struct reggroup *group)
 {
   if ((regnum == PPC_MACOSX_VSCR_REGNUM)
       || (regnum == PPC_MACOSX_VRSAVE_REGNUM))
@@ -605,9 +609,9 @@ ppc_register_reggroup_p (struct gdbarch *gdbarch, int regnum,
 }
 
 int
-ppc_use_struct_convention (int gccp, struct type *value_type)
+ppc_use_struct_convention(int gccp, struct type *value_type)
 {
-  if ((TYPE_LENGTH (value_type) == 16) && TYPE_VECTOR (value_type))
+  if ((TYPE_LENGTH(value_type) == 16) && TYPE_VECTOR(value_type))
     return 0;
 
   return 1;
@@ -669,19 +673,19 @@ ppc_frame_prev_register (struct frame_info *next_frame, void **this_cache,
 
       if (valuep)
         {
-          if (cache->prev_pc == (CORE_ADDR) - 1)
-            cache->prev_pc = ppc_frame_find_prev_pc (next_frame, this_cache);
-          store_unsigned_integer (valuep,
-                                  register_size (current_gdbarch, regnum),
-                                  cache->prev_pc);
+          if (cache->prev_pc == (CORE_ADDR)-1L)
+            cache->prev_pc = ppc_frame_find_prev_pc(next_frame, this_cache);
+          store_unsigned_integer(valuep,
+                                 register_size(current_gdbarch, regnum),
+                                 cache->prev_pc);
         }
 
       return;
     }
 
-  saved_regs = ppc_frame_saved_regs (next_frame, this_cache);
+  saved_regs = ppc_frame_saved_regs(next_frame, this_cache);
 
-  if ((saved_regs != NULL) && (saved_regs[regnum] != -1))
+  if ((saved_regs != NULL) && (saved_regs[regnum] != (CORE_ADDR)-1L))
     {
       /* APPLE LOCAL variable opt states.  */
       *optimizedp = opt_okay;
@@ -698,7 +702,7 @@ ppc_frame_prev_register (struct frame_info *next_frame, void **this_cache,
 	     regs, since for a 32 bit task, the registers are 64 bits,
 	     but only 32 bits are stored on the stack.  */
 
-	  if (PPC_MACOSX_IS_FP_REGNUM (regnum) 
+	  if (PPC_MACOSX_IS_FP_REGNUM (regnum)
 	      || PPC_MACOSX_IS_VP_REGNUM (regnum))
 	    {
 	      wordsize = register_size (current_gdbarch, regnum);
@@ -768,7 +772,7 @@ ppc_frame_this_id (struct frame_info *next_frame, void **this_cache,
 }
 
 static struct ppc_frame_cache *
-ppc_sigtramp_frame_cache (struct frame_info *next_frame, void **this_cache)
+ppc_sigtramp_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   enum
   { EXCSTATE = 0x20, GPSTATE = 0xa0, GPSTATE64 = 0x130,
@@ -783,21 +787,21 @@ ppc_sigtramp_frame_cache (struct frame_info *next_frame, void **this_cache)
   unsigned int i;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct ppc_frame_cache *)*this_cache;
 
-  cache = ppc_alloc_frame_cache ();
+  cache = ppc_alloc_frame_cache();
   *this_cache = cache;
 
-  cache->sp = frame_unwind_register_unsigned (next_frame, SP_REGNUM);
+  cache->sp = frame_unwind_register_unsigned(next_frame, SP_REGNUM);
   if (cache->sp == 0)
     return cache;
 
-  cache->pc = frame_func_unwind (next_frame);
+  cache->pc = frame_func_unwind(next_frame);
 
-  sigframe = read_memory_unsigned_integer (cache->sp, TARGET_PTR_BIT / 8);
+  sigframe = read_memory_unsigned_integer(cache->sp, TARGET_PTR_BIT / 8);
   context =
-    read_memory_unsigned_integer (sigframe + 0xd4, TARGET_PTR_BIT / 8);
-  length = read_memory_unsigned_integer (sigframe + 0xd0, TARGET_INT_BIT / 8);
+    read_memory_unsigned_integer(sigframe + 0xd4, TARGET_PTR_BIT / 8);
+  length = read_memory_unsigned_integer(sigframe + 0xd0, TARGET_INT_BIT / 8);
 
   switch (length)
     {
@@ -868,31 +872,31 @@ ppc_sigtramp_frame_cache (struct frame_info *next_frame, void **this_cache)
 }
 
 static void
-ppc_sigtramp_frame_this_id (struct frame_info *next_frame, void **this_cache,
-                            struct frame_id *this_id)
+ppc_sigtramp_frame_this_id(struct frame_info *next_frame,
+                           void **this_cache, struct frame_id *this_id)
 {
   struct ppc_frame_cache *cache =
     ppc_sigtramp_frame_cache (next_frame, this_cache);
 
   /* See the end of ppc_push_dummy_call.  */
-  (*this_id) = frame_id_build (cache->fp, frame_pc_unwind (next_frame));
+  (*this_id) = frame_id_build(cache->fp, frame_pc_unwind(next_frame));
 }
 
 static void
-ppc_sigtramp_frame_prev_register (struct frame_info *next_frame,
-                                  void **this_cache,
-				  /* APPLE LOCAL variable opt states.  */
-                                  int regnum, enum opt_state *optimizedp,
-                                  enum lval_type *lvalp, CORE_ADDR * addrp,
-                                  int *realnump, gdb_byte *valuep)
+ppc_sigtramp_frame_prev_register(struct frame_info *next_frame,
+                                 void **this_cache,
+				 /* APPLE LOCAL variable opt states.  */
+                                 int regnum, enum opt_state *optimizedp,
+                                 enum lval_type *lvalp, CORE_ADDR *addrp,
+                                 int *realnump, gdb_byte *valuep)
 {
   struct ppc_frame_cache *cache =
-    ppc_sigtramp_frame_cache (next_frame, this_cache);
+    ppc_sigtramp_frame_cache(next_frame, this_cache);
   CORE_ADDR *saved_regs = NULL;
 
-  saved_regs = ppc_frame_saved_regs (next_frame, this_cache);
+  saved_regs = ppc_frame_saved_regs(next_frame, this_cache);
 
-  if ((saved_regs != NULL) && (saved_regs[regnum] != -1))
+  if ((saved_regs != NULL) && (saved_regs[regnum] != (CORE_ADDR)-1L))
     {
       int size;
       int offset = 0;
@@ -934,13 +938,13 @@ static const struct frame_unwind ppc_sigtramp_frame_unwind = {
 };
 
 static const struct frame_unwind *
-ppc_sigtramp_frame_sniffer (struct frame_info *next_frame)
+ppc_sigtramp_frame_sniffer(struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
   char *name;
 
-  find_pc_partial_function_no_inlined (pc, &name, NULL, NULL);
-  if (legacy_pc_in_sigtramp (pc, name))
+  find_pc_partial_function_no_inlined(pc, &name, NULL, NULL);
+  if (legacy_pc_in_sigtramp(pc, name))
     return &ppc_sigtramp_frame_unwind;
 
   return NULL;
@@ -967,14 +971,14 @@ static const struct frame_base ppc_frame_base = {
 
 /* Get the ith function argument for the current function.  */
 CORE_ADDR
-ppc_fetch_pointer_argument (struct frame_info *frame, int argi,
-                            struct type *type)
+ppc_fetch_pointer_argument(struct frame_info *frame, int argi,
+                           struct type *type)
 {
   CORE_ADDR addr;
   static unsigned long long mask = 0xffffffff;
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
 
-  addr = get_frame_register_unsigned (frame, 3 + argi);
+  addr = get_frame_register_unsigned(frame, 3 + argi);
 
   /* I am not sure whether the ABI specifies that the upper 32
      bits of the register holding a pointer need to be set to
@@ -986,19 +990,19 @@ ppc_fetch_pointer_argument (struct frame_info *frame, int argi,
 }
 
 static CORE_ADDR
-ppc_integer_to_address (struct gdbarch *gdbarch, struct type *type, 
-                        const gdb_byte *buf)
+ppc_integer_to_address(struct gdbarch *gdbarch, struct type *type,
+                       const gdb_byte *buf)
 {
-  gdb_byte *tmp = alloca (TYPE_LENGTH (builtin_type_void_data_ptr));
-  LONGEST val = unpack_long (type, buf);
-  store_unsigned_integer (tmp, TYPE_LENGTH (builtin_type_void_data_ptr), val);
-  return extract_unsigned_integer (tmp,
-                                   TYPE_LENGTH (builtin_type_void_data_ptr));
+  gdb_byte *tmp = alloca(TYPE_LENGTH (builtin_type_void_data_ptr));
+  LONGEST val = unpack_long(type, buf);
+  store_unsigned_integer(tmp, TYPE_LENGTH(builtin_type_void_data_ptr), val);
+  return extract_unsigned_integer(tmp,
+                                  TYPE_LENGTH(builtin_type_void_data_ptr));
 }
 
 /* Align to 16 byte boundary */
 static CORE_ADDR
-ppc_macosx_frame_align (struct gdbarch *gdbarch, CORE_ADDR addr)
+ppc_macosx_frame_align(struct gdbarch *gdbarch, CORE_ADDR addr)
 {
    return (addr & -16);
 }
@@ -1095,7 +1099,7 @@ ppc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_push_dummy_call (gdbarch, ppc_darwin_abi_push_dummy_call);
   set_gdbarch_frame_align (gdbarch, ppc_macosx_frame_align);
   set_gdbarch_frame_red_zone_size (gdbarch, 224);
-  
+
   set_gdbarch_stab_reg_to_regnum (gdbarch, ppc_macosx_stab_reg_to_regnum);
   set_gdbarch_dwarf2_reg_to_regnum (gdbarch, rs6000_dwarf2_reg_to_regnum);
 
@@ -1314,7 +1318,7 @@ ppc_macosx_init_abi_64 (struct gdbarch_info info, struct gdbarch *gdbarch)
   set_gdbarch_return_value (gdbarch, ppc64_darwin_abi_return_value);
   set_gdbarch_frame_red_zone_size (gdbarch, 288);
   set_gdbarch_frame_align (gdbarch, ppc_macosx_frame_align);
-  
+
   set_gdbarch_get_longjmp_target (gdbarch, ppc_64_macosx_get_longjmp_target);
   /* APPLE LOCAL: Replace built in fp user reg read callback.
      The ppc frame information knows if a frame uses a frame pointer and if
@@ -1324,14 +1328,14 @@ ppc_macosx_init_abi_64 (struct gdbarch_info info, struct gdbarch *gdbarch)
 }
 
 static int
-ppc_mach_o_query_64bit ()
+ppc_mach_o_query_64bit(void)
 {
   host_basic_info_data_t info;
   mach_msg_type_number_t count;
 
   count = HOST_BASIC_INFO_COUNT;
-  host_info (mach_host_self (), HOST_BASIC_INFO, (host_info_t) & info,
-             &count);
+  host_info(mach_host_self(), HOST_BASIC_INFO, (host_info_t)&info,
+            &count);
 
   return (info.cpu_type == CPU_TYPE_POWERPC &&
           info.cpu_subtype == CPU_SUBTYPE_POWERPC_970);
@@ -1357,7 +1361,7 @@ ppc_mach_o_osabi_sniffer (bfd *abfd)
 #define PPC_64_JMP_LR 0xa8
 
 static int
-ppc_macosx_get_longjmp_target_helper (unsigned int offset, CORE_ADDR *pc)
+ppc_macosx_get_longjmp_target_helper(unsigned int offset, CORE_ADDR *pc)
 {
   CORE_ADDR jmp_buf;
   ULONGEST long_addr = 0;
@@ -1366,10 +1370,10 @@ ppc_macosx_get_longjmp_target_helper (unsigned int offset, CORE_ADDR *pc)
      jump buf.  The stored lr there is offset by PPC_JMP_LR as
      given above.  */
 
-  jmp_buf = read_register (PPC_MACOSX_FIRST_GP_REGNUM + 3);
+  jmp_buf = read_register(PPC_MACOSX_FIRST_GP_REGNUM + 3);
 
-  if (safe_read_memory_unsigned_integer
-      (jmp_buf + offset, TARGET_PTR_BIT / 8, &long_addr))
+  if (safe_read_memory_unsigned_integer((jmp_buf + offset),
+                                        (TARGET_PTR_BIT / 8), &long_addr))
     {
       *pc = long_addr;
       return 1;
@@ -1379,76 +1383,78 @@ ppc_macosx_get_longjmp_target_helper (unsigned int offset, CORE_ADDR *pc)
 }
 
 static int
-ppc_64_macosx_get_longjmp_target (CORE_ADDR *pc)
+ppc_64_macosx_get_longjmp_target(CORE_ADDR *pc)
 {
-  return ppc_macosx_get_longjmp_target_helper (PPC_64_JMP_LR, pc);
+  return ppc_macosx_get_longjmp_target_helper(PPC_64_JMP_LR, pc);
 }
 
 static int
-ppc_macosx_get_longjmp_target (CORE_ADDR *pc)
+ppc_macosx_get_longjmp_target(CORE_ADDR *pc)
 {
-  return ppc_macosx_get_longjmp_target_helper (PPC_JMP_LR, pc);
+  return ppc_macosx_get_longjmp_target_helper(PPC_JMP_LR, pc);
 }
 
-/* Callback function for user_reg_replace (). This function will get the
+/* Callback function for user_reg_replace(). This function will get the
    current value of the frame pointer for the current frame based off of
    the ppc specific frame information. If the frame uses a frame register
    other than the SP, it will return that register, otherwise it will return
    the SP value. This allows modification of the ppc frame pointer from
    expressions using the "print $fp = <expr>" format.  */
 static struct value *
-ppc_value_of_builtin_frame_fp_reg (struct frame_info *frame)
+ppc_value_of_builtin_frame_fp_reg(struct frame_info *frame)
 {
   CORE_ADDR frame_pc;
   ppc_function_properties *props;
   /* Get the ppc specific frame information for this frame.  */
-  props = ppc_frame_function_properties (frame_next_hack (frame), 
-					 frame_cache_hack (frame));
+  props = ppc_frame_function_properties(frame_next_hack(frame),
+                                        (void **)frame_cache_hack(frame));
   if (props)
     {
-      /* Get the current frame PC and make sure that our pc is 
-         beyond the instruction that sets up the frame pointer register.  */
-      frame_pc = get_frame_pc (frame);
+      /* Get the current frame PC and make sure that our pc is
+         beyond the instruction that sets up the frame pointer register. */
+      frame_pc = get_frame_pc(frame);
 
-      if (props->frameptr_used && props->frameptr_reg > 0
-	 && props->frameptr_pc != INVALID_ADDRESS
-	 && props->frameptr_pc <= frame_pc)
-	{
+      if ((props->frameptr_used) && (props->frameptr_reg > 0)
+          && (props->frameptr_pc != INVALID_ADDRESS)
+          && (props->frameptr_pc <= frame_pc))
+        {
 	  /* We are using a Frame Pointer register other than
 	     the stack pointer, return its value.  */
-	  return value_of_register (props->frameptr_reg, frame);
+	  return value_of_register(props->frameptr_reg, frame);
 	}
     }
   /* Default to using the SP as our frame pointer if we don't find
      any information to the contrary.  */
-  return value_of_register (PPC_MACOSX_SP_REGNUM, frame);
+  return value_of_register(PPC_MACOSX_SP_REGNUM, frame);
 }
 
 void
-_initialize_ppc_tdep ()
+_initialize_ppc_tdep(void)
 {
-  register_gdbarch_init (bfd_arch_powerpc, ppc_gdbarch_init);
+  register_gdbarch_init(bfd_arch_powerpc, ppc_gdbarch_init);
 
-  gdbarch_register_osabi_sniffer (bfd_arch_unknown, bfd_target_mach_o_flavour,
-                                  ppc_mach_o_osabi_sniffer);
+  gdbarch_register_osabi_sniffer(bfd_arch_unknown, bfd_target_mach_o_flavour,
+                                 ppc_mach_o_osabi_sniffer);
 
-  gdbarch_register_osabi (bfd_arch_powerpc, 0, GDB_OSABI_DARWIN,
-                          ppc_macosx_init_abi);
+  gdbarch_register_osabi(bfd_arch_powerpc, 0, GDB_OSABI_DARWIN,
+                         ppc_macosx_init_abi);
 
-  gdbarch_register_osabi (bfd_arch_powerpc, bfd_mach_ppc64,
-                          GDB_OSABI_DARWIN64, ppc_macosx_init_abi_64);
+  gdbarch_register_osabi(bfd_arch_powerpc, bfd_mach_ppc64,
+                         GDB_OSABI_DARWIN64, ppc_macosx_init_abi_64);
 
-  add_setshow_boolean_cmd ("ppc", class_obscure,
-			   &ppc_debugflag, _("\
+  add_setshow_boolean_cmd("ppc", class_obscure,
+			  &ppc_debugflag, _("\
 Set if printing PPC stack analysis debugging statements."), _("\
 Show if printing PPC stack analysis debugging statements."), NULL,
-			   NULL, NULL,
-			   &setdebuglist, &showdebuglist);
+			  NULL, NULL,
+			  &setdebuglist, &showdebuglist);
 
-  add_setshow_uinteger_cmd ("ppc-maximum-frame-size", class_obscure,
-			    &ppc_max_frame_size, _("\
+  add_setshow_uinteger_cmd("ppc-maximum-frame-size", class_obscure,
+			   &ppc_max_frame_size, _("\
 Set the maximum size to expect for a valid PPC frame."), _("\
 Show the maximum size to expect for a valid PPC frame."), NULL,
-			    NULL, NULL,
-			    &setlist, &showlist);
+			   NULL, NULL,
+			   &setlist, &showlist);
 }
+
+/* EOF */

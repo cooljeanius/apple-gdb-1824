@@ -5239,10 +5239,10 @@ fi
 done
 
 
-for ac_header in a.out.h errno.h fcntl.h limits.h locale.h machine/reg.h \
-                  sgtty.h signal.h stdarg.h stddef.h stdio.h sys/dir.h \
-                  sys/file.h sys/ioctl.h sys/param.h sys/ptrace.h \
-                  sys/types.h sys/user.h varargs.h
+for ac_header in a.out.h errno.h fcntl.h limits.h locale.h mach/kmod.h \
+                  machine/reg.h sgtty.h signal.h stdarg.h stddef.h \
+                  stdio.h sys/dir.h sys/file.h sys/ioctl.h sys/param.h \
+                  sys/ptrace.h sys/types.h sys/user.h varargs.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"

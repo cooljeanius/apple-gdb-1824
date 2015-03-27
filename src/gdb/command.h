@@ -31,8 +31,10 @@
 
 enum command_class
 {
-  /* Special args to help_list */
-  class_deprecated, all_classes = -2, all_commands = -1,
+  /* Special args to help_list: */
+  class_deprecated = -3, /* FIXME: not sure if this should be -3 or 0... */
+  /* (not that it matters though; it is never used anywhere else...) */
+  all_classes = -2, all_commands = -1,
   /* Classes of commands */
   no_class = -1, class_run = 0, class_vars, class_stack,
   class_files, class_support, class_info, class_breakpoint, class_trace,

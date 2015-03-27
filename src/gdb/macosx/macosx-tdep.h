@@ -5,6 +5,8 @@
 #ifndef __GDB_MACOSX_TDEP_H__
 #define __GDB_MACOSX_TDEP_H__
 
+#include "defs.h"
+
 #if defined(TARGET_POWERPC)
 # include "ppc-macosx-tdep.h"
 #elif defined(TARGET_I386) || defined(TARGET_X86_64)
@@ -16,7 +18,9 @@
 #elif defined(__i386__) || defined(HOST_I386) || defined(__x86_64__) || defined(HOST_X86_64)
 # include "i386-macosx-tdep.h"
 #elif defined(__arm__) || defined(HOST_ARM)
-# include "arm-macosx-tdep.h"
+# if !defined(__GDB_ARM_MACOSX_TDEP_H__)
+#  include "arm-macosx-tdep.h"
+# endif /* !__GDB_ARM_MACOSX_TDEP_H__ */
 #else
 # error "Unrecognized target architecture"
 #endif /* TARGET_POWERPC || TARGET_I386 || TARGET_ARM */

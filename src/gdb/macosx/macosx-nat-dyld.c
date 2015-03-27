@@ -1148,16 +1148,16 @@ macosx_dyld_init (macosx_dyld_thread_status *s, bfd *exec_bfd)
 
   if (ret != 1)
     {
-      macosx_locate_dyld_static (s, &static_dyld_address);
+      macosx_locate_dyld_static(s, &static_dyld_address);
       if (s->dyld_addr != INVALID_ADDRESS)
-        ret = macosx_locate_dyld (&dyld_address, s->dyld_addr);
+        ret = macosx_locate_dyld(&dyld_address, s->dyld_addr);
       else if (static_dyld_address != INVALID_ADDRESS)
-        ret = macosx_locate_dyld (&dyld_address, static_dyld_address);
+        ret = macosx_locate_dyld(&dyld_address, static_dyld_address);
       else
-        ret = macosx_locate_dyld (&dyld_address, INVALID_ADDRESS);
+        ret = macosx_locate_dyld(&dyld_address, INVALID_ADDRESS);
     }
 
-  if (ret != 1 && target_is_remote ())
+  if ((ret != 1) && target_is_remote())
     {
       /* On an iPhone we can find dyld at 0x2fe00000.
          On a PPC app running under Rosetta, we will find dyld at 0x8fc00000.

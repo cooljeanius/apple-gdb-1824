@@ -22,13 +22,13 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if defined (TARGET_POWERPC)
+#if defined(TARGET_POWERPC)
 # include "ppc-macosx-thread-status.h"
 # include "ppc-macosx-regs.h"
-#elif defined (TARGET_I386)
+#elif defined(TARGET_I386)
 # include "i386-macosx-thread-status.h"
 # include "i386-macosx-tdep.h"
-#elif defined (TARGET_ARM)
+#elif defined(TARGET_ARM)
 # include "arm-macosx-thread-status.h"
 # include "arm-macosx-tdep.h"
 #else
@@ -969,23 +969,24 @@ static char *
 macosx_core_ptid_to_str(ptid_t pid)
 {
   static char buf[128];
-  sprintf(buf, "core thread %lu", ptid_get_lwp (pid));
+  sprintf(buf, "core thread %lu", ptid_get_lwp(pid));
   return buf;
 }
 
 static int
-core_thread_alive (ptid_t pid)
+core_thread_alive(ptid_t pid ATTRIBUTE_UNUSED)
 {
   return 1;
 }
 
 static void
-core_prepare_to_store (void)
+core_prepare_to_store(void)
 {
+  return;
 }
 
 static void
-core_store_registers (int regno)
+core_store_registers(int regno)
 {
   core_cached_registers_raw_t *cached_regs_raw;
   struct thread_info *thrd_info = find_thread_pid (inferior_ptid);
@@ -1003,8 +1004,7 @@ core_store_registers (int regno)
      this information and it will get read back out. The register bytes are
      stored in target endain format just like the register cache, so we must
      make sure to keep them in target endian format during this store.  */
-#if defined (TARGET_POWERPC)
-
+#if defined(TARGET_POWERPC)
   if (cached_regs_raw->ppc_gp_regs)
     ppc_macosx_store_gp_registers_raw (cached_regs_raw->ppc_gp_regs);
 
@@ -1012,41 +1012,34 @@ core_store_registers (int regno)
     ppc_macosx_store_fp_registers_raw (cached_regs_raw->ppc_fp_regs);
 
   if (cached_regs_raw->ppc_vp_regs)
-    ppc_macosx_store_vp_registers_raw (cached_regs_raw->ppc_vp_regs);
+    ppc_macosx_store_vp_registers_raw(cached_regs_raw->ppc_vp_regs);
 
   if (cached_regs_raw->ppc64_gp_regs)
-    ppc_macosx_store_gp_registers_64_raw (cached_regs_raw->ppc64_gp_regs);
-
-#elif defined (TARGET_I386)
-
+    ppc_macosx_store_gp_registers_64_raw(cached_regs_raw->ppc64_gp_regs);
+#elif defined(TARGET_I386)
   if (cached_regs_raw->i386_gp_regs)
-    i386_macosx_store_gp_registers_raw (cached_regs_raw->i386_gp_regs);
+    i386_macosx_store_gp_registers_raw(cached_regs_raw->i386_gp_regs);
 
   if (cached_regs_raw->i386_fp_regs)
-    i386_macosx_store_fp_registers_raw (cached_regs_raw->i386_fp_regs);
+    i386_macosx_store_fp_registers_raw(cached_regs_raw->i386_fp_regs);
 
   if (cached_regs_raw->x86_64_gp_regs)
-    x86_64_macosx_store_gp_registers_raw (cached_regs_raw->x86_64_gp_regs);
+    x86_64_macosx_store_gp_registers_raw(cached_regs_raw->x86_64_gp_regs);
 
   if (cached_regs_raw->x86_64_fp_regs)
-    x86_64_macosx_store_fp_registers_raw (cached_regs_raw->x86_64_fp_regs);
-
-
+    x86_64_macosx_store_fp_registers_raw(cached_regs_raw->x86_64_fp_regs);
 #elif defined (TARGET_ARM)
-
   if (cached_regs_raw->arm_gp_regs)
-    arm_macosx_store_gp_registers_raw (cached_regs_raw->arm_gp_regs);
+    arm_macosx_store_gp_registers_raw(cached_regs_raw->arm_gp_regs);
 
   if (cached_regs_raw->arm_vfpv1_regs)
-    arm_macosx_store_vfpv1_regs_raw (cached_regs_raw->arm_vfpv1_regs);
+    arm_macosx_store_vfpv1_regs_raw(cached_regs_raw->arm_vfpv1_regs);
 
   if (cached_regs_raw->arm_vfpv3_regs)
-    arm_macosx_store_vfpv3_regs_raw (cached_regs_raw->arm_vfpv3_regs);
-
+    arm_macosx_store_vfpv3_regs_raw(cached_regs_raw->arm_vfpv3_regs);
 #else
 # error "unsupported architecture"
 #endif /* TARGET_foo */
-
 }
 
 static void

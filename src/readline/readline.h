@@ -184,7 +184,7 @@ extern int rl_yank_last_arg PARAMS((int, int));
 /* Not available unless __CYGWIN__ is defined. */
 #ifdef __CYGWIN__
 extern int rl_paste_from_clipboard PARAMS((int, int));
-#endif
+#endif /* __CYGWIN__ */
 
 /* Bindable commands for incremental searching. */
 extern int rl_reverse_search_history PARAMS((int, int));
@@ -371,7 +371,7 @@ extern int rl_reset_line_state PARAMS((void));
 extern int rl_crlf PARAMS((void));
 
 #if (defined(__STDC__) || defined(__cplusplus)) && defined(USE_VARARGS) && defined(PREFER_STDARG)
-extern int rl_message(const char *, ...)  __attribute__((__format__ (printf, 1, 2)));
+extern int rl_message(const char *, ...)  __attribute__((__format__(printf, 1, 2)));
 #else
 extern int rl_message PARAMS((void));
 #endif /* (__STDC__ || __cplusplus) && USE_VARARGS && PREFER_STDARG */
@@ -455,7 +455,7 @@ extern int crlf PARAMS((void));
 extern char **completion_matches PARAMS((char *, rl_compentry_func_t *));
 extern char *username_completion_function PARAMS((const char *, int));
 extern char *filename_completion_function PARAMS((const char *, int));
-#endif
+#endif /* 0 */
 
 /* **************************************************************** */
 /*								    */
@@ -806,6 +806,8 @@ extern int rl_restore_state PARAMS((struct readline_state *));
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
 #endif /* _READLINE_H_ */
+
+/* EOF */

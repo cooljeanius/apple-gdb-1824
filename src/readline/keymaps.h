@@ -25,9 +25,9 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
-#if defined (READLINE_LIBRARY)
+#if defined(READLINE_LIBRARY)
 #  include "rlstdc.h"
 #  include "chardefs.h"
 #  include "rltypedefs.h"
@@ -35,7 +35,7 @@ extern "C" {
 #  include <readline/rlstdc.h>
 #  include <readline/chardefs.h>
 #  include <readline/rltypedefs.h>
-#endif
+#endif /* READLINE_LIBRARY */
 
 /* A keymap contains one entry for each key in the ASCII set.
    Each entry consists of a type and a pointer.
@@ -51,7 +51,7 @@ typedef struct _keymap_entry {
    in a desired character set (e.g, 128 for ASCII, 256 for ISO Latin-x,
    and so on) plus one for subsequence matching. */
 #define KEYMAP_SIZE 257
-#define ANYOTHERKEY KEYMAP_SIZE-1
+#define ANYOTHERKEY (KEYMAP_SIZE - 1)
 
 /* I wanted to make the above structure contain a union of:
    union { rl_command_func_t *function; struct _keymap_entry *keymap; } value;
@@ -98,6 +98,8 @@ extern void rl_set_keymap PARAMS((Keymap));
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
 #endif /* _KEYMAPS_H_ */
+
+/* EOF */

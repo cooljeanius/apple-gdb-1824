@@ -1409,6 +1409,26 @@ fi
 AC_MSG_CHECKING([declarations])
 AC_MSG_RESULT([ ])dnl
 
+AC_CHECK_DECLS([atof],[],[],[
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest for atof wants to include <stdlib.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STDLIB_H */
+])dnl
+
+AC_CHECK_DECLS([strchr, strpbrk],[],[],[
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest expects <string.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STRING_H */
+])dnl
+
 m4_ifdef([libiberty_INIT],[
   libiberty_INIT
 ])dnl
@@ -1805,9 +1825,9 @@ unset ac_cv_func_getcwd
 unset ac_cv_func_gethostbyname
 unset ac_cv_func_strcasecmp
 unset ac_cv_func_strchr
-AC_CHECK_FUNCS([alarm assert atexit bzero dup2 exit fflush fgets fprintf \
-                fwrite getcwd gethostbyaddr gethostbyname gethostname \
-                getpass gets gettimeofday inet_ntoa isascii \
+AC_CHECK_FUNCS([atof alarm assert atexit bzero dup2 exit fflush fgets \
+                fprintf fwrite getcwd gethostbyaddr gethostbyname \
+                gethostname getpass gets gettimeofday inet_ntoa isascii \
                 mach_error_string memchr memcmp memcpy memmove mempcpy \
                 memset mkdir netname_look_up nl_langinfo pathconf pclose \
                 popen pow readdir re_comp regcomp select socket \
@@ -2732,7 +2752,7 @@ build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Wno-unused -Wunused-value -Wunused-label -Wunused-result \
 -Wempty-body -Wmissing-declarations \
 -Wno-format-security -Wno-format \
--Wmissing-noreturn -Waddress -Wattributes \
+-Waddress -Wattributes \
 -Wswitch -Wclobbered -Wcoverage-mismatch -Wdiv-by-zero \
 -Wdouble-promotion -Wfree-nonheap-object -Wsign-compare \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
@@ -2794,13 +2814,14 @@ case "${host}" in
 esac
 
 # GCC supports -Wuninitialized only with -O or -On, n != 0.
-# and also -Winit-self only with -Wuninitialized
-# others in this section are technically supported at other optimization
+# ...and also -Winit-self only works when -Wuninitialized is also used.
+# -Wmissing-noreturn requires -O or higher, or -fipa-pure-const to work.
+# Others in this section are technically supported at other optimization
 # levels, but really only make sense with it on.
-opt_warnings="-Wuninitialized -Winit-self -Wvolatile-register-var \
--Wdisabled-optimization -Waggressive-loop-optimizations \
--Wvector-operation-performance -Wmaybe-uninitialized \
--Wstrict-overflow=1 -Wunsafe-loop-optimizations"
+opt_warnings="-Wuninitialized -Winit-self -Wmissing-noreturn \
+-Wvolatile-register-var -Wdisabled-optimization \
+-Waggressive-loop-optimizations -Wvector-operation-performance \
+-Wmaybe-uninitialized -Wstrict-overflow=1 -Wunsafe-loop-optimizations"
 # -Warray-bounds is only for -O2 and up, or when -ftree-vrp is active, so
 # use a separate variable for it:
 opt_warnings_plus="${opt_warnings} -Warray-bounds"
@@ -2835,7 +2856,7 @@ fi
 #  * -Wmissing-prototypes (C-only; redundant with other flag)
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
 #  * -Winline (I can never tell if the compiler is right or not with this)
-#  * -Wformat (currently we explicitly disable this)
+#  * -Wformat (currently we explicitly disable this; required for others)
 #  * -Wundef (only if we can figure out how to fix the issue with caddr_t)
 #  * -Wunused-macros (if we also add back -Wundef as per above)
 #  * -Wunused-function (had been added, but I hate fixing it)

@@ -129,6 +129,9 @@
 /* Define to 1 if you have the <machine/reg.h> header file. */
 #undef HAVE_MACHINE_REG_H
 
+/* Define to 1 if you have the <mach/kmod.h> header file. */
+#undef HAVE_MACH_KMOD_H
+
 /* Define to 1 if your system has a GNU libc compatible `malloc' function, and
    to 0 otherwise. */
 #undef HAVE_MALLOC

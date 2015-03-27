@@ -96,9 +96,16 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # include "macosx/tm-i386-macosx.h"
 #elif defined(TARGET_ARM)
 # include "arm-tdep.h"
-# if defined(HOST_I386) || defined(__i386__)
+# if !defined(_TM_ARM_MACOSX_H_)
+#  include "tm-arm-macosx.h"
+# endif /* !_TM_ARM_MACOSX_H_ */
+# if !defined(__GDB_TM_ARM_MACOSX_H__)
+#  include "macosx/tm-arm-macosx.h"
+# endif /* !__GDB_TM_ARM_MACOSX_H__ */
+# if (defined(HOST_I386) || defined(__i386__)) && \
+     !defined(THROW_CATCH_FIND_TYPEINFO)
 #  include "macosx/tm-i386-macosx.h"
-# endif /* HOST_I386 || __i386__ */
+# endif /* (HOST_I386 || __i386__) && !THROW_CATCH_FIND_TYPEINFO */
 #else
 # error "Unrecognized target architecture."
 #endif /* TARGET_foo */
@@ -657,6 +664,7 @@ macosx_get_current_exception_event(void)
       exception_event->kind = EX_EVENT_CATCH;
     }
 
+  /* this can vary depending on target: */
 #ifdef THROW_CATCH_FIND_TYPEINFO
   typeinfo_str =
     THROW_CATCH_FIND_TYPEINFO(curr_frame, exception_event->kind);

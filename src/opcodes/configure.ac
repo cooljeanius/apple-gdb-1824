@@ -154,13 +154,29 @@ if test -x ${srcdir}/libtool; then
 fi
 
 AC_ARG_ENABLE([targets],
-[AS_HELP_STRING([--enable-targets],[alternative target configurations])],
+[AS_HELP_STRING([--enable-targets],
+                [A comma-delimited list of alternate target configurations.
+                 Alternatively, whitespace-delimiting it could work, too,
+                 if you remember to quote it properly.])],
 [case "${enableval}" in
-  yes | "") AC_MSG_ERROR([enable-targets option must specify target names or 'all'])
-            ;;
-  no)       enable_targets="" ;;
-  *)        enable_targets=${enableval} ;;
-esac])dnl
+  yes | "") 
+      AC_MSG_ERROR([enable-targets flag must specify targ names or 'all'])
+      ;;
+  no) enable_targets="" ;;
+  *)  enable_targets=${enableval} ;;
+esac
+test -n "${enable_targets}"])dnl
+  ## this flag could be dangerous:
+AC_ARG_ENABLE([obsolete],
+[AS_HELP_STRING([--enable-obsolete],
+                [allow building of obsolete target configurations])],
+[case "${enableval}" in
+  yes) export enable_obsolete="yes" ;;
+  no)  export enable_obsolete="no" ;;
+  *)   AC_MSG_ERROR([bad value '${enableval}' for obsolete flag]) ;;
+esac
+test -n "${enable_obsolete}"])dnl
+  ## other subdirs share this flag, too:
 AC_ARG_ENABLE([commonbfdlib],
 [AS_HELP_STRING([--enable-commonbfdlib],
                 [build shared BFD/opcodes/libiberty library])],
@@ -169,7 +185,8 @@ AC_ARG_ENABLE([commonbfdlib],
   no)  commonbfdlib=false ;;
   *) AC_MSG_ERROR([bad value ${enableval} for opcodes commonbfdlib flag])
      ;;
-esac])dnl
+esac
+test -n "${commonbfdlib}"])dnl
 
 dnl# APPLE LOCAL change is to omit the following:
 AM_BINUTILS_WARNINGS
@@ -458,14 +475,19 @@ fi
 
 all_targets=false
 selarchs=""
+
+AC_MSG_CHECKING([which targets to look up])
+AC_MSG_RESULT([plain ones are '${target}' and canonical ones are '${canon_targets}'])
 for targ in ${target} ${canon_targets}
 do
     if test "x${targ}" = "xall"; then
+        AC_MSG_NOTICE([no need to source config.bfd when targ is 'all'])
         all_targets=true
     else
-	AC_MSG_NOTICE([sourcing ../bfd/config.bfd])
+	AC_MSG_NOTICE([sourcing ../bfd/config.bfd for target '${targ}'])
 	. ${srcdir}/../bfd/config.bfd
 	selarchs="${selarchs} ${targ_archs}"
+	AC_MSG_NOTICE([selarchs are now '${selarchs}'])
     fi
 done	
 
@@ -643,11 +665,14 @@ changequote([,])
     # I have no clue why this is a thing:
     if test -e /mount/endor/wildenhu/local-x86_64/bin/sed; then
       if test -r ../ltmain.sh; then
+        echo "../ltconfig ../ltmain.sh"
         ../ltconfig ../ltmain.sh
       elif test -r ../ltmain-old.sh; then
+        echo "../ltconfig ../ltmain-old.sh"
         ../ltconfig ../ltmain-old.sh
       elif test -r ../ltcf-c.sh; then
-        ../ltconfig ../ltmain-old.sh
+        echo "../ltconfig ../ltcf-c.sh"
+        ../ltconfig ../ltcf-c.sh
       else
         echo "not sure which ltmain.sh to use to do so"
       fi

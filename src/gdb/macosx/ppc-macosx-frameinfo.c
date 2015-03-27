@@ -131,7 +131,7 @@ ppc_print_properties (ppc_function_properties * props)
           printf_filtered
             (" %d bytes of integer and floating-point registers have been saved:\n",
              props->offset);
-	  printf_filtered (" 0x%s is the stack setup address.\n", 
+	  printf_filtered (" 0x%s is the stack setup address.\n",
                            paddr_nz (props->stack_offset_pc));
         }
       if (props->saved_gpr >= 0)
@@ -186,13 +186,13 @@ ppc_print_properties (ppc_function_properties * props)
    information about a function frame. */
 
 CORE_ADDR
-ppc_parse_instructions (CORE_ADDR start, CORE_ADDR end,
-                        ppc_function_properties * props)
+ppc_parse_instructions(CORE_ADDR start, CORE_ADDR end,
+                       ppc_function_properties *props)
 {
   CORE_ADDR pc = start;
   CORE_ADDR last_recognized_insn = start;
-  int unrecognized_insn_count = 0; /* We want to allow some unrecognized instructions, 
-				      but we don't want to keep scanning forever. 
+  int unrecognized_insn_count = 0; /* We want to allow some unrecognized instructions,
+				      but we don't want to keep scanning forever.
 				      So this is the number of unrecognized instructions
 				      before we bail from the prologue scanning. */
   int max_insn = 6;             /* If we don't recognize an instruction, keep going
@@ -471,12 +471,12 @@ ppc_parse_instructions (CORE_ADDR start, CORE_ADDR end,
         }
       else if ((op & 0xfc1f0000) == 0xbc010000)	/* stmw Rx, NUM(r1) */
         {
-	  unsigned int reg = GET_SRC_REG (op);
-          if ((props->saved_gpr == -1) || (props->saved_gpr > reg))
+	  unsigned int reg = GET_SRC_REG(op);
+          if ((props->saved_gpr == -1) || (props->saved_gpr > (int)reg))
             {
               unsigned int i;
 	      props->saved_gpr = reg;
-              props->gpr_offset = SIGNED_SHORT (op) + offset2;
+              props->gpr_offset = SIGNED_SHORT(op) + offset2;
 	      for (i = reg; i < 32; i++)
 		props->gpr_bitmap[i] = 1;
 	    }
@@ -492,12 +492,12 @@ ppc_parse_instructions (CORE_ADDR start, CORE_ADDR end,
 	       /* std rx,NUM(r1), rx >= r13 */
 	       )
 	{
-	  unsigned int reg = GET_SRC_REG (op);
+	  unsigned int reg = GET_SRC_REG(op);
 	  props->gpr_bitmap[reg] = 1;
-          if ((props->saved_gpr == -1) || (props->saved_gpr > reg))
+          if ((props->saved_gpr == -1) || (props->saved_gpr > (int)reg))
             {
 	      props->saved_gpr = reg;
-              props->gpr_offset = SIGNED_SHORT (op) + offset2;
+              props->gpr_offset = SIGNED_SHORT(op) + offset2;
 	    }
 	  goto processed_insn;
 	}
@@ -752,22 +752,22 @@ ppc_parse_instructions (CORE_ADDR start, CORE_ADDR end,
      pc range but we aren't really done with the prologue.  There
      might still be some easy data we could recover if look a little
      further.  This does that but just for a couple of important
-     things that aren't likely to show up in regular code.  
+     things that aren't likely to show up in regular code.
      Note, we don't always trust end, because that comes from trying to
      look at line number ranges for more patches coming from the first
      line of the function.  But we don't look very far for this 'cause it
      is expensive.  It is simpler to do a fast scan here that search the
      line tables.  */
 
-  if (unrecognized_insn_count > max_insn || pc >= end) 
-    { 
+  if ((unrecognized_insn_count > max_insn) || (pc >= end))
+    {
       int cleanup_length = 6;
-      
+
       if ((!props->lr_saved
-	   && props->lr_reg != 0xffffffff
-	   && props->lr_invalid != 0
-	   && props->lr_valid_again == INVALID_ADDRESS)
-	  || (props->saved_gpr != -1 && props->offset == -1))
+	   && (props->lr_reg != (int)0xffffffff)
+	   && (props->lr_invalid != 0)
+	   && (props->lr_valid_again == INVALID_ADDRESS))
+	  || ((props->saved_gpr != -1) && (props->offset == -1)))
 	{
 	  /* We saw the link register made invalid, but we
 	     also didn't see it saved, or we saw GPR registers saved
@@ -776,14 +776,14 @@ ppc_parse_instructions (CORE_ADDR start, CORE_ADDR end,
 	     otherwise we will think the return address is always stored
 	     in some register, and end up adding a garbage address to
 	     the stack.  */
-	  
+
 	  for (; cleanup_length > 0; pc += 4, cleanup_length--)
 	    {
 	      ULONGEST op = 0;
-	      
+
 	      if (!safe_read_memory_unsigned_integer (pc, 4, &op))
 		break;
-	      
+
 	      if ((op & 0xfc1fffff) == 0x7c0803a6)      /* mtlr Rx */
 		{
 		  props->lr_valid_again = pc;
@@ -977,7 +977,7 @@ ppc_frame_saved_regs (struct frame_info *next_frame, void **this_cache)
 	  if (props->fpr_bitmap[i])
 	    {
 	      long offset = props->fpr_offset +
-                        ((i - props->saved_fpr) * register_size 
+                        ((i - props->saved_fpr) * register_size
                           (current_gdbarch, PPC_MACOSX_FIRST_FP_REGNUM));
 	      saved_regs[fpr] = prev_sp + offset;
 	    }
@@ -1051,10 +1051,10 @@ ppc_frame_function_properties (struct frame_info *next_frame,
     lbounds = *bounds;
   else
     {
-      /* BOUNDS can be NULL if there is no minsym for the address and 
-         THIS_FRAME can be NULL if NEXT_FRAME is inside the main function. 
+      /* BOUNDS can be NULL if there is no minsym for the address and
+         THIS_FRAME can be NULL if NEXT_FRAME is inside the main function.
 	 We need to be sure to not call get_frame_pc() using a NULL frame.  */
-      lbounds.prologue_start = this_frame ? get_frame_pc (this_frame) : 
+      lbounds.prologue_start = this_frame ? get_frame_pc (this_frame) :
 					    INVALID_ADDRESS;
       lbounds.body_start = INVALID_ADDRESS;
       lbounds.epilogue_start = INVALID_ADDRESS;

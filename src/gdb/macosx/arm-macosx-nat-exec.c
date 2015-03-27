@@ -22,6 +22,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+/* headers from parent srcdir: */
 #include "defs.h"
 #include "frame.h"
 #include "inferior.h"
@@ -34,6 +35,7 @@
 #include "gdbarch.h"
 #include "arch-utils.h"
 
+/* headers from macosx subdir (well, mostly): */
 #include "macosx-nat-mutils.h"
 
 #include "arm-tdep.h"

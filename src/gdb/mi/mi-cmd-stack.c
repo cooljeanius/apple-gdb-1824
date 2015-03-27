@@ -40,12 +40,13 @@
 /* APPLE LOCAL - subroutine inlining  */
 #include "inlining.h"
 
-#ifdef __i386__
+#if (defined(__i386__) && !defined(THROW_CATCH_FIND_TYPEINFO)) || \
+    defined(TARGET_I386)
 # include "tm-i386-macosx.h"
 # include "config/i386/tm-i386-macosx.h"
 #else
 # define MI_CMD_STACK_C_NOT_ON_i386 1
-#endif /* __i386__ */
+#endif /* (__i386__ && !THROW_CATCH_FIND_TYPEINFO) || TARGET_I386 */
 
 /* FIXME: There is no general mi header to put these kinds of utility
  * functions: */
@@ -66,35 +67,35 @@ void mi_interp_context_hook(int thread_id);
 regex_t mi_symbol_filter;
 
 static char *print_values_bad_input_string =
-           "Unknown value for PRINT_VALUES: must be: 0 or \"--no-values\", "
-	   "1 or \"--all-values\", 2 or \"--simple-values\", "
-           "3 or \"--make-varobj\"";
+         "Unknown value for PRINT_VALUES: must be: 0 or \"--no-values\", "
+	 "1 or \"--all-values\", 2 or \"--simple-values\", "
+         "3 or \"--make-varobj\"";
 
 /* Use this to print any extra info in the stack listing output that is
    not in the standard gdb printing */
 
-void mi_print_frame_more_info (struct ui_out *uiout,
-				struct symtab_and_line *sal,
-				struct frame_info *fi);
+void mi_print_frame_more_info(struct ui_out *uiout,
+                              struct symtab_and_line *sal,
+                              struct frame_info *fi);
 
-static void list_args_or_locals (int locals, enum print_values values,
+static void list_args_or_locals(int locals, enum print_values values,
+                                struct frame_info *fi,
+                                int all_blocks);
+
+static void print_syms_for_block(struct block *block,
 				 struct frame_info *fi,
-				 int all_blocks);
-
-static void print_syms_for_block (struct block *block,
-				  struct frame_info *fi,
-				  struct ui_stream *stb,
-				  int locals,
-				  int consts,
-				  enum print_values values,
-				  regex_t *filter);
+				 struct ui_stream *stb,
+				 int locals,
+				 int consts,
+				 enum print_values values,
+				 regex_t *filter);
 
 static void
-print_globals_for_symtab (struct symtab *file_symtab,
-			  struct ui_stream *stb,
-			  enum print_values values,
-			  int consts,
-			  regex_t *filter);
+print_globals_for_symtab(struct symtab *file_symtab,
+			 struct ui_stream *stb,
+			 enum print_values values,
+			 int consts,
+			 regex_t *filter);
 
 /* Print a list of the stack frames. Args can be none, in which case
    we want to print the whole backtrace, or a pair of numbers
@@ -367,9 +368,10 @@ mi_cmd_stack_list_frames_lite (char *command, char **argv, int argc)
 
 	  if ((limit == -1) || (i >= start && i < limit))
 	    {
-	      print_fun (uiout, &i, get_frame_pc (fi),
-                                        get_frame_base(fi));
-              int j = frame_relative_level (fi);
+              int j;
+	      print_fun(uiout, &i, get_frame_pc(fi),
+                        get_frame_base(fi));
+              j = frame_relative_level(fi);
               while ((j < i) && (fi != NULL))
                 {
                   fi = get_prev_frame (fi);

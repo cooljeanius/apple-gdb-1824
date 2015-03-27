@@ -22,19 +22,19 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if defined (TARGET_I386)
+#if defined(TARGET_I386)
 # define KDP_TARGET_I386 1
 #else
 # undef KDP_TARGET_I386
 #endif /* TARGET_I386 */
 
-#if defined (TARGET_POWERPC)
+#if defined(TARGET_POWERPC)
 # define KDP_TARGET_POWERPC 1
 #else
 # undef KDP_TARGET_POWERPC
 #endif /* TARGET_POWERPC */
 
-#if defined (TARGET_ARM)
+#if defined(TARGET_ARM)
 # define KDP_TARGET_ARM 1
 #else
 # undef KDP_TARGET_ARM
@@ -50,18 +50,18 @@
 #include "mach-o.h"
 #include "objfiles.h"
 
-#if KDP_TARGET_POWERPC
+#if defined(KDP_TARGET_POWERPC) && KDP_TARGET_POWERPC
 # include "ppc-macosx-thread-status.h"
 # include "ppc-macosx-regs.h"
 # include "ppc-macosx-regnums.h"
 #endif /* KDP_TARGET_POWERPC */
 
-#if KDP_TARGET_I386
+#if defined(KDP_TARGET_I386) && KDP_TARGET_I386
 # include "i386-macosx-thread-status.h"
 # include "i386-macosx-tdep.h"
 #endif /* KDP_TARGET_I386 */
 
-#ifdef KDP_TARGET_ARM
+#if defined(KDP_TARGET_ARM) && KDP_TARGET_ARM
 # include "arm-macosx-thread-status.h"
 # include "arm-macosx-tdep.h"
 # include "arm-tdep.h"
@@ -121,8 +121,8 @@
 #include <uuid/uuid.h>
 #include <libintl.h>
 
-extern int standard_is_async_p (void);
-extern int standard_can_async_p (void);
+extern int standard_is_async_p(void);
+extern int standard_can_async_p(void);
 
 static unsigned int kdp_debug_level = 3;
 static unsigned int kdp_default_port = 41139;
@@ -143,6 +143,8 @@ static int remote_kdp_feature = 0;
 struct target_ops kdp_ops;
 
 static void kdp_mourn_inferior(void);
+
+extern void _initialize_remote_kdp(void);
 
 static void
 set_timeouts(char *args, int from_tty, struct cmd_list_element *cmd)
@@ -2318,21 +2320,21 @@ update_kdp_default_host_type(char *args, int from_tty,
 }
 
 void
-_initialize_remote_kdp (void)
+_initialize_remote_kdp(void)
 {
   static const char *archlist[] = { "powerpc", "ia32", NULL };
 
-  init_kdp_ops ();
-  add_target (&kdp_ops);
+  init_kdp_ops();
+  add_target(&kdp_ops);
 
-  add_com ("kdp-reattach", class_run, kdp_reattach_command,
-           "Re-attach to a (possibly connected) remote Mac OS X kernel.\nThe kernel must support the reattach packet.");
-  add_com ("kdp-reboot", class_run, kdp_reboot_command,
-           "Reboot a connected remote Mac OS X kernel.\nThe kernel must support the reboot packet.");
-  add_com ("kdp-detach", class_run, kdp_detach_command,
-           "Reset a (possibly disconnected) remote Mac OS X kernel.\n");
-  add_com ("kdp-kernelversion", class_run, kdp_kernelversion_command,
-           "Print the version of a remote Mac OS X kernel.\n");
+  add_com("kdp-reattach", class_run, kdp_reattach_command,
+          "Re-attach to a (possibly connected) remote Mac OS X kernel.\nThe kernel must support the reattach packet.");
+  add_com("kdp-reboot", class_run, kdp_reboot_command,
+          "Reboot a connected remote Mac OS X kernel.\nThe kernel must support the reboot packet.");
+  add_com("kdp-detach", class_run, kdp_detach_command,
+          "Reset a (possibly disconnected) remote Mac OS X kernel.\n");
+  add_com("kdp-kernelversion", class_run, kdp_kernelversion_command,
+          "Print the version of a remote Mac OS X kernel.\n");
 
   add_setshow_enum_cmd
     ("kdp-default-host-type", class_obscure, archlist,
@@ -2398,7 +2400,7 @@ No additional help."),
      NULL,
      &setlist, &showlist);
 
-  kdp_reset (&c);
+  kdp_reset(&c);
 }
 
 /* EOF */

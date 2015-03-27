@@ -4994,6 +4994,13 @@
 		A5CA6A8E1AC088E100716574 /* memmem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = memmem.c; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/memmem.c"; sourceTree = "<absolute>"; };
 		A5CA6B5F1AC10E3700716574 /* macosx-nat-cmds-load.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "macosx-nat-cmds-load.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/macosx/macosx-nat-cmds-load.h"; sourceTree = "<absolute>"; };
 		A5CA6C681AC39A0E00716574 /* i386-macosx-nat-exec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "i386-macosx-nat-exec.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/macosx/i386-macosx-nat-exec.h"; sourceTree = "<absolute>"; };
+		A5CA6CA71AC449EE00716574 /* infcmd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = infcmd.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/infcmd.h"; sourceTree = "<absolute>"; };
+		A5CA6DC21AC5932700716574 /* fbsd-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "fbsd-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/fbsd-tdep.c"; sourceTree = "<absolute>"; };
+		A5CA6DC31AC5932700716574 /* fbsd-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "fbsd-tdep.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/fbsd-tdep.h"; sourceTree = "<absolute>"; };
+		A5CA6DC41AC5933100716574 /* filesystem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = filesystem.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/filesystem.c"; sourceTree = "<absolute>"; };
+		A5CA6DC51AC5933100716574 /* filesystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = filesystem.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/filesystem.h"; sourceTree = "<absolute>"; };
+		A5CA6DC61AC5933100716574 /* findcmd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = findcmd.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/findcmd.c"; sourceTree = "<absolute>"; };
+		A5CA6DC71AC5933F00716574 /* fr30-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "fr30-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/fr30-tdep.c"; sourceTree = "<absolute>"; };
 		A5FE698F1A9E935D005583F9 /* macosx-nat-info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "macosx-nat-info.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/macosx/macosx-nat-info.h"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
@@ -5815,9 +5822,15 @@
 				2609D49B0E82C40A008125DE /* f-valprint.c */,
 				2609D49C0E82C40A008125DE /* fbsd-nat.c */,
 				2609D49D0E82C40A008125DE /* fbsd-nat.h */,
+				A5CA6DC21AC5932700716574 /* fbsd-tdep.c */,
+				A5CA6DC31AC5932700716574 /* fbsd-tdep.h */,
+				A5CA6DC41AC5933100716574 /* filesystem.c */,
+				A5CA6DC51AC5933100716574 /* filesystem.h */,
+				A5CA6DC61AC5933100716574 /* findcmd.c */,
 				2609D49E0E82C40A008125DE /* findvar.c */,
 				2609D49F0E82C40A008125DE /* fix-and-continue.c */,
 				2609D4A00E82C40A008125DE /* fork-child.c */,
+				A5CA6DC71AC5933F00716574 /* fr30-tdep.c */,
 				2609D4A10E82C40A008125DE /* frame-base.c */,
 				2609D4A20E82C40A008125DE /* frame-base.h */,
 				2609D4A30E82C40A008125DE /* frame-unwind.c */,
@@ -5947,6 +5960,7 @@
 				2609D65D0E82C40B008125DE /* infcall.c */,
 				2609D65E0E82C40B008125DE /* infcall.h */,
 				2609D65F0E82C40B008125DE /* infcmd.c */,
+				A5CA6CA71AC449EE00716574 /* infcmd.h */,
 				2609D6600E82C40B008125DE /* inferior.h */,
 				2609D6610E82C40B008125DE /* inflow.c */,
 				2609D6620E82C40B008125DE /* inflow.h */,

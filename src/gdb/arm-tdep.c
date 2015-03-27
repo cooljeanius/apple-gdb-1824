@@ -1,4 +1,4 @@
-/* Common target dependent code for GDB on ARM systems.
+/* arm-tdep.c: Common target dependent code for GDB on ARM systems.
 
    Copyright 1988, 1989, 1991, 1992, 1993, 1995, 1996, 1998, 1999,
    2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
@@ -183,8 +183,8 @@ static register_info_t g_register_info[] =
   { "cpsr", 0, &builtin_type_uint32 }
 };
 
-const uint32_t g_register_info_count = sizeof(g_register_info)/
-				       sizeof(register_info_t);
+const uint32_t g_register_info_count = (sizeof(g_register_info)
+                                        / sizeof(register_info_t));
 
 /* Valid register name styles.  */
 static const char **valid_disassembly_styles;
@@ -2437,18 +2437,18 @@ arm_make_stub_cache (struct frame_info *next_frame)
 /* Our frame ID for a stub frame is the current SP and LR.  */
 
 static void
-arm_stub_this_id (struct frame_info *next_frame,
-		  void **this_cache,
-		  struct frame_id *this_id)
+arm_stub_this_id(struct frame_info *next_frame,
+		 void **this_cache,
+		 struct frame_id *this_id)
 {
   arm_prologue_cache_t *cache;
 
   if (*this_cache == NULL)
-    *this_cache = arm_make_stub_cache (next_frame);
+    *this_cache = arm_make_stub_cache(next_frame);
   cache = *this_cache;
 
-  *this_id = frame_id_build (cache->prev_sp,
-			     frame_pc_unwind (next_frame));
+  *this_id = frame_id_build(cache->prev_sp,
+			    frame_pc_unwind(next_frame));
 }
 
 struct frame_unwind arm_stub_unwind = {
@@ -2460,12 +2460,12 @@ struct frame_unwind arm_stub_unwind = {
 #ifndef TM_NEXTSTEP
 
 static const struct frame_unwind *
-arm_stub_unwind_sniffer (struct frame_info *next_frame)
+arm_stub_unwind_sniffer(struct frame_info *next_frame)
 {
   gdb_byte dummy[4];
 
-  if (in_plt_section (frame_unwind_address_in_block (next_frame), NULL)
-      || target_read_memory (frame_pc_unwind (next_frame), dummy, 4) != 0)
+  if (in_plt_section(frame_unwind_address_in_block(next_frame), NULL)
+      || target_read_memory(frame_pc_unwind(next_frame), dummy, 4) != 0)
     return &arm_stub_unwind;
 
   return NULL;
@@ -2474,15 +2474,15 @@ arm_stub_unwind_sniffer (struct frame_info *next_frame)
 #endif /* !TM_NEXTSTEP */
 
 static CORE_ADDR
-arm_normal_frame_base (struct frame_info *next_frame, void **this_cache)
+arm_normal_frame_base(struct frame_info *next_frame, void **this_cache)
 {
   arm_prologue_cache_t *cache;
 
   if (*this_cache == NULL)
-    *this_cache = arm_make_prologue_cache (next_frame);
-  cache = *this_cache;
+    *this_cache = arm_make_prologue_cache(next_frame);
+  cache = (arm_prologue_cache_t *)*this_cache;
 
-  return cache->prev_sp + cache->frameoffset - cache->framesize;
+  return (cache->prev_sp + cache->frameoffset - cache->framesize);
 }
 
 struct frame_base arm_normal_base = {
@@ -2594,34 +2594,34 @@ enum
 };
 
 static arm_prologue_cache_t *
-arm_macosx_sigtramp_frame_cache (struct frame_info *next_frame, void **this_cache)
+arm_macosx_sigtramp_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
 
   arm_prologue_cache_t *cache = NULL;
-  CORE_ADDR mcontext_addr = 0;
-  CORE_ADDR gpr_addr = 0;
-  CORE_ADDR fpr_addr = 0;
-  CORE_ADDR vfp_addr = 0;
-  ULONGEST mcontext_size = 0;
-  CORE_ADDR frame_base = 0;
+  CORE_ADDR mcontext_addr = 0UL;
+  CORE_ADDR gpr_addr = 0UL;
+  CORE_ADDR fpr_addr = 0UL;
+  CORE_ADDR vfp_addr = 0UL;
+  ULONGEST mcontext_size = 0UL;
+  CORE_ADDR frame_base = 0UL;
   int reg_size = 0;
-  unsigned int i = 0;
+  unsigned int i = 0U;
 
   /* Have we already built this cache?  */
   if (*this_cache)
-    return *this_cache;
+    return (arm_prologue_cache_t *)*this_cache;
 
   /* Make a normal frame cache first so we can tell a bit about where
      we are in the _sigtramp frame and so we can get our frame base.  */
-  *this_cache = cache = arm_make_prologue_cache (next_frame);
+  *this_cache = cache = arm_make_prologue_cache(next_frame);
 
   /* Figure out what our frame base is so we can reliably find the
      sigtramp information on the frame.  */
   frame_base = cache->prev_sp + cache->frameoffset - cache->framesize;
 
   /* Extract the ucontext.uc_mcsize and ucontext.uc_mcontext.  */
-  mcontext_size = read_memory_unsigned_integer (frame_base + 100, GP_REG_SIZE);
-  mcontext_addr = read_memory_unsigned_integer (frame_base + 104, GP_REG_SIZE);
+  mcontext_size = read_memory_unsigned_integer(frame_base + 100, GP_REG_SIZE);
+  mcontext_addr = read_memory_unsigned_integer(frame_base + 104, GP_REG_SIZE);
 
   /* Determine what registers are saved in the signal context based on
      the size of the mcontext structure.  */
@@ -2642,8 +2642,8 @@ arm_macosx_sigtramp_frame_cache (struct frame_info *next_frame, void **this_cach
       break;
 
     default:
-      warning ("unrecognized length (0x%lx) for sigtramp context",
-               (unsigned long) mcontext_size);
+      warning("unrecognized length (0x%lx) for sigtramp context",
+              (unsigned long)mcontext_size);
       break;
     }
 
@@ -2677,54 +2677,55 @@ arm_macosx_sigtramp_frame_cache (struct frame_info *next_frame, void **this_cach
 }
 
 static void
-arm_macosx_sigtramp_frame_this_id (struct frame_info *next_frame,
-				   void **this_cache, struct frame_id *this_id)
+arm_macosx_sigtramp_frame_this_id(struct frame_info *next_frame,
+				  void **this_cache, struct frame_id *this_id)
 {
   struct frame_id id;
   CORE_ADDR func;
   arm_prologue_cache_t *cache;
 
   if (*this_cache == NULL)
-    *this_cache = arm_macosx_sigtramp_frame_cache (next_frame, this_cache);
+    *this_cache = arm_macosx_sigtramp_frame_cache(next_frame, this_cache);
 
-  cache = *this_cache;
+  cache = (arm_prologue_cache_t *)*this_cache;
 
-  func = frame_func_unwind (next_frame);
+  func = frame_func_unwind(next_frame);
 
   /* If we did NOT get anything sensical from a call to frame_func_unwind,
      see if we were able to find our prologue start in our arch specific
      prologue cache information and use it. This will allow us to stack
      crawl through code that has no symbols.  */
-  if (func == 0 && cache != NULL)
+  if ((func == 0) && (cache != NULL))
     func = cache->prologue_start;
 
   /* If we have hit a wall, stop.  */
   if (cache->prev_sp == 0)
     return;
 
-  id = frame_id_build (cache->prev_sp, func);
+  id = frame_id_build(cache->prev_sp, func);
   *this_id = id;
 }
 
-/* Extract a register from our sigtramp cache.  */
+/* Extract a register from our sigtramp cache: */
 static void
-arm_macosx_sigtramp_frame_prev_register (struct frame_info *next_frame,
-                                  void **this_cache,
-                                  int regnum, int *optimizedp,
-                                  enum lval_type *lvalp, CORE_ADDR * addrp,
-                                  int *realnump, gdb_byte *valuep)
+arm_macosx_sigtramp_frame_prev_register(struct frame_info *next_frame,
+                                        void **this_cache, int regnum,
+                                        int *optimizedp,
+                                        enum lval_type *lvalp,
+                                        CORE_ADDR *addrp, int *realnump,
+                                        gdb_byte *valuep)
 {
   arm_prologue_cache_t *cache;
+  enum opt_state e_opt;
 
   if (*this_cache == NULL)
-    *this_cache = arm_macosx_sigtramp_frame_cache (next_frame, this_cache);
+    *this_cache = arm_macosx_sigtramp_frame_cache(next_frame, this_cache);
 
-  cache = *this_cache;
+  cache = (arm_prologue_cache_t *)*this_cache;
 
-  enum opt_state e_opt;
-  trad_frame_get_prev_register (next_frame, cache->saved_regs, regnum,
-				optimizedp ? &e_opt : NULL, lvalp, addrp,
-				realnump, valuep);
+  trad_frame_get_prev_register(next_frame, cache->saved_regs, regnum,
+                               (optimizedp ? &e_opt : NULL), lvalp, addrp,
+                               realnump, valuep);
 
   if (optimizedp)
     *optimizedp = e_opt;
@@ -2733,12 +2734,15 @@ arm_macosx_sigtramp_frame_prev_register (struct frame_info *next_frame,
 static const struct frame_unwind arm_macosx_sigtramp_frame_unwind = {
   SIGTRAMP_FRAME,
   arm_macosx_sigtramp_frame_this_id,
-  arm_macosx_sigtramp_frame_prev_register
+  (frame_prev_register_ftype *)arm_macosx_sigtramp_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 
 static const struct frame_unwind *
-arm_macosx_sigtramp_unwind_sniffer (struct frame_info *next_frame)
+arm_macosx_sigtramp_unwind_sniffer(struct frame_info *next_frame)
 {
   /* Function statics that will keep a cached address range from the
      expensive find_pc_partial_function function results.  */
@@ -2748,7 +2752,7 @@ arm_macosx_sigtramp_unwind_sniffer (struct frame_info *next_frame)
 
   /* Lookup the minimal symbol for _sigtramp.  */
   struct minimal_symbol *msymbol;
-  msymbol = lookup_minimal_symbol ("_sigtramp", NULL, NULL);
+  msymbol = lookup_minimal_symbol("_sigtramp", NULL, NULL);
   if (msymbol)
     {
       /* Check if we need to cache (or re-cache) the results.  */
@@ -2758,11 +2762,11 @@ arm_macosx_sigtramp_unwind_sniffer (struct frame_info *next_frame)
           char *name = NULL;
           CORE_ADDR start = 0;
           CORE_ADDR end = 0;
-          if (find_pc_partial_function (addr, &name, &start, &end))
+          if (find_pc_partial_function(addr, &name, &start, &end))
             {
               /* Make sure nothing went awry in the address to name and
                  function bounds lookup.  */
-              if (name && strcmp ("_sigtramp", name) == 0)
+              if (name && (strcmp("_sigtramp", name) == 0))
                 {
                   g_sigtramp_msymbol = msymbol;
                   g_sigtramp_start = start;
@@ -2774,9 +2778,9 @@ arm_macosx_sigtramp_unwind_sniffer (struct frame_info *next_frame)
 
   if (g_sigtramp_start != 0)
     {
-      CORE_ADDR pc = frame_pc_unwind (next_frame);
+      CORE_ADDR pc = frame_pc_unwind(next_frame);
 
-      if (pc >= g_sigtramp_start && pc < g_sigtramp_end)
+      if ((pc >= g_sigtramp_start) && (pc < g_sigtramp_end))
         return &arm_macosx_sigtramp_frame_unwind;
     }
   return NULL;
@@ -2784,65 +2788,61 @@ arm_macosx_sigtramp_unwind_sniffer (struct frame_info *next_frame)
 
 #else /* not TM_NEXTSTEP */
 static arm_prologue_cache_t *
-arm_make_sigtramp_cache (struct frame_info *next_frame)
+arm_make_sigtramp_cache(struct frame_info *next_frame)
 {
   arm_prologue_cache_t *cache;
   int reg;
 
-  cache = frame_obstack_zalloc (sizeof (arm_prologue_cache_t));
+  cache = frame_obstack_zalloc(sizeof(arm_prologue_cache_t));
 
-  cache->prev_sp = frame_unwind_register_unsigned (next_frame, ARM_SP_REGNUM);
+  cache->prev_sp = frame_unwind_register_unsigned(next_frame, ARM_SP_REGNUM);
 
-  cache->saved_regs = trad_frame_alloc_saved_regs (next_frame);
+  cache->saved_regs = trad_frame_alloc_saved_regs(next_frame);
 
   for (reg = 0; reg < NUM_REGS; reg++)
     cache->saved_regs[reg].addr
-      = SIGCONTEXT_REGISTER_ADDRESS (cache->prev_sp,
-				     frame_pc_unwind (next_frame), reg);
+      = SIGCONTEXT_REGISTER_ADDRESS(cache->prev_sp,
+				    frame_pc_unwind(next_frame), reg);
 
   /* FIXME: What about thumb mode?  */
   cache->framereg = ARM_SP_REGNUM;
   cache->prev_sp
-    = read_memory_integer (cache->saved_regs[cache->framereg].addr,
-			   register_size (current_gdbarch, cache->framereg));
+    = read_memory_integer(cache->saved_regs[cache->framereg].addr,
+			  register_size(current_gdbarch, cache->framereg));
 
   return cache;
 }
 
 static void
-arm_sigtramp_this_id (struct frame_info *next_frame,
-		      void **this_cache,
-		      struct frame_id *this_id)
+arm_sigtramp_this_id(struct frame_info *next_frame, void **this_cache,
+		     struct frame_id *this_id)
 {
   arm_prologue_cache_t *cache;
 
   if (*this_cache == NULL)
-    *this_cache = arm_make_sigtramp_cache (next_frame);
+    *this_cache = arm_make_sigtramp_cache(next_frame);
   cache = *this_cache;
 
   /* FIXME drow/2003-07-07: This is NOT right if we single-step within
      the sigtramp frame; the PC should be the beginning of the trampoline.  */
-  *this_id = frame_id_build (cache->prev_sp, frame_pc_unwind (next_frame));
+  *this_id = frame_id_build(cache->prev_sp, frame_pc_unwind(next_frame));
 }
 
 static void
-arm_sigtramp_prev_register (struct frame_info *next_frame,
-			    void **this_cache,
-			    int prev_regnum,
-			    int *optimized,
-			    enum lval_type *lvalp,
-			    CORE_ADDR *addrp,
-			    int *realnump,
-			    gdb_byte *valuep)
+arm_sigtramp_prev_register(struct frame_info *next_frame,
+                           void **this_cache, int prev_regnum,
+                           int *optimized, enum lval_type *lvalp,
+                           CORE_ADDR *addrp, int *realnump,
+                           gdb_byte *valuep)
 {
   arm_prologue_cache_t *cache;
 
   if (*this_cache == NULL)
-    *this_cache = arm_make_sigtramp_cache (next_frame);
+    *this_cache = arm_make_sigtramp_cache(next_frame);
   cache = *this_cache;
 
-  trad_frame_get_prev_register (next_frame, cache->saved_regs, prev_regnum,
-				optimized, lvalp, addrp, realnump, valuep);
+  trad_frame_get_prev_register(next_frame, cache->saved_regs, prev_regnum,
+                               optimized, lvalp, addrp, realnump, valuep);
 }
 
 struct frame_unwind arm_sigtramp_unwind = {
@@ -2852,10 +2852,10 @@ struct frame_unwind arm_sigtramp_unwind = {
 };
 
 static const struct frame_unwind *
-arm_sigtramp_unwind_sniffer (struct frame_info *next_frame)
+arm_sigtramp_unwind_sniffer(struct frame_info *next_frame)
 {
-  if (SIGCONTEXT_REGISTER_ADDRESS_P ()
-      && legacy_pc_in_sigtramp (frame_pc_unwind (next_frame), (char *) 0))
+  if (SIGCONTEXT_REGISTER_ADDRESS_P()
+      && legacy_pc_in_sigtramp(frame_pc_unwind(next_frame), (char *)0))
     return &arm_sigtramp_unwind;
 
   return NULL;
@@ -2870,10 +2870,10 @@ arm_sigtramp_unwind_sniffer (struct frame_info *next_frame)
    breakpoint.  */
 
 static struct frame_id
-arm_unwind_dummy_id (struct gdbarch *gdbarch, struct frame_info *next_frame)
+arm_unwind_dummy_id(struct gdbarch *gdbarch, struct frame_info *next_frame)
 {
-  return frame_id_build (frame_unwind_register_unsigned (next_frame, ARM_SP_REGNUM),
-			 frame_pc_unwind (next_frame));
+  return frame_id_build(frame_unwind_register_unsigned(next_frame, ARM_SP_REGNUM),
+                        frame_pc_unwind(next_frame));
 }
 
 /* Given THIS_FRAME, find the previous frame's resume PC using the FP
@@ -2881,28 +2881,29 @@ arm_unwind_dummy_id (struct gdbarch *gdbarch, struct frame_info *next_frame)
    PC cannot be safely extracted from the frame, return DEFAULT_PC.  */
 
 static CORE_ADDR
-arm_unwind_pc_using_fp (struct frame_info *this_frame, CORE_ADDR default_pc)
+arm_unwind_pc_using_fp(struct frame_info *this_frame, CORE_ADDR default_pc)
 {
   CORE_ADDR pc = default_pc;
 
   /* If this is NOT the bottom most frame then lets verify that this
      matches the previous PC at [FP+4].  */
-  if (get_frame_type(this_frame) == NORMAL_FRAME &&
-      frame_relative_level (this_frame) > 0)
+  if ((get_frame_type(this_frame) == NORMAL_FRAME)
+      && (frame_relative_level(this_frame) > 0))
     {
-      void **this_cache = frame_cache_hack (this_frame);
+      void **this_cache = (void **)frame_cache_hack(this_frame);
       arm_prologue_cache_t *cache;
 
       if (*this_cache == NULL)
-	*this_cache = arm_make_prologue_cache ( get_next_frame (this_frame));
-      cache = *this_cache;
+	*this_cache = arm_make_prologue_cache(get_next_frame(this_frame));
+      cache = (arm_prologue_cache_t *)*this_cache;
 
-      /* Verify we have a frame that is NOT just the stack pointer.  */
-      if (cache && cache->framereg == ARM_FP_REGNUM)
+      /* Verify we have a frame that is NOT just the stack pointer: */
+      if (cache && (cache->framereg == ARM_FP_REGNUM))
 	{
 	  ULONGEST fp_pc;
-	  CORE_ADDR fp = get_frame_register_unsigned (this_frame, ARM_FP_REGNUM);
-	  if (fp != 0 && safe_read_memory_unsigned_integer (fp+4, 4, &fp_pc))
+	  CORE_ADDR fp = get_frame_register_unsigned(this_frame, ARM_FP_REGNUM);
+	  if ((fp != 0)
+              && safe_read_memory_unsigned_integer((fp + 4), 4, &fp_pc))
 	    {
 	      if (pc != fp_pc)
 		{
@@ -2922,22 +2923,22 @@ arm_unwind_pc_using_fp (struct frame_info *this_frame, CORE_ADDR default_pc)
    containing function).  */
 
 static CORE_ADDR
-arm_unwind_pc (struct gdbarch *gdbarch, struct frame_info *this_frame)
+arm_unwind_pc(struct gdbarch *gdbarch, struct frame_info *this_frame)
 {
   arm_prologue_cache_t *cache = NULL;
   CORE_ADDR pc;
-  pc = frame_unwind_register_unsigned (this_frame, ARM_PC_REGNUM);
+  pc = frame_unwind_register_unsigned(this_frame, ARM_PC_REGNUM);
 #ifdef TM_NEXTSTEP
-  cache = get_arm_prologue_cache (this_frame);
+  cache = get_arm_prologue_cache(this_frame);
   /* APPLE LOCAL ADDITION: Try and use the frame pointer to locate the
      previous PC.  */
   pc = arm_unwind_pc_using_fp(this_frame, pc);
 #endif /* TM_NEXTSTEP */
-  if (arm_pc_is_thumb (pc))
+  if (arm_pc_is_thumb(pc))
     {
       if (cache)
 	cache->prev_pc_is_thumb = 1;
-      pc = UNMAKE_THUMB_ADDR (pc);
+      pc = UNMAKE_THUMB_ADDR(pc);
     }
   else
     {
@@ -2948,9 +2949,9 @@ arm_unwind_pc (struct gdbarch *gdbarch, struct frame_info *this_frame)
 }
 
 static CORE_ADDR
-arm_unwind_sp (struct gdbarch *gdbarch, struct frame_info *this_frame)
+arm_unwind_sp(struct gdbarch *gdbarch, struct frame_info *this_frame)
 {
-  return frame_unwind_register_unsigned (this_frame, ARM_SP_REGNUM);
+  return frame_unwind_register_unsigned(this_frame, ARM_SP_REGNUM);
 }
 
 /* When arguments must be pushed onto the stack, they go on in reverse
@@ -2964,24 +2965,24 @@ struct stack_item
 };
 
 static struct stack_item *
-push_stack_item (struct stack_item *prev, void *contents, int len)
+push_stack_item(struct stack_item *prev, void *contents, int len)
 {
   struct stack_item *si;
-  si = xmalloc (sizeof (struct stack_item));
-  si->data = xmalloc (len);
+  si = (struct stack_item *)xmalloc(sizeof(struct stack_item));
+  si->data = xmalloc(len);
   si->len = len;
   si->prev = prev;
-  memcpy (si->data, contents, len);
+  memcpy(si->data, contents, len);
   return si;
 }
 
 static struct stack_item *
-pop_stack_item (struct stack_item *si)
+pop_stack_item(struct stack_item *si)
 {
   struct stack_item *dead = si;
   si = si->prev;
-  xfree (dead->data);
-  xfree (dead);
+  xfree(dead->data);
+  xfree(dead);
   return si;
 }
 
@@ -3048,13 +3049,13 @@ arm_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
        * the THUMB bit in it.  */
       if (TYPE_CODE_PTR == typecode
 	  && target_type != NULL
-	  && TYPE_CODE_FUNC == TYPE_CODE (target_type))
+	  && TYPE_CODE_FUNC == TYPE_CODE(target_type))
 	{
-	  CORE_ADDR regval = extract_unsigned_integer (val, len);
-	  if (arm_pc_is_thumb (regval))
+	  CORE_ADDR regval = extract_unsigned_integer(val, len);
+	  if (arm_pc_is_thumb(regval))
 	    {
-	      val = alloca (len);
-	      store_unsigned_integer (val, len, MAKE_THUMB_ADDR (regval));
+	      val = (bfd_byte *)alloca(len);
+	      store_unsigned_integer(val, len, MAKE_THUMB_ADDR(regval));
 	    }
 	}
 
@@ -3063,27 +3064,28 @@ arm_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
        * registers and stack.  */
       while (len > 0)
 	{
-	  int partial_len = len < DEPRECATED_REGISTER_SIZE ? len : DEPRECATED_REGISTER_SIZE;
+	  int partial_len = ((len < DEPRECATED_REGISTER_SIZE)
+                             ? len : DEPRECATED_REGISTER_SIZE);
 
 	  if (argreg <= ARM_LAST_ARG_REGNUM)
 	    {
 	      /* The argument is being passed in a general purpose
 	       * register.  */
-	      CORE_ADDR regval = extract_unsigned_integer (val, partial_len);
+	      CORE_ADDR regval = extract_unsigned_integer(val, partial_len);
 	      if (arm_debug > 5)
-		fprintf_unfiltered (gdb_stdlog, "arg %d in %s = 0x%s\n",
-				    argnum, REGISTER_NAME (argreg),
-				    phex (regval, DEPRECATED_REGISTER_SIZE));
-	      regcache_cooked_write_unsigned (regcache, argreg, regval);
+		fprintf_unfiltered(gdb_stdlog, "arg %d in %s = 0x%s\n",
+				   argnum, REGISTER_NAME(argreg),
+				   phex(regval, DEPRECATED_REGISTER_SIZE));
+	      regcache_cooked_write_unsigned(regcache, argreg, regval);
 	      argreg++;
 	    }
 	  else
 	    {
-	      /* Push the arguments onto the stack.  */
+	      /* Push the arguments onto the stack: */
 	      if (arm_debug > 5)
-		fprintf_unfiltered (gdb_stdlog, "arg %d @ sp + %d\n",
-				    argnum, nstack);
-	      si = push_stack_item (si, val, DEPRECATED_REGISTER_SIZE);
+		fprintf_unfiltered(gdb_stdlog, "arg %d @ sp + %d\n",
+				   argnum, nstack);
+	      si = push_stack_item(si, val, DEPRECATED_REGISTER_SIZE);
 	      nstack += DEPRECATED_REGISTER_SIZE;
 	    }
 
@@ -3099,12 +3101,12 @@ arm_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
   while (si)
     {
       sp -= si->len;
-      write_memory (sp, si->data, si->len);
-      si = pop_stack_item (si);
+      write_memory(sp, (const bfd_byte *)si->data, si->len);
+      si = pop_stack_item(si);
     }
 
-  /* Finally, update teh SP register.  */
-  regcache_cooked_write_unsigned (regcache, ARM_SP_REGNUM, sp);
+  /* Finally, update teh SP register: */
+  regcache_cooked_write_unsigned(regcache, ARM_SP_REGNUM, sp);
 
   return sp;
 }
@@ -3152,23 +3154,25 @@ arm_print_float_info (struct gdbarch *gdbarch, struct ui_file *file,
    register N.  */
 
 static struct type *
-arm_register_type (struct gdbarch *gdbarch, int regnum)
+arm_register_type(struct gdbarch *gdbarch, int regnum)
 {
-  /* APPLE LOCAL: Use register info table.   */
-  if (regnum < g_register_info_count && g_register_info[regnum].type)
-    return *g_register_info[regnum].type;
-;
-	return builtin_type_int32;
-	}
+  /* APPLE LOCAL: Use register info table: */
+  if (((uint32_t)regnum < g_register_info_count)
+      && g_register_info[regnum].type)
+    {
+      return *g_register_info[regnum].type;
+    };
+  return builtin_type_int32;
+}
 
 /* Index within `registers' of the first byte of the space for
    register N.  */
 
 static int
-arm_register_byte (int regnum)
+arm_register_byte(int regnum)
 {
-  /* APPLE LOCAL: Use register info table.   */
-  if (regnum < g_register_info_count)
+  /* APPLE LOCAL: Use register info table:  */
+  if ((uint32_t)regnum < g_register_info_count)
     return g_register_info[regnum].offset;
   return 0;
 }
@@ -3539,17 +3543,18 @@ thumb_scan_prolog_insn_blx (const uint32_t insn,
       uint32_t I1 = !(J1 ^ S);
       uint32_t I2 = !(J2 ^ S);
       uint32_t offset = (I1 << 23) + (I2 << 22) + (imm10H << 12) + (imm10L << 2);
+      uint32_t blx_pc;
+      struct minimal_symbol *msymbol;
       if (S)
 	{
 	  uint32_t sign_mask = -(1 << 24);
 	  offset |= sign_mask; /* Sign extend.  */
 	}
-      uint32_t blx_pc = (state->pc & 0xFFFFFFFC) + 4 + offset;
-      struct minimal_symbol *msymbol;
-      msymbol = lookup_minimal_symbol_by_pc (blx_pc);
+      blx_pc = (state->pc & 0xFFFFFFFC) + 4 + offset;
+      msymbol = lookup_minimal_symbol_by_pc(blx_pc);
       if (msymbol)
 	{
-	  char *name = SYMBOL_NATURAL_NAME (msymbol);
+	  char *name = SYMBOL_NATURAL_NAME(msymbol);
 	  if (name && strcmp(name, "__save_vfp_d8_d15_regs") == 0)
 	    {
 	      /* Register d8 is equivalent to s15 and s16, so below we save
@@ -3610,37 +3615,38 @@ thumb2_scan_prolog_insn_stmfd_sp (const uint32_t insn,
 
 
 static int
-thumb_scan_prolog_insn_push (const uint32_t insn,
-			     arm_prologue_cache_t *cache,
-			     arm_prologue_state_t *state)
+thumb_scan_prolog_insn_push(const uint32_t insn,
+			    arm_prologue_cache_t *cache,
+			    arm_prologue_state_t *state)
 {
   int regno;
+  uint32_t mask;
   state->findmask |= THUMB_PROLOGUE_PUSH; /* push found */
   /* Bits 0-7 contain a mask for registers R0-R7.  Bit 8 says
      whether to save LR (R14).  */
-  uint32_t mask = (insn & 0xff) | ((insn & 0x100) << 6);
+  mask = (insn & 0xff) | ((insn & 0x100) << 6);
 
   /* Calculate offsets of saved R0-R7 and LR.  */
   for (regno = ARM_LR_REGNUM; regno >= 0; regno--)
     {
     if (mask & (1 << regno))
       {
-	  if (cache)
-	    {
-	cache->framesize += 4;
-	cache->saved_regs[state->reg_saved_in_reg[regno]].addr = -cache->framesize;
-	    }
-	/* Reset saved register map.  */
-	state->reg_saved_in_reg[regno] = regno;
+        if (cache)
+          {
+            cache->framesize += 4;
+            cache->saved_regs[state->reg_saved_in_reg[regno]].addr = -cache->framesize;
+          }
+        /* Reset saved register map: */
+        state->reg_saved_in_reg[regno] = regno;
       }
-}
+    }
   return prolog_yes;
 }
 
 static int
-thumb_scan_prolog_insn_sub4_sp_imm (const uint32_t insn,
-				    arm_prologue_cache_t *cache,
-				    arm_prologue_state_t *state)
+thumb_scan_prolog_insn_sub4_sp_imm(const uint32_t insn,
+				   arm_prologue_cache_t *cache,
+				   arm_prologue_state_t *state)
 {
   int offset;
   if ((state->findmask & THUMB_PROLOGUE_PUSH) == 0) /* before push?  */
@@ -3648,60 +3654,62 @@ thumb_scan_prolog_insn_sub4_sp_imm (const uint32_t insn,
   else
     state->findmask |= THUMB_PROLOGUE_SUB_SP;	  /* sub sp found */
 
-  offset = bits (insn, 0, 6) * 4; /* get scaled offset */
+  offset = bits(insn, 0, 6) * 4; /* get scaled offset */
   if (cache)
     {
-  cache->frameoffset += offset;
-  cache->framesize += offset;
-}
+      cache->frameoffset += offset;
+      cache->framesize += offset;
+    }
   return prolog_yes;
 }
 
 
 static int
-thumb_scan_prolog_insn_add6_r7_sp (const uint32_t insn,
-				   arm_prologue_cache_t *cache,
-				   arm_prologue_state_t *state)
+thumb_scan_prolog_insn_add6_r7_sp(const uint32_t insn,
+				  arm_prologue_cache_t *cache,
+				  arm_prologue_state_t *state)
 {
   state->findmask |= THUMB_PROLOGUE_FP_SETUP;  /* setting of r7 found */
   if (cache)
     {
-  cache->framereg = THUMB_FP_REGNUM;
-  /* get scaled offset */
-  cache->frameoffset = (insn & 0xff) << 2;
-}
+      cache->framereg = THUMB_FP_REGNUM;
+      /* get scaled offset */
+      cache->frameoffset = (insn & 0xff) << 2;
+    }
   return prolog_yes;
 }
 
 static int
-thumb_scan_prolog_insn_add_sp_rm (const uint32_t insn,
-				   arm_prologue_cache_t *cache,
-				   arm_prologue_state_t *state)
+thumb_scan_prolog_insn_add_sp_rm(const uint32_t insn,
+				 arm_prologue_cache_t *cache,
+				 arm_prologue_state_t *state)
 {
-  /* Make sure we have found our push instruction first.  */
+  uint32_t Rm;
+  CORE_ADDR rm_load_addr;
+  /* Make sure we have found our push instruction first: */
   if ((state->findmask & THUMB_PROLOGUE_PUSH) == 0)
     return prolog_yes; /* before push.  */
 
   /* add/sub sp found */
   state->findmask |= THUMB_PROLOGUE_SUB_SP;
 
-  uint32_t Rm = bits (insn, 3, 6);
-  CORE_ADDR rm_load_addr = state->reg_loaded_from_address[Rm];
+  Rm = bits(insn, 3, 6);
+  rm_load_addr = state->reg_loaded_from_address[Rm];
 
   if (rm_load_addr != INVALID_ADDRESS)
     {
-      int32_t offset = read_memory_integer (rm_load_addr, 4);
+      int32_t offset = read_memory_integer(rm_load_addr, 4);
 
       if (arm_debug > 6)
-	fprintf_unfiltered (gdb_stdlog, "thumb_scan_prolog_insn_add_sp_rm () "
-			    "read immediate from [0x%s] = 0x%8.8x (%d)\n",
-			    paddr (rm_load_addr), offset, offset);
+	fprintf_unfiltered(gdb_stdlog, "thumb_scan_prolog_insn_add_sp_rm () "
+			   "read immediate from [0x%s] = 0x%8.8x (%d)\n",
+			   paddr(rm_load_addr), offset, offset);
 
       if (cache)
 	{
-      cache->frameoffset -= offset;
-      cache->framesize -= offset;
-    }
+          cache->frameoffset -= offset;
+          cache->framesize -= offset;
+        }
     }
   else
     {
@@ -3712,8 +3720,8 @@ thumb_scan_prolog_insn_add_sp_rm (const uint32_t insn,
 	 thumb_scan_prolog_insn_ldr_rd_pc_relative ()). We may need to
 	 add support for more ways to load a register in the future. Post
 	 a warning so we know that we need to take care of such issues.  */
-      warning (_("thumb_scan_prolog_insn_add_sp_rm: add sp, r%u "
-	       "encountered with unknown contents for r%u"), Rm, Rm);
+      warning(_("thumb_scan_prolog_insn_add_sp_rm: add sp, r%u "
+	      "encountered with unknown contents for r%u"), Rm, Rm);
     }
   return prolog_yes;
 }
@@ -3778,14 +3786,15 @@ thumb_scan_prolog_insn_mov_rlo_rhi (const uint32_t insn,
 }
 
 static int
-thumb2_scan_prolog_insn_push_w (const uint32_t insn,
-				arm_prologue_cache_t *cache,
-				arm_prologue_state_t *state)
+thumb2_scan_prolog_insn_push_w(const uint32_t insn,
+                               arm_prologue_cache_t *cache,
+                               arm_prologue_state_t *state)
 {
   int regno;
+  uint32_t mask;
   state->findmask |= THUMB_PROLOGUE_PUSH; /* push found */
   /* Bits 0-15 contain a mask for registers R0-R15.  */
-  uint32_t mask = (insn & 0xffff);
+  mask = (insn & 0xffff);
 
   /* Calculate offsets of saved R0-R7 and LR.  */
   for (regno = ARM_LR_REGNUM; regno >= 0; regno--)
@@ -3914,10 +3923,10 @@ thumb2_scan_prolog_insn_sub_sp_imm12 (const uint32_t insn,
 }
 
 static uint32_t
-data_proc_immediate (const uint32_t insn)
+data_proc_immediate(const uint32_t insn)
 {
-  uint32_t imm = bits (insn, 0, 7);		/* immediate value */
-  uint32_t rot = 2 * bits (insn, 8, 11);	/* rotate amount */
+  uint32_t imm = bits(insn, 0, 7);		/* immediate value */
+  uint32_t rot = 2U * bits(insn, 8, 11);	/* rotate amount */
   imm = (imm >> rot) | (imm << (32 - rot));
   return imm;
 }
@@ -3943,50 +3952,52 @@ data_proc_immediate (const uint32_t insn)
  */
 
 int
-arm_macosx_fast_show_stack (unsigned int count_limit,
-			    unsigned int print_start,
-			    unsigned int print_end,
-			    unsigned int *count,
-			    void (print_fun) (struct ui_out * uiout,
-					      int *frame_num,
-					      CORE_ADDR pc, CORE_ADDR fp))
+arm_macosx_fast_show_stack(unsigned int count_limit,
+			   unsigned int print_start,
+			   unsigned int print_end,
+			   unsigned int *count,
+			   void (print_fun)(struct ui_out * uiout,
+                                            int *frame_num,
+                                            CORE_ADDR pc, CORE_ADDR fp))
 {
   CORE_ADDR fp, prev_fp;
-  static CORE_ADDR sigtramp_start = 0;
-  static CORE_ADDR sigtramp_end = 0;
-  unsigned int i = 0;
+  static CORE_ADDR sigtramp_start = 0UL;
+  static CORE_ADDR sigtramp_end = 0UL;
+  unsigned int i = 0U;
   int more_frames;
   int success = 1;
   struct frame_info *fi;
-  ULONGEST next_fp = 0;
-  ULONGEST pc = 0;
-  int wordsize = gdbarch_tdep (current_gdbarch)->wordsize;
+  ULONGEST next_fp = 0UL;
+  ULONGEST pc = 0UL;
+  int wordsize = gdbarch_tdep(current_gdbarch)->wordsize;
 
-  more_frames = fast_show_stack_trace_prologue (count_limit, print_start, print_end,
-						wordsize, &sigtramp_start,
-						&sigtramp_end, &i, &fi,
-						print_fun);
+  more_frames = fast_show_stack_trace_prologue(count_limit, print_start,
+                                               print_end, wordsize,
+                                               &sigtramp_start,
+                                               &sigtramp_end, &i, &fi,
+                                               print_fun);
 
   if (more_frames < 0)
     {
-      /* An error occurred during the initial stack frames.  */
+      /* An error occurred during the initial stack frames: */
       success = 0;
     }
   else if (more_frames == 0)
     {
-      /* We already have all the frames we need.  */
+      /* We already have all the frames we need: */
       success = 1;
     }
   else if (i < count_limit)
     {
-      /* We got some stack frames and still need more.  */
-      arm_prologue_cache_t *cache = get_arm_prologue_cache (fi);
-      fp = get_frame_register_unsigned (fi, cache ? cache->framereg :
-					   ARM_FP_REGNUM);
+      /* We got some stack frames and still need more: */
+      arm_prologue_cache_t *cache = get_arm_prologue_cache(fi);
+      int done;
+      fp = get_frame_register_unsigned(fi, (cache ? cache->framereg :
+                                            ARM_FP_REGNUM));
       prev_fp = fp;
-      int done = (fp == 0);
+      done = (fp == 0);
 
-      while (!done && i < count_limit)
+      while (!done && (i < count_limit))
 	{
 	  int add_frame = 0;
 	  CORE_ADDR next_fp_addr = 0;
@@ -3995,38 +4006,38 @@ arm_macosx_fast_show_stack (unsigned int count_limit,
 	    {
 	      CORE_ADDR mcontext_addr;
 	      CORE_ADDR gpr_addr;
-	      /* We are in signal trampoline.  */
-	      mcontext_addr = read_memory_unsigned_integer (fp + 104, GP_REG_SIZE);
+	      /* We are in signal trampoline: */
+	      mcontext_addr = read_memory_unsigned_integer(fp + 104, GP_REG_SIZE);
 	      gpr_addr = mcontext_addr + EXC_STATE_SIZE;
 	      next_fp_addr = gpr_addr + (ARM_FP_REGNUM * GP_REG_SIZE);
 	      next_pc_addr = gpr_addr + (ARM_PC_REGNUM * GP_REG_SIZE);
 	    }
 	  else
 	    {
-	      /* We have a normal frame.  */
+	      /* We have a normal frame: */
 	      next_fp_addr = fp;
-	      next_pc_addr = fp + 4;
+	      next_pc_addr = (fp + 4);
 	    }
 
-	  if (next_fp_addr != 0 && next_pc_addr != 0)
+	  if ((next_fp_addr != 0) && (next_pc_addr != 0))
 	    {
-	      /* Read the next FP by dereferencing the current FP.  */
-	      if (safe_read_memory_unsigned_integer (next_fp_addr, GP_REG_SIZE,
-						     &next_fp))
+	      /* Read the next FP by dereferencing the current FP: */
+	      if (safe_read_memory_unsigned_integer(next_fp_addr, GP_REG_SIZE,
+						    &next_fp))
 		{
 		  if (next_fp == 0)
 		    done = 1; /* normal end of our FP chain.  */
 		  else if (next_fp == fp)
 		    {
-		      warning ("Frame pointer point back at the previous frame");
+		      warning("Frame pointer point back at the previous frame");
 		      done = 1; /* Avoid infinite loop.  */
 		      success = 0;  /* This is not good, return error... */
 		    }
 		  else
 		    {
-		      /* Read the previous PC value.  */
-		      if (safe_read_memory_unsigned_integer (next_pc_addr,
-							     GP_REG_SIZE, &pc))
+		      /* Read the previous PC value: */
+		      if (safe_read_memory_unsigned_integer(next_pc_addr,
+							    GP_REG_SIZE, &pc))
 			{
 			  if (pc == 0)
 			    done = 1;
@@ -4055,14 +4066,14 @@ arm_macosx_fast_show_stack (unsigned int count_limit,
 	      fp = next_fp;
 	      /* Strip bit zero (thumb bit) for any return addresses since
 	         we read this from memory.  */
-	      pc = ADDR_BITS_REMOVE (pc);
-	      pc_set_load_state (pc, OBJF_SYM_ALL, 0);
+	      pc = ADDR_BITS_REMOVE(pc);
+	      pc_set_load_state(pc, OBJF_SYM_ALL, 0);
 
-	      if (print_fun && (i >= print_start && i < print_end))
-		print_fun (uiout, &i, pc, fp);
+	      if (print_fun && ((i >= print_start) && (i < print_end)))
+		print_fun(uiout, (int *)&i, pc, fp);
 	      i++;
 
-	      if (!backtrace_past_main && addr_inside_main_func (pc))
+	      if (!backtrace_past_main && addr_inside_main_func(pc))
 		done = 1;
 	    }
 	  else
@@ -4078,86 +4089,84 @@ arm_macosx_fast_show_stack (unsigned int count_limit,
 }
 
 static uint32_t
-shifted_reg_val (uint32_t insn, int carry, uint32_t pc_val,
-		 uint32_t status_reg)
+shifted_reg_val(uint32_t insn, int carry, uint32_t pc_val,
+                uint32_t status_reg)
 {
   uint32_t res, shift;
-  int rm = bits (insn, 0, 3);
-  uint32_t shifttype = bits (insn, 5, 6);
+  int rm = bits(insn, 0, 3);
+  uint32_t shifttype = bits(insn, 5, 6);
 
   if (bit (insn, 4))
     {
-      int rs = bits (insn, 8, 11);
-      shift = (rs == 15 ? pc_val + 8 : read_register (rs)) & 0xFF;
+      int rs = bits(insn, 8, 11);
+      shift = (((rs == 15) ? (pc_val + 8) : read_register(rs)) & 0xFF);
     }
   else
-    shift = bits (insn, 7, 11);
+    shift = bits(insn, 7, 11);
 
-  res = (rm == 15
+  res = ((rm == 15)
 	 ? ((pc_val | (ARM_PC_32 ? 0 : status_reg))
-	    + (bit (insn, 4) ? 12 : 8))
-	 : read_register (rm));
+	    + (bit(insn, 4) ? 12 : 8))
+	 : read_register(rm));
 
   switch (shifttype)
     {
     case 0:			/* LSL */
-      res = shift >= 32 ? 0 : res << shift;
+      res = ((shift >= 32) ? 0 : (res << shift));
       break;
 
     case 1:			/* LSR */
-      res = shift >= 32 ? 0 : res >> shift;
+      res = ((shift >= 32) ? 0 : (res >> shift));
       break;
 
     case 2:			/* ASR */
       if (shift >= 32)
 	shift = 31;
       res = ((res & 0x80000000L)
-	     ? ~((~res) >> shift) : res >> shift);
+	     ? ~((~res) >> shift) : (res >> shift));
       break;
 
     case 3:			/* ROR/RRX */
       shift &= 31;
       if (shift == 0)
-	res = (res >> 1) | (carry ? 0x80000000L : 0);
+	res = ((res >> 1) | (carry ? 0x80000000L : 0));
       else
-	res = (res >> shift) | (res << (32 - shift));
+	res = ((res >> shift) | (res << (32 - shift)));
       break;
     }
 
-  return res & 0xffffffff;
+  return (res & 0xffffffff);
 }
 
 /* Return number of 1-bits in VAL.  */
 
 static int
-bitcount (uint32_t val)
+bitcount(uint32_t val)
 {
   int nbits;
   for (nbits = 0; val != 0; nbits++)
-    val &= val - 1;		/* delete rightmost 1-bit in val */
+    val &= (val - 1);		/* delete rightmost 1-bit in val */
   return nbits;
 }
 
 CORE_ADDR
-thumb_get_next_pc (CORE_ADDR pc)
+thumb_get_next_pc(CORE_ADDR pc)
 {
-  uint32_t pc_val = ((uint32_t) pc) + 4;	/* PC after prefetch */
-  const uint16_t inst1 = read_memory_integer (pc, 2);
+  uint32_t pc_val = (((uint32_t)pc) + 4U);	/* PC after prefetch */
+  const uint16_t inst1 = read_memory_integer(pc, 2);
   const int inst_is_thumb32 = IS_THUMB32_OP(inst1);
-  const uint16_t inst2 = inst_is_thumb32 ? read_memory_integer (pc + 2, 2) : 0;
-  CORE_ADDR nextpc = pc + (inst_is_thumb32 ? 4 : 2);
+  const uint16_t inst2 = inst_is_thumb32 ? read_memory_integer(pc + 2, 2) : 0;
+  CORE_ADDR nextpc = (pc + (inst_is_thumb32 ? 4 : 2));
   uint32_t offset;
 
-  const uint32_t cpsr = read_register (ARM_PS_REGNUM);
-
-  if (arm_debug)
+  const uint32_t cpsr = read_register(ARM_PS_REGNUM);  if (arm_debug)
     {
-      fprintf_unfiltered (gdb_stdlog, "thumb_get_next_pc (%s):  cpsr = 0x%8.8x, "
-			  "inst = %4.4x", paddr (pc), cpsr, inst1);
+      fprintf_unfiltered(gdb_stdlog, "thumb_get_next_pc (%s):  cpsr = 0x%8.8x, "
+			 "inst = %4.4x", paddr(pc), cpsr, inst1);
       if (inst_is_thumb32)
-	fprintf_unfiltered (gdb_stdlog, "%4.4x\n", inst2);
+	fprintf_unfiltered(gdb_stdlog, "%4.4x\n", inst2);
       else
-	fprintf_unfiltered (gdb_stdlog, "\n");
+	fprintf_unfiltered(gdb_stdlog, "\n");
     }
 
 
@@ -4167,17 +4176,17 @@ thumb_get_next_pc (CORE_ADDR pc)
 
       /* Fetch the saved PC from the stack.  It is stored above
          all of the other registers.  */
-      offset = bitcount (bits (inst1, 0, 7)) * DEPRECATED_REGISTER_SIZE;
-      sp = read_register (ARM_SP_REGNUM);
-      nextpc = (CORE_ADDR) read_memory_integer (sp + offset, 4);
-      nextpc = ADDR_BITS_REMOVE (nextpc);
+      offset = bitcount(bits(inst1, 0, 7)) * DEPRECATED_REGISTER_SIZE;
+      sp = read_register(ARM_SP_REGNUM);
+      nextpc = (CORE_ADDR)read_memory_integer(sp + offset, 4);
+      nextpc = ADDR_BITS_REMOVE(nextpc);
       if (nextpc == pc)
-	error (_("Infinite loop detected"));
+	error(_("Infinite loop detected"));
     }
   else if ((inst1 & 0xf000) == 0xd000)	/* conditional branch */
     {
-      uint32_t cond = bits (inst1, 8, 11);
-      if (cond != 0x0f && condition_true (cond, cpsr))    /* 0x0f = SWI */
+      uint32_t cond = bits(inst1, 8, 11);
+      if (cond != 0x0f && condition_true(cond, cpsr))    /* 0x0f = SWI */
 	nextpc = pc_val + (sbits (inst1, 0, 7) << 1);
     }
   else if ((inst1 & 0xf800) == 0xe000)	/* unconditional branch */
@@ -4237,11 +4246,11 @@ thumb_get_next_pc (CORE_ADDR pc)
 		    case 0x7f: /* 1111111 */
 		      if (op1 == 0)
 			{
-			  /* Secure Monitor Call.  */
+			  ; /* Secure Monitor Call.  */
 			}
 		      else
 			{
-			  /* Permanently UNDEFINED.  */
+			  ; /* Permanently UNDEFINED.  */
 			}
 		      break;
 
@@ -4250,7 +4259,7 @@ thumb_get_next_pc (CORE_ADDR pc)
 			{
 			  /* not x111xxx - Conditional branch.  */
 			  uint32_t cond = bits(inst1, 6, 9);
-			  if (condition_true (cond, cpsr))
+			  if (condition_true(cond, cpsr))
 			    {
 			      uint32_t S = bit(inst1, 10);
 			      uint32_t imm6 = bits(inst1, 0, 5);
@@ -4264,8 +4273,8 @@ thumb_get_next_pc (CORE_ADDR pc)
 				  uint32_t sign_mask = -(1 << 20);
 				  offset |= sign_mask; /* Sign extend.  */
 				}
-      nextpc = pc_val + offset;
-    }
+                              nextpc = pc_val + offset;
+                            }
 			}
 		      break;
 		  }
@@ -4330,7 +4339,7 @@ thumb_get_next_pc (CORE_ADDR pc)
 	  uint32_t Rn = bits(inst1, 0, 3);
 	  if (Rn == 15)
 	    {
-	      /* LDR (literal).  */
+	      ; /* LDR (literal).  */
 	    }
 	  else
 	    {
@@ -4340,18 +4349,19 @@ thumb_get_next_pc (CORE_ADDR pc)
 		  /* Rt is the PC.  */
 		  uint32_t imm2 = bits(inst2, 4, 5);
 		  uint32_t Rm = bits(inst2, 0, 3);
-		  offset = Rm << imm2;
-		  CORE_ADDR pc_addr = Rn + offset;
-		  /* make sure pc address is 4 byte aligned.  */
-		  gdb_assert ((pc_addr & 3) == 0);
-		  nextpc = (CORE_ADDR) read_memory_integer (pc_addr, 4);
-		  nextpc = ADDR_BITS_REMOVE (nextpc);
+                  CORE_ADDR pc_addr;
+		  offset = (Rm << imm2);
+		  pc_addr = (Rn + offset);
+		  /* make sure pc address is 4 byte aligned: */
+		  gdb_assert((pc_addr & 3) == 0);
+		  nextpc = (CORE_ADDR)read_memory_integer(pc_addr, 4);
+		  nextpc = ADDR_BITS_REMOVE(nextpc);
 		  if (nextpc == pc)
-		    error (_("Infinite loop detected"));
+		    error(_("Infinite loop detected"));
 		}
 	    }
 	}
-      else if ((inst1 & 0xfff0) == 0xe8d0 && (inst2 & 0xffe0) == 0xf000)
+      else if (((inst1 & 0xfff0) == 0xe8d0) && (inst2 & 0xffe0) == 0xf000)
 	{
 	  /* TBB, TBH (ARMv6T2, ARMv7).  */
 	  uint32_t Rn = bits(inst1, 0, 3); /* Table base address.  */
@@ -4360,31 +4370,33 @@ thumb_get_next_pc (CORE_ADDR pc)
 	      uint32_t elem_index = read_register(bits(inst2, 0, 3));
 	      uint32_t H = bit(inst2, 4); /* Half word elements.  */
 	      uint32_t base;
+              uint32_t elem_size;
+              uint32_t elem_addr;
 	      if (Rn == 15)
 		base = pc_val;
 	      else
 		base = read_register(Rn);
-	      uint32_t elem_size = 1 << H;
-	      uint32_t elem_addr = base + (elem_index * elem_size);
-	      offset = read_memory_integer (elem_addr, elem_size) << 1;
-	      nextpc = pc_val + offset;
+	      elem_size = (1U << H);
+	      elem_addr = (base + (elem_index * elem_size));
+	      offset = (read_memory_integer(elem_addr, elem_size) << 1);
+	      nextpc = (pc_val + offset);
 	    }
 	}
    }
   else if ((inst1 & 0xff00) == 0x4700)	/* bx REG, blx REG */
     {
-      if (bits (inst1, 3, 6) == 0x0f)
+      if (bits(inst1, 3, 6) == 0x0f)
 	nextpc = pc_val;
       else
-	nextpc = read_register (bits (inst1, 3, 6));
+	nextpc = read_register(bits(inst1, 3, 6));
 
-      nextpc = ADDR_BITS_REMOVE (nextpc);
+      nextpc = ADDR_BITS_REMOVE(nextpc);
       if (nextpc == pc)
-	error (_("Infinite loop detected"));
+	error(_("Infinite loop detected"));
     }
   else if ((inst1 & 0xff87) == 0x4687)  /* mov pc, <Rm> */
     {
-      nextpc = read_register (bits (inst1, 3, 6));
+      nextpc = read_register(bits(inst1, 3, 6));
     }
   else if ((inst1 & 0xff00) == 0xbf00)
     {
@@ -4399,10 +4411,11 @@ thumb_get_next_pc (CORE_ADDR pc)
 	     in the IF/THEN block that is an else instruction, or the next
 	     instruction past the end of the IT block if they are all IF
 	     ops.  */
-	  if (!condition_true (firstcond, cpsr))
+	  if (!condition_true(firstcond, cpsr))
 	    {
 	      typedef enum { it_op_none = 0, it_op_if, it_op_else } it_op_t;
-	      uint32_t firstcond_0 = firstcond & 1;
+	      uint32_t firstcond_0 = (firstcond & 1);
+              uint32_t num_opcodes_to_skip;
 	      it_op_t it_ops[3] = { it_op_none, it_op_none, it_op_none };
 	      if (mask & 7)
 		it_ops[0] = bit(mask, 3) == firstcond_0 ? it_op_if : it_op_else;
@@ -4413,7 +4426,7 @@ thumb_get_next_pc (CORE_ADDR pc)
 	      if (mask & 1)
 		it_ops[2] = bit(mask, 1) == firstcond_0 ? it_op_if : it_op_else;
 
-	      uint32_t num_opcodes_to_skip = 1;
+	      num_opcodes_to_skip = 1U;
 	      if (it_ops[0] == it_op_if)
 		{
 		  num_opcodes_to_skip++;
@@ -4425,9 +4438,9 @@ thumb_get_next_pc (CORE_ADDR pc)
 		    }
 		}
 
-	      for (i=0; i<num_opcodes_to_skip; ++i)
+	      for (i = 0; i < num_opcodes_to_skip; ++i)
 		{
-		  uint16_t next_inst = read_memory_integer (nextpc, 2);
+		  uint16_t next_inst = read_memory_integer(nextpc, 2);
 		  if (IS_THUMB32_OP(next_inst))
 		    nextpc += 4;
 		  else
@@ -5372,20 +5385,19 @@ arm_get_longjmp_target (CORE_ADDR *pc)
   return 1;
 }
 
-/* Return non-zero if the PC is inside a thumb call thunk.  */
-
+/* Return non-zero if the PC is inside a thumb call thunk: */
 int
-arm_in_call_stub (CORE_ADDR pc, char *name)
+arm_in_call_stub(CORE_ADDR pc, char *name)
 {
   CORE_ADDR start_addr;
 
   /* Find the starting address of the function containing the PC.  If
      the caller did NOT give us a name, look it up at the same time.  */
-  if (0 == find_pc_partial_function (pc, name ? NULL : &name,
-				     &start_addr, NULL))
+  if (0 == find_pc_partial_function(pc, name ? NULL : &name,
+				    &start_addr, NULL))
     return 0;
 
-  return strncmp (name, "_call_via_r", 11) == 0;
+  return strncmp(name, "_call_via_r", 11) == 0;
 }
 
 /* If PC is in a Thumb call or return stub, return the address of the
@@ -5394,17 +5406,17 @@ arm_in_call_stub (CORE_ADDR pc, char *name)
    are r0-r9, sl, fp, ip, sp, and lr.  */
 
 CORE_ADDR
-arm_skip_stub (CORE_ADDR pc)
+arm_skip_stub(CORE_ADDR pc)
 {
   char *name;
   CORE_ADDR start_addr;
 
   /* Find the starting address and name of the function containing the PC.  */
-  if (find_pc_partial_function (pc, &name, &start_addr, NULL) == 0)
+  if (find_pc_partial_function(pc, &name, &start_addr, NULL) == 0)
     return 0;
 
   /* Call thunks always start with "_call_via_".  */
-  if (strncmp (name, "_call_via_", 10) == 0)
+  if (strncmp(name, "_call_via_", 10) == 0)
     {
       /* Use the name suffix to determine which register contains the
          target PC.  */
@@ -5415,61 +5427,61 @@ arm_skip_stub (CORE_ADDR pc)
       int regno;
 
       for (regno = 0; regno <= 14; regno++)
-	if (strcmp (&name[10], table[regno]) == 0)
-	  return read_register (regno);
+	if (strcmp(&name[10], table[regno]) == 0)
+	  return read_register(regno);
     }
 
   return 0;			/* not a stub */
 }
 
 static void
-set_arm_command (char *args, int from_tty)
+set_arm_command(char *args, int from_tty)
 {
-  printf_unfiltered (_("\
+  printf_unfiltered(_("\
 \"set arm\" must be followed by an apporpriate subcommand.\n"));
-  help_list (setarmcmdlist, "set arm ", all_commands, gdb_stdout);
+  help_list(setarmcmdlist, "set arm ", all_commands, gdb_stdout);
 }
 
 static void
-show_arm_command (char *args, int from_tty)
+show_arm_command(char *args, int from_tty)
 {
-  cmd_show_list (showarmcmdlist, from_tty, "");
+  cmd_show_list(showarmcmdlist, from_tty, "");
 }
 
 static void
-arm_update_current_architecture (void)
+arm_update_current_architecture(void)
 {
   struct gdbarch_info info;
 
-  /* If the current architecture is not ARM, we have nothing to do.  */
-  if (gdbarch_bfd_arch_info (current_gdbarch)->arch != bfd_arch_arm)
+  /* If the current architecture is not ARM, we have nothing to do: */
+  if (gdbarch_bfd_arch_info(current_gdbarch)->arch != bfd_arch_arm)
     return;
 
   /* Update the architecture.  */
-  gdbarch_info_init (&info);
+  gdbarch_info_init(&info);
 
-  if (!gdbarch_update_p (info))
-    internal_error (__FILE__, __LINE__, "could not update architecture");
+  if (!gdbarch_update_p(info))
+    internal_error(__FILE__, __LINE__, "could not update architecture");
 }
 
 static void
-set_fp_model_sfunc (char *args, int from_tty,
-		    struct cmd_list_element *c)
+set_fp_model_sfunc(char *args, int from_tty,
+		   struct cmd_list_element *c)
 {
   enum arm_float_model fp_model;
 
   for (fp_model = ARM_FLOAT_AUTO; fp_model != ARM_FLOAT_LAST; fp_model++)
-    if (strcmp (current_fp_model, fp_model_strings[fp_model]) == 0)
+    if (strcmp(current_fp_model, fp_model_strings[fp_model]) == 0)
       {
 	arm_fp_model = fp_model;
 	break;
       }
 
   if (fp_model == ARM_FLOAT_LAST)
-    internal_error (__FILE__, __LINE__, _("Invalid fp model accepted: %s."),
-		    current_fp_model);
+    internal_error(__FILE__, __LINE__, _("Invalid fp model accepted: %s."),
+		   current_fp_model);
 
-  arm_update_current_architecture ();
+  arm_update_current_architecture();
 }
 
 static void
@@ -5567,7 +5579,7 @@ set_arm_single_step_mode (struct gdbarch *gdbarch, int single_step_mode)
 	    break;
 
 	  case arm_single_step_mode_hardware:
-	    set_gdbarch_software_single_step (gdbarch, NULL);
+	    set_gdbarch_software_single_step(gdbarch, NULL);
 	    break;
 	}
     }
@@ -5575,15 +5587,15 @@ set_arm_single_step_mode (struct gdbarch *gdbarch, int single_step_mode)
 }
 
 int
-get_arm_single_step_mode ()
+get_arm_single_step_mode(void)
 {
   return arm_single_step_mode;
 }
 
 void
-arm_set_show_opcode_bytes (char *args, int from_tty, struct cmd_list_element *c)
+arm_set_show_opcode_bytes(char *args, int from_tty, struct cmd_list_element *c)
 {
-  set_arm_show_opcode_bytes_option (show_opcode_bytes);
+  set_arm_show_opcode_bytes_option(show_opcode_bytes);
 }
 
 /* Return the ARM register name corresponding to register I.  */
@@ -5669,42 +5681,42 @@ arm_write_pc (CORE_ADDR pc, ptid_t ptid)
 {
   write_register_pid (ARM_PC_REGNUM, pc, ptid);
 
-  /* If necessary, set the T bit.  */
+  /* If necessary, set the T bit: */
   if (arm_apcs_32)
     {
-      CORE_ADDR val = read_register_pid (ARM_PS_REGNUM, ptid);
-      if (arm_pc_is_thumb (pc))
-	write_register_pid (ARM_PS_REGNUM, val | 0x20, ptid);
+      CORE_ADDR val = read_register_pid(ARM_PS_REGNUM, ptid);
+      if (arm_pc_is_thumb(pc))
+	write_register_pid(ARM_PS_REGNUM, val | 0x20, ptid);
       else
-	write_register_pid (ARM_PS_REGNUM, val & ~(CORE_ADDR) 0x20, ptid);
+	write_register_pid(ARM_PS_REGNUM, val & ~(CORE_ADDR) 0x20, ptid);
     }
 }
 
 static enum gdb_osabi
-arm_elf_osabi_sniffer (bfd *abfd)
+arm_elf_osabi_sniffer(bfd *abfd)
 {
   unsigned int elfosabi;
   enum gdb_osabi osabi = GDB_OSABI_UNKNOWN;
 
-  elfosabi = elf_elfheader (abfd)->e_ident[EI_OSABI];
+  elfosabi = elf_elfheader(abfd)->e_ident[EI_OSABI];
 
   if (elfosabi == ELFOSABI_ARM)
     /* GNU tools use this value.  Check note sections in this case,
        as well.  */
-    bfd_map_over_sections (abfd,
-			   generic_elf_osabi_sniff_abi_tag_sections,
-			   &osabi);
+    bfd_map_over_sections(abfd,
+			  generic_elf_osabi_sniff_abi_tag_sections,
+			  &osabi);
 
-  /* Anything else will be handled by the generic ELF sniffer.  */
+  /* Anything else will be handled by the generic ELF sniffer: */
   return osabi;
 }
 
 
 int
-arm_register_reggroup_p (struct gdbarch *gdbarch, int regnum,
-                         struct reggroup *group)
+arm_register_reggroup_p(struct gdbarch *gdbarch, int regnum,
+                        struct reggroup *group)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
 
   if (tdep->fp_model == ARM_FLOAT_VFP)
     {
@@ -5743,7 +5755,7 @@ arm_register_reggroup_p (struct gdbarch *gdbarch, int regnum,
    reading a binary file.  */
 
 static struct gdbarch *
-arm_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
+arm_gdbarch_init(struct gdbarch_info info, struct gdbarch_list *arches)
 {
   struct gdbarch_tdep *tdep;
   struct gdbarch *gdbarch;
@@ -5755,14 +5767,14 @@ arm_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   /* If we have an object to base this architecture on, try to determine
      its ABI.  */
 
-  if (arm_abi == ARM_ABI_AUTO && info.abfd != NULL)
+  if ((arm_abi == ARM_ABI_AUTO) && (info.abfd != NULL))
     {
       int ei_osabi;
 
-      switch (bfd_get_flavour (info.abfd))
+      switch (bfd_get_flavour(info.abfd))
 	{
 	case bfd_target_aout_flavour:
-	  /* Assume it is an old APCS-style ABI.  */
+	  /* Assume it is an old APCS-style ABI: */
 	  arm_abi = ARM_ABI_APCS;
 	  break;
 
@@ -5773,7 +5785,7 @@ arm_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 	  break;
 
 	case bfd_target_elf_flavour:
-	  ei_osabi = elf_elfheader (info.abfd)->e_ident[EI_OSABI];
+	  ei_osabi = elf_elfheader(info.abfd)->e_ident[EI_OSABI];
 	  if (ei_osabi == ELFOSABI_ARM)
 	    {
 	      /* GNU tools used to use this value, but do not for EABI
@@ -5785,13 +5797,13 @@ arm_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 	    {
 	      int e_flags, eabi_ver;
 
-	      e_flags = elf_elfheader (info.abfd)->e_flags;
-	      eabi_ver = EF_ARM_EABI_VERSION (e_flags);
+	      e_flags = elf_elfheader(info.abfd)->e_flags;
+	      eabi_ver = EF_ARM_EABI_VERSION(e_flags);
 
 	      switch (eabi_ver)
 		{
 		case EF_ARM_EABI_UNKNOWN:
-		  /* Assume GNU tools.  */
+		  /* Assume GNU tools: */
 		  arm_abi = ARM_ABI_APCS;
 		  break;
 
@@ -5800,7 +5812,7 @@ arm_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 		  break;
 
 		default:
-		  warning (_("unknown ARM EABI version 0x%x"), eabi_ver);
+		  warning(_("unknown ARM EABI version 0x%x"), eabi_ver);
 		  arm_abi = ARM_ABI_APCS;
 		  break;
 		}
@@ -5818,10 +5830,10 @@ arm_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   if (arches != NULL)
     {
       if (arm_abi == ARM_ABI_AUTO)
-	arm_abi = gdbarch_tdep (arches->gdbarch)->arm_abi;
+	arm_abi = gdbarch_tdep(arches->gdbarch)->arm_abi;
 
       if (fp_model == ARM_FLOAT_AUTO)
-	fp_model = gdbarch_tdep (arches->gdbarch)->fp_model;
+	fp_model = gdbarch_tdep(arches->gdbarch)->fp_model;
     }
   else
     {
@@ -5834,36 +5846,36 @@ arm_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 	 uses that now, and we now provide a way for the user to force
 	 the model. So default to the most useful variant.  */
       if (fp_model == ARM_FLOAT_AUTO)
-	fp_model = ARM_FLOAT_NONE;  /* APPLE LOCAL: default to no fp or fp
-				       emulation (for libgcc which has float
-				       sw support, but it just does NOT attempt
-				       to emulate floating point registers in
-				       memory).  */
+	fp_model = ARM_FLOAT_NONE; /* APPLE LOCAL: default to no fp or fp
+				    * emulation (for libgcc which has float
+				    * sw support, but it just fails to
+                                    * attempt to emulate floating point
+                                    * registers in memory).  */
     }
 
-  /* If there is already a candidate, use it.  */
-  for (best_arch = gdbarch_list_lookup_by_info (arches, &info);
+  /* If there is already a candidate, use it: */
+  for (best_arch = gdbarch_list_lookup_by_info(arches, &info);
        best_arch != NULL;
-       best_arch = gdbarch_list_lookup_by_info (best_arch->next, &info))
+       best_arch = gdbarch_list_lookup_by_info(best_arch->next, &info))
     {
-      if (arm_abi != gdbarch_tdep (best_arch->gdbarch)->arm_abi)
+      if (arm_abi != gdbarch_tdep(best_arch->gdbarch)->arm_abi)
 	continue;
 
-      if (fp_model != gdbarch_tdep (best_arch->gdbarch)->fp_model)
+      if (fp_model != gdbarch_tdep(best_arch->gdbarch)->fp_model)
 	continue;
 
       if (fp_model == ARM_FLOAT_VFP)
-	vfp_version = gdbarch_tdep (best_arch->gdbarch)->vfp_version;
+	vfp_version = gdbarch_tdep(best_arch->gdbarch)->vfp_version;
 
-      /* Found a match.  */
+      /* Found a match: */
       break;
     }
 
   if (best_arch != NULL)
     return best_arch->gdbarch;
 
-  tdep = xcalloc (1, sizeof (struct gdbarch_tdep));
-  gdbarch = gdbarch_alloc (&info, tdep);
+  tdep = (struct gdbarch_tdep *)xcalloc(1, sizeof(struct gdbarch_tdep));
+  gdbarch = gdbarch_alloc(&info, tdep);
 
   /* Record additional information about the architecture we are defining.
      These are gdbarch discriminators, like the OSABI.  */
@@ -5872,12 +5884,12 @@ arm_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   tdep->vfp_version = vfp_version;
 
 #ifdef TM_NEXTSTEP
-  /* APPLE LOCAL HACK - we set the wordsize to 4 to keep the dyld code happy.  */
+  /* APPLE LOCAL HACK: we set the wordsize to 4 to keep the dyld code happy: */
   tdep->wordsize = 4;
 #endif /* TM_NEXTSTEP */
 
-  /* APPLE LOCAL Map the DWARF register numbers to gdb's internal numberings. */
-  set_gdbarch_dwarf2_reg_to_regnum (gdbarch, arm_dwarf2_reg_to_regnum);
+  /* APPLE LOCAL Map the DWARF register numbers to gdb's internal numberings: */
+  set_gdbarch_dwarf2_reg_to_regnum(gdbarch, arm_dwarf2_reg_to_regnum);
 
   /* Breakpoints.  */
   switch (info.byte_order)
@@ -6043,69 +6055,72 @@ arm_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 }
 
 static void
-arm_dump_tdep (struct gdbarch *current_gdbarch, struct ui_file *file)
+arm_dump_tdep(struct gdbarch *current_gdbarch, struct ui_file *file)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
 
   if (tdep == NULL)
     return;
 
-  fprintf_unfiltered (file, _("arm_dump_tdep: Lowest pc = 0x%s"),
-		      paddr (tdep->lowest_pc));
+  fprintf_unfiltered(file, _("arm_dump_tdep: Lowest pc = 0x%s"),
+		     paddr(tdep->lowest_pc));
 }
 
 extern initialize_file_ftype _initialize_arm_tdep; /* -Wmissing-prototypes */
 
 void
-_initialize_arm_tdep (void)
+_initialize_arm_tdep(void)
 {
   struct ui_file *stb;
   long length;
   const char *setname;
   const char *setdesc;
   const char *const *regnames;
-  int numregs, i, j;
+  int numregs;
+  uint32_t i;
+  int j;
   static char *helptext;
   char regdesc[1024], *rdptr = regdesc;
-  size_t rest = sizeof (regdesc);
+  size_t rest = sizeof(regdesc);
 
-  /* APPLE LOCAL START: Build the offsets to be used by arm_register_byte.  */
+  /* APPLE LOCAL START: Build the offsets to be used by arm_register_byte: */
   g_register_info[0].offset = 0;
-  for (i=1; i<g_register_info_count; i++)
+  for (i = 1U; i < g_register_info_count; i++)
     {
-      if (g_register_info[i - 1].type)
-	g_register_info[i].offset = g_register_info[i - 1].offset +
-				    TYPE_LENGTH (*g_register_info[i - 1].type);
+      if (g_register_info[i - 1U].type)
+	g_register_info[i].offset =
+          (g_register_info[i - 1U].offset
+           + TYPE_LENGTH(*g_register_info[i - 1U].type));
     }
   /* APPLE LOCAL END.  */
 
-  gdbarch_register (bfd_arch_arm, arm_gdbarch_init, arm_dump_tdep);
+  gdbarch_register(bfd_arch_arm, arm_gdbarch_init, arm_dump_tdep);
 
   /* Register an ELF OS ABI sniffer for ARM binaries.  */
-  gdbarch_register_osabi_sniffer (bfd_arch_arm,
-				  bfd_target_elf_flavour,
-				  arm_elf_osabi_sniffer);
+  gdbarch_register_osabi_sniffer(bfd_arch_arm,
+				 bfd_target_elf_flavour,
+				 arm_elf_osabi_sniffer);
 
-  /* Get the number of possible sets of register names defined in opcodes.  */
-  num_disassembly_options = get_arm_regname_num_options ();
+  /* Get the number of possible sets of register names defined in opcodes: */
+  num_disassembly_options = get_arm_regname_num_options();
 
-  /* Add root prefix command for all "set arm"/"show arm" commands.  */
-  add_prefix_cmd ("arm", no_class, set_arm_command,
-		  _("Various ARM-specific commands."),
-		  &setarmcmdlist, "set arm ", 0, &setlist);
+  /* Add root prefix command for all "set arm"/"show arm" commands: */
+  add_prefix_cmd("arm", no_class, set_arm_command,
+		 _("Various ARM-specific commands."),
+		 &setarmcmdlist, "set arm ", 0, &setlist);
 
-  add_prefix_cmd ("arm", no_class, show_arm_command,
-		  _("Various ARM-specific commands."),
-		  &showarmcmdlist, "show arm ", 0, &showlist);
+  add_prefix_cmd("arm", no_class, show_arm_command,
+		 _("Various ARM-specific commands."),
+		 &showarmcmdlist, "show arm ", 0, &showlist);
 
-  /* Sync the opcode insn printer with our register viewer.  */
-  parse_arm_disassembler_option ("reg-names-std");
+  /* Sync the opcode insn printer with our register viewer: */
+  parse_arm_disassembler_option("reg-names-std");
 
   /* Initialize the array that will be passed to
      add_setshow_enum_cmd().  */
-  valid_disassembly_styles
-    = xmalloc ((num_disassembly_options + 1) * sizeof (char *));
-  for (i = 0; i < num_disassembly_options; i++)
+  valid_disassembly_styles =
+    (const char **)xmalloc((num_disassembly_options + 1) * sizeof(char *));
+  for (i = 0; (int)i < num_disassembly_options; i++)
     {
       numregs = get_arm_regnames (i, &setname, &setdesc, &regnames);
       valid_disassembly_styles[i] = setname;

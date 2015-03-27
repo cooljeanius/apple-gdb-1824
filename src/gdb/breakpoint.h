@@ -278,6 +278,16 @@ struct bp_location
   CORE_ADDR requested_address;
 };
 
+/* The possible return values for print_bpstat, print_it_normal,
+ * print_it_done, print_it_noop: */
+enum print_stop_action
+{
+  PRINT_UNKNOWN = -1,
+  PRINT_SRC_AND_LOC,
+  PRINT_SRC_ONLY,
+  PRINT_NOTHING
+};
+
 /* This structure is a collection of function pointers that, if available,
    will be called instead of the performing the default action for this
    bptype.  */
@@ -286,10 +296,10 @@ struct breakpoint_ops
 {
   /* The normal print routine for this breakpoint, called when we
      hit it.  */
-  enum print_stop_action (*print_it) (struct breakpoint *);
+  enum print_stop_action (*print_it)(struct breakpoint *);
 
   /* Display information about this breakpoint, for "info breakpoints".  */
-  void (*print_one) (struct breakpoint *, CORE_ADDR *);
+  void (*print_one)(struct breakpoint *, CORE_ADDR *);
 
   /* Display information about this breakpoint after setting it (roughly
      speaking; this is called from "mention").  */
@@ -558,15 +568,7 @@ struct bpstat_what
     int call_dummy;
   };
 
-/* The possible return values for print_bpstat, print_it_normal,
-   print_it_done, print_it_noop. */
-enum print_stop_action
-  {
-    PRINT_UNKNOWN = -1,
-    PRINT_SRC_AND_LOC,
-    PRINT_SRC_ONLY,
-    PRINT_NOTHING
-  };
+/* The enum that was here has been moved higher up in the header. */
 
 /* Tell what to do about this bpstat.  */
 struct bpstat_what bpstat_what (bpstat);
@@ -912,15 +914,17 @@ extern int deprecated_exception_catchpoints_are_fragile
    reinitialized -- e.g. when program is re-run.  */
 extern int deprecated_exception_support_initialized ATTRIBUTE_DEPRECATED;
 
-/* APPLE LOCAL begin radar 6366048 search both minsyms & syms for bps.  */
-extern void remove_duplicate_sals (struct symtabs_and_lines *,
-				   struct symtabs_and_lines,
-				   char **);
+/* APPLE LOCAL begin radar 6366048 search both minsyms & syms for bps: */
+extern void remove_duplicate_sals(struct symtabs_and_lines *,
+				  struct symtabs_and_lines,
+				  char **);
 /* APPLE LOCAL end radar 6366048 search both minsyms & syms for bps.  */
 
-extern void breakpoints_relocate (struct objfile *, struct section_offsets *);
+extern void breakpoints_relocate(struct objfile *, struct section_offsets *);
 
-/* APPLE LOCAL Disable breakpoints while updating data formatters.  */
-extern struct cleanup * make_cleanup_enable_disable_bpts_during_operation (void);
+/* APPLE LOCAL Disable breakpoints while updating data formatters: */
+extern struct cleanup *make_cleanup_enable_disable_bpts_during_operation(void);
 
-#endif /* !defined (BREAKPOINT_H) */
+#endif /* !defined(BREAKPOINT_H) */
+
+/* EOF */

@@ -28,16 +28,22 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#if TARGET_POWERPC
+#if defined(TARGET_POWERPC) && TARGET_POWERPC
 # include "ppc-macosx-thread-status.h"
 # include "ppc-macosx-regs.h"
 # include "ppc-macosx-regnums.h"
 #endif /* TARGET_POWERPC */
 
-#if TARGET_I386
+#if defined(TARGET_I386) && TARGET_I386
 # include "i386-macosx-thread-status.h"
 # include "i386-macosx-tdep.h"
 #endif /* TARGET_I386 */
+
+#if defined(TARGET_ARM) && TARGET_ARM
+# include "arm-macosx-thread-status.h"
+# include "arm-macosx-tdep.h"
+# include "arm-macosx-regnums.h"
+#endif /* TARGET_ARM */
 
 #include "defs.h"
 #include "inferior.h"
@@ -55,6 +61,10 @@
 #ifndef CPU_TYPE_POWERPC
 # define CPU_TYPE_POWERPC (18)
 #endif /* !CPU_TYPE_POWERPC */
+
+#ifndef CPU_TYPE_ARM
+# define CPU_TYPE_ARM (12)
+#endif /* !CPU_TYPE_ARM */
 
 #define DARWIN_KERNEL_ID 0
 

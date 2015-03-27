@@ -99,8 +99,12 @@
 #include "arm-macosx-regnums.h"
 #include "arm-macosx-tdep.h"
 #include "arm-macosx-thread-status.h"
-#include "config/arm/tm-arm-macosx.h"
-#include "tm-arm-macosx.h"
+#ifndef _TM_ARM_MACOSX_H_
+# include "config/arm/tm-arm-macosx.h"
+#endif /* !_TM_ARM_MACOSX_H_ */
+#ifndef __GDB_TM_ARM_MACOSX_H__
+# include "tm-arm-macosx.h"
+#endif /* !__GDB_TM_ARM_MACOSX_H__ */
 
 #ifdef HAVE_MALLOC_H
 # include <malloc.h>

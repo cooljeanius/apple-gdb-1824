@@ -40,6 +40,12 @@ extern void rollback_stop(void);
 
 #include "checkpoint.h"
 
+/* keep this condition the same as in the 2 places below: */
+#ifdef NM_NEXTSTEP /* in lieu of target vectory */
+/* has protos for fork_memcache_put() and direct_memcache_get() in it: */
+# include "macosx-nat-inferior.h"
+#endif /* NM_NEXTSTEP */
+
 #define LIBCHECKPOINT_NAME "/usr/libexec/gdb/libcheckpoint.dylib"
 #define CP_FORK_NAME "_gdbcp_fork"
 #define CP_CG_SAVE_NAME "_gdbcp_cg_save"
@@ -107,7 +113,6 @@ memcache_put(struct checkpoint *cp)
 
 #ifdef NM_NEXTSTEP /* in lieu of target vectory */
  {
-   void fork_memcache_put(struct checkpoint *);
    if (cp->pid != 0)
      fork_memcache_put(cp);
  }
@@ -319,7 +324,6 @@ collect_checkpoint(void)
 
 #ifdef NM_NEXTSTEP /* in lieu of target vectory */
   {
-    void direct_memcache_get(struct checkpoint *);
     if (cp->pid == 0)
       direct_memcache_get(cp);
   }

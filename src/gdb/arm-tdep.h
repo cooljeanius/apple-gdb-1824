@@ -27,6 +27,10 @@
 #ifndef __GDB_ARM_TDEP_H__
 #define __GDB_ARM_TDEP_H__
 
+#include "defs.h"
+#include "gdbarch.h"
+#include "reggroups.h"
+
 /* APPLE LOCAL: Use R7 as FP for ARM. */
 #ifdef TM_NEXTSTEP
 # define __ARM_FP_REG 7
@@ -265,7 +269,7 @@ struct register_info
 typedef struct register_info register_info_t;
 
 #ifndef LOWEST_PC
-# define LOWEST_PC (gdbarch_tdep (current_gdbarch)->lowest_pc)
+# define LOWEST_PC (gdbarch_tdep(current_gdbarch)->lowest_pc)
 #endif /* !LOWEST_PC */
 
 /* Prototypes for internal interfaces needed by more than one MD file: */
@@ -285,6 +289,12 @@ enum {
 
 int get_arm_single_step_mode(void);
 int set_arm_single_step_mode(struct gdbarch *gdbarch, int single_step_mode);
+
+int arm_in_call_stub(CORE_ADDR pc, char *name);
+CORE_ADDR arm_skip_stub(CORE_ADDR pc);
+
+int arm_register_reggroup_p(struct gdbarch *gdbarch, int regnum,
+                            struct reggroup *group);
 
 #endif /* !__GDB_ARM_TDEP_H__ */
 

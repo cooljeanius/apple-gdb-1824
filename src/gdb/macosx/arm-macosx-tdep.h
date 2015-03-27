@@ -7,7 +7,9 @@
 #include "defs.h"
 #include "arm-macosx-thread-status.h"
 #include "arm-macosx-regnums.h"
-#include "macosx-tdep.h"
+#ifndef __GDB_MACOSX_TDEP_H__
+# include "macosx-tdep.h"
+#endif /* !__GDB_MACOSX_TDEP_H__ */
 
 #ifndef INVALID_ADDRESS
 # define INVALID_ADDRESS ((CORE_ADDR)(-1L))

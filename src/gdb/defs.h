@@ -300,7 +300,7 @@ typedef bfd_vma CORE_ADDR;
 #define DEPRECATED_STREQN(a,b,c) (strncmp((a), (b), (c)) == 0)
 
 /* Check if a character is one of the commonly used C++ marker characters.  */
-extern int is_cplus_marker (int);
+extern int is_cplus_marker(int);
 
 /* enable xdb commands if set */
 extern int xdb_commands;
@@ -315,7 +315,7 @@ extern int quit_flag;
 extern int immediate_quit;
 extern int sevenbit_strings;
 
-extern void quit (void);
+extern void quit(void);
 
 /* FIXME: cagney/2000-03-13: It has been suggested that the peformance
    benefits of having a ``QUIT'' macro rather than a function are
@@ -362,7 +362,7 @@ enum language
     language_scm,    		/* Scheme / Guile */
     language_pascal,		/* Pascal */
     language_ada,		/* Ada */
-    language_minimal,		/* All other languages, minimal support only */
+    language_minimal,	/* All other languages, minimal support only */
     nr_languages
   };
 
@@ -435,7 +435,7 @@ struct cleanup
 
 #ifndef NORETURN
 # if defined(__GNUC__) \
-     && (__GNUC__ == 1 || (__GNUC__ == 2 && __GNUC_MINOR__ < 7))
+     && ((__GNUC__ == 1) || ((__GNUC__ == 2) && (__GNUC_MINOR__ < 7)))
 #  define NORETURN volatile
 # else
 #  define NORETURN		/* nothing */
@@ -500,137 +500,137 @@ struct symbol;
 
 
 /* APPLE LOCAL begin size */
-extern void set_screen_size (void);
-extern void set_width (void);
+extern void set_screen_size(void);
+extern void set_width(void);
 /* APPLE LOCAL end size */
 
-extern void initialize_utils (void);
+extern void initialize_utils(void);
 
-extern void notice_quit (void);
+extern void notice_quit(void);
 
-extern int strcmp_iw (const char *, const char *);
+extern int strcmp_iw(const char *, const char *);
 
-extern int strcmp_iw_ordered (const char *, const char *);
+extern int strcmp_iw_ordered(const char *, const char *);
 
-extern int streq (const char *, const char *);
+extern int streq(const char *, const char *);
 
-extern int subset_compare (char *, char *);
+extern int subset_compare(char *, char *);
 
-extern char *safe_strerror (int);
+extern char *safe_strerror(int);
 
 /* APPLE LOCAL begin mmalloc */
-extern void *init_malloc (void *);
-extern void init_mmalloc_default_pool (void *);
+extern void *init_malloc(void *);
+extern void init_mmalloc_default_pool(void *);
 /* APPLE LOCAL end mmalloc */
 
-extern void request_quit (int);
+extern void request_quit(int);
 
 #define	ALL_CLEANUPS	((struct cleanup *)0)
 
-extern void do_cleanups (struct cleanup *);
-extern void do_final_cleanups (struct cleanup *);
-extern void do_run_cleanups (struct cleanup *);
-extern void do_exec_cleanups (struct cleanup *);
-extern void do_exec_error_cleanups (struct cleanup *);
+extern void do_cleanups(struct cleanup *);
+extern void do_final_cleanups(struct cleanup *);
+extern void do_run_cleanups(struct cleanup *);
+extern void do_exec_cleanups(struct cleanup *);
+extern void do_exec_error_cleanups(struct cleanup *);
 /* APPLE LOCAL: hand_call_cleanups.  */
-extern void do_hand_call_cleanups (struct cleanup *);
+extern void do_hand_call_cleanups(struct cleanup *);
 
-extern void discard_cleanups (struct cleanup *);
-extern void discard_final_cleanups (struct cleanup *);
-extern void discard_exec_error_cleanups (struct cleanup *);
+extern void discard_cleanups(struct cleanup *);
+extern void discard_final_cleanups(struct cleanup *);
+extern void discard_exec_error_cleanups(struct cleanup *);
 /* APPLE LOCAL: hand_call_cleanups.  */
-extern void discard_hand_call_cleanups (struct cleanup *old_chain);
-extern void discard_my_cleanups (struct cleanup **, struct cleanup *);
+extern void discard_hand_call_cleanups(struct cleanup *old_chain);
+extern void discard_my_cleanups(struct cleanup **, struct cleanup *);
 
 /* NOTE: cagney/2000-03-04: This typedef is strictly for the
    make_cleanup function declarations below. Do not use this typedef
    as a cast when passing functions into the make_cleanup() code.
    Instead either use a bounce function or add a wrapper function.
    Calling a f(char*) function with f(void*) is non-portable. */
-typedef void (make_cleanup_ftype) (void *);
+typedef void (make_cleanup_ftype)(void *);
 
-extern struct cleanup *make_cleanup (make_cleanup_ftype *, void *);
+extern struct cleanup *make_cleanup(make_cleanup_ftype *, void *);
 
-extern struct cleanup *make_cleanup_freeargv (char **);
+extern struct cleanup *make_cleanup_freeargv(char **);
 
 struct ui_file;
-extern struct cleanup *make_cleanup_ui_file_delete (struct ui_file *);
+extern struct cleanup *make_cleanup_ui_file_delete(struct ui_file *);
 
 /* APPLE LOCAL begin cleanup */
-struct cleanup *make_cleanup_ui_out_delete (struct ui_out *);
-struct cleanup *make_cleanup_restore_uiout (struct ui_out *);
-struct cleanup *make_cleanup_ui_out_suppress_output (struct ui_out *cur_uiout);
+struct cleanup *make_cleanup_ui_out_delete(struct ui_out *);
+struct cleanup *make_cleanup_restore_uiout(struct ui_out *);
+struct cleanup *make_cleanup_ui_out_suppress_output(struct ui_out *cur_uiout);
 /* APPLE LOCAL end cleanup */
 
 struct section_addr_info;
 extern struct cleanup *(make_cleanup_free_section_addr_info
                         (struct section_addr_info *));
 
-extern struct cleanup *make_cleanup_close (int fd);
+extern struct cleanup *make_cleanup_close(int fd);
 
-extern struct cleanup *make_cleanup_bfd_close (bfd *abfd);
+extern struct cleanup *make_cleanup_bfd_close(bfd *abfd);
 
-extern struct cleanup *make_final_cleanup (make_cleanup_ftype *, void *);
+extern struct cleanup *make_final_cleanup(make_cleanup_ftype *, void *);
 
-extern struct cleanup *make_my_cleanup (struct cleanup **,
-					make_cleanup_ftype *, void *);
+extern struct cleanup *make_my_cleanup(struct cleanup **,
+                                       make_cleanup_ftype *, void *);
 
-extern struct cleanup *make_run_cleanup (make_cleanup_ftype *, void *);
+extern struct cleanup *make_run_cleanup(make_cleanup_ftype *, void *);
 
-extern struct cleanup *make_exec_cleanup (make_cleanup_ftype *, void *);
-extern struct cleanup *make_exec_error_cleanup (make_cleanup_ftype *, void *);
+extern struct cleanup *make_exec_cleanup(make_cleanup_ftype *, void *);
+extern struct cleanup *make_exec_error_cleanup(make_cleanup_ftype *, void *);
 
 /* APPLE LOCAL: hand_call_cleanups.  */
-extern struct cleanup *make_hand_call_cleanup (make_cleanup_ftype *, void *);
+extern struct cleanup *make_hand_call_cleanup(make_cleanup_ftype *, void *);
 
-extern struct cleanup *save_cleanups (void);
-extern struct cleanup *save_final_cleanups (void);
-extern struct cleanup *save_my_cleanups (struct cleanup **);
+extern struct cleanup *save_cleanups(void);
+extern struct cleanup *save_final_cleanups(void);
+extern struct cleanup *save_my_cleanups(struct cleanup **);
 
-extern void restore_cleanups (struct cleanup *);
-extern void restore_final_cleanups (struct cleanup *);
-extern void restore_my_cleanups (struct cleanup **, struct cleanup *);
+extern void restore_cleanups(struct cleanup *);
+extern void restore_final_cleanups(struct cleanup *);
+extern void restore_my_cleanups(struct cleanup **, struct cleanup *);
 
-extern void free_current_contents (void *);
+extern void free_current_contents(void *);
 
-extern void null_cleanup (void *);
+extern void null_cleanup(void *);
 
-extern int myread (int, char *, int);
+extern int myread(int, char *, int);
 
-extern int query (const char *, ...) ATTR_FORMAT (printf, 1, 2);
-extern int nquery (const char *, ...) ATTR_FORMAT (printf, 1, 2);
-extern int yquery (const char *, ...) ATTR_FORMAT (printf, 1, 2);
+extern int query(const char *, ...) ATTR_FORMAT(printf, 1, 2);
+extern int nquery(const char *, ...) ATTR_FORMAT(printf, 1, 2);
+extern int yquery(const char *, ...) ATTR_FORMAT(printf, 1, 2);
 
-extern void init_page_info (void);
+extern void init_page_info(void);
 
-extern char *gdb_realpath (const char *);
-extern char *xfullpath (const char *);
+extern char *gdb_realpath(const char *);
+extern char *xfullpath(const char *);
 
-extern unsigned long gnu_debuglink_crc32 (unsigned long crc,
-                                          unsigned char *buf, size_t len);
+extern unsigned long gnu_debuglink_crc32(unsigned long crc,
+                                         unsigned char *buf, size_t len);
 
-const char *bundle_basename (const char *filepath);
+const char *bundle_basename(const char *filepath);
 
 void unlimit_file_rlimit(void);
 void restore_file_rlimit(void);
 
 /* From demangle.c */
 
-extern void set_demangling_style (char *);
+extern void set_demangling_style(char *);
 
 /* APPLE LOCAL fix-and-continue */
 /* From fix-and-continue.h */
 
-extern CORE_ADDR decode_fix_and_continue_trampoline (CORE_ADDR);
-extern void update_picbase_register (struct symbol *);
-extern void fix_command_1 (const char *, const char *, const char *);
-int fix_and_continue_supported (void);
-int file_exists_p (const char *);
+extern CORE_ADDR decode_fix_and_continue_trampoline(CORE_ADDR);
+extern void update_picbase_register(struct symbol *);
+extern void fix_command_1(const char *, const char *, const char *);
+int fix_and_continue_supported(void);
+int file_exists_p(const char *);
 
 /* From tm.h */
 
 struct type;
-typedef int (use_struct_convention_fn) (int gcc_p, struct type * value_type);
+typedef int (use_struct_convention_fn)(int gcc_p, struct type *value_type);
 extern use_struct_convention_fn generic_use_struct_convention;
 
 
@@ -638,11 +638,11 @@ extern use_struct_convention_fn generic_use_struct_convention;
 
 extern int annotation_level;	/* in stack.c */
 
-extern void begin_line (void);
+extern void begin_line(void);
 
-extern void wrap_here (char *);
+extern void wrap_here(char *);
 
-extern void reinitialize_more_filter (void);
+extern void reinitialize_more_filter(void);
 
 /* Normal results */
 extern struct ui_file *gdb_stdout;
@@ -670,126 +670,137 @@ extern struct ui_file *gdb_null;
 /* More generic printf like operations.  Filtered versions may return
    non-locally on error.  */
 
-extern void fputs_filtered (const char *, struct ui_file *);
+extern void fputs_filtered(const char *, struct ui_file *);
 
-extern void fputs_unfiltered (const char *, struct ui_file *);
+extern void fputs_unfiltered(const char *, struct ui_file *);
 
-extern int fputc_filtered (int c, struct ui_file *);
+extern int fputc_filtered(int c, struct ui_file *);
 
-extern int fputc_unfiltered (int c, struct ui_file *);
+extern int fputc_unfiltered(int c, struct ui_file *);
 
-extern int putchar_filtered (int c);
+extern int putchar_filtered(int c);
 
-extern int putchar_unfiltered (int c);
+extern int putchar_unfiltered(int c);
 
-extern void puts_filtered (const char *);
+extern void puts_filtered(const char *);
 
-extern void puts_unfiltered (const char *);
+extern void puts_unfiltered(const char *);
 
-extern void puts_filtered_tabular (char *string, int width, int right);
+extern void puts_filtered_tabular(char *string, int width, int right);
 
-extern void puts_debug (char *prefix, char *string, char *suffix);
+extern void puts_debug(char *prefix, char *string, char *suffix);
 
-extern void vprintf_filtered (const char *, va_list) ATTR_FORMAT (printf, 1, 0);
+extern void vprintf_filtered(const char *, va_list)
+  ATTR_FORMAT(printf, 1, 0);
 
-extern void vfprintf_filtered (struct ui_file *, const char *, va_list) ATTR_FORMAT (printf, 2, 0);
+extern void vfprintf_filtered(struct ui_file *, const char *, va_list)
+  ATTR_FORMAT(printf, 2, 0);
 
-extern void fprintf_filtered (struct ui_file *, const char *, ...) ATTR_FORMAT (printf, 2, 3);
+extern void fprintf_filtered(struct ui_file *, const char *, ...)
+  ATTR_FORMAT(printf, 2, 3);
 
-extern void fprintfi_filtered (int, struct ui_file *, const char *, ...) ATTR_FORMAT (printf, 3, 4);
+extern void fprintfi_filtered(int, struct ui_file *, const char *, ...)
+  ATTR_FORMAT(printf, 3, 4);
 
-extern void printf_filtered (const char *, ...) ATTR_FORMAT (printf, 1, 2);
+extern void printf_filtered(const char *, ...) ATTR_FORMAT(printf, 1, 2);
 
-extern void printfi_filtered (int, const char *, ...) ATTR_FORMAT (printf, 2, 3);
+extern void printfi_filtered(int, const char *, ...)
+  ATTR_FORMAT(printf, 2, 3);
 
-extern void vprintf_unfiltered (const char *, va_list) ATTR_FORMAT (printf, 1, 0);
+extern void vprintf_unfiltered(const char *, va_list)
+  ATTR_FORMAT(printf, 1, 0);
 
-extern void vfprintf_unfiltered (struct ui_file *, const char *, va_list) ATTR_FORMAT (printf, 2, 0);
+extern void vfprintf_unfiltered(struct ui_file *, const char *, va_list)
+  ATTR_FORMAT(printf, 2, 0);
 
-extern void fprintf_unfiltered (struct ui_file *, const char *, ...) ATTR_FORMAT (printf, 2, 3);
+extern void fprintf_unfiltered(struct ui_file *, const char *, ...)
+  ATTR_FORMAT(printf, 2, 3);
 
-extern void printf_unfiltered (const char *, ...) ATTR_FORMAT (printf, 1, 2);
+extern void printf_unfiltered(const char *, ...) ATTR_FORMAT(printf, 1, 2);
 
-extern void print_spaces (int, struct ui_file *);
+extern void print_spaces(int, struct ui_file *);
 
-extern void print_spaces_filtered (int, struct ui_file *);
+extern void print_spaces_filtered(int, struct ui_file *);
 
-extern char *n_spaces (int);
+extern char *n_spaces(int);
 
-extern void fputstr_filtered (const char *str, int quotr, struct ui_file * stream);
+extern void fputstr_filtered(const char *str, int quotr,
+                             struct ui_file *stream);
 
-extern void fputstr_unfiltered (const char *str, int quotr, struct ui_file * stream);
+extern void fputstr_unfiltered(const char *str, int quotr,
+                               struct ui_file *stream);
 
-extern void fputstrn_unfiltered (const char *str, int n, int quotr, struct ui_file * stream);
+extern void fputstrn_unfiltered(const char *str, int n, int quotr,
+                                struct ui_file *stream);
 
 /* Display the host ADDR on STREAM formatted as ``0x%x''. */
-extern void gdb_print_host_address (const void *addr, struct ui_file *stream);
+extern void gdb_print_host_address(const void *addr, struct ui_file *stream);
 
 /* Convert a CORE_ADDR into a HEX string.  paddr() is like %08lx.
    paddr_nz() is like %lx.  paddr_u() is like %lu. paddr_width() is
    for ``%*''. */
-extern int strlen_paddr (void);
-extern char *paddr (CORE_ADDR addr);
-extern char *paddr_nz (CORE_ADDR addr);
-extern char *paddr_u (CORE_ADDR addr);
-extern char *paddr_d (LONGEST addr);
+extern int strlen_paddr(void);
+extern char *paddr(CORE_ADDR addr);
+extern char *paddr_nz(CORE_ADDR addr);
+extern char *paddr_u(CORE_ADDR addr);
+extern char *paddr_d(LONGEST addr);
 
 /* Like 0x%lx, replaces deprecated_print_address_numeric.  */
-extern const char *paddress (CORE_ADDR addr);
+extern const char *paddress(CORE_ADDR addr);
 
-extern char *phex (ULONGEST l, int sizeof_l);
-extern char *phex_nz (ULONGEST l, int sizeof_l);
-extern char *int_string (LONGEST, int, int, int, int);
+extern char *phex(ULONGEST l, int sizeof_l);
+extern char *phex_nz(ULONGEST l, int sizeof_l);
+extern char *int_string(LONGEST, int, int, int, int);
 
 /* Like paddr() only print/scan raw CORE_ADDR.  The output from
    core_addr_to_string() can be passed direct to
    string_to_core_addr().  */
-extern const char *core_addr_to_string (const CORE_ADDR addr);
-extern const char *core_addr_to_string_nz (const CORE_ADDR addr);
-extern CORE_ADDR string_to_core_addr (const char *my_string);
+extern const char *core_addr_to_string(const CORE_ADDR addr);
+extern const char *core_addr_to_string_nz(const CORE_ADDR addr);
+extern CORE_ADDR string_to_core_addr(const char *my_string);
 
 /* Return a string that contains a number formatted as a hex
    string.  */
-extern char *hex_string (LONGEST);
-extern char *hex_string_custom (LONGEST, int);
+extern char *hex_string(LONGEST);
+extern char *hex_string_custom(LONGEST, int);
 
-extern void fprintf_symbol_filtered (struct ui_file *, char *,
-				     enum language, int);
+extern void fprintf_symbol_filtered(struct ui_file *, char *,
+				    enum language, int);
 
-extern NORETURN void perror_with_name (const char *) ATTR_NORETURN;
+extern NORETURN void perror_with_name(const char *) ATTR_NORETURN;
 
-extern void print_sys_errmsg (const char *, int);
+extern void print_sys_errmsg(const char *, int);
 
 /* From symfile.c */
 
-extern void symbol_file_command (char *, int);
+extern void symbol_file_command(char *, int);
 
-/* Remote targets may wish to use this as their load function.  */
-extern void generic_load (char *name, int from_tty);
+/* Remote targets may wish to use this as their load function: */
+extern void generic_load(char *name, int from_tty);
 
 /* Summarise a download */
 struct timeval;
-extern void print_transfer_performance (struct ui_file *stream,
-					unsigned long data_count,
-					unsigned long write_count,
-					const struct timeval *start_time,
-					const struct timeval *end_time);
+extern void print_transfer_performance(struct ui_file *stream,
+                                       unsigned long data_count,
+                                       unsigned long write_count,
+                                       const struct timeval *start_time,
+                                       const struct timeval *end_time);
 
 /* From top.c */
 
-typedef void initialize_file_ftype (void);
+typedef void initialize_file_ftype(void);
 
-extern char *skip_quoted (char *);
+extern char *skip_quoted(char *);
 
-extern char *gdb_readline (char *);
+extern char *gdb_readline(char *);
 
-extern char *gdb_readline_wrapper (char *);
+extern char *gdb_readline_wrapper(char *);
 
-extern char *command_line_input (char *, int, char *);
+extern char *command_line_input(char *, int, char *);
 
-extern void print_prompt (void);
+extern void print_prompt(void);
 
-extern int input_from_terminal_p (void);
+extern int input_from_terminal_p(void);
 
 extern int info_verbose;
 
@@ -819,34 +830,34 @@ extern void print_address(CORE_ADDR, struct ui_file *);
 #define OPF_TRY_CWD_FIRST     0x01
 #define OPF_SEARCH_IN_PATH    0x02
 
-extern int openp (const char *, int, const char *, int, int, char **);
+extern int openp(const char *, int, const char *, int, int, char **);
 
-extern int source_full_path_of (char *, char **);
+extern int source_full_path_of(char *, char **);
 
-extern void mod_path (char *, char **);
+extern void mod_path(char *, char **);
 
-extern void add_path (char *, char **, int);
+extern void add_path(char *, char **, int);
 
-extern void directory_command (char *, int);
+extern void directory_command(char *, int);
 
 extern char *source_path;
 
-extern void init_source_path (void);
+extern void init_source_path(void);
 
-extern void init_last_source_visited (void);
+extern void init_last_source_visited(void);
 
 /* From exec.c */
 
-extern void exec_set_section_offsets (bfd_signed_vma text_off,
-				      bfd_signed_vma data_off,
-				      bfd_signed_vma bss_off);
+extern void exec_set_section_offsets(bfd_signed_vma text_off,
+				     bfd_signed_vma data_off,
+				     bfd_signed_vma bss_off);
 
 /* Take over the 'find_mapped_memory' vector from exec.c. */
-extern void exec_set_find_memory_regions (int (*) (int (*) (CORE_ADDR,
-							    unsigned long,
-							    int, int, int,
-							    void *),
-						   void *));
+extern void exec_set_find_memory_regions(int (*)(int (*)(CORE_ADDR,
+                                                         unsigned long,
+                                                         int, int, int,
+                                                         void *),
+                                                 void *));
 
 /* Possible lvalue types.  Like enum language, this should be in
    value.h, but needs to be here for the same reason. */
@@ -905,9 +916,9 @@ struct command_line
    so you can read command lines directly from the MI.  */
 
 extern struct command_line *read_command_lines(char *, int);
-extern struct command_line * read_command_lines_1(char * (*read_next_line_func)(void));
+extern struct command_line *read_command_lines_1(char *(*read_next_line_func)(void));
 
-extern void free_command_lines (struct command_line **);
+extern void free_command_lines(struct command_line **);
 
 /* To continue the execution commands when running gdb asynchronously.
    A continuation structure contains a pointer to a function to be called
@@ -927,7 +938,7 @@ struct continuation_arg
 
 struct continuation
   {
-    void (*continuation_hook) (struct continuation_arg *);
+    void (*continuation_hook)(struct continuation_arg *);
     struct continuation_arg *arg_list;
     struct continuation *next;
   };
@@ -938,15 +949,15 @@ extern struct continuation *cmd_continuation;
 extern struct continuation *intermediate_continuation;
 
 /* From utils.c */
-extern void add_continuation (void (*)(struct continuation_arg *),
-			      struct continuation_arg *);
-extern void do_all_continuations (void);
-extern void discard_all_continuations (void);
+extern void add_continuation(void (*)(struct continuation_arg *),
+			     struct continuation_arg *);
+extern void do_all_continuations(void);
+extern void discard_all_continuations(void);
 
-extern void add_intermediate_continuation (void (*)(struct continuation_arg *),
-			      struct continuation_arg *);
-extern void do_all_intermediate_continuations (void);
-extern void discard_all_intermediate_continuations (void);
+extern void add_intermediate_continuation(void (*)(struct continuation_arg *),
+                                          struct continuation_arg *);
+extern void do_all_intermediate_continuations(void);
+extern void discard_all_intermediate_continuations(void);
 
 /* String containing the current directory (what getwd would return).  */
 
@@ -1014,201 +1025,32 @@ enum scheduler_locking_mode {
 };
 
 enum scheduler_locking_mode
-  set_scheduler_locking_mode (enum scheduler_locking_mode new_mode);
-void scheduler_run_this_ptid (struct ptid this_ptid);
+  set_scheduler_locking_mode(enum scheduler_locking_mode new_mode);
+void scheduler_run_this_ptid(struct ptid this_ptid);
 int scheduler_lock_on_p(void);
 struct ptid get_scheduler_lock_ptid(void);
 struct cleanup *
-  make_cleanup_set_restore_scheduler_locking_mode (enum scheduler_locking_mode new_mode);
+  make_cleanup_set_restore_scheduler_locking_mode(enum scheduler_locking_mode new_mode);
 /* APPLE LOCAL end scheduler locking */
 
-uint8_t **get_binary_file_uuids (const char *filename);
+uint8_t **get_binary_file_uuids(const char *filename);
 
-void free_uuids_array (uint8_t **uuids);
+void free_uuids_array(uint8_t **uuids);
 
-char *puuid (uint8_t *uuid);
+char *puuid(uint8_t *uuid);
 
-const char *re_comp (const char *str);
+const char *re_comp(const char *str);
 
-int re_exec (const char *str);
+int re_exec(const char *str);
 
-int re_set_syntax (int newflags);
+int re_set_syntax(int newflags);
 
-int re_search_oneshot (regex_t *patbuf, const char *str, int size, int start, int range, void *regs);
-
+int re_search_oneshot(regex_t *patbuf, const char *str, int size,
+                      int start, int range, void *regs);
 
 
-/* Optional host machine definition. Pure autoconf targets will not
-   need a "xm.h" file. This will be a symlink to one of the xm-*.h
-   files, built by the `configure' script.  */
-
-#ifdef GDB_XM_FILE
-# include "xm.h"
-#endif /* GDB_XM_FILE */
-
-/* Optional native machine support.  Non-native (and possibly pure
-   multi-arch) targets do not need a "nm.h" file.  This will be a
-   symlink to one of the nm-*.h files, built by the `configure'
-   script.  */
-
-#ifdef GDB_NM_FILE
-# include "nm.h"
-#endif /* GDB_NM_FILE */
-
-/* Optional target machine definition.  Pure multi-arch configurations
-   do not need a "tm.h" file.  This will be a symlink to one of the
-   tm-*.h files, built by the `configure' script.  */
-
-#ifdef GDB_TM_FILE
-# include "tm.h"
-#endif /* GDB_TM_FILE */
-
-/* Assume that fopen accepts the letter "b" in the mode string.
-   It is demanded by ISO C9X, and should be supported on all
-   platforms that claim to have a standard-conforming C library.  On
-   true POSIX systems it will be ignored and have no effect.  There
-   may still be systems without a standard-conforming C library where
-   an ISO C9X compiler (GCC) is available.  Known examples are SunOS
-   4.x and 4.3BSD.  This assumption means these systems are no longer
-   supported.  */
-#ifndef FOPEN_RB
-# include "fopen-bin.h"
-#endif /* !FOPEN_RB */
-
-/* Defaults for system-wide constants (if not defined by xm.h, we fake it).
-   FIXME: Assumes 2's complement arithmetic */
-
-#if !defined (UINT_MAX)
-# define	UINT_MAX ((unsigned int)(~0))	/* 0xFFFFFFFF for 32-bits */
-#endif /* !UINT_MAX */
-
-#if !defined (INT_MAX)
-# define	INT_MAX ((int)(UINT_MAX >> 1))	/* 0x7FFFFFFF for 32-bits */
-#endif /* !INT_MAX */
-
-#if !defined (INT_MIN)
-# define INT_MIN ((int)((int) ~0 ^ INT_MAX))	/* 0x80000000 for 32-bits */
-#endif /* !INT_MIN */
-
-#if !defined (ULONG_MAX)
-# define	ULONG_MAX ((unsigned long)(~0L))	/* 0xFFFFFFFF for 32-bits */
-#endif /* !ULONG_MAX */
-
-#if !defined (LONG_MAX)
-# define	LONG_MAX ((long)(ULONG_MAX >> 1))	/* 0x7FFFFFFF for 32-bits */
-#endif /* !LONG_MAX */
-
-#if !defined (ULONGEST_MAX)
-# define	ULONGEST_MAX (~(ULONGEST)0)        /* 0xFFFFFFFFFFFFFFFF for 64-bits */
-#endif /* !ULONGEST_MAX */
-
-#if !defined (LONGEST_MAX)                 /* 0x7FFFFFFFFFFFFFFF for 64-bits */
-# define	LONGEST_MAX ((LONGEST)(ULONGEST_MAX >> 1))
-#endif /* !LONGEST_MAX */
-
-/* Convert a LONGEST to an int.  This is used in contexts (e.g. number of
-   arguments to a function, number in a value history, register number, etc.)
-   where the value must not be larger than can fit in an int.  */
-
-extern int longest_to_int (LONGEST);
-
-/* Assorted functions we can declare, now that const and volatile are
-   defined.  */
-
-extern char *savestring (const char *, size_t);
-
-/* APPLE LOCAL begin mmalloc */
-extern char *msavestring (void *, const char *, size_t);
-
-char *strsave (const char *ptr);
-
-extern char *mstrsave (void *, const char *);
-
-/* Robust versions of same.  Throw an internal error when no memory,
-   guard against stray NULL arguments. */
-extern void *xmmalloc (void *md, size_t size);
-extern void *xmrealloc (void *md, void *ptr, size_t size);
-extern void *xmcalloc (void *md, size_t number, size_t size);
-extern void xmfree (void *md, void *ptr);
-/* APPLE LOCAL end mmalloc */
-
-/* xmalloc(), xrealloc() and xcalloc() have already been declared in
-   "libiberty.h". */
-extern void xfree (void *);
-
-/* Like xmalloc, but zero the memory.  */
-extern void *xzalloc (size_t);
-
-/* Utility macros to allocate typed memory.  Avoids errors like:
-   struct foo *foo = xmalloc (sizeof struct bar); and memset (foo,
-   sizeof (struct foo), 0).  */
-#define XZALLOC(TYPE) ((TYPE*) xzalloc (sizeof (TYPE)))
-#define XMALLOC(TYPE) ((TYPE*) xmalloc (sizeof (TYPE)))
-#define XCALLOC(NMEMB, TYPE) ((TYPE*) xcalloc ((NMEMB), sizeof (TYPE)))
-
-/* Like asprintf/vasprintf but get an internal_error if the call
-   fails. */
-extern void xasprintf (char **ret, const char *format, ...) ATTR_FORMAT (printf, 2, 3);
-#ifndef LIBIBERTY_H
-extern void xvasprintf (char **ret, const char *format, va_list ap)
-     ATTR_FORMAT (printf, 2, 0);
-#endif /* !LIBIBERTY_H */
-
-/* Like asprintf and vasprintf, but return the string, throw an error
-   if no memory.  */
-extern char *xstrprintf (const char *format, ...) ATTR_FORMAT (printf, 1, 2);
-extern char *xstrvprintf (const char *format, va_list ap)
-     ATTR_FORMAT (printf, 1, 0);
-
-/* Like snprintf, but throw an error if the output buffer is too small.  */
-extern int xsnprintf (char *str, size_t size, const char *format, ...)
-     ATTR_FORMAT (printf, 3, 4);
-
-extern int parse_escape (char **);
-
-/* Message to be printed before the error message, when an error occurs: */
-extern char *error_pre_print;
-
-/* Message to be printed before the error message, when an error occurs: */
-extern char *quit_pre_print;
-
-/* Message to be printed before the warning message, when a warning occurs: */
-extern char *warning_pre_print;
-
-extern NORETURN void verror (const char *fmt, va_list ap)
-     ATTR_NORETURN ATTR_FORMAT (printf, 1, 0);
-
-extern NORETURN void error (const char *fmt, ...) ATTR_NORETURN ATTR_FORMAT (printf, 1, 2);
-
-extern NORETURN void error_stream (struct ui_file *) ATTR_NORETURN;
-
-extern NORETURN void vfatal (const char *fmt, va_list ap)
-     ATTR_NORETURN ATTR_FORMAT (printf, 1, 0);
-
-extern NORETURN void fatal (const char *fmt, ...) ATTR_NORETURN ATTR_FORMAT (printf, 1, 2);
-
-extern NORETURN void internal_verror (const char *file, int line,
-				      const char *, va_list ap)
-     ATTR_NORETURN ATTR_FORMAT (printf, 3, 0);
-
-extern NORETURN void internal_error (const char *file, int line,
-				     const char *, ...) ATTR_NORETURN ATTR_FORMAT (printf, 3, 4);
-
-extern void internal_vwarning (const char *file, int line,
-			       const char *, va_list ap)
-     ATTR_FORMAT (printf, 3, 0);
-
-extern void internal_warning (const char *file, int line,
-			      const char *, ...) ATTR_FORMAT (printf, 3, 4);
-
-extern NORETURN void nomem (long) ATTR_NORETURN;
-
-extern void warning (const char *, ...) ATTR_FORMAT (printf, 1, 2);
-
-extern void vwarning (const char *, va_list args) ATTR_FORMAT (printf, 1, 0);
-
 /* List of known OS ABIs.  If you change this, make sure to update the
-   table in osabi.c.  */
+ * table in osabi.c.  */
 enum gdb_osabi
 {
   GDB_OSABI_UNINITIALIZED = -1, /* For struct gdbarch_info.  */
@@ -1250,6 +1092,180 @@ enum gdb_osabi
   GDB_OSABI_INVALID		/* keep this last */
 };
 
+
+/* Optional host machine definition. Pure autoconf targets will not
+   need a "xm.h" file. This will be a symlink to one of the xm-*.h
+   files, built by the `configure' script.  */
+
+#ifdef GDB_XM_FILE
+# include "xm.h"
+#endif /* GDB_XM_FILE */
+
+/* Optional native machine support.  Non-native (and possibly pure
+   multi-arch) targets do not need a "nm.h" file.  This will be a
+   symlink to one of the nm-*.h files, built by the `configure'
+   script.  */
+
+#ifdef GDB_NM_FILE
+# include "nm.h"
+#endif /* GDB_NM_FILE */
+
+/* Optional target machine definition.  Pure multi-arch configurations
+   do not need a "tm.h" file.  This will be a symlink to one of the
+   tm-*.h files, built by the `configure' script.  */
+
+#ifdef GDB_TM_FILE
+# include "tm.h"
+#endif /* GDB_TM_FILE */
+
+/* Assume that fopen accepts the letter "b" in the mode string.
+   It is demanded by ISO C9X, and should be supported on all
+   platforms that claim to have a standard-conforming C library.  On
+   true POSIX systems it will be ignored and have no effect.  There
+   may still be systems without a standard-conforming C library where
+   an ISO C9X compiler (GCC) is available.  Known examples are SunOS
+   4.x and 4.3BSD.  This assumption means these systems are no longer
+   supported.  */
+#ifndef FOPEN_RB
+# include "fopen-bin.h"
+#endif /* !FOPEN_RB */
+
+/* Defaults for system-wide constants (if not defined by xm.h, we fake it).
+   FIXME: Assumes 2's complement arithmetic */
+
+#if !defined(UINT_MAX)
+# define UINT_MAX ((unsigned int)(~0))	/* 0xFFFFFFFF for 32-bits */
+#endif /* !UINT_MAX */
+
+#if !defined(INT_MAX)
+# define INT_MAX ((int)(UINT_MAX >> 1))	/* 0x7FFFFFFF for 32-bits */
+#endif /* !INT_MAX */
+
+#if !defined(INT_MIN)
+# define INT_MIN ((int)((int) ~0 ^ INT_MAX)) /* 0x80000000 for 32-bits */
+#endif /* !INT_MIN */
+
+#if !defined (ULONG_MAX)
+# define ULONG_MAX ((unsigned long)(~0L)) /* 0xFFFFFFFF for 32-bits */
+#endif /* !ULONG_MAX */
+
+#if !defined(LONG_MAX)
+# define LONG_MAX ((long)(ULONG_MAX >> 1L)) /* 0x7FFFFFFF for 32-bits */
+#endif /* !LONG_MAX */
+
+#if !defined (ULONGEST_MAX)
+# define ULONGEST_MAX (~(ULONGEST)0UL) /* 0xFFFFFFFFFFFFFFFF for 64-bits */
+#endif /* !ULONGEST_MAX */
+
+#if !defined(LONGEST_MAX)             /* 0x7FFFFFFFFFFFFFFF for 64-bits */
+# define LONGEST_MAX ((LONGEST)(ULONGEST_MAX >> 1L))
+#endif /* !LONGEST_MAX */
+
+/* Convert a LONGEST to an int.  This is used in contexts (e.g. number of
+   arguments to a function, number in a value history, register number, etc.)
+   where the value must not be larger than can fit in an int.  */
+
+extern int longest_to_int(LONGEST);
+
+/* Assorted functions we can declare, now that const and volatile are
+   defined.  */
+
+extern char *savestring(const char *, size_t);
+
+/* APPLE LOCAL begin mmalloc */
+extern char *msavestring(void *, const char *, size_t);
+
+char *strsave(const char *ptr);
+
+extern char *mstrsave(void *, const char *);
+
+/* Robust versions of same.  Throw an internal error when no memory,
+   guard against stray NULL arguments. */
+extern void *xmmalloc(void *md, size_t size);
+extern void *xmrealloc(void *md, void *ptr, size_t size);
+extern void *xmcalloc(void *md, size_t number, size_t size);
+extern void xmfree(void *md, void *ptr);
+/* APPLE LOCAL end mmalloc */
+
+#ifndef LIBIBERTY_H
+/* xmalloc(), xrealloc() and xcalloc() have already been declared in
+   "libiberty.h". */
+extern void xfree(void *);
+#endif /* !LIBIBERTY_H */
+
+/* Like xmalloc, but zero the memory.  */
+extern void *xzalloc(size_t);
+
+/* Utility macros to allocate typed memory.  Avoids errors like:
+   struct foo *foo = xmalloc (sizeof struct bar); and memset (foo,
+   sizeof (struct foo), 0).  */
+#define XZALLOC(TYPE) ((TYPE*)xzalloc(sizeof(TYPE)))
+#define XMALLOC(TYPE) ((TYPE*)xmalloc(sizeof(TYPE)))
+#define XCALLOC(NMEMB, TYPE) ((TYPE*)xcalloc((NMEMB), sizeof(TYPE)))
+
+/* Like asprintf/vasprintf but get an internal_error if the call
+   fails. */
+extern void xasprintf(char **ret, const char *format, ...) ATTR_FORMAT(printf, 2, 3);
+#ifndef LIBIBERTY_H
+extern void xvasprintf(char **ret, const char *format, va_list ap)
+     ATTR_FORMAT(printf, 2, 0);
+#endif /* !LIBIBERTY_H */
+
+/* Like asprintf and vasprintf, but return the string, throw an error
+   if no memory.  */
+extern char *xstrprintf(const char *format, ...) ATTR_FORMAT(printf, 1, 2);
+extern char *xstrvprintf(const char *format, va_list ap)
+     ATTR_FORMAT(printf, 1, 0);
+
+/* Like snprintf, but throw an error if the output buffer is too small.  */
+extern int xsnprintf(char *str, size_t size, const char *format, ...)
+     ATTR_FORMAT(printf, 3, 4);
+
+extern int parse_escape(char **);
+
+/* Message to be printed before the error message, when an error occurs: */
+extern char *error_pre_print;
+
+/* Message to be printed before the error message, when an error occurs: */
+extern char *quit_pre_print;
+
+/* Message to be printed before the warning message, when a warning occurs: */
+extern char *warning_pre_print;
+
+extern NORETURN void verror(const char *fmt, va_list ap)
+     ATTR_NORETURN ATTR_FORMAT(printf, 1, 0);
+
+extern NORETURN void error(const char *fmt, ...) ATTR_NORETURN ATTR_FORMAT(printf, 1, 2);
+
+extern NORETURN void error_stream(struct ui_file *) ATTR_NORETURN;
+
+extern NORETURN void vfatal(const char *fmt, va_list ap)
+     ATTR_NORETURN ATTR_FORMAT(printf, 1, 0);
+
+extern NORETURN void fatal(const char *fmt, ...) ATTR_NORETURN ATTR_FORMAT(printf, 1, 2);
+
+extern NORETURN void internal_verror(const char *file, int line,
+				     const char *, va_list ap)
+     ATTR_NORETURN ATTR_FORMAT(printf, 3, 0);
+
+extern NORETURN void internal_error(const char *file, int line,
+				    const char *, ...) ATTR_NORETURN ATTR_FORMAT(printf, 3, 4);
+
+extern void internal_vwarning(const char *file, int line,
+			      const char *, va_list ap)
+     ATTR_FORMAT(printf, 3, 0);
+
+extern void internal_warning(const char *file, int line,
+			     const char *, ...) ATTR_FORMAT(printf, 3, 4);
+
+extern NORETURN void nomem(long) ATTR_NORETURN;
+
+extern void warning(const char *, ...) ATTR_FORMAT(printf, 1, 2);
+
+extern void vwarning(const char *, va_list args) ATTR_FORMAT(printf, 1, 0);
+
+/* The enum that was here has been moved higher above. */
+
 /* Global functions from other, non-gdb GNU thingies.
  * Libiberty thingies are no longer declared here. We include libiberty.h
  * above, instead. */
@@ -1282,9 +1298,10 @@ enum gdb_osabi
 #endif /* !max */
 
 
-#ifndef atof
-extern double atof (const char *);	/* X3.159-1989  4.10.1.1 */
-#endif /* !atof */
+#if !defined(atof) && (!defined(HAVE_DECL_ATOF) || \
+                       (defined(HAVE_DECL_ATOF) && !HAVE_DECL_ATOF))
+extern double atof(const char *);	/* X3.159-1989  4.10.1.1 */
+#endif /* !atof && !HAVE_DECL_ATOF */
 
 /* Various possibilities for alloca: */
 #ifndef alloca
@@ -1318,7 +1335,7 @@ enum { MAX_REGISTER_SIZE = 16 };
 
 /* Number of bits in a char or unsigned char for the target machine.
    Just like CHAR_BIT in <limits.h> but describes the target machine.  */
-#if !defined (TARGET_CHAR_BIT)
+#if !defined(TARGET_CHAR_BIT)
 # define TARGET_CHAR_BIT 8
 #endif /* !TARGET_CHAR_BIT */
 
@@ -1394,7 +1411,7 @@ struct cmd_list_element;
 
 /* APPLE LOCAL gdb_client_data */
 /* Typedef for anonymous data type for event data: */
-typedef void * gdb_client_data;
+typedef void *gdb_client_data;
 
 /* APPLE LOCAL Debugger_state */
 typedef enum {
@@ -1557,9 +1574,9 @@ extern int use_windows;
    certain purposes.  */
 
 #ifndef PIDGET
-# define PIDGET(PTID) (ptid_get_pid (PTID))
-# define TIDGET(PTID) (ptid_get_lwp (PTID))
-# define MERGEPID(PID, TID) ptid_build (PID, TID, 0)
+# define PIDGET(PTID) (ptid_get_pid(PTID))
+# define TIDGET(PTID) (ptid_get_lwp(PTID))
+# define MERGEPID(PID, TID) ptid_build(PID, TID, 0)
 #endif /* !PIDGET */
 
 /* Define well known filenos if the system does not define them: */
@@ -1576,7 +1593,7 @@ extern int use_windows;
 /* If this definition is NOT overridden by the header files, assume
    that isatty and fileno exist on this system.  */
 #ifndef ISATTY
-# define ISATTY(FP)	(isatty (fileno (FP)))
+# define ISATTY(FP)	(isatty(fileno(FP)))
 #endif /* !ISATTY */
 
 /* Ensure that V is aligned to an N byte boundary (B's assumed to be a
@@ -1632,11 +1649,11 @@ extern int maint_use_timers;
 struct cleanup *start_timer(int *timer_var, char *timer_name, char *this_mssg);
 
 /* APPLE LOCAL: Used in target_check_safe_call:  */
-#define MALLOC_SUBSYSTEM 1 << 0
-#define OBJC_SUBSYSTEM   1 << 1
-#define LOADER_SUBSYSTEM 1 << 2
-#define SPINLOCK_SUBSYSTEM 1 << 3
-#define ALL_SUBSYSTEMS   MALLOC_SUBSYSTEM|OBJC_SUBSYSTEM|LOADER_SUBSYSTEM|SPINLOCK_SUBSYSTEM
+#define MALLOC_SUBSYSTEM (1 << 0)
+#define OBJC_SUBSYSTEM   (1 << 1)
+#define LOADER_SUBSYSTEM (1 << 2)
+#define SPINLOCK_SUBSYSTEM (1 << 3)
+#define ALL_SUBSYSTEMS (MALLOC_SUBSYSTEM|OBJC_SUBSYSTEM|LOADER_SUBSYSTEM|SPINLOCK_SUBSYSTEM)
 
 #endif /* #ifndef DEFS_H */
 

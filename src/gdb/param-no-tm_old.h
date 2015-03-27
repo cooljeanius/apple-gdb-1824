@@ -21,8 +21,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #define PARAM_H 1
 
 /* DO NOT #include "tm.h" -- a particular tm file has been inc'd by caller */
-
-#include "xm.h"
+#if defined(GDB_XM_FILE)
+# include "xm.h"
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(__STDC__)
+#  warning "No hostfile to include."
+# endif /* __GNUC__ && !__STRICT_ANSI__ && !__STDC__ */
+#endif /* GDB_XM_FILE */
 
 /* TARGET_BYTE_ORDER and HOST_BYTE_ORDER should be defined to one of these: */
 #if !defined(BIG_ENDIAN)
