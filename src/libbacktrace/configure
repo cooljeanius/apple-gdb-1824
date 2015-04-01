@@ -4280,14 +4280,14 @@ if test -f ${srcdir}/config.status; then
 $as_echo "$as_me: config.status is already present, moving it aside." >&6;}
     mv -vf ${srcdir}/config.status ${srcdir}/config_status_backup.sh
     if test -e ${srcdir}/config_status_backup.sh; then
-      chmod +x ${srcdir}/config_status_backup.sh
+      chmod +x ${srcdir}/config_status_backup.sh 2>&1
     fi
   else
     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: srcdir is unwritable" >&5
 $as_echo "$as_me: WARNING: srcdir is unwritable" >&2;}
   fi
 fi
-# 1.11.1: Require that version of automake.
+# 1.11.6: Require that version of automake.
 # foreign: Do NOT require README, INSTALL, NEWS, etc.
 # no-define: Do NOT define PACKAGE and VERSION.
 # no-dependencies: Do NOT generate automatic dependencies.
@@ -17783,7 +17783,7 @@ fi
 PIC_FLAG=""
 if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
   case "${host}" in
-  *-apple-darwin*) PIC_FLAG="-fPIC -fno-common" ;;
+  *-apple-darwin*) PIC_FLAG="-DPIC -fPIC -fno-common" ;;
   *) PIC_FLAG=-fPIC ;;
   esac
 fi
@@ -17792,7 +17792,7 @@ fi
 if test "${enable_host_shared+set}" = set; then :
   enableval=$enable_host_shared;
 case "${host}" in
-*-apple-darwin*) PIC_FLAG="-fPIC -fno-common" ;;
+*-apple-darwin*) PIC_FLAG="-DPIC -fPIC -fno-common" ;;
 *) PIC_FLAG=-fPIC ;;
 esac
 
@@ -17856,8 +17856,8 @@ int i;
 int
 main ()
 {
-__atomic_load_n (&i, __ATOMIC_ACQUIRE);
-		        __atomic_store_n (&i, 1, __ATOMIC_RELEASE);
+__atomic_load_n(&i, __ATOMIC_ACQUIRE);
+		        __atomic_store_n(&i, 1, __ATOMIC_RELEASE);
   ;
   return 0;
 }

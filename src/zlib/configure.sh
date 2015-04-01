@@ -792,8 +792,8 @@ echo prefix = $prefix >> configure.log
 echo sharedlibdir = $sharedlibdir >> configure.log
 echo uname = $uname >> configure.log
 
-# udpate Makefile with the configure results
-sed < Makefile.in "
+# udpate Makefile_orig with the configure results
+sed < Makefile_orig.in "
 /^CC *=/s#=.*#=$CC#
 /^CFLAGS *=/s#=.*#=$CFLAGS#
 /^SFLAGS *=/s#=.*#=$SFLAGS#
@@ -820,7 +820,7 @@ sed < Makefile.in "
 /^PIC_OBJC *=/s#=.*#= $PIC_OBJC#
 /^all: */s#:.*#: $ALL#
 /^test: */s#:.*#: $TEST#
-" > Makefile
+" > Makefile_orig
 
 # create zlib.pc with the configure results
 sed < zlib.pc.in "

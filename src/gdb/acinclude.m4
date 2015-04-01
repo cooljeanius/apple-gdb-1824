@@ -861,3 +861,201 @@ if test "x" = "Y0"; then
 fi
 ])dnl
 
+dnl# Find the location of the private Tcl headers
+dnl# When Tcl is installed, this is TCL_INCLUDE_SPEC/tcl-private/generic
+dnl# When Tcl is in the build tree, this is not needed.
+dnl#
+dnl# Note: you must use first use SC_LOAD_TCLCONFIG!
+AC_DEFUN([CY_AC_TCL_PRIVATE_HEADERS],[
+  AC_REQUIRE([AC_PROG_SED])dnl
+
+  AC_MSG_CHECKING([for Tcl private headers])
+  private_dir=""
+  dir=`echo ${TCL_INCLUDE_SPEC}/tcl-private/generic | sed -e s/-I//`
+  if test -f ${dir}/tclInt.h ; then
+    private_dir=${dir}
+  fi
+
+  if test x"${private_dir}" = x""; then
+    AC_ERROR([could not find private Tcl headers])
+  else
+    TCL_PRIVATE_INCLUDE="-I${private_dir}"
+    AC_MSG_RESULT([${private_dir}])
+  fi
+])dnl
+
+dnl# Find the location of the private Tk headers
+dnl# When Tk is installed, this is TK_INCLUDE_SPEC/tk-private/generic
+dnl# When Tk is in the build tree, this not needed.
+dnl#
+dnl# Note: you must first use SC_LOAD_TKCONFIG
+AC_DEFUN([CY_AC_TK_PRIVATE_HEADERS],[
+  AC_REQUIRE([AC_PROG_SED])dnl
+
+  AC_MSG_CHECKING([for Tk private headers])
+  private_dir=""
+  dir=`echo ${TK_INCLUDE_SPEC}/tk-private/generic | sed -e s/-I//`
+  if test -f ${dir}/tkInt.h; then
+    private_dir=${dir}
+  fi
+
+  if test x"${private_dir}" = x""; then
+    AC_ERROR([could not find Tk private headers])
+  else
+    TK_PRIVATE_INCLUDE="-I${private_dir}"
+    AC_MSG_RESULT([${private_dir}])
+  fi
+])dnl
+
+dnl# GDB_AC_DEFINE_RELOCATABLE([VARIABLE],[ARG-NAME],[SHELL-VARIABLE])
+dnl# For use in processing directory values for --with-foo.
+dnl# If the path in SHELL_VARIABLE is relative to the prefix, then the
+dnl# result is relocatable, then this will define the C macro
+dnl VARIABLE_RELOCATABLE to 1; otherwise it is defined as 0.
+AC_DEFUN([GDB_AC_DEFINE_RELOCATABLE], [
+  if test "x${exec_prefix}" = "xNONE" || test "x${exec_prefix}" = 'x${prefix}'; then
+     if test "x${prefix}" = "xNONE"; then
+     	test_prefix=/usr/local
+     else
+	test_prefix="${prefix}"
+     fi
+  else
+     test_prefix="${exec_prefix}"
+  fi
+  value=0
+  case [$3] in
+     "${test_prefix}"|"${test_prefix}/"*|\
+	'${exec_prefix}'|'${exec_prefix}/'*)
+     value=1
+     ;;
+  esac
+  AC_DEFINE_UNQUOTED([$1]_RELOCATABLE,[${value}],
+     [Define if the $2 directory should be relocated when GDB is moved.])
+])dnl
+
+dnl# GDB_AC_WITH_DIR([VARIABLE],[ARG-NAME],[HELP],[DEFAULT])
+dnl# Add a new --with option that defines a directory.
+dnl# The result is stored in VARIABLE.  AC_DEFINE_DIR is called
+dnl# on this variable, as is AC_SUBST.
+dnl# ARG-NAME is the base name of the argument (without "--with").
+dnl# HELP is the help text to use.
+dnl# If the user's choice is relative to the prefix, then the
+dnl# result is relocatable, then this will define the C macro
+dnl# VARIABLE_RELOCATABLE to 1; otherwise it is defined as 0.
+dnl# DEFAULT is the default value, which is used if the user
+dnl# does not specify the argument.
+AC_DEFUN([GDB_AC_WITH_DIR],[
+  AC_ARG_WITH([$2],[AS_HELP_STRING([--with-][$2][=PATH],[$3])],[
+    [$1]=${withval}],[[$1]=[$4]])
+  AC_DEFINE_DIR([$1],[$1],[$3])dnl
+  AC_SUBST([$1])dnl
+  GDB_AC_DEFINE_RELOCATABLE([$1],[$2],[${ac_define_dir}])dnl
+])dnl
+
+dnl# GDB_AC_CHECK_BFD([MESSAGE],[CV],[CODE],[HEADER])
+dnl# Check whether BFD provides a feature.
+dnl# MESSAGE is the "checking" message to display.
+dnl# CV is the name of the cache variable where the result is stored.
+dnl# The result will be "yes" or "no".
+dnl# CODE is some code to compile that checks for the feature.
+dnl# A link test is run.
+dnl# HEADER is the name of an extra BFD header to include.
+AC_DEFUN([GDB_AC_CHECK_BFD],[
+  OLD_CFLAGS="${CFLAGS}"
+  OLD_LDFLAGS="${LDFLAGS}"
+  OLD_LIBS="${LIBS}"
+  # Put the old CFLAGS/LDFLAGS last, in case the user's (C|LD)FLAGS
+  # points somewhere with bfd, with -I/foo/lib and -L/foo/lib.  We
+  # always want our bfd.
+  CFLAGS="-I${srcdir}/../include -I../bfd -I${srcdir}/../bfd ${CFLAGS}"
+  LDFLAGS="-L../bfd -L../libiberty ${zlibdir} ${LDFLAGS}"
+  intl=`echo ${LIBINTL} | sed 's,${top_builddir}/,,g'`
+  if test -f ../zlib/Makefile; then
+    LIBS="-lbfd -L../zlib -lz -liberty ${intl} ${LIBS}"
+  else
+    LIBS="-lbfd -lz -liberty ${intl} ${LIBS}"
+  fi
+  AC_CACHE_CHECK([$1],[$2],
+  [AC_TRY_LINK(
+  [#include <stdlib.h>
+  #include "bfd.h"
+  #include "$4"
+  ],
+  [return $3;],[[$2]=yes],[[$2]=no])])
+  CFLAGS="${OLD_CFLAGS}"
+  LDFLAGS="${OLD_LDFLAGS}"
+  LIBS="${OLD_LIBS}"
+])dnl
+
+dnl# GDB_GUILE_PROGRAM_NAMES([PKG-CONFIG],[VERSION])
+dnl#
+dnl# Define and substitute 'GUILD' to contain the absolute file name of
+dnl# the 'guild' command for VERSION, using PKG-CONFIG.  (This is
+dnl# similar to Guile's 'GUILE_PROGS' macro.)
+AC_DEFUN([GDB_GUILE_PROGRAM_NAMES],[
+  AC_CACHE_CHECK([for the absolute file name of the 'guild' command],
+    [ac_cv_guild_program_name],
+    [ac_cv_guild_program_name="`$1 --variable guild $2`"
+
+     # In Guile up to 2.0.11 included, guile-2.0.pc would not define
+     # the 'guild' and 'bindir' variables.  In that case, try to guess
+     # what the program name is, at the risk of getting it wrong if
+     # Guile was configured with '--program-suffix' or similar.
+     if test "x${ac_cv_guild_program_name}" = "x"; then
+       guile_exec_prefix="`$1 --variable exec_prefix $2`"
+       ac_cv_guild_program_name="$guile_exec_prefix/bin/guild"
+     fi
+  ])dnl
+
+  if ! "${ac_cv_guild_program_name}" --version >&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD; then
+    AC_MSG_ERROR(['${ac_cv_guild_program_name}' appears to be unusable])
+  fi
+
+  GUILD="${ac_cv_guild_program_name}"
+  AC_SUBST([GUILD])dnl
+])dnl
+
+dnl# GDB_GUILD_TARGET_FLAG
+dnl#
+dnl# Compute the value of GUILD_TARGET_FLAG.
+dnl# For native builds this is empty.
+dnl# For cross builds this is --target=<host>.
+AC_DEFUN([GDB_GUILD_TARGET_FLAG],[
+  if test "x${cross_compiling}" = "xno"; then
+    GUILD_TARGET_FLAG=""
+  else
+    GUILD_TARGET_FLAG="--target=${host}"
+  fi
+  AC_SUBST([GUILD_TARGET_FLAG])dnl
+])dnl
+
+dnl# GDB_TRY_GUILD([SRC-FILE])
+dnl#
+dnl# We precompile the .scm files and install them with gdb, so make sure
+dnl# guild works for this host.
+dnl# The .scm files are precompiled for several reasons:
+dnl# 1) To silence Guile during gdb startup (Guile's auto-compilation
+dnl#    output is unnecessarily verbose).
+dnl# 2) Make gdb developers see compilation errors/warnings during the
+dnl#    build, and not leave it to later when the user runs gdb.
+dnl# 3) As a convenience for the user, so that one copy of the files is
+dnl#    built instead of one copy per user.
+dnl#
+dnl# Make sure guild can handle this host by trying to compile SRC-FILE,
+dnl# and setting ac_cv_guild_ok to yes or no.
+dnl# Note that guild can handle cross-compilation.
+dnl# It could happen that guild cannot handle the host, but guile would
+dnl# still work.  For the time being we are conservative, and if guild
+dnl# fails on us, we then punt.
+AC_DEFUN([GDB_TRY_GUILD], [
+  AC_REQUIRE([GDB_GUILD_TARGET_FLAG])
+  AC_CACHE_CHECK([whether guild supports this host],
+    [ac_cv_guild_ok],
+    [echo "${ac_cv_guild_program_name} compile ${GUILD_TARGET_FLAG} -o conftest.go $1" >&AS_MESSAGE_LOG_FD
+     if "${ac_cv_guild_program_name}" compile ${GUILD_TARGET_FLAG} -o conftest.go "$1" >&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD; then
+       ac_cv_guild_ok=yes
+     else
+       ac_cv_guild_ok=no
+     fi])dnl
+])dnl
+

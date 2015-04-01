@@ -1,5 +1,5 @@
-#                                               -*- Autoconf -*-
-# Process this file with autoconf to produce a configure script.
+dnl#                                               -*- Autoconf -*-
+dnl# Process this file with autoconf to produce a configure script.
 
 AC_INIT([minizip],[1.2.8],[bugzilla.redhat.com])
 AC_CONFIG_SRCDIR([minizip.c])
@@ -15,17 +15,18 @@ AC_PROG_MKDIR_P
 # libtool
 AC_PROG_CXX
 AC_DEFUN([AC_REQUIRE_RANLIB],[
-  AC_REQUIRE([AC_PROG_RANLIB])
-])
+  AC_REQUIRE([AC_PROG_RANLIB])dnl
+])dnl
 AC_REQUIRE_RANLIB
-LT_INIT([win32-dll])
-LT_LANG([C])
-LT_LANG([Windows Resource])
+LT_INIT([win32-dll])dnl
+LT_LANG([C])dnl
+LT_LANG([Windows Resource])dnl
 
 AC_MSG_CHECKING([whether to build example programs])
-AC_ARG_ENABLE([demos],[AS_HELP_STRING([--enable-demos],[build example programs])])
-AM_CONDITIONAL([COND_DEMOS],[test "$enable_demos" = yes])
-if test "${enable_demos}" = yes
+AC_ARG_ENABLE([demos],
+              [AS_HELP_STRING([--enable-demos],[build example programs])])
+AM_CONDITIONAL([COND_DEMOS],[test "x${enable_demos}" = "xyes"])
+if test "x${enable_demos}" = "xyes"
 then
 	AC_MSG_RESULT([yes])
 else
@@ -43,7 +44,7 @@ AM_CONDITIONAL([WIN32],[test "${WIN32}" = "yes"])
 AC_EXEEXT
 
 # Checks for libraries.
-AC_CHECK_LIB([z],[gzopen])
+AC_CHECK_LIB([z],[gzopen])dnl
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h stddef.h stdio.h utime.h])
@@ -61,11 +62,13 @@ AC_TYPE_UINT64_T
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_MKTIME
-AC_CHECK_FUNCS([memset mkdir utime])
+AC_CHECK_FUNCS([memset mkdir utime])dnl
 
-# Output
+# Output.
 AC_CONFIG_FILES([Makefile minizip.pc])
 AC_CONFIG_COMMANDS([top_original],[
-(test -e ../../configure.sh && pushd ../.. && sh ./configure.sh && popd)
+if test ! -e ../../Makefile.am || test -e ../../Makefile_orig.in; then
+  (test -x ../../configure.sh && pushd ../.. && sh ./configure.sh && popd)
+fi
 ],[])
 AC_OUTPUT

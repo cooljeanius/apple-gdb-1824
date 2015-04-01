@@ -1,4 +1,4 @@
-/* GDB CLI utility library.
+/* cli-utils.c: GDB CLI utility library.
    Copyright 2001 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 #include "defs.h"
 #include "cli/cli-utils.h"
 
-#if defined(__sun) || defined(__GNUC__) 
+#if defined(__sun) || defined(__GNUC__)
 /* This declaration ensures that this object will export at least 1 symbol.  */
 int cli_utils_c_dummy_symbol;
 #else

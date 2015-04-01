@@ -2948,7 +2948,7 @@ fi
 if test "x${srcdir}" = "x."; then
   if test -n "${with_build_subdir}"; then
     libiberty_topdir="${srcdir}/../.."
-    with_target_subdir=
+    with_target_subdir=""
   elif test -z "${with_target_subdir}"; then
     libiberty_topdir="${srcdir}/.."
   else
@@ -18431,7 +18431,9 @@ else
 #ifdef HAVE_STDINT_H
 # include <stdint.h>
 #else
-# warning this conftest expects <stdint.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest expects <stdint.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDINT_H */
 
 int
@@ -18452,7 +18454,9 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 #ifdef HAVE_LIMITS_H
 # include <limits.h>
 #else
-# warning this conftest expects <limits.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest expects <limits.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LIMITS_H */
 #ifndef CHAR_BIT
 # define CHAR_BIT 8
@@ -18468,7 +18472,9 @@ else
 #ifdef HAVE_LIMITS_H
 # include <limits.h>
 #else
-# warning this conftest expects <limits.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest expects <limits.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LIMITS_H */
 #ifndef CHAR_BIT
 # define CHAR_BIT 8

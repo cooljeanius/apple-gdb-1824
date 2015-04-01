@@ -368,8 +368,8 @@ unset ac_cv_lib_intl_gettext
 # Also check for -lintl anyways, but with different functions:
 AC_CHECK_LIB([intl],[gettext],[:],[
   AC_CHECK_LIB([intl],[libintl_gettext],[:],[
-    if test -x "`which ld`"; then
-      unset ac_cv_lib_intl_main
+    if test -x "`which ld`" && test "x${ac_cv_lib_intl_main}" = "x"; then
+      test -z "${ac_cv_lib_intl_main}"
       ## neither worked:
       PRE_INTL_LDFLAGS="${LDFLAGS}"
       LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"

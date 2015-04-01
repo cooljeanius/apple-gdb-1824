@@ -1,3 +1,6 @@
+# no-executables.m4 serial 1                               -*- Autoconf -*-
+
+###########################################################################
 # GCC_NO_EXECUTABLES
 # -----------------
 # FIXME: The GCC team has specific needs which the current Autoconf
@@ -5,7 +8,7 @@
 # hack until Autoconf is able to provide the services its users
 # need.
 #
-# Several of the support libraries that are often built with GCC can't
+# Several of the support libraries that are often built with GCC cannot
 # assume the tool-chain is already capable of linking a program: the
 # compiler often expects to be able to link with some of such
 # libraries.
@@ -37,23 +40,23 @@ if test "x${gcc_no_link}" = "xyes"; then
 else
   m4_defn([_AC_COMPILER_EXEEXT])dnl
 fi
-)
+)dnl
 
 m4_define([AC_LINK_IFELSE],
 if test "x${gcc_no_link}" = "xyes"; then
   AC_MSG_ERROR([Link tests are not allowed after [[$0]].])
 fi
-m4_defn([AC_LINK_IFELSE]))
+m4_defn([AC_LINK_IFELSE]))dnl
 
 dnl# This is a shame.  We have to provide a default for some link tests,
 dnl# similar to the default for run tests.
 m4_define([AC_FUNC_MMAP],
 dnl# APPLE LOCAL: mmap() always works right on Darwin. Take our word for it
 case "${host}" in
-  *-apple-darwin* | *-apple-macos*)
+  *-apple-darwin* | *-apple-macos*[)]
     ac_cv_func_mmap_fixed_mapped=yes
     ;;
-  *)
+  *[)]
     if test "x${gcc_no_link}" = "xyes"; then
       if test "x${ac_cv_func_mmap_fixed_mapped+set}" != "xset"; then
         ac_cv_func_mmap_fixed_mapped=no
@@ -63,7 +66,16 @@ case "${host}" in
 esac
 if test "x${ac_cv_func_mmap_fixed_mapped}" != "xno"; then
   m4_defn([AC_FUNC_MMAP])
-fi)
+fi)dnl
 
 m4_divert_pop()dnl
-])# GCC_NO_EXECUTABLES
+])dnl# GCC_NO_EXECUTABLES
+
+# Use the strongest available test out of AC_TRY_COMPILE and AC_TRY_LINK.
+AC_DEFUN([GCC_TRY_COMPILE_OR_LINK],[
+if test "x${gcc_no_link}" = "xyes"; then
+  AC_TRY_COMPILE([$1],[$2],[$3],[$4])
+else
+  AC_TRY_LINK([$1],[$2],[$3],[$4])
+fi
+])dnl

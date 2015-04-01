@@ -29,7 +29,7 @@ AC_ARG_WITH([newlib],
 if test "x${srcdir}" = "x."; then
   if test -n "${with_build_subdir}"; then
     libiberty_topdir="${srcdir}/../.."
-    with_target_subdir=
+    with_target_subdir=""
   elif test -z "${with_target_subdir}"; then
     libiberty_topdir="${srcdir}/.."
   else
@@ -329,7 +329,7 @@ AC_DEFUN([AC_EXTRA_THINGS_LIBTOOL_WANTS],[
 ])dnl
 AC_EXTRA_THINGS_LIBTOOL_WANTS
 LT_INIT([disable-shared pic-only])dnl
-LT_PREREQ([2.4.4])dnl
+LT_PREREQ([2.4.6])dnl
 
 AC_CONFIG_HEADERS([config.h])dnl
 
@@ -512,14 +512,18 @@ AC_CACHE_VAL([liberty_cv_uint64],
 #ifdef HAVE_STDINT_H
 # include <stdint.h>
 #else
-# warning this conftest expects <stdint.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest expects <stdint.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDINT_H */
 ]],[[extern uint64_t foo;]])],[liberty_cv_uint64=uint64_t],[
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #ifdef HAVE_LIMITS_H
 # include <limits.h>
 #else
-# warning this conftest expects <limits.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest expects <limits.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LIMITS_H */
 #ifndef CHAR_BIT
 # define CHAR_BIT 8
@@ -532,7 +536,9 @@ extern char foo[sizeof(long) * CHAR_BIT >= 64 ? 1 : -1];
 #ifdef HAVE_LIMITS_H
 # include <limits.h>
 #else
-# warning this conftest expects <limits.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest expects <limits.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LIMITS_H */
 #ifndef CHAR_BIT
 # define CHAR_BIT 8

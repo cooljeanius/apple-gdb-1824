@@ -61,20 +61,20 @@ if test -f ${srcdir}/config.status; then
     AC_MSG_NOTICE([config.status is already present, moving it aside.])
     mv -vf ${srcdir}/config.status ${srcdir}/config_status_backup.sh
     if test -e ${srcdir}/config_status_backup.sh; then
-      chmod +x ${srcdir}/config_status_backup.sh
+      chmod +x ${srcdir}/config_status_backup.sh 2>&1
     fi
   else
     AC_MSG_WARN([srcdir is unwritable])
   fi
 fi
-# 1.11.1: Require that version of automake.
+# 1.11.6: Require that version of automake.
 # foreign: Do NOT require README, INSTALL, NEWS, etc.
 # no-define: Do NOT define PACKAGE and VERSION.
 # no-dependencies: Do NOT generate automatic dependencies.
 #    (because it breaks when using bootstrap-lean, since some of the
 #    headers are gone at "make install" time).
 # -Wall: Issue all automake warnings.
-AM_INIT_AUTOMAKE([1.11.1 foreign no-dist no-define no-dependencies -Wall])
+AM_INIT_AUTOMAKE([1.11.6 foreign no-dist no-define no-dependencies -Wall])
 
 AM_MAINTAINER_MODE([disable])dnl
 
@@ -232,7 +232,7 @@ fi
 PIC_FLAG=""
 if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
   case "${host}" in
-  *-apple-darwin*) PIC_FLAG="-fPIC -fno-common" ;;
+  *-apple-darwin*) PIC_FLAG="-DPIC -fPIC -fno-common" ;;
   *) PIC_FLAG=-fPIC ;;
   esac
 fi
@@ -241,7 +241,7 @@ AC_ARG_ENABLE([host-shared],
 [AS_HELP_STRING([--enable-host-shared],
 		[build host code as shared libraries])],[
 case "${host}" in
-*-apple-darwin*) PIC_FLAG="-fPIC -fno-common" ;;
+*-apple-darwin*) PIC_FLAG="-DPIC -fPIC -fno-common" ;;
 *) PIC_FLAG=-fPIC ;;
 esac
 ],[])dnl
@@ -277,8 +277,8 @@ if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
 else
    AC_LINK_IFELSE(
      [AC_LANG_PROGRAM([[int i;]],
-     		      [[__atomic_load_n (&i, __ATOMIC_ACQUIRE);
-		        __atomic_store_n (&i, 1, __ATOMIC_RELEASE);]])],
+     		      [[__atomic_load_n(&i, __ATOMIC_ACQUIRE);
+		        __atomic_store_n(&i, 1, __ATOMIC_RELEASE);]])],
      [libbacktrace_cv_sys_atomic=yes],
      [libbacktrace_cv_sys_atomic=no])
 fi])

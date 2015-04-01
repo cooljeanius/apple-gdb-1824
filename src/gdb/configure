@@ -8707,8 +8707,8 @@ if test "x$ac_cv_lib_intl_libintl_gettext" = xyes; then :
   :
 else
 
-    if test -x "`which ld`"; then
-      unset ac_cv_lib_intl_main
+    if test -x "`which ld`" && test "x${ac_cv_lib_intl_main}" = "x"; then
+      test -z "${ac_cv_lib_intl_main}"
       ## neither worked:
       PRE_INTL_LDFLAGS="${LDFLAGS}"
       LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
@@ -45303,11 +45303,228 @@ $as_echo "#define USE_WIN32API 1" >>confdefs.h
 esac
 
 
-  test -z "${gdb_cv_var_elf}"
-  test -z "${gdb_cv_var_macho}"
-  test -z "${gdb_cv_var_som}"
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: skipping checks for what formats bfd supports." >&5
-$as_echo "$as_me: WARNING: skipping checks for what formats bfd supports." >&2;}
+  # Add ELF support to GDB, but only if BFD includes ELF support:
+
+  OLD_CFLAGS="${CFLAGS}"
+  OLD_LDFLAGS="${LDFLAGS}"
+  OLD_LIBS="${LIBS}"
+  # Put the old CFLAGS/LDFLAGS last, in case the user's (C|LD)FLAGS
+  # points somewhere with bfd, with -I/foo/lib and -L/foo/lib.  We
+  # always want our bfd.
+  CFLAGS="-I${srcdir}/../include -I../bfd -I${srcdir}/../bfd ${CFLAGS}"
+  LDFLAGS="-L../bfd -L../libiberty ${zlibdir} ${LDFLAGS}"
+  intl=`echo ${LIBINTL} | sed 's,${top_builddir}/,,g'`
+  if test -f ../zlib/Makefile; then
+    LIBS="-lbfd -L../zlib -lz -liberty ${intl} ${LIBS}"
+  else
+    LIBS="-lbfd -lz -liberty ${intl} ${LIBS}"
+  fi
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ELF support in BFD" >&5
+$as_echo_n "checking for ELF support in BFD... " >&6; }
+if ${gdb_cv_var_elf+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdlib.h>
+  #include "bfd.h"
+  #include "elf-bfd.h"
+
+int
+main ()
+{
+return bfd_get_elf_phdr_upper_bound(NULL);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gdb_cv_var_elf=yes
+else
+  gdb_cv_var_elf=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gdb_cv_var_elf" >&5
+$as_echo "$gdb_cv_var_elf" >&6; }
+  CFLAGS="${OLD_CFLAGS}"
+  LDFLAGS="${OLD_LDFLAGS}"
+  LIBS="${OLD_LIBS}"
+
+  if test "x${gdb_cv_var_elf}" = "xyes"; then
+    CONFIG_OBS="${CONFIG_OBS} elfread.o stap-probe.o"
+
+$as_echo "#define HAVE_ELF 1" >>confdefs.h
+
+    # -ldl is provided by bfd/Makfile.am (LIBDL) <PLUGINS>.
+    if test "x${plugins}" = "xyes" && test "x${ac_cv_search_dlopen}" = "x"; then
+      test -z "${ac_cv_search_dlopen}"
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing dlopen" >&5
+$as_echo_n "checking for library containing dlopen... " >&6; }
+if ${ac_cv_search_dlopen+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char dlopen ();
+int
+main ()
+{
+return dlopen ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' dl; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_dlopen=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_dlopen+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_dlopen+:} false; then :
+
+else
+  ac_cv_search_dlopen=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_dlopen" >&5
+$as_echo "$ac_cv_search_dlopen" >&6; }
+ac_res=$ac_cv_search_dlopen
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+fi
+
+    fi
+  fi
+
+  # Add macho support to GDB, but only if BFD includes it:
+
+  OLD_CFLAGS="${CFLAGS}"
+  OLD_LDFLAGS="${LDFLAGS}"
+  OLD_LIBS="${LIBS}"
+  # Put the old CFLAGS/LDFLAGS last, in case the user's (C|LD)FLAGS
+  # points somewhere with bfd, with -I/foo/lib and -L/foo/lib.  We
+  # always want our bfd.
+  CFLAGS="-I${srcdir}/../include -I../bfd -I${srcdir}/../bfd ${CFLAGS}"
+  LDFLAGS="-L../bfd -L../libiberty ${zlibdir} ${LDFLAGS}"
+  intl=`echo ${LIBINTL} | sed 's,${top_builddir}/,,g'`
+  if test -f ../zlib/Makefile; then
+    LIBS="-lbfd -L../zlib -lz -liberty ${intl} ${LIBS}"
+  else
+    LIBS="-lbfd -lz -liberty ${intl} ${LIBS}"
+  fi
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Mach-O support in BFD" >&5
+$as_echo_n "checking for Mach-O support in BFD... " >&6; }
+if ${gdb_cv_var_macho+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdlib.h>
+  #include "bfd.h"
+  #include "mach-o.h"
+
+int
+main ()
+{
+return bfd_mach_o_lookup_command(NULL, 0, NULL);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gdb_cv_var_macho=yes
+else
+  gdb_cv_var_macho=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gdb_cv_var_macho" >&5
+$as_echo "$gdb_cv_var_macho" >&6; }
+  CFLAGS="${OLD_CFLAGS}"
+  LDFLAGS="${OLD_LDFLAGS}"
+  LIBS="${OLD_LIBS}"
+
+  if test "x${gdb_cv_var_macho}" = "xyes"; then
+    CONFIG_OBS="${CONFIG_OBS} machoread.o"
+  fi
+
+  # Add SOM support to GDB, but only if BFD includes it:
+
+  OLD_CFLAGS="${CFLAGS}"
+  OLD_LDFLAGS="${LDFLAGS}"
+  OLD_LIBS="${LIBS}"
+  # Put the old CFLAGS/LDFLAGS last, in case the user's (C|LD)FLAGS
+  # points somewhere with bfd, with -I/foo/lib and -L/foo/lib.  We
+  # always want our bfd.
+  CFLAGS="-I${srcdir}/../include -I../bfd -I${srcdir}/../bfd ${CFLAGS}"
+  LDFLAGS="-L../bfd -L../libiberty ${zlibdir} ${LDFLAGS}"
+  intl=`echo ${LIBINTL} | sed 's,${top_builddir}/,,g'`
+  if test -f ../zlib/Makefile; then
+    LIBS="-lbfd -L../zlib -lz -liberty ${intl} ${LIBS}"
+  else
+    LIBS="-lbfd -lz -liberty ${intl} ${LIBS}"
+  fi
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SOM support in BFD" >&5
+$as_echo_n "checking for SOM support in BFD... " >&6; }
+if ${gdb_cv_var_som+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdlib.h>
+  #include "bfd.h"
+  #include "som.h"
+
+int
+main ()
+{
+return bfd_som_attach_aux_hdr(NULL, 0, NULL);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gdb_cv_var_som=yes
+else
+  gdb_cv_var_som=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gdb_cv_var_som" >&5
+$as_echo "$gdb_cv_var_som" >&6; }
+  CFLAGS="${OLD_CFLAGS}"
+  LDFLAGS="${OLD_LDFLAGS}"
+  LIBS="${OLD_LIBS}"
+
+  if test "x${gdb_cv_var_som}" = "xyes"; then
+    CONFIG_OBS="${CONFIG_OBS} somread.o"
+  fi
+
 if test "x${gdb_host_obs}" != "x"; then
   # Add any host-specific objects to GDB.
   test -n "${gdb_host_obs}" && export CONFIG_OBS="${CONFIG_OBS} ${gdb_host_obs}"

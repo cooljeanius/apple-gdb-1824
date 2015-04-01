@@ -3253,14 +3253,14 @@ xstormy16-tdep.o: xstormy16-tdep.c $(defs_h) $(frame_h) $(frame_base_h) \
 
 cli-cmds.o: $(cli_srcdir)/cli-cmds.c $(defs_h) $(readline_h) \
   $(readline_tilde_h) $(completer_h) $(target_h) $(gdb_wait_h) \
-  $(gdb_string_h) $(gdb_vfork_h) $(linespec_h) \
+  $(gdb_regex_h) $(gdb_string_h) $(gdb_vfork_h) $(linespec_h) \
   $(expression_h) $(frame_h) $(value_h) $(language_h) $(filenames_h) \
   $(objfiles_h) $(source_h) $(disasm_h) $(ui_out_h) $(top_h) \
   $(cli_decode_h) $(cli_script_h) $(cli_setshow_h) $(cli_cmds_h) \
   $(tui_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-cmds.c
 cli-decode.o: $(cli_srcdir)/cli-decode.c $(defs_h) $(symtab_h) \
-  $(gdb_string_h) $(ui_out_h) $(cli_cmds_h) \
+  $(gdb_regex_h) $(gdb_string_h) $(completer_h) $(ui_out_h) $(cli_cmds_h) \
   $(cli_decode_h) $(tui_h) $(gdb_assert_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-decode.c
 cli-dump.o: $(cli_srcdir)/cli-dump.c $(defs_h) $(gdb_string_h) \
@@ -3269,14 +3269,15 @@ cli-dump.o: $(cli_srcdir)/cli-dump.c $(defs_h) $(gdb_string_h) \
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-dump.c
 cli-interp.o: $(cli_srcdir)/cli-interp.c $(defs_h) $(interps_h) \
   $(wrapper_h) $(event_top_h) $(ui_out_h) $(cli_out_h) $(top_h) \
-  $(gdb_string_h) $(exceptions_h)
+  $(inferior_h) $(mi_console_h) $(gdb_string_h) $(cli_cmds_h) \
+  $(exceptions_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-interp.c
 cli-logging.o: $(cli_srcdir)/cli-logging.c $(defs_h) $(gdbcmd_h) \
   $(ui_out_h) $(gdb_string_h) $(cli_logging_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-logging.c
 cli-script.o: $(cli_srcdir)/cli-script.c $(defs_h) $(value_h) \
   $(language_h) $(ui_out_h) $(gdb_string_h) $(exceptions_h) $(top_h) \
-  $(cli_cmds_h) $(cli_decode_h) $(cli_script_h)
+  $(event_top_h) $(cli_cmds_h) $(cli_decode_h) $(cli_script_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-script.c
 cli-setshow.o: $(cli_srcdir)/cli-setshow.c $(defs_h) $(readline_tilde_h) \
   $(value_h) $(gdb_string_h) $(ui_out_h) $(cli_decode_h) $(cli_cmds_h) \
