@@ -49,12 +49,12 @@
 #include "readline/readline.h"
 #include "readline/history.h"
 
-/* readline defines this.  */
+/* readline defines this: */
 #undef savestring
 
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
 
 /* Maximum length of an agent aexpression.
    This accounts for the fact that packets are limited to 400 bytes

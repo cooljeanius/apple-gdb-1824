@@ -224,8 +224,8 @@ static register_info_t g_reginfo_arm_vfpv1[] =
   { "d14",  0, &builtin_type_ieee_double_little },
   { "d15",  0, &builtin_type_ieee_double_little }
 };
-const uint32_t g_reginfo_arm_vfpv1_count = sizeof(g_reginfo_arm_vfpv1)/
-					   sizeof(register_info_t);
+const uint32_t g_reginfo_arm_vfpv1_count = (sizeof(g_reginfo_arm_vfpv1)
+                                            / sizeof(register_info_t));
 
 /* VFPv3 registers.  */
 static register_info_t g_reginfo_arm_vfpv3[] =
@@ -779,7 +779,7 @@ void *arm_macosx_save_thread_inferior_status(void)
 }
 
 void
-arm_macosx_restore_thread_inferior_status (void *tdep_inf_status)
+arm_macosx_restore_thread_inferior_status(void *tdep_inf_status)
 {
   if (tdep_inf_status != NULL)
     {
@@ -801,7 +801,7 @@ arm_fetch_pointer_argument(struct frame_info *frame, int argi,
 {
   CORE_ADDR addr;
 
-  addr = get_frame_register_unsigned (frame, argi);
+  addr = get_frame_register_unsigned(frame, argi);
 
   return addr;
 }
@@ -813,9 +813,9 @@ arm_fetch_pointer_argument(struct frame_info *frame, int argi,
 /* Print interesting information about the floating point processor
    (if present) or emulator.  */
 static void
-arm_macosx_print_float_info_vfp (struct gdbarch *gdbarch,
-				 struct ui_file *file,
-				 struct frame_info *frame, const char *args)
+arm_macosx_print_float_info_vfp(struct gdbarch *gdbarch,
+                                struct ui_file *file,
+                                struct frame_info *frame, const char *args)
 {
   static const char* enabled_strings[2] = {"disabled", "enabled"};
   static const char* Rmode_strings[4] = {
@@ -824,38 +824,38 @@ arm_macosx_print_float_info_vfp (struct gdbarch *gdbarch,
     "Round towards minus infinity (RM) mode",
     "Round towards zero (RZ) mode"
   };
-  uint32_t fpscr = read_register (ARM_VFP_REGNUM_FPSCR);
+  uint32_t fpscr = read_register(ARM_VFP_REGNUM_FPSCR);
   uint32_t b;
-  printf (_("VFP fpscr = 0x%8.8x\n"), fpscr);
-  printf (_("     N = %u  Set if comparison produces a less than result\n"),
-	  bit (fpscr, 31));
-  printf (_("     Z = %u  Set if comparison produces an equal result\n"),
-	  bit (fpscr, 30));
-  printf (_("     C = %u  Set if comparison produces an equal, greater "
-	  "than, or unordered result\n"),
-	  bit (fpscr, 29));
-  printf (_("     V = %u  Set if comparison produces an unordered result\n"),
-	  bit (fpscr, 28));
-  b = bit (fpscr, 25);
-  printf (_("    DN = %u  default NaN mode %s\n"), b, enabled_strings[b]);
-  b = bit (fpscr, 24);
-  printf (_("    Fz = %u  flush-to-zero mode %s\n"), b, enabled_strings[b]);
-  b = bits (fpscr, 22, 23);
-  printf (_(" Rmode = %u  %s\n"), b, Rmode_strings[b]);
-  printf (_("Stride = %u\n"), bits (fpscr, 20, 21));
-  printf (_("   LEN = %u\n"), bits (fpscr, 16, 18));
-  printf (_("   IDE = %u  Input Subnormal exception\n"), bit (fpscr, 15));
-  printf (_("   IXE = %u  Inexact exception\n"), bit (fpscr, 12));
-  printf (_("   UFE = %u  Underflow exception\n"), bit (fpscr, 11));
-  printf (_("   OFE = %u  Overflow exception\n"), bit (fpscr, 10));
-  printf (_("   DZE = %u  Division by Zero exception\n"), bit (fpscr, 9));
-  printf (_("   IOE = %u  Invalid Operation exception\n"), bit (fpscr, 8));
-  printf (_("   IDC = %u  Input Subnormal cumulative\n"), bit (fpscr, 7));
-  printf (_("   IXC = %u  Inexact cumulative\n"), bit (fpscr, 4));
-  printf (_("   UFC = %u  Underflow cumulative\n"), bit (fpscr, 3));
-  printf (_("   OFC = %u  Overflow cumulative\n"), bit (fpscr, 2));
-  printf (_("   DZC = %u  Division by Zero cumulative\n"), bit (fpscr, 1));
-  printf (_("   IOC = %u  Invalid Operation cumulative\n"), bit (fpscr, 0));
+  printf(_("VFP fpscr = 0x%8.8x\n"), fpscr);
+  printf(_("     N = %u  Set if comparison produces a less than result\n"),
+	 bit(fpscr, 31));
+  printf(_("     Z = %u  Set if comparison produces an equal result\n"),
+	 bit(fpscr, 30));
+  printf(_("     C = %u  Set if comparison produces an equal, greater "
+	 "than, or unordered result\n"),
+	 bit(fpscr, 29));
+  printf(_("     V = %u  Set if comparison produces an unordered result\n"),
+	 bit(fpscr, 28));
+  b = bit(fpscr, 25);
+  printf(_("    DN = %u  default NaN mode %s\n"), b, enabled_strings[b]);
+  b = bit(fpscr, 24);
+  printf(_("    Fz = %u  flush-to-zero mode %s\n"), b, enabled_strings[b]);
+  b = bits(fpscr, 22, 23);
+  printf(_(" Rmode = %u  %s\n"), b, Rmode_strings[b]);
+  printf(_("Stride = %u\n"), bits(fpscr, 20, 21));
+  printf(_("   LEN = %u\n"), bits(fpscr, 16, 18));
+  printf(_("   IDE = %u  Input Subnormal exception\n"), bit(fpscr, 15));
+  printf(_("   IXE = %u  Inexact exception\n"), bit(fpscr, 12));
+  printf(_("   UFE = %u  Underflow exception\n"), bit(fpscr, 11));
+  printf(_("   OFE = %u  Overflow exception\n"), bit(fpscr, 10));
+  printf(_("   DZE = %u  Division by Zero exception\n"), bit(fpscr, 9));
+  printf(_("   IOE = %u  Invalid Operation exception\n"), bit(fpscr, 8));
+  printf(_("   IDC = %u  Input Subnormal cumulative\n"), bit(fpscr, 7));
+  printf(_("   IXC = %u  Inexact cumulative\n"), bit(fpscr, 4));
+  printf(_("   UFC = %u  Underflow cumulative\n"), bit(fpscr, 3));
+  printf(_("   OFC = %u  Overflow cumulative\n"), bit(fpscr, 2));
+  printf(_("   DZC = %u  Division by Zero cumulative\n"), bit(fpscr, 1));
+  printf(_("   IOC = %u  Invalid Operation cumulative\n"), bit(fpscr, 0));
 }
 
 static void
@@ -870,99 +870,47 @@ arm_macosx_pseudo_register_read_vfpv1 (struct gdbarch *gdbarch,
 }
 
 static void
-arm_macosx_pseudo_register_write_vfpv1 (struct gdbarch *gdbarch,
-				        struct regcache *regcache, int reg,
-					const gdb_byte *buf)
-{
-  int s_reg_lsw = 2 * (reg - ARM_VFPV1_PSEUDO_REGNUM_D0) + ARM_VFP_REGNUM_S0;
-  int s_reg_msw = s_reg_lsw + 1;
-  regcache_cooked_write (regcache, s_reg_lsw, buf);
-  regcache_cooked_write (regcache, s_reg_msw, buf + 4);
-}
-
-static void
-arm_macosx_pseudo_register_read_vfpv3 (struct gdbarch *gdbarch,
+arm_macosx_pseudo_register_write_vfpv1(struct gdbarch *gdbarch,
 				       struct regcache *regcache, int reg,
-				       gdb_byte *buf)
+                                       const gdb_byte *buf)
 {
-  int s_reg_lsw = 0;
-  int s_reg_msw = 0;
-  int regno;
-  int stride_byte_size = 0;
-  if (reg >= ARM_VFPV3_PSEUDO_REGNUM_D0 && reg <= ARM_VFPV3_PSEUDO_REGNUM_D15)
-    {
-      /* D0- D15 overlap with the values for S0 - S31 where 2 consecutive S
-         registers make up a D register.  */
-      int d = reg - ARM_VFPV3_PSEUDO_REGNUM_D0;
-      s_reg_lsw = 2 * d + ARM_VFP_REGNUM_S0;
-      s_reg_msw = s_reg_lsw + 1;
-
-      /* Set the stride byte size to be 4 as each pseudo consecutive S register
-         is 4 bytes in size.  */
-      stride_byte_size = 4;
-    }
-  else if (reg >= ARM_SIMD_PSEUDO_REGNUM_Q0 &&
-	   reg <= ARM_SIMD_PSEUDO_REGNUM_Q15)
-    {
-      int q = reg - ARM_SIMD_PSEUDO_REGNUM_Q0;
-      if (q < 8)
-	{
-	  /* Q0-Q7 overlap with the values for S0-S31 where 4 consecutive S
-	     registers make up a Q register.  */
-	  s_reg_lsw = 4 * q + ARM_VFP_REGNUM_S0;
-	  s_reg_msw = s_reg_lsw + 3;
-	  /* Set the stride byte size to be 4 as each pseudo Q register will
-	     overlap 4 4 byte consecutive S registers.  */
-	  stride_byte_size = 4;
-	}
-      else
-	{
-	  /* Q8-Q15 overlap with the values for D15-D31 where 2 consecutive D
-	     registers make up a Q register.  */
-	  s_reg_lsw = 2 * (q - 8) + ARM_VFPV3_REGNUM_D16;
-	  s_reg_msw = s_reg_lsw + 1;
-	  /* Set the stride byte size to be 8 as each pseudo Q register will
-	     overlap 2 8 byte consecutive D registers.  */
-	  stride_byte_size = 8;
-	}
-    }
-
-  for (regno=s_reg_lsw; regno<=s_reg_msw; regno++)
-    regcache_cooked_read (regcache, regno,
-			  buf + (stride_byte_size * (regno - s_reg_lsw)));
+  int s_reg_lsw = (2 * (reg - ARM_VFPV1_PSEUDO_REGNUM_D0) + ARM_VFP_REGNUM_S0);
+  int s_reg_msw = (s_reg_lsw + 1);
+  regcache_cooked_write(regcache, s_reg_lsw, buf);
+  regcache_cooked_write(regcache, s_reg_msw, buf + 4);
 }
 
 static void
-arm_macosx_pseudo_register_write_vfpv3 (struct gdbarch *gdbarch,
-					struct regcache *regcache, int reg,
-					const gdb_byte *buf)
+arm_macosx_pseudo_register_read_vfpv3(struct gdbarch *gdbarch,
+				      struct regcache *regcache, int reg,
+				      gdb_byte *buf)
 {
   int s_reg_lsw = 0;
   int s_reg_msw = 0;
   int regno;
   int stride_byte_size = 0;
-  if (reg >= ARM_VFPV3_PSEUDO_REGNUM_D0 && reg <= ARM_VFPV3_PSEUDO_REGNUM_D15)
+  if ((reg >= ARM_VFPV3_PSEUDO_REGNUM_D0) && (reg <= ARM_VFPV3_PSEUDO_REGNUM_D15))
     {
       /* D0- D15 overlap with the values for S0 - S31 where 2 consecutive S
          registers make up a D register.  */
-      int d = reg - ARM_VFPV3_PSEUDO_REGNUM_D0;
-      s_reg_lsw = 2 * d + ARM_VFP_REGNUM_S0;
-      s_reg_msw = s_reg_lsw + 1;
+      int d = (reg - ARM_VFPV3_PSEUDO_REGNUM_D0);
+      s_reg_lsw = (2 * d + ARM_VFP_REGNUM_S0);
+      s_reg_msw = (s_reg_lsw + 1);
 
       /* Set the stride byte size to be 4 as each pseudo consecutive S register
          is 4 bytes in size.  */
       stride_byte_size = 4;
     }
-  else if (reg >= ARM_SIMD_PSEUDO_REGNUM_Q0 &&
-	   reg <= ARM_SIMD_PSEUDO_REGNUM_Q15)
+  else if ((reg >= ARM_SIMD_PSEUDO_REGNUM_Q0) &&
+	   (reg <= ARM_SIMD_PSEUDO_REGNUM_Q15))
     {
-      int q = reg - ARM_SIMD_PSEUDO_REGNUM_Q0;
+      int q = (reg - ARM_SIMD_PSEUDO_REGNUM_Q0);
       if (q < 8)
 	{
 	  /* Q0-Q7 overlap with the values for S0-S31 where 4 consecutive S
 	     registers make up a Q register.  */
-	  s_reg_lsw = 4 * q + ARM_VFP_REGNUM_S0;
-	  s_reg_msw = s_reg_lsw + 3;
+	  s_reg_lsw = (4 * q + ARM_VFP_REGNUM_S0);
+	  s_reg_msw = (s_reg_lsw + 3);
 	  /* Set the stride byte size to be 4 as each pseudo Q register will
 	     overlap 4 4 byte consecutive S registers.  */
 	  stride_byte_size = 4;
@@ -971,17 +919,69 @@ arm_macosx_pseudo_register_write_vfpv3 (struct gdbarch *gdbarch,
 	{
 	  /* Q8-Q15 overlap with the values for D15-D31 where 2 consecutive D
 	     registers make up a Q register.  */
-	  s_reg_lsw = 2 * (q - 8) + ARM_VFPV3_REGNUM_D16;
-	  s_reg_msw = s_reg_lsw + 1;
+	  s_reg_lsw = (2 * (q - 8) + ARM_VFPV3_REGNUM_D16);
+	  s_reg_msw = (s_reg_lsw + 1);
 	  /* Set the stride byte size to be 8 as each pseudo Q register will
 	     overlap 2 8 byte consecutive D registers.  */
 	  stride_byte_size = 8;
 	}
     }
 
-  for ((regno = s_reg_lsw); (regno <= s_reg_msw); regno++)
-    regcache_cooked_write (regcache, regno,
-			   buf + (stride_byte_size * (regno - s_reg_lsw)));
+  for (regno = s_reg_lsw; regno <= s_reg_msw; regno++)
+    regcache_cooked_read(regcache, regno,
+			 (buf + (stride_byte_size * (regno - s_reg_lsw))));
+}
+
+static void
+arm_macosx_pseudo_register_write_vfpv3(struct gdbarch *gdbarch,
+                                       struct regcache *regcache, int reg,
+                                       const gdb_byte *buf)
+{
+  int s_reg_lsw = 0;
+  int s_reg_msw = 0;
+  int regno;
+  int stride_byte_size = 0;
+  if ((reg >= ARM_VFPV3_PSEUDO_REGNUM_D0) && (reg <= ARM_VFPV3_PSEUDO_REGNUM_D15))
+    {
+      /* D0- D15 overlap with the values for S0 - S31 where 2 consecutive S
+         registers make up a D register.  */
+      int d = (reg - ARM_VFPV3_PSEUDO_REGNUM_D0);
+      s_reg_lsw = (2 * d + ARM_VFP_REGNUM_S0);
+      s_reg_msw = (s_reg_lsw + 1);
+
+      /* Set the stride byte size to be 4 as each pseudo consecutive S register
+         is 4 bytes in size.  */
+      stride_byte_size = 4;
+    }
+  else if ((reg >= ARM_SIMD_PSEUDO_REGNUM_Q0) &&
+	   (reg <= ARM_SIMD_PSEUDO_REGNUM_Q15))
+    {
+      int q = (reg - ARM_SIMD_PSEUDO_REGNUM_Q0);
+      if (q < 8)
+	{
+	  /* Q0-Q7 overlap with the values for S0-S31 where 4 consecutive S
+	     registers make up a Q register.  */
+	  s_reg_lsw = (4 * q + ARM_VFP_REGNUM_S0);
+	  s_reg_msw = (s_reg_lsw + 3);
+	  /* Set the stride byte size to be 4 as each pseudo Q register will
+	     overlap 4 4 byte consecutive S registers.  */
+	  stride_byte_size = 4;
+	}
+      else
+	{
+	  /* Q8-Q15 overlap with the values for D15-D31 where 2 consecutive D
+	     registers make up a Q register.  */
+	  s_reg_lsw = (2 * (q - 8) + ARM_VFPV3_REGNUM_D16);
+	  s_reg_msw = (s_reg_lsw + 1);
+	  /* Set the stride byte size to be 8 as each pseudo Q register will
+	     overlap 2 8 byte consecutive D registers.  */
+	  stride_byte_size = 8;
+	}
+    }
+
+  for (regno = s_reg_lsw; regno <= s_reg_msw; regno++)
+    regcache_cooked_write(regcache, regno,
+			  buf + (stride_byte_size * (regno - s_reg_lsw)));
 }
 
 /* This is cribbed from arm-tdep.c. I do NOT want to add all the mach-o
@@ -1112,7 +1112,8 @@ static struct type *
 arm_macosx_register_type_vfpv1(struct gdbarch *gdbarch, int regnum)
 {
   /* APPLE LOCAL: Use register info table: */
-  if (regnum < g_reginfo_arm_vfpv1_count && g_reginfo_arm_vfpv1[regnum].type)
+  if (((uint32_t)regnum < g_reginfo_arm_vfpv1_count)
+      && g_reginfo_arm_vfpv1[regnum].type)
     return *g_reginfo_arm_vfpv1[regnum].type;
   return builtin_type_int32;
 }
@@ -1121,25 +1122,26 @@ static struct type *
 arm_macosx_register_type_vfpv3(struct gdbarch *gdbarch, int regnum)
 {
   /* APPLE LOCAL: Use register info table: */
-  if (regnum < g_reginfo_arm_vfpv3_count && g_reginfo_arm_vfpv3[regnum].type)
+  if (((uint32_t)regnum < g_reginfo_arm_vfpv3_count)
+      && g_reginfo_arm_vfpv3[regnum].type)
     return *g_reginfo_arm_vfpv3[regnum].type;
   return builtin_type_int32;
 }
 
 /* Return the ARM register name corresponding to register REGNUM.  */
 static const char *
-arm_macosx_register_name_vfpv1 (int regnum)
+arm_macosx_register_name_vfpv1(int regnum)
 {
-  if (regnum < g_reginfo_arm_vfpv1_count)
+  if ((uint32_t)regnum < g_reginfo_arm_vfpv1_count)
     return g_reginfo_arm_vfpv1[regnum].name;
   return NULL;
 }
 
 /* Return the ARM register name corresponding to register REGNUM.  */
 static const char *
-arm_macosx_register_name_vfpv3 (int regnum)
+arm_macosx_register_name_vfpv3(int regnum)
 {
-  if (regnum < g_reginfo_arm_vfpv3_count)
+  if ((uint32_t)regnum < g_reginfo_arm_vfpv3_count)
     return g_reginfo_arm_vfpv3[regnum].name;
   return NULL;
 }
@@ -1148,19 +1150,19 @@ arm_macosx_register_name_vfpv3 (int regnum)
    register N.  */
 
 static int
-arm_macosx_register_byte_vfpv1 (int regnum)
+arm_macosx_register_byte_vfpv1(int regnum)
 {
   /* APPLE LOCAL: Use register info table: */
-  if (regnum < g_reginfo_arm_vfpv1_count)
+  if ((uint32_t)regnum < g_reginfo_arm_vfpv1_count)
     return g_reginfo_arm_vfpv1[regnum].offset;
   return 0;
 }
 
 static int
-arm_macosx_register_byte_vfpv3 (int regnum)
+arm_macosx_register_byte_vfpv3(int regnum)
 {
   /* APPLE LOCAL: Use register info table: */
-  if (regnum < g_reginfo_arm_vfpv3_count)
+  if ((uint32_t)regnum < g_reginfo_arm_vfpv3_count)
     return g_reginfo_arm_vfpv3[regnum].offset;
   return 0;
 }

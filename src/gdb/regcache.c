@@ -1449,5 +1449,6 @@ Takes an optional file parameter."), &maintenanceprintlist);
 Print the internal register configuration including each register's group.\n\
 Takes an optional file parameter."),
 	   &maintenanceprintlist);
-
 }
+
+/* EOF */

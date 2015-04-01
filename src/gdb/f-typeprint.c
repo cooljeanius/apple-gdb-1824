@@ -4,7 +4,7 @@
    2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
    Contributed by Motorola.  Adapted from the C version by Farooq Butt
-   (fmbutt@engage.sps.mot.com).
+   <fmbutt@engage.sps.mot.com>.
 
    This file is part of GDB.
 
@@ -39,7 +39,7 @@
 
 #if 0				/* Currently unused */
 static void f_type_print_args (struct type *, struct ui_file *);
-#endif
+#endif /* 0 */
 
 static void print_equivalent_f77_float_type (struct type *,
 					     struct ui_file *);
@@ -404,3 +404,5 @@ f_type_print_base (struct type *type, struct ui_file *stream, int show,
       break;
     }
 }
+
+/* EOF */

@@ -85,8 +85,8 @@
    names, type names, location expressions to name a few).  */
 
 #ifndef DWARF2_REG_TO_REGNUM
-#define DWARF2_REG_TO_REGNUM(REG) (REG)
-#endif
+# define DWARF2_REG_TO_REGNUM(REG) (REG)
+#endif /* !DWARF2_REG_TO_REGNUM */
 
 #if 0
 /* .debug_info header for a compilation unit
@@ -102,8 +102,8 @@ typedef struct comp_unit_header
     unsigned char addr_size;	/* byte size of an address -- 4 */
   }
 _COMP_UNIT_HEADER;
-#define _ACTUAL_COMP_UNIT_HEADER_SIZE 11
-#endif
+# define _ACTUAL_COMP_UNIT_HEADER_SIZE 11
+#endif /* 0 */
 
 /* .debug_pubnames header
    Because of alignment constraints, this structure has padding and cannot
@@ -213,7 +213,7 @@ struct dwarf2_per_objfile
 
   /* APPLE LOCAL: use mmap for dwarf sections.  */
 #if 0
-#ifdef HAVE_MMAP
+# ifdef HAVE_MMAP
   /* BFD mmap windows from the sections.  */
   bfd_window info_window;
   bfd_window abbrev_window;
@@ -222,8 +222,8 @@ struct dwarf2_per_objfile
   bfd_window macinfo_window;
   bfd_window ranges_window;
   bfd_window loc_window;
-#endif /* HAVE_MMAP */
-#endif
+# endif /* HAVE_MMAP */
+#endif /* 0 */
   /* END APPLE LOCAL */
 
   /* A list of all the compilation units.  This is used to locate
@@ -348,7 +348,7 @@ asection *dwarf_eh_frame_section;
 #define RANGES_SECTION   "LC_SEGMENT.__DWARF.__debug_ranges"
 #define EH_FRAME_SECTION "LC_SEGMENT.__TEXT.__eh_frame"
 
-/* APPLE LOCAL: We don't handle the macro information from
+/* APPLE LOCAL: We do NOT handle the macro information from
    gcc correctly, e.g. v. <rdar://problem/7237783>, so until
    that works we should ignore the macinfo section.  No one
    is using it intentionally -- it just gets pulled in when
@@ -361,8 +361,8 @@ asection *dwarf_eh_frame_section;
 
 /* We hold several abbreviation tables in memory at the same time. */
 #ifndef ABBREV_HASH_SIZE
-#define ABBREV_HASH_SIZE 121
-#endif
+# define ABBREV_HASH_SIZE 121
+#endif /* !ABBREV_HASH_SIZE */
 
 /* The data in a compilation unit header, after target2host
    translation, looks like this.  */
@@ -408,10 +408,10 @@ struct comp_unit_head
   int base_known;
 };
 
-/* Fixed size for the DIE hash table.  */
+/* Fixed size for the DIE hash table: */
 #ifndef REF_HASH_SIZE
-#define REF_HASH_SIZE 1021
-#endif
+# define REF_HASH_SIZE 1021
+#endif /* !REF_HASH_SIZE */
 
 /* Internal state when decoding a particular compilation unit.  */
 struct dwarf2_cu
@@ -770,7 +770,7 @@ struct function_range
 #define DW_SND(attr)       ((attr)->u.snd)
 #define DW_ADDR(attr)	   ((attr)->u.addr)
 
-/* Blocks are a bunch of untyped bytes. */
+/* Blocks are a bunch of untyped bytes: */
 struct dwarf_block
   {
     unsigned int size;
@@ -778,19 +778,19 @@ struct dwarf_block
   };
 
 #ifndef ATTR_ALLOC_CHUNK
-#define ATTR_ALLOC_CHUNK 4
-#endif
+# define ATTR_ALLOC_CHUNK 4
+#endif /* !ATTR_ALLOC_CHUNK */
 
-/* Allocate fields for structs, unions and enums in this size.  */
+/* Allocate fields for structs, unions and enums in this size: */
 #ifndef DW_FIELD_ALLOC_CHUNK
-#define DW_FIELD_ALLOC_CHUNK 4
-#endif
+# define DW_FIELD_ALLOC_CHUNK 4
+#endif /* !DW_FIELD_ALLOC_CHUNK */
 
 /* APPLE LOCAL begin radar 6568709  */
-/* Determine how many bytes a pointer/address is supposed to have.  */
+/* Determine how many bytes a pointer/address is supposed to have: */
 #ifndef TARGET_ADDRESS_BYTES
-#define TARGET_ADDRESS_BYTES (TARGET_LONG_BIT / TARGET_CHAR_BIT)
-#endif
+# define TARGET_ADDRESS_BYTES (TARGET_LONG_BIT / TARGET_CHAR_BIT)
+#endif /* !TARGET_ADDRESS_BYTES */
 /* APPLE LOCAL end radar 6568709  */
 
 /* A zeroed version of a partial die for initialization purposes.  */
@@ -957,8 +957,8 @@ static void fix_inlined_subroutine_symbols (void);
 /* APPLE LOCAL end debug inlined section  */
 
 #if 0
-static void dwarf2_build_psymtabs_easy (struct objfile *, int);
-#endif
+static void dwarf2_build_psymtabs_easy(struct objfile *, int);
+#endif /* 0 */
 
 static void dwarf2_create_include_psymtab (char *, struct partial_symtab *,
                                            struct objfile *);
@@ -1235,10 +1235,10 @@ static char *dwarf_bool_name (unsigned int);
 static char *dwarf_type_encoding_name (unsigned int);
 
 #if 0
-static char *dwarf_cfi_name (unsigned int);
+static char *dwarf_cfi_name(unsigned int);
 
-struct die_info *copy_die (struct die_info *);
-#endif
+struct die_info *copy_die(struct die_info *);
+#endif /* 0 */
 
 static struct die_info *sibling_die (struct die_info *);
 
@@ -1534,7 +1534,7 @@ dwarf2_build_psymtabs (struct objfile *objfile, int mainline)
       dwarf2_build_psymtabs_easy (objfile, mainline);
     }
   else
-#endif
+#endif /* 0 */
     /* only test this case for now */
     {
       /* In this case we have to work a bit harder */
@@ -1824,9 +1824,9 @@ find_pubtypes (bfd *ignore_abfd, asection *sectp, void *ignore)
    archive.  */
 
 void
-dwarf2_scan_pubtype_for_psymbols (struct partial_symtab *pst,
-			   struct objfile *objfile,
-			   enum language psymtab_language)
+dwarf2_scan_pubtype_for_psymbols(struct partial_symtab *pst,
+                                 struct objfile *objfile,
+                                 enum language psymtab_language)
 {
   struct bfd *abfd;
   int cached;
@@ -1838,34 +1838,34 @@ dwarf2_scan_pubtype_for_psymbols (struct partial_symtab *pst,
   bfd_size_type pubtypes_size;
   int noerr;
   int bytes_read;
-  struct cleanup *timing_cleanup;
+  struct cleanup *timing_cleanup = (struct cleanup *)NULL;
   static int timer = -1;
 
   if (maint_use_timers)
-    timing_cleanup = start_timer (&timer, "pubtypes", PSYMTAB_OSO_NAME (pst));
+    timing_cleanup = start_timer(&timer, "pubtypes", PSYMTAB_OSO_NAME (pst));
 
-  if (PSYMTAB_OSO_NAME (pst) == NULL || pst->readin)
+  if ((PSYMTAB_OSO_NAME(pst) == NULL) || pst->readin)
     return;
 
-  abfd = open_bfd_from_oso (pst, &cached);
+  abfd = open_bfd_from_oso(pst, &cached);
   if (abfd == NULL)
     {
-      warning ("Could not open OSO file %s "
-	       "to scan for pubtypes for objfile %s",
-	       PSYMTAB_OSO_NAME (pst),
-	       objfile->name ? objfile->name : "<unknown>");
+      warning("Could not open OSO file %s "
+	      "to scan for pubtypes for objfile %s",
+	      PSYMTAB_OSO_NAME(pst),
+	      (objfile->name ? objfile->name : "<unknown>"));
       if (maint_use_timers)
-	do_cleanups (timing_cleanup);
+	do_cleanups(timing_cleanup);
       return;
     }
 
-  if (!bfd_check_format (abfd, bfd_object))
+  if (!bfd_check_format(abfd, bfd_object))
     {
-      warning ("Not in bfd_object form");
+      warning("Not in bfd_object form");
       goto close_bfd;
     }
 
-  pubtypes_section = bfd_sections_find_if (abfd, find_pubtypes, NULL);
+  pubtypes_section = bfd_sections_find_if(abfd, find_pubtypes, NULL);
   if (pubtypes_section == NULL)
     {
       goto close_bfd;
@@ -1874,27 +1874,30 @@ dwarf2_scan_pubtype_for_psymbols (struct partial_symtab *pst,
   /* mmap in the pubtypes section.
      FIXME: Insert a no-mmap version...   */
 
-  pubtypes_size = bfd_get_section_size (pubtypes_section);
+  pubtypes_size = bfd_get_section_size(pubtypes_section);
 
 #ifdef HAVE_MMAP
-  bfd_init_window (&(pubtypes_window));
-  noerr = bfd_get_section_contents_in_window_with_mode
-    (abfd, pubtypes_section, &pubtypes_window, 0, pubtypes_size, 0);
+  bfd_init_window(&(pubtypes_window));
+  noerr =
+    bfd_get_section_contents_in_window_with_mode(abfd, pubtypes_section,
+                                                 &pubtypes_window, 0,
+                                                 pubtypes_size, 0);
   if (!noerr)
     {
-      bfd_free_window (&pubtypes_window);
-      bfd_close (abfd);
-      perror_with_name (PSYMTAB_OSO_NAME (pst));
+      bfd_free_window(&pubtypes_window);
+      bfd_close(abfd);
+      perror_with_name(PSYMTAB_OSO_NAME(pst));
     }
   pubtypes_data = pubtypes_window.data;
 #else
-  pubtypes_data = xmalloc (pubtypes_size + 1);
-  noerr = bfd_get_section_contents (abfd, pubtypes_section, pubtypes_data, 0, pubtypes_size);
+  pubtypes_data = xmalloc(pubtypes_size + 1);
+  noerr = bfd_get_section_contents(abfd, pubtypes_section, pubtypes_data,
+                                   0, pubtypes_size);
   if (!noerr)
     {
-      xfree (pubtypes_data);
-      bfd_close (abfd);
-      perror_with_name (PSYMTAB_OSO_NAME (pst));
+      xfree(pubtypes_data);
+      bfd_close(abfd);
+      perror_with_name(PSYMTAB_OSO_NAME(pst));
     }
 #endif  /* HAVE_MMAP */
 
@@ -1970,23 +1973,22 @@ dwarf2_scan_pubtype_for_psymbols (struct partial_symtab *pst,
 				   0, 0,
 				   psymtab_language, objfile);
 	    }
-
 	}
     }
 #ifdef HAVE_MMAP
-  bfd_free_window (&pubtypes_window);
+  bfd_free_window(&pubtypes_window);
 #else
-      xfree (pubtypes_data);
-#endif
+  xfree(pubtypes_data);
+#endif /* HAVE_MMAP */
 
  close_bfd:
       /* If we cached the bfd, we'll let our caller clean
 	 it up, otherwise close the bfd here.  */
   if (!cached)
-    close_bfd_or_archive (abfd);
+    close_bfd_or_archive(abfd);
 
   if (maint_use_timers)
-    do_cleanups (timing_cleanup);
+    do_cleanups(timing_cleanup);
 }
 
 #if 0
@@ -1994,7 +1996,7 @@ dwarf2_scan_pubtype_for_psymbols (struct partial_symtab *pst,
    .debug_pubnames and .debug_aranges sections.  */
 
 static void
-dwarf2_build_psymtabs_easy (struct objfile *objfile, int mainline)
+dwarf2_build_psymtabs_easy(struct objfile *objfile, int mainline)
 {
   bfd *abfd = objfile->obfd;
   char *aranges_buffer, *pubnames_buffer;
@@ -2026,7 +2028,7 @@ dwarf2_build_psymtabs_easy (struct objfile *objfile, int mainline)
 					dwarf_aranges_section);
 
 }
-#endif
+#endif /* 0 */
 
 /* Read in the comp unit header information from the debug_info at
    info_ptr.  */
@@ -5102,23 +5104,23 @@ read_file_scope (struct die_info *die, struct dwarf2_cu *cu)
     cu->cu_is_optimized = 1;
   /* APPLE LOCAL end Inform users about debugging optimized code  */
 
-  /* We assume that we're processing GCC output. */
+  /* We assume that we are processing GCC output: */
   processing_gcc_compilation = 2;
 #if 0
-  /* FIXME:Do something here.  */
+  /* FIXME: Do something here: */
   if (dip->at_producer != NULL)
     {
-      handle_producer (dip->at_producer);
+      handle_producer(dip->at_producer);
     }
-#endif
+#endif /* 0 */
 
   /* The compilation unit may be in a different language or objfile,
      zero out all remembered fundamental types.  */
-  memset (cu->ftypes, 0, FT_NUM_MEMBERS * sizeof (struct type *));
+  memset(cu->ftypes, 0, (FT_NUM_MEMBERS * sizeof(struct type *)));
 
-  start_symtab (name, comp_dir, lowpc);
-  record_debugformat ("DWARF 2");
-  record_producer (cu->producer);
+  start_symtab(name, comp_dir, lowpc);
+  record_debugformat("DWARF 2");
+  record_producer(cu->producer);
 
   initialize_cu_func_list (cu);
 
@@ -5526,10 +5528,10 @@ read_func_scope (struct die_info *die, struct dwarf2_cu *cu)
    a new scope, process the dies, and then close the scope.  */
 
 static void
-read_lexical_block_scope (struct die_info *die, struct dwarf2_cu *cu)
+read_lexical_block_scope(struct die_info *die, struct dwarf2_cu *cu)
 {
   struct objfile *objfile = cu->objfile;
-  struct context_stack *new;
+  struct context_stack *newstack;
   CORE_ADDR lowpc, highpc;
   struct die_info *child_die;
   CORE_ADDR baseaddr;
@@ -5537,7 +5539,7 @@ read_lexical_block_scope (struct die_info *die, struct dwarf2_cu *cu)
   struct address_range_list *ranges = NULL;
   /* APPLE LOCAL end address ranges  */
 
-  baseaddr = objfile_text_section_offset (objfile);
+  baseaddr = objfile_text_section_offset(objfile);
 
   /* Ignore blocks with missing or invalid low and high pc attributes.  */
   /* ??? Perhaps consider discontiguous blocks defined by DW_AT_ranges
@@ -5545,7 +5547,7 @@ read_lexical_block_scope (struct die_info *die, struct dwarf2_cu *cu)
      be nasty.  Might be easier to properly extend generic blocks to
      describe ranges.  */
   /* APPLE LOCAL begin address ranges  */
-  if (!dwarf2_get_pc_bounds (die, &lowpc, &highpc, &ranges, cu))
+  if (!dwarf2_get_pc_bounds(die, &lowpc, &highpc, &ranges, cu))
     return;
   lowpc += baseaddr;
   highpc += baseaddr;
@@ -5561,26 +5563,26 @@ read_lexical_block_scope (struct die_info *die, struct dwarf2_cu *cu)
     }
   /* APPLE LOCAL end address ranges  */
 
-  push_context (0, lowpc);
+  push_context(0, lowpc);
   if (die->child != NULL)
     {
       child_die = die->child;
       while (child_die && child_die->tag)
 	{
-	  process_die (child_die, cu);
-	  child_die = sibling_die (child_die);
+	  process_die(child_die, cu);
+	  child_die = sibling_die(child_die);
 	}
     }
-  new = pop_context ();
+  newstack = pop_context();
 
   if (local_symbols != NULL)
     {
       /* APPLE LOCAL begin address ranges  */
-      finish_block (0, &local_symbols, new->old_blocks, new->start_addr,
-		    highpc, ranges, objfile);
+      finish_block(0, &local_symbols, newstack->old_blocks,
+                   newstack->start_addr, highpc, ranges, objfile);
       /* APPLE LOCAL end address ranges  */
     }
-  local_symbols = new->locals;
+  local_symbols = newstack->locals;
 }
 
 /* APPLE LOCAL begin address ranges  */
@@ -7954,7 +7956,7 @@ is_type_tag_for_partial (int tag)
     case DW_TAG_set_type:
     case DW_TAG_string_type:
     case DW_TAG_subroutine_type:
-#endif
+#endif /* 0 */
     case DW_TAG_base_type:
     case DW_TAG_class_type:
     case DW_TAG_enumeration_type:
@@ -9792,7 +9794,7 @@ translate_debug_map_address_with_tuple (struct oso_to_final_addr_map *map,
 			    match->name, paddr_nz (map->pst->texthigh));
       final_addr = map->pst->texthigh;
     }
-#endif
+#endif /* 0 */
 
   if (debug_debugmap)
     fprintf_unfiltered (gdb_stdlog,
@@ -11260,7 +11262,7 @@ dwarf_base_type (int encoding, int size, struct dwarf2_cu *cu)
 
 #if 0
 struct die_info *
-copy_die (struct die_info *old_die)
+copy_die(struct die_info *old_die)
 {
   struct die_info *new_die;
   int i, num_attrs;
@@ -11291,7 +11293,7 @@ copy_die (struct die_info *old_die)
   new_die->next = NULL;
   return new_die;
 }
-#endif
+#endif /* 0 */
 
 /* Return sibling of die, NULL if no sibling.  */
 
@@ -11647,7 +11649,7 @@ dwarf_attr_name (unsigned attr)
       return "DW_AT_MIPS_loop_unroll_factor";
     case DW_AT_MIPS_software_pipeline_depth:
       return "DW_AT_MIPS_software_pipeline_depth";
-#endif
+#endif /* MIPS */
     case DW_AT_MIPS_linkage_name:
       return "DW_AT_MIPS_linkage_name";
 
@@ -12103,7 +12105,7 @@ dwarf_type_encoding_name (unsigned enc)
 
 #if 0
 static char *
-dwarf_cfi_name (unsigned cfi_opc)
+dwarf_cfi_name(unsigned cfi_opc)
 {
   switch (cfi_opc)
     {
@@ -12172,10 +12174,10 @@ dwarf_cfi_name (unsigned cfi_opc)
       return "DW_CFA_<unknown>";
     }
 }
-#endif
+#endif /* 0 */
 
 static void
-dump_die (struct die_info *die)
+dump_die(struct die_info *die)
 {
   unsigned int i;
 
@@ -12363,25 +12365,26 @@ follow_die_ref (struct die_info *src_die, struct attribute *attr,
 }
 
 static struct type *
-dwarf2_fundamental_type (struct objfile *objfile, int typeid,
-			 struct dwarf2_cu *cu)
+dwarf2_fundamental_type(struct objfile *objfile, int d2typeid,
+                        struct dwarf2_cu *cu)
 {
-  if (typeid < 0 || typeid >= FT_NUM_MEMBERS)
+  if ((d2typeid < 0) || (d2typeid >= FT_NUM_MEMBERS))
     {
-      error (_("Dwarf Error: internal error - invalid fundamental type id %d [in module %s]"),
-	     typeid, objfile->name);
+      error(_("Dwarf Error: internal error - invalid fundamental type id %d [in module %s]"),
+	    d2typeid, objfile->name);
     }
 
   /* Look for this particular type in the fundamental type vector.  If
      one is not found, create and install one appropriate for the
      current language and the current target machine. */
 
-  if (cu->ftypes[typeid] == NULL)
+  if (cu->ftypes[d2typeid] == NULL)
     {
-      cu->ftypes[typeid] = cu->language_defn->la_fund_type (objfile, typeid);
+      cu->ftypes[d2typeid] = cu->language_defn->la_fund_type(objfile,
+                                                             d2typeid);
     }
 
-  return (cu->ftypes[typeid]);
+  return (cu->ftypes[d2typeid]);
 }
 
 /* Decode simple location descriptions.
@@ -13543,77 +13546,78 @@ static struct cmd_list_element *set_dwarf2_cmdlist;
 static struct cmd_list_element *show_dwarf2_cmdlist;
 
 static void
-set_dwarf2_cmd (char *args, int from_tty)
+set_dwarf2_cmd(char *args, int from_tty)
 {
-  help_list (set_dwarf2_cmdlist, "maintenance set dwarf2 ", -1, gdb_stdout);
+  help_list(set_dwarf2_cmdlist, "maintenance set dwarf2 ",
+            (enum command_class)-1, gdb_stdout);
 }
 
 static void
-show_dwarf2_cmd (char *args, int from_tty)
+show_dwarf2_cmd(char *args, int from_tty)
 {
-  cmd_show_list (show_dwarf2_cmdlist, from_tty, "");
+  cmd_show_list(show_dwarf2_cmdlist, from_tty, "");
 }
 
-void _initialize_dwarf2_read (void);
+void _initialize_dwarf2_read(void);
 
 void
-_initialize_dwarf2_read (void)
+_initialize_dwarf2_read(void)
 {
-  dwarf2_objfile_data_key = register_objfile_data ();
+  dwarf2_objfile_data_key = register_objfile_data();
 
-  add_prefix_cmd ("dwarf2", class_maintenance, set_dwarf2_cmd, _("\
+  add_prefix_cmd("dwarf2", class_maintenance, set_dwarf2_cmd, _("\
 Set DWARF 2 specific variables.\n\
 Configure DWARF 2 variables such as the cache size"),
-                  &set_dwarf2_cmdlist, "maintenance set dwarf2 ",
-                  0/*allow-unknown*/, &maintenance_set_cmdlist);
+                 &set_dwarf2_cmdlist, "maintenance set dwarf2 ",
+                 0/*allow-unknown*/, &maintenance_set_cmdlist);
 
-  add_prefix_cmd ("dwarf2", class_maintenance, show_dwarf2_cmd, _("\
+  add_prefix_cmd("dwarf2", class_maintenance, show_dwarf2_cmd, _("\
 Show DWARF 2 specific variables\n\
 Show DWARF 2 variables such as the cache size"),
-                  &show_dwarf2_cmdlist, "maintenance show dwarf2 ",
-                  0/*allow-unknown*/, &maintenance_show_cmdlist);
+                 &show_dwarf2_cmdlist, "maintenance show dwarf2 ",
+                 0/*allow-unknown*/, &maintenance_show_cmdlist);
 
   /* APPLE LOCAL */
-  add_setshow_zinteger_cmd ("debugmap", class_maintenance, &debug_debugmap, _("\
+  add_setshow_zinteger_cmd("debugmap", class_maintenance, &debug_debugmap, _("\
 Set DWARF debug map debugging."), _("\
 Show DWARF debug map debugging."), _("\
 When non-zero, debug map specific debugging is enabled."),
-                            NULL,
-                            show_debug_debugmap,
-                            &setdebuglist, &showdebuglist);
+                           NULL,
+                           show_debug_debugmap,
+                           &setdebuglist, &showdebuglist);
 
-  add_setshow_zinteger_cmd ("max-cache-age", class_obscure,
-			    &dwarf2_max_cache_age, _("\
+  add_setshow_zinteger_cmd("max-cache-age", class_obscure,
+			   &dwarf2_max_cache_age, _("\
 Set the upper bound on the age of cached dwarf2 compilation units."), _("\
 Show the upper bound on the age of cached dwarf2 compilation units."), _("\
 A higher limit means that cached compilation units will be stored\n\
 in memory longer, and more total memory will be used.  Zero disables\n\
 caching, which can slow down startup."),
-			    NULL,
-			    show_dwarf2_max_cache_age,
-			    &set_dwarf2_cmdlist,
-			    &show_dwarf2_cmdlist);
+			   NULL,
+			   show_dwarf2_max_cache_age,
+			   &set_dwarf2_cmdlist,
+			   &show_dwarf2_cmdlist);
 
   /* APPLE LOCAL begin subroutine inlining  */
-  add_setshow_boolean_cmd ("inlined-stepping", class_support,
-			   &dwarf2_allow_inlined_stepping,
+  add_setshow_boolean_cmd("inlined-stepping", class_support,
+			  &dwarf2_allow_inlined_stepping,
 	      _("Set the ability to maneuver through inlined function calls as if they were normal calls."),
 	      _("Show the ability to maneuver through inlined function calls as if they were normal calls."),
-			   NULL, NULL, NULL, &setlist, &showlist);
+                          NULL, NULL, NULL, &setlist, &showlist);
 
-  add_setshow_boolean_cmd ("inlined-stepping", class_obscure,
-			   &dwarf2_debug_inlined_stepping,
+  add_setshow_boolean_cmd("inlined-stepping", class_obscure,
+			  &dwarf2_debug_inlined_stepping,
 	      _("Set the extra information for debugging gdb's maneuvering through inlined function calls."),
 	      _("Show the extra information for debugging gdb's maneuvering through inlined function calls."),
-			   NULL, NULL, NULL, &setdebuglist, &showdebuglist);
+                          NULL, NULL, NULL, &setdebuglist, &showdebuglist);
   /* APPLE LOCAL end subroutine inlining  */
 
   /* APPLE LOCAL begin Inform users about debugging optimized code  */
-  add_setshow_boolean_cmd ("inform-optimized", class_support,
-			   &dwarf2_inform_debugging_optimized_code,
-			   _("Set gdb informing you when you are debugging optimized code."),
-			   _("Show gdb informing you when you are debugging optimized code."),
-			   NULL, NULL, NULL, &setlist, &showlist);
+  add_setshow_boolean_cmd("inform-optimized", class_support,
+			  &dwarf2_inform_debugging_optimized_code,
+			  _("Set gdb informing you when you are debugging optimized code."),
+			  _("Show gdb informing you when you are debugging optimized code."),
+			  NULL, NULL, NULL, &setlist, &showlist);
   /* APPLE LOCAL end Inform users about debugging optimized code  */
 }
 

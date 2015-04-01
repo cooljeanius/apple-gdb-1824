@@ -35,18 +35,18 @@
 #include "gdbcore.h"
 #include "infcall.h"
 
-extern void _initialize_scheme_language (void);
-static struct value *evaluate_subexp_scm (struct type *, struct expression *,
-				      int *, enum noside);
-static struct value *scm_lookup_name (char *);
-static int in_eval_c (void);
+extern void _initialize_scheme_language(void);
+static struct value *evaluate_subexp_scm(struct type *, struct expression *,
+                                         int *, enum noside);
+static struct value *scm_lookup_name(char *);
+static int in_eval_c(void);
 
 struct type *builtin_type_scm;
 
 void
-scm_printchar (int c, struct ui_file *stream)
+scm_printchar(int c, struct ui_file *stream)
 {
-  fprintf_filtered (stream, "#\\%c", c);
+  fprintf_filtered(stream, "#\\%c", c);
 }
 
 static void
@@ -276,10 +276,12 @@ const struct language_defn scm_language_defn =
 };
 
 void
-_initialize_scheme_language (void)
+_initialize_scheme_language(void)
 {
-  add_language (&scm_language_defn);
-  builtin_type_scm = init_type (TYPE_CODE_INT,
-				TARGET_LONG_BIT / TARGET_CHAR_BIT,
-				0, "SCM", (struct objfile *) NULL);
+  add_language(&scm_language_defn);
+  builtin_type_scm = init_type(TYPE_CODE_INT,
+                               (TARGET_LONG_BIT / TARGET_CHAR_BIT),
+                               0, "SCM", (struct objfile *)NULL);
 }
+
+/* EOF */

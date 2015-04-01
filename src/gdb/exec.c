@@ -47,25 +47,25 @@
 #include <ctype.h>
 #include "gdb_stat.h"
 #ifndef O_BINARY
-#define O_BINARY 0
-#endif
+# define O_BINARY 0
+#endif /* !O_BINARY */
 
 #include "xcoffsolib.h"
 
 /* APPLE LOCAL begin dyld */
 #ifdef MACOSX_DYLD
-#include "macosx-nat-dyld.h"
-#endif
+# include "macosx-nat-dyld.h"
+#endif /* MACOSX_DYLD */
 /* APPLE LOCAL end dyld */
 
 /* APPLE LOCAL begin section names */
 #ifndef TEXT_SECTION_NAME
-#define TEXT_SECTION_NAME ".text"
-#endif
+# define TEXT_SECTION_NAME ".text"
+#endif /* !TEXT_SECTION_NAME */
 
 #ifndef DATA_SECTION_NAME
-#define DATA_SECTION_NAME ".data"
-#endif
+# define DATA_SECTION_NAME ".data"
+#endif /* !DATA_SECTION_NAME */
 /* APPLE LOCAL end section names */
 
 /* When attaching to a KASLR kernel we have a symbol file provided at
@@ -161,7 +161,7 @@ exec_open (char *args, int from_tty)
 }
 
 static void
-exec_close (int quitting)
+exec_close(int quitting)
 {
   int need_symtab_cleanup = 0;
   struct vmap *vp, *nxt;
@@ -182,35 +182,35 @@ exec_close (int quitting)
       else if (vp->bfd != exec_bfd)
 	/* FIXME-leak: We should be freeing vp->name too, I think.  */
 	if (!bfd_close (vp->bfd))
-	  warning (_("cannot close \"%s\": %s"),
-		   vp->name, bfd_errmsg (bfd_get_error ()));
+	  warning(_("cannot close \"%s\": %s"),
+		  vp->name, bfd_errmsg(bfd_get_error()));
 
       /* FIXME: This routine is #if 0'd in symfile.c.  What should we
          be doing here?  Should we just free everything in
          vp->objfile->symtabs?  Should free_objfile do that?
-         FIXME-as-well: free_objfile already free'd vp->name, so it isn't
+         FIXME-as-well: free_objfile already free'd vp->name, so it is NOT
          valid here.  */
-      free_named_symtabs (vp->name);
-      xfree (vp);
+      free_named_symtabs(vp->name);
+      xfree(vp);
     }
 
   vmap = NULL;
 
   if (exec_bfd)
     {
-      char *name = bfd_get_filename (exec_bfd);
+      char *name = bfd_get_filename(exec_bfd);
 
-      if (!bfd_close (exec_bfd))
-	warning (_("cannot close \"%s\": %s"),
-		 name, bfd_errmsg (bfd_get_error ()));
+      if (!bfd_close(exec_bfd))
+	warning(_("cannot close \"%s\": %s"),
+                name, bfd_errmsg(bfd_get_error()));
       exec_bfd = NULL;
     }
 
   if (exec_ops.to_sections)
     {
       /* APPLE LOCAL section resize */
-      target_resize_to_sections
-	(&exec_ops, exec_ops.to_sections_end - exec_ops.to_sections);
+      target_resize_to_sections(&exec_ops,
+                                (exec_ops.to_sections_end - exec_ops.to_sections));
     }
 }
 
@@ -229,10 +229,10 @@ exec_file_clear (int from_tty)
    is really an int * which points to from_tty.  */
 
 static int
-solib_add_stub (PTR from_ttyp)
+solib_add_stub(PTR from_ttyp)
 {
-  SOLIB_ADD (NULL, *(int *) from_ttyp, &current_target, auto_solib_add);
-  re_enable_breakpoints_in_shlibs (0);
+  SOLIB_ADD(NULL, *(int *)from_ttyp, &current_target, auto_solib_add);
+  re_enable_breakpoints_in_shlibs(0);
   return 0;
 }
 #endif /* SOLIB_ADD */
@@ -280,13 +280,15 @@ exec_file_attach (char *filename, int from_tty)
 #if defined(__GO32__) || defined(_WIN32) || defined(__CYGWIN__)
       if (scratch_chan < 0)
 	{
-	  char *exename = alloca (strlen (filename) + 5);
-	  strcat (strcpy (exename, filename), ".exe");
-	  scratch_chan = openp (getenv ("PATH"), OPF_TRY_CWD_FIRST, exename,
-	     write_files ? O_RDWR | O_BINARY : O_RDONLY | O_BINARY, 0,
-	     &scratch_pathname);
+	  char *exename = alloca(strlen(filename) + 5);
+	  strcat(strcpy(exename, filename), ".exe");
+	  scratch_chan = openp(getenv("PATH"), OPF_TRY_CWD_FIRST, exename,
+                               (write_files
+                                ? (O_RDWR | O_BINARY)
+                                : (O_RDONLY | O_BINARY)), 0,
+                               &scratch_pathname);
 	}
-#endif
+#endif /* __GO32__ || _WIN32 || __CYGWIN__ */
 
       /* APPLE LOCAL begin app bundles */
 #ifdef TM_NEXTSTEP
@@ -296,17 +298,19 @@ exec_file_attach (char *filename, int from_tty)
 	     Foo.app/Contents/MacOS/Foo, where the user gave us up to
 	     Foo.app.  The ".app" is optional. */
 
-	  char *wrapped_filename = macosx_filename_in_bundle (filename, 1);
+	  char *wrapped_filename = macosx_filename_in_bundle(filename, 1);
 
 	  if (wrapped_filename != NULL)
 	    {
-	      scratch_chan = openp (getenv ("PATH"), 1, wrapped_filename,
-				    write_files ? O_RDWR | O_BINARY : O_RDONLY | O_BINARY, 0,
-				    &scratch_pathname);
-	      xfree (wrapped_filename);
+	      scratch_chan = openp(getenv("PATH"), 1, wrapped_filename,
+				   (write_files
+                                    ? (O_RDWR | O_BINARY)
+                                    : (O_RDONLY | O_BINARY)), 0,
+				   &scratch_pathname);
+	      xfree(wrapped_filename);
 	    }
 	}
-#endif
+#endif /* TM_NEXTSTEP */
       /* APPLE LOCAL end app bundles */
 
       if (scratch_chan < 0 && !file_exists_p (filename))
@@ -358,52 +362,52 @@ exec_file_attach (char *filename, int from_tty)
 #ifdef DEPRECATED_IBM6000_TARGET
       /* Setup initial vmap. */
 
-      map_vmap (exec_bfd, 0);
+      map_vmap(exec_bfd, 0);
       if (vmap == NULL)
 	{
 	  /* Make sure to close exec_bfd, or else "run" might try to use
 	     it.  */
-	  exec_close (0);
-	  error (_("\"%s\": can't find the file sections: %s"),
-		 scratch_pathname, bfd_errmsg (bfd_get_error ()));
+	  exec_close(0);
+	  error(_("\"%s\": cannot find the file sections: %s"),
+                scratch_pathname, bfd_errmsg(bfd_get_error()));
 	}
 #endif /* DEPRECATED_IBM6000_TARGET */
 
-      if (build_section_table (exec_bfd, &exec_ops.to_sections,
-			       &exec_ops.to_sections_end))
+      if (build_section_table(exec_bfd, &exec_ops.to_sections,
+			      &exec_ops.to_sections_end))
 	{
 	  /* Make sure to close exec_bfd, or else "run" might try to use
 	     it.  */
-	  exec_close (0);
-	  error (_("\"%s\": can't find the file sections: %s"),
-		 scratch_pathname, bfd_errmsg (bfd_get_error ()));
+	  exec_close(0);
+	  error(_("\"%s\": cannot find the file sections: %s"),
+                scratch_pathname, bfd_errmsg(bfd_get_error()));
 	}
 
 #ifdef DEPRECATED_HPUX_TEXT_END
-      DEPRECATED_HPUX_TEXT_END (&exec_ops);
-#endif
+      DEPRECATED_HPUX_TEXT_END(&exec_ops);
+#endif /* DEPRECATED_HPUX_TEXT_END */
 
-      validate_files ();
+      validate_files();
 
-      set_gdbarch_from_file (exec_bfd);
+      set_gdbarch_from_file(exec_bfd);
 
-      push_target (&exec_ops);
+      push_target(&exec_ops);
 
 #ifdef MACOSX_DYLD
-      macosx_init_dyld_symfile (symfile_objfile, exec_bfd);
-#endif
+      macosx_init_dyld_symfile(symfile_objfile, exec_bfd);
+#endif /* MACOSX_DYLD */
 
 #ifdef SOLIB_ADD
-      catch_errors (solib_add_stub, &from_tty, (char *) 0,
-		    RETURN_MASK_ALL);
-#endif
+      catch_errors(solib_add_stub, &from_tty, (char *)0,
+		   RETURN_MASK_ALL);
+#endif /* SOLIB_ADD */
 
-      /* Tell display code (if any) about the changed file name.  */
+      /* Tell display code (if any) about the changed file name: */
       if (deprecated_exec_file_display_hook)
-	(*deprecated_exec_file_display_hook) (filename);
+	(*deprecated_exec_file_display_hook)(filename);
     }
-  bfd_cache_close_all ();
-  observer_notify_executable_changed (NULL);
+  bfd_cache_close_all();
+  observer_notify_executable_changed(NULL);
 }
 
 /*  Process the first arg in ARGS as the new exec file.
@@ -973,18 +977,20 @@ This can be used if the exec file does not contain section addresses,\n\
 file itself are wrong.  Each section must be changed separately.  The\n\
 ``info files'' command lists all the sections and their addresses."));
 
-  add_setshow_boolean_cmd ("write", class_support, &write_files, _("\
+  add_setshow_boolean_cmd("write", class_support, &write_files, _("\
 Set writing into executable and core files."), _("\
 Show writing into executable and core files."), NULL,
-			   NULL,
-			   show_write_files,
-			   &setlist, &showlist);
+			  NULL,
+			  show_write_files,
+			  &setlist, &showlist);
 
-  add_target (&exec_ops);
+  add_target(&exec_ops);
 }
 
 static char *
-exec_make_note_section (bfd *obfd, int *note_size)
+exec_make_note_section(bfd *obfd, int *note_size)
 {
-  error (_("Can't create a corefile"));
+  error(_("Cannot create a corefile"));
 }
+
+/* EOF */

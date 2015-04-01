@@ -54,7 +54,7 @@
 #include "ppc-macosx-tdep.h"
 #include "ppc-macosx-regs.h"
 #include "ppc-macosx-regnums.h"
-#include "ppc-macosx-tdep.h"
+/* we already included "ppc-macosx-tdep.h" once */
 #include "ppc-macosx-frameinfo.h"
 
 #include <mach/mach.h>

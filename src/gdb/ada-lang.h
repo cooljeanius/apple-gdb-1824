@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
-#if !defined (ADA_LANG_H)
+#if !defined(ADA_LANG_H)
 #define ADA_LANG_H 1
 
 struct partial_symbol;
@@ -432,6 +432,28 @@ extern struct symbol *lookup_symbol_in_language(const char *,
                                                 const struct block *,
                                                 domain_enum, enum language,
                                                 int *, struct symtab **);
-#endif
+
+/* '-Wmissing-declarations': */
+extern char *ada_la_decode(const char *encoded, int options);
+
+extern int ada_match_name(const char *, const char *, int);
+
+extern int ada_suppress_symbol_printing(struct symbol *);
+
+extern struct value *ada_value_ptr_subscript(struct value *, struct type *,
+                                             int, struct value **);
+
+extern LONGEST ada_array_bound_from_type(struct type *, int, int,
+                                         struct type **);
+
+extern struct value *ada_array_length(struct value *, int);
+
+extern struct value *ada_to_static_fixed_value(struct value *val);
+
+extern struct value *ada_evaluate_subexp(struct type *,
+                                         struct expression *, int *,
+                                         enum noside);
+
+#endif /* !ADA_LANG_H */
 
 /* EOF */

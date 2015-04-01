@@ -33,7 +33,9 @@
 #include "target.h"
 #include "readline/readline.h"
 
-#define XMALLOC(TYPE) ((TYPE*) xmalloc (sizeof (TYPE)))
+#ifndef XMALLOC
+# define XMALLOC(TYPE) ((TYPE*)xmalloc(sizeof(TYPE)))
+#endif /* !XMALLOC */
 
 /* APPLE LOCAL: segment binary file downloads
  * default the binary file chunk size to the max value: */
@@ -756,21 +758,22 @@ set_binary_buffer_size (char *args, int from_tty)
 }
 
 static void
-set_restore_cmd (char *args, int from_tty)
+set_restore_cmd(char *args, int from_tty)
 {
+  return;
 }
 
 static void
-show_restore_cmd (char *args, int from_tty)
+show_restore_cmd(char *args, int from_tty)
 {
-  show_binary_buffer_size (args, from_tty);
+  show_binary_buffer_size(args, from_tty);
 }
 
 /* APPLE LOCAL END: segment binary file downloads  */
 
 
 void
-_initialize_cli_dump (void)
+_initialize_cli_dump(void)
 {
   struct cmd_list_element *c;
 
@@ -908,13 +911,13 @@ Arguments are FILE START STOP.  Writes the contents of memory within the\n\
 range [START .. STOP) to the specifed FILE in raw target ordered bytes."),
 	   &binary_append_cmdlist);
 
-  add_cmd ("value", all_commands, append_binary_value, _("\
+  add_cmd("value", all_commands, append_binary_value, _("\
 Append the value of an expression to a raw binary file.\n\
 Arguments are FILE EXPRESSION.  Writes the value of EXPRESSION\n\
 to the specified FILE in raw target ordered bytes."),
-	   &binary_append_cmdlist);
+          &binary_append_cmdlist);
 
-  c = add_com ("restore", class_vars, restore_command, _("\
+  c = add_com("restore", class_vars, restore_command, _("\
 Restore the contents of FILE to target memory.\n\
 Arguments are FILE OFFSET START END where all except FILE are optional.\n\
 OFFSET will be added to the base address of the file (default zero).\n\

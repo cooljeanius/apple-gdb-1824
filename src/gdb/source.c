@@ -49,29 +49,29 @@
 #include "readline/readline.h"
 
 #ifndef O_BINARY
-#define O_BINARY 0
-#endif
+# define O_BINARY 0
+#endif /* !O_BINARY */
 
 #define OPEN_MODE (O_RDONLY | O_BINARY)
 #define FDOPEN_MODE FOPEN_RB
 
 /* Prototypes for exported functions. */
 
-void _initialize_source (void);
+extern void _initialize_source(void);
 
 /* Prototypes for local functions. */
 
-static int get_filename_and_charpos (struct symtab *, char **);
+static int get_filename_and_charpos(struct symtab *, char **);
 
-static void reverse_search_command (char *, int);
+static void reverse_search_command(char *, int);
 
-static void forward_search_command (char *, int);
+static void forward_search_command(char *, int);
 
-static void line_info (char *, int);
+static void line_info(char *, int);
 
-static void source_info (char *, int);
+static void source_info(char *, int);
 
-static void show_directories (char *, int);
+static void show_directories(char *, int);
 
 /* Path of directories to search for source files.
    Same format as the PATH environment variable's value.  */
@@ -98,12 +98,12 @@ static char **pathname_substitutions_argv = NULL;
 
 int lines_to_list = 10;
 static void
-show_lines_to_list (struct ui_file *file, int from_tty,
-		    struct cmd_list_element *c, const char *value)
+show_lines_to_list(struct ui_file *file, int from_tty,
+		   struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("\
+  fprintf_filtered(file, _("\
 Number of source lines gdb will list by default is %s.\n"),
-		    value);
+                   value);
 }
 
 /* Line number of last line printed.  Default for various commands.
@@ -146,14 +146,17 @@ get_lines_to_list (void)
    NOTE: The returned sal pc and end fields are not valid. */
 
 struct symtab_and_line
-get_current_source_symtab_and_line (void)
+get_current_source_symtab_and_line(void)
 {
-  struct symtab_and_line cursal = { };
+  struct symtab_and_line cursal = {
+    (struct symtab *)NULL, (asection *)NULL, 0, 0UL, 0UL, NORMAL_LT_ENTRY,
+    (struct symtab_and_line *)NULL
+  };
 
   cursal.symtab = current_source_symtab;
   cursal.line = current_source_line;
-  cursal.pc = 0;
-  cursal.end = 0;
+  cursal.pc = 0UL;
+  cursal.end = 0UL;
 
   return cursal;
 }
@@ -183,9 +186,12 @@ set_default_source_symtab_and_line (void)
    NOTE: The returned sal pc and end fields are not valid. */
 
 struct symtab_and_line
-set_current_source_symtab_and_line (const struct symtab_and_line *sal)
+set_current_source_symtab_and_line(const struct symtab_and_line *sal)
 {
-  struct symtab_and_line cursal = { };
+  struct symtab_and_line cursal = {
+    (struct symtab *)NULL, (asection *)NULL, 0, 0UL, 0UL, NORMAL_LT_ENTRY,
+    (struct symtab_and_line *)NULL
+  };
 
   cursal.symtab = current_source_symtab;
   cursal.line = current_source_line;
@@ -835,15 +841,15 @@ source_full_path_of (char *filename, char **full_pathname)
 {
   int fd;
 
-  fd = openp (source_path, OPF_TRY_CWD_FIRST | OPF_SEARCH_IN_PATH, filename,
-	      O_RDONLY, 0, full_pathname);
+  fd = openp(source_path, OPF_TRY_CWD_FIRST | OPF_SEARCH_IN_PATH, filename,
+	     O_RDONLY, 0, full_pathname);
   if (fd < 0)
     {
       *full_pathname = NULL;
       return 0;
     }
 
-  close (fd);
+  close(fd);
   return 1;
 }
 
@@ -1042,17 +1048,15 @@ show_pathname_substitutions (struct ui_file *file, int from_tty,
    FULLNAME can be the last known absolute path to the file in question.
 
    On Success
-     A valid file descriptor is returned. ( the return value is positive )
+     A valid file descriptor is returned. (the return value is positive)
      FULLNAME is set to the absolute path to the file just opened.
 
    On Failure
-     A non valid file descriptor is returned. ( the return value is negitive )
+     A non valid file descriptor is returned. (the return value is negative)
      FULLNAME is set to NULL.  */
 int
-find_and_open_source (struct objfile *objfile,
-		      const char *filename,
-		      const char *dirname,
-		      char **fullname)
+find_and_open_source(struct objfile *objfile, const char *filename,
+		     const char *dirname, char **fullname)
 {
   char *path = source_path;
   const char *p;
@@ -1061,11 +1065,11 @@ find_and_open_source (struct objfile *objfile,
   /* Quick way out if we already know its full name */
   if (*fullname)
     {
-      result = open (*fullname, OPEN_MODE);
+      result = open(*fullname, OPEN_MODE);
       if (result >= 0)
 	return result;
-      /* Didn't work -- free old one, try again. */
-      xfree (*fullname);
+      /* Did NOT work -- free old one, try again: */
+      xfree(*fullname);
       *fullname = NULL;
     }
 
@@ -1676,9 +1680,9 @@ line_info (char *arg, int from_tty)
    SYM is an example of this.  It will convert from the value in the
    sal from character position to line number.  */
 
-void convert_sal (struct symtab_and_line *sal)
+void convert_sal(struct symtab_and_line *sal)
 {
-  struct symtab  *symtab = NULL;
+  struct symtab *symtab = NULL;
   struct linetable *linetable = NULL;
   unsigned int i;
   int fd;
@@ -1696,14 +1700,14 @@ void convert_sal (struct symtab_and_line *sal)
 
   if (symtab->line_charpos == 0)
     {
-      fd = open_source_file (symtab);
+      fd = open_source_file(symtab);
       if (fd < 0)
 	return;
-      find_source_lines (symtab, fd);
-      close (fd);
+      find_source_lines(symtab, fd);
+      close(fd);
     }
 
-  for (i = 1; i < symtab->nlines; i++)
+  for (i = 1U; i < (unsigned int)symtab->nlines; i++)
     {
       if ((symtab->line_charpos[i] >= (sal->line + 1))
 	  && (symtab->line_charpos[i - 1] <= (sal->line + 1)))
@@ -1992,3 +1996,5 @@ pathname-substitutions /path1/from /new/path1/to '/path2/with space/from' /path2
 			  &setlist, &showlist);
   /* APPLE LOCAL end pathname substitution */
 }
+
+/* EOF */

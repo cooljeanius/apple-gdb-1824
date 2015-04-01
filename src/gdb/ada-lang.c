@@ -1031,9 +1031,9 @@ ada_decode_symbol (const struct general_symbol_info *gsymbol)
 }
 
 char *
-ada_la_decode (const char *encoded, int options)
+ada_la_decode(const char *encoded, int options)
 {
-  return xstrdup (ada_decode (encoded));
+  return xstrdup(ada_decode(encoded));
 }
 
 /* Returns non-zero iff SYM_NAME matches NAME, ignoring any trailing
@@ -1044,20 +1044,20 @@ ada_la_decode (const char *encoded, int options)
    either argument is NULL.  */
 
 int
-ada_match_name (const char *sym_name, const char *name, int wild)
+ada_match_name(const char *sym_name, const char *name, int wild)
 {
-  if (sym_name == NULL || name == NULL)
+  if ((sym_name == NULL) || (name == NULL))
     return 0;
   else if (wild)
-    return wild_match (name, strlen (name), sym_name);
+    return wild_match(name, strlen(name), sym_name);
   else
     {
-      int len_name = strlen (name);
-      return (strncmp (sym_name, name, len_name) == 0
-              && is_name_suffix (sym_name + len_name))
-        || (strncmp (sym_name, "_ada_", 5) == 0
-            && strncmp (sym_name + 5, name, len_name) == 0
-            && is_name_suffix (sym_name + len_name + 5));
+      size_t len_name = strlen(name);
+      return (((strncmp(sym_name, name, len_name) == 0)
+               && is_name_suffix(sym_name + len_name))
+              || ((strncmp(sym_name, "_ada_", 5) == 0)
+                  && (strncmp(sym_name + 5, name, len_name) == 0)
+                  && is_name_suffix(sym_name + len_name + 5)));
     }
 }
 
@@ -1065,12 +1065,12 @@ ada_match_name (const char *sym_name, const char *name, int wild)
    suppressed in info listings.  */
 
 int
-ada_suppress_symbol_printing (struct symbol *sym)
+ada_suppress_symbol_printing(struct symbol *sym)
 {
-  if (SYMBOL_DOMAIN (sym) == STRUCT_DOMAIN)
+  if (SYMBOL_DOMAIN(sym) == STRUCT_DOMAIN)
     return 1;
   else
-    return is_suppressed_name (SYMBOL_LINKAGE_NAME (sym));
+    return is_suppressed_name(SYMBOL_LINKAGE_NAME(sym));
 }
 
 
@@ -2077,8 +2077,8 @@ ada_value_subscript (struct value *arr, int arity, struct value **ind)
    IND.  Does not read the entire array into memory.  */
 
 struct value *
-ada_value_ptr_subscript (struct value *arr, struct type *type, int arity,
-                         struct value **ind)
+ada_value_ptr_subscript(struct value *arr, struct type *type, int arity,
+                        struct value **ind)
 {
   int k;
 
@@ -2246,20 +2246,20 @@ ada_index_type (struct type *type, int n)
    run-time quantities other than discriminants.  */
 
 LONGEST
-ada_array_bound_from_type (struct type * arr_type, int n, int which,
-                           struct type ** typep)
+ada_array_bound_from_type(struct type *arr_type, int n, int which,
+                          struct type **typep)
 {
   struct type *type;
   struct type *index_type_desc;
 
-  if (ada_is_packed_array_type (arr_type))
-    arr_type = decode_packed_array_type (arr_type);
+  if (ada_is_packed_array_type(arr_type))
+    arr_type = decode_packed_array_type(arr_type);
 
-  if (arr_type == NULL || !ada_is_simple_array_type (arr_type))
+  if ((arr_type == NULL) || !ada_is_simple_array_type(arr_type))
     {
       if (typep != NULL)
         *typep = builtin_type_int;
-      return (LONGEST) - which;
+      return (LONGEST)-which;
     }
 
   if (TYPE_CODE (arr_type) == TYPE_CODE_PTR)
@@ -2333,28 +2333,28 @@ ada_array_bound (struct value *arr, int n, int which)
    clauses at the moment.  */
 
 struct value *
-ada_array_length (struct value *arr, int n)
+ada_array_length(struct value *arr, int n)
 {
-  struct type *arr_type = ada_check_typedef (value_type (arr));
+  struct type *arr_type = ada_check_typedef(value_type(arr));
 
-  if (ada_is_packed_array_type (arr_type))
-    return ada_array_length (decode_packed_array (arr), n);
+  if (ada_is_packed_array_type(arr_type))
+    return ada_array_length(decode_packed_array(arr), n);
 
-  if (ada_is_simple_array_type (arr_type))
+  if (ada_is_simple_array_type(arr_type))
     {
       struct type *type;
       LONGEST v =
-        ada_array_bound_from_type (arr_type, n, 1, &type) -
-        ada_array_bound_from_type (arr_type, n, 0, NULL) + 1;
-      return value_from_longest (type, v);
+        (ada_array_bound_from_type(arr_type, n, 1, &type)
+         - ada_array_bound_from_type(arr_type, n, 0, NULL) + 1L);
+      return value_from_longest(type, v);
     }
   else
     return
-      value_from_longest (builtin_type_int,
-                          value_as_long (desc_one_bound (desc_bounds (arr),
-                                                         n, 1))
-                          - value_as_long (desc_one_bound (desc_bounds (arr),
-                                                           n, 0)) + 1);
+      value_from_longest(builtin_type_int,
+                         (value_as_long(desc_one_bound(desc_bounds(arr),
+                                                       n, 1))
+                          - value_as_long(desc_one_bound(desc_bounds(arr),
+                                                         n, 0)) + 1L));
 }
 
 /* An empty array whose type is that of ARR_TYPE (an array type),
@@ -6219,7 +6219,7 @@ ada_template_to_fixed_record_type_1 (struct type *type,
     }
 
   value_free_to_mark(mark);
-  if (TYPE_LENGTH(rtype) > varsize_limit)
+  if ((unsigned int)TYPE_LENGTH(rtype) > varsize_limit)
     error(_("record type with dynamic size is larger than varsize-limit"));
   return rtype;
 }
@@ -6498,7 +6498,8 @@ to_fixed_array_type(struct type *type0, struct value *dval,
           result = create_array_type(alloc_type(TYPE_OBJFILE(type0)),
                                      result, range_type);
         }
-      if (!ignore_too_big && (TYPE_LENGTH(result) > varsize_limit))
+      if (!ignore_too_big
+          && ((unsigned int)TYPE_LENGTH(result) > varsize_limit))
         error(_("array type with dynamic size is larger than varsize-limit"));
     }
 
@@ -6669,14 +6670,14 @@ ada_to_fixed_value (struct value *val)
    types, therefore, the type of the result is likely to be inaccurate.  */
 
 struct value *
-ada_to_static_fixed_value (struct value *val)
+ada_to_static_fixed_value(struct value *val)
 {
   struct type *type =
-    to_static_fixed_type (static_unwrap_type (value_type (val)));
-  if (type == value_type (val))
+    to_static_fixed_type(static_unwrap_type(value_type(val)));
+  if (type == value_type(val))
     return val;
   else
-    return coerce_unspec_val_to_type (val, type);
+    return coerce_unspec_val_to_type(val, type);
 }
 
 
@@ -7145,7 +7146,7 @@ struct value *
 ada_evaluate_subexp(struct type *expect_type, struct expression *exp,
                     int *pos, enum noside noside)
 {
-  enum exp_opcode op;
+  int opnum;
   int tem;
   int pc;
   struct value *arg1 = NULL, *arg2 = NULL, *arg3;
@@ -7155,733 +7156,770 @@ ada_evaluate_subexp(struct type *expect_type, struct expression *exp,
 
   pc = *pos;
   *pos += 1;
-  op = exp->elts[pc].opcode;
+  opnum = exp->elts[pc].opcode;
 
-  switch (op)
+  /* need two separate switch statements because values could fall into
+   * one of two separate enums: */
+  if (opnum <= OP_EXTENDED0)
     {
-    default:
-      *pos -= 1;
-      return
-        unwrap_value (evaluate_subexp_standard
-                      (expect_type, exp, pos, noside));
-
-    case OP_STRING:
-      {
-        struct value *result;
-        *pos -= 1;
-        result = evaluate_subexp_standard (expect_type, exp, pos, noside);
-        /* The result type will have code OP_STRING, bashed there from
-           OP_ARRAY.  Bash it back.  */
-        if (TYPE_CODE (value_type (result)) == TYPE_CODE_STRING)
-          TYPE_CODE (value_type (result)) = TYPE_CODE_ARRAY;
-        return result;
-      }
-
-    case UNOP_CAST:
-      (*pos) += 2;
-      type = exp->elts[pc + 1].type;
-      arg1 = evaluate_subexp (type, exp, pos, noside);
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-      if (type != ada_check_typedef (value_type (arg1)))
+      enum exp_opcode op = (enum exp_opcode)opnum;
+      switch (op)
         {
-          if (ada_is_fixed_point_type (type))
-            arg1 = cast_to_fixed (type, arg1);
-          else if (ada_is_fixed_point_type (value_type (arg1)))
-            arg1 = value_cast (type, cast_from_fixed_to_double (arg1));
-          else if (VALUE_LVAL (arg1) == lval_memory)
+        default:
+          *pos -= 1;
+          return
+            unwrap_value(evaluate_subexp_standard(expect_type, exp, pos,
+                                                  noside));
+
+        case OP_STRING:
+        {
+          struct value *result;
+          *pos -= 1;
+          result = evaluate_subexp_standard(expect_type, exp, pos, noside);
+          /* The result type will have code OP_STRING, bashed there from
+           * OP_ARRAY.  Bash it back: */
+          if (TYPE_CODE(value_type(result)) == TYPE_CODE_STRING)
+            TYPE_CODE(value_type(result)) = TYPE_CODE_ARRAY;
+          return result;
+        }
+
+        case UNOP_CAST:
+          (*pos) += 2;
+          type = exp->elts[pc + 1].type;
+          arg1 = evaluate_subexp(type, exp, pos, noside);
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+          if (type != ada_check_typedef(value_type(arg1)))
             {
-              /* This is in case of the really obscure (and undocumented,
-                 but apparently expected) case of (Foo) Bar.all, where Bar
-                 is an integer constant and Foo is a dynamic-sized type.
-                 If we don't do this, ARG1 will simply be relabeled with
-                 TYPE.  */
-              if (noside == EVAL_AVOID_SIDE_EFFECTS)
-                return value_zero (to_static_fixed_type (type), not_lval);
-              arg1 =
-                ada_to_fixed_value_create
-                (type, VALUE_ADDRESS (arg1) + value_offset (arg1), 0);
+              if (ada_is_fixed_point_type(type))
+                arg1 = cast_to_fixed(type, arg1);
+              else if (ada_is_fixed_point_type(value_type(arg1)))
+                arg1 = value_cast(type, cast_from_fixed_to_double(arg1));
+              else if (VALUE_LVAL(arg1) == lval_memory)
+                {
+                  /* This is in case of the very obscure (and undocumented,
+                   * but apparently expected) case of (Foo) Bar.all, where
+                   * Bar is an integer constant and Foo is a dynamic-sized
+                   * type.  If we do NOT do this, then ARG1 will simply be
+                   * relabeled with TYPE: */
+                  if (noside == EVAL_AVOID_SIDE_EFFECTS)
+                    return value_zero(to_static_fixed_type(type), not_lval);
+                  arg1 =
+                    ada_to_fixed_value_create(type,
+                                              (VALUE_ADDRESS(arg1) + value_offset(arg1)),
+                                              (struct value *)0);
+                }
+              else
+                arg1 = value_cast(type, arg1);
+            }
+          return arg1;
+
+        case BINOP_ASSIGN:
+          arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          arg2 = evaluate_subexp(value_type(arg1), exp, pos, noside);
+          if (noside == EVAL_SKIP || noside == EVAL_AVOID_SIDE_EFFECTS)
+            return arg1;
+          if (ada_is_fixed_point_type(value_type(arg1)))
+            arg2 = cast_to_fixed(value_type(arg1), arg2);
+          else if (ada_is_fixed_point_type(value_type(arg2)))
+            error(_("Fixed-point values must be assigned to fixed-point variables"));
+          else
+            arg2 = coerce_for_assign(value_type(arg1), arg2);
+          return ada_value_assign(arg1, arg2);
+
+        case BINOP_ADD:
+          arg1 = evaluate_subexp_with_coercion(exp, pos, noside);
+          arg2 = evaluate_subexp_with_coercion(exp, pos, noside);
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+          if ((ada_is_fixed_point_type(value_type(arg1))
+               || ada_is_fixed_point_type(value_type(arg2)))
+              && (value_type(arg1) != value_type(arg2)))
+            error(_("Operands of fixed-point addition must have the same type"));
+          return value_cast(value_type(arg1), value_add(arg1, arg2));
+
+        case BINOP_SUB:
+          arg1 = evaluate_subexp_with_coercion(exp, pos, noside);
+          arg2 = evaluate_subexp_with_coercion(exp, pos, noside);
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+          if ((ada_is_fixed_point_type(value_type(arg1))
+               || ada_is_fixed_point_type(value_type(arg2)))
+              && (value_type(arg1) != value_type(arg2)))
+            error(_("Operands of fixed-point subtraction must have the same type"));
+          return value_cast(value_type(arg1), value_sub(arg1, arg2));
+
+        case BINOP_MUL:
+        case BINOP_DIV:
+          arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+          else if ((noside == EVAL_AVOID_SIDE_EFFECTS)
+                   && ((op == BINOP_DIV) || (op == BINOP_REM)
+                       || (op == BINOP_MOD)))
+            return value_zero(value_type(arg1), not_lval);
+          else
+            {
+              if (ada_is_fixed_point_type(value_type(arg1)))
+                arg1 = cast_from_fixed_to_double(arg1);
+              if (ada_is_fixed_point_type(value_type(arg2)))
+                arg2 = cast_from_fixed_to_double(arg2);
+              return ada_value_binop(arg1, arg2, op);
+            }
+
+        case BINOP_REM:
+        case BINOP_MOD:
+          arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+          else if ((noside == EVAL_AVOID_SIDE_EFFECTS)
+                   && ((op == BINOP_DIV) || (op == BINOP_REM)
+                       || (op == BINOP_MOD)))
+            return value_zero(value_type(arg1), not_lval);
+          else
+            return ada_value_binop(arg1, arg2, op);
+
+        case BINOP_EQUAL:
+        case BINOP_NOTEQUAL:
+          arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          arg2 = evaluate_subexp(value_type(arg1), exp, pos, noside);
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+          if (noside == EVAL_AVOID_SIDE_EFFECTS)
+            tem = 0;
+          else
+            tem = ada_value_equal(arg1, arg2);
+          if (op == BINOP_NOTEQUAL)
+            tem = !tem;
+          return value_from_longest(LA_BOOL_TYPE, (LONGEST)tem);
+
+        case UNOP_NEG:
+          arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+          else if (ada_is_fixed_point_type(value_type(arg1)))
+            return value_cast(value_type(arg1), value_neg(arg1));
+          else
+            return value_neg(arg1);
+
+        case OP_VAR_VALUE:
+          *pos -= 1;
+          if (noside == EVAL_SKIP)
+            {
+              *pos += 4;
+              goto nosideret;
+            }
+          else if (SYMBOL_DOMAIN(exp->elts[pc + 2].symbol) == UNDEF_DOMAIN)
+            {
+              /* Only encountered when an unresolved symbol occurs in a
+               * context other than a function call, in which case, it is
+               * illegal.  */
+              error(_("Unexpected unresolved symbol, %s, during evaluation"),
+                    SYMBOL_PRINT_NAME(exp->elts[pc + 2].symbol));
+            }
+          else if (noside == EVAL_AVOID_SIDE_EFFECTS)
+            {
+              *pos += 4;
+              return
+                value_zero(to_static_fixed_type(static_unwrap_type(SYMBOL_TYPE(exp->elts[pc + 2].symbol))),
+                           not_lval);
             }
           else
-            arg1 = value_cast (type, arg1);
-        }
-      return arg1;
+            {
+              arg1 =
+                unwrap_value(evaluate_subexp_standard(expect_type, exp,
+                                                      pos, noside));
+              return ada_to_fixed_value(arg1);
+            }
 
-    case UNOP_QUAL:
-      (*pos) += 2;
-      type = exp->elts[pc + 1].type;
-      return ada_evaluate_subexp (type, exp, pos, noside);
+        case OP_FUNCALL:
+          (*pos) += 2;
 
-    case BINOP_ASSIGN:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (value_type (arg1), exp, pos, noside);
-      if (noside == EVAL_SKIP || noside == EVAL_AVOID_SIDE_EFFECTS)
-        return arg1;
-      if (ada_is_fixed_point_type (value_type (arg1)))
-        arg2 = cast_to_fixed (value_type (arg1), arg2);
-      else if (ada_is_fixed_point_type (value_type (arg2)))
-        error
-          (_("Fixed-point values must be assigned to fixed-point variables"));
-      else
-        arg2 = coerce_for_assign (value_type (arg1), arg2);
-      return ada_value_assign (arg1, arg2);
+          /* Allocate arg vector, including space for the function to be
+           * called in argvec[0] and a terminating NULL: */
+          nargs = longest_to_int(exp->elts[pc + 1].longconst);
+          argvec =
+            (struct value **)alloca(sizeof(struct value *) * (nargs + 2));
 
-    case BINOP_ADD:
-      arg1 = evaluate_subexp_with_coercion (exp, pos, noside);
-      arg2 = evaluate_subexp_with_coercion (exp, pos, noside);
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-      if ((ada_is_fixed_point_type (value_type (arg1))
-           || ada_is_fixed_point_type (value_type (arg2)))
-          && value_type (arg1) != value_type (arg2))
-        error (_("Operands of fixed-point addition must have the same type"));
-      return value_cast (value_type (arg1), value_add (arg1, arg2));
+          if ((exp->elts[*pos].opcode == OP_VAR_VALUE)
+              && (SYMBOL_DOMAIN(exp->elts[pc + 5].symbol) == UNDEF_DOMAIN))
+            error(_("Unexpected unresolved symbol, %s, during evaluation"),
+                  SYMBOL_PRINT_NAME(exp->elts[pc + 5].symbol));
+          else
+            {
+              for (tem = 0; tem <= nargs; tem += 1)
+                argvec[tem] = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+              argvec[tem] = 0;
 
-    case BINOP_SUB:
-      arg1 = evaluate_subexp_with_coercion (exp, pos, noside);
-      arg2 = evaluate_subexp_with_coercion (exp, pos, noside);
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-      if ((ada_is_fixed_point_type (value_type (arg1))
-           || ada_is_fixed_point_type (value_type (arg2)))
-          && value_type (arg1) != value_type (arg2))
-        error (_("Operands of fixed-point subtraction must have the same type"));
-      return value_cast (value_type (arg1), value_sub (arg1, arg2));
+              if (noside == EVAL_SKIP)
+                goto nosideret;
+            }
 
-    case BINOP_MUL:
-    case BINOP_DIV:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-      else if (noside == EVAL_AVOID_SIDE_EFFECTS
-               && (op == BINOP_DIV || op == BINOP_REM || op == BINOP_MOD))
-        return value_zero (value_type (arg1), not_lval);
-      else
+          if (ada_is_packed_array_type(desc_base_type(value_type(argvec[0]))))
+            argvec[0] = ada_coerce_to_simple_array(argvec[0]);
+          else if ((TYPE_CODE(value_type(argvec[0])) == TYPE_CODE_REF)
+                   || ((TYPE_CODE(value_type(argvec[0])) == TYPE_CODE_ARRAY)
+                       && (VALUE_LVAL(argvec[0]) == lval_memory)))
+            argvec[0] = value_addr(argvec[0]);
+
+          type = ada_check_typedef(value_type(argvec[0]));
+          if (TYPE_CODE(type) == TYPE_CODE_PTR)
+            {
+              switch (TYPE_CODE(ada_check_typedef(TYPE_TARGET_TYPE(type))))
+                {
+                case TYPE_CODE_FUNC:
+                  type = ada_check_typedef(TYPE_TARGET_TYPE(type));
+                  break;
+                case TYPE_CODE_ARRAY:
+                  break;
+                case TYPE_CODE_STRUCT:
+                  if (noside != EVAL_AVOID_SIDE_EFFECTS)
+                    argvec[0] = ada_value_ind(argvec[0]);
+                  type = ada_check_typedef(TYPE_TARGET_TYPE(type));
+                  break;
+                default:
+                  error(_("cannot subscript or call something of type `%s'"),
+                        ada_type_name(value_type(argvec[0])));
+                  break;
+                }
+            }
+
+          switch (TYPE_CODE(type))
+            {
+            case TYPE_CODE_FUNC:
+              if (noside == EVAL_AVOID_SIDE_EFFECTS)
+                return allocate_value(TYPE_TARGET_TYPE(type));
+              return call_function_by_hand(argvec[0], nargs, (argvec + 1));
+            case TYPE_CODE_STRUCT:
+            {
+              int arity;
+
+              arity = ada_array_arity(type);
+              type = ada_array_element_type(type, nargs);
+              if (type == NULL)
+                error(_("cannot subscript or call a record"));
+              if (arity != nargs)
+                error(_("wrong number of subscripts; expecting %d"),
+                      arity);
+              if (noside == EVAL_AVOID_SIDE_EFFECTS)
+                return allocate_value(ada_aligned_type(type));
+              return
+                unwrap_value(ada_value_subscript(argvec[0], nargs,
+                                                 (argvec + 1)));
+            }
+            case TYPE_CODE_ARRAY:
+              if (noside == EVAL_AVOID_SIDE_EFFECTS)
+                {
+                  type = ada_array_element_type(type, nargs);
+                  if (type == NULL)
+                    error(_("element type of array unknown"));
+                  else
+                    return allocate_value(ada_aligned_type(type));
+                }
+              return
+                unwrap_value(ada_value_subscript(ada_coerce_to_simple_array(argvec[0]),
+                                                 nargs, (argvec + 1)));
+            case TYPE_CODE_PTR:     /* Pointer to array */
+              type = to_fixed_array_type(TYPE_TARGET_TYPE(type), NULL, 1);
+              if (noside == EVAL_AVOID_SIDE_EFFECTS)
+                {
+                  type = ada_array_element_type(type, nargs);
+                  if (type == NULL)
+                    error(_("element type of array unknown"));
+                  else
+                    return allocate_value(ada_aligned_type(type));
+                }
+              return
+                unwrap_value(ada_value_ptr_subscript(argvec[0], type,
+                                                     nargs, (argvec + 1)));
+
+            default:
+              error(_("Attempt to index or call something other than an \
+                      array or function"));
+            }
+
+        case TERNOP_SLICE:
         {
-          if (ada_is_fixed_point_type (value_type (arg1)))
-            arg1 = cast_from_fixed_to_double (arg1);
-          if (ada_is_fixed_point_type (value_type (arg2)))
-            arg2 = cast_from_fixed_to_double (arg2);
-          return ada_value_binop (arg1, arg2, op);
-        }
-
-    case BINOP_REM:
-    case BINOP_MOD:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-      else if (noside == EVAL_AVOID_SIDE_EFFECTS
-               && (op == BINOP_DIV || op == BINOP_REM || op == BINOP_MOD))
-        return value_zero (value_type (arg1), not_lval);
-      else
-        return ada_value_binop (arg1, arg2, op);
-
-    case BINOP_EQUAL:
-    case BINOP_NOTEQUAL:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (value_type (arg1), exp, pos, noside);
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-      if (noside == EVAL_AVOID_SIDE_EFFECTS)
-        tem = 0;
-      else
-        tem = ada_value_equal (arg1, arg2);
-      if (op == BINOP_NOTEQUAL)
-        tem = !tem;
-      return value_from_longest (LA_BOOL_TYPE, (LONGEST) tem);
-
-    case UNOP_NEG:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-      else if (ada_is_fixed_point_type (value_type (arg1)))
-        return value_cast (value_type (arg1), value_neg (arg1));
-      else
-        return value_neg (arg1);
-
-    case OP_VAR_VALUE:
-      *pos -= 1;
-      if (noside == EVAL_SKIP)
-        {
-          *pos += 4;
-          goto nosideret;
-        }
-      else if (SYMBOL_DOMAIN (exp->elts[pc + 2].symbol) == UNDEF_DOMAIN)
-        /* Only encountered when an unresolved symbol occurs in a
-           context other than a function call, in which case, it is
-           illegal.  */
-        error (_("Unexpected unresolved symbol, %s, during evaluation"),
-               SYMBOL_PRINT_NAME (exp->elts[pc + 2].symbol));
-      else if (noside == EVAL_AVOID_SIDE_EFFECTS)
-        {
-          *pos += 4;
-          return value_zero
-            (to_static_fixed_type
-             (static_unwrap_type (SYMBOL_TYPE (exp->elts[pc + 2].symbol))),
-             not_lval);
-        }
-      else
-        {
-          arg1 =
-            unwrap_value (evaluate_subexp_standard
-                          (expect_type, exp, pos, noside));
-          return ada_to_fixed_value (arg1);
-        }
-
-    case OP_FUNCALL:
-      (*pos) += 2;
-
-      /* Allocate arg vector, including space for the function to be
-         called in argvec[0] and a terminating NULL.  */
-      nargs = longest_to_int (exp->elts[pc + 1].longconst);
-      argvec =
-        (struct value **) alloca (sizeof (struct value *) * (nargs + 2));
-
-      if (exp->elts[*pos].opcode == OP_VAR_VALUE
-          && SYMBOL_DOMAIN (exp->elts[pc + 5].symbol) == UNDEF_DOMAIN)
-        error (_("Unexpected unresolved symbol, %s, during evaluation"),
-               SYMBOL_PRINT_NAME (exp->elts[pc + 5].symbol));
-      else
-        {
-          for (tem = 0; tem <= nargs; tem += 1)
-            argvec[tem] = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-          argvec[tem] = 0;
+          struct value *array = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          struct value *low_bound_val =
+            evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          struct value *high_bound_val =
+            evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          LONGEST low_bound;
+          LONGEST high_bound;
+          low_bound_val = coerce_ref(low_bound_val);
+          high_bound_val = coerce_ref(high_bound_val);
+          low_bound = pos_atr(low_bound_val);
+          high_bound = pos_atr(high_bound_val);
 
           if (noside == EVAL_SKIP)
             goto nosideret;
-        }
 
-      if (ada_is_packed_array_type (desc_base_type (value_type (argvec[0]))))
-        argvec[0] = ada_coerce_to_simple_array (argvec[0]);
-      else if (TYPE_CODE (value_type (argvec[0])) == TYPE_CODE_REF
-               || (TYPE_CODE (value_type (argvec[0])) == TYPE_CODE_ARRAY
-                   && VALUE_LVAL (argvec[0]) == lval_memory))
-        argvec[0] = value_addr (argvec[0]);
+          /* If this is a reference to an aligner type, then remove all
+           * the aligners.  */
+          if ((TYPE_CODE(value_type(array)) == TYPE_CODE_REF)
+              && ada_is_aligner_type(TYPE_TARGET_TYPE(value_type(array))))
+            TYPE_TARGET_TYPE(value_type(array)) =
+              ada_aligned_type(TYPE_TARGET_TYPE(value_type(array)));
 
-      type = ada_check_typedef (value_type (argvec[0]));
-      if (TYPE_CODE (type) == TYPE_CODE_PTR)
-        {
-          switch (TYPE_CODE (ada_check_typedef (TYPE_TARGET_TYPE (type))))
-            {
-            case TYPE_CODE_FUNC:
-              type = ada_check_typedef (TYPE_TARGET_TYPE (type));
-              break;
-            case TYPE_CODE_ARRAY:
-              break;
-            case TYPE_CODE_STRUCT:
-              if (noside != EVAL_AVOID_SIDE_EFFECTS)
-                argvec[0] = ada_value_ind (argvec[0]);
-              type = ada_check_typedef (TYPE_TARGET_TYPE (type));
-              break;
-            default:
-              error (_("cannot subscript or call something of type `%s'"),
-                     ada_type_name (value_type (argvec[0])));
-              break;
-            }
-        }
+          if (ada_is_packed_array_type(value_type(array)))
+            error(_("cannot slice a packed array"));
 
-      switch (TYPE_CODE (type))
-        {
-        case TYPE_CODE_FUNC:
-          if (noside == EVAL_AVOID_SIDE_EFFECTS)
-            return allocate_value (TYPE_TARGET_TYPE (type));
-          return call_function_by_hand (argvec[0], nargs, argvec + 1);
-        case TYPE_CODE_STRUCT:
-          {
-            int arity;
+          /* If this is a reference to an array or an array lvalue,
+           * then convert to a pointer: */
+          if ((TYPE_CODE(value_type(array)) == TYPE_CODE_REF)
+              || ((TYPE_CODE(value_type(array)) == TYPE_CODE_ARRAY)
+                  && (VALUE_LVAL(array) == lval_memory)))
+            array = value_addr(array);
 
-            arity = ada_array_arity (type);
-            type = ada_array_element_type (type, nargs);
-            if (type == NULL)
-              error (_("cannot subscript or call a record"));
-            if (arity != nargs)
-              error (_("wrong number of subscripts; expecting %d"), arity);
-            if (noside == EVAL_AVOID_SIDE_EFFECTS)
-              return allocate_value (ada_aligned_type (type));
-            return
-              unwrap_value (ada_value_subscript
-                            (argvec[0], nargs, argvec + 1));
-          }
-        case TYPE_CODE_ARRAY:
-          if (noside == EVAL_AVOID_SIDE_EFFECTS)
-            {
-              type = ada_array_element_type (type, nargs);
-              if (type == NULL)
-                error (_("element type of array unknown"));
-              else
-                return allocate_value (ada_aligned_type (type));
-            }
-          return
-            unwrap_value (ada_value_subscript
-                          (ada_coerce_to_simple_array (argvec[0]),
-                           nargs, argvec + 1));
-        case TYPE_CODE_PTR:     /* Pointer to array */
-          type = to_fixed_array_type (TYPE_TARGET_TYPE (type), NULL, 1);
-          if (noside == EVAL_AVOID_SIDE_EFFECTS)
-            {
-              type = ada_array_element_type (type, nargs);
-              if (type == NULL)
-                error (_("element type of array unknown"));
-              else
-                return allocate_value (ada_aligned_type (type));
-            }
-          return
-            unwrap_value (ada_value_ptr_subscript (argvec[0], type,
-                                                   nargs, argvec + 1));
+          if ((noside == EVAL_AVOID_SIDE_EFFECTS)
+              && ada_is_array_descriptor_type(ada_check_typedef(value_type(array))))
+            return empty_array(ada_type_of_array(array, 0), low_bound);
 
-        default:
-          error (_("Attempt to index or call something other than an \
-array or function"));
-        }
+          array = ada_coerce_to_simple_array_ptr(array);
 
-    case TERNOP_SLICE:
-      {
-        struct value *array = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-        struct value *low_bound_val =
-          evaluate_subexp (NULL_TYPE, exp, pos, noside);
-        struct value *high_bound_val =
-          evaluate_subexp (NULL_TYPE, exp, pos, noside);
-        LONGEST low_bound;
-        LONGEST high_bound;
-        low_bound_val = coerce_ref (low_bound_val);
-        high_bound_val = coerce_ref (high_bound_val);
-        low_bound = pos_atr (low_bound_val);
-        high_bound = pos_atr (high_bound_val);
-
-        if (noside == EVAL_SKIP)
-          goto nosideret;
-
-        /* If this is a reference to an aligner type, then remove all
-           the aligners.  */
-        if (TYPE_CODE (value_type (array)) == TYPE_CODE_REF
-            && ada_is_aligner_type (TYPE_TARGET_TYPE (value_type (array))))
-          TYPE_TARGET_TYPE (value_type (array)) =
-            ada_aligned_type (TYPE_TARGET_TYPE (value_type (array)));
-
-        if (ada_is_packed_array_type (value_type (array)))
-          error (_("cannot slice a packed array"));
-
-        /* If this is a reference to an array or an array lvalue,
-           convert to a pointer.  */
-        if (TYPE_CODE (value_type (array)) == TYPE_CODE_REF
-            || (TYPE_CODE (value_type (array)) == TYPE_CODE_ARRAY
-                && VALUE_LVAL (array) == lval_memory))
-          array = value_addr (array);
-
-        if (noside == EVAL_AVOID_SIDE_EFFECTS
-            && ada_is_array_descriptor_type (ada_check_typedef
-                                             (value_type (array))))
-          return empty_array (ada_type_of_array (array, 0), low_bound);
-
-        array = ada_coerce_to_simple_array_ptr (array);
-
-        /* If we have more than one level of pointer indirection,
-           dereference the value until we get only one level.  */
-        while (TYPE_CODE (value_type (array)) == TYPE_CODE_PTR
-               && (TYPE_CODE (TYPE_TARGET_TYPE (value_type (array)))
+          /* If we have more than one level of pointer indirection,
+           * then dereference the value until we get only one level: */
+          while ((TYPE_CODE(value_type(array)) == TYPE_CODE_PTR)
+                 && (TYPE_CODE(TYPE_TARGET_TYPE(value_type(array)))
                      == TYPE_CODE_PTR))
-          array = value_ind (array);
+            array = value_ind(array);
 
-        /* Make sure we really do have an array type before going further,
-           to avoid a SEGV when trying to get the index type or the target
-           type later down the road if the debug info generated by
-           the compiler is incorrect or incomplete.  */
-        if (!ada_is_simple_array_type (value_type (array)))
-          error (_("cannot take slice of non-array"));
+          /* Make sure we really do have an array type before we go any
+           * further, to avoid a SEGV when trying to get the index type or
+           * the target type later down the road if the debug info
+           * generated by the compiler is incorrect or incomplete: */
+          if (!ada_is_simple_array_type(value_type(array)))
+            error(_("cannot take slice of non-array"));
 
-        if (TYPE_CODE (value_type (array)) == TYPE_CODE_PTR)
+          if (TYPE_CODE(value_type(array)) == TYPE_CODE_PTR)
+            {
+              if ((high_bound < low_bound) || (noside == EVAL_AVOID_SIDE_EFFECTS))
+                return empty_array(TYPE_TARGET_TYPE(value_type(array)),
+                                   low_bound);
+              else
+                {
+                  struct type *arr_type0 =
+                    to_fixed_array_type(TYPE_TARGET_TYPE(value_type(array)),
+                                        NULL, 1);
+                  return ada_value_slice_ptr(array, arr_type0,
+                                             (int)low_bound,
+                                             (int)high_bound);
+                }
+            }
+          else if (noside == EVAL_AVOID_SIDE_EFFECTS)
+            return array;
+          else if (high_bound < low_bound)
+            return empty_array(value_type(array), low_bound);
+          else
+            return ada_value_slice(array, (int)low_bound, (int)high_bound);
+        }
+
+        case BINOP_IN_BOUNDS:
+          (*pos) += 2;
+          arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+
+          if (noside == EVAL_AVOID_SIDE_EFFECTS)
+            return value_zero(builtin_type_int, not_lval);
+
+          tem = longest_to_int(exp->elts[pc + 1].longconst);
+
+          if ((tem < 1) || (tem > ada_array_arity(value_type(arg2))))
+            error(_("invalid dimension number to 'range"));
+
+          arg3 = ada_array_bound(arg2, tem, 1);
+          arg2 = ada_array_bound(arg2, tem, 0);
+
+          return
+            value_from_longest(builtin_type_int,
+                               ((value_less(arg1, arg3)
+                                 || value_equal(arg1, arg3))
+                                && (value_less(arg2, arg1)
+                                    || value_equal(arg2, arg1))));
+
+        case BINOP_EXP:
+          arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+          else if (noside == EVAL_AVOID_SIDE_EFFECTS)
+            return value_zero(value_type(arg1), not_lval);
+          else
+            return value_binop(arg1, arg2, op);
+
+        case UNOP_PLUS:
+          arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+          else
+            return arg1;
+
+        case UNOP_ABS:
+          arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+          if (value_less(arg1, value_zero(value_type(arg1), not_lval)))
+            return value_neg(arg1);
+          else
+            return arg1;
+
+        case UNOP_IND:
+          if (expect_type && (TYPE_CODE(expect_type) == TYPE_CODE_PTR))
+            expect_type = TYPE_TARGET_TYPE(ada_check_typedef(expect_type));
+          arg1 = evaluate_subexp(expect_type, exp, pos, noside);
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+          type = ada_check_typedef(value_type(arg1));
+          if (noside == EVAL_AVOID_SIDE_EFFECTS)
+            {
+              if (ada_is_array_descriptor_type (type))
+                {
+                  /* GDB allows dereferencing GNAT array descriptors: */
+                  struct type *arrType = ada_type_of_array(arg1, 0);
+                  if (arrType == NULL)
+                    error(_("Attempt to dereference null array pointer."));
+                  return value_at_lazy(arrType, 0);
+                }
+              else if ((TYPE_CODE(type) == TYPE_CODE_PTR)
+                       || (TYPE_CODE(type) == TYPE_CODE_REF)
+                       /* In C you can dereference an array to get the 1st elt: */
+                       || (TYPE_CODE(type) == TYPE_CODE_ARRAY))
+                {
+                  type =
+                    to_static_fixed_type(ada_aligned_type(ada_check_typedef(TYPE_TARGET_TYPE(type))));
+                  check_size(type);
+                  return value_zero(type, lval_memory);
+                }
+              else if (TYPE_CODE(type) == TYPE_CODE_INT)
+                {
+                  /* GDB allows dereferencing an int: */
+                  return value_zero(builtin_type_int, lval_memory);
+                }
+              else
+                error(_("Attempt to take contents of a non-pointer value."));
+            }
+          arg1 = ada_coerce_ref(arg1);     /* FIXME: What is this for?? */
+          type = ada_check_typedef(value_type(arg1));
+
+          if (ada_is_array_descriptor_type(type))
+            {
+              /* GDB allows dereferencing GNAT array descriptors: */
+              return ada_coerce_to_simple_array(arg1);
+            }
+          else
+            return ada_value_ind(arg1);
+
+        case STRUCTOP_STRUCT:
+          tem = longest_to_int(exp->elts[pc + 1].longconst);
+          (*pos) += (3 + BYTES_TO_EXP_ELEM(tem + 1));
+          arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+          if (noside == EVAL_AVOID_SIDE_EFFECTS)
+            {
+              struct type *type1 = value_type(arg1);
+              if (ada_is_tagged_type(type1, 1))
+                {
+                  type = ada_lookup_struct_elt_type(type1,
+                                                    &exp->elts[pc + 2].string,
+                                                    1, 1, NULL);
+                  if (type == NULL)
+                    {
+                      /* In this case, we assume that the field COULD exist
+                       * in some extension of the type.  Return an object
+                       * of "type" void, which will match any formal
+                       * (see ada_type_match). */
+                      return value_zero (builtin_type_void, lval_memory);
+                    }
+                }
+              else
+                type =
+                  ada_lookup_struct_elt_type(type1,
+                                             &exp->elts[pc + 2].string,
+                                             1, 0, NULL);
+
+              return value_zero(ada_aligned_type(type), lval_memory);
+            }
+          else
+            return
+              ada_to_fixed_value(unwrap_value(ada_value_struct_elt(arg1,
+                                                                   &exp->elts[pc + 2].string,
+                                                                   "record")));
+        case OP_TYPE:
+          /* The value is not supposed to be used.  This is here to make it
+           * easier to accommodate expressions that contain types: */
+          (*pos) += 2;
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+          else if (noside == EVAL_AVOID_SIDE_EFFECTS)
+            return allocate_value(builtin_type_void);
+          else
+            error(_("Attempt to use a type name as an expression"));
+        }
+    }
+  else if (opnum >= OP_EXTENDED0)
+    {
+      enum ada_operator op = (enum ada_operator)opnum;
+      switch (op)
+        {
+        default:
+          *pos -= 1;
+          return
+            unwrap_value(evaluate_subexp_standard(expect_type, exp, pos,
+                                                  noside));
+
+        case TERNOP_IN_RANGE: /* 98 */
+          arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          arg3 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+
+          return
+            value_from_longest(builtin_type_int,
+                               ((value_less(arg1, arg3)
+                                 || value_equal(arg1, arg3))
+                                && (value_less(arg2, arg1)
+                                    || value_equal(arg2, arg1))));
+
+        case OP_ATR_FIRST: /* 99 */
+        case OP_ATR_LAST: /* 100 */
+        case OP_ATR_LENGTH: /* 101 */
           {
-            if (high_bound < low_bound || noside == EVAL_AVOID_SIDE_EFFECTS)
-              return empty_array (TYPE_TARGET_TYPE (value_type (array)),
-                                  low_bound);
+            struct type *type_arg;
+            if (exp->elts[*pos].opcode == OP_TYPE)
+              {
+                evaluate_subexp(NULL_TYPE, exp, pos, EVAL_SKIP);
+                arg1 = NULL;
+                type_arg = exp->elts[pc + 2].type;
+              }
             else
               {
-                struct type *arr_type0 =
-                  to_fixed_array_type (TYPE_TARGET_TYPE (value_type (array)),
-                                       NULL, 1);
-                return ada_value_slice_ptr (array, arr_type0,
-                                            (int) low_bound,
-					    (int) high_bound);
+                arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+                type_arg = NULL;
               }
-          }
-        else if (noside == EVAL_AVOID_SIDE_EFFECTS)
-          return array;
-        else if (high_bound < low_bound)
-          return empty_array (value_type (array), low_bound);
-        else
-          return ada_value_slice (array, (int) low_bound, (int) high_bound);
-      }
 
-    case UNOP_IN_RANGE:
-      (*pos) += 2;
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      type = exp->elts[pc + 1].type;
+            if (exp->elts[*pos].opcode != OP_LONG)
+              error(_("Invalid operand to '%s"),
+                    ada_attribute_name((enum exp_opcode)op));
+            tem = longest_to_int(exp->elts[*pos + 2].longconst);
+            *pos += 4;
 
-      if (noside == EVAL_SKIP)
-        goto nosideret;
+            if (noside == EVAL_SKIP)
+              goto nosideret;
 
-      switch (TYPE_CODE (type))
-        {
-        default:
-          lim_warning (_("Membership test incompletely implemented; \
-always returns true"));
-          return value_from_longest (builtin_type_int, (LONGEST) 1);
-
-        case TYPE_CODE_RANGE:
-          arg2 = value_from_longest (builtin_type_int, TYPE_LOW_BOUND (type));
-          arg3 = value_from_longest (builtin_type_int,
-                                     TYPE_HIGH_BOUND (type));
-          return
-            value_from_longest (builtin_type_int,
-                                (value_less (arg1, arg3)
-                                 || value_equal (arg1, arg3))
-                                && (value_less (arg2, arg1)
-                                    || value_equal (arg2, arg1)));
-        }
-
-    case BINOP_IN_BOUNDS:
-      (*pos) += 2;
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-
-      if (noside == EVAL_AVOID_SIDE_EFFECTS)
-        return value_zero (builtin_type_int, not_lval);
-
-      tem = longest_to_int (exp->elts[pc + 1].longconst);
-
-      if (tem < 1 || tem > ada_array_arity (value_type (arg2)))
-        error (_("invalid dimension number to 'range"));
-
-      arg3 = ada_array_bound (arg2, tem, 1);
-      arg2 = ada_array_bound (arg2, tem, 0);
-
-      return
-        value_from_longest (builtin_type_int,
-                            (value_less (arg1, arg3)
-                             || value_equal (arg1, arg3))
-                            && (value_less (arg2, arg1)
-                                || value_equal (arg2, arg1)));
-
-    case TERNOP_IN_RANGE:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg3 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-
-      return
-        value_from_longest (builtin_type_int,
-                            (value_less (arg1, arg3)
-                             || value_equal (arg1, arg3))
-                            && (value_less (arg2, arg1)
-                                || value_equal (arg2, arg1)));
-
-    case OP_ATR_FIRST:
-    case OP_ATR_LAST:
-    case OP_ATR_LENGTH:
-      {
-        struct type *type_arg;
-        if (exp->elts[*pos].opcode == OP_TYPE)
-          {
-            evaluate_subexp (NULL_TYPE, exp, pos, EVAL_SKIP);
-            arg1 = NULL;
-            type_arg = exp->elts[pc + 2].type;
-          }
-        else
-          {
-            arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-            type_arg = NULL;
-          }
-
-        if (exp->elts[*pos].opcode != OP_LONG)
-          error (_("Invalid operand to '%s"), ada_attribute_name (op));
-        tem = longest_to_int (exp->elts[*pos + 2].longconst);
-        *pos += 4;
-
-        if (noside == EVAL_SKIP)
-          goto nosideret;
-
-        if (type_arg == NULL)
-          {
-            arg1 = ada_coerce_ref (arg1);
-
-            if (ada_is_packed_array_type (value_type (arg1)))
-              arg1 = ada_coerce_to_simple_array (arg1);
-
-            if (tem < 1 || tem > ada_array_arity (value_type (arg1)))
-              error (_("invalid dimension number to '%s"),
-                     ada_attribute_name (op));
-
-            if (noside == EVAL_AVOID_SIDE_EFFECTS)
+            if (type_arg == NULL)
               {
-                type = ada_index_type (value_type (arg1), tem);
+                arg1 = ada_coerce_ref(arg1);
+
+                if (ada_is_packed_array_type(value_type(arg1)))
+                  arg1 = ada_coerce_to_simple_array(arg1);
+
+                if ((tem < 1) || (tem > ada_array_arity(value_type(arg1))))
+                  error(_("invalid dimension number to '%s"),
+                        ada_attribute_name((enum exp_opcode)op));
+
+                if (noside == EVAL_AVOID_SIDE_EFFECTS)
+                  {
+                    type = ada_index_type(value_type(arg1), tem);
+                    if (type == NULL)
+                      error(_("attempt to take bound of something that is not an array"));
+                    return allocate_value(type);
+                  }
+
+                switch (op)
+                  {
+                  default:          /* Should never happen.  */
+                    error(_("unexpected attribute encountered"));
+                  case OP_ATR_FIRST:
+                    return ada_array_bound(arg1, tem, 0);
+                  case OP_ATR_LAST:
+                    return ada_array_bound(arg1, tem, 1);
+                  case OP_ATR_LENGTH:
+                    return ada_array_length(arg1, tem);
+                  }
+              }
+            else if (discrete_type_p(type_arg))
+              {
+                struct type *range_type;
+                char *name = ada_type_name(type_arg);
+                range_type = NULL;
+                if ((name != NULL)
+                    && (TYPE_CODE(type_arg) != TYPE_CODE_ENUM))
+                  range_type =
+                    to_fixed_range_type(name, NULL,
+                                        TYPE_OBJFILE(type_arg));
+                if (range_type == NULL)
+                  range_type = type_arg;
+                switch (op)
+                  {
+                  default:
+                    error(_("unexpected attribute encountered"));
+                  case OP_ATR_FIRST:
+                    return discrete_type_low_bound(range_type);
+                  case OP_ATR_LAST:
+                    return discrete_type_high_bound(range_type);
+                  case OP_ATR_LENGTH:
+                    error(_("the 'length attribute applies only to array types"));
+                  }
+              }
+            else if (TYPE_CODE(type_arg) == TYPE_CODE_FLT)
+              error(_("unimplemented type attribute"));
+            else
+              {
+                LONGEST low, high;
+
+                if (ada_is_packed_array_type(type_arg))
+                  type_arg = decode_packed_array_type(type_arg);
+
+                if ((tem < 1) || (tem > ada_array_arity(type_arg)))
+                  error(_("invalid dimension number to '%s"),
+                        ada_attribute_name((enum exp_opcode)op));
+
+                type = ada_index_type(type_arg, tem);
                 if (type == NULL)
-                  error
-                    (_("attempt to take bound of something that is not an array"));
-                return allocate_value (type);
-              }
+                  error(_("attempt to take bound of something that is not an array"));
+                if (noside == EVAL_AVOID_SIDE_EFFECTS)
+                  return allocate_value(type);
 
-            switch (op)
-              {
-              default:          /* Should never happen.  */
-                error (_("unexpected attribute encountered"));
-              case OP_ATR_FIRST:
-                return ada_array_bound (arg1, tem, 0);
-              case OP_ATR_LAST:
-                return ada_array_bound (arg1, tem, 1);
-              case OP_ATR_LENGTH:
-                return ada_array_length (arg1, tem);
+                switch (op)
+                  {
+                  default:
+                    error(_("unexpected attribute encountered"));
+                  case OP_ATR_FIRST:
+                    low = ada_array_bound_from_type(type_arg, tem, 0,
+                                                    &type);
+                    return value_from_longest(type, low);
+                  case OP_ATR_LAST:
+                    high = ada_array_bound_from_type(type_arg, tem, 1,
+                                                     &type);
+                    return value_from_longest(type, high);
+                  case OP_ATR_LENGTH:
+                    low = ada_array_bound_from_type(type_arg, tem, 0,
+                                                    &type);
+                    high = ada_array_bound_from_type(type_arg, tem, 1,
+                                                     NULL);
+                    return value_from_longest(type, (high - low + 1));
+                  }
               }
           }
-        else if (discrete_type_p (type_arg))
+
+        case OP_ATR_MIN: /* 104 */
+        case OP_ATR_MAX: /* 103 */
+          evaluate_subexp(NULL_TYPE, exp, pos, EVAL_SKIP);
+          arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+          else if (noside == EVAL_AVOID_SIDE_EFFECTS)
+            return value_zero(value_type(arg1), not_lval);
+          else
+            return value_binop(arg1, arg2,
+                               ((op == (int)OP_ATR_MIN)
+                                ? BINOP_MIN : BINOP_MAX));
+
+        case OP_ATR_MODULUS: /* 105 */
           {
-            struct type *range_type;
-            char *name = ada_type_name (type_arg);
-            range_type = NULL;
-            if (name != NULL && TYPE_CODE (type_arg) != TYPE_CODE_ENUM)
-              range_type =
-                to_fixed_range_type (name, NULL, TYPE_OBJFILE (type_arg));
-            if (range_type == NULL)
-              range_type = type_arg;
-            switch (op)
+            struct type *type_arg = exp->elts[pc + 2].type;
+            evaluate_subexp(NULL_TYPE, exp, pos, EVAL_SKIP);
+
+            if (noside == EVAL_SKIP)
+              goto nosideret;
+
+            if (!ada_is_modular_type(type_arg))
+              error(_("'modulus must be applied to modular type"));
+
+            return value_from_longest(TYPE_TARGET_TYPE(type_arg),
+                                      ada_modulus(type_arg));
+          }
+
+        case OP_ATR_POS: /* 106 */
+          evaluate_subexp(NULL_TYPE, exp, pos, EVAL_SKIP);
+          arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+          else if (noside == EVAL_AVOID_SIDE_EFFECTS)
+            return value_zero(builtin_type_int, not_lval);
+          else
+            return value_pos_atr(arg1);
+
+        case OP_ATR_SIZE: /* 107 */
+          arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+          else if (noside == EVAL_AVOID_SIDE_EFFECTS)
+            return value_zero(builtin_type_int, not_lval);
+          else
+            return value_from_longest(builtin_type_int,
+                                      TARGET_CHAR_BIT
+                                      * TYPE_LENGTH(value_type(arg1)));
+
+        case OP_ATR_TAG: /* 108 */
+          arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+
+          if (noside == EVAL_AVOID_SIDE_EFFECTS)
+            return value_zero(ada_tag_type(arg1), not_lval);
+
+          return ada_value_tag(arg1);
+
+        case OP_ATR_VAL: /* 109 */
+          evaluate_subexp(NULL_TYPE, exp, pos, EVAL_SKIP);
+          arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+          type = exp->elts[pc + 2].type;
+          if (noside == EVAL_SKIP)
+            goto nosideret;
+          else if (noside == EVAL_AVOID_SIDE_EFFECTS)
+            return value_zero(type, not_lval);
+          else
+            return value_val_atr(type, arg1);
+
+        case UNOP_QUAL: /* 110 */
+          (*pos) += 2;
+          type = exp->elts[pc + 1].type;
+          return ada_evaluate_subexp(type, exp, pos, noside);
+
+        case UNOP_IN_RANGE: /* 111 */
+          {
+            (*pos) += 2;
+            arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+            type = exp->elts[pc + 1].type;
+
+            if (noside == EVAL_SKIP)
+              {
+                goto nosideret;
+              }
+
+            switch (TYPE_CODE(type))
               {
               default:
-                error (_("unexpected attribute encountered"));
-              case OP_ATR_FIRST:
-                return discrete_type_low_bound (range_type);
-              case OP_ATR_LAST:
-                return discrete_type_high_bound (range_type);
-              case OP_ATR_LENGTH:
-                error (_("the 'length attribute applies only to array types"));
+                lim_warning(_("Membership test incompletely implemented; \
+                              always returns true"));
+                return value_from_longest(builtin_type_int, (LONGEST)1L);
+
+              case TYPE_CODE_RANGE:
+                arg2 = value_from_longest(builtin_type_int,
+                                          TYPE_LOW_BOUND(type));
+                arg3 = value_from_longest(builtin_type_int,
+                                          TYPE_HIGH_BOUND(type));
+                return
+                value_from_longest(builtin_type_int,
+                                   ((value_less(arg1, arg3)
+                                     || value_equal(arg1, arg3))
+                                    && (value_less(arg2, arg1)
+                                        || value_equal(arg2, arg1))));
               }
           }
-        else if (TYPE_CODE (type_arg) == TYPE_CODE_FLT)
-          error (_("unimplemented type attribute"));
-        else
-          {
-            LONGEST low, high;
-
-            if (ada_is_packed_array_type (type_arg))
-              type_arg = decode_packed_array_type (type_arg);
-
-            if (tem < 1 || tem > ada_array_arity (type_arg))
-              error (_("invalid dimension number to '%s"),
-                     ada_attribute_name (op));
-
-            type = ada_index_type (type_arg, tem);
-            if (type == NULL)
-              error
-                (_("attempt to take bound of something that is not an array"));
-            if (noside == EVAL_AVOID_SIDE_EFFECTS)
-              return allocate_value (type);
-
-            switch (op)
-              {
-              default:
-                error (_("unexpected attribute encountered"));
-              case OP_ATR_FIRST:
-                low = ada_array_bound_from_type (type_arg, tem, 0, &type);
-                return value_from_longest (type, low);
-              case OP_ATR_LAST:
-                high = ada_array_bound_from_type (type_arg, tem, 1, &type);
-                return value_from_longest (type, high);
-              case OP_ATR_LENGTH:
-                low = ada_array_bound_from_type (type_arg, tem, 0, &type);
-                high = ada_array_bound_from_type (type_arg, tem, 1, NULL);
-                return value_from_longest (type, high - low + 1);
-              }
-          }
-      }
-
-    case OP_ATR_TAG:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-
-      if (noside == EVAL_AVOID_SIDE_EFFECTS)
-        return value_zero (ada_tag_type (arg1), not_lval);
-
-      return ada_value_tag (arg1);
-
-    case OP_ATR_MIN:
-    case OP_ATR_MAX:
-      evaluate_subexp (NULL_TYPE, exp, pos, EVAL_SKIP);
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-      else if (noside == EVAL_AVOID_SIDE_EFFECTS)
-        return value_zero(value_type(arg1), not_lval);
-      else
-        return value_binop(arg1, arg2,
-                           ((op == OP_ATR_MIN) ? BINOP_MIN : BINOP_MAX));
-
-    case OP_ATR_MODULUS:
-      {
-        struct type *type_arg = exp->elts[pc + 2].type;
-        evaluate_subexp (NULL_TYPE, exp, pos, EVAL_SKIP);
-
-        if (noside == EVAL_SKIP)
-          goto nosideret;
-
-        if (!ada_is_modular_type (type_arg))
-          error (_("'modulus must be applied to modular type"));
-
-        return value_from_longest (TYPE_TARGET_TYPE (type_arg),
-                                   ada_modulus (type_arg));
-      }
-
-
-    case OP_ATR_POS:
-      evaluate_subexp (NULL_TYPE, exp, pos, EVAL_SKIP);
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-      else if (noside == EVAL_AVOID_SIDE_EFFECTS)
-        return value_zero (builtin_type_int, not_lval);
-      else
-        return value_pos_atr (arg1);
-
-    case OP_ATR_SIZE:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-      else if (noside == EVAL_AVOID_SIDE_EFFECTS)
-        return value_zero (builtin_type_int, not_lval);
-      else
-        return value_from_longest (builtin_type_int,
-                                   TARGET_CHAR_BIT
-                                   * TYPE_LENGTH (value_type (arg1)));
-
-    case OP_ATR_VAL:
-      evaluate_subexp (NULL_TYPE, exp, pos, EVAL_SKIP);
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      type = exp->elts[pc + 2].type;
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-      else if (noside == EVAL_AVOID_SIDE_EFFECTS)
-        return value_zero (type, not_lval);
-      else
-        return value_val_atr (type, arg1);
-
-    case BINOP_EXP:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-      else if (noside == EVAL_AVOID_SIDE_EFFECTS)
-        return value_zero (value_type (arg1), not_lval);
-      else
-        return value_binop (arg1, arg2, op);
-
-    case UNOP_PLUS:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-      else
-        return arg1;
-
-    case UNOP_ABS:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-      if (value_less (arg1, value_zero (value_type (arg1), not_lval)))
-        return value_neg (arg1);
-      else
-        return arg1;
-
-    case UNOP_IND:
-      if (expect_type && TYPE_CODE (expect_type) == TYPE_CODE_PTR)
-        expect_type = TYPE_TARGET_TYPE (ada_check_typedef (expect_type));
-      arg1 = evaluate_subexp (expect_type, exp, pos, noside);
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-      type = ada_check_typedef (value_type (arg1));
-      if (noside == EVAL_AVOID_SIDE_EFFECTS)
-        {
-          if (ada_is_array_descriptor_type (type))
-            /* GDB allows dereferencing GNAT array descriptors.  */
-            {
-              struct type *arrType = ada_type_of_array (arg1, 0);
-              if (arrType == NULL)
-                error (_("Attempt to dereference null array pointer."));
-              return value_at_lazy (arrType, 0);
-            }
-          else if (TYPE_CODE (type) == TYPE_CODE_PTR
-                   || TYPE_CODE (type) == TYPE_CODE_REF
-                   /* In C you can dereference an array to get the 1st elt.  */
-                   || TYPE_CODE (type) == TYPE_CODE_ARRAY)
-            {
-              type = to_static_fixed_type
-                (ada_aligned_type
-                 (ada_check_typedef (TYPE_TARGET_TYPE (type))));
-              check_size (type);
-              return value_zero (type, lval_memory);
-            }
-          else if (TYPE_CODE (type) == TYPE_CODE_INT)
-            /* GDB allows dereferencing an int.  */
-            return value_zero (builtin_type_int, lval_memory);
-          else
-            error (_("Attempt to take contents of a non-pointer value."));
+          break;
         }
-      arg1 = ada_coerce_ref (arg1);     /* FIXME: What is this for?? */
-      type = ada_check_typedef (value_type (arg1));
-
-      if (ada_is_array_descriptor_type (type))
-        /* GDB allows dereferencing GNAT array descriptors.  */
-        return ada_coerce_to_simple_array (arg1);
-      else
-        return ada_value_ind (arg1);
-
-    case STRUCTOP_STRUCT:
-      tem = longest_to_int (exp->elts[pc + 1].longconst);
-      (*pos) += 3 + BYTES_TO_EXP_ELEM (tem + 1);
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-      if (noside == EVAL_AVOID_SIDE_EFFECTS)
-        {
-          struct type *type1 = value_type (arg1);
-          if (ada_is_tagged_type (type1, 1))
-            {
-              type = ada_lookup_struct_elt_type (type1,
-                                                 &exp->elts[pc + 2].string,
-                                                 1, 1, NULL);
-              if (type == NULL)
-                /* In this case, we assume that the field COULD exist
-                   in some extension of the type.  Return an object of
-                   "type" void, which will match any formal
-                   (see ada_type_match). */
-                return value_zero (builtin_type_void, lval_memory);
-            }
-          else
-            type =
-              ada_lookup_struct_elt_type (type1, &exp->elts[pc + 2].string, 1,
-                                          0, NULL);
-
-          return value_zero (ada_aligned_type (type), lval_memory);
-        }
-      else
-        return
-          ada_to_fixed_value (unwrap_value
-                              (ada_value_struct_elt
-                               (arg1, &exp->elts[pc + 2].string, "record")));
-    case OP_TYPE:
-      /* The value is not supposed to be used.  This is here to make it
-         easier to accommodate expressions that contain types.  */
-      (*pos) += 2;
-      if (noside == EVAL_SKIP)
-        goto nosideret;
-      else if (noside == EVAL_AVOID_SIDE_EFFECTS)
-        return allocate_value (builtin_type_void);
-      else
-        error (_("Attempt to use a type name as an expression"));
     }
 
 nosideret:
@@ -8254,8 +8292,10 @@ ada_modulus(struct type * type)
    below.  */
 /* Format: OP_DEFN (<operator>, <operator length>, <# args>, <binop>).  */
 
+#define EXP_OPCODE_OPERATORS \
+    OP_DEFN(OP_VAR_VALUE, 4, 0, 0)
+
 #define ADA_OPERATORS \
-    OP_DEFN(OP_VAR_VALUE, 4, 0, 0) \
     OP_DEFN(BINOP_IN_BOUNDS, 3, 2, 0) \
     OP_DEFN(TERNOP_IN_RANGE, 1, 3, 0) \
     OP_DEFN(OP_ATR_FIRST, 1, 2, 0) \
@@ -8275,33 +8315,67 @@ ada_modulus(struct type * type)
 static void
 ada_operator_length(struct expression *exp, int pc, int *oplenp, int *argsp)
 {
-  enum ada_operator ada_opcode;
-  ada_opcode = (enum ada_operator)exp->elts[pc - 1].opcode;
-  switch (ada_opcode)
-    {
-    default:
-      operator_length_standard(exp, pc, oplenp, argsp);
-      break;
-
 #define OP_DEFN(op, len, args, binop) \
     case op: *oplenp = len; *argsp = args; break;
-      ADA_OPERATORS;
-#undef OP_DEFN
+  int opnum = exp->elts[pc - 1].opcode;
+  /* need two separate switch statements because values could fall into
+   * one of two separate enums: */
+  if (opnum <= OP_EXTENDED0)
+    {
+      enum exp_opcode the_exp_opcode;
+      the_exp_opcode = (enum exp_opcode)opnum;
+      switch (the_exp_opcode)
+        {
+        default:
+          operator_length_standard(exp, pc, oplenp, argsp);
+          break;
+        EXP_OPCODE_OPERATORS;
+        }
     }
+  else if (opnum >= OP_EXTENDED0)
+    {
+      enum ada_operator ada_opcode;
+      ada_opcode = (enum ada_operator)opnum;
+      switch (ada_opcode)
+        {
+        default:
+          operator_length_standard(exp, pc, oplenp, argsp);
+          break;
+        ADA_OPERATORS;
+        }
+    }
+#undef OP_DEFN
 }
 
 static char *
 ada_op_name(enum exp_opcode opcode)
 {
-  enum ada_operator ada_opcode = (enum ada_operator)opcode;
-  switch (ada_opcode)
-    {
-    default:
-      return op_name_standard(opcode);
 #define OP_DEFN(op, len, args, binop) case op: return #op;
-      ADA_OPERATORS;
-#undef OP_DEFN
+  if (opcode <= OP_EXTENDED0)
+    {
+      switch (opcode)
+        {
+        default:
+          return op_name_standard(opcode);
+        EXP_OPCODE_OPERATORS;
+        }
     }
+  else if (opcode >= OP_EXTENDED0)
+    {
+      enum ada_operator ada_opcode = (enum ada_operator)opcode;
+      switch (ada_opcode)
+        {
+        default:
+          return op_name_standard(opcode);
+        ADA_OPERATORS;
+        }
+    }
+  else
+    {
+      return op_name_standard(opcode);
+    }
+
+#undef OP_DEFN
 }
 
 /* As for operator_length, but assumes PC is pointing at the first
@@ -8312,17 +8386,34 @@ static void
 ada_forward_operator_length(struct expression *exp, int pc,
                             int *oplenp, int *argsp)
 {
-  enum ada_operator ada_op = (enum ada_operator)exp->elts[pc].opcode;
-  switch (ada_op)
-    {
-    default:
-      *oplenp = *argsp = 0;
-      break;
 #define OP_DEFN(op, len, args, binop) \
     case op: *oplenp = len; *argsp = args; break;
-      ADA_OPERATORS;
-#undef OP_DEFN
+  int opnum = exp->elts[pc].opcode;
+  /* need two separate switch statements because values could fall into
+   * one of two separate enums: */
+  if (opnum <= OP_EXTENDED0)
+    {
+      enum exp_opcode exp_op = (enum exp_opcode)opnum;
+      switch (exp_op)
+        {
+        default:
+          *oplenp = *argsp = 0;
+          break;
+        EXP_OPCODE_OPERATORS;
+        }
     }
+  else if (opnum >= OP_EXTENDED0)
+    {
+      enum ada_operator ada_op = (enum ada_operator)opnum;
+      switch (ada_op)
+        {
+        default:
+          *oplenp = *argsp = 0;
+          break;
+        ADA_OPERATORS;
+        }
+    }
+#undef OP_DEFN
 }
 
 static int

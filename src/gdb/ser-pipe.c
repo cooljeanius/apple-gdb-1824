@@ -1,4 +1,4 @@
-/* Serial interface for a pipe to a separate program
+/* ser-pipe.c: Serial interface for a pipe to a separate program
    Copyright 1999, 2000, 2001 Free Software Foundation, Inc.
 
    Contributed by Cygnus Solutions.
@@ -35,10 +35,10 @@
 
 #include <signal.h>
 
-static int pipe_open (struct serial *scb, const char *name);
-static void pipe_close (struct serial *scb);
+static int pipe_open(struct serial *scb, const char *name);
+static void pipe_close(struct serial *scb);
 
-extern void _initialize_ser_pipe (void);
+extern void _initialize_ser_pipe(void);
 
 struct pipe_state
   {
@@ -48,35 +48,38 @@ struct pipe_state
 /* Open up a raw pipe */
 
 static int
-pipe_open (struct serial *scb, const char *name)
+pipe_open(struct serial *scb, const char *name)
 {
 #if !HAVE_SOCKETPAIR
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "pipe_open() needs socketpair() in order to work."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
   return -1;
 #else
   struct pipe_state *state;
   /* This chunk: */
   /* Copyright (c) 1988, 1993
-   *      The Regents of the University of California.  All rights reserved.
+   *     The Regents of the University of California.  All rights reserved.
    *
    * This code is derived from software written by Ken Arnold and
    * published in UNIX Review, Vol. 6, No. 8.
    */
   int pdes[2];
   int pid;
-  if (socketpair (AF_UNIX, SOCK_STREAM, 0, pdes) < 0)
+  if (socketpair(AF_UNIX, SOCK_STREAM, 0, pdes) < 0)
     return -1;
 
   /* Create the child process to run the command in.  Note that the
      apparent call to vfork() below *might* actually be a call to
      fork() due to the fact that autoconf will ``#define vfork fork''
      on certain platforms.  */
-  pid = vfork ();
-  
+  pid = vfork();
+
   /* Error. */
   if (pid == -1)
     {
-      close (pdes[0]);
-      close (pdes[1]);
+      close(pdes[0]);
+      close(pdes[1]);
       return -1;
     }
 
@@ -84,57 +87,57 @@ pipe_open (struct serial *scb, const char *name)
   if (pid == 0)
     {
       /* re-wire pdes[1] to stdin/stdout */
-      close (pdes[0]);
+      close(pdes[0]);
       if (pdes[1] != STDOUT_FILENO)
 	{
-	  dup2 (pdes[1], STDOUT_FILENO);
-	  close (pdes[1]);
+	  dup2(pdes[1], STDOUT_FILENO);
+	  close(pdes[1]);
 	}
-      dup2 (STDOUT_FILENO, STDIN_FILENO);
-#if 0
+      dup2(STDOUT_FILENO, STDIN_FILENO);
+# if 0
       /* close any stray FD's - FIXME - how? */
       /* POSIX.2 B.3.2.2 "popen() shall ensure that any streams
-         from previous popen() calls that remain open in the 
+         from previous popen() calls that remain open in the
          parent process are closed in the new child process. */
       for (old = pidlist; old; old = old->next)
-	close (fileno (old->fp));	/* don't allow a flush */
-#endif
+	close(fileno(old->fp));	/* do NOT allow a flush */
+# endif /* 0 */
 
       /* APPLE LOCAL: gdb is setgid to give it extra special debuggizer
          powers; we need to drop those privileges before executing the
          inferior process.  */
-      setgid (getgid ());
+      setgid(getgid());
 
-      execl ("/bin/sh", "sh", "-c", name, (char *) 0);
-      _exit (127);
+      execl("/bin/sh", "sh", "-c", name, (char *)0);
+      _exit(127);
     }
 
-  /* Parent. */
-  close (pdes[1]);
+  /* Parent: */
+  close(pdes[1]);
   /* :end chunk */
-  state = XMALLOC (struct pipe_state);
+  state = XMALLOC(struct pipe_state);
   state->pid = pid;
   scb->fd = pdes[0];
   scb->state = state;
 
-  /* If we don't do this, GDB simply exits when the remote side dies.  */
-  signal (SIGPIPE, SIG_IGN);
+  /* If we fail to do this, GDB simply exits when the remote side dies: */
+  signal(SIGPIPE, SIG_IGN);
   return 0;
-#endif
+#endif /* HAVE_SOCKETPAIR */
 }
 
 static void
-pipe_close (struct serial *scb)
+pipe_close(struct serial *scb)
 {
-  struct pipe_state *state = scb->state;
+  struct pipe_state *state = (struct pipe_state *)scb->state;
   if (state != NULL)
     {
       int pid = state->pid;
-      close (scb->fd);
+      close(scb->fd);
       scb->fd = -1;
       xfree (state);
       scb->state = NULL;
-      kill (pid, SIGTERM);
+      kill(pid, SIGTERM);
       /* Might be useful to check that the child does die. */
     }
 }
@@ -144,8 +147,8 @@ static struct serial_ops pipe_ops;
 void
 _initialize_ser_pipe (void)
 {
-  struct serial_ops *ops = XMALLOC (struct serial_ops);
-  memset (ops, 0, sizeof (struct serial_ops));
+  struct serial_ops *ops = XMALLOC(struct serial_ops);
+  memset(ops, 0, sizeof(struct serial_ops));
   ops->name = "pipe";
   ops->next = 0;
   ops->open = pipe_open;
@@ -166,5 +169,7 @@ _initialize_ser_pipe (void)
   ops->async = ser_base_async;
   ops->read_prim = ser_unix_read_prim;
   ops->write_prim = ser_unix_write_prim;
-  serial_add_interface (ops);
+  serial_add_interface(ops);
 }
+
+/* EOF */

@@ -26,32 +26,30 @@
 #include "gdb_string.h"
 
 
-/* Return a new environment object.  */
-
+/* Return a new environment object: */
 struct gdb_environ *
-make_environ (void)
+make_environ(void)
 {
   struct gdb_environ *e;
 
-  e = (struct gdb_environ *) xmalloc (sizeof (struct gdb_environ));
+  e = (struct gdb_environ *)xmalloc(sizeof(struct gdb_environ));
 
   e->allocated = 10;
-  e->vector = (char **) xmalloc ((e->allocated + 1) * sizeof (char *));
+  e->vector = (char **)xmalloc((e->allocated + 1) * sizeof(char *));
   e->vector[0] = 0;
   return e;
 }
 
-/* Free an environment and all the strings in it.  */
-
+/* Free an environment and all the strings in it: */
 void
-free_environ (struct gdb_environ *e)
+free_environ(struct gdb_environ *e)
 {
   char **vector = e->vector;
 
   while (*vector)
-    xfree (*vector++);
+    xfree(*vector++);
 
-  xfree (e);
+  xfree(e);
 }
 
 /* Copy the environment given to this process into E.
@@ -59,7 +57,7 @@ free_environ (struct gdb_environ *e)
    that all strings in these environments are safe to free.  */
 
 void
-init_environ (struct gdb_environ *e)
+init_environ(struct gdb_environ *e)
 {
   extern char **environ;
   int i;
@@ -71,18 +69,18 @@ init_environ (struct gdb_environ *e)
 
   if (e->allocated < i)
     {
-      e->allocated = max (i, e->allocated + 10);
-      e->vector = (char **) xrealloc ((char *) e->vector,
-				      (e->allocated + 1) * sizeof (char *));
+      e->allocated = max(i, (e->allocated + 10));
+      e->vector = (char **)xrealloc((char *)e->vector,
+                                    ((e->allocated + 1) * sizeof(char *)));
     }
 
-  memcpy (e->vector, environ, (i + 1) * sizeof (char *));
+  memcpy(e->vector, environ, ((i + 1) * sizeof(char *)));
 
   while (--i >= 0)
     {
-      int len = strlen (e->vector[i]);
-      char *new = (char *) xmalloc (len + 1);
-      memcpy (new, e->vector[i], len + 1);
+      size_t len = strlen(e->vector[i]);
+      char *new = (char *)xmalloc(len + 1UL);
+      memcpy(new, e->vector[i], (len + 1UL));
       e->vector[i] = new;
     }
 }
@@ -103,43 +101,43 @@ struct dyld_smuggle_pairs {
 };
 
 void
-smuggle_dyld_settings (struct gdb_environ *e)
+smuggle_dyld_settings(struct gdb_environ *e)
 {
-  /* The list of DYLD_* names was gleaned from dyld's src/dyld.cpp.  */
-
-  struct dyld_smuggle_pairs env_names[] = { 
-       {"DYLD_FRAMEWORK_PATH", "GDB_DYLD_FRAMEWORK_PATH"},
-       {"DYLD_FALLBACK_FRAMEWORK_PATH", "GDB_DYLD_FALLBACK_FRAMEWORK_PATH"},
-       {"DYLD_LIBRARY_PATH", "GDB_DYLD_LIBRARY_PATH"},
-       {"DYLD_FALLBACK_LIBRARY_PATH", "GDB_DYLD_FALLBACK_LIBRARY_PATH"},
-       {"DYLD_ROOT_PATH", "GDB_DYLD_ROOT_PATH"},
-       {"DYLD_PATHS_ROOT", "GDB_DYLD_PATHS_ROOT"},
-       {"DYLD_IMAGE_SUFFIX", "GDB_DYLD_IMAGE_SUFFIX"},
-       {"DYLD_INSERT_LIBRARIES", "GDB_DYLD_INSERT_LIBRARIES"},
-       { NULL, NULL } };
+  /* The list of DYLD_* names was gleaned from dyld's src/dyld.cpp: */
+  struct dyld_smuggle_pairs env_names[] = {
+    { "DYLD_FRAMEWORK_PATH", "GDB_DYLD_FRAMEWORK_PATH" },
+    { "DYLD_FALLBACK_FRAMEWORK_PATH", "GDB_DYLD_FALLBACK_FRAMEWORK_PATH" },
+    { "DYLD_LIBRARY_PATH", "GDB_DYLD_LIBRARY_PATH" },
+    { "DYLD_FALLBACK_LIBRARY_PATH", "GDB_DYLD_FALLBACK_LIBRARY_PATH" },
+    { "DYLD_ROOT_PATH", "GDB_DYLD_ROOT_PATH" },
+    { "DYLD_PATHS_ROOT", "GDB_DYLD_PATHS_ROOT" },
+    { "DYLD_IMAGE_SUFFIX", "GDB_DYLD_IMAGE_SUFFIX" },
+    { "DYLD_INSERT_LIBRARIES", "GDB_DYLD_INSERT_LIBRARIES" },
+    { NULL, NULL }
+  };
   int i;
 
   for (i = 0; env_names[i].real_name != NULL; i++)
     {
-      const char *real_val = get_in_environ (e, env_names[i].real_name);
-      const char *smuggled_val = get_in_environ (e, env_names[i].smuggled_name);
+      const char *real_val = get_in_environ(e, env_names[i].real_name);
+      const char *smuggled_val = get_in_environ(e, env_names[i].smuggled_name);
 
-      if (real_val == NULL && smuggled_val == NULL)
+      if ((real_val == NULL) && (smuggled_val == NULL))
         continue;
 
       if (smuggled_val == NULL)
         continue;
 
       /* Is the value of the DYLD_* env var truncated to ""? */
-      if (real_val != NULL && real_val[0] != '\0')
+      if ((real_val != NULL) && (real_val[0] != '\0'))
         continue;
 
-      /* real_val has a value and it looks legitimate - don't overwrite it
-         with the smuggled version.  */
+      /* real_val has a value and it looks legitimate - do NOT overwrite it
+       * with the smuggled version: */
       if (real_val != NULL)
         continue;
 
-      set_in_environ (e, env_names[i].real_name, smuggled_val);
+      set_in_environ(e, env_names[i].real_name, smuggled_val);
     }
 }
 
@@ -147,34 +145,32 @@ smuggle_dyld_settings (struct gdb_environ *e)
    This is used to get something to pass to execve.  */
 
 char **
-environ_vector (struct gdb_environ *e)
+environ_vector(struct gdb_environ *e)
 {
   return e->vector;
 }
 
-/* Return the value in environment E of variable VAR.  */
-
+/* Return the value in environment E of variable VAR: */
 char *
-get_in_environ (const struct gdb_environ *e, const char *var)
+get_in_environ(const struct gdb_environ *e, const char *var)
 {
-  int len = strlen (var);
+  size_t len = strlen(var);
   char **vector = e->vector;
   char *s;
 
   for (; (s = *vector) != NULL; vector++)
-    if (strncmp (s, var, len) == 0 && s[len] == '=')
+    if ((strncmp(s, var, len) == 0) && (s[len] == '='))
       return &s[len + 1];
 
   return 0;
 }
 
-/* Store the value in E of VAR as VALUE.  */
-
+/* Store the value in E of VAR as VALUE: */
 void
-set_in_environ (struct gdb_environ *e, const char *var, const char *value)
+set_in_environ(struct gdb_environ *e, const char *var, const char *value)
 {
   int i;
-  int len = strlen (var);
+  size_t len = strlen(var);
   char **vector = e->vector;
   char *s;
 
@@ -187,19 +183,19 @@ set_in_environ (struct gdb_environ *e, const char *var, const char *value)
       if (i == e->allocated)
 	{
 	  e->allocated += 10;
-	  vector = (char **) xrealloc ((char *) vector,
-				       (e->allocated + 1) * sizeof (char *));
+	  vector = (char **)xrealloc((char *)vector,
+                                     (e->allocated + 1) * sizeof(char *));
 	  e->vector = vector;
 	}
       vector[i + 1] = 0;
     }
   else
-    xfree (s);
+    xfree(s);
 
-  s = (char *) xmalloc (len + strlen (value) + 2);
-  strcpy (s, var);
-  strcat (s, "=");
-  strcat (s, value);
+  s = (char *)xmalloc(len + strlen(value) + 2UL);
+  strcpy(s, var);
+  strcat(s, "=");
+  strcat(s, value);
   vector[i] = s;
 
   /* This used to handle setting the PATH and GNUTARGET variables
@@ -215,23 +211,22 @@ set_in_environ (struct gdb_environ *e, const char *var, const char *value)
   return;
 }
 
-/* Remove the setting for variable VAR from environment E.  */
-
+/* Remove the setting for variable VAR from environment E: */
 void
-unset_in_environ (struct gdb_environ *e, char *var)
+unset_in_environ(struct gdb_environ *e, char *var)
 {
-  int len = strlen (var);
+  size_t len = strlen(var);
   char **vector = e->vector;
   char *s;
 
   for (; (s = *vector) != NULL; vector++)
     {
-      if (DEPRECATED_STREQN (s, var, len) && s[len] == '=')
+      if (DEPRECATED_STREQN(s, var, len) && (s[len] == '='))
 	{
-	  xfree (s);
-	  /* Walk through the vector, shuffling args down by one, including
-	     the NULL terminator.  Can't use memcpy() here since the regions
-	     overlap, and memmove() might not be available. */
+	  xfree(s);
+          /* Walk through the vector, shuffling args down by one, including
+           * the NULL terminator.  We cannot use memcpy() here, since the
+           * regions overlap, and memmove() might not be available: */
 	  while ((vector[0] = vector[1]) != NULL)
 	    {
 	      vector++;
@@ -240,3 +235,5 @@ unset_in_environ (struct gdb_environ *e, char *var)
 	}
     }
 }
+
+/* EOF */

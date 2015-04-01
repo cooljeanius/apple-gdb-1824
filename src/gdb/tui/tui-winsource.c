@@ -253,33 +253,38 @@ tui_erase_source_content(struct tui_win_info *win_info, int display_prompt)
 }
 
 
-/* Redraw the complete line of a source or disassembly window.  */
+/* Redraw the complete line of a source or disassembly window: */
 static void
-tui_show_source_line (struct tui_win_info * win_info, int lineno)
+tui_show_source_line(struct tui_win_info * win_info, int lineno)
 {
-  struct tui_win_element * line;
+  struct tui_win_element *line;
   int x, y;
 
-  line = (struct tui_win_element *) win_info->generic.content[lineno - 1];
+  line = (struct tui_win_element *)win_info->generic.content[lineno - 1];
   if (line->which_element.source.is_exec_point)
-    wattron (win_info->generic.handle, A_STANDOUT);
+    wattron(win_info->generic.handle, A_STANDOUT);
 
-  mvwaddstr (win_info->generic.handle, lineno, 1,
-             line->which_element.source.line);
+  mvwaddstr(win_info->generic.handle, lineno, 1,
+            line->which_element.source.line);
   if (line->which_element.source.is_exec_point)
-    wattroff (win_info->generic.handle, A_STANDOUT);
+    wattroff(win_info->generic.handle, A_STANDOUT);
 
-  /* Clear to end of line but stop before the border.  */
-  getyx (win_info->generic.handle, y, x);
-  while (x + 1 < win_info->generic.width)
+  /* Clear to end of line but stop before the border: */
+  getyx(win_info->generic.handle, y, x);
+  while ((x + 1) < win_info->generic.width)
     {
-      waddch (win_info->generic.handle, ' ');
-      getyx (win_info->generic.handle, y, x);
+      waddch(win_info->generic.handle, ' ');
+      getyx(win_info->generic.handle, y, x);
     }
+
+  /* use value stored to 'y': */
+  if (y >= 0) {
+    return;
+  }
 }
 
 void
-tui_show_source_content (struct tui_win_info * win_info)
+tui_show_source_content(struct tui_win_info * win_info)
 {
   if (win_info->generic.content_size > 0)
     {
@@ -382,6 +387,8 @@ tui_update_all_breakpoint_info (void)
     }
 }
 
+/* Put this out here for '-Wnested-externs': */
+extern struct breakpoint *breakpoint_chain;
 
 /* Scan the source window and the breakpoints to update the
    has_break information for each line.
@@ -397,7 +404,6 @@ tui_update_breakpoint_info (struct tui_win_info * win, int current_only)
   for (i = 0; i < win->generic.content_size; i++)
     {
       struct breakpoint *bp;
-      extern struct breakpoint *breakpoint_chain;
       int mode;
       struct tui_source_element* line;
 

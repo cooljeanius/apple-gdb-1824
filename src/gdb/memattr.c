@@ -552,7 +552,7 @@ mem_enable_caching (void *unusued)
 }
 /* END APPLE LOCAL */
 
-extern initialize_file_ftype _initialize_mem; /* -Wmissing-prototype */
+extern initialize_file_ftype _initialize_mem; /* -Wmissing-prototypes */
 
 void
 _initialize_mem(void)

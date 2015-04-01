@@ -42,16 +42,20 @@
 
 #include "xsym.h"
 
+#include "symread.h"
+
 #include <string.h>
 #include <stdio.h>
 
 struct type *sym_builtin_type_pstr;
 struct type *sym_builtin_type_cstr;
 
+extern void _initialize_symread(void);
+
 static void
-sym_complaint (void)
+sym_complaint(void)
 {
-  complaint (&symfile_complaints, "error parsing SYM-format symbol table");
+  complaint(&symfile_complaints, "error parsing SYM-format symbol table");
 }
 
 struct sym_symfile_info
@@ -61,12 +65,13 @@ struct sym_symfile_info
 };
 
 static void
-sym_new_init (struct objfile *objfile)
+sym_new_init(struct objfile *objfile ATTRIBUTE_UNUSED)
 {
+  return;
 }
 
 static struct type *
-sym_lookup_builtin_type (unsigned int num)
+sym_lookup_builtin_type(unsigned int num)
 {
   switch (num)
     {
@@ -117,12 +122,12 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
                size_t offset, size_t *offsetptr, struct type **tptr,
                char **nptr, unsigned long *vptr)
 {
-  unsigned int typecode = 0;
+  unsigned int typecode = 0U;
   struct type *type = NULL;
   char *sym_typename = NULL;
   struct type *target = NULL;
   char *targname = NULL;
-  unsigned long value = 0;
+  unsigned long value = 0UL;
   int retval = 0;
   int ret;
 
@@ -154,12 +159,12 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
             sym_complaint();
             break;
           }
-        if (value < 0)
+        if (value < 0L)
           {
             sym_complaint();
             break;
           }
-        if (value >= ntypes)
+        if ((size_t)value >= ntypes)
           {
             sym_complaint();
             break;
@@ -233,7 +238,7 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
           (struct field *)TYPE_ALLOC(type, sizeof(struct field) * nelem);
         memset(TYPE_FIELDS(type), 0, sizeof(struct field) * nelem);
 
-        for (i = 0; i < nelem; i++)
+        for (i = 0UL; i < (unsigned long)nelem; i++)
           {
             ret =
               sym_parse_type(objfile, typevec, ntypes, buf, len, offset,
@@ -570,7 +575,7 @@ sym_read_type(struct objfile *objfile, struct type **typevec,
       SYMBOL_TYPE(symbol) = type;
       SYMBOL_LINKAGE_NAME(symbol) = ntypename;
       SYMBOL_VALUE(symbol) = 0;
-      SYMBOL_LANGUAGE(symbol) = 0;
+      SYMBOL_LANGUAGE(symbol) = (enum language)0;
       SYMBOL_SECTION(symbol) = 0;
       SYMBOL_BFD_SECTION(symbol) = 0;
       SYMBOL_DOMAIN(symbol) = VAR_DOMAIN;
@@ -1369,34 +1374,36 @@ sym_symfile_read (struct objfile *objfile, int mainline)
 }
 
 static void
-sym_symfile_finish (struct objfile *objfile)
+sym_symfile_finish(struct objfile *objfile ATTRIBUTE_UNUSED)
 {
+  return;
 }
 
 static void
-sym_symfile_offsets (struct objfile *objfile, struct section_addr_info *addrs)
+sym_symfile_offsets(struct objfile *objfile, struct section_addr_info *addrs)
 {
-  unsigned int i;
+  unsigned int u_i;
 
   objfile->num_sections = addrs->num_sections;
   objfile->section_offsets = (struct section_offsets *)
-    obstack_alloc (&objfile->objfile_obstack,
-                   SIZEOF_N_SECTION_OFFSETS (objfile->num_sections));
-  memset (objfile->section_offsets, 0,
-          SIZEOF_N_SECTION_OFFSETS (objfile->num_sections));
+    obstack_alloc(&objfile->objfile_obstack,
+                  SIZEOF_N_SECTION_OFFSETS(objfile->num_sections));
+  memset(objfile->section_offsets, 0,
+         SIZEOF_N_SECTION_OFFSETS(objfile->num_sections));
 
   if (addrs->other[0].addr != 0)
     {
-      for (i = 0; i < objfile->sections_end - objfile->sections; i++)
+      ptrdiff_t j;
+      for (j = 0; j < (objfile->sections_end - objfile->sections); j++)
         {
-          objfile->sections[i].addr += addrs->other[0].addr;
-          objfile->sections[i].endaddr += addrs->other[0].addr;
+          objfile->sections[j].addr += addrs->other[0].addr;
+          objfile->sections[j].endaddr += addrs->other[0].addr;
         }
     }
 
-  for (i = 0; i < objfile->num_sections; i++)
+  for (u_i = 0U; u_i < (unsigned int)objfile->num_sections; u_i++)
     {
-      objfile->section_offsets->offsets[i] = (long) addrs->other[0].addr;
+      objfile->section_offsets->offsets[u_i] = (long)addrs->other[0].addr;
     }
 
   objfile->sect_index_text = 0;
@@ -1456,7 +1463,7 @@ static struct sym_fns sym_sym_fns = {
 };
 
 void
-sym_dump_command (char *args, int from_tty)
+sym_dump_command(char *args, int from_tty)
 {
   char **argv;
   struct cleanup *cleanups;
@@ -1467,21 +1474,21 @@ sym_dump_command (char *args, int from_tty)
   FILE *f = NULL;
   bfd *abfd = NULL;
 
-  dont_repeat ();
+  dont_repeat();
 
   if (args == NULL)
     {
-      error ("Usage: sym-dump <symfile> <outfile>");
+      error("Usage: sym-dump <symfile> <outfile>");
     }
-  if ((argv = buildargv (args)) == NULL)
+  if ((argv = buildargv(args)) == NULL)
     {
-      nomem (0);
+      nomem(0);
     }
-  cleanups = make_cleanup_freeargv (argv);
+  cleanups = make_cleanup_freeargv(argv);
 
   if (argv[0] == NULL)
     {
-      error ("Usage: sym-dump <symfile> <outfile>");
+      error("Usage: sym-dump <symfile> <outfile>");
     }
   symname = argv[0];
   if (argv[1] != NULL)
@@ -1490,27 +1497,27 @@ sym_dump_command (char *args, int from_tty)
     }
   if ((argv[1] != NULL) && (argv[2] != NULL))
     {
-      error ("Usage: sym-dump <symfile> <outfile>");
+      error("Usage: sym-dump <symfile> <outfile>");
     }
 
-  filename = tilde_expand (filename);
-  make_cleanup (free, filename);
+  filename = tilde_expand(filename);
+  make_cleanup(free, filename);
 
-  symname = tilde_expand (symname);
-  make_cleanup (free, symname);
+  symname = tilde_expand(symname);
+  make_cleanup(free, symname);
 
-  f = fopen (filename, "w");
+  f = fopen(filename, "w");
   if (f == NULL)
     {
-      error ("Unable to open \"%s\" for writing: %s", filename,
-             strerror (errno));
+      error("Unable to open \"%s\" for writing: %s", filename,
+            strerror(errno));
     }
 
-  abfd = bfd_openr (symname, "sym");
+  abfd = bfd_openr(symname, "sym");
   if (abfd == NULL)
     {
-      error ("Unable to open \"%s\" for reading: %s", symname,
-             bfd_errmsg (bfd_get_error ()));
+      error("Unable to open \"%s\" for reading: %s", symname,
+            bfd_errmsg(bfd_get_error()));
     }
 
   if (!bfd_check_format(abfd, bfd_object))
@@ -1526,7 +1533,9 @@ sym_dump_command (char *args, int from_tty)
   do_cleanups(cleanups);
 }
 
-void _initialize_symread(void)
+/* remember, function name must start in column 0 for init.c to work: */
+void
+_initialize_symread(void)
 {
   sym_builtin_type_pstr = make_pointer_type(builtin_type_char, NULL);
   sym_builtin_type_cstr = make_pointer_type(builtin_type_char, NULL);

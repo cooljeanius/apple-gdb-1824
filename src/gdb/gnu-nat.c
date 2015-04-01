@@ -598,7 +598,7 @@ make_proc (struct inf *inf, mach_port_t port, int tid)
   return proc;
 }
 
-/* Frees PROC and any resources it uses, and returns the value of PROC's 
+/* Frees PROC and any resources it uses, and returns the value of PROC's
    next field.  */
 struct proc *
 _proc_free (struct proc *proc)
@@ -874,7 +874,7 @@ inf_set_traced (struct inf *inf, int on)
 {
   if (on == inf->traced)
     return;
-  
+
   if (inf->task && !inf->task->dead)
     /* Make it take effect immediately.  */
     {
@@ -1550,7 +1550,7 @@ rewait:
 #if 0				/* do we need this? */
 	      prune_threads (1);	/* Get rid of the old shell threads */
 	      renumber_threads (0);	/* Give our threads reasonable names. */
-#endif
+#endif /* 0 */
 	    }
 	  inf_debug (inf, "pending exec completed, pending_execs => %d",
 		     inf->pending_execs);
@@ -2156,7 +2156,7 @@ gnu_attach (char *args, int from_tty)
 
 #if 0				/* Do we need this? */
   renumber_threads (0);		/* Give our threads reasonable names. */
-#endif
+#endif /* 0 */
 }
 
 
@@ -2201,11 +2201,11 @@ gnu_terminal_init_inferior (void)
    that registers contains all the registers from the program being
    debugged.  */
 static void
-gnu_prepare_to_store (void)
+gnu_prepare_to_store(void)
 {
 #ifdef CHILD_PREPARE_TO_STORE
-  CHILD_PREPARE_TO_STORE ();
-#endif
+  CHILD_PREPARE_TO_STORE();
+#endif /* CHILD_PREPARE_TO_STORE */
 }
 
 static void
@@ -3078,14 +3078,14 @@ The default value is \"off\"."),
   add_cmd ("pause", no_class, show_thread_default_pause_cmd, _("\
 Show whether new threads are suspended while gdb has control."),
 	   &show_thread_default_cmd_list);
-  
+
   add_cmd ("run", class_run, set_thread_default_run_cmd, _("\
 Set whether new threads are allowed to run (once gdb has noticed them)."),
 	   &set_thread_default_cmd_list);
   add_cmd ("run", no_class, show_thread_default_run_cmd, _("\
 Show whether new threads are allowed to run (once gdb has noticed them)."),
 	   &show_thread_default_cmd_list);
-  
+
   add_cmd ("detach-suspend-count", class_run, set_thread_default_detach_sc_cmd,
 	   _("Set the default detach-suspend-count value for new threads."),
 	   &set_thread_default_cmd_list);
@@ -3274,7 +3274,7 @@ show_thread_cmd (char *args, int from_tty)
   if (thread->detach_sc != 0)
     show_thread_detach_sc_cmd (0, from_tty);
 }
-#endif
+#endif /* 0 */
 
 static void
 thread_takeover_sc_cmd (char *args, int from_tty)
@@ -3362,19 +3362,19 @@ to the thread's initial suspend-count when gdb notices the threads."),
 
 
 void
-_initialize_gnu_nat (void)
+_initialize_gnu_nat(void)
 {
-  proc_server = getproc ();
-  
-  init_gnu_ops ();
-  add_target (&gnu_ops);
+  proc_server = getproc();
 
-  add_task_commands ();
-  add_thread_commands ();
-  deprecated_add_set_cmd ("gnu-debug", class_maintenance,
-			  var_boolean, (char *) &gnu_debug_flag,
-			  "Set debugging output for the gnu backend.",
-			  &maintenancelist);
+  init_gnu_ops();
+  add_target(&gnu_ops);
+
+  add_task_commands();
+  add_thread_commands();
+  deprecated_add_set_cmd("gnu-debug", class_maintenance,
+			 var_boolean, (char *)&gnu_debug_flag,
+			 "Set debugging output for the gnu backend.",
+			 &maintenancelist);
 }
 
 #ifdef	FLUSH_INFERIOR_CACHE
@@ -3385,17 +3385,16 @@ _initialize_gnu_nat (void)
    end up looping in mysterious Bpt traps */
 
 void
-flush_inferior_icache (CORE_ADDR pc, int amount)
+flush_inferior_icache(CORE_ADDR pc, int amount)
 {
   vm_machine_attribute_val_t flush = MATTR_VAL_ICACHE_FLUSH;
   error_t ret;
 
-  ret = vm_machine_attribute (current_inferior->task->port,
-			      pc,
-			      amount,
-			      MATTR_CACHE,
-			      &flush);
+  ret = vm_machine_attribute(current_inferior->task->port, pc, amount,
+			     MATTR_CACHE, &flush);
   if (ret != KERN_SUCCESS)
-    warning (_("Error flushing inferior's cache : %s"), safe_strerror (ret));
+    warning(_("Error flushing inferior's cache : %s"), safe_strerror(ret));
 }
 #endif /* FLUSH_INFERIOR_CACHE */
+
+/* EOF */

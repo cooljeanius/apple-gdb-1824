@@ -1,4 +1,4 @@
-/* Manage register sets.
+/* regset.c: Manage register sets.
 
    Copyright 2004 Free Software Foundation, Inc.
 
@@ -32,11 +32,11 @@
    The object returned is allocated on ARCH's obstack.  */
 
 struct regset *
-regset_alloc (struct gdbarch *arch,
-              supply_regset_ftype *supply_regset,
-              collect_regset_ftype *collect_regset)
+regset_alloc(struct gdbarch *arch,
+             supply_regset_ftype *supply_regset,
+             collect_regset_ftype *collect_regset)
 {
-  struct regset *regset = GDBARCH_OBSTACK_ZALLOC (arch, struct regset);
+  struct regset *regset = GDBARCH_OBSTACK_ZALLOC(arch, struct regset);
 
   regset->arch = arch;
   regset->supply_regset = supply_regset;
@@ -44,3 +44,5 @@ regset_alloc (struct gdbarch *arch,
 
   return regset;
 }
+
+/* EOF */

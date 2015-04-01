@@ -4779,13 +4779,16 @@ read_frame (char *buf,
    return value, because at the moment I don't know what the right
    thing to do it for those.  */
 void
-getpkt (char *buf,
-	long sizeof_buf,
-	int forever)
+getpkt(char *buf, long sizeof_buf, int forever)
 {
   int timed_out;
 
-  timed_out = getpkt_sane (buf, sizeof_buf, forever);
+  timed_out = getpkt_sane(buf, sizeof_buf, forever);
+
+  /* use value stored to this variable: */
+  if (timed_out > 0) {
+    return;
+  }
 }
 
 
@@ -5449,6 +5452,9 @@ crc32 (unsigned char *buf, int len, unsigned int crc)
   return crc;
 }
 
+/* This is used in the compare-sections command: */
+extern bfd *exec_bfd;
+
 /* compare-sections command
 
    With no arguments, compares each loadable section in the exec bfd
@@ -5462,27 +5468,26 @@ crc32 (unsigned char *buf, int len, unsigned int crc)
    generic_load()) to make use of this target functionality.  */
 
 static void
-compare_sections_command (char *args, int from_tty)
+compare_sections_command(char *args, int from_tty)
 {
-  struct remote_state *rs = get_remote_state ();
+  struct remote_state *rs = get_remote_state();
   asection *s;
   unsigned long host_crc, target_crc;
-  extern bfd *exec_bfd;
   struct cleanup *old_chain;
   char *tmp;
   char *sectdata;
   const char *sectname;
-  char *buf = alloca (rs->remote_packet_size);
+  char *buf = alloca(rs->remote_packet_size);
   bfd_size_type size;
   bfd_vma lma;
   int matched = 0;
   int mismatched = 0;
 
   if (!exec_bfd)
-    error (_("command cannot be used without an exec file"));
+    error(_("command cannot be used without an exec file"));
   if (!current_target.to_shortname ||
-      strcmp (current_target.to_shortname, "remote") != 0)
-    error (_("command can only be used with remote target"));
+      (strcmp(current_target.to_shortname, "remote") != 0))
+    error(_("command can only be used with remote target"));
 
   for (s = exec_bfd->sections; s; s = s->next)
     {
@@ -6232,10 +6237,10 @@ end_remote_timer(void)
 /* APPLE LOCAL BEGIN: target remote-macosx.  */
 #ifdef MACOSX_DYLD
 
-#if defined (TARGET_ARM)
-#include "arm-macosx-tdep.h"
-#include "arm-tdep.h"
-#endif
+#if defined(TARGET_ARM)
+# include "arm-macosx-tdep.h"
+# include "arm-tdep.h"
+#endif /* TARGET_ARM */
 
 static struct target_ops remote_macosx_ops;
 static char *remote_macosx_shortname = "remote-macosx";
@@ -6619,9 +6624,9 @@ remote_macosx_attach(char *args, int from_tty)
 }
 
 static void
-remote_macosx_mourn (void)
+remote_macosx_mourn(void)
 {
-  remote_mourn_1 (&remote_macosx_ops);
+  remote_mourn_1(&remote_macosx_ops);
   macosx_dyld_mourn_inferior();
 }
 
@@ -6633,15 +6638,17 @@ remote_macosx_query_step_packet_supported(void)
   int result = 0;
   struct remote_state *rs = get_remote_state();
   char *buf = alloca(rs->remote_packet_size);
-  putpkt ("qStepPacketSupported");
+  int old_remote_timeout;
+  int timed_out;
+  putpkt("qStepPacketSupported");
   /* Reply "OK" Stepping packet is supported.  */
 
-  int old_remote_timeout = remote_timeout;
+  old_remote_timeout = remote_timeout;
   remote_timeout = 1;
-  int timed_out = getpkt_sane(buf, rs->remote_packet_size, 0);
+  timed_out = getpkt_sane(buf, rs->remote_packet_size, 0);
   if (!timed_out)
     {
-      if (buf[0] == 'O' && buf[1] == 'K')
+      if ((buf[0] == 'O') && (buf[1] == 'K'))
 	result = 1;
       else
 	{

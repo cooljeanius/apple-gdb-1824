@@ -32,8 +32,8 @@
 #include "elf-bfd.h"
 
 #ifndef GDB_OSABI_DEFAULT
-#define GDB_OSABI_DEFAULT GDB_OSABI_UNKNOWN
-#endif
+# define GDB_OSABI_DEFAULT GDB_OSABI_UNKNOWN
+#endif /* !GDB_OSABI_DEFAULT */
 
 /* State for the "set osabi" command.  */
 static enum { osabi_auto, osabi_default, osabi_user } user_osabi_state;
@@ -680,25 +680,25 @@ show_osabi (struct ui_file *file, int from_tty, struct cmd_list_element *c,
 extern initialize_file_ftype _initialize_gdb_osabi; /* -Wmissing-prototype */
 
 void
-_initialize_gdb_osabi (void)
+_initialize_gdb_osabi(void)
 {
-  if (strcmp (gdb_osabi_names[GDB_OSABI_INVALID], "<invalid>") != 0)
-    internal_error
-      (__FILE__, __LINE__,
+  if (strcmp(gdb_osabi_names[GDB_OSABI_INVALID], "<invalid>") != 0)
+    internal_error(__FILE__, __LINE__,
        _("_initialize_gdb_osabi: gdb_osabi_names[] is inconsistent"));
 
-  /* Register a generic sniffer for ELF flavoured files.  */
-  gdbarch_register_osabi_sniffer (bfd_arch_unknown,
-				  bfd_target_elf_flavour,
-				  generic_elf_osabi_sniffer);
+  /* Register a generic sniffer for ELF-flavoured files: */
+  gdbarch_register_osabi_sniffer(bfd_arch_unknown,
+				 bfd_target_elf_flavour,
+				 generic_elf_osabi_sniffer);
 
-  /* Register the "set osabi" command.  */
-  add_setshow_enum_cmd ("osabi", class_support, gdb_osabi_available_names,
-			&set_osabi_string, _("\
+  /* Register the "set osabi" command: */
+  add_setshow_enum_cmd("osabi", class_support, gdb_osabi_available_names,
+                       &set_osabi_string, _("\
 Set OS ABI of target."), _("\
 Show OS ABI of target."), NULL,
-			set_osabi,
-			show_osabi,
-			&setlist, &showlist);
+                       set_osabi, show_osabi,
+                       &setlist, &showlist);
   user_osabi_state = osabi_auto;
 }
+
+/* EOF */

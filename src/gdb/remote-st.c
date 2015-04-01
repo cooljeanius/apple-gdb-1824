@@ -48,14 +48,14 @@
 
 extern struct target_ops st2000_ops;	/* Forward declaration */
 
-static void st2000_close ();
-static void st2000_fetch_register ();
-static void st2000_store_register ();
+static void st2000_close();
+static void st2000_fetch_register();
+static void st2000_store_register();
 
 #define LOG_FILE "st2000.log"
-#if defined (LOG_FILE)
+#if defined(LOG_FILE)
 FILE *log_file;
-#endif
+#endif /* LOG_FILE */
 
 static int timeout = 24;
 

@@ -34,8 +34,8 @@
 #include <fcntl.h>
 #include <sys/time.h>
 #ifdef __CYGWIN__
-#include <sys/cygwin.h>		/* For cygwin_conv_to_full_posix_path.  */
-#endif
+# include <sys/cygwin.h>	/* For cygwin_conv_to_full_posix_path.  */
+#endif /* __CYGWIN__ */
 #include <signal.h>
 
 static struct {

@@ -1060,28 +1060,28 @@ _initialize_machoread(void)
 {
   add_symtab_fns(&macho_sym_fns);
 
-#if HAVE_MMAP
-  add_setshow_boolean_cmd ("mmap-string-tables", class_obscure,
-			   &mmap_strtabflag, _("\
+#if defined(HAVE_MMAP) && HAVE_MMAP
+  add_setshow_boolean_cmd("mmap-string-tables", class_obscure,
+			  &mmap_strtabflag, _("\
 Set if GDB should use mmap() to read STABS info."), _("\
 Show if GDB should use mmap() to read STABS info."), NULL,
-			   NULL, NULL,
-			   &setlist, &showlist);
+			  NULL, NULL,
+			  &setlist, &showlist);
 #endif /* HAVE_MMAP */
 
-  add_setshow_boolean_cmd ("use-eh-frame-info", class_obscure,
-			   &use_eh_frames_info, _("\
+  add_setshow_boolean_cmd("use-eh-frame-info", class_obscure,
+			  &use_eh_frames_info, _("\
 Set if GDB should use the EH frame/DWARF CFI information to backtrace."), _("\
 Show if GDB should use the EH frame/DWARF CFI information to backtrace."), NULL,
-			   NULL, NULL,
-			   &setlist, &showlist);
+			  NULL, NULL,
+			  &setlist, &showlist);
 
-  add_setshow_boolean_cmd ("mach-o-process-exports", class_obscure,
-			   &mach_o_process_exports_flag, _("\
+  add_setshow_boolean_cmd("mach-o-process-exports", class_obscure,
+			  &mach_o_process_exports_flag, _("\
 Set if GDB should process indirect function stub symbols from object files."), _("\
 Show if GDB should process indirect function stub symbols from object files."), NULL,
-			   NULL, NULL,
-			   &setlist, &showlist);
+			  NULL, NULL,
+			  &setlist, &showlist);
 }
 
 /* EOF */

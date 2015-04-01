@@ -37,7 +37,7 @@
 #include "language.h"
 /* APPLE LOCAL - subroutine inlining  */
 #include "annotate.h"
-#include "symfile.h"
+/* we already included "symfile.h" once above */
 #include "objfiles.h"
 #include "completer.h"
 #include "ui-out.h"
@@ -71,7 +71,11 @@
 #   include "macosx/nm-macosx.h"
 #  endif /* !_NM_NEXTSTEP_H_ */
 # endif /* !(multiple things) */
-# include "macosx/macosx-nat-inferior.h"
+/* in case we found the wrong one (i.e., from "../gdb-next" instead of
+ * from "./macosx"): */
+# ifndef __GDB_MACOSX_NAT_INFERIOR_H__
+#  include "macosx/macosx-nat-inferior.h"
+# endif /* !__GDB_MACOSX_NAT_INFERIOR_H__ */
 #else
 # define INFCMD_C_NOT_ON_NEXTSTEP 1
 #endif /* NM_NEXTSTEP || TM_NEXTSTEP */

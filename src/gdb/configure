@@ -887,6 +887,8 @@ HAVE_INTTYPES_H
 HAVE_UNSIGNED_LONG_LONG_INT
 HAVE_LONG_LONG_INT
 EXTRA_DEFS
+zlibinc
+zlibdir
 UNIX03_UGH_CFLAGS
 LIBXML2_LIBS
 LIBXML2_INCLUDES
@@ -970,7 +972,6 @@ ac_ct_DUMPBIN
 DUMPBIN
 LD
 FGREP
-SED
 LIBTOOL
 am__fastdepCCAS_FALSE
 am__fastdepCCAS_TRUE
@@ -979,6 +980,10 @@ CCASFLAGS
 CCAS
 ac_ct_AR
 AR
+REPORT_BUGS_TEXI
+REPORT_BUGS_TO
+SED
+PKGVERSION
 COMPILER
 MAKE_SHOULD_RECURSE_INTO_GNULIB_FALSE
 MAKE_SHOULD_RECURSE_INTO_GNULIB_TRUE
@@ -1146,6 +1151,8 @@ enable_tui
 enable_gdbtk
 with_libunwind
 enable_profiling
+with_pkgversion
+with_bugurl
 enable_fast_install
 enable_shared
 enable_static
@@ -1895,6 +1902,8 @@ Optional Packages:
                           [LIBDIR/debug]
   --with-gnulib           Build the gnulib sources here
   --with-libunwind        Use libunwind frame unwinding support
+  --with-pkgversion=PKG   Use PKG in the version string in place of "GDB"
+  --with-bugurl=URL       Direct users to URL to report a bug
   --with-pic[=PKGS]       try to use only PIC/non-PIC objects [default=use
                           both]
   --with-aix-soname=aix|svr4|both
@@ -8698,11 +8707,13 @@ if test "x$ac_cv_lib_intl_libintl_gettext" = xyes; then :
   :
 else
 
-    unset ac_cv_lib_intl_main
-    ## neither worked:
-    PRE_INTL_LDFLAGS="${LDFLAGS}"
-    LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lintl" >&5
+    if test -x "`which ld`"; then
+      unset ac_cv_lib_intl_main
+      ## neither worked:
+      PRE_INTL_LDFLAGS="${LDFLAGS}"
+      LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+      ##FIXME: the linker sometimes crashes here:
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lintl" >&5
 $as_echo_n "checking for main in -lintl... " >&6; }
 if ${ac_cv_lib_intl_main+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -8740,8 +8751,9 @@ _ACEOF
   LIBS="-lintl $LIBS"
 
 fi
-    ## reset:
-    LDFLAGS="${PRE_INTL_LDFLAGS}"
+      ## reset:
+      LDFLAGS="${PRE_INTL_LDFLAGS}"
+    fi
 
 fi
 
@@ -9028,6 +9040,8 @@ targ=${target}; . ${srcdir}/../bfd/config.bfd
 targ_archs=`echo ${targ_archs} | sed 's/ .*//'`
 
 if test "x${targ_archs}" != "x"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: targ_archs are now '${targ_archs}'" >&5
+$as_echo "$as_me: targ_archs are now '${targ_archs}'" >&6;}
 
 cat >>confdefs.h <<_ACEOF
 #define DEFAULT_BFD_ARCH ${targ_archs}
@@ -9035,6 +9049,8 @@ _ACEOF
   ## end def
 fi
 if test "x${targ_defvec}" != "x"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: targ_defvec is now '${targ_defvec}'" >&5
+$as_echo "$as_me: targ_defvec is now '${targ_defvec}'" >&6;}
 
 cat >>confdefs.h <<_ACEOF
 #define DEFAULT_BFD_VEC ${targ_defvec}
@@ -9429,7 +9445,6 @@ _ACEOF
 fi
 
 done
-
   for ac_header in libunwind-ia64.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "libunwind-ia64.h" "ac_cv_header_libunwind_ia64_h" "$ac_includes_default"
@@ -9441,7 +9456,7 @@ _ACEOF
 fi
 
 done
-
+  ## make sure we found both of them:
   if test x"${ac_cv_header_libunwind_h}" = x"yes" -a x"${ac_cv_header_libunwind_ia64_h}" = x"yes"; then
     enable_libunwind=yes;
   fi
@@ -9604,9 +9619,132 @@ $as_echo "$ac_cv_cc_supports_pg" >&6; }
 fi
 
 
-  test -z "${PKGVERSION}"
 
-  test -z "${REPORT_BUGS_TO}"
+
+# Check whether --with-pkgversion was given.
+if test "${with_pkgversion+set}" = set; then :
+  withval=$with_pkgversion; case "${withval}" in
+      yes) as_fn_error $? "package version not specified" "$LINENO" 5 ;;
+      no)  PKGVERSION="" ;;
+      *)   PKGVERSION="($withval) " ;;
+     esac
+else
+  PKGVERSION="(GDB) "
+fi
+    ## corresponding define:
+if test "x${PKGVERSION}" != "x"; then
+  test -n "${PKGVERSION}"
+
+cat >>confdefs.h <<_ACEOF
+#define PKGVERSION "${PKGVERSION}"
+_ACEOF
+  ## end definition
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
+$as_echo_n "checking for a sed that does not truncate output... " >&6; }
+if ${ac_cv_path_SED+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+            ac_script=s/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/
+     for ac_i in 1 2 3 4 5 6 7; do
+       ac_script="$ac_script$as_nl$ac_script"
+     done
+     echo "$ac_script" 2>/dev/null | sed 99q >conftest.sed
+     { ac_script=; unset ac_script;}
+     if test -z "$SED"; then
+  ac_path_SED_found=false
+  # Loop through the user's path and test for each of PROGNAME-LIST
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_prog in sed gsed; do
+    for ac_exec_ext in '' $ac_executable_extensions; do
+      ac_path_SED="$as_dir/$ac_prog$ac_exec_ext"
+      as_fn_executable_p "$ac_path_SED" || continue
+# Check for GNU ac_path_SED and select it if it is found.
+  # Check for GNU $ac_path_SED
+case `"$ac_path_SED" --version 2>&1` in
+*GNU*)
+  ac_cv_path_SED="$ac_path_SED" ac_path_SED_found=:;;
+*)
+  ac_count=0
+  $as_echo_n 0123456789 >"conftest.in"
+  while :
+  do
+    cat "conftest.in" "conftest.in" >"conftest.tmp"
+    mv "conftest.tmp" "conftest.in"
+    cp "conftest.in" "conftest.nl"
+    $as_echo '' >> "conftest.nl"
+    "$ac_path_SED" -f conftest.sed < "conftest.nl" >"conftest.out" 2>/dev/null || break
+    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
+    as_fn_arith $ac_count + 1 && ac_count=$as_val
+    if test $ac_count -gt ${ac_path_SED_max-0}; then
+      # Best one so far, save it but keep looking for a better one
+      ac_cv_path_SED="$ac_path_SED"
+      ac_path_SED_max=$ac_count
+    fi
+    # 10*(2^10) chars as input seems more than enough
+    test $ac_count -gt 10 && break
+  done
+  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
+esac
+
+      $ac_path_SED_found && break 3
+    done
+  done
+  done
+IFS=$as_save_IFS
+  if test -z "$ac_cv_path_SED"; then
+    as_fn_error $? "no acceptable sed could be found in \$PATH" "$LINENO" 5
+  fi
+else
+  ac_cv_path_SED=$SED
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_SED" >&5
+$as_echo "$ac_cv_path_SED" >&6; }
+ SED="$ac_cv_path_SED"
+  rm -f conftest.sed
+
+
+
+# Check whether --with-bugurl was given.
+if test "${with_bugurl+set}" = set; then :
+  withval=$with_bugurl; case "${withval}" in
+      yes) as_fn_error $? "bug URL not specified" "$LINENO" 5 ;;
+      no)  BUGURL=""
+	   ;;
+      *)   BUGURL="${withval}"
+	   ;;
+     esac
+else
+  BUGURL="http://www.gnu.org/software/gdb/bugs/"
+fi
+
+  case ${BUGURL} in
+  "")
+    REPORT_BUGS_TO=""
+    REPORT_BUGS_TEXI=""
+    ;;
+  *)
+
+    REPORT_BUGS_TO="<${BUGURL}>"
+    REPORT_BUGS_TEXI=@uref{`echo "${BUGURL}" | sed 's/@/@@/g'`}
+    ;;
+  esac;
+      ## corresponding define:
+if test "x${REPORT_BUGS_TO}" != "x"; then
+  test -n "${REPORT_BUGS_TO}"
+
+cat >>confdefs.h <<_ACEOF
+#define REPORT_BUGS_TO "${REPORT_BUGS_TO}"
+_ACEOF
+  ## end definition
+fi
 
 # --------------------- #
 # Checks for programs.  #
@@ -35674,7 +35812,7 @@ fi
 # Link in zlib if we can. This allows us to read compressed debug sections:
 
 
-  # See if the user specified whether he wants zlib support or not.
+  # See if the user specified whether he or she wants zlib support or not:
 
 # Check whether --with-zlib was given.
 if test "${with_zlib+set}" = set; then :
@@ -35754,6 +35892,14 @@ fi
     if test "x${with_zlib}" = "yes" -a "x${ac_cv_header_zlib_h}" != "xyes"; then
       as_fn_error $? "zlib (libz) library was explicitly requested but not found" "$LINENO" 5
     fi
+  fi
+
+  # for the in-tree one:
+  if test "x${zlibdir}" = "x"; then
+    test -z "${zlibdir}" && zlibdir=-L../zlib
+  fi
+  if test "x${zlibinc}" = "x"; then
+    test -z "${zlibinc}" && zlibinc="-I\$(srcdir)/../zlib"
   fi
 
 # On HP/UX we may need libxpdl for dlgetmodinfo (used by solib-pa64.c).
@@ -39745,6 +39891,346 @@ _ACEOF
 
 fi
 
+
+# The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking size of char" >&5
+$as_echo_n "checking size of char... " >&6; }
+if ${ac_cv_sizeof_char+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (char))" "ac_cv_sizeof_char"        "$ac_includes_default"; then :
+
+else
+  if test "$ac_cv_type_char" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (char)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof_char=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof_char" >&5
+$as_echo "$ac_cv_sizeof_char" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define SIZEOF_CHAR $ac_cv_sizeof_char
+_ACEOF
+
+# The cast to long int works around a bug in the HP C Compiler,
+# see AC_CHECK_SIZEOF for more information.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of char" >&5
+$as_echo_n "checking alignment of char... " >&6; }
+if ${ac_cv_alignof_char+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) offsetof (ac__type_alignof_, y)" "ac_cv_alignof_char"        "$ac_includes_default
+#ifndef offsetof
+# define offsetof(type, member) ((char *) &((type *) 0)->member - (char *) 0)
+#endif
+typedef struct { char x; char y; } ac__type_alignof_;"; then :
+
+else
+  if test "$ac_cv_type_char" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute alignment of char
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_alignof_char=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_alignof_char" >&5
+$as_echo "$ac_cv_alignof_char" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define ALIGNOF_CHAR $ac_cv_alignof_char
+_ACEOF
+
+# The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking size of short" >&5
+$as_echo_n "checking size of short... " >&6; }
+if ${ac_cv_sizeof_short+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (short))" "ac_cv_sizeof_short"        "$ac_includes_default"; then :
+
+else
+  if test "$ac_cv_type_short" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (short)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof_short=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof_short" >&5
+$as_echo "$ac_cv_sizeof_short" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define SIZEOF_SHORT $ac_cv_sizeof_short
+_ACEOF
+
+# The cast to long int works around a bug in the HP C Compiler,
+# see AC_CHECK_SIZEOF for more information.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of short" >&5
+$as_echo_n "checking alignment of short... " >&6; }
+if ${ac_cv_alignof_short+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) offsetof (ac__type_alignof_, y)" "ac_cv_alignof_short"        "$ac_includes_default
+#ifndef offsetof
+# define offsetof(type, member) ((char *) &((type *) 0)->member - (char *) 0)
+#endif
+typedef struct { char x; short y; } ac__type_alignof_;"; then :
+
+else
+  if test "$ac_cv_type_short" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute alignment of short
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_alignof_short=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_alignof_short" >&5
+$as_echo "$ac_cv_alignof_short" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define ALIGNOF_SHORT $ac_cv_alignof_short
+_ACEOF
+
+# The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking size of int" >&5
+$as_echo_n "checking size of int... " >&6; }
+if ${ac_cv_sizeof_int+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (int))" "ac_cv_sizeof_int"        "$ac_includes_default"; then :
+
+else
+  if test "$ac_cv_type_int" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (int)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof_int=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof_int" >&5
+$as_echo "$ac_cv_sizeof_int" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define SIZEOF_INT $ac_cv_sizeof_int
+_ACEOF
+
+# The cast to long int works around a bug in the HP C Compiler,
+# see AC_CHECK_SIZEOF for more information.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of int" >&5
+$as_echo_n "checking alignment of int... " >&6; }
+if ${ac_cv_alignof_int+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) offsetof (ac__type_alignof_, y)" "ac_cv_alignof_int"        "$ac_includes_default
+#ifndef offsetof
+# define offsetof(type, member) ((char *) &((type *) 0)->member - (char *) 0)
+#endif
+typedef struct { char x; int y; } ac__type_alignof_;"; then :
+
+else
+  if test "$ac_cv_type_int" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute alignment of int
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_alignof_int=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_alignof_int" >&5
+$as_echo "$ac_cv_alignof_int" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define ALIGNOF_INT $ac_cv_alignof_int
+_ACEOF
+
+ac_fn_c_check_type "$LINENO" "wchar_t" "ac_cv_type_wchar_t" "$ac_includes_default"
+if test "x$ac_cv_type_wchar_t" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_WCHAR_T 1
+_ACEOF
+
+
+  # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking size of wchar_t" >&5
+$as_echo_n "checking size of wchar_t... " >&6; }
+if ${ac_cv_sizeof_wchar_t+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (wchar_t))" "ac_cv_sizeof_wchar_t"        "$ac_includes_default"; then :
+
+else
+  if test "$ac_cv_type_wchar_t" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (wchar_t)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof_wchar_t=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof_wchar_t" >&5
+$as_echo "$ac_cv_sizeof_wchar_t" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define SIZEOF_WCHAR_T $ac_cv_sizeof_wchar_t
+_ACEOF
+
+  # The cast to long int works around a bug in the HP C Compiler,
+# see AC_CHECK_SIZEOF for more information.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of wchar_t" >&5
+$as_echo_n "checking alignment of wchar_t... " >&6; }
+if ${ac_cv_alignof_wchar_t+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) offsetof (ac__type_alignof_, y)" "ac_cv_alignof_wchar_t"        "$ac_includes_default
+#ifndef offsetof
+# define offsetof(type, member) ((char *) &((type *) 0)->member - (char *) 0)
+#endif
+typedef struct { char x; wchar_t y; } ac__type_alignof_;"; then :
+
+else
+  if test "$ac_cv_type_wchar_t" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute alignment of wchar_t
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_alignof_wchar_t=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_alignof_wchar_t" >&5
+$as_echo "$ac_cv_alignof_wchar_t" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define ALIGNOF_WCHAR_T $ac_cv_alignof_wchar_t
+_ACEOF
+
+
+fi
+# The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking size of long" >&5
+$as_echo_n "checking size of long... " >&6; }
+if ${ac_cv_sizeof_long+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (long))" "ac_cv_sizeof_long"        "$ac_includes_default"; then :
+
+else
+  if test "$ac_cv_type_long" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (long)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof_long=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof_long" >&5
+$as_echo "$ac_cv_sizeof_long" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define SIZEOF_LONG $ac_cv_sizeof_long
+_ACEOF
+
+# The cast to long int works around a bug in the HP C Compiler,
+# see AC_CHECK_SIZEOF for more information.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of long" >&5
+$as_echo_n "checking alignment of long... " >&6; }
+if ${ac_cv_alignof_long+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) offsetof (ac__type_alignof_, y)" "ac_cv_alignof_long"        "$ac_includes_default
+#ifndef offsetof
+# define offsetof(type, member) ((char *) &((type *) 0)->member - (char *) 0)
+#endif
+typedef struct { char x; long y; } ac__type_alignof_;"; then :
+
+else
+  if test "$ac_cv_type_long" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute alignment of long
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_alignof_long=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_alignof_long" >&5
+$as_echo "$ac_cv_alignof_long" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define ALIGNOF_LONG $ac_cv_alignof_long
+_ACEOF
 
 ac_fn_c_check_type "$LINENO" "caddr_t" "ac_cv_type_caddr_t" "$ac_includes_default"
 if test "x$ac_cv_type_caddr_t" = xyes; then :
@@ -44385,17 +44871,17 @@ fi
 build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Wparentheses -Wpointer-arith \
 -Wno-unused -Wunused-value -Wunused-label -Wunused-result \
--Wempty-body -Wmissing-declarations \
--Wno-format-security -Wno-format \
--Waddress -Wattributes \
+-Wunused-variable -Wunused-but-set-variable \
+-Wempty-body -Wmissing-declarations -Wignored-qualifiers \
+-Wno-format-security -Waddress -Wattributes \
 -Wswitch -Wclobbered -Wcoverage-mismatch -Wdiv-by-zero \
--Wdouble-promotion -Wfree-nonheap-object -Wsign-compare \
+-Wdouble-promotion -Wfree-nonheap-object -Wsign-compare -Wtype-limits \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
--Wmissing-include-dirs -Woverflow -Woverlength-strings -Woverride-init \
--Wpragmas -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
--Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc \
+-Wmissing-include-dirs -Woverflow -Woverlength-strings -Wpragmas \
+-Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
+-Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc -Wlogical-op \
 -Wunsuffixed-float-constants -Wfloat-conversion -Wjump-misses-init \
--Wno-deprecated-declarations"
+-Wmissing-field-initializers -Wno-deprecated-declarations"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -44406,7 +44892,7 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 else
   c_warnings="-Wpointer-sign -Wdeclaration-after-statement -Wc++-compat \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
--Wstrict-prototypes"
+-Wstrict-prototypes -Woverride-init -Wnested-externs"
   build_warnings="${build_warnings} ${c_warnings}"
 fi
 
@@ -44423,7 +44909,7 @@ case "${host}" in
     # (-Wmost might have to be removed for the same reason as -Wall)
     # -Wnonportable-cfstrings is actually a flag for newer versions of the
     # FSF gcc, but it only makes sense on Apple platforms.
-    build_warnings="${build_warnings} -Wmost -Wformat-nonliteral -Wextra-tokens -Wnewline-eof -std=gnu99 -Wnonportable-cfstrings -Wendif-labels"
+    build_warnings="${build_warnings} -Wmost -Wformat -Wformat-nonliteral -Wformat-y2k -Wextra-tokens -Wnewline-eof -std=gnu99 -Wnonportable-cfstrings -Wendif-labels"
     case "${host}" in
       *64*-apple-darwin9* | *64*-apple-darwin1[0123456789].*.*)
         build_warnings="${build_warnings} -Wshorten-64-to-32"
@@ -44455,7 +44941,7 @@ esac
 opt_warnings="-Wuninitialized -Winit-self -Wmissing-noreturn \
 -Wvolatile-register-var -Wdisabled-optimization \
 -Waggressive-loop-optimizations -Wvector-operation-performance \
--Wmaybe-uninitialized -Wstrict-overflow=1 -Wunsafe-loop-optimizations"
+-Wmaybe-uninitialized -Wstrict-overflow=1"
 # -Warray-bounds is only for -O2 and up, or when -ftree-vrp is active, so
 # use a separate variable for it:
 opt_warnings_plus="${opt_warnings} -Warray-bounds"
@@ -44490,14 +44976,14 @@ fi
 #  * -Wmissing-prototypes (C-only; redundant with other flag)
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
 #  * -Winline (I can never tell if the compiler is right or not with this)
-#  * -Wformat (currently we explicitly disable this; required for others)
 #  * -Wundef (only if we can figure out how to fix the issue with caddr_t)
 #  * -Wunused-macros (if we also add back -Wundef as per above)
 #  * -Wunused-function (had been added, but I hate fixing it)
-#  * -Wnested-externs (can be redundant with -Wimplicit)
 #  * -Wchar-subscripts (upstream FSF gdb explicitly disables this)
 #  * -Wunused-local-typedefs (`mig` generates code that triggers this)
 #  * -Wenum-compare (not really sure how to solve for now...)
+#  * -Wunsafe-loop-optimizations (lex/yacc generate code that triggers it)
+#  * -Waggregate-return (too noisy and hard to avoid)
 # Once gcc 5 is relesaed, the following might be worth consideration:
 #  * -Wbool-compare
 #  * -Wlogical-not-parentheses
@@ -44509,8 +44995,8 @@ fi
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)
-#  * -Wunused-function (hard to fix)
 #  * -Wunused-value (dummy workaround method for this is dumb)
+#  * -Wunused-but-set-variable (likewise)
 #  * -Wstrict-prototypes (would already do similar checks anyways)
 #  * -Wmissing-noreturn (might want to use the newer version instead)
 #  * -Wvolatile-register-var (kinda pointless)
@@ -44521,6 +45007,10 @@ fi
 #  * -Wno-deprecated-declarations (I recently marked a bunch of functions
 #    as deprecated, but that made things too noisy... will eventually want
 #    the warnings back though.)
+#  * -Wformat (we used to explicitly disable this; but it was required for
+#    others such as -Wformat-nonliteral, so I added it back)
+#  * -Wnested-externs (if it gets redundant with -Wimplicit again)
+#  * -Wtype-limits (often triggered on purpose, so okay to just ignore it)
 # Up for debate in some other way:
 #  * -Wstrict-overflow (i.e., could change the value assigned to it. We use
 #    "1" now because that is the default for "-Wall", but "2" is the
@@ -44529,8 +45019,13 @@ fi
 #  * -Wdouble-promotion (could be moved to the same place as -Wlong-long if
 #    we get rid of -Wunsuffixed-float-constants some time...)
 # NOT actually up for debate:
-#  * -Werror (never add this)
+#  * -Werror (never actually add this, even though upstream GDB does...)
 #  * -pedantic-errors (likewise, never add this)
+#  * -Wunused-parameter (despite the existence of clang's
+#    -Wused-but-marked-unused flag, upstream still insists on leaving this
+#    one out, presumably because gcc does not support it yet...)
+#  * -Wunused-but-set-parameter (likewise)
+#  * -Wall (contains -Wunused-parameter)
 # Check whether --enable-build-warnings was given.
 if test "${enable_build_warnings+set}" = set; then :
   enableval=$enable_build_warnings; case "${enableval}" in
@@ -44599,6 +45094,32 @@ else
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 	    CFLAGS="${saved_CFLAGS}"
+            ;;
+          -Wformat-nonliteral|-Wformat-y2k)
+            ## (These would be ignored without also using -Wformat)
+	    saved_CFLAGS="${CFLAGS}"
+	    CFLAGS="${CFLAGS} ${w} -Werror -Wformat"
+	    saved_CXXFLAGS="${CXXFLAGS}"
+	    CXXFLAGS="${CXXFLAGS} ${w} -Werror -Wformat"
+	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"; then :
+  WARN_CFLAGS="${WARN_CFLAGS} ${w}"
+else
+  BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+	    CFLAGS="${saved_CFLAGS}"
+	    CXXFLAGS="${saved_CXXFLAGS}"
             ;;
 	  *) # Check that GCC accepts it:
 	    saved_CFLAGS="${CFLAGS}"
@@ -44782,6 +45303,11 @@ $as_echo "#define USE_WIN32API 1" >>confdefs.h
 esac
 
 
+  test -z "${gdb_cv_var_elf}"
+  test -z "${gdb_cv_var_macho}"
+  test -z "${gdb_cv_var_som}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: skipping checks for what formats bfd supports." >&5
+$as_echo "$as_me: WARNING: skipping checks for what formats bfd supports." >&2;}
 if test "x${gdb_host_obs}" != "x"; then
   # Add any host-specific objects to GDB.
   test -n "${gdb_host_obs}" && export CONFIG_OBS="${CONFIG_OBS} ${gdb_host_obs}"

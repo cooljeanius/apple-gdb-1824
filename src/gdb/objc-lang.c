@@ -843,9 +843,9 @@ objc_create_fundamental_type (struct objfile *objfile, int typeid)
    notify function it calls when adding a new region, passing in a
    pointer to the new region structure.  */
 
-#define OBJC_TRAMPOLINE_MESSAGE (1<<0)  // trampoline acts like objc_msgSend_fixedup
-#define OBJC_TRAMPOLINE_STRET (1<<1)    // trampoline is struct-returning
-#define OBJC_TRAMPOLINE_VTABLE (1<<2)   // trampoline is vtable dispatcher
+#define OBJC_TRAMPOLINE_MESSAGE (1 << 0) /* trampoline acts like objc_msgSend_fixedup */
+#define OBJC_TRAMPOLINE_STRET (1 << 1) /* trampoline is struct-returning */
+#define OBJC_TRAMPOLINE_VTABLE (1 << 2) /* trampoline is vtable dispatcher */
 
 struct objc_trampoline_record
 {
@@ -2362,7 +2362,8 @@ objc_setup_safe_print (struct cleanup **cleanup)
     }
   else
     {
-      // If they have disabled non-blocking mode then this setup should just return true.
+      /* If they have disabled non-blocking mode, then this setup should
+       * just return true: */
       safe_p = 1;
     }
 
@@ -3854,20 +3855,23 @@ resolve_newruntime_objc_msgsendsuper (CORE_ADDR pc, CORE_ADDR *new_pc,
     {
       char selname[2048];
       selname[0] = '\0';
-      read_memory_string (sel, selname, 2047);
-      sel = lookup_child_selector (selname);
+      read_memory_string(sel, selname, 2047);
+      sel = lookup_child_selector(selname);
     }
 
   /* OBJECT is the address of a two-word struct.
      The second word is the address of the class we are starting from, then
      we get the super class by grabbing the second word of the class:  */
-  //  object = read_memory_unsigned_integer (object + addrsize, addrsize);
-  //  object = read_memory_unsigned_integer (object + addrsize, addrsize);
+#if 0
+  object = read_memory_unsigned_integer(object + addrsize, addrsize);
+  object = read_memory_unsigned_integer(object + addrsize, addrsize);
+#endif /* 0 */
 
-  read_objc_super (object, &sstr);
-  // The header file on objc_super says the second field in ObjC 2 is the super_class,
-  // but that doesn't actually seem to be true, that seems in fact to be the class.
-  // So we have to grab the super class from that.
+  read_objc_super(object, &sstr);
+  /* The header file on objc_super says the second field in ObjC 2 is the
+   * super_class, but that does NOT actually seem to be true; that seems,
+   * in fact, to be the class.  So we have to grab the super_class from
+   * that instead.  */
 
   object = read_memory_unsigned_integer (sstr.class + addrsize, addrsize);
 
@@ -5462,18 +5466,20 @@ _initialize_objc_lang(void)
 			   NULL, NULL,
 			   &setlist, &showlist);
 
-  add_setshow_boolean_cmd ("objc-non-blocking-mode", no_class, &use_non_blocking_mode,
-			   "Set whether all inferior function calls should use the objc non-blocking mode.\n"
-                           "Note that if this is on the attempt to call the function will fail if we can't turn on\n"
-                           "the non-blocking mode.\n",
-			   "Show whether all inferior function calls should use the objc non-blocking mode.",
-			   "??",
-			   set_non_blocking_mode_func, NULL,
-			   &setlist, &showlist);
-  add_setshow_zinteger_cmd ("objc", class_maintenance, &debug_objc, "Set objc debugging.",
-                            "Show objc debugging.",
-                            "When non-zero, objc specific debugging is enabled.",
-			    NULL,
-			    NULL,
-			    &setdebuglist, &showdebuglist);
+  add_setshow_boolean_cmd("objc-non-blocking-mode", no_class, &use_non_blocking_mode,
+			  "Set whether all inferior function calls should use the objc non-blocking mode.\n"
+                          "Note that if this is on the attempt to call the function will fail if we can't turn on\n"
+                          "the non-blocking mode.\n",
+			  "Show whether all inferior function calls should use the objc non-blocking mode.",
+			  "??",
+			  set_non_blocking_mode_func, NULL,
+			  &setlist, &showlist);
+  add_setshow_zinteger_cmd("objc", class_maintenance, &debug_objc, "Set objc debugging.",
+                           "Show objc debugging.",
+                           "When non-zero, objc specific debugging is enabled.",
+			   NULL,
+			   NULL,
+			   &setdebuglist, &showdebuglist);
 }
+
+/* EOF */

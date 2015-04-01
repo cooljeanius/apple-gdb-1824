@@ -1,4 +1,4 @@
-/* Abstraction of GNU v2 abi.
+/* gnu-v2-abi.c: Abstraction of GNU v2 abi.
 
    Copyright 2001, 2002, 2003, 2005 Free Software Foundation, Inc.
 
@@ -37,31 +37,31 @@
 
 struct cp_abi_ops gnu_v2_abi_ops;
 
-static int vb_match (struct type *, int, struct type *);
+static int vb_match(struct type *, int, struct type *);
 
 static enum dtor_kinds
-gnuv2_is_destructor_name (const char *name)
+gnuv2_is_destructor_name(const char *name)
 {
-  if ((name[0] == '_' && is_cplus_marker (name[1]) && name[2] == '_')
-      || strncmp (name, "__dt__", 6) == 0)
+  if (((name[0] == '_') && is_cplus_marker(name[1]) && (name[2] == '_'))
+      || (strncmp(name, "__dt__", 6) == 0))
     return complete_object_dtor;
   else
-    return 0;
+    return (enum dtor_kinds)0;
 }
 
 static enum ctor_kinds
-gnuv2_is_constructor_name (const char *name)
+gnuv2_is_constructor_name(const char *name)
 {
-  if ((name[0] == '_' && name[1] == '_'
-       && (isdigit (name[2]) || strchr ("Qt", name[2])))
-      || strncmp (name, "__ct__", 6) == 0)
+  if (((name[0] == '_') && (name[1] == '_')
+       && (isdigit(name[2]) || strchr("Qt", name[2])))
+      || (strncmp(name, "__ct__", 6) == 0))
     return complete_object_ctor;
   else
-    return 0;
+    return (enum ctor_kinds)0;
 }
 
 static int
-gnuv2_is_vtable_name (const char *name)
+gnuv2_is_vtable_name(const char *name)
 {
   return (((name)[0] == '_'
 	   && (((name)[1] == 'V' && (name)[2] == 'T')
@@ -72,9 +72,9 @@ gnuv2_is_vtable_name (const char *name)
 }
 
 static int
-gnuv2_is_operator_name (const char *name)
+gnuv2_is_operator_name(const char *name)
 {
-  return strncmp (name, "operator", 8) == 0;
+  return (strncmp(name, "operator", 8) == 0);
 }
 
 
@@ -212,14 +212,14 @@ gnuv2_value_rtti_type (struct value *v, int *full, int *top, int *using_enc)
      the vtables properly for G++ compiled stuff.  Also, I'll be using
      the type info functions, which are always right.  Deal with it
      until then.
-     JCI - This pretty much useless.  This gets the "true" type 
-     correctly when there is single inheritance - but in all such  
-     cases that I could find gdb already knows that.  In cases 
-     where this points INTO the object (like non-virtual diamond 
-     graphs) the demangled name is something like OUTER::INNER 
-     and this is not a symbol gdb can resolve, so we fail & return 
-     NULL anyway.  Seems like this really isn't going to work till 
-     we actually call the RTTI function & parse it. 
+     JCI - This pretty much useless.  This gets the "true" type
+     correctly when there is single inheritance - but in all such
+     cases that I could find gdb already knows that.  In cases
+     where this points INTO the object (like non-virtual diamond
+     graphs) the demangled name is something like OUTER::INNER
+     and this is not a symbol gdb can resolve, so we fail & return
+     NULL anyway.  Seems like this really isn't going to work till
+     we actually call the RTTI function & parse it.
 */
 
   /* If the type has no vptr fieldno, try to get it filled in */
@@ -408,9 +408,11 @@ init_gnuv2_ops (void)
 extern initialize_file_ftype _initialize_gnu_v2_abi; /* -Wmissing-prototypes */
 
 void
-_initialize_gnu_v2_abi (void)
+_initialize_gnu_v2_abi(void)
 {
-  init_gnuv2_ops ();
-  register_cp_abi (&gnu_v2_abi_ops);
-  set_cp_abi_as_auto_default (gnu_v2_abi_ops.shortname);
+  init_gnuv2_ops();
+  register_cp_abi(&gnu_v2_abi_ops);
+  set_cp_abi_as_auto_default(gnu_v2_abi_ops.shortname);
 }
+
+/* EOF */

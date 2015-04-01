@@ -36,6 +36,10 @@
 #include "cli/cli-decode.h"
 #include "cli/cli-script.h"
 
+#if 0
+# define APPLE_MERGE 1
+#endif /* 0 */
+
 /* From mi/mi-main.c */
 extern void mi_interpreter_exec_bp_cmd(char *command,
                                        char **argv, int argc);
@@ -1364,7 +1368,7 @@ script_from_file(FILE *stream, char *file)
 
   /* keep this condition the same as below: */
 #if defined(__APPLE__) && defined(__APPLE_CC__) && defined(APPLE_MERGE)
-  int needed_length;
+  size_t needed_length;
 #endif /* APPLE MERGE */
 
   if (stream == NULL)
@@ -1382,7 +1386,8 @@ script_from_file(FILE *stream, char *file)
   error_pre_print = "";
 
 #if defined(__APPLE__) && defined(__APPLE_CC__) && defined(APPLE_MERGE)
-  needed_length = (strlen(source_file_name) + strlen(source_pre_error) + 80);
+  needed_length = (strlen(source_file_name) + strlen(source_pre_error)
+                   + 80UL);
   if (source_error_allocated < needed_length)
     {
       source_error_allocated *= 2;
@@ -1402,7 +1407,7 @@ script_from_file(FILE *stream, char *file)
     args.stream = stream;
     e = catch_exception(uiout, wrapped_read_command_file, &args,
                         RETURN_MASK_ERROR);
-    switch (e.reason)
+    switch ((int)e.reason)
       {
       case 0:
 	break;

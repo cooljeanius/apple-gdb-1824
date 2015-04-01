@@ -368,13 +368,16 @@ unset ac_cv_lib_intl_gettext
 # Also check for -lintl anyways, but with different functions:
 AC_CHECK_LIB([intl],[gettext],[:],[
   AC_CHECK_LIB([intl],[libintl_gettext],[:],[
-    unset ac_cv_lib_intl_main
-    ## neither worked:
-    PRE_INTL_LDFLAGS="${LDFLAGS}"
-    LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-    AC_CHECK_LIB([intl],[main])dnl
-    ## reset:
-    LDFLAGS="${PRE_INTL_LDFLAGS}"
+    if test -x "`which ld`"; then
+      unset ac_cv_lib_intl_main
+      ## neither worked:
+      PRE_INTL_LDFLAGS="${LDFLAGS}"
+      LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+      ##FIXME: the linker sometimes crashes here:
+      AC_CHECK_LIB([intl],[main])dnl
+      ## reset:
+      LDFLAGS="${PRE_INTL_LDFLAGS}"
+    fi
   ])dnl#end case where symbols are prefixed with "libintl_"
 ])dnl#end case where symbols are unprefixed
   ## just in case:
@@ -559,11 +562,13 @@ targ=${target}; . ${srcdir}/../bfd/config.bfd
 targ_archs=`echo ${targ_archs} | sed 's/ .*//'`
 
 if test "x${targ_archs}" != "x"; then
+  AC_MSG_NOTICE([targ_archs are now '${targ_archs}'])
   AC_DEFINE_UNQUOTED([DEFAULT_BFD_ARCH],[${targ_archs}],
     [Define to BFD's default architecture. ])dnl
   ## end def
 fi
 if test "x${targ_defvec}" != "x"; then
+  AC_MSG_NOTICE([targ_defvec is now '${targ_defvec}'])
   AC_DEFINE_UNQUOTED([DEFAULT_BFD_VEC],[${targ_defvec}],
     [Define to BFD's default target vector. ])dnl
   ## end def
@@ -682,8 +687,9 @@ AC_ARG_WITH([libunwind],
     AC_MSG_ERROR([bad value ${withval} for GDB with-libunwind option])
     ;;
 esac],[
-  AC_CHECK_HEADERS([libunwind.h])
-  AC_CHECK_HEADERS([libunwind-ia64.h])
+  AC_CHECK_HEADERS([libunwind.h])dnl
+  AC_CHECK_HEADERS([libunwind-ia64.h])dnl
+  ## make sure we found both of them:
   if test x"${ac_cv_header_libunwind_h}" = x"yes" -a x"${ac_cv_header_libunwind_ia64_h}" = x"yes"; then
     enable_libunwind=yes;
   fi
@@ -750,21 +756,25 @@ if test "x${enable_profiling}" = "xyes"; then
 fi
 
 m4_ifdef([ACX_PKGVERSION],[
-ACX_PKGVERSION([GDB])
+ACX_PKGVERSION([GDB])dnl
+  ## corresponding define:
 if test "x${PKGVERSION}" != "x"; then
   test -n "${PKGVERSION}"
   AC_DEFINE_UNQUOTED([PKGVERSION],["${PKGVERSION}"],
-                     [Additional package description])
+                     [Additional package description])dnl
+  ## end definition
 fi
 ],[
   test -z "${PKGVERSION}"
 ])dnl
 m4_ifdef([ACX_BUGURL],[
-ACX_BUGURL([http://www.gnu.org/software/gdb/bugs/])
+ACX_BUGURL([http://www.gnu.org/software/gdb/bugs/])dnl
+  ## corresponding define:
 if test "x${REPORT_BUGS_TO}" != "x"; then
   test -n "${REPORT_BUGS_TO}"
   AC_DEFINE_UNQUOTED([REPORT_BUGS_TO],["${REPORT_BUGS_TO}"],
-                     [Bug reporting address])
+                     [Bug reporting address])dnl
+  ## end definition
 fi
 ],[
   test -z "${REPORT_BUGS_TO}"
@@ -1080,14 +1090,24 @@ m4_ifdef([AM_ZLIB],[
 ],[
 AC_MSG_CHECKING([if there is a zlib sister directory in this source tree])
 if test -d ../zlib -o -d ${srcdir}/../zlib; then
+  if test "x${zlibdir}" = "x"; then
+    test -z "${zlibdir}" && zlibdir=-L../zlib
+  fi
+  if test "x${zlibinc}" = "x"; then
+    test -z "${zlibinc}" && zlibinc="-I\$(srcdir)/../zlib"
+  fi
   export HAVE_ZLIB_SOURCE=1
   AC_SUBST([HAVE_ZLIB_SOURCE])dnl
   ## print:
   AC_MSG_RESULT([yes])
 else
+  zlibdir=""
+  zlibinc=""
   AC_MSG_RESULT([no])
 fi
 AC_SEARCH_LIBS([zlibVersion],[z],[AC_CHECK_HEADERS([zlib.h])])dnl
+AC_SUBST([zlibdir])dnl
+AC_SUBST([zlibinc])dnl
 ])dnl
 
 # On HP/UX we may need libxpdl for dlgetmodinfo (used by solib-pa64.c).
@@ -1431,6 +1451,8 @@ AC_CHECK_DECLS([strchr, strpbrk],[],[],[
 
 m4_ifdef([libiberty_INIT],[
   libiberty_INIT
+],[
+  AC_MSG_NOTICE([skipping extra checks for libiberty things])dnl
 ])dnl
 
 dnl# just skip the first one; getting different results from the two
@@ -1595,6 +1617,18 @@ AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 AC_TYPE_UINTMAX_T
+AC_CHECK_SIZEOF([char])dnl
+AC_CHECK_ALIGNOF([char])dnl
+AC_CHECK_SIZEOF([short])dnl
+AC_CHECK_ALIGNOF([short])dnl
+AC_CHECK_SIZEOF([int])dnl
+AC_CHECK_ALIGNOF([int])dnl
+AC_CHECK_TYPES([wchar_t],[
+  AC_CHECK_SIZEOF([wchar_t])dnl
+  AC_CHECK_ALIGNOF([wchar_t])dnl
+],[],[])dnl
+AC_CHECK_SIZEOF([long])dnl
+AC_CHECK_ALIGNOF([long])dnl
 AC_CHECK_TYPES([caddr_t])dnl
 AC_CHECK_TYPES([thread_t])dnl
 AC_CHECK_TYPES([regex_t],[],[],[
@@ -2750,17 +2784,17 @@ AC_SUBST([TARGET_SYSTEM_ROOT_DEFINE])dnl
 build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Wparentheses -Wpointer-arith \
 -Wno-unused -Wunused-value -Wunused-label -Wunused-result \
--Wempty-body -Wmissing-declarations \
--Wno-format-security -Wno-format \
--Waddress -Wattributes \
+-Wunused-variable -Wunused-but-set-variable \
+-Wempty-body -Wmissing-declarations -Wignored-qualifiers \
+-Wno-format-security -Waddress -Wattributes \
 -Wswitch -Wclobbered -Wcoverage-mismatch -Wdiv-by-zero \
--Wdouble-promotion -Wfree-nonheap-object -Wsign-compare \
+-Wdouble-promotion -Wfree-nonheap-object -Wsign-compare -Wtype-limits \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
--Wmissing-include-dirs -Woverflow -Woverlength-strings -Woverride-init \
--Wpragmas -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
--Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc \
+-Wmissing-include-dirs -Woverflow -Woverlength-strings -Wpragmas \
+-Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
+-Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc -Wlogical-op \
 -Wunsuffixed-float-constants -Wfloat-conversion -Wjump-misses-init \
--Wno-deprecated-declarations"
+-Wmissing-field-initializers -Wno-deprecated-declarations"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -2771,7 +2805,7 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 else
   c_warnings="-Wpointer-sign -Wdeclaration-after-statement -Wc++-compat \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
--Wstrict-prototypes"
+-Wstrict-prototypes -Woverride-init -Wnested-externs"
   build_warnings="${build_warnings} ${c_warnings}"
 fi
 
@@ -2789,7 +2823,7 @@ case "${host}" in
     # (-Wmost might have to be removed for the same reason as -Wall)
     # -Wnonportable-cfstrings is actually a flag for newer versions of the
     # FSF gcc, but it only makes sense on Apple platforms.
-    build_warnings="${build_warnings} -Wmost -Wformat-nonliteral -Wextra-tokens -Wnewline-eof -std=gnu99 -Wnonportable-cfstrings -Wendif-labels"
+    build_warnings="${build_warnings} -Wmost -Wformat -Wformat-nonliteral -Wformat-y2k -Wextra-tokens -Wnewline-eof -std=gnu99 -Wnonportable-cfstrings -Wendif-labels"
     case "${host}" in
       *64*-apple-darwin9* | *64*-apple-darwin1[[0123456789]].*.*)
         build_warnings="${build_warnings} -Wshorten-64-to-32"
@@ -2821,7 +2855,7 @@ esac
 opt_warnings="-Wuninitialized -Winit-self -Wmissing-noreturn \
 -Wvolatile-register-var -Wdisabled-optimization \
 -Waggressive-loop-optimizations -Wvector-operation-performance \
--Wmaybe-uninitialized -Wstrict-overflow=1 -Wunsafe-loop-optimizations"
+-Wmaybe-uninitialized -Wstrict-overflow=1"
 # -Warray-bounds is only for -O2 and up, or when -ftree-vrp is active, so
 # use a separate variable for it:
 opt_warnings_plus="${opt_warnings} -Warray-bounds"
@@ -2856,14 +2890,14 @@ fi
 #  * -Wmissing-prototypes (C-only; redundant with other flag)
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
 #  * -Winline (I can never tell if the compiler is right or not with this)
-#  * -Wformat (currently we explicitly disable this; required for others)
 #  * -Wundef (only if we can figure out how to fix the issue with caddr_t)
 #  * -Wunused-macros (if we also add back -Wundef as per above)
 #  * -Wunused-function (had been added, but I hate fixing it)
-#  * -Wnested-externs (can be redundant with -Wimplicit)
 #  * -Wchar-subscripts (upstream FSF gdb explicitly disables this)
 #  * -Wunused-local-typedefs (`mig` generates code that triggers this)
 #  * -Wenum-compare (not really sure how to solve for now...)
+#  * -Wunsafe-loop-optimizations (lex/yacc generate code that triggers it)
+#  * -Waggregate-return (too noisy and hard to avoid)
 # Once gcc 5 is relesaed, the following might be worth consideration:
 #  * -Wbool-compare
 #  * -Wlogical-not-parentheses
@@ -2875,8 +2909,8 @@ fi
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)
-#  * -Wunused-function (hard to fix)
 #  * -Wunused-value (dummy workaround method for this is dumb)
+#  * -Wunused-but-set-variable (likewise)
 #  * -Wstrict-prototypes (would already do similar checks anyways)
 #  * -Wmissing-noreturn (might want to use the newer version instead)
 #  * -Wvolatile-register-var (kinda pointless)
@@ -2887,6 +2921,10 @@ fi
 #  * -Wno-deprecated-declarations (I recently marked a bunch of functions
 #    as deprecated, but that made things too noisy... will eventually want
 #    the warnings back though.)
+#  * -Wformat (we used to explicitly disable this; but it was required for
+#    others such as -Wformat-nonliteral, so I added it back)
+#  * -Wnested-externs (if it gets redundant with -Wimplicit again)
+#  * -Wtype-limits (often triggered on purpose, so okay to just ignore it)
 # Up for debate in some other way:
 #  * -Wstrict-overflow (i.e., could change the value assigned to it. We use
 #    "1" now because that is the default for "-Wall", but "2" is the
@@ -2895,8 +2933,13 @@ fi
 #  * -Wdouble-promotion (could be moved to the same place as -Wlong-long if
 #    we get rid of -Wunsuffixed-float-constants some time...)
 # NOT actually up for debate:
-#  * -Werror (never add this)
+#  * -Werror (never actually add this, even though upstream GDB does...)
 #  * -pedantic-errors (likewise, never add this)
+#  * -Wunused-parameter (despite the existence of clang's
+#    -Wused-but-marked-unused flag, upstream still insists on leaving this
+#    one out, presumably because gcc does not support it yet...)
+#  * -Wunused-but-set-parameter (likewise)
+#  * -Wall (contains -Wunused-parameter)
 AC_ARG_ENABLE([build-warnings],
 [AS_HELP_STRING([--enable-build-warnings],
                 [Enable build-time compiler warnings if gcc is used])],
@@ -2954,6 +2997,18 @@ then
                               [WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
                               [BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
 	    CFLAGS="${saved_CFLAGS}"
+            ;;
+          -Wformat-nonliteral|-Wformat-y2k)
+            ## (These would be ignored without also using -Wformat)
+	    saved_CFLAGS="${CFLAGS}"
+	    CFLAGS="${CFLAGS} ${w} -Werror -Wformat"
+	    saved_CXXFLAGS="${CXXFLAGS}"
+	    CXXFLAGS="${CXXFLAGS} ${w} -Werror -Wformat"
+	    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+                              [WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
+                              [BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
+	    CFLAGS="${saved_CFLAGS}"
+	    CXXFLAGS="${saved_CXXFLAGS}"
             ;;
 	  *) # Check that GCC accepts it:
 	    saved_CFLAGS="${CFLAGS}"
@@ -3085,9 +3140,9 @@ esac
 AC_SUBST([WIN32LIBS])dnl
 
 m4_ifdef([GDB_AC_CHECK_BFD],[
-  # Add ELF support to GDB, but only if BFD includes ELF support.
+  # Add ELF support to GDB, but only if BFD includes ELF support:
   GDB_AC_CHECK_BFD([for ELF support in BFD],[gdb_cv_var_elf],
-                   [bfd_get_elf_phdr_upper_bound (NULL)],[elf-bfd.h])
+                   [bfd_get_elf_phdr_upper_bound(NULL)],[elf-bfd.h])
   if test "x${gdb_cv_var_elf}" = "xyes"; then
     CONFIG_OBS="${CONFIG_OBS} elfread.o stap-probe.o"
     AC_DEFINE([HAVE_ELF],[1],
@@ -3099,19 +3154,24 @@ m4_ifdef([GDB_AC_CHECK_BFD],[
     fi
   fi
 
-  # Add macho support to GDB, but only if BFD includes it.
+  # Add macho support to GDB, but only if BFD includes it:
   GDB_AC_CHECK_BFD([for Mach-O support in BFD],[gdb_cv_var_macho],
-                   [bfd_mach_o_lookup_command (NULL, 0, NULL)],[mach-o.h])
+                   [bfd_mach_o_lookup_command(NULL, 0, NULL)],[mach-o.h])
   if test "x${gdb_cv_var_macho}" = "xyes"; then
     CONFIG_OBS="${CONFIG_OBS} machoread.o"
   fi
 
-  # Add SOM support to GDB, but only if BFD includes it.
+  # Add SOM support to GDB, but only if BFD includes it:
   GDB_AC_CHECK_BFD([for SOM support in BFD],[gdb_cv_var_som],
                    [bfd_som_attach_aux_hdr(NULL, 0, NULL)],[som.h])
   if test "x${gdb_cv_var_som}" = "xyes"; then
     CONFIG_OBS="${CONFIG_OBS} somread.o"
   fi
+],[
+  test -z "${gdb_cv_var_elf}"
+  test -z "${gdb_cv_var_macho}"
+  test -z "${gdb_cv_var_som}"
+  AC_MSG_WARN([skipping checks for what formats bfd supports.])dnl
 ])dnl##end ifdef
 
 if test "x${gdb_host_obs}" != "x"; then

@@ -35,8 +35,8 @@
 #include "gdbcore.h"
 
 #ifdef __CYGWIN__
-#include <sys/cygwin.h>
-#endif
+# include <sys/cygwin.h>
+#endif /* __CYGWIN__ */
 
 #ifdef __CYGWIN__
 static char default_nto_target[] = "C:\\QNXsdk\\target\\qnx6";
@@ -44,7 +44,7 @@ static char default_nto_target[] = "C:\\QNXsdk\\target\\qnx6";
 static char default_nto_target[] = "/opt/QNXsdk/target/qnx6";
 #else
 static char default_nto_target[] = "";
-#endif
+#endif /* __CYGWIN__ || (__sun__ || linux) */
 
 struct nto_target_ops current_nto_target;
 

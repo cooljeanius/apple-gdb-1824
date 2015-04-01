@@ -48,7 +48,7 @@
 #include "block.h"
 #include "dictionary.h"
 #include "objc-lang.h"
-#include "macosx-nat-inferior.h"  // need to pick up macho_calculate_offsets_for_dsym() in machoread.c
+#include "macosx-nat-inferior.h" /* need to pick up macho_calculate_offsets_for_dsym() in machoread.c */
 
 #include "db-access-functions.h"
 
@@ -72,7 +72,7 @@ static void objfile_remove_from_restrict_list (struct objfile *);
 /* Variables to make obsolete commands available.  */
 static char *cached_symfile_path = NULL;
 int mapped_symbol_files = 0;
-int use_mapped_symbol_files = 0;  // Temporarily disable jmolenda 2004-05-13
+int use_mapped_symbol_files = 0; /* Temporarily disable jmolenda 2004-05-13 */
 
 extern struct cmd_list_element *setshliblist;
 extern struct cmd_list_element *showshliblist;
@@ -2526,8 +2526,8 @@ sort_objfile_thumb_psyms (struct objfile *objfile)
 }
 
 
-// This constant value matches the value used in
-// MSYMBOL_SET_SPECIAL / MSYMBOL_IS_SPECIAL
+/* This constant value matches the value used in
+ * MSYMBOL_SET_SPECIAL / MSYMBOL_IS_SPECIAL  */
 
 #define MSYMBOL_THUMB_FUNCTION 0x80000000
 
@@ -2657,22 +2657,24 @@ slide_objfile (struct objfile *objfile, CORE_ADDR slide,
         }
 
 
-      do_cleanups (offset_cleanup);
+      do_cleanups(offset_cleanup);
       if (info_verbose)
-        printf_filtered ("done\n");
+        printf_filtered("done\n");
     }
 }
 
 void
-_initialize_objfiles (void)
+_initialize_objfiles(void)
 {
   cached_symfile_path =
-    xstrdup ("./gdb-symfile-cache:./syms:/usr/libexec/gdb/symfiles");
+    xstrdup("./gdb-symfile-cache:./syms:/usr/libexec/gdb/symfiles");
 
-  /* APPLE LOCAL: We do NOT want to raise load levels for MetroWerks.  */
-  add_setshow_boolean_cmd ("auto-raise-load-levels", class_obscure,
-			   &should_auto_raise_load_state, _("\
+  /* APPLE LOCAL: We do NOT want to raise load levels for MetroWerks: */
+  add_setshow_boolean_cmd("auto-raise-load-levels", class_obscure,
+			  &should_auto_raise_load_state, _("\
 Set if GDB should raise the symbol loading level on all frames found in backtraces."), _("\
 Show if GDB should raise the symbol loading level on all frames found in backtraces."), NULL,
-			   NULL, NULL, &setlist, &showlist);
+                          NULL, NULL, &setlist, &showlist);
 }
+
+/* EOF */

@@ -39,14 +39,14 @@
 #include "gdbcmd.h"
 #include "block.h"
 
-/* Prototypes for exported functions. */
+/* Prototypes for exported functions: */
 
-void _initialize_blockframe (void);
+extern void _initialize_blockframe(void);
 
-static int find_pc_partial_function_impl (CORE_ADDR, char **, CORE_ADDR *,
-					  CORE_ADDR *, int);
+static int find_pc_partial_function_impl(CORE_ADDR, char **, CORE_ADDR *,
+					 CORE_ADDR *, int);
 
-/* APPLE LOCAL: Test whether PC is in the range of addresses that 
+/* APPLE LOCAL: Test whether PC is in the range of addresses that
    corresponds to the "main" function.
    NB: This function was originally here as inside_main_func().
    In the FSF sources it moved to frame.c and takes a frame pointer.
@@ -232,7 +232,7 @@ get_frame_function_inlined (struct frame_info * frame)
   struct bfd_section *sect;
   if (bl == 0)
     return 0;
-  
+
   sect = find_pc_mapped_section (bl->startaddr);
   return block_inlined_function (bl, sect);
 }
@@ -284,7 +284,7 @@ find_pc_sect_function (CORE_ADDR pc, struct bfd_section *section)
       && section == cached_mapped_section
       && cached_pc_function)
     return cached_pc_function;
-  
+
   last_function_lookup_pc = pc;
 
   b = block_for_pc_sect (pc, section);
@@ -362,7 +362,7 @@ find_pc_partial_function (CORE_ADDR pc, char **name, CORE_ADDR *address,
 }
 
 int
-find_pc_partial_function_no_inlined (CORE_ADDR pc, char **name, 
+find_pc_partial_function_no_inlined (CORE_ADDR pc, char **name,
 				     CORE_ADDR *address, CORE_ADDR *endaddr)
 {
   return find_pc_partial_function_impl (pc, name, address, endaddr, 0);
@@ -450,7 +450,7 @@ find_pc_partial_function_impl (CORE_ADDR pc, char **name, CORE_ADDR *address,
 	    {
 	      cache_pc_function_low = BLOCK_LOWEST_PC (SYMBOL_BLOCK_VALUE (f));
 	      if (BLOCK_RANGES (SYMBOL_BLOCK_VALUE (f)))
-		cache_pc_function_high = 
+		cache_pc_function_high =
 		  BLOCK_HIGHEST_PC (SYMBOL_BLOCK_VALUE (f));
 	      else
 		cache_pc_function_high = BLOCK_END (SYMBOL_BLOCK_VALUE (f));

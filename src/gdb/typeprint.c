@@ -39,27 +39,28 @@
 #include "exceptions.h"
 
 /* For real-type printing in whatis_exp() */
-extern int objectprint;		/* Controls looking up an object's derived type
-				   using what we find in its vtables.  */
+extern int objectprint;	/* Controls looking up an object's derived type
+			 * using what we find in its vtables.  */
 
-extern void _initialize_typeprint (void);
+extern void _initialize_typeprint(void);
 
-static void ptype_command (char *, int);
+static void ptype_command(char *, int);
 
-static struct type *ptype_eval (struct expression *);
+static struct type *ptype_eval(struct expression *);
 
-static void whatis_command (char *, int);
+static void whatis_command(char *, int);
 
-static void whatis_exp (char *, int);
+static void whatis_exp(char *, int);
 
 /* Print a description of a type in the format of a
    typedef for the current language.
    NEW is the new name for a type TYPE. */
 
 void
-typedef_print (struct type *type, struct symbol *new, struct ui_file *stream)
+typedef_print(struct type *type, struct symbol *newsym,
+              struct ui_file *stream)
 {
-  CHECK_TYPEDEF (type);
+  CHECK_TYPEDEF(type);
   switch (current_language->la_language)
     {
 #ifdef _LANG_c
@@ -67,35 +68,37 @@ typedef_print (struct type *type, struct symbol *new, struct ui_file *stream)
     case language_cplus:
     case language_objc:
     case language_objcplus:
-      fprintf_filtered (stream, "typedef ");
-      type_print (type, "", stream, 0);
-      if (TYPE_NAME ((SYMBOL_TYPE (new))) == 0
-	  || strcmp (TYPE_NAME ((SYMBOL_TYPE (new))), DEPRECATED_SYMBOL_NAME (new)) != 0)
-	fprintf_filtered (stream, " %s", SYMBOL_PRINT_NAME (new));
+      fprintf_filtered(stream, "typedef ");
+      type_print(type, "", stream, 0);
+      if ((TYPE_NAME((SYMBOL_TYPE(newsym))) == 0)
+	  || (strcmp(TYPE_NAME((SYMBOL_TYPE(newsym))),
+                     DEPRECATED_SYMBOL_NAME(newsym)) != 0))
+	fprintf_filtered(stream, " %s", SYMBOL_PRINT_NAME(newsym));
       break;
-#endif
+#endif /* _LANG_c */
 #ifdef _LANG_m2
     case language_m2:
-      fprintf_filtered (stream, "TYPE ");
-      if (!TYPE_NAME (SYMBOL_TYPE (new))
-	  || strcmp (TYPE_NAME ((SYMBOL_TYPE (new))), DEPRECATED_SYMBOL_NAME (new)) != 0)
-	fprintf_filtered (stream, "%s = ", SYMBOL_PRINT_NAME (new));
+      fprintf_filtered(stream, "TYPE ");
+      if (!TYPE_NAME(SYMBOL_TYPE(newsym))
+	  || (strcmp(TYPE_NAME((SYMBOL_TYPE(newsym))),
+                     DEPRECATED_SYMBOL_NAME(newsym)) != 0))
+	fprintf_filtered(stream, "%s = ", SYMBOL_PRINT_NAME(newsym));
       else
-	fprintf_filtered (stream, "<builtin> = ");
-      type_print (type, "", stream, 0);
+	fprintf_filtered(stream, "<builtin> = ");
+      type_print(type, "", stream, 0);
       break;
-#endif
+#endif /* _LANG_m2 */
 #ifdef _LANG_pascal
     case language_pascal:
-      fprintf_filtered (stream, "type ");
-      fprintf_filtered (stream, "%s = ", SYMBOL_PRINT_NAME (new));
-      type_print (type, "", stream, 0);
+      fprintf_filtered(stream, "type ");
+      fprintf_filtered(stream, "%s = ", SYMBOL_PRINT_NAME(newsym));
+      type_print(type, "", stream, 0);
       break;
-#endif
+#endif /* _LANG_pascal */
     default:
-      error (_("Language not supported."));
+      error(_("Language not supported."));
     }
-  fprintf_filtered (stream, ";\n");
+  fprintf_filtered(stream, ";\n");
 }
 
 /* Print a description of a type TYPE in the form of a declaration of a
@@ -151,19 +154,19 @@ get_single_quote_typename(void)
 }
 
 char *
-type_sprint_quoted (struct type *type, char *varstring, int show)
+type_sprint_quoted(struct type *type, char *varstring, int show)
 {
   char *ret_val;
   struct gdb_exception e;
-  int old_value = set_single_quote_typename (1);
-  TRY_CATCH (e, RETURN_MASK_ERROR)
+  int old_value = set_single_quote_typename(1);
+  TRY_CATCH(e, RETURN_MASK_ERROR)
     {
-      ret_val = type_sprint (type, varstring, show);
+      ret_val = type_sprint(type, varstring, show);
     }
 
-  set_single_quote_typename (old_value);
-  if (e.reason != NO_ERROR)
-    throw_exception (e);
+  set_single_quote_typename(old_value);
+  if (e.reason != (int)NO_ERROR)
+    throw_exception(e);
 
   return ret_val;
 }
@@ -266,40 +269,39 @@ ptype_eval (struct expression *exp)
     }
 }
 
-/* TYPENAME is either the name of a type, or an expression.  */
-
+/* TYPENAME is either the name of a type, or an expression: */
 static void
-ptype_command (char *typename, int from_tty)
+ptype_command(char *the_typename, int from_tty)
 {
   struct type *type;
   struct expression *expr;
   struct cleanup *old_chain;
 
-  if (typename == NULL)
+  if (the_typename == NULL)
     {
-      /* Print type of last thing in value history. */
-      whatis_exp (typename, 1);
+      /* Print type of last thing in value history: */
+      whatis_exp(the_typename, 1);
     }
   else
     {
       /* APPLE LOCAL initialize innermost_block  */
       innermost_block = NULL;
-      expr = parse_expression (typename);
-      old_chain = make_cleanup (free_current_contents, &expr);
-      type = ptype_eval (expr);
+      expr = parse_expression(the_typename);
+      old_chain = make_cleanup(free_current_contents, &expr);
+      type = ptype_eval(expr);
       if (type != NULL)
 	{
 	  /* User did "ptype <typename>" */
-	  printf_filtered ("type = ");
-	  type_print (type, "", gdb_stdout, 1);
-	  printf_filtered ("\n");
-	  do_cleanups (old_chain);
+	  printf_filtered("type = ");
+	  type_print(type, "", gdb_stdout, 1);
+	  printf_filtered("\n");
+	  do_cleanups(old_chain);
 	}
       else
 	{
 	  /* User did "ptype <symbolname>" */
-	  do_cleanups (old_chain);
-	  whatis_exp (typename, 1);
+	  do_cleanups(old_chain);
+	  whatis_exp(the_typename, 1);
 	}
     }
 }
@@ -391,19 +393,19 @@ print_type_scalar (struct type *type, LONGEST val, struct ui_file *stream)
    and whatis_command(). */
 
 void
-maintenance_print_type (char *typename, int from_tty)
+maintenance_print_type(char *the_typename, int from_tty)
 {
   struct value *val;
   struct type *type;
   struct cleanup *old_chain;
   struct expression *expr;
 
-  if (typename != NULL)
+  if (the_typename != NULL)
     {
       /* APPLE LOCAL initialize innermost_block  */
       innermost_block = NULL;
-      expr = parse_expression (typename);
-      old_chain = make_cleanup (free_current_contents, &expr);
+      expr = parse_expression(the_typename);
+      old_chain = make_cleanup(free_current_contents, &expr);
       if (expr->elts[0].opcode == OP_TYPE)
 	{
 	  /* The user expression names a type directly, just use that type. */
@@ -413,29 +415,29 @@ maintenance_print_type (char *typename, int from_tty)
 	{
 	  /* The user expression may name a type indirectly by naming an
 	     object of that type.  Find that indirectly named type. */
-	  val = evaluate_type (expr);
-	  type = value_type (val);
+	  val = evaluate_type(expr);
+	  type = value_type(val);
 	}
       if (type != NULL)
 	{
-	  recursive_dump_type (type, 0);
+	  recursive_dump_type(type, 0);
 	}
-      do_cleanups (old_chain);
+      do_cleanups(old_chain);
     }
 }
 
 
 void
-_initialize_typeprint (void)
+_initialize_typeprint(void)
 {
-
-  add_com ("ptype", class_vars, ptype_command, _("\
+  add_com("ptype", class_vars, ptype_command, _("\
 Print definition of type TYPE.\n\
 Argument may be a type name defined by typedef, or \"struct STRUCT-TAG\"\n\
 or \"class CLASS-NAME\" or \"union UNION-TAG\" or \"enum ENUM-TAG\".\n\
 The selected stack frame's lexical context is used to look up the name."));
 
-  add_com ("whatis", class_vars, whatis_command,
-	   _("Print data type of expression EXP."));
-
+  add_com("whatis", class_vars, whatis_command,
+	  _("Print data type of expression EXP."));
 }
+
+/* EOF */

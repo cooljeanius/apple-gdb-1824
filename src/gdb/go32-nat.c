@@ -1,4 +1,4 @@
-/* Native debugging support for Intel x86 running DJGPP.
+/* go32-nat.c: Native debugging support for Intel x86 running DJGPP.
    Copyright 1997, 1999, 2000, 2001, 2005 Free Software Foundation, Inc.
    Written by Robert Hoehne.
 
@@ -50,8 +50,8 @@
 #include <debug/v2load.h>
 #include <debug/dbgcom.h>
 #if __DJGPP_MINOR__ > 2
-#include <debug/redir.h>
-#endif
+# include <debug/redir.h>
+#endif /* __DJGPP_MINOR__ > 2 */
 
 #if __DJGPP_MINOR__ < 3
 /* This code will be provided from DJGPP 2.03 on. Until then I code it
@@ -409,18 +409,18 @@ go32_wait (ptid_t ptid, struct target_waitstatus *status)
      in the initialization, so the child get also the changed directory
      set with the gdb-command "cd ..." */
   if (!*child_cwd)
-    /* Initialize child's cwd with the current one.  */
-    getcwd (child_cwd, sizeof (child_cwd));
+    /* Initialize child's cwd with the current one: */
+    getcwd(child_cwd, sizeof(child_cwd));
 
-  chdir (child_cwd);
+  chdir(child_cwd);
 
 #if __DJGPP_MINOR__ < 3
-  load_npx ();
-#endif
-  run_child ();
+  load_npx();
+#endif /* __DJGPP_MINOR__ < 3 */
+  run_child();
 #if __DJGPP_MINOR__ < 3
-  save_npx ();
-#endif
+  save_npx();
+#endif /* __DJGPP_MINOR__ < 3 */
 
   /* Did we step over an INT xx instruction?  */
   if (stepping_over_INT && a_tss.tss_eip == INT3_addr + 1)
@@ -455,7 +455,7 @@ go32_wait (ptid_t ptid, struct target_waitstatus *status)
 		status->kind = TARGET_WAITKIND_SIGNALLED;
 #else
 	      status->value.sig = sig_map[i].gdb_sig;
-#endif
+#endif /* __DJGPP_MINOR__ < 3 */
 	      break;
 	    }
 	}
@@ -650,8 +650,8 @@ go32_create_inferior (char *exec_file, char *args, char **env, int from_tty)
 
   edi_init (start_state);
 #if __DJGPP_MINOR__ < 3
-  save_npx ();
-#endif
+  save_npx();
+#endif /* __DJGPP_MINOR__ < 3 */
 
   inferior_ptid = pid_to_ptid (SOME_PID);
   push_target (&go32_ops);
@@ -695,7 +695,7 @@ void
 go32_set_dr (int i, CORE_ADDR addr)
 {
   if (i < 0 || i > 3)
-    internal_error (__FILE__, __LINE__, 
+    internal_error (__FILE__, __LINE__,
 		    _("Invalid register %d in go32_set_dr.\n"), i);
   D_REGS[i] = addr;
 }
@@ -795,7 +795,7 @@ go32_terminal_info (char *args, int from_tty)
 	  ("\tFile handle %d appears to be redirected by inferior.\n", i);
     }
   }
-#endif
+#endif /* __DJGPP_MINOR__ > 2 */
 }
 
 static void
@@ -1721,7 +1721,7 @@ get_cr3 (void)
 	      break;
 	    }
 	}
-#endif
+#endif /* 0 */
 
       if (cr3 > 0xfffff)
 	cr3 = 0;
@@ -1951,19 +1951,21 @@ the `info dos ldt' command."),
 }
 
 pid_t
-tcgetpgrp (int fd)
+tcgetpgrp(int fd)
 {
-  if (isatty (fd))
+  if (isatty(fd))
     return SOME_PID;
   errno = ENOTTY;
   return -1;
 }
 
 int
-tcsetpgrp (int fd, pid_t pgid)
+tcsetpgrp(int fd, pid_t pgid)
 {
-  if (isatty (fd) && pgid == SOME_PID)
+  if (isatty(fd) && (pgid == SOME_PID))
     return 0;
-  errno = pgid == SOME_PID ? ENOTTY : ENOSYS;
+  errno = ((pgid == SOME_PID) ? ENOTTY : ENOSYS);
   return -1;
 }
+
+/* EOF */

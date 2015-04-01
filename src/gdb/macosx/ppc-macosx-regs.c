@@ -34,7 +34,7 @@
 #include "objfiles.h"
 #include "regcache.h"
 
-#include "ppc-macosx-regs.h"
+/* we already included "ppc-macosx-regs.h" once */
 
 static inline void
 supply_unsigned_int (int regnum, unsigned int val)
@@ -492,3 +492,5 @@ ppc_macosx_stab_reg_to_regnum (int num)
     }
   return regnum;
 }
+
+/* EOF */

@@ -24,47 +24,51 @@
 #include "solist.h"
 
 static struct so_list *
-null_current_sos (void)
+null_current_sos(void)
 {
   return NULL;
 }
 
 static void
-null_special_symbol_handling (void)
+null_special_symbol_handling(void)
 {
+  return;
 }
 
 static void
-null_solib_create_inferior_hook (void)
+null_solib_create_inferior_hook(void)
 {
+  return;
 }
 
 static void
-null_clear_solib (void)
+null_clear_solib(void)
 {
+  return;
 }
 
 static void
-null_free_so (struct so_list *so)
+null_free_so(struct so_list *so)
 {
-  xfree (so->lm_info);
+  xfree(so->lm_info);
 }
 
 
 static void
-null_relocate_section_addresses (struct so_list *so,
-                                 struct section_table *sec)
+null_relocate_section_addresses(struct so_list *so,
+                                struct section_table *sec)
 {
+  return;
 }
 
 static int
-null_open_symbol_file_object (void *from_ttyp)
+null_open_symbol_file_object(void *from_ttyp)
 {
   return 0;
 }
 
 static int
-null_in_dynsym_resolve_code (CORE_ADDR pc)
+null_in_dynsym_resolve_code(CORE_ADDR pc)
 {
   return 0;
 }
@@ -74,7 +78,7 @@ static struct target_so_ops null_so_ops;
 extern initialize_file_ftype _initialize_null_solib; /* -Wmissing-prototypes */
 
 void
-_initialize_null_solib (void)
+_initialize_null_solib(void)
 {
   null_so_ops.relocate_section_addresses = null_relocate_section_addresses;
   null_so_ops.free_so = null_free_so;
@@ -89,3 +93,5 @@ _initialize_null_solib (void)
   if (current_target_so_ops == 0)
     current_target_so_ops = &null_so_ops;
 }
+
+/* EOF */

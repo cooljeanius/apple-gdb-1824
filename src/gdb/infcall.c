@@ -41,8 +41,8 @@
 #include "objc-lang.h"
 
 /* APPLE LOCAL checkpointing */
-extern void begin_inferior_call_checkpoints (void);
-extern void end_inferior_call_checkpoints (void);
+extern void begin_inferior_call_checkpoints(void);
+extern void end_inferior_call_checkpoints(void);
 
 #if defined(NM_NEXTSTEP) || defined(TM_NEXTSTEP)
 # include "macosx-nat-infthread.h"
@@ -430,9 +430,9 @@ hand_function_call(struct value *function, struct type *expect_type,
   struct inferior_status *inf_status;
   struct cleanup *inf_status_cleanup;
   CORE_ADDR funaddr;
-  int using_gcc;		/* Set to version of gcc in use, or zero if not gcc */
+  int using_gcc;   /* Set to version of gcc in use, or zero if not gcc */
   CORE_ADDR real_pc;
-  struct type *ftype = check_typedef (value_type (function));
+  struct type *ftype = check_typedef(value_type(function));
   CORE_ADDR bp_addr;
   struct regcache *caller_regcache;
   struct cleanup *caller_regcache_cleanup;
@@ -445,30 +445,30 @@ hand_function_call(struct value *function, struct type *expect_type,
   /* APPLE LOCAL begin */
   /* Make sure we have a viable return type for the function being called. */
 
-  funaddr = find_function_addr (function, &orig_return_type);
-  values_type = check_typedef (orig_return_type);
+  funaddr = find_function_addr(function, &orig_return_type);
+  values_type = check_typedef(orig_return_type);
 
   /* We don't require expect_type not to be a typedef, so remember to
      run check_typedef here */
 
-  if ((values_type == NULL) || (TYPE_CODE (values_type) == TYPE_CODE_ERROR))
+  if ((values_type == NULL) || (TYPE_CODE(values_type) == TYPE_CODE_ERROR))
     if (expect_type != NULL)
       {
 	orig_return_type = expect_type;
-	values_type = check_typedef (expect_type);
+	values_type = check_typedef(expect_type);
       }
 
-  if ((values_type == NULL) || (TYPE_CODE (values_type) == TYPE_CODE_ERROR))
+  if ((values_type == NULL) || (TYPE_CODE(values_type) == TYPE_CODE_ERROR))
     {
       char *sym_name;
-      find_pc_partial_function (funaddr, &sym_name, NULL, NULL);
+      find_pc_partial_function(funaddr, &sym_name, NULL, NULL);
 
-      error ("Unable to call function \"%s\" at 0x%s: "
-	     "no return type information available.\n"
-	     "To call this function anyway, you can cast the "
-	     "return type explicitly (e.g. 'print (float) fabs (3.0)')",
-	     sym_name ? sym_name : "<unknown>",
-	     paddr_nz (funaddr));
+      error("Unable to call function \"%s\" at 0x%s: "
+	    "no return type information available.\n"
+	    "To call this function anyway, you can cast the "
+	    "return type explicitly (e.g. 'print (float) fabs (3.0)')",
+	    (sym_name ? sym_name : "<unknown>"),
+	    paddr_nz(funaddr));
     }
   /* APPLE LOCAL end */
 
@@ -476,8 +476,8 @@ hand_function_call(struct value *function, struct type *expect_type,
      containing the register values).  This chain is create BEFORE the
      inf_status chain so that the inferior status can cleaned up
      (restored or discarded) without having the retbuf freed.  */
-  retbuf = regcache_xmalloc (current_gdbarch);
-  retbuf_cleanup = make_cleanup_regcache_xfree (retbuf);
+  retbuf = regcache_xmalloc(current_gdbarch);
+  retbuf_cleanup = make_cleanup_regcache_xfree(retbuf);
 
   /* APPLE LOCAL: Calling into the ObjC runtime can block against other threads
      that hold the runtime lock.  Since any random function call might go into
@@ -496,28 +496,28 @@ hand_function_call(struct value *function, struct type *expect_type,
 
       if (retval != objc_debugger_mode_success)
 	{
-          if  (retval == objc_debugger_mode_fail_spinlock_held
-               || retval == objc_debugger_mode_fail_malloc_lock_held)
-            if (ui_out_is_mi_like_p (uiout))
-              error ("");
+          if  ((retval == objc_debugger_mode_fail_spinlock_held)
+               || (retval == objc_debugger_mode_fail_malloc_lock_held))
+            if (ui_out_is_mi_like_p(uiout))
+              error(" ");
             else
-              error ("Canceling call as the malloc lock is held so it isn't safe to call the runtime.\n"
-                     "Issue the command:\n"
-                     "    set objc-non-blocking-mode off \n"
-                     "to override this check if you are sure your call doesn't use the malloc libraries or the ObjC runtime.");
+              error("Canceling call as the malloc lock is held so it isn't safe to call the runtime.\n"
+                    "Issue the command:\n"
+                    "    set objc-non-blocking-mode off \n"
+                    "to override this check if you are sure your call doesn't use the malloc libraries or the ObjC runtime.");
 
           else
-            if (ui_out_is_mi_like_p (uiout))
-              error ("");
+            if (ui_out_is_mi_like_p(uiout))
+              error(" ");
             else
-              error ("Canceling call as the ObjC runtime would deadlock.\n"
-                     "Issue the command:\n"
-                     "    set objc-non-blocking-mode off \n"
-                     "to override this check if you are sure your call doesn't use the ObjC runtime.");
+              error("Canceling call as the ObjC runtime would deadlock.\n"
+                    "Issue the command:\n"
+                    "    set objc-non-blocking-mode off \n"
+                    "to override this check if you are sure your call doesn't use the ObjC runtime.");
         }
     }
   else
-    runtime_cleanup = make_cleanup (null_cleanup, 0);
+    runtime_cleanup = make_cleanup(null_cleanup, 0);
 
   /* APPLE LOCAL: Always arrange to stop on ObjC exceptions thrown while in
      a hand-called function: */
@@ -1267,3 +1267,5 @@ A value of zero disables the timer.",
 			    &setlist, &showlist);
 
 }
+
+/* EOF */

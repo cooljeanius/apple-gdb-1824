@@ -27,12 +27,12 @@
 #include "defs.h"
 
 #ifdef HAVE_PTRACE_H
-#include <ptrace.h>
+# include <ptrace.h>
 #else
-#ifdef HAVE_SYS_PTRACE_H
-#include <sys/ptrace.h>
-#endif
-#endif
+# ifdef HAVE_SYS_PTRACE_H
+#  include <sys/ptrace.h>
+# endif /* HAVE_SYS_PTRACE_H */
+#endif /* HAVE_PTRACE_H */
 
 #include <sys/types.h>
 #include <sys/param.h>
@@ -47,16 +47,16 @@
 #include <sys/user.h>
 
 #ifndef CORE_REGISTER_ADDR
-#define CORE_REGISTER_ADDR(regno, regptr) register_addr(regno, regptr)
+# define CORE_REGISTER_ADDR(regno, regptr) register_addr(regno, regptr)
 #endif /* CORE_REGISTER_ADDR */
 
 #ifdef NEED_SYS_CORE_H
-#include <sys/core.h>
-#endif
+# include <sys/core.h>
+#endif /* NEED_SYS_CORE_H */
 
-static void fetch_core_registers (char *, unsigned, int, CORE_ADDR);
+static void fetch_core_registers(char *, unsigned, int, CORE_ADDR);
 
-void _initialize_core_aout (void);
+void _initialize_core_aout(void);
 
 /* Extract the register values out of the core file and store
    them where `read_register' will find them.
@@ -72,36 +72,37 @@ void _initialize_core_aout (void);
  */
 
 static void
-fetch_core_registers (char *core_reg_sect, unsigned core_reg_size, int which,
-		      CORE_ADDR reg_addr)
+fetch_core_registers(char *core_reg_sect, unsigned core_reg_size, int which,
+		     CORE_ADDR reg_addr)
 {
   int regno;
   CORE_ADDR addr;
   int bad_reg = -1;
-  CORE_ADDR reg_ptr = -reg_addr;	/* Original u.u_ar0 is -reg_addr. */
+  CORE_ADDR reg_ptr = -reg_addr;    /* Original u.u_ar0 is -reg_addr. */
   int numregs = NUM_REGS;
 
-  /* If u.u_ar0 was an absolute address in the core file, relativize it now,
-     so we can use it as an offset into core_reg_sect.  When we're done,
-     "register 0" will be at core_reg_sect+reg_ptr, and we can use
-     CORE_REGISTER_ADDR to offset to the other registers.  If this is a modern
-     core file without a upage, reg_ptr will be zero and this is all a big
-     NOP.  */
+  /* If u.u_ar0 was an absolute addr in the core file, relativize it now,
+   * so we can use it as an offset into core_reg_sect.  When we are done,
+   * "register 0" will be at core_reg_sect+reg_ptr, and we can use
+   * CORE_REGISTER_ADDR to offset to the other registers.  If this is a
+   * modern core file without a upage, reg_ptr will be zero and this is all
+   * a big NOP: */
   if (reg_ptr > core_reg_size)
     reg_ptr -= KERNEL_U_ADDR;
 
   for (regno = 0; regno < numregs; regno++)
     {
-      addr = CORE_REGISTER_ADDR (regno, reg_ptr);
-      if (addr >= core_reg_size
-	  && bad_reg < 0)
+      addr = CORE_REGISTER_ADDR(regno, reg_ptr);
+      if ((addr >= core_reg_size) && (bad_reg < 0))
 	bad_reg = regno;
       else
-	regcache_raw_supply (current_regcache, regno, core_reg_sect + addr);
+	regcache_raw_supply(current_regcache, regno,
+                            (core_reg_sect + addr));
     }
 
   if (bad_reg >= 0)
-    error (_("Register %s not found in core file."), REGISTER_NAME (bad_reg));
+    error(_("Register %s not found in core file."),
+          REGISTER_NAME(bad_reg));
 }
 
 
@@ -111,14 +112,14 @@ fetch_core_registers (char *core_reg_sect, unsigned core_reg_size, int which,
    BLOCKEND is the address of the end of the user structure.  */
 
 CORE_ADDR
-register_addr (int regno, CORE_ADDR blockend)
+register_addr(int regno, CORE_ADDR blockend)
 {
   CORE_ADDR addr;
 
-  if (regno < 0 || regno >= NUM_REGS)
-    error (_("Invalid register number %d."), regno);
+  if ((regno < 0) || (regno >= NUM_REGS))
+    error(_("Invalid register number %d."), regno);
 
-  REGISTER_U_ADDR (addr, blockend, regno);
+  REGISTER_U_ADDR(addr, blockend, regno);
 
   return addr;
 }
@@ -126,8 +127,7 @@ register_addr (int regno, CORE_ADDR blockend)
 #endif /* REGISTER_U_ADDR */
 
 
-/* Register that we are able to handle aout (trad-core) file formats.  */
-
+/* Register that we are able to handle aout (trad-core) file formats: */
 static struct core_fns aout_core_fns =
 {
   bfd_target_unknown_flavour,		/* core_flavour */
@@ -138,7 +138,9 @@ static struct core_fns aout_core_fns =
 };
 
 void
-_initialize_core_aout (void)
+_initialize_core_aout(void)
 {
-  deprecated_add_core_fns (&aout_core_fns);
+  deprecated_add_core_fns(&aout_core_fns);
 }
+
+/* EOF */

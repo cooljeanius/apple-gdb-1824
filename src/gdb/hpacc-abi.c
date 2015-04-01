@@ -1,7 +1,7 @@
-/* Abstraction of HP aCC ABI.
+/* hpacc-abi.c: Abstraction of HP aCC ABI.
 
    Contributed by Daniel Berlin <dberlin@redhat.com>
-   Most of the real code is from HP, i've just fiddled it to fit in
+   Most of the real code is from HP; I have just fiddled it to fit in
    the C++ ABI abstraction framework.
 
    Copyright 2001, 2005 Free Software Foundation, Inc.
@@ -44,34 +44,34 @@ static regex_t destructor_pattern;
 static regex_t operator_pattern;
 
 static enum dtor_kinds
-hpacc_is_destructor_name (const char *name)
+hpacc_is_destructor_name(const char *name)
 {
-  if (regexec (&destructor_pattern, name, 0, 0, 0) == 0)
+  if (regexec(&destructor_pattern, name, 0, 0, 0) == 0)
     return complete_object_dtor;
   else
-    return 0;
+    return (enum dtor_kinds)0;
 }
 
 static enum ctor_kinds
-hpacc_is_constructor_name (const char *name)
+hpacc_is_constructor_name(const char *name)
 {
-  if (regexec (&constructor_pattern, name, 0, 0, 0) == 0)
+  if (regexec(&constructor_pattern, name, 0, 0, 0) == 0)
     return complete_object_ctor;
   else
-    return 0;
+    return (enum ctor_kinds)0;
 }
 
 static int
-hpacc_is_operator_name (const char *name)
+hpacc_is_operator_name(const char *name)
 {
-  return regexec (&operator_pattern, name, 0, 0, 0) == 0;
+  return (regexec(&operator_pattern, name, 0, 0, 0) == 0);
 }
 
 static int
 hpacc_is_vtable_name (const char *name)
 {
-  return strcmp (name,
-		 "This will never match anything, please fill it in") == 0;
+  return strcmp(name,
+                "This will never match anything, please fill it in") == 0;
 }
 
 /* Return a virtual function as a value.
@@ -224,7 +224,7 @@ hpacc_value_rtti_type (struct value *v, int *full, int *top, int *using_enc)
   if (coreptr == 0)
     /* return silently -- maybe called on gdb-generated value */
     return NULL;
-  
+
   /* Fetch the top offset of the object */
   /* FIXME possible 32x64 problem with pointer size & arithmetic */
   vp = value_at (builtin_type_int,
@@ -306,18 +306,20 @@ init_hpacc_ops (void)
 extern initialize_file_ftype _initialize_hpacc_abi; /* -Wmissing-prototypes */
 
 void
-_initialize_hpacc_abi (void)
+_initialize_hpacc_abi(void)
 {
-  init_hpacc_ops ();
+  init_hpacc_ops();
 
-  regcomp (&constructor_pattern,
-	   "^This will never match anything, please fill it in$", REG_NOSUB);
+  regcomp(&constructor_pattern,
+	  "^This will never match anything, please fill it in$", REG_NOSUB);
 
-  regcomp (&destructor_pattern,
-	   "^This will never match anything, please fill it in$", REG_NOSUB);
+  regcomp(&destructor_pattern,
+	  "^This will never match anything, please fill it in$", REG_NOSUB);
 
-  regcomp (&operator_pattern,
-	   "^This will never match anything, please fill it in$", REG_NOSUB);
+  regcomp(&operator_pattern,
+	  "^This will never match anything, please fill it in$", REG_NOSUB);
 
-  register_cp_abi (&hpacc_abi_ops);
+  register_cp_abi(&hpacc_abi_ops);
 }
+
+/* EOF */

@@ -4,7 +4,7 @@
    Software Foundation, Inc.
 
    Contributed by Motorola.  Adapted from the C definitions by Farooq Butt
-   (fmbutt@engage.sps.mot.com), additionally worked over by Stan Shebs.
+   <fmbutt@engage.sps.mot.com>, additionally worked over by Stan Shebs.
 
    This file is part of GDB.
 
@@ -38,22 +38,22 @@
 #include "block.h"
 
 #if 0
-static int there_is_a_visible_common_named (char *);
-#endif
+static int there_is_a_visible_common_named(char *);
+#endif /* 0 */
 
-extern void _initialize_f_valprint (void);
-static void info_common_command (char *, int);
-static void list_all_visible_commons (char *);
-static void f77_create_arrayprint_offset_tbl (struct type *,
-					      struct ui_file *);
-static void f77_get_dynamic_length_of_aggregate (struct type *);
+extern void _initialize_f_valprint(void);
+static void info_common_command(char *, int);
+static void list_all_visible_commons(char *);
+static void f77_create_arrayprint_offset_tbl(struct type *,
+					     struct ui_file *);
+static void f77_get_dynamic_length_of_aggregate(struct type *);
 
 int f77_array_offset_tbl[MAX_FORTRAN_DIMS + 1][2];
 
 /* Array which holds offsets to be applied to get a row's elements
    for a given array. Array also holds the size of each subarray.  */
 
-/* The following macro gives us the size of the nth dimension, Where 
+/* The following macro gives us the size of the nth dimension, Where
    n is 1 based. */
 
 #define F77_DIM_SIZE(n) (f77_array_offset_tbl[n][1])
@@ -149,10 +149,10 @@ f77_get_dynamic_upperbound (struct type *type, int *upper_bound)
       break;
 
     case BOUND_CANNOT_BE_DETERMINED:
-      /* we have an assumed size array on our hands. Assume that 
-         upper_bound == lower_bound so that we show at least 
-         1 element.If the user wants to see more elements, let 
-         him manually ask for 'em and we'll subscript the 
+      /* we have an assumed size array on our hands. Assume that
+         upper_bound == lower_bound so that we show at least
+         1 element.If the user wants to see more elements, let
+         him manually ask for 'em and we'll subscript the
          array and show him */
       f77_get_dynamic_lowerbound (type, upper_bound);
       break;
@@ -194,11 +194,11 @@ f77_get_dynamic_length_of_aggregate (struct type *type)
 
   /* Recursively go all the way down into a possibly multi-dimensional
      F77 array and get the bounds.  For simple arrays, this is pretty
-     easy but when the bounds are dynamic, we must be very careful 
-     to add up all the lengths correctly.  Not doing this right 
+     easy but when the bounds are dynamic, we must be very careful
+     to add up all the lengths correctly.  Not doing this right
      will lead to horrendous-looking arrays in parameter lists.
 
-     This function also works for strings which behave very 
+     This function also works for strings which behave very
      similarly to arrays.  */
 
   if (TYPE_CODE (TYPE_TARGET_TYPE (type)) == TYPE_CODE_ARRAY
@@ -220,7 +220,7 @@ f77_get_dynamic_length_of_aggregate (struct type *type)
     (upper_bound - lower_bound + 1) * TYPE_LENGTH (check_typedef (TYPE_TARGET_TYPE (type)));
 }
 
-/* Function that sets up the array offset,size table for the array 
+/* Function that sets up the array offset,size table for the array
    type "type".  */
 
 static void
@@ -252,9 +252,9 @@ f77_create_arrayprint_offset_tbl (struct type *type, struct ui_file *stream)
       ndimen++;
     }
 
-  /* Now we multiply eltlen by all the offsets, so that later we 
-     can print out array elements correctly.  Up till now we 
-     know an offset to apply to get the item but we also 
+  /* Now we multiply eltlen by all the offsets, so that later we
+     can print out array elements correctly.  Up till now we
+     know an offset to apply to get the item but we also
      have to know how much to add to get to the next item */
 
   ndimen--;
@@ -269,53 +269,52 @@ f77_create_arrayprint_offset_tbl (struct type *type, struct ui_file *stream)
 
 
 
-/* Actual function which prints out F77 arrays, Valaddr == address in 
+/* Actual function which prints out F77 arrays, Valaddr == address in
    the superior.  Address == the address in the inferior.  */
 
 static void
-f77_print_array_1 (int nss, int ndimensions, struct type *type,
-		   const gdb_byte *valaddr, CORE_ADDR address,
-		   struct ui_file *stream, int format,
-		   int deref_ref, int recurse, enum val_prettyprint pretty,
-		   int *elts)
+f77_print_array_1(int nss, int ndimensions, struct type *type,
+		  const gdb_byte *valaddr, CORE_ADDR address,
+		  struct ui_file *stream, int format,
+		  int deref_ref, int recurse, enum val_prettyprint pretty,
+		  int *elts)
 {
   int i;
 
   if (nss != ndimensions)
     {
-      for (i = 0; (i < F77_DIM_SIZE (nss) && (*elts) < print_max); i++)
+      for (i = 0; (i < F77_DIM_SIZE(nss)) && ((*elts) < print_max); i++)
 	{
-	  fprintf_filtered (stream, "( ");
-	  f77_print_array_1 (nss + 1, ndimensions, TYPE_TARGET_TYPE (type),
-			     valaddr + i * F77_DIM_OFFSET (nss),
-			     address + i * F77_DIM_OFFSET (nss),
-			     stream, format, deref_ref, recurse, pretty, elts);
-	  fprintf_filtered (stream, ") ");
+	  fprintf_filtered(stream, "( ");
+	  f77_print_array_1((nss + 1), ndimensions, TYPE_TARGET_TYPE(type),
+			    (valaddr + i * F77_DIM_OFFSET(nss)),
+			    (address + i * F77_DIM_OFFSET(nss)),
+			    stream, format, deref_ref, recurse, pretty, elts);
+	  fprintf_filtered(stream, ") ");
 	}
-      if (*elts >= print_max && i < F77_DIM_SIZE (nss)) 
-	fprintf_filtered (stream, "...");
+      if ((*elts >= print_max) && (i < F77_DIM_SIZE(nss)))
+	fprintf_filtered(stream, "...");
     }
   else
     {
-      for (i = 0; i < F77_DIM_SIZE (nss) && (*elts) < print_max; 
+      for (i = 0; (i < F77_DIM_SIZE(nss)) && ((*elts) < print_max);
 	   i++, (*elts)++)
 	{
-	  val_print (TYPE_TARGET_TYPE (type),
-		     valaddr + i * F77_DIM_OFFSET (ndimensions),
-		     0,
-		     address + i * F77_DIM_OFFSET (ndimensions),
-		     stream, format, deref_ref, recurse, pretty);
+	  val_print(TYPE_TARGET_TYPE(type),
+		    (valaddr + i * F77_DIM_OFFSET(ndimensions)),
+                    0, (address + i * F77_DIM_OFFSET(ndimensions)),
+		    stream, format, deref_ref, recurse, pretty);
 
-	  if (i != (F77_DIM_SIZE (nss) - 1))
-	    fprintf_filtered (stream, ", ");
+	  if (i != (F77_DIM_SIZE(nss) - 1))
+	    fprintf_filtered(stream, ", ");
 
-	  if ((*elts == print_max - 1) && (i != (F77_DIM_SIZE (nss) - 1)))
-	    fprintf_filtered (stream, "...");
+	  if ((*elts == print_max - 1) && (i != (F77_DIM_SIZE(nss) - 1)))
+	    fprintf_filtered(stream, "...");
 	}
     }
 }
 
-/* This function gets called to print an F77 array, we set up some 
+/* This function gets called to print an F77 array, we set up some
    stuff and then immediately call f77_print_array_1() */
 
 static void
@@ -333,8 +332,8 @@ f77_print_array (struct type *type, const gdb_byte *valaddr,
     error (_("Type node corrupt! F77 arrays cannot have %d subscripts (%d Max)"),
 	   ndimensions, MAX_FORTRAN_DIMS);
 
-  /* Since F77 arrays are stored column-major, we set up an 
-     offset table to get at the various row's elements. The 
+  /* Since F77 arrays are stored column-major, we set up an
+     offset table to get at the various row's elements. The
      offset table contains entries for both offset and subarray size. */
 
   f77_create_arrayprint_offset_tbl (type, stream);
@@ -601,8 +600,8 @@ list_all_visible_commons (char *funname)
     }
 }
 
-/* This function is used to print out the values in a given COMMON 
-   block. It will always use the most local common block of the 
+/* This function is used to print out the values in a given COMMON
+   block. It will always use the most local common block of the
    given name */
 
 static void
@@ -614,9 +613,9 @@ info_common_command (char *comname, int from_tty)
   char *funname = 0;
   struct symbol *func;
 
-  /* We have been told to display the contents of F77 COMMON 
-     block supposedly visible in this function.  Let us 
-     first make sure that it is visible and if so, let 
+  /* We have been told to display the contents of F77 COMMON
+     block supposedly visible in this function.  Let us
+     first make sure that it is visible and if so, let
      us display its contents */
 
   fi = deprecated_selected_frame;
@@ -624,7 +623,7 @@ info_common_command (char *comname, int from_tty)
   if (fi == NULL)
     error (_("No frame selected"));
 
-  /* The following is generally ripped off from stack.c's routine 
+  /* The following is generally ripped off from stack.c's routine
      print_frame_info() */
 
   func = find_pc_function (get_frame_pc (fi));
@@ -664,7 +663,7 @@ info_common_command (char *comname, int from_tty)
 	funname = DEPRECATED_SYMBOL_NAME (msymbol);
     }
 
-  /* If comname is NULL, we assume the user wishes to see the 
+  /* If comname is NULL, we assume the user wishes to see the
      which COMMON blocks are visible here and then return */
 
   if (comname == 0)
@@ -703,7 +702,7 @@ info_common_command (char *comname, int from_tty)
 
 #if 0
 static int
-there_is_a_visible_common_named (char *comname)
+there_is_a_visible_common_named(char *comname)
 {
   SAVED_F77_COMMON_PTR the_common;
   struct frame_info *fi;
@@ -718,7 +717,7 @@ there_is_a_visible_common_named (char *comname)
   if (fi == NULL)
     error (_("No frame selected"));
 
-  /* The following is generally ripped off from stack.c's routine 
+  /* The following is generally ripped off from stack.c's routine
      print_frame_info() */
 
   func = find_pc_function (fi->pc);
@@ -762,14 +761,16 @@ there_is_a_visible_common_named (char *comname)
 
   return (the_common ? 1 : 0);
 }
-#endif
+#endif /* 0 */
 
 void
-_initialize_f_valprint (void)
+_initialize_f_valprint(void)
 {
-  add_info ("common", info_common_command,
-	    _("Print out the values contained in a Fortran COMMON block."));
+  add_info("common", info_common_command,
+	   _("Print out the values contained in a Fortran COMMON block."));
   if (xdb_commands)
-    add_com ("lc", class_info, info_common_command,
-	     _("Print out the values contained in a Fortran COMMON block."));
+    add_com("lc", class_info, info_common_command,
+	    _("Print out the values contained in a Fortran COMMON block."));
 }
+
+/* 0 */

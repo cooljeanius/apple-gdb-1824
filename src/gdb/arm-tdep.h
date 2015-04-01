@@ -293,8 +293,54 @@ int set_arm_single_step_mode(struct gdbarch *gdbarch, int single_step_mode);
 int arm_in_call_stub(CORE_ADDR pc, char *name);
 CORE_ADDR arm_skip_stub(CORE_ADDR pc);
 
+struct arm_prologue_cache
+{
+  /* The stack pointer at the time this frame was created; i.e. the
+   * caller's stack pointer when this function was called.  It is used
+   * to identify this frame: */
+  CORE_ADDR prev_sp;
+
+  /* Also known as the start of the function: */
+  CORE_ADDR prologue_start;
+
+  /* The frame base for this frame is just prev_sp + frame offset -
+   * frame size.  FRAMESIZE is the size of this stack frame, and
+   * FRAMEOFFSET if the initial offset from the stack pointer (this
+   * frame's stack pointer, not PREV_SP) to the frame base: */
+  int framesize;
+  int frameoffset;
+
+  /* The register used to hold the frame pointer for this frame: */
+  int framereg;
+
+  /* The unwound frame pointer value, or zero if not available: */
+  CORE_ADDR prev_fp;
+
+  int prev_pc_is_thumb;	/* previous function is a thumb function. */
+
+  /* Saved register offsets: */
+  struct trad_frame_saved_reg *saved_regs;
+};
+
+typedef struct arm_prologue_cache arm_prologue_cache_t;
+
+arm_prologue_cache_t *get_arm_prologue_cache(struct frame_info *frame);
+
+int read_thumb_instruction(CORE_ADDR addr, uint32_t *opcode_size_ptr,
+                           uint32_t *insn);
+
+struct frame_info *get_non_inlined_frame(struct frame_info *this_frame);
+
 int arm_register_reggroup_p(struct gdbarch *gdbarch, int regnum,
                             struct reggroup *group);
+
+/* for '-Wmissing-variable-declarations': */
+#ifdef __clang__
+extern int arm_apcs_32;
+extern struct frame_unwind arm_prologue_unwind;
+extern struct frame_unwind arm_stub_unwind;
+extern struct frame_base arm_normal_base;
+#endif /* __clang__ */
 
 #endif /* !__GDB_ARM_TDEP_H__ */
 

@@ -82,50 +82,50 @@
 
 /* Prototypes for local functions. */
 
-static void until_break_command_continuation (struct continuation_arg *arg);
+static void until_break_command_continuation(struct continuation_arg *arg);
 
-static void catch_command_1 (char *, int, int);
+static void catch_command_1(char *, int, int);
 
-static void enable_delete_command (char *, int);
+static void enable_delete_command(char *, int);
 
-static void enable_delete_breakpoint (struct breakpoint *);
+static void enable_delete_breakpoint(struct breakpoint *);
 
-static void enable_once_command (char *, int);
+static void enable_once_command(char *, int);
 
-static void enable_once_breakpoint (struct breakpoint *);
+static void enable_once_breakpoint(struct breakpoint *);
 
-static void disable_command (char *, int);
+static void disable_command(char *, int);
 
-static void enable_command (char *, int);
+static void enable_command(char *, int);
 
-static void map_breakpoint_numbers (char *, void (*)(struct breakpoint *));
+static void map_breakpoint_numbers(char *, void (*)(struct breakpoint *));
 
-static void ignore_command (char *, int);
+static void ignore_command(char *, int);
 
-static int breakpoint_re_set_one (void *);
+static int breakpoint_re_set_one(void *);
 
 /* APPLE LOCAL breakpoints */
-static void breakpoint_re_set_all (void);
+static void breakpoint_re_set_all(void);
 
-static void clear_command (char *, int);
+static void clear_command(char *, int);
 
-static void catch_command (char *, int);
+static void catch_command(char *, int);
 
-static void watch_command (char *, int);
+static void watch_command(char *, int);
 
-static int can_use_hardware_watchpoint (struct value *);
+static int can_use_hardware_watchpoint(struct value *);
 
 /* APPLE LOCAL begin handle duplicate breakpoints  */
 /* APPLE LOCAL radar 6067785 - Remove static qualifier */
-void remove_duplicate_sals (struct symtabs_and_lines *,
-			    struct symtabs_and_lines,
-			    char **);
+void remove_duplicate_sals(struct symtabs_and_lines *,
+			   struct symtabs_and_lines,
+			   char **);
 
-static void remove_duplicates (struct symtabs_and_lines *);
+static void remove_duplicates(struct symtabs_and_lines *);
 /* APPLE LOCAL end handle duplicate breakpoints  */
 
 /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps.  */
-static void remove_non_msymbol_sals (struct symtabs_and_lines *);
+static void remove_non_msymbol_sals(struct symtabs_and_lines *);
 
 /* APPLE LOCAL begin breakpoint lists */
 /* To use break_command_1 in gdb_breakpoint, we need
@@ -139,40 +139,40 @@ struct breakpoint_list
   struct breakpoint *bp;
 };
 
-static int breakpoint_address_is_meaningful (struct breakpoint *);
+static int breakpoint_address_is_meaningful(struct breakpoint *);
 /* APPLE LOCAL end breakpoint lists */
 
 /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps.  */
-static int break_command_1 (char *, int, int, struct breakpoint *, int);
+static int break_command_1(char *, int, int, struct breakpoint *, int);
 
 /* APPLE LOCAL: We want to call most of break_command_1 from gdb_breakpoints so we
    don't have lots of duplicated code.  That's what break_command_2 gives us.  */
 /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps.  */
-static int break_command_2 (char *, int, int, struct breakpoint *,
-			    char *, int *, struct breakpoint_list **, int);
+static int break_command_2(char *, int, int, struct breakpoint *,
+			   char *, int *, struct breakpoint_list **, int);
 
-static void mention (struct breakpoint *);
+static void mention(struct breakpoint *);
 
 /* APPLE LOCAL: Added pending_p.  */
-struct breakpoint *set_raw_breakpoint (struct symtab_and_line, enum bptype,
-				       int pending_p);
+struct breakpoint *set_raw_breakpoint(struct symtab_and_line, enum bptype,
+				      int pending_p);
 
-static void check_duplicates (struct breakpoint *);
+static void check_duplicates(struct breakpoint *);
 
-static void breakpoint_adjustment_warning (CORE_ADDR, CORE_ADDR, int, int);
+static void breakpoint_adjustment_warning(CORE_ADDR, CORE_ADDR, int, int);
 
-static CORE_ADDR adjust_breakpoint_address (CORE_ADDR bpaddr,
-                                            enum bptype bptype);
+static CORE_ADDR adjust_breakpoint_address(CORE_ADDR bpaddr,
+                                           enum bptype bptype);
 
-static void describe_other_breakpoints (CORE_ADDR, asection *);
+static void describe_other_breakpoints(CORE_ADDR, asection *);
 
-static void breakpoints_info (char *, int);
+static void breakpoints_info(char *, int);
 
-static void breakpoint_1 (int, int);
+static void breakpoint_1(int, int);
 
-static bpstat bpstat_alloc (struct breakpoint *, bpstat);
+static bpstat bpstat_alloc(struct breakpoint *, bpstat);
 
-static int breakpoint_cond_eval (void *);
+static int breakpoint_cond_eval(void *);
 
 /* APPLE LOCAL begin exception throw/catch types */
 /* These variables contain the regexp's used in current_exception_should_stop
@@ -188,37 +188,37 @@ static int exception_catchpoint_throw_enabled;
 static int current_exception_should_stop(void);
 /* APPLE LOCAL end exception throw/catch types */
 
-static void cleanup_executing_breakpoints (void *);
+static void cleanup_executing_breakpoints(void *);
 
-static void commands_command (char *, int);
+static void commands_command(char *, int);
 
-static void condition_command (char *, int);
+static void condition_command(char *, int);
 
 /* APPLE LOCAL begin refactor condition_command */
 /* We want to use condition_command to set the condition from
    gdb_breakpoints, but we already have the breakpoint.  So condition_command_1
    is the functional part of condition_command for use to use.  */
-static void condition_command_1 (struct breakpoint *b, char *condition, int from_tty);
+static void condition_command_1(struct breakpoint *b, char *condition, int from_tty);
 /* APPLE LOCAL end refactor condition_command */
 
-static int get_number_trailer (char **, int);
+static int get_number_trailer(char **, int);
 
-static void do_captured_parse_breakpoint (struct ui_out *, void *);
+static void do_captured_parse_breakpoint(struct ui_out *, void *);
 
 static enum print_stop_action
-print_exception_catchpoint (struct breakpoint *b);
+print_exception_catchpoint(struct breakpoint *b);
 
 static void
-print_one_exception_catchpoint (struct breakpoint *b, CORE_ADDR *last_addr);
+print_one_exception_catchpoint(struct breakpoint *b, CORE_ADDR *last_addr);
 
 static void
-print_mention_exception_catchpoint (struct breakpoint *b);
+print_mention_exception_catchpoint(struct breakpoint *b);
 
 /* APPLE LOCAL: Used for breakpoints that run the target under the mi.  */
 static void
-async_breakpoint_command_continuation (struct continuation_arg *arg);
+async_breakpoint_command_continuation(struct continuation_arg *arg);
 
-void set_breakpoint_count (int);
+void set_breakpoint_count(int);
 
 typedef enum
   {
@@ -227,11 +227,11 @@ typedef enum
   }
 insertion_state_t;
 
-static int remove_breakpoint (struct bp_location *, insertion_state_t);
+static int remove_breakpoint(struct bp_location *, insertion_state_t);
 
-static enum print_stop_action print_it_typical (bpstat);
+static enum print_stop_action print_it_typical(bpstat);
 
-static enum print_stop_action print_bp_stop_message (bpstat bs);
+static enum print_stop_action print_bp_stop_message(bpstat bs);
 
 typedef struct
   {
@@ -240,67 +240,67 @@ typedef struct
   }
 args_for_catchpoint_enable;
 
-static int watchpoint_check (void *);
+static int watchpoint_check(void *);
 
-static int cover_target_enable_exception_callback (void *);
+static int cover_target_enable_exception_callback(void *);
 
-static void maintenance_info_breakpoints (char *, int);
+static void maintenance_info_breakpoints(char *, int);
 
-static void create_longjmp_breakpoint (char *);
+static void create_longjmp_breakpoint(char *);
 
-static void create_overlay_event_breakpoint (char *);
+static void create_overlay_event_breakpoint(char *);
 
-static int hw_breakpoint_used_count (void);
+static int hw_breakpoint_used_count(void);
 
-static int hw_watchpoint_used_count (enum bptype, int *);
+static int hw_watchpoint_used_count(enum bptype, int *);
 
-static void hbreak_command (char *, int);
+static void hbreak_command(char *, int);
 
-static void thbreak_command (char *, int);
+static void thbreak_command(char *, int);
 
 /* APPLE LOCAL: Added the by_location arg.  */
-static void watch_command_1 (char *, int, int, int);
+static void watch_command_1(char *, int, int, int);
 
-static void rwatch_command (char *, int);
+static void rwatch_command(char *, int);
 
-static void awatch_command (char *, int);
+static void awatch_command(char *, int);
 
-static void do_enable_breakpoint (struct breakpoint *, enum bpdisp);
+static void do_enable_breakpoint(struct breakpoint *, enum bpdisp);
 
-static void solib_load_unload_1 (char *hookname,
-				 int tempflag,
-				 char *dll_pathname,
-				 char *cond_string, enum bptype bp_kind);
+static void solib_load_unload_1(char *hookname,
+                                int tempflag,
+                                char *dll_pathname,
+                                char *cond_string, enum bptype bp_kind);
 
-static void create_fork_vfork_event_catchpoint (int tempflag,
-						char *cond_string,
-						enum bptype bp_kind);
+static void create_fork_vfork_event_catchpoint(int tempflag,
+                                               char *cond_string,
+                                               enum bptype bp_kind);
 
-static void stop_command (char *arg, int from_tty);
+static void stop_command(char *arg, int from_tty);
 
-static void stopin_command (char *arg, int from_tty);
+static void stopin_command(char *arg, int from_tty);
 
-static void stopat_command (char *arg, int from_tty);
+static void stopat_command(char *arg, int from_tty);
 
-static char *ep_find_event_name_end (char *arg);
+static char *ep_find_event_name_end(char *arg);
 
-static char *ep_parse_optional_if_clause (char **arg);
+static char *ep_parse_optional_if_clause(char **arg);
 
-static char *ep_parse_optional_filename (char **arg);
+static char *ep_parse_optional_filename(char **arg);
 
 /* APPLE LOCAL return a value */
-static struct breakpoint *create_exception_catchpoint (int tempflag, char *cond_string,
+static struct breakpoint *create_exception_catchpoint(int tempflag, char *cond_string,
 					 /* APPLE LOCAL gnu v3 */
 					 int gnu_v3_p,
 					 enum exception_event_kind ex_event,
 					 struct symtab_and_line *sal);
 
-static void catch_exception_command_1 (enum exception_event_kind ex_event,
-				       char *arg, int tempflag, int from_tty);
+static void catch_exception_command_1(enum exception_event_kind ex_event,
+				      char *arg, int tempflag, int from_tty);
 
-static void tcatch_command (char *arg, int from_tty);
+static void tcatch_command(char *arg, int from_tty);
 
-static void ep_skip_leading_whitespace (char **s);
+static void ep_skip_leading_whitespace(char **s);
 
 /* APPLE LOCAL - We may have more than one breakpoint implementing the
    exception catch & exception throw breaks.  So it is convenient to keep
@@ -310,17 +310,17 @@ static int exception_catchpoint_catch_enabled;
 static int exception_catchpoint_throw_enabled;
 
 /* APPLE LOCAL - for future-break & -break-insert -f.  */
-static void restore_saved_pending_break_support (void * val);
+static void restore_saved_pending_break_support(void * val);
 
 /* APPLE LOCAL: Can't let breakpoint_sals_to_pc error when resolving
    pending breakpoints, since that might happen when we are also
    handling the shared library event.  In any case, it's stupid
    to let one unresolvable breakpoint scotch setting all the rest.  */
 
-static void breakpoint_sals_to_pc (struct symtabs_and_lines *sals, char *address);
+static void breakpoint_sals_to_pc(struct symtabs_and_lines *sals, char *address);
 /* APPLE LOCAL:  */
-static int safe_breakpoint_sals_to_pc (struct symtabs_and_lines *sals,
-				       char *address);
+static int safe_breakpoint_sals_to_pc(struct symtabs_and_lines *sals,
+				      char *address);
 
 /* APPLE LOCAL: These two track the relative ages of symbols &
    breakpoints.  Increment the symbol generation if you add new
@@ -333,9 +333,9 @@ int breakpoint_generation = 0;
    when RE-SETTING breakpoints.  */
 static int dont_mention = 0;
 /* APPLE LOCAL: Set the objfile associated with a given breakpoint.  */
-static void set_bp_objfile (struct breakpoint *b, struct symtab_and_line *sal);
+static void set_bp_objfile(struct breakpoint *b, struct symtab_and_line *sal);
 
-static void print_catch_info (struct breakpoint *b);
+static void print_catch_info(struct breakpoint *b);
 
 /* Prototypes for exported functions. */
 
@@ -344,13 +344,13 @@ static void print_catch_info (struct breakpoint *b);
 static int can_use_hw_watchpoints;
 
 static void
-show_can_use_hw_watchpoints (struct ui_file *file, int from_tty,
-			     struct cmd_list_element *c,
-			     const char *value)
+show_can_use_hw_watchpoints(struct ui_file *file, int from_tty,
+			    struct cmd_list_element *c,
+			    const char *value)
 {
-  fprintf_filtered (file, _("\
+  fprintf_filtered(file, _("\
 Debugger's willingness to use watchpoint hardware is %s.\n"),
-		    value);
+                   value);
 }
 
 /* If AUTO_BOOLEAN_FALSE, gdb will not attempt to create pending breakpoints.
@@ -3173,7 +3173,9 @@ bpstat_stop_status (CORE_ADDR bp_addr, ptid_t ptid, int stopped_by_watchpoint)
     if (ep_is_exception_catchpoint (b))
       {
 	if (!current_exception_should_stop()) {
-	  // remove_breakpoints ();
+#if 0
+	  remove_breakpoints();
+#endif /* 0 */
 	  bs->stop = 0;
 	  bs->print_it = print_it_noop;
 	  continue;

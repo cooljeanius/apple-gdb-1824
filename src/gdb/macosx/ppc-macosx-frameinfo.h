@@ -1,3 +1,5 @@
+/* ppc-macosx-frameinfo.h -*- C -*- */
+
 #ifndef __GDB_PPC_MACOSX_FRAMEINFO_H__
 #define __GDB_PPC_MACOSX_FRAMEINFO_H__
 
@@ -87,7 +89,7 @@ struct ppc_frame_cache
   CORE_ADDR sp;            /* The stack pointer for this frame */
   CORE_ADDR fp;            /* The frame pointer for this frame (often == sp) */
   CORE_ADDR pc;            /* The address of the function of this frame, or
-                              the current pc value if the function is 
+                              the current pc value if the function is
                               unknown. */
 
   /* Early in the function the stack pointer (sp, r1) and frame pointer (fp)
@@ -97,7 +99,7 @@ struct ppc_frame_cache
      in use, to find the caller's frame pointer.  So for that code we need to
      record a valid fp that can be dereferenced, not the location of what
      the sp/fp will eventually be set to.  */
-  CORE_ADDR sp_for_dereferencing; 
+  CORE_ADDR sp_for_dereferencing;
 
   CORE_ADDR prev_pc;       /* Caller's pc value (return address) */
   CORE_ADDR prev_sp;       /* Caller's stack pointer */
@@ -120,31 +122,34 @@ struct ppc_frame_cache
   int boundaries_status;
 };
 
-void ppc_print_boundaries (struct ppc_function_boundaries * bounds);
-void ppc_print_properties (struct ppc_function_properties * props);
+void ppc_print_boundaries(struct ppc_function_boundaries *bounds);
+void ppc_print_properties(struct ppc_function_properties *props);
 
-CORE_ADDR ppc_parse_instructions (CORE_ADDR start, CORE_ADDR end,
-                                  struct ppc_function_properties * props);
+CORE_ADDR ppc_parse_instructions(CORE_ADDR start, CORE_ADDR end,
+                                 struct ppc_function_properties *props);
 
-void ppc_clear_function_boundaries_request (struct ppc_function_boundaries_request * request);
-void ppc_clear_function_boundaries (struct ppc_function_boundaries * boundaries);
-void ppc_clear_function_properties (struct ppc_function_properties * properties);
+void ppc_clear_function_boundaries_request(struct ppc_function_boundaries_request *request);
+void ppc_clear_function_boundaries(struct ppc_function_boundaries *boundaries);
+void ppc_clear_function_properties(struct ppc_function_properties *properties);
 
-int ppc_find_function_boundaries (struct ppc_function_boundaries_request * request, struct ppc_function_boundaries * reply);
+int ppc_find_function_boundaries(struct ppc_function_boundaries_request *request,
+                                 struct ppc_function_boundaries *reply);
 
-struct ppc_function_boundaries *ppc_frame_function_boundaries (struct
-                                                               frame_info
-                                                               *frame,
-                                                               void
-                                                               **this_cache);
+struct ppc_function_boundaries *ppc_frame_function_boundaries(struct
+                                                              frame_info
+                                                              *frame,
+                                                              void
+                                                              **this_cache);
 
-struct ppc_function_properties *ppc_frame_function_properties (struct
-                                                               frame_info
-                                                               *frame,
-                                                               void
-                                                               **this_cache);
+struct ppc_function_properties *ppc_frame_function_properties(struct
+                                                              frame_info
+                                                              *frame,
+                                                              void
+                                                              **this_cache);
 
-CORE_ADDR *ppc_frame_saved_regs (struct frame_info *next_frame,
-                                 void **this_cache);
+CORE_ADDR *ppc_frame_saved_regs(struct frame_info *next_frame,
+                                void **this_cache);
 
 #endif /* __GDB_PPC_MACOSX_FRAMEINFO_H__ */
+
+/* EOF */

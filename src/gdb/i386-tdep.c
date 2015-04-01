@@ -45,14 +45,14 @@
 #include "value.h"
 #include "gdb_assert.h"
 #include "reggroups.h"
-#include "dummy-frame.h"
-#include "osabi.h"
+/* we already included "dummy-frame.h" once above */
+/* we already included "osabi.h" once above */
 
 #include "bfd.h"
 #include "elf-bfd.h"
 #include "dis-asm.h"
 
-#include "gdb_assert.h"
+/* we already included "gdb_assert.h" once above */
 #include "gdb_string.h"
 
 #include "i386-tdep.h"
@@ -64,7 +64,9 @@
 #include "macosx-tdep.h"
 
 #ifndef __i386__
-# warning i386-tdep.c is an i386-specific file, but __i386__ is not defined.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "i386-tdep.c is an i386-specific file but __i386__ is undefined"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* !__i386__ */
 
 /* Register names.  */
@@ -1804,8 +1806,8 @@ is \"default\"."),
 			NULL, /* FIXME: i18n: */
 			&setlist, &showlist);
 
-  /* Initialize the i386 specific register groups.  */
-  i386_init_reggroups ();
+  /* Initialize the i386 specific register groups: */
+  i386_init_reggroups();
 }
 
 /* EOF */

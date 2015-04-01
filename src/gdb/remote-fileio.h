@@ -1,4 +1,4 @@
-/* Remote File-I/O communications
+/* remote-fileio.h: Remote File-I/O communications
 
    Copyright 2003 Free Software Foundation, Inc.
 
@@ -27,12 +27,14 @@
 struct cmd_list_element;
 
 /* Unified interface to remote fileio, called in remote.c from
-   remote_wait () and remote_async_wait () */
-extern void remote_fileio_request (char *buf);
+   remote_wait() and remote_async_wait() */
+extern void remote_fileio_request(char *buf);
 
-/* Called from _initialize_remote () */
-extern void initialize_remote_fileio (
-  struct cmd_list_element *remote_set_cmdlist,
+/* Called from _initialize_remote() */
+extern void initialize_remote_fileio
+ (struct cmd_list_element *remote_set_cmdlist,
   struct cmd_list_element *remote_show_cmdlist);
 
-#endif
+#endif /* !REMOTE_FILEIO_H */
+
+/* EOF */

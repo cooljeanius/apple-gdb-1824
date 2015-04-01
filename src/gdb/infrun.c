@@ -62,15 +62,15 @@
 /* APPLE LOCAL: for the $lr == $pc check in handle_inferior_event() */
 #if (defined(TM_NEXTSTEP) && TM_NEXTSTEP) && (defined(TARGET_POWERPC) && TARGET_POWERPC)
 # include "ppc-macosx-regnums.h"
-#endif
+#endif /* TM_NEXTSTEP && TARGET_POWERPC */
 
 /* APPLE LOCAL begin old watchpoint hackery */
 #if !defined(TARGET_DISABLE_HW_WATCHPOINTS)
-#define TARGET_DISABLE_HW_WATCHPOINTS(pid)
-#endif
+# define TARGET_DISABLE_HW_WATCHPOINTS(pid)
+#endif /* !TARGET_DISABLE_HW_WATCHPOINTS */
 #if !defined(TARGET_ENABLE_HW_WATCHPOINTS)
-#define TARGET_ENABLE_HW_WATCHPOINTS(pid)
-#endif
+# define TARGET_ENABLE_HW_WATCHPOINTS(pid)
+#endif /* !TARGET_ENABLE_HW_WATCHPOINTS */
 /* APPLE LOCAL end old watchpoint hackery */
 
 /* APPLE LOCAL checkpoints */

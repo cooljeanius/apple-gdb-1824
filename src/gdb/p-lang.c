@@ -1,4 +1,4 @@
-/* Pascal language support routines for GDB, the GNU debugger.
+/* p-lang.c: Pascal language support routines for GDB, the GNU debugger.
 
    Copyright 2000, 2002, 2003, 2004, 2005 Free Software Foundation,
    Inc.
@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   Foundation, Inc., 59 Temple Pl. Suite 330, Boston, MA 02111-1307, USA */
 
 /* This file is derived from c-lang.c */
 
@@ -33,7 +33,7 @@
 #include "value.h"
 #include <ctype.h>
 
-extern void _initialize_pascal_language (void);
+extern void _initialize_pascal_language(void);
 
 
 /* Determines if type TYPE is a pascal string type.
@@ -495,7 +495,9 @@ const struct language_defn pascal_language_defn =
 };
 
 void
-_initialize_pascal_language (void)
+_initialize_pascal_language(void)
 {
-  add_language (&pascal_language_defn);
+  add_language(&pascal_language_defn);
 }
+
+/* EOF */

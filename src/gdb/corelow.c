@@ -28,8 +28,8 @@
 #include <signal.h>
 #include <fcntl.h>
 #ifdef HAVE_SYS_FILE_H
-#include <sys/file.h>		/* needed for F_OK and friends */
-#endif
+# include <sys/file.h>		/* needed for F_OK and friends */
+#endif /* HAVE_SYS_FILE_H */
 #include "frame.h"		/* required by inferior.h */
 #include "inferior.h"
 #include "symtab.h"
@@ -51,12 +51,12 @@
 #include "inlining."
 
 #ifndef O_BINARY
-#define O_BINARY 0
-#endif
+# define O_BINARY 0
+#endif /* !O_BINARY */
 
 #ifndef O_LARGEFILE
-#define O_LARGEFILE 0
-#endif
+# define O_LARGEFILE 0
+#endif /* !O_LARGEFILE */
 
 /* List of all available core_fns.  On gdb startup, each core file
    register reader calls deprecated_add_core_fns() to register
@@ -320,7 +320,7 @@ core_open (char *filename, int from_tty)
   if (scratch_chan < 0)
     perror_with_name (filename);
 
-  temp_bfd = bfd_fopen (filename, gnutarget, 
+  temp_bfd = bfd_fopen (filename, gnutarget,
 			write_files ? FOPEN_RUB : FOPEN_RB,
 			scratch_chan);
   if (temp_bfd == NULL)

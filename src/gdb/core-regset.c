@@ -40,10 +40,10 @@
 #include "gdb_string.h"
 #include <time.h>
 #ifdef HAVE_SYS_PROCFS_H
-#include <sys/procfs.h>
-#endif
+# include <sys/procfs.h>
+#endif /* HAVE_SYS_PROCFS_H */
 
-/* Prototypes for supply_gregset etc.  */
+/* Prototypes for supply_gregset etc.: */
 #include "gregset.h"
 
 /* Provide registers to GDB from a core file.
@@ -59,8 +59,8 @@
    REG_ADDR is ignored.  */
 
 static void
-fetch_core_registers (char *core_reg_sect, unsigned core_reg_size, int which,
-		      CORE_ADDR reg_addr)
+fetch_core_registers(char *core_reg_sect, unsigned core_reg_size, int which,
+		     CORE_ADDR reg_addr)
 {
   gdb_gregset_t gregset;
   gdb_fpregset_t fpregset;
@@ -68,30 +68,30 @@ fetch_core_registers (char *core_reg_sect, unsigned core_reg_size, int which,
   switch (which)
     {
     case 0:
-      if (core_reg_size != sizeof (gregset))
-	warning (_("Wrong size gregset in core file."));
+      if (core_reg_size != sizeof(gregset))
+	warning(_("Wrong size gregset in core file."));
       else
 	{
-	  memcpy (&gregset, core_reg_sect, sizeof (gregset));
-	  supply_gregset (&gregset);
+	  memcpy(&gregset, core_reg_sect, sizeof(gregset));
+	  supply_gregset(&gregset);
 	}
       break;
 
     case 2:
-      if (core_reg_size != sizeof (fpregset))
-	warning (_("Wrong size fpregset in core file."));
+      if (core_reg_size != sizeof(fpregset))
+	warning(_("Wrong size fpregset in core file."));
       else
 	{
-	  memcpy (&fpregset, core_reg_sect, sizeof (fpregset));
+	  memcpy(&fpregset, core_reg_sect, sizeof(fpregset));
 	  if (FP0_REGNUM >= 0)
-	    supply_fpregset (&fpregset);
+	    supply_fpregset(&fpregset);
 	}
       break;
 
     default:
-      /* We've covered all the kinds of registers we know about here,
-         so this must be something we wouldn't know what to do with
-         anyway.  Just ignore it.  */
+      /* We have covered all the kinds of registers we know about here,
+       * so this must be something that we would NOT know what to do with
+       * anyway.  Just ignore it: */
       break;
     }
 }
@@ -109,11 +109,13 @@ static struct core_fns regset_core_fns =
   NULL					/* next */
 };
 
-/* Provide a prototype to silence -Wmissing-prototypes.  */
-extern void _initialize_core_regset (void);
+/* Provide a prototype to silence '-Wmissing-prototypes': */
+extern void _initialize_core_regset(void);
 
 void
-_initialize_core_regset (void)
+_initialize_core_regset(void)
 {
   deprecated_add_core_fns (&regset_core_fns);
 }
+
+/* EOF */

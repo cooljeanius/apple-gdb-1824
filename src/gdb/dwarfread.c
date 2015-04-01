@@ -1,4 +1,4 @@
-/* DWARF debugging format support for GDB.
+/* dwarfread.c: DWARF debugging format support for GDB.
 
    Copyright 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
@@ -70,7 +70,7 @@
      sparc-hal-solaris2*
      sparc-*-sysv4*
 
-   Some non-gcc compilers produce dwarf-1: 
+   Some non-gcc compilers produce dwarf-1:
 
      PR gdb/1179 was from a user with Diab C++ 4.3.
      On 2003-07-25 the gdb list received a report from a user
@@ -92,7 +92,6 @@
 */
 
 /*
-
    FIXME: Do we need to generate dependencies in partial symtabs?
    (Perhaps we don't need to).
 
@@ -107,7 +106,6 @@
 
    FIXME: See other FIXME's and "ifdef 0" scattered throughout the code for
    other things to work on, if you get bored. :-)
-
  */
 
 #include "defs.h"
@@ -117,7 +115,7 @@
 #include "elf/dwarf.h"
 #include "buildsym.h"
 #include "demangle.h"
-#include "expression.h"		/* Needed for enum exp_opcode in language.h, sigh... */
+#include "expression.h" /* Needed for enum exp_opcode in language.h, sigh... */
 #include "language.h"
 #include "complaints.h"
 
@@ -126,56 +124,56 @@
 
 /* Some macros to provide DIE info for complaints. */
 
-#define DIE_ID (curdie!=NULL ? curdie->die_ref : 0)
-#define DIE_NAME (curdie!=NULL && curdie->at_name!=NULL) ? curdie->at_name : ""
+#define DIE_ID ((curdie != NULL) ? curdie->die_ref : 0)
+#define DIE_NAME (((curdie != NULL) && (curdie->at_name != NULL)) \
+                  ? curdie->at_name : "")
 
-/* Complaints that can be issued during DWARF debug info reading. */
-
+/* Complaints that can be issued during DWARF debug info reading: */
 static void
 bad_die_ref_complaint (int arg1, const char *arg2, int arg3)
 {
-  complaint (&symfile_complaints,
-	     _("DIE @ 0x%x \"%s\", reference to DIE (0x%x) outside compilation unit"),
-	     arg1, arg2, arg3);
+  complaint(&symfile_complaints,
+	    _("DIE @ 0x%x \"%s\", reference to DIE (0x%x) outside compilation unit"),
+	    arg1, arg2, arg3);
 }
 
 static void
-unknown_attribute_form_complaint (int arg1, const char *arg2, int arg3)
+unknown_attribute_form_complaint(int arg1, const char *arg2, int arg3)
 {
-  complaint (&symfile_complaints,
-	     _("DIE @ 0x%x \"%s\", unknown attribute form (0x%x)"), arg1, arg2,
-	     arg3);
+  complaint(&symfile_complaints,
+	    _("DIE @ 0x%x \"%s\", unknown attribute form (0x%x)"), arg1, arg2,
+	    arg3);
 }
 
 static void
-dup_user_type_definition_complaint (int arg1, const char *arg2)
+dup_user_type_definition_complaint(int arg1, const char *arg2)
 {
-  complaint (&symfile_complaints,
-	     _("DIE @ 0x%x \"%s\", internal error: duplicate user type definition"),
-	     arg1, arg2);
+  complaint(&symfile_complaints,
+	    _("DIE @ 0x%x \"%s\", internal error: duplicate user type definition"),
+	    arg1, arg2);
 }
 
 static void
-bad_array_element_type_complaint (int arg1, const char *arg2, int arg3)
+bad_array_element_type_complaint(int arg1, const char *arg2, int arg3)
 {
-  complaint (&symfile_complaints,
-	     _("DIE @ 0x%x \"%s\", bad array element type attribute 0x%x"), arg1,
-	     arg2, arg3);
+  complaint(&symfile_complaints,
+	    _("DIE @ 0x%x \"%s\", bad array element type attribute 0x%x"), arg1,
+	    arg2, arg3);
 }
 
 typedef unsigned int DIE_REF;	/* Reference to a DIE */
 
 #ifndef GCC_PRODUCER
-#define GCC_PRODUCER "GNU C "
-#endif
+# define GCC_PRODUCER "GNU C "
+#endif /* !GCC_PRODUCER */
 
 #ifndef GPLUS_PRODUCER
-#define GPLUS_PRODUCER "GNU C++ "
-#endif
+# define GPLUS_PRODUCER "GNU C++ "
+#endif /* !GPLUS_PRODUCER */
 
 #ifndef LCC_PRODUCER
-#define LCC_PRODUCER "NCR C/C++"
-#endif
+# define LCC_PRODUCER "NCR C/C++"
+#endif /* !LCC_PRODUCER */
 
 /* Flags to target_to_host() that tell whether or not the data object is
    expected to be signed.  Used, for example, when fetching a signed
@@ -320,7 +318,7 @@ static int dbsize;		/* Size of dwarf info in bytes */
 static int dbroff;		/* Relative offset from start of .debug section */
 static char *lnbase;		/* Base pointer to line section */
 
-/* This value is added to each symbol value.  FIXME:  Generalize to 
+/* This value is added to each symbol value.  FIXME:  Generalize to
    the section_offsets structure used by dbxread (once this is done,
    pass the appropriate section number to end_symtab).  */
 static CORE_ADDR baseaddr;	/* Add to each symbol value */
@@ -417,7 +415,7 @@ static struct type *ftypes[FT_NUM_MEMBERS];	/* Fundamental types */
    and we need it while processing the DIE's for that compilation unit.
    It is eventually saved in the symtab structure, but we don't finalize
    the symtab struct until we have processed all the DIE's for the
-   compilation unit.  We also need to get and save a pointer to the 
+   compilation unit.  We also need to get and save a pointer to the
    language struct for this language, so we can call the language
    dependent routines for doing things such as creating fundamental
    types. */
@@ -520,7 +518,6 @@ static struct type *dwarf_fundamental_type (struct objfile *, int);
 
 
 /*
-
    LOCAL FUNCTION
 
    dwarf_fundamental_type -- lookup or create a fundamental type
@@ -550,7 +547,6 @@ static struct type *dwarf_fundamental_type (struct objfile *, int);
    RETURNS
 
    Pointer to a fundamental type.
-
  */
 
 static struct type *
@@ -574,7 +570,6 @@ dwarf_fundamental_type (struct objfile *objfile, int typeid)
 }
 
 /*
-
    LOCAL FUNCTION
 
    set_cu_language -- set local copy of language for compilation unit
@@ -593,7 +588,6 @@ dwarf_fundamental_type (struct objfile *objfile, int typeid)
    RETURNS
 
    No return value.
-
  */
 
 static void
@@ -708,7 +702,6 @@ dwarf_build_psymtabs (struct objfile *objfile, int mainline, file_ptr dbfoff,
 }
 
 /*
-
    LOCAL FUNCTION
 
    read_lexical_block_scope -- process all dies in a lexical block
@@ -722,7 +715,6 @@ dwarf_build_psymtabs (struct objfile *objfile, int mainline, file_ptr dbfoff,
 
    Process all the DIES contained within a lexical block scope.
    Start a new scope, process the dies, and then close the scope.
-
  */
 
 static void
@@ -745,7 +737,6 @@ read_lexical_block_scope (struct dieinfo *dip, char *thisdie, char *enddie,
 }
 
 /*
-
    LOCAL FUNCTION
 
    lookup_utype -- look up a user defined type from die reference
@@ -783,7 +774,6 @@ lookup_utype (DIE_REF die_ref)
 
 
 /*
-
    LOCAL FUNCTION
 
    alloc_utype  -- add a user defined type for die reference
@@ -835,7 +825,6 @@ alloc_utype (DIE_REF die_ref, struct type *utypep)
 }
 
 /*
-
    LOCAL FUNCTION
 
    free_utypes -- free the utypes array and reset pointer & count
@@ -861,7 +850,6 @@ free_utypes (void *dummy)
 
 
 /*
-
    LOCAL FUNCTION
 
    decode_die_type -- return a type for a specified die
@@ -910,7 +898,6 @@ decode_die_type (struct dieinfo *dip)
 }
 
 /*
-
    LOCAL FUNCTION
 
    struct_type -- compute and return the type for a struct or union
@@ -986,7 +973,7 @@ struct_type (struct dieinfo *dip, char *thisdie, char *enddie,
   /* Use whatever size is known.  Zero is a valid size.  We might however
      wish to check has_at_byte_size to make sure that some byte size was
      given explicitly, but DWARF doesn't specify that explicit sizes of
-     zero have to present, so complaining about missing sizes should 
+     zero have to present, so complaining about missing sizes should
      probably not be the default. */
   TYPE_LENGTH_ASSIGN (type) = dip->at_byte_size;
   thisdie += dip->die_length;
@@ -1102,7 +1089,6 @@ struct_type (struct dieinfo *dip, char *thisdie, char *enddie,
 }
 
 /*
-
    LOCAL FUNCTION
 
    read_structure_scope -- process all dies within struct or union
@@ -1158,7 +1144,6 @@ read_structure_scope (struct dieinfo *dip, char *thisdie, char *enddie,
 }
 
 /*
-
    LOCAL FUNCTION
 
    decode_array_element_type -- decode type of the array elements
@@ -1228,7 +1213,6 @@ decode_array_element_type (char *scan)
 }
 
 /*
-
    LOCAL FUNCTION
 
    decode_subscript_data_item -- decode array subscript item
@@ -1343,7 +1327,6 @@ decode_subscript_data_item (char *scan, char *end)
 }
 
 /*
-
    LOCAL FUNCTION
 
    dwarf_read_array_type -- read TAG_array_type DIE
@@ -1411,7 +1394,6 @@ dwarf_read_array_type (struct dieinfo *dip)
 }
 
 /*
-
    LOCAL FUNCTION
 
    read_tag_pointer_type -- read TAG_pointer_type DIE
@@ -1452,7 +1434,6 @@ read_tag_pointer_type (struct dieinfo *dip)
 }
 
 /*
-
    LOCAL FUNCTION
 
    read_tag_string_type -- read TAG_string_type DIE
@@ -1514,7 +1495,6 @@ read_tag_string_type (struct dieinfo *dip)
 }
 
 /*
-
    LOCAL FUNCTION
 
    read_subroutine_type -- process TAG_subroutine_type dies
@@ -1576,7 +1556,6 @@ read_subroutine_type (struct dieinfo *dip, char *thisdie, char *enddie)
 }
 
 /*
-
    LOCAL FUNCTION
 
    read_enumeration -- process dies which define an enumeration
@@ -1618,7 +1597,6 @@ read_enumeration (struct dieinfo *dip, char *thisdie, char *enddie,
 }
 
 /*
-
    LOCAL FUNCTION
 
    enum_type -- decode and return a type for an enumeration
@@ -1757,7 +1735,6 @@ enum_type (struct dieinfo *dip, struct objfile *objfile)
 }
 
 /*
-
    LOCAL FUNCTION
 
    read_func_scope -- process all dies within a function scope
@@ -1809,7 +1786,6 @@ read_func_scope (struct dieinfo *dip, char *thisdie, char *enddie,
 
 
 /*
-
    LOCAL FUNCTION
 
    handle_producer -- process the AT_producer attribute
@@ -1818,7 +1794,6 @@ read_func_scope (struct dieinfo *dip, char *thisdie, char *enddie,
 
    Perform any operations that depend on finding a particular
    AT_producer attribute.
-
  */
 
 static void
@@ -1852,7 +1827,7 @@ handle_producer (char *producer)
 	  /* For now, stay with AUTO_DEMANGLING for g++ output, as we don't
 	     know whether it will use the old style or v3 mangling.  */
 	  set_demangling_style (GNU_DEMANGLING_STYLE_STRING);
-#endif
+#endif /* 0 */
 	}
       else if (DEPRECATED_STREQN (producer, LCC_PRODUCER, strlen (LCC_PRODUCER)))
 	{
@@ -1863,7 +1838,6 @@ handle_producer (char *producer)
 
 
 /*
-
    LOCAL FUNCTION
 
    read_file_scope -- process all dies within a file scope
@@ -1915,7 +1889,6 @@ read_file_scope (struct dieinfo *dip, char *thisdie, char *enddie,
 }
 
 /*
-
    LOCAL FUNCTION
 
    process_dies -- process a range of DWARF Information Entries
@@ -2013,7 +1986,6 @@ process_dies (char *thisdie, char *enddie, struct objfile *objfile)
 }
 
 /*
-
    LOCAL FUNCTION
 
    decode_line_numbers -- decode a line number table fragment
@@ -2113,7 +2085,6 @@ decode_line_numbers (char *linetable)
 }
 
 /*
-
    LOCAL FUNCTION
 
    locval -- compute the value of a location attribute
@@ -2244,7 +2215,6 @@ locval (struct dieinfo *dip)
 }
 
 /*
-
    LOCAL FUNCTION
 
    read_ofile_symtab -- build a full symtab entry from chunk of DIE's
@@ -2294,7 +2264,7 @@ read_ofile_symtab (struct partial_symtab *pst)
 
   /* If there is a line number table associated with this compilation unit
      then read the size of this fragment in bytes, from the fragment itself.
-     Allocate a buffer for the fragment and read it in for future 
+     Allocate a buffer for the fragment and read it in for future
      processing. */
 
   lnbase = NULL;
@@ -2325,7 +2295,6 @@ read_ofile_symtab (struct partial_symtab *pst)
 }
 
 /*
-
    LOCAL FUNCTION
 
    psymtab_to_symtab_1 -- do grunt work for building a full symtab entry
@@ -2338,7 +2307,6 @@ read_ofile_symtab (struct partial_symtab *pst)
 
    Called once for each partial symbol table entry that needs to be
    expanded into a full symbol table entry.
-
  */
 
 static void
@@ -2397,7 +2365,6 @@ psymtab_to_symtab_1 (struct partial_symtab *pst)
 }
 
 /*
-
    LOCAL FUNCTION
 
    dwarf_psymtab_to_symtab -- build a full symtab entry from partial one
@@ -2411,7 +2378,6 @@ psymtab_to_symtab_1 (struct partial_symtab *pst)
    This is the DWARF support entry point for building a full symbol
    table entry from a partial symbol table entry.  We are passed a
    pointer to the partial symbol table entry that needs to be expanded.
-
  */
 
 static void
@@ -2433,21 +2399,21 @@ dwarf_psymtab_to_symtab (struct partial_symtab *pst)
 	         disconcerting pauses.  */
 	      if (info_verbose)
 		{
-		  printf_filtered (_("Reading in symbols for %s..."),
-				   pst->filename);
-		  gdb_flush (gdb_stdout);
+		  printf_filtered(_("Reading in symbols for %s..."),
+				  pst->filename);
+		  gdb_flush(gdb_stdout);
 		}
 
-	      psymtab_to_symtab_1 (pst);
+	      psymtab_to_symtab_1(pst);
 
-#if 0				/* FIXME:  Check to see what dbxread is doing here and see if
-				   we need to do an equivalent or is this something peculiar to
-				   stabs/a.out format.
-				   Match with global symbols.  This only needs to be done once,
-				   after all of the symtabs and dependencies have been read in.
-				 */
-	      scan_file_globals (pst->objfile);
-#endif
+#if 0         /* FIXME:  Check to see what dbxread is doing here and see if
+              we need to do an equivalent or is this something peculiar to
+              stabs/a.out format.
+              Match with global symbols.  This only needs to be done once,
+              after all of the symtabs and dependencies have been read in.
+              */
+	      scan_file_globals(pst->objfile);
+#endif /* 0 */
 
 	      /* Finish up the verbose info message.  */
 	      if (info_verbose)
@@ -2461,7 +2427,6 @@ dwarf_psymtab_to_symtab (struct partial_symtab *pst)
 }
 
 /*
-
    LOCAL FUNCTION
 
    add_enum_psymbol -- add enumeration members to partial symbol table
@@ -2507,7 +2472,6 @@ add_enum_psymbol (struct dieinfo *dip, struct objfile *objfile)
 }
 
 /*
-
    LOCAL FUNCTION
 
    add_partial_symbol -- add symbol to partial symbol table
@@ -2604,14 +2568,14 @@ NOTES
 		main () { int j; }
 
 	for which the relevant DWARF segment has the structure:
-	
+
 		0x51:
 		0x23   global subrtn   sibling     0x9b
 		                       name        main
 		                       fund_type   FT_integer
 		                       low_pc      0x800004cc
 		                       high_pc     0x800004d4
-		                            
+
 		0x74:
 		0x23   local var       sibling     0x97
 		                       name        j
@@ -2620,16 +2584,16 @@ NOTES
 		                                   OP_CONST 0xfffffffc
 		                                   OP_ADD
 		0x97:
-		0x4         
-		
+		0x4
+
 		0x9b:
 		0x1d   local var       sibling     0xb8
 		                       name        i
 		                       fund_type   FT_integer
 		                       location    OP_ADDR 0x800025dc
-		                            
+
 		0xb8:
-		0x4         
+		0x4
 
 	We want to include the symbol 'i' in the partial symbol table, but
 	not the symbol 'j'.  In essence, we want to skip all the dies within
@@ -2677,7 +2641,7 @@ scan_partial_symbols (char *thisdie, char *enddie, struct objfile *objfile)
 		  add_partial_symbol (&di, objfile);
 		  /* If there is a sibling attribute, adjust the nextdie
 		     pointer to skip the entire scope of the subroutine.
-		     Apply some sanity checking to make sure we don't 
+		     Apply some sanity checking to make sure we don't
 		     overrun or underrun the range of remaining DIE's */
 		  if (di.at_sibling != 0)
 		    {
@@ -2727,7 +2691,6 @@ scan_partial_symbols (char *thisdie, char *enddie, struct objfile *objfile)
 }
 
 /*
-
    LOCAL FUNCTION
 
    scan_compilation_units -- build a psymtab entry for each compilation
@@ -2766,7 +2729,6 @@ scan_partial_symbols (char *thisdie, char *enddie, struct objfile *objfile)
    RETURNS
 
    Returns no value.
-
  */
 
 static void
@@ -2843,7 +2805,6 @@ scan_compilation_units (char *thisdie, char *enddie, file_ptr dbfoff,
 }
 
 /*
-
    LOCAL FUNCTION
 
    new_symbol -- make a symbol table entry for a new symbol
@@ -2997,7 +2958,6 @@ new_symbol (struct dieinfo *dip, struct objfile *objfile)
 }
 
 /*
-
    LOCAL FUNCTION
 
    synthesize_typedef -- make a symbol table entry for a "fake" typedef
@@ -3015,7 +2975,6 @@ new_symbol (struct dieinfo *dip, struct objfile *objfile)
 
    This is used for C++ class, structs, unions, and enumerations to
    set up the tag name as a type.
-
  */
 
 static void
@@ -3041,7 +3000,6 @@ synthesize_typedef (struct dieinfo *dip, struct objfile *objfile,
 }
 
 /*
-
    LOCAL FUNCTION
 
    decode_mod_fund_type -- decode a modified fundamental type
@@ -3087,7 +3045,6 @@ decode_mod_fund_type (char *typedata)
 }
 
 /*
-
    LOCAL FUNCTION
 
    decode_mod_u_d_type -- decode a modified user defined type
@@ -3133,7 +3090,6 @@ decode_mod_u_d_type (char *typedata)
 }
 
 /*
-
    LOCAL FUNCTION
 
    decode_modified_type -- decode modified user or fundamental type
@@ -3169,7 +3125,6 @@ decode_mod_u_d_type (char *typedata)
    BUGS
 
    We currently ignore MOD_const and MOD_volatile.  (FIXME)
-
  */
 
 static struct type *
@@ -3227,21 +3182,21 @@ decode_modified_type (char *modifiers, unsigned int modcount, int mtype)
 		     DIE_NAME);	/* FIXME */
 	  break;
 	case MOD_volatile:
-	  complaint (&symfile_complaints,
-		     _("DIE @ 0x%x \"%s\", type modifier 'volatile' ignored"),
-		     DIE_ID, DIE_NAME);	/* FIXME */
+	  complaint(&symfile_complaints,
+		    _("DIE @ 0x%x \"%s\", type modifier 'volatile' ignored"),
+		    DIE_ID, DIE_NAME);	/* FIXME */
 	  break;
 	default:
-	  if (!(MOD_lo_user <= (unsigned char) modifier))
+	  if (!(MOD_lo_user <= (unsigned char)modifier))
 #if 0
 /* This part of the test would always be true, and it triggers a compiler
    warning.  */
-		&& (unsigned char) modifier <= MOD_hi_user))
-#endif
+		&& ((unsigned char)modifier <= MOD_hi_user)))
+#endif /* 0 */
 	    {
-	      complaint (&symfile_complaints,
-			 _("DIE @ 0x%x \"%s\", unknown type modifier %u"), DIE_ID,
-			 DIE_NAME, modifier);
+	      complaint(&symfile_complaints,
+                        _("DIE @ 0x%x \"%s\", unknown type modifier %u"),
+                        DIE_ID, DIE_NAME, modifier);
 	    }
 	  break;
 	}
@@ -3250,7 +3205,6 @@ decode_modified_type (char *modifiers, unsigned int modcount, int mtype)
 }
 
 /*
-
    LOCAL FUNCTION
 
    decode_fund_type -- translate basic DWARF type to gdb base type
@@ -3278,7 +3232,6 @@ decode_fund_type (unsigned int fundtype)
 
   switch (fundtype)
     {
-
     case FT_void:
       typep = dwarf_fundamental_type (current_objfile, FT_VOID);
       break;
@@ -3375,7 +3328,6 @@ decode_fund_type (unsigned int fundtype)
     case FT_ext_prec_complex:
       typep = dwarf_fundamental_type (current_objfile, FT_EXT_PREC_COMPLEX);
       break;
-
     }
 
   if (typep == NULL)
@@ -3393,7 +3345,6 @@ decode_fund_type (unsigned int fundtype)
 }
 
 /*
-
    LOCAL FUNCTION
 
    create_name -- allocate a fresh copy of a string on an obstack
@@ -3402,7 +3353,6 @@ decode_fund_type (unsigned int fundtype)
 
    Given a pointer to a string and a pointer to an obstack, allocates
    a fresh copy of the string on the specified obstack.
-
  */
 
 static char *
@@ -3418,7 +3368,6 @@ create_name (char *name, struct obstack *obstackp)
 }
 
 /*
-
    LOCAL FUNCTION
 
    basicdieinfo -- extract the minimal die info from raw die data
@@ -3501,7 +3450,6 @@ basicdieinfo (struct dieinfo *dip, char *diep, struct objfile *objfile)
 }
 
 /*
-
    LOCAL FUNCTION
 
    completedieinfo -- finish reading the information for a given DIE
@@ -3529,7 +3477,6 @@ basicdieinfo (struct dieinfo *dip, char *diep, struct objfile *objfile)
    keeps an approximate count of the number of dies processed for
    each compilation unit.  This information is presented to the user
    if the info_verbose flag is set.
-
  */
 
 static void
@@ -3719,7 +3666,6 @@ completedieinfo (struct dieinfo *dip, struct objfile *objfile)
 }
 
 /*
-
    LOCAL FUNCTION
 
    target_to_host -- swap in target data to host
@@ -3744,12 +3690,11 @@ completedieinfo (struct dieinfo *dip, struct objfile *objfile)
    result until the bfd library is able to do this for us.
 
    FIXME: Would a 32 bit target ever need an 8 byte result?
-
  */
 
 static CORE_ADDR
-target_to_host (char *from, int nbytes, int signextend,	/* FIXME:  Unused */
-		struct objfile *objfile)
+target_to_host(char *from, int nbytes, int signextend, /* FIXME:  Unused */
+               struct objfile *objfile)
 {
   CORE_ADDR rtnval;
 
@@ -3778,7 +3723,6 @@ target_to_host (char *from, int nbytes, int signextend,	/* FIXME:  Unused */
 }
 
 /*
-
    LOCAL FUNCTION
 
    attribute_size -- compute size of data for a DWARF attribute
@@ -3794,7 +3738,6 @@ target_to_host (char *from, int nbytes, int signextend,	/* FIXME:  Unused */
    size.
 
    Returns -1 for unrecognized attributes.
-
  */
 
 static int
@@ -3831,3 +3774,5 @@ attribute_size (unsigned int attr)
     }
   return (nbytes);
 }
+
+/* EOF */

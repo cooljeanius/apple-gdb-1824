@@ -53,19 +53,20 @@
 /* Support routines for single stepping.  Calculate the next PC value.  */
 #define submask(x) ((1L << ((x) + 1)) - 1)
 #define bit(obj,st) (((obj) >> (st)) & 1)
-#define bits(obj,st,fn) (((obj) >> (st)) & submask ((fn) - (st)))
+#define bits(obj,st,fn) (((obj) >> (st)) & submask((fn) - (st)))
 #define sbits(obj,st,fn) \
-  ((long) (bits(obj,st,fn) | ((long) bit(obj,fn) * ~ submask (fn - st))))
+  ((long)(bits(obj,st,fn) | ((long)bit(obj,fn) * ~submask(fn - st))))
 #define BranchDest(addr,instr) \
-  ((CORE_ADDR) (((long) (addr)) + 8 + (sbits (instr, 0, 23) << 2)))
+  ((CORE_ADDR)(((long)(addr)) + 8L + (sbits(instr, 0, 23) << 2)))
 #define ARM_PC_32 1
-#define IS_THUMB32_OP(op) (((op) & 0xe000) == 0xe000 && bits ((op), 11, 12) != 0)
+#define IS_THUMB32_OP(op) (((op) & 0xe000) == 0xe000 && bits((op), 11, 12) != 0)
 static int arm_debug;
 static void
-show_arm_debug (struct ui_file *file, int from_tty,
-		struct cmd_list_element *c, const char *value)
+show_arm_debug(struct ui_file *file, int from_tty ATTRIBUTE_UNUSED,
+               struct cmd_list_element *c ATTRIBUTE_UNUSED,
+               const char *value)
 {
-  fprintf_filtered (file, _("ARM debugging is %s.\n"), value);
+  fprintf_filtered(file, _("ARM debugging is %s.\n"), value);
 }
 
 /* Each OS has a different mechanism for accessing the various
@@ -106,11 +107,11 @@ show_arm_debug (struct ui_file *file, int from_tty,
    MSYMBOL_IS_SPECIAL   Tests the "special" bit in a minimal symbol.  */
 
 #define MSYMBOL_SET_SPECIAL(msym)					\
-	MSYMBOL_INFO (msym) = (char *) (((long) MSYMBOL_INFO (msym))	\
-					| 0x80000000)
+	MSYMBOL_INFO(msym) = (char *)(((long)MSYMBOL_INFO(msym))	\
+                                      | 0x80000000)
 
 #define MSYMBOL_IS_SPECIAL(msym)				\
-	(((long) MSYMBOL_INFO (msym) & 0x80000000) != 0)
+	(((long)MSYMBOL_INFO(msym) & 0x80000000) != 0)
 
 /* The list of available "set arm ..." and "show arm ..." commands.  */
 static struct cmd_list_element *setarmcmdlist = NULL;
@@ -219,61 +220,32 @@ static int current_option;
 static void set_disassembly_style_sfunc(char *, int,
 					 struct cmd_list_element *);
 
-static void arm_set_show_opcode_bytes (char *args, int from_tty,
-				       struct cmd_list_element *c);
+static void arm_set_show_opcode_bytes(char *args, int from_tty,
+				      struct cmd_list_element *c);
 
-static void set_disassembly_style (void);
+static void set_disassembly_style(void);
 
-static void convert_from_extended (const struct floatformat *, const void *,
-				   void *);
-static void convert_to_extended (const struct floatformat *, void *,
-				 const void *);
+static void convert_from_extended(const struct floatformat *, const void *,
+				  void *);
+static void convert_to_extended(const struct floatformat *, void *,
+                                const void *);
 
-struct arm_prologue_cache
-{
-  /* The stack pointer at the time this frame was created; i.e. the
-     caller's stack pointer when this function was called. It is used
-     to identify this frame.  */
-  CORE_ADDR prev_sp;
-
-  /* Also known as the start of the function.  */
-  CORE_ADDR prologue_start;
-
-  /* The frame base for this frame is just prev_sp + frame offset -
-     frame size. FRAMESIZE is the size of this stack frame, and
-     FRAMEOFFSET if the initial offset from the stack pointer (this
-     frame's stack pointer, not PREV_SP) to the frame base.  */
-
-  int framesize;
-  int frameoffset;
-
-  /* The register used to hold the frame pointer for this frame.  */
-  int framereg;
-
-  /* The unwound frame pointer value, or zero if not available.  */
-  CORE_ADDR prev_fp;
-
-  int prev_pc_is_thumb;	/* previous function is a thumb function.  */
-
-  /* Saved register offsets.  */
-  struct trad_frame_saved_reg *saved_regs;
-};
-
-typedef struct arm_prologue_cache arm_prologue_cache_t;
+/* The struct and typedef that used to be here have both been moved to the
+ * corresponding header.  */
 
 arm_prologue_cache_t *
-get_arm_prologue_cache (struct frame_info *frame)
+get_arm_prologue_cache(struct frame_info *frame)
 {
   arm_prologue_cache_t *arm_frame_cache = NULL;
 
   if (frame)
     {
-      enum frame_type frame_type = get_frame_type (frame);
+      enum frame_type frame_type = get_frame_type(frame);
       if (frame_type != DUMMY_FRAME)
 	{
-	  void **frame_cache = frame_cache_hack (frame);
+	  void **frame_cache = (void **)frame_cache_hack(frame);
 	  if (frame_cache)
-	    arm_frame_cache = *frame_cache;
+	    arm_frame_cache = (arm_prologue_cache_t *)*frame_cache;
 	}
     }
 
@@ -322,9 +294,9 @@ typedef struct arm_prologue_state arm_prologue_state_t;
 /* Callback definition for prologue instruction scanning functions
    used in the arm_opcode_info_tag structure. The return value is
    to be one of the prolog_XXX values described below.  */
-typedef int (arm_scan_prolog_ftype) (const uint32_t insn,
-				      arm_prologue_cache_t *cache,
-				      arm_prologue_state_t *state);
+typedef int (arm_scan_prolog_ftype)(const uint32_t insn,
+                                    arm_prologue_cache_t *cache,
+                                    arm_prologue_state_t *state);
 
 /*
   Definitions for the arm_opcode_info_tag TYPE member.
@@ -381,103 +353,103 @@ struct arm_opcode_info_tag
 
 typedef struct arm_opcode_info_tag arm_opcode_info_t;
 
-static uint32_t data_proc_immediate (const uint32_t insn);
+static uint32_t data_proc_immediate(const uint32_t insn);
 
 /* Prologue scanning function declarations.  */
 
-static int arm_scan_prolog_insn_stmfd_sp (const uint32_t insn,
-					   arm_prologue_cache_t *cache,
-					   arm_prologue_state_t *state);
+static int arm_scan_prolog_insn_stmfd_sp(const uint32_t insn,
+                                         arm_prologue_cache_t *cache,
+                                         arm_prologue_state_t *state);
 
-static int arm_scan_prolog_insn_data_proc_imm (const uint32_t insn,
-						arm_prologue_cache_t *cache,
-						arm_prologue_state_t *state);
+static int arm_scan_prolog_insn_data_proc_imm(const uint32_t insn,
+                                              arm_prologue_cache_t *cache,
+                                              arm_prologue_state_t *state);
 
-static int arm_scan_prolog_insn_mov_ip_sp (const uint32_t insn,
+static int arm_scan_prolog_insn_mov_ip_sp(const uint32_t insn,
+                                          arm_prologue_cache_t *cache,
+                                          arm_prologue_state_t *state);
+
+static int arm_scan_prolog_insn_str_rd_sp(const uint32_t insn,
+                                          arm_prologue_cache_t *cache,
+                                          arm_prologue_state_t *state);
+
+static int arm_scan_prolog_insn_stmfd_sp(const uint32_t insn,
+                                         arm_prologue_cache_t *cache,
+                                         arm_prologue_state_t *state);
+
+static int arm_scan_prolog_insn_stfe_fn_sp_minus_12(const uint32_t insn,
+                                                    arm_prologue_cache_t *cache,
+                                                    arm_prologue_state_t *state);
+
+static int arm_scan_prolog_insn_sfmfd_fn_4_sp(const uint32_t insn,
+                                              arm_prologue_cache_t *cache,
+                                              arm_prologue_state_t *state);
+
+static int arm_scan_prolog_insn_fstmdb(const uint32_t insn,
+                                       arm_prologue_cache_t *cache,
+                                       arm_prologue_state_t *state);
+
+static int thumb_scan_prolog_insn_push(const uint32_t insn,
+                                       arm_prologue_cache_t *cache,
+                                       arm_prologue_state_t *state);
+
+static int thumb_scan_prolog_insn_sub4_sp_imm(const uint32_t insn,
+                                              arm_prologue_cache_t *cache,
+                                              arm_prologue_state_t *state);
+
+
+static int thumb_scan_prolog_insn_add6_r7_sp(const uint32_t insn,
+                                             arm_prologue_cache_t *cache,
+                                             arm_prologue_state_t *state);
+
+static int thumb_scan_prolog_insn_add_sp_rm(const uint32_t insn,
+                                            arm_prologue_cache_t *cache,
+                                            arm_prologue_state_t *state);
+
+static int thumb_scan_prolog_insn_ldr_rd_pc_rel(const uint32_t insn,
+                                                arm_prologue_cache_t *cache,
+                                                arm_prologue_state_t *state);
+
+static int thumb_scan_prolog_insn_mov_r7_sp(const uint32_t insn,
+                                            arm_prologue_cache_t *cache,
+                                            arm_prologue_state_t *state);
+
+static int thumb_scan_prolog_insn_mov_rlo_rhi(const uint32_t insn,
+                                              arm_prologue_cache_t *cache,
+                                              arm_prologue_state_t *state);
+
+static int thumb2_scan_prolog_insn_stmfd_sp(const uint32_t insn,
 					    arm_prologue_cache_t *cache,
 					    arm_prologue_state_t *state);
 
-static int arm_scan_prolog_insn_str_rd_sp (const uint32_t insn,
-					    arm_prologue_cache_t *cache,
-					    arm_prologue_state_t *state);
-
-static int arm_scan_prolog_insn_stmfd_sp (const uint32_t insn,
-					   arm_prologue_cache_t *cache,
-					   arm_prologue_state_t *state);
-
-static int arm_scan_prolog_insn_stfe_fn_sp_minus_12 (const uint32_t insn,
-						      arm_prologue_cache_t *cache,
-						      arm_prologue_state_t *state);
-
-static int arm_scan_prolog_insn_sfmfd_fn_4_sp (const uint32_t insn,
-						arm_prologue_cache_t *cache,
-						arm_prologue_state_t *state);
-
-static int arm_scan_prolog_insn_fstmdb (const uint32_t insn,
+static int thumb2_scan_prolog_insn_push_w(const uint32_t insn,
 					  arm_prologue_cache_t *cache,
 					  arm_prologue_state_t *state);
 
-static int thumb_scan_prolog_insn_push (const uint32_t insn,
-					 arm_prologue_cache_t *cache,
-					 arm_prologue_state_t *state);
-
-static int thumb_scan_prolog_insn_sub4_sp_imm (const uint32_t insn,
-						arm_prologue_cache_t *cache,
-						arm_prologue_state_t *state);
-
-
-static int thumb_scan_prolog_insn_add6_r7_sp (const uint32_t insn,
-					       arm_prologue_cache_t *cache,
-					       arm_prologue_state_t *state);
-
-static int thumb_scan_prolog_insn_add_sp_rm (const uint32_t insn,
-					      arm_prologue_cache_t *cache,
-					      arm_prologue_state_t *state);
-
-static int thumb_scan_prolog_insn_ldr_rd_pc_rel (const uint32_t insn,
-						  arm_prologue_cache_t *cache,
-						  arm_prologue_state_t *state);
-
-static int thumb_scan_prolog_insn_mov_r7_sp (const uint32_t insn,
-					      arm_prologue_cache_t *cache,
-					      arm_prologue_state_t *state);
-
-static int thumb_scan_prolog_insn_mov_rlo_rhi (const uint32_t insn,
-						arm_prologue_cache_t *cache,
-						arm_prologue_state_t *state);
-
-static int thumb2_scan_prolog_insn_stmfd_sp (const uint32_t insn,
+static int thumb2_scan_prolog_insn_push_w_rt(const uint32_t insn,
 					     arm_prologue_cache_t *cache,
 					     arm_prologue_state_t *state);
 
-static int thumb2_scan_prolog_insn_push_w (const uint32_t insn,
-					   arm_prologue_cache_t *cache,
-					   arm_prologue_state_t *state);
+static int thumb2_scan_prolog_insn_vpush(const uint32_t insn,
+					 arm_prologue_cache_t *cache,
+					 arm_prologue_state_t *state);
 
-static int thumb2_scan_prolog_insn_push_w_rt (const uint32_t insn,
-					      arm_prologue_cache_t *cache,
-					      arm_prologue_state_t *state);
+static int thumb2_scan_prolog_insn_sub_sp_const(const uint32_t insn,
+                                                arm_prologue_cache_t *cache,
+                                                arm_prologue_state_t *state);
 
-static int thumb2_scan_prolog_insn_vpush (const uint32_t insn,
-					  arm_prologue_cache_t *cache,
-					  arm_prologue_state_t *state);
+static int thumb2_scan_prolog_insn_sub_sp_imm12(const uint32_t insn,
+                                                arm_prologue_cache_t *cache,
+                                                arm_prologue_state_t *state);
 
-static int thumb2_scan_prolog_insn_sub_sp_const (const uint32_t insn,
-						 arm_prologue_cache_t *cache,
-						 arm_prologue_state_t *state);
-
-static int thumb2_scan_prolog_insn_sub_sp_imm12 (const uint32_t insn,
-						 arm_prologue_cache_t *cache,
-						 arm_prologue_state_t *state);
-
-static int thumb_scan_prolog_insn_blx (const uint32_t insn,
-				       arm_prologue_cache_t *cache,
-				       arm_prologue_state_t *state);
+static int thumb_scan_prolog_insn_blx(const uint32_t insn,
+				      arm_prologue_cache_t *cache,
+				      arm_prologue_state_t *state);
 
 static int
-scan_prolog_insn_return_no (const uint32_t insn,
-			    arm_prologue_cache_t *cache,
-			    arm_prologue_state_t *state)
+scan_prolog_insn_return_no(const uint32_t insn ATTRIBUTE_UNUSED,
+			   arm_prologue_cache_t *cache ATTRIBUTE_UNUSED,
+			   arm_prologue_state_t *state ATTRIBUTE_UNUSED)
 {
   /* Any opcodes that we know could NOT be in a prologue can use this as their
      SCAN_PROLOG callback.  */
@@ -521,7 +493,7 @@ static arm_opcode_info_t arm_opcode_info[] =
   { 0xfe200000, 0xe8200000, scan_prolog_insn_return_no,			ARM_ALL_VARIANTS, "ldm"}
 };
 
-#define ARM_OPCOPE_INFO_COUNT	(sizeof (arm_opcode_info)/sizeof (arm_opcode_info_t))
+#define ARM_OPCOPE_INFO_COUNT (sizeof(arm_opcode_info) / sizeof(arm_opcode_info_t))
 
 
 
@@ -551,7 +523,9 @@ static arm_opcode_info_t thumb_opcode_info[] =
   { 0xffffffff, 0x466f    , thumb_scan_prolog_insn_mov_r7_sp,     ARMV4T_AND_ABOVE, "mov r7, sp"},
   { 0xffffffc0, 0x4640    , thumb_scan_prolog_insn_mov_rlo_rhi,   ARMV4T_AND_ABOVE, "mov r0-r7, r8-r15"},
   /* Thumb2 */
-//{ 0xfe5f0000, 0xe80d0000, thumb2_scan_prolog_insn_stmia_sp,	  ARMV6T2_AND_ABOVE, "stmia, sp!,{...}"},
+#if 0
+  { 0xfe5f0000, 0xe80d0000, thumb2_scan_prolog_insn_stmia_sp,	  ARMV6T2_AND_ABOVE, "stmia, sp!,{...}"},
+#endif /* 0 */
   { 0xffffa000, 0xe92d0000, thumb2_scan_prolog_insn_stmfd_sp,	  ARMV6T2_AND_ABOVE, "stmfd, sp!,{...}"},
   { 0xffffa000, 0xe8ad0000, thumb2_scan_prolog_insn_push_w,	  ARMV6T2_AND_ABOVE, "push<c>.w <registers> (encoding T2)"},
   { 0xffff0fff, 0xf84d0d04, thumb2_scan_prolog_insn_push_w_rt,	  ARMV6T2_AND_ABOVE, "push<c>.w <registers> (encoding T3)"},
@@ -577,26 +551,26 @@ static arm_opcode_info_t thumb_opcode_info[] =
 };
 
 static uint32_t
-ror_c (uint32_t value, uint32_t N, uint32_t shift)
+ror_c(uint32_t value, uint32_t N, uint32_t shift)
 {
-    uint32_t m = shift % N;
-    uint32_t result = (value >> m) | (value << (N - m));
+    uint32_t m = (shift % N);
+    uint32_t result = ((value >> m) | (value << (N - m)));
     return result;
 }
 
 static uint32_t
-thumb_expand_imm_c (uint32_t insn)
+thumb_expand_imm_c(uint32_t insn)
 {
   /* Expands the modified immediate constants in Thumb instructions.
      These opcode have an immediate that is 12 bits that is broken
      up into an i, imm3, a, b, c, d, e, f, g, h fields is the ARM
      architecture reference manual. This code was made by reading
      the pseudo code that was found in that manual.  */
-  uint32_t imm32 = 0;
-  const uint32_t i = bit (insn, 26);
-  const uint32_t imm3 = bits (insn, 12, 14);
-  const uint32_t abcdefgh = bits (insn, 0, 7);
-  const uint32_t imm12 = i << 11 | imm3 << 8 | abcdefgh;
+  uint32_t imm32 = 0U;
+  const uint32_t i = bit(insn, 26);
+  const uint32_t imm3 = bits(insn, 12, 14);
+  const uint32_t abcdefgh = bits(insn, 0, 7);
+  const uint32_t imm12 = (i << 11 | imm3 << 8 | abcdefgh);
 
   if (bits(imm12, 10, 11) == 0)
     {
@@ -622,12 +596,12 @@ thumb_expand_imm_c (uint32_t insn)
   else
     {
       const uint32_t unrotated_value = 0x80 | bits(imm12, 0, 6);
-      imm32 = ror_c (unrotated_value, 32, bits(imm12, 7, 11));
+      imm32 = ror_c(unrotated_value, 32, bits(imm12, 7, 11));
     }
   return imm32;
 }
 
-#define THUMB_OPCOPE_INFO_COUNT	(sizeof (thumb_opcode_info)/sizeof (arm_opcode_info_t))
+#define THUMB_OPCOPE_INFO_COUNT	(sizeof(thumb_opcode_info) / sizeof(arm_opcode_info_t))
 #define MAX_THUMB_PROLOGUE_SIZE	40
 #define MAX_ARM_PROLOGUE_SIZE	64
 
@@ -640,20 +614,19 @@ thumb_expand_imm_c (uint32_t insn)
 #define MAKE_THUMB_ADDR(addr)	((addr) | 1)
 #define UNMAKE_THUMB_ADDR(addr) ((addr) & ~1)
 
-/* Set to true if the 32-bit mode is in use.  */
-
+/* Set to true if the 32-bit mode is in use: */
 int arm_apcs_32 = 1;
 
 /* Determine if the program counter specified in MEMADDR is in a Thumb
    function.  */
 
 int
-arm_pc_is_thumb (CORE_ADDR memaddr)
+arm_pc_is_thumb(CORE_ADDR memaddr)
 {
   struct minimal_symbol *sym;
 
   /* If bit 0 of the address is set, assume this is a Thumb address.  */
-  if (IS_THUMB_ADDR (memaddr))
+  if (IS_THUMB_ADDR(memaddr))
     return 1;
 
   /* Thumb functions have a "special" bit set in minimal symbols.  */
@@ -676,28 +649,28 @@ arm_pc_is_thumb (CORE_ADDR memaddr)
    first 16 bit opcode will be in bits 31:16, and the second 16 bit opcode
    will be in bits 15:0.  */
 int
-read_thumb_instruction (CORE_ADDR addr, uint32_t *opcode_size_ptr, uint32_t *insn)
+read_thumb_instruction(CORE_ADDR addr, uint32_t *opcode_size_ptr, uint32_t *insn)
 {
   ULONGEST buf;
-  if (safe_read_memory_unsigned_integer (addr, 2, &buf))
+  if (safe_read_memory_unsigned_integer(addr, 2, &buf))
     *insn = buf;
   else
     return 0;
 
   /* Check if this is a 32 bit instruction and read the low 16 bits
      after shifting the high 16 bits into 31:16.  */
-  if ((*insn & 0xe000) != 0xe000 || bits (*insn, 11, 12) == 0)
+  if (((*insn & 0xe000) != 0xe000) || (bits(*insn, 11, 12) == 0))
     {
-      /* We have a 16 bit thumb instruction.  */
+      /* We have a 16 bit thumb instruction: */
       if (opcode_size_ptr)
 	*opcode_size_ptr = 2;
     }
   else
     {
-      /* We have a 32 bit thumb instruction.  */
-      *insn = *insn << 16 | read_memory_unsigned_integer (addr + 2, 2);
+      /* We have a 32 bit thumb instruction: */
+      *insn = (*insn << 16 | read_memory_unsigned_integer(addr + 2, 2));
 
-      /* Fill in the opcode size if requested.  */
+      /* Fill in the opcode size if requested: */
       if (opcode_size_ptr)
 	*opcode_size_ptr = 4;
     }
@@ -719,9 +692,9 @@ arm_addr_bits_remove (CORE_ADDR val)
 /* When reading symbols, we need to zap the low bit of the address,
    which may be set to 1 for Thumb functions.  */
 static CORE_ADDR
-arm_smash_text_address (CORE_ADDR val)
+arm_smash_text_address(CORE_ADDR val)
 {
-  return val & ~1;
+  return (val & ~1);
 }
 
 /* Immediately after a function call, return the saved pc. Cannot
@@ -730,9 +703,9 @@ arm_smash_text_address (CORE_ADDR val)
    instructions.  */
 
 static CORE_ADDR
-arm_saved_pc_after_call (struct frame_info *frame)
+arm_saved_pc_after_call(struct frame_info *frame ATTRIBUTE_UNUSED)
 {
-  return ADDR_BITS_REMOVE (read_register (ARM_LR_REGNUM));
+  return ADDR_BITS_REMOVE(read_register(ARM_LR_REGNUM));
 }
 
 /* A typical Thumb prologue looks like this:
@@ -837,11 +810,14 @@ init_prologue_state (arm_prologue_state_t *state)
 }
 
 static CORE_ADDR
-thumb_macosx_skip_prologue (CORE_ADDR pc, CORE_ADDR func_end)
+thumb_macosx_skip_prologue(CORE_ADDR pc, CORE_ADDR func_end)
 {
-  int i;
+  size_t i;
   arm_prologue_state_t state;
-  init_prologue_state (&state);
+  CORE_ADDR last_prologue_inst_addr;
+  CORE_ADDR max_prologue_addr;
+  uint32_t opcode_size;
+  init_prologue_state(&state);
 
   /* APPLE LOCAL ADDITION: Make sure we find some prologue opcodes by keeping
      track of the last valid prologue instruction we find in END_PROLOGUE.
@@ -850,25 +826,25 @@ thumb_macosx_skip_prologue (CORE_ADDR pc, CORE_ADDR func_end)
      end of the function could be due to "optimized prologue instruction
      scheduling". So END_PROLOGUE should only get set to CURRENT_PC if we
      recognized the instruction as a prologue instruction.  */
-  CORE_ADDR last_prologue_inst_addr = pc;
+  last_prologue_inst_addr = pc;
   if (arm_debug > 3)
-    fprintf_unfiltered (gdb_stdlog, "thumb_macosx_skip_prologue (0x%s, 0x%s)\n",
-			paddr (pc), paddr (func_end));
+    fprintf_unfiltered(gdb_stdlog, "thumb_macosx_skip_prologue (0x%s, 0x%s)\n",
+                       paddr(pc), paddr(func_end));
   /* findmask:
      bit 0 - push { rlist }
      bit 1 - mov r7, sp  OR  add r7, sp, #imm  (setting of r7)
      bit 2 - sub sp, #simm  OR  add sp, #simm  (adjusting of sp)
   */
-  CORE_ADDR max_prologue_addr = func_end;
-  if (max_prologue_addr > pc + MAX_THUMB_PROLOGUE_SIZE)
-    max_prologue_addr = pc + MAX_THUMB_PROLOGUE_SIZE;
+  max_prologue_addr = func_end;
+  if (max_prologue_addr > (pc + MAX_THUMB_PROLOGUE_SIZE))
+    max_prologue_addr = (pc + MAX_THUMB_PROLOGUE_SIZE);
 
-  uint32_t opcode_size = 2;  /* Size in bytes of the thumb instruction.  */
+  opcode_size = 2U;  /* Size in bytes of the thumb instruction.  */
   for (state.pc = pc; state.pc < max_prologue_addr; state.pc += opcode_size)
     {
       uint32_t insn;
       /* Read a 16 or 32 bit thumb instruction into a 32 bit value.  */
-      if (!read_thumb_instruction (state.pc, &opcode_size, &insn))
+      if (!read_thumb_instruction(state.pc, &opcode_size, &insn))
         return pc;
 
       /* Make sure we got a 2 or 4 byte opcode size. We could conceivably
@@ -879,33 +855,35 @@ thumb_macosx_skip_prologue (CORE_ADDR pc, CORE_ADDR func_end)
       if (arm_debug > 3)
 	{
 	  if (opcode_size == 4)
-	    fprintf_unfiltered (gdb_stdlog, " 0x%s: 0x%8.8x",
-				paddr (state.pc), insn);
+	    fprintf_unfiltered(gdb_stdlog, " 0x%s: 0x%8.8x",
+                               paddr(state.pc), insn);
 	  else
-	    fprintf_unfiltered (gdb_stdlog, " 0x%s: 0x%4.4x    ",
-				paddr (state.pc), insn);
+	    fprintf_unfiltered(gdb_stdlog, " 0x%s: 0x%4.4x    ",
+                               paddr(state.pc), insn);
 	}
 
       /* Iterate through our opcode information array and figure out which
        * instructions can be part of a progloue, or which ones cannot be
        * part of a prologue.  */
-      for (i=0; i<THUMB_OPCOPE_INFO_COUNT; i++)
+      for (i = 0UL; i < THUMB_OPCOPE_INFO_COUNT; i++)
 	{
 	  arm_opcode_info_t *op_info = &thumb_opcode_info[i];
 
 	  if ((insn & op_info->mask) == op_info->value)
 	    {
-	      if (arm_debug > 3)
-		fprintf_unfiltered (gdb_stdlog, " -> [%3d] %-30s ", i,
-				    op_info->description);
+              int opcode_type;
 
-	      int opcode_type = op_info->scan_prolog(insn, NULL, &state);
+	      if (arm_debug > 3)
+		fprintf_unfiltered(gdb_stdlog, " -> [%3zu] %-30s ", i,
+				   op_info->description);
+
+	      opcode_type = op_info->scan_prolog(insn, NULL, &state);
 
 	      if (opcode_type == prolog_yes)
 		{
-		  /* We have a proglogue opcode. */
+		  /* We have a proglogue opcode: */
 		  if (arm_debug > 3)
-		    fprintf_unfiltered (gdb_stdlog, "prolog_yes");
+		    fprintf_unfiltered(gdb_stdlog, "prolog_yes");
 		  last_prologue_inst_addr = state.pc + opcode_size;
 		}
 	      else if (opcode_type == prolog_no)
@@ -1053,18 +1031,18 @@ arm_skip_prologue (CORE_ADDR pc)
 #endif /* !TM_NEXTSTEP */
 
 static CORE_ADDR
-arm_macosx_skip_prologue_addr_ctx (struct address_context *pc_addr_ctx)
+arm_macosx_skip_prologue_addr_ctx(struct address_context *pc_addr_ctx)
 {
   CORE_ADDR pc = pc_addr_ctx->address;
   uint32_t insn;
   uint32_t i;
   arm_prologue_state_t state;
-  init_prologue_state (&state);
-  CORE_ADDR prologue_start, prologue_end = 0;
+  CORE_ADDR prologue_start, prologue_end = 0UL;
   CORE_ADDR last_prologue_inst_addr = pc;
+  init_prologue_state(&state);
 
   /* If we are in a dummy frame, do NOT even try to skip the prologue.  */
-  if (deprecated_pc_in_call_dummy (pc))
+  if (deprecated_pc_in_call_dummy(pc))
     return pc;
 
   /* One way to find the end of the prologue (which works well
@@ -1099,72 +1077,75 @@ arm_macosx_skip_prologue_addr_ctx (struct address_context *pc_addr_ctx)
      possible prologue plus up to five instructions inserted by
      the scheduler.  */
 
-  /* See what the symbol table says.  */
+  /* See what the symbol table says: */
   if (pc_addr_ctx->symbol
-      && SYMBOL_CLASS (pc_addr_ctx->symbol) == LOC_BLOCK
-      && SYMBOL_BLOCK_VALUE (pc_addr_ctx->symbol))
+      && (SYMBOL_CLASS(pc_addr_ctx->symbol) == LOC_BLOCK)
+      && SYMBOL_BLOCK_VALUE(pc_addr_ctx->symbol))
     {
-      prologue_start = SYMBOL_BLOCK_VALUE (pc_addr_ctx->symbol)->startaddr;
-      prologue_end =  SYMBOL_BLOCK_VALUE (pc_addr_ctx->symbol)->endaddr;
+      prologue_start = SYMBOL_BLOCK_VALUE(pc_addr_ctx->symbol)->startaddr;
+      prologue_end =  SYMBOL_BLOCK_VALUE(pc_addr_ctx->symbol)->endaddr;
     }
   else
-  if (!find_pc_partial_function (pc, NULL, &prologue_start, &prologue_end))
+  if (!find_pc_partial_function(pc, NULL, &prologue_start, &prologue_end))
     {
       /* We did NOT find any function bounds for the given PC, just use
        * the current PC as the prologue start address.  */
       prologue_start = pc;
     }
 
-  /* We do NOT use the line table to find the prolgue start and end
-     since there could be optimized instructions built into the prologue,
-     so make sure to limit the end to MAX_ARM_PROLOGUE_SIZE bytes past the start if needed.  */
-  if (prologue_end == 0 || prologue_end > pc + MAX_ARM_PROLOGUE_SIZE)
-    prologue_end = prologue_start + MAX_ARM_PROLOGUE_SIZE;
+  /* We do NOT use the line table to find the prolgue start and end since
+   * there could be optimized instructions built into the prologue, so make
+   * sure to limit the end to MAX_ARM_PROLOGUE_SIZE bytes past the start
+   * if needed: */
+  if ((prologue_end == 0) || (prologue_end > (pc + MAX_ARM_PROLOGUE_SIZE)))
+    prologue_end = (prologue_start + MAX_ARM_PROLOGUE_SIZE);
 
-  /* Check if this is Thumb code.  */
-  if (arm_pc_is_thumb (pc))
-    return thumb_macosx_skip_prologue (pc, prologue_end);
+  /* Check if this is Thumb code: */
+  if (arm_pc_is_thumb(pc))
+    return thumb_macosx_skip_prologue(pc, prologue_end);
 
   if (arm_debug > 3)
-    fprintf_unfiltered (gdb_stdlog, "arm_macosx_skip_prologue (0x%s)\n", paddr (pc));
+    fprintf_unfiltered(gdb_stdlog, "arm_macosx_skip_prologue (0x%s)\n",
+                       paddr(pc));
 
   for (state.pc = pc; state.pc < prologue_end; state.pc += 4)
     {
       ULONGEST buf;
-      if (safe_read_memory_unsigned_integer (state.pc, 4, &buf))
+      if (safe_read_memory_unsigned_integer(state.pc, 4, &buf))
         insn = buf;
       else
         return pc;
 
       if (arm_debug > 3)
-	fprintf_unfiltered (gdb_stdlog, "  0x%s: 0x%8.8x", paddr (state.pc),
-			    insn);
+	fprintf_unfiltered(gdb_stdlog, "  0x%s: 0x%8.8x", paddr(state.pc),
+			   insn);
 
       /* Iterate through our opcode information array and figure out which
        * instructions can be part of a progloue, or which ones cannot be
        * part of a prologue.  */
-      for (i=0; i<ARM_OPCOPE_INFO_COUNT; i++)
+      for (i = 0UL; i < ARM_OPCOPE_INFO_COUNT; i++)
 	{
 	  arm_opcode_info_t *op_info = &arm_opcode_info[i];
 
 	  if ((insn & op_info->mask) == op_info->value)
 	    {
+              int opcode_type;
 	      if (arm_debug > 3)
-		fprintf_unfiltered (gdb_stdlog, " -> [%3d] %-30s ",
-				    i, op_info->description);
+		fprintf_unfiltered(gdb_stdlog, " -> [%3d] %-30s ",
+				   i, op_info->description);
 
-	      int opcode_type = op_info->scan_prolog(insn, NULL, &state);
+	      opcode_type = op_info->scan_prolog(insn, NULL, &state);
 	      if (opcode_type == prolog_yes)
 		{
-		  /* We have a proglogue opcode. */
+		  /* We have a proglogue opcode: */
 		  if (arm_debug > 3)
-		    fprintf_unfiltered (gdb_stdlog, "prolog_yes");
-		  last_prologue_inst_addr = state.pc + 4;
+		    fprintf_unfiltered(gdb_stdlog, "prolog_yes");
+		  last_prologue_inst_addr = (state.pc + 4);
 		}
 	      else if (opcode_type == prolog_no)
 		{
 		  if (arm_debug > 3)
-		    fprintf_unfiltered (gdb_stdlog, "prolog_no");
+		    fprintf_unfiltered(gdb_stdlog, "prolog_no");
 		  /* We have an instruction that cannot appear in a
 		     proglogue, so return the last instruction that
 		     was a valid prologue opcode. */
@@ -1173,14 +1154,14 @@ arm_macosx_skip_prologue_addr_ctx (struct address_context *pc_addr_ctx)
 	      else
 		{
 		  if (arm_debug > 3)
-		    fprintf_unfiltered (gdb_stdlog, "prolog_ignore");
+		    fprintf_unfiltered(gdb_stdlog, "prolog_ignore");
 		}
 	      /* We found an opcode match, break out of the mask/value loop.  */
 	      break;
 	    }
 	}
       if (arm_debug > 3)
-	fprintf_unfiltered (gdb_stdlog, "\n");
+	fprintf_unfiltered(gdb_stdlog, "\n");
     }
 
   return last_prologue_inst_addr;		/* End of prologue */
@@ -1387,29 +1368,30 @@ thumb_scan_prologue (CORE_ADDR prev_pc, arm_prologue_cache_t *cache)
 #endif /* !TM_NEXTSTEP */
 
 static void
-thumb_macosx_scan_prologue (CORE_ADDR prev_pc, arm_prologue_cache_t *cache)
+thumb_macosx_scan_prologue(CORE_ADDR prev_pc, arm_prologue_cache_t *cache)
 {
   CORE_ADDR prologue_end;
-  uint32_t insn = 0;
-  int i;
+  uint32_t insn = 0U;
+  size_t i;
   /* Which register has been copied to register n?  */
   arm_prologue_state_t state;
-  init_prologue_state (&state);
+  uint32_t opcode_size;
+  init_prologue_state(&state);
   /* findmask:
      bit 0 - push { rlist }
      bit 1 - mov r7, sp  OR  add r7, sp, #imm  (setting of r7)
      bit 2 - sub sp, #simm  OR  add sp, #simm  (adjusting of sp)
   */
   if (arm_debug > 3)
-    fprintf_unfiltered (gdb_stdlog, "thumb_macosx_scan_prologue (0x%s, %p)\n",
-			paddr (prev_pc), cache);
+    fprintf_unfiltered(gdb_stdlog, "thumb_macosx_scan_prologue (0x%s, %p)\n",
+                       paddr(prev_pc), cache);
 
 
   cache->prologue_start = prologue_end = state.pc = 0;
 
   /* Find the function prologue. If we cannot find the function in
      the symbol table, peek in the stack frame to find the PC.  */
-  if (find_pc_partial_function (prev_pc, NULL, &cache->prologue_start, &prologue_end))
+  if (find_pc_partial_function(prev_pc, NULL, &cache->prologue_start, &prologue_end))
     {
       /* One way to find the end of the prologue (which works well
          for unoptimized code) is to do the following:
@@ -1443,31 +1425,34 @@ thumb_macosx_scan_prologue (CORE_ADDR prev_pc, arm_prologue_cache_t *cache)
 	 possible prologue plus up to five instructions inserted by
 	 the scheduler.  */
 
-      if (prologue_end > cache->prologue_start + MAX_THUMB_PROLOGUE_SIZE)
-	  prologue_end = cache->prologue_start + MAX_THUMB_PROLOGUE_SIZE;
+      if (prologue_end > (cache->prologue_start + MAX_THUMB_PROLOGUE_SIZE))
+	  prologue_end = (cache->prologue_start + MAX_THUMB_PROLOGUE_SIZE);
       if (arm_debug > 4)
-	fprintf_unfiltered (gdb_stdlog,
-			    "prologue_start found in symbols starting at 0x%s\n",
-			    paddr (cache->prologue_start));
+	fprintf_unfiltered(gdb_stdlog,
+			   "prologue_start found in symbols starting at 0x%s\n",
+			   paddr(cache->prologue_start));
     }
   else
     {
+      ULONGEST ulongest;
+      CORE_ADDR prologue_pc;
+      uint32_t count;
+      uint32_t consecutive_zero_opcodes;
       /* We have no symbol information. We need to search backward for a
          push instruction.  */
 
       /* Initialize the prologue start and end addresses in case we do NOT
        * find anything useful.  */
       cache->prologue_start = prologue_end = 0;
-      ULONGEST ulongest = 0;
-      CORE_ADDR prologue_pc;
-      uint32_t count = 0;
-      uint32_t consecutive_zero_opcodes = 0;
+      ulongest = 0UL;
+      count = 0U;
+      consecutive_zero_opcodes = 0U;
       if (arm_debug > 4)
-	fprintf_unfiltered (gdb_stdlog,
-			"Find prologue_start by reading memory opcodes:\n");
+	fprintf_unfiltered(gdb_stdlog,
+                       "Find prologue_start by reading memory opcodes:\n");
 
       for (prologue_pc = prev_pc;
-	   safe_read_memory_unsigned_integer (prologue_pc, 2, &ulongest);
+	   safe_read_memory_unsigned_integer(prologue_pc, 2, &ulongest);
 	   prologue_pc -= 2)
 	{
 	  insn = ulongest;
@@ -1478,21 +1463,21 @@ thumb_macosx_scan_prologue (CORE_ADDR prev_pc, arm_prologue_cache_t *cache)
 	  if (consecutive_zero_opcodes > 1)
 	    {
 	      if (arm_debug > 4)
-		fprintf_unfiltered (gdb_stdlog,
-				    "  prologue_start - unable find start \
+		fprintf_unfiltered(gdb_stdlog,
+				   "  prologue_start - unable find start \
 of function, aborting at 0x%s after consecutive zero opcodes\n",
-				    paddr (prologue_pc));
+                                   paddr(prologue_pc));
 	      return;
 	    }
 
 	  if (arm_debug > 4)
-	    fprintf_unfiltered (gdb_stdlog, " 0x%s: 0x%4.4x\n",
-				paddr (prologue_pc), insn);
+	    fprintf_unfiltered(gdb_stdlog, " 0x%s: 0x%4.4x\n",
+                               paddr(prologue_pc), insn);
 
 	  if ((insn & 0xff80) == 0xb580)	/* push { lr, r7, ... } */
 	    {
 	      /* Also check for pretend arguments just in case.  */
-	      if (safe_read_memory_unsigned_integer (prologue_pc - 2, 2, &ulongest))
+	      if (safe_read_memory_unsigned_integer(prologue_pc - 2, 2, &ulongest))
 		 {
 		    uint32_t prev_insn = ulongest;
 		    if ((prev_insn & 0xffffff80) == 0xb080)	/* sub sp, #n (subtract immediated from SP)  */
@@ -1507,14 +1492,13 @@ of function, aborting at 0x%s after consecutive zero opcodes\n",
 		  }
 
 
-	      /* Watch for a push that would start a frame.  */
+	      /* Watch for a push that would start a frame: */
 	      cache->prologue_start = prologue_pc;
-	      prologue_end = cache->prologue_start + MAX_THUMB_PROLOGUE_SIZE;	/* See above.  */
+	      prologue_end = (cache->prologue_start + MAX_THUMB_PROLOGUE_SIZE);	/* See above.  */
 	      if (arm_debug > 4)
-		fprintf_unfiltered (gdb_stdlog,
-				    "prologue_start - found start of function 0x%s: 0x%s\n",
-				    paddr (prologue_pc),
-				    paddr (insn));
+		fprintf_unfiltered(gdb_stdlog,
+				   "prologue_start - found start of function 0x%s: 0x%s\n",
+				   paddr(prologue_pc), paddr(insn));
 
 	      break;
 	    }
@@ -1523,16 +1507,16 @@ of function, aborting at 0x%s after consecutive zero opcodes\n",
 	  if (count++ > 256)
 	    {
 	      if (arm_debug > 4)
-		fprintf_unfiltered (gdb_stdlog,
-				    "prologue_start - unable find start of function within 256 opcodes from 0x%s\n",
-				    paddr (prev_pc));
+		fprintf_unfiltered(gdb_stdlog,
+				   "prologue_start - unable find start of function within 256 opcodes from 0x%s\n",
+				   paddr(prev_pc));
 	      return;
 	    }
 	}
 
     }
 
-  prologue_end = min (prologue_end, prev_pc);
+  prologue_end = min(prologue_end, prev_pc);
 
 
   /* Search the prologue looking for instructions that set up the
@@ -1540,13 +1524,13 @@ of function, aborting at 0x%s after consecutive zero opcodes\n",
      Do this until all basic prolog instructions are found.  */
 
   cache->framesize = 0;
-  uint32_t opcode_size = 2;  /* Size in bytes of the thumb instruction.  */
+  opcode_size = 2U; /* Size in bytes of the thumb instruction.  */
   for (state.pc = cache->prologue_start;
        state.pc < prologue_end;
        state.pc += opcode_size)
     {
       /* Read a 16 or 32 bit thumb instruction into a 32 bit value.  */
-      if (!read_thumb_instruction (state.pc, &opcode_size, &insn))
+      if (!read_thumb_instruction(state.pc, &opcode_size, &insn))
         return;
 
       /* Make sure we got a 2 or 4 byte opcode size. We could conceivably
@@ -1557,36 +1541,37 @@ of function, aborting at 0x%s after consecutive zero opcodes\n",
       if (arm_debug > 3)
 	{
 	  if (opcode_size == 4)
-	    fprintf_unfiltered (gdb_stdlog, "  0x%s: 0x%8.8x",
-				paddr (state.pc), insn);
+	    fprintf_unfiltered(gdb_stdlog, "  0x%s: 0x%8.8x",
+                               paddr(state.pc), insn);
 	  else
-	    fprintf_unfiltered (gdb_stdlog, "  0x%s: 0x%4.4x    ",
-				paddr (state.pc), insn);
+	    fprintf_unfiltered(gdb_stdlog, "  0x%s: 0x%4.4x    ",
+                               paddr(state.pc), insn);
 	}
 
-      for (i=0; i<THUMB_OPCOPE_INFO_COUNT; i++)
+      for (i = 0UL; i < THUMB_OPCOPE_INFO_COUNT; i++)
 	{
 	  arm_opcode_info_t *op_info = &thumb_opcode_info[i];
 	  if ((insn & op_info->mask) == op_info->value)
 	    {
+              int opcode_type;
 	      /* We have a matching opcode, check if we need to scan it! */
 	      if (arm_debug > 3)
-		fprintf_unfiltered (gdb_stdlog, " -> {%3d} %-30s ",
-				    i, op_info->description);
+		fprintf_unfiltered(gdb_stdlog, " -> {%3zu} %-30s ",
+				   i, op_info->description);
 
-	      int opcode_type = op_info->scan_prolog(insn, cache, &state);
+	      opcode_type = op_info->scan_prolog(insn, cache, &state);
 
 	      if (opcode_type == prolog_yes)
 		{
 		  /* We have a proglogue opcode, scan the prologue instruction
 		     if there is a callback.  */
 		  if (arm_debug > 3)
-		    fprintf_unfiltered (gdb_stdlog, "prolog_yes");
+		    fprintf_unfiltered(gdb_stdlog, "prolog_yes");
 		}
 	      else if (opcode_type == prolog_no)
 		{
 		  if (arm_debug > 3)
-		    fprintf_unfiltered (gdb_stdlog, "prolog_no");
+		    fprintf_unfiltered(gdb_stdlog, "prolog_no");
 
 		  /* We have an instruction that cannot appear in a
 		     proglogue, so we should stop parsing.  */
@@ -1595,14 +1580,14 @@ of function, aborting at 0x%s after consecutive zero opcodes\n",
 	      else
 		{
 		  if (arm_debug > 3)
-		    fprintf_unfiltered (gdb_stdlog, "prolog_ignore");
+		    fprintf_unfiltered(gdb_stdlog, "prolog_ignore");
 		}
 	      /* We found an opcode match, break out of the mask/value loop.  */
 	      break;
 	    }
 	}
       if (arm_debug > 3)
-	fprintf_unfiltered (gdb_stdlog, "\n");
+	fprintf_unfiltered(gdb_stdlog, "\n");
     }
 }
 
@@ -1923,89 +1908,91 @@ arm_scan_prologue (struct frame_info *next_frame, struct arm_prologue_cache *cac
      The frame offset is [new FP] - [new SP].  */
   cache->framesize = -sp_offset;
   if (cache->framereg == ARM_FP_REGNUM)
-    cache->frameoffset = fp_offset - sp_offset;
+    cache->frameoffset = (fp_offset - sp_offset);
   else
     cache->frameoffset = 0;
 }
 
 #endif /* !TM_NEXTSTEP */
 
-/* Get the real frame for this frame by getting the previous frame as long as
-   THIS_FRAME is inlined. We do this so we can check the real type of the
-   current frame (is this frame really a sigtramp frame, or is it really a
-   normal frame).  */
-
+/* Get the real frame for this frame by getting the previous frame as long
+ * as THIS_FRAME is inlined.  We do this so we can check the real type of
+ * the current frame (i.e., is this frame really a sigtramp frame, or is it
+ * really a normal frame): */
 struct frame_info *
-get_non_inlined_frame (struct frame_info *this_frame)
+get_non_inlined_frame(struct frame_info *this_frame)
 {
   while (this_frame != NULL)
     {
       if (get_frame_type(this_frame) != INLINED_FRAME)
 	break;
-      this_frame = get_prev_frame (this_frame);
+      this_frame = get_prev_frame(this_frame);
     }
   return this_frame;
 }
 
 
 static CORE_ADDR
-arm_macosx_locate_prologue_start (const CORE_ADDR addr)
+arm_macosx_locate_prologue_start(const CORE_ADDR addr)
 {
   /* Initialize the prologue start and end addresses in case we do NOT
      find anything useful.  */
-  ULONGEST ulongest = 0;
+  ULONGEST ulongest = 0UL;
   CORE_ADDR pc;
-  /* Default our return value to be the same address that was passed in.  */
+  /* Default our return value to be the same address that was passed in: */
   CORE_ADDR prologue_start = addr;
-  uint32_t consecutive_zero_opcodes = 0;
-  const uint32_t max_insns = 1024;
-  const uint32_t opcode_size = 4;
-  const uint32_t max_consecutive_zero_opcodes = 2;
+  uint32_t consecutive_zero_opcodes = 0U;
+  const uint32_t max_insns = 1024U;
+  const uint32_t opcode_size = 4U;
+  const uint32_t max_consecutive_zero_opcodes = 2U;
   CORE_ADDR low_addr;
 
-  if (addr >= max_insns * opcode_size)
-    low_addr = addr - (max_insns * opcode_size);
+  if (addr >= (max_insns * opcode_size))
+    low_addr = (addr - (max_insns * opcode_size));
   else
     low_addr = 0;
 
   for (pc = addr; pc > low_addr; pc -= opcode_size)
     {
-      if (!safe_read_memory_unsigned_integer (pc, opcode_size, &ulongest))
+      uint32_t insn;
+
+      if (!safe_read_memory_unsigned_integer(pc, opcode_size, &ulongest))
 	{
 	  if (arm_debug > 4)
-	    fprintf_unfiltered (gdb_stdlog,
-				"%s: failed to read opcode at 0x%s.\n",
-				__FUNCTION__, paddr (pc));
+	    fprintf_unfiltered(gdb_stdlog,
+                               "%s: failed to read opcode at 0x%s.\n",
+                               __FUNCTION__, paddr(pc));
 	  break;
 	}
 
-      uint32_t insn = ulongest;
+      insn = ulongest;
 
       if (arm_debug > 4)
-	fprintf_unfiltered (gdb_stdlog, " 0x%s: 0x%8.8x\n", paddr (pc), insn);
+	fprintf_unfiltered(gdb_stdlog, " 0x%s: 0x%8.8x\n",
+                           paddr(pc), insn);
 
       if (insn == 0)
 	{
 	  if (++consecutive_zero_opcodes >= max_consecutive_zero_opcodes)
 	    {
 	      if (arm_debug > 4)
-		fprintf_unfiltered (gdb_stdlog,
-				    "%s: aborting at 0x%s after %u consecutive "
-				    "0x00000000 opcodes.\n",
-				    __FUNCTION__, paddr (pc),
-				    max_consecutive_zero_opcodes);
+		fprintf_unfiltered(gdb_stdlog,
+				   "%s: aborting at 0x%s after %u consecutive "
+				   "0x00000000 opcodes.\n",
+				   __FUNCTION__, paddr(pc),
+				   max_consecutive_zero_opcodes);
 	      break;
 	    }
 	}
       else
 	consecutive_zero_opcodes = 0;
 
-      /* Look for a stmdb instructions that push at least the LR.  */
+      /* Look for a stmdb instructions that push at least the LR: */
       if ((insn & 0xffff4000u) == 0xe92d4000u)
 	{
-	  /* Also check for pretend arguments just in case.  */
-	  if (safe_read_memory_unsigned_integer (pc - opcode_size, opcode_size,
-						 &ulongest))
+	  /* Also check for pretend arguments, just in case: */
+	  if (safe_read_memory_unsigned_integer((pc - opcode_size),
+                                                opcode_size, &ulongest))
 	    {
 	      uint32_t prev_insn = ulongest;
 
@@ -2016,7 +2003,7 @@ arm_macosx_locate_prologue_start (const CORE_ADDR addr)
 		     function prologue. This happens when an argument
 		     value is split between regs and stack such as:
 		     int f (int x, int y, int z, long long ll);   */
-		  pc = pc - opcode_size;
+		  pc = (pc - opcode_size);
 		}
 	    }
 	  prologue_start = pc;
@@ -2025,28 +2012,27 @@ arm_macosx_locate_prologue_start (const CORE_ADDR addr)
     }
 
   if (arm_debug > 4)
-    fprintf_unfiltered (gdb_stdlog, "%s(0x%s): 0x%s %s\n", __FUNCTION__,
-			paddr (addr), paddr(prologue_start),
-			addr == prologue_start ? "FAIL" : "SUCCESS");
+    fprintf_unfiltered(gdb_stdlog, "%s(0x%s): 0x%s %s\n", __FUNCTION__,
+                       paddr(addr), paddr(prologue_start),
+                       ((addr == prologue_start) ? "FAIL" : "SUCCESS"));
 
   return prologue_start;
 }
 
 static void
-arm_macosx_scan_prologue (struct frame_info *next_frame, arm_prologue_cache_t *cache)
+arm_macosx_scan_prologue(struct frame_info *next_frame, arm_prologue_cache_t *cache)
 {
   arm_prologue_state_t state;
-  int i;
+  size_t i;
   uint32_t insn;
   CORE_ADDR prologue_end;
-  CORE_ADDR prev_pc = frame_pc_unwind (next_frame);
-
-  init_prologue_state (&state);
-
+  CORE_ADDR prev_pc = frame_pc_unwind(next_frame);
   arm_prologue_cache_t *next_cache;
 
-  next_cache = get_arm_prologue_cache (next_frame);
-  /* Assume there is no frame until proven otherwise.  */
+  init_prologue_state(&state);
+
+  next_cache = get_arm_prologue_cache(next_frame);
+  /* Assume there is no frame until proven otherwise: */
   cache->framereg = ARM_SP_REGNUM;
   cache->framesize = 0;
   cache->frameoffset = 0;
@@ -2082,26 +2068,26 @@ arm_macosx_scan_prologue (struct frame_info *next_frame, arm_prologue_cache_t *c
      2 sigtramp   INLINED_FRAME
      1 sigtramp   SIGTRAMP_FRAME  REAL_PREV_FRAME
      0 sighandler SENTINEL_FRAME
-
   */
-  if (frame_relative_level (next_frame) > 0)
+
+  if (frame_relative_level(next_frame) > 0)
     {
       struct frame_info *real_next_frame;
       struct frame_info *real_prev_frame;
 
-      /* Get the non-inlined frame for NEXT_FRAME.  */
-      real_next_frame = get_non_inlined_frame (next_frame);
-      /* Check for NULL since we cannot pass NULL to get_prev_frame ().  */
+      /* Get the non-inlined frame for NEXT_FRAME: */
+      real_next_frame = get_non_inlined_frame(next_frame);
+      /* Check for NULL since we cannot pass NULL to get_prev_frame(): */
       if (real_next_frame != NULL)
 	{
 	  /* Get the non-inlined frame previous to REAL_NEXT_FRAME.  */
-	  real_prev_frame = get_non_inlined_frame (get_prev_frame (
-							      real_next_frame));
+	  real_prev_frame =
+            get_non_inlined_frame(get_prev_frame(real_next_frame));
 	  if (real_prev_frame != NULL)
 	    {
 	      /* Make sure the previous real frame is a normal frame (and not
 	         a SIGTRAMP_FRAME).  */
-	      if (get_frame_type (real_prev_frame) != SIGTRAMP_FRAME)
+	      if (get_frame_type(real_prev_frame) != SIGTRAMP_FRAME)
 		{
 		  /* Our current base frame and the previous base frame are
 		     normal, so we can safely assume our frame register is
@@ -2113,22 +2099,22 @@ arm_macosx_scan_prologue (struct frame_info *next_frame, arm_prologue_cache_t *c
     }
 
 
-  /* Check for Thumb prologue.  */
-  if ((next_cache && next_cache->prev_pc_is_thumb) || arm_pc_is_thumb (prev_pc))
+  /* Check for Thumb prologue: */
+  if ((next_cache && next_cache->prev_pc_is_thumb) || arm_pc_is_thumb(prev_pc))
     {
-      thumb_macosx_scan_prologue (prev_pc, cache);
+      thumb_macosx_scan_prologue(prev_pc, cache);
       return;
     }
 
   if (arm_debug > 3)
-    fprintf_unfiltered (gdb_stdlog, "arm_macosx_scan_prologue (0x%s, %p)\n",
-			paddr (prev_pc), cache);
+    fprintf_unfiltered(gdb_stdlog, "arm_macosx_scan_prologue (0x%s, %p)\n",
+                       paddr(prev_pc), cache);
 
   cache->prologue_start = prologue_end = state.pc = 0;
 
   /* Find the function prologue. If we cannot find the function in
      the symbol table, peek in the stack frame to find the PC.  */
-  if (find_pc_partial_function (prev_pc, NULL, &cache->prologue_start, &prologue_end))
+  if (find_pc_partial_function(prev_pc, NULL, &cache->prologue_start, &prologue_end))
     {
       /* One way to find the end of the prologue (which works well
          for unoptimized code) is to do the following:
@@ -2162,22 +2148,22 @@ arm_macosx_scan_prologue (struct frame_info *next_frame, arm_prologue_cache_t *c
 	 possible prologue plus up to five instructions inserted by
 	 the scheduler.  */
 
-      if (prologue_end > cache->prologue_start + MAX_ARM_PROLOGUE_SIZE)
-	  prologue_end = cache->prologue_start + MAX_ARM_PROLOGUE_SIZE;
+      if (prologue_end > (cache->prologue_start + MAX_ARM_PROLOGUE_SIZE))
+	  prologue_end = (cache->prologue_start + MAX_ARM_PROLOGUE_SIZE);
 
       if (arm_debug > 4)
-	fprintf_unfiltered (gdb_stdlog,
-			    "  prologue_start found in symbols starting at 0x%s\n",
-			    paddr (cache->prologue_start));
+	fprintf_unfiltered(gdb_stdlog,
+			   "  prologue_start found in symbols starting at 0x%s\n",
+			   paddr(cache->prologue_start));
     }
   else
     {
-      /* Find the prologue start by searching backwards in memory.  */
-      cache->prologue_start = arm_macosx_locate_prologue_start (prev_pc);
-      prologue_end = cache->prologue_start + MAX_ARM_PROLOGUE_SIZE;
-	}
+      /* Find the prologue start by searching backwards in memory: */
+      cache->prologue_start = arm_macosx_locate_prologue_start(prev_pc);
+      prologue_end = (cache->prologue_start + MAX_ARM_PROLOGUE_SIZE);
+    }
 
-  prologue_end = min (prologue_end, prev_pc);
+  prologue_end = min(prologue_end, prev_pc);
 
   /* Now search the prologue looking for instructions that set up the
      frame pointer, adjust the stack pointer, and save registers.
@@ -2204,36 +2190,37 @@ arm_macosx_scan_prologue (struct frame_info *next_frame, arm_prologue_cache_t *c
        state.pc < prologue_end;
        state.pc += 4)
     {
-      insn = read_memory_unsigned_integer (state.pc, 4);
+      insn = read_memory_unsigned_integer(state.pc, 4);
 
       if (arm_debug > 3)
-	fprintf_unfiltered (gdb_stdlog, "  0x%s: 0x%8.8x ",
-				    paddr (state.pc), insn);
+	fprintf_unfiltered(gdb_stdlog, "  0x%s: 0x%8.8x ",
+                           paddr(state.pc), insn);
 
 
-      for (i=0; i<ARM_OPCOPE_INFO_COUNT; i++)
+      for (i = 0UL; i < ARM_OPCOPE_INFO_COUNT; i++)
 	{
 	  arm_opcode_info_t *op_info = &arm_opcode_info[i];
 	  if ((insn & op_info->mask) == op_info->value)
 	    {
+              int opcode_type;
 	      if (arm_debug > 3)
-		fprintf_unfiltered (gdb_stdlog, " -> {%3d} %-30s ",
-				    i, op_info->description);
+		fprintf_unfiltered(gdb_stdlog, " -> {%3zu} %-30s ",
+				   i, op_info->description);
 
 	      /* We have a matching opcode, check if we need to scan it! */
-	      int opcode_type = op_info->scan_prolog(insn, cache, &state);
+	      opcode_type = op_info->scan_prolog(insn, cache, &state);
 
 	      if (opcode_type == prolog_yes)
 		{
 		  /* We have a proglogue opcode, scan the prologue instruction
 		     if there is a callback.  */
 		  if (arm_debug > 3)
-		    fprintf_unfiltered (gdb_stdlog, "prolog_yes");
+		    fprintf_unfiltered(gdb_stdlog, "prolog_yes");
 		}
 	      else if (opcode_type == prolog_no)
 		{
 		  if (arm_debug > 3)
-		    fprintf_unfiltered (gdb_stdlog, "prolog_no");
+		    fprintf_unfiltered(gdb_stdlog, "prolog_no");
 
 		  /* We have an instruction that cannot appear in a
 		     proglogue, so we should stop parsing.  */
@@ -2242,14 +2229,14 @@ arm_macosx_scan_prologue (struct frame_info *next_frame, arm_prologue_cache_t *c
 	      else
 		{
 		  if (arm_debug > 3)
-		    fprintf_unfiltered (gdb_stdlog, "prolog_ignore");
+		    fprintf_unfiltered(gdb_stdlog, "prolog_ignore");
 		}
 	      /* We found an opcode match, break out of the mask/value loop.  */
 	      break;
 	    }
 	}
       if (arm_debug > 3)
-	fprintf_unfiltered (gdb_stdlog, "\n");
+	fprintf_unfiltered(gdb_stdlog, "\n");
     }
 
   /* The frame size is just the negative of the offset (from the
@@ -2257,7 +2244,7 @@ arm_macosx_scan_prologue (struct frame_info *next_frame, arm_prologue_cache_t *c
      The frame offset is [new FP] - [new SP].  */
   cache->framesize = -state.sp_offset;
   if (cache->framereg == ARM_FP_REGNUM)
-    cache->frameoffset = state.fp_offset - state.sp_offset;
+    cache->frameoffset = (state.fp_offset - state.sp_offset);
   else
     cache->frameoffset = 0;
 }
@@ -2265,29 +2252,29 @@ arm_macosx_scan_prologue (struct frame_info *next_frame, arm_prologue_cache_t *c
 
 
 static arm_prologue_cache_t *
-arm_make_prologue_cache (struct frame_info *next_frame)
+arm_make_prologue_cache(struct frame_info *next_frame)
 {
   int reg;
   arm_prologue_cache_t *cache;
 
-  cache = frame_obstack_zalloc (sizeof (arm_prologue_cache_t));
-  cache->saved_regs = trad_frame_alloc_saved_regs (next_frame);
+  cache = (arm_prologue_cache_t *)frame_obstack_zalloc(sizeof(arm_prologue_cache_t));
+  cache->saved_regs = trad_frame_alloc_saved_regs(next_frame);
 
 #ifdef TM_NEXTSTEP
-  arm_macosx_scan_prologue (next_frame, cache);
+  arm_macosx_scan_prologue(next_frame, cache);
 #else
-  arm_scan_prologue (next_frame, cache);
+  arm_scan_prologue(next_frame, cache);
 #endif /* TM_NEXTSTEP */
 
-  cache->prev_fp = frame_unwind_register_unsigned (next_frame, cache->framereg);
+  cache->prev_fp = frame_unwind_register_unsigned(next_frame, cache->framereg);
   if (cache->prev_fp != 0)
     {
-      cache->prev_sp = cache->prev_fp + cache->framesize - cache->frameoffset;
+      cache->prev_sp = (cache->prev_fp + cache->framesize - cache->frameoffset);
   /* Calculate actual addresses of saved registers using offsets
      determined by arm_scan_prologue.  */
   for (reg = 0; reg < NUM_REGS; reg++)
 	{
-    if (trad_frame_addr_p (cache->saved_regs, reg))
+    if (trad_frame_addr_p(cache->saved_regs, reg))
       cache->saved_regs[reg].addr += cache->prev_sp;
 	  else if (cache->framereg == ARM_FP_REGNUM)
 	    {
@@ -2300,7 +2287,7 @@ arm_make_prologue_cache (struct frame_info *next_frame)
 	      if (reg == ARM_FP_REGNUM)
 		cache->saved_regs[reg].addr = cache->prev_fp;
 	      else if (reg == ARM_PC_REGNUM)
-		cache->saved_regs[reg].addr = cache->prev_fp + 4;
+		cache->saved_regs[reg].addr = (cache->prev_fp + 4);
 	    }
 	}
     }
@@ -2308,22 +2295,22 @@ arm_make_prologue_cache (struct frame_info *next_frame)
   if (arm_debug > 6)
     {
       int reg;
-      fprintf_unfiltered (gdb_stdlog, "#%i (arm_prologue_cache_t *)%p:\n"
+      fprintf_unfiltered(gdb_stdlog, "#%i (arm_prologue_cache_t *)%p:\n"
 	"\tprev_sp = 0x%s\n\tprologue_start = 0x%s\n"
 	"\tframesize = %i\n\tframeoffset = %i\n\tframereg = %i\n"
 	"\tprev_fp = 0x%s\n\tprev_pc_is_thumb = %i\n",
-	frame_relative_level (next_frame), cache, paddr(cache->prev_sp),
+	frame_relative_level(next_frame), cache, paddr(cache->prev_sp),
 	paddr(cache->prologue_start), cache->framesize, cache->frameoffset,
 	cache->framereg, paddr(cache->prev_fp), cache->prev_pc_is_thumb);
 
       /* Dump the register location information that we found.  */
       for (reg = 0; reg < NUM_REGS; reg++)
-	if (cache->saved_regs[reg].addr != -1 ||
-	    cache->saved_regs[reg].realreg != reg)
-	  fprintf_unfiltered (gdb_stdlog, "\tsaved_regs[%i] = { addr = 0x%s, realreg = %i }\n",
-			      reg,
-			      paddr(cache->saved_regs[reg].addr),
-			      cache->saved_regs[reg].realreg);
+	if ((cache->saved_regs[reg].addr != -1) ||
+	    (cache->saved_regs[reg].realreg != reg))
+	  fprintf_unfiltered(gdb_stdlog, "\tsaved_regs[%i] = { addr = 0x%s, realreg = %i }\n",
+			     reg,
+			     paddr(cache->saved_regs[reg].addr),
+			     cache->saved_regs[reg].realreg);
     }
   return cache;
 }
@@ -2332,26 +2319,25 @@ arm_make_prologue_cache (struct frame_info *next_frame)
    and the caller's SP when we were called.  */
 
 static void
-arm_prologue_this_id (struct frame_info *next_frame,
-		      void **this_cache,
-		      struct frame_id *this_id)
+arm_prologue_this_id(struct frame_info *next_frame, void **this_cache,
+		     struct frame_id *this_id)
 {
   arm_prologue_cache_t *cache;
   struct frame_id id;
   CORE_ADDR func;
 
   if (*this_cache == NULL)
-    *this_cache = arm_make_prologue_cache (next_frame);
-  cache = *this_cache;
+    *this_cache = arm_make_prologue_cache(next_frame);
+  cache = (arm_prologue_cache_t *)*this_cache;
 
-  func = frame_func_unwind (next_frame);
+  func = frame_func_unwind(next_frame);
 
   /* APPLE LOCAL ADDITION: If we did NOT get anything sensical from a call
      to frame_func_unwind, see if we were able to find our prologue
      start in our arch specific prologue cache information and use
      it. This will allow us to stack crawl through code that has no
      symbols.  */
-  if (func == 0 && cache != NULL)
+  if ((func == 0) && (cache != NULL))
     func = cache->prologue_start;
   /* APPLE LOCAL END  */
 
@@ -2360,29 +2346,27 @@ arm_prologue_this_id (struct frame_info *next_frame,
   if (func <= LOWEST_PC)
     return;
 
-  /* If we have hit a wall, stop.  */
+  /* If we have hit a wall, then stop: */
   if (cache->prev_sp == 0)
     return;
 
-  id = frame_id_build (cache->prev_sp, func);
+  id = frame_id_build(cache->prev_sp, func);
   *this_id = id;
 }
 
 static void
-arm_prologue_prev_register (struct frame_info *next_frame,
-			    void **this_cache,
-			    int prev_regnum,
-			    int *optimized,
-			    enum lval_type *lvalp,
-			    CORE_ADDR *addrp,
-			    int *realnump,
-			    gdb_byte *valuep)
+arm_prologue_prev_register(struct frame_info *next_frame,
+                           void **this_cache, int prev_regnum,
+                           int *optimized, enum lval_type *lvalp,
+			   CORE_ADDR *addrp, int *realnump,
+                           gdb_byte *valuep)
 {
   arm_prologue_cache_t *cache;
+  enum opt_state e_opt;
 
   if (*this_cache == NULL)
-    *this_cache = arm_make_prologue_cache (next_frame);
-  cache = *this_cache;
+    *this_cache = arm_make_prologue_cache(next_frame);
+  cache = (arm_prologue_cache_t *)*this_cache;
 
   /* If we are asked to unwind the PC, then we need to return the LR
      instead. The saved value of PC points into this frame's
@@ -2397,14 +2381,13 @@ arm_prologue_prev_register (struct frame_info *next_frame,
     {
       *lvalp = not_lval;
       if (valuep)
-	store_unsigned_integer (valuep, 4, cache->prev_sp);
+	store_unsigned_integer(valuep, 4, cache->prev_sp);
       return;
     }
 
-  enum opt_state e_opt;
-  trad_frame_get_prev_register (next_frame, cache->saved_regs, prev_regnum,
-				optimized ? &e_opt : NULL, lvalp, addrp,
-				realnump, valuep);
+  trad_frame_get_prev_register(next_frame, cache->saved_regs, prev_regnum,
+                               (optimized ? &e_opt : NULL), lvalp, addrp,
+                               realnump, valuep);
   if (optimized)
     *optimized = e_opt;
 }
@@ -2412,40 +2395,41 @@ arm_prologue_prev_register (struct frame_info *next_frame,
 struct frame_unwind arm_prologue_unwind = {
   NORMAL_FRAME,
   arm_prologue_this_id,
-  arm_prologue_prev_register
+  (frame_prev_register_ftype *)arm_prologue_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *
-arm_prologue_unwind_sniffer (struct frame_info *next_frame)
+arm_prologue_unwind_sniffer(struct frame_info *next_frame ATTRIBUTE_UNUSED)
 {
   return &arm_prologue_unwind;
 }
 
 static arm_prologue_cache_t *
-arm_make_stub_cache (struct frame_info *next_frame)
+arm_make_stub_cache(struct frame_info *next_frame)
 {
   arm_prologue_cache_t *cache;
 
-  cache = frame_obstack_zalloc (sizeof (arm_prologue_cache_t));
-  cache->saved_regs = trad_frame_alloc_saved_regs (next_frame);
+  cache = (arm_prologue_cache_t *)frame_obstack_zalloc(sizeof(arm_prologue_cache_t));
+  cache->saved_regs = trad_frame_alloc_saved_regs(next_frame);
 
-  cache->prev_sp = frame_unwind_register_unsigned (next_frame, ARM_SP_REGNUM);
+  cache->prev_sp = frame_unwind_register_unsigned(next_frame, ARM_SP_REGNUM);
 
   return cache;
 }
 
-/* Our frame ID for a stub frame is the current SP and LR.  */
-
+/* Our frame ID for a stub frame is the current SP and LR: */
 static void
-arm_stub_this_id(struct frame_info *next_frame,
-		 void **this_cache,
+arm_stub_this_id(struct frame_info *next_frame, void **this_cache,
 		 struct frame_id *this_id)
 {
   arm_prologue_cache_t *cache;
 
   if (*this_cache == NULL)
     *this_cache = arm_make_stub_cache(next_frame);
-  cache = *this_cache;
+  cache = (arm_prologue_cache_t *)*this_cache;
 
   *this_id = frame_id_build(cache->prev_sp,
 			    frame_pc_unwind(next_frame));
@@ -2454,7 +2438,10 @@ arm_stub_this_id(struct frame_info *next_frame,
 struct frame_unwind arm_stub_unwind = {
   NORMAL_FRAME,
   arm_stub_this_id,
-  arm_prologue_prev_register
+  (frame_prev_register_ftype *)arm_prologue_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 #ifndef TM_NEXTSTEP
@@ -2870,7 +2857,8 @@ arm_sigtramp_unwind_sniffer(struct frame_info *next_frame)
    breakpoint.  */
 
 static struct frame_id
-arm_unwind_dummy_id(struct gdbarch *gdbarch, struct frame_info *next_frame)
+arm_unwind_dummy_id(struct gdbarch *gdbarch ATTRIBUTE_UNUSED,
+                    struct frame_info *next_frame)
 {
   return frame_id_build(frame_unwind_register_unsigned(next_frame, ARM_SP_REGNUM),
                         frame_pc_unwind(next_frame));
@@ -2907,10 +2895,10 @@ arm_unwind_pc_using_fp(struct frame_info *this_frame, CORE_ADDR default_pc)
 	    {
 	      if (pc != fp_pc)
 		{
-		  /* Our previous PC does NOT match the PC we found by walking
-		     the frame pointer. We need to determine if we should use
-		     this prev_pc or not.  */
-		     pc = fp_pc;	/* For now always use it.  */
+		  /* Our previous PC does NOT match the PC we found by
+                   * walking the frame pointer.  We need to determine if we
+                   * should use this prev_pc or not: */
+                  pc = fp_pc;	/* For now always use it.  */
 		}
 	    }
 	}
@@ -2923,7 +2911,8 @@ arm_unwind_pc_using_fp(struct frame_info *this_frame, CORE_ADDR default_pc)
    containing function).  */
 
 static CORE_ADDR
-arm_unwind_pc(struct gdbarch *gdbarch, struct frame_info *this_frame)
+arm_unwind_pc(struct gdbarch *gdbarch ATTRIBUTE_UNUSED,
+              struct frame_info *this_frame)
 {
   arm_prologue_cache_t *cache = NULL;
   CORE_ADDR pc;
@@ -2949,7 +2938,8 @@ arm_unwind_pc(struct gdbarch *gdbarch, struct frame_info *this_frame)
 }
 
 static CORE_ADDR
-arm_unwind_sp(struct gdbarch *gdbarch, struct frame_info *this_frame)
+arm_unwind_sp(struct gdbarch *gdbarch ATTRIBUTE_UNUSED,
+              struct frame_info *this_frame)
 {
   return frame_unwind_register_unsigned(this_frame, ARM_SP_REGNUM);
 }
@@ -2991,10 +2981,11 @@ pop_stack_item(struct stack_item *si)
    we should probably support some of them based on the selected ABI.  */
 
 static CORE_ADDR
-arm_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
-		     struct regcache *regcache, CORE_ADDR bp_addr, int nargs,
-		     struct value **args, CORE_ADDR sp, int struct_return,
-		     CORE_ADDR struct_addr)
+arm_push_dummy_call(struct gdbarch *gdbarch ATTRIBUTE_UNUSED,
+                    struct value *function ATTRIBUTE_UNUSED,
+                    struct regcache *regcache, CORE_ADDR bp_addr,
+                    int nargs, struct value **args, CORE_ADDR sp,
+                    int struct_return, CORE_ADDR struct_addr)
 {
   int argnum;
   int argreg;
@@ -3112,49 +3103,51 @@ arm_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 }
 
 static void
-print_fpu_flags (int flags)
+print_fpu_flags(int flags)
 {
   if (flags & (1 << 0))
-    fputs ("IVO ", stdout);
+    fputs("IVO ", stdout);
   if (flags & (1 << 1))
-    fputs ("DVZ ", stdout);
+    fputs("DVZ ", stdout);
   if (flags & (1 << 2))
-    fputs ("OFL ", stdout);
+    fputs("OFL ", stdout);
   if (flags & (1 << 3))
-    fputs ("UFL ", stdout);
+    fputs("UFL ", stdout);
   if (flags & (1 << 4))
-    fputs ("INX ", stdout);
-  putchar ('\n');
+    fputs("INX ", stdout);
+  putchar('\n');
 }
 
 /* Print interesting information about the floating point processor
    (if present) or emulator.  */
 static void
-arm_print_float_info (struct gdbarch *gdbarch, struct ui_file *file,
-		      struct frame_info *frame, const char *args)
+arm_print_float_info(struct gdbarch *gdbarch ATTRIBUTE_UNUSED,
+                     struct ui_file *file ATTRIBUTE_UNUSED,
+		     struct frame_info *frame ATTRIBUTE_UNUSED,
+                     const char *args ATTRIBUTE_UNUSED)
 {
-  unsigned long status = read_register (ARM_FPS_REGNUM);
-    int type;
+  unsigned long status = read_register(ARM_FPS_REGNUM);
+  int type;
 
-    type = (status >> 24) & 127;
-    if (status & (1 << 31))
-      printf (_("Hardware FPU type %d\n"), type);
-    else
-      printf (_("Software FPU type %d\n"), type);
-    /* i18n: [floating point unit] mask */
-    fputs (_("mask: "), stdout);
-    print_fpu_flags (status >> 16);
-    /* i18n: [floating point unit] flags */
-    fputs (_("flags: "), stdout);
-    print_fpu_flags (status);
-  }
+  type = ((status >> 24) & 127);
+  if (status & (1 << 31))
+    printf(_("Hardware FPU type %d\n"), type);
+  else
+    printf(_("Software FPU type %d\n"), type);
+  /* i18n: [floating point unit] mask */
+  fputs(_("mask: "), stdout);
+  print_fpu_flags(status >> 16);
+  /* i18n: [floating point unit] flags */
+  fputs(_("flags: "), stdout);
+  print_fpu_flags(status);
+}
 
 
 /* Return the GDB type object for the "standard" data type of data in
    register N.  */
 
 static struct type *
-arm_register_type(struct gdbarch *gdbarch, int regnum)
+arm_register_type(struct gdbarch *gdbarch ATTRIBUTE_UNUSED, int regnum)
 {
   /* APPLE LOCAL: Use register info table: */
   if (((uint32_t)regnum < g_register_info_count)
@@ -3275,9 +3268,9 @@ condition_true (uint32_t cond, uint32_t status_reg)
 
 /* Callback for arm_macosx_scan_prologue for the "mov ip, sp" opcode.  */
 static int
-arm_scan_prolog_insn_mov_ip_sp (const uint32_t insn,
-				  arm_prologue_cache_t *cache,
-				  arm_prologue_state_t *state)
+arm_scan_prolog_insn_mov_ip_sp(const uint32_t insn ATTRIBUTE_UNUSED,
+                               arm_prologue_cache_t *cache ATTRIBUTE_UNUSED,
+                               arm_prologue_state_t *state)
 {
   state->ip_offset = 0;
   return prolog_yes;
@@ -3738,49 +3731,49 @@ thumb_scan_prolog_insn_add_sp_rm(const uint32_t insn,
    thumb_scan_prolog_insn_add_sp_rm ()) and figure out the stack offset
    for large thumb stacks.  */
 static int
-thumb_scan_prolog_insn_ldr_rd_pc_rel (const uint32_t insn,
-				      arm_prologue_cache_t *cache,
-				      arm_prologue_state_t *state)
+thumb_scan_prolog_insn_ldr_rd_pc_rel(const uint32_t insn,
+				     arm_prologue_cache_t *cache ATTRIBUTE_UNUSED,
+				     arm_prologue_state_t *state)
 {
-  uint32_t Rd = bits (insn, 8, 10);
-  uint32_t immed_8 = bits (insn, 0, 7);
+  uint32_t Rd = bits(insn, 8, 10);
+  uint32_t immed_8 = bits(insn, 0, 7);
 
   /* The PC is the value for this instruction, so we need to add four
      since the PC is 4 past the current location in the CPU pipeline.
      We also need to mask PC bit 1 (and we do bit zero for good
      measure) to zero. */
-  state->reg_loaded_from_address[Rd] = (state->pc & 0xFFFFFFFC) + 4 +
-				       (immed_8 * 4);
+  state->reg_loaded_from_address[Rd] = ((state->pc & 0xFFFFFFFC) + 4
+                                        + (immed_8 * 4));
   if (arm_debug > 6)
-    fprintf_unfiltered (gdb_stdlog, "thumb_scan_prolog_insn_ldr_rd_pc_rel () "
-			"r%u #imm @ 0x%s\n", Rd,
-			paddr (state->reg_loaded_from_address[Rd]));
+    fprintf_unfiltered(gdb_stdlog, "thumb_scan_prolog_insn_ldr_rd_pc_rel () "
+                       "r%u #imm @ 0x%s\n", Rd,
+                       paddr(state->reg_loaded_from_address[Rd]));
   return prolog_ignore;
 }
 
 
 static int
-thumb_scan_prolog_insn_mov_r7_sp (const uint32_t insn,
-				  arm_prologue_cache_t *cache,
-				  arm_prologue_state_t *state)
+thumb_scan_prolog_insn_mov_r7_sp(const uint32_t insn ATTRIBUTE_UNUSED,
+				 arm_prologue_cache_t *cache,
+				 arm_prologue_state_t *state)
 {
-  state->findmask |= THUMB_PROLOGUE_FP_SETUP;/* setting of r7 found */
+  state->findmask |= THUMB_PROLOGUE_FP_SETUP; /* setting of r7 found */
   if (cache)
     {
-  cache->framereg = THUMB_FP_REGNUM;
-  cache->frameoffset = 0;
+      cache->framereg = THUMB_FP_REGNUM;
+      cache->frameoffset = 0;
     }
   state->reg_saved_in_reg[THUMB_FP_REGNUM] = ARM_SP_REGNUM;
   return prolog_yes;
 }
 
 static int
-thumb_scan_prolog_insn_mov_rlo_rhi (const uint32_t insn,
-				    arm_prologue_cache_t *cache,
-				    arm_prologue_state_t *state)
+thumb_scan_prolog_insn_mov_rlo_rhi(const uint32_t insn,
+				   arm_prologue_cache_t *cache ATTRIBUTE_UNUSED,
+				   arm_prologue_state_t *state)
 {
-  int lo_reg = insn & 7;		    /* dest.  register (r0-r7) */
-  int hi_reg = ((insn >> 3) & 7) + 8;	    /* source register (r8-15) */
+  int lo_reg = (insn & 7);		    /* dest.  register (r0-r7) */
+  int hi_reg = (((insn >> 3) & 7) + 8);	    /* source register (r8-15) */
   state->reg_saved_in_reg[lo_reg] = hi_reg; /* remember hi reg was saved */
   return prolog_ignore;
 }
@@ -5030,12 +5023,12 @@ arm_breakpoint_from_pc (CORE_ADDR *pcptr, int *lenptr)
    format, into VALBUF.  */
 
 static void
-arm_extract_return_value (struct type *type, struct regcache *regs,
-			  gdb_byte *valbuf)
+arm_extract_return_value(struct type *type, struct regcache *regs,
+			 gdb_byte *valbuf)
 {
-  if (TYPE_CODE_FLT == TYPE_CODE (type))
+  if (TYPE_CODE_FLT == TYPE_CODE(type))
     {
-      switch (gdbarch_tdep (current_gdbarch)->fp_model)
+      switch (gdbarch_tdep(current_gdbarch)->fp_model)
 	{
 	case ARM_FLOAT_FPA:
 	  {
@@ -5044,9 +5037,9 @@ arm_extract_return_value (struct type *type, struct regcache *regs,
 	       internal type.  */
 	    bfd_byte tmpbuf[FP_REGISTER_SIZE];
 
-	    regcache_cooked_read (regs, ARM_F0_REGNUM, tmpbuf);
-	    convert_from_extended (floatformat_from_type (type), tmpbuf,
-				   valbuf);
+	    regcache_cooked_read(regs, ARM_F0_REGNUM, tmpbuf);
+	    convert_from_extended(floatformat_from_type(type), tmpbuf,
+				  valbuf);
 	  }
 	  break;
 
@@ -5054,40 +5047,43 @@ arm_extract_return_value (struct type *type, struct regcache *regs,
 	case ARM_FLOAT_SOFT_VFP:
 	case ARM_FLOAT_NONE:
 	case ARM_FLOAT_VFP:
-	  regcache_cooked_read (regs, ARM_A1_REGNUM, valbuf);
-	  if (TYPE_LENGTH (type) > 4)
-	    regcache_cooked_read (regs, ARM_A1_REGNUM + 1,
-				  valbuf + INT_REGISTER_SIZE);
+	  regcache_cooked_read(regs, ARM_A1_REGNUM, valbuf);
+	  if (TYPE_LENGTH(type) > 4)
+	    regcache_cooked_read(regs, ARM_A1_REGNUM + 1,
+				 valbuf + INT_REGISTER_SIZE);
 	  break;
 
 /*	APPLE FUTURE ADDITION: We may need to comment out the ARM_FLOAT_VFP
 	case above and use this code if we decide to send and return float
 	and double values in the VFP registers in the future. Currently we
-	do NOT adopt this optional procedure call standard.
+	do NOT adopt this optional procedure call standard.  */
+#ifdef FUTURE_ADDITION
 	case ARM_FLOAT_VFP:
-	  if (TYPE_LENGTH (type) <= 4)
-	    regcache_cooked_read (regs, ARM_VFP_REGNUM_S0, valbuf);
-	  else if (TYPE_LENGTH (type) <= 8)
-	    regcache_cooked_read (regs, ARM_FIRST_VFP_PSEUDO_REGNUM, valbuf);
+	  if (TYPE_LENGTH(type) <= 4)
+	    regcache_cooked_read(regs, ARM_VFP_REGNUM_S0, valbuf);
+	  else if (TYPE_LENGTH(type) <= 8)
+	    regcache_cooked_read(regs, ARM_FIRST_VFP_PSEUDO_REGNUM, valbuf);
 	  break;
-*/
+#endif /* FUTURE_ADDITION */
 	default:
 	  internal_error
 	    (__FILE__, __LINE__,
 	     _("arm_extract_return_value: Floating point model not supported"));
+#ifndef __clang__
 	  break;
+#endif /* !__clang__ */
 	}
     }
-  else if (TYPE_CODE (type) == TYPE_CODE_INT
-	   || TYPE_CODE (type) == TYPE_CODE_CHAR
-	   || TYPE_CODE (type) == TYPE_CODE_BOOL
-	   || TYPE_CODE (type) == TYPE_CODE_PTR
-	   || TYPE_CODE (type) == TYPE_CODE_REF
-	   || TYPE_CODE (type) == TYPE_CODE_ENUM)
+  else if ((TYPE_CODE(type) == TYPE_CODE_INT)
+	   || (TYPE_CODE(type) == TYPE_CODE_CHAR)
+	   || (TYPE_CODE(type) == TYPE_CODE_BOOL)
+	   || (TYPE_CODE(type) == TYPE_CODE_PTR)
+	   || (TYPE_CODE(type) == TYPE_CODE_REF)
+	   || (TYPE_CODE(type) == TYPE_CODE_ENUM))
     {
       /* If the the type is a plain integer, then the access is
 	 straight-forward.  Otherwise we have to play around a bit more.  */
-      int len = TYPE_LENGTH (type);
+      int len = TYPE_LENGTH(type);
       int regno = ARM_A1_REGNUM;
       ULONGEST tmp;
 
@@ -5095,11 +5091,11 @@ arm_extract_return_value (struct type *type, struct regcache *regs,
 	{
 	  /* By using store_unsigned_integer we avoid having to do
 	     anything special for small big-endian values.  */
-	  regcache_cooked_read_unsigned (regs, regno++, &tmp);
-	  store_unsigned_integer (valbuf,
-				  (len > INT_REGISTER_SIZE
-				   ? INT_REGISTER_SIZE : len),
-				  tmp);
+	  regcache_cooked_read_unsigned(regs, regno++, &tmp);
+	  store_unsigned_integer(valbuf,
+				 ((len > INT_REGISTER_SIZE)
+				  ? INT_REGISTER_SIZE : len),
+				 tmp);
 	  len -= INT_REGISTER_SIZE;
 	  valbuf += INT_REGISTER_SIZE;
 	}
@@ -5109,15 +5105,15 @@ arm_extract_return_value (struct type *type, struct regcache *regs,
       /* For a structure or union the behaviour is as if the value had
          been stored to word-aligned memory and then loaded into
          registers with 32-bit load instruction(s).  */
-      int len = TYPE_LENGTH (type);
+      int len = TYPE_LENGTH(type);
       int regno = ARM_A1_REGNUM;
       bfd_byte tmpbuf[INT_REGISTER_SIZE];
 
       while (len > 0)
 	{
-	  regcache_cooked_read (regs, regno++, tmpbuf);
-	  memcpy (valbuf, tmpbuf,
-		  len > INT_REGISTER_SIZE ? INT_REGISTER_SIZE : len);
+	  regcache_cooked_read(regs, regno++, tmpbuf);
+	  memcpy(valbuf, tmpbuf,
+		 ((len > INT_REGISTER_SIZE) ? INT_REGISTER_SIZE : len));
 	  len -= INT_REGISTER_SIZE;
 	  valbuf += INT_REGISTER_SIZE;
 	}
@@ -5128,11 +5124,11 @@ arm_extract_return_value (struct type *type, struct regcache *regs,
    the address in which a function should return its structure value.  */
 
 static CORE_ADDR
-arm_extract_struct_value_address (struct regcache *regcache)
+arm_extract_struct_value_address(struct regcache *regcache)
 {
   ULONGEST ret;
 
-  regcache_cooked_read_unsigned (regcache, ARM_A1_REGNUM, &ret);
+  regcache_cooked_read_unsigned(regcache, ARM_A1_REGNUM, &ret);
   return ret;
 }
 
@@ -5141,12 +5137,13 @@ arm_extract_struct_value_address (struct regcache *regcache)
    register, 1 if it must be returned in memory.  */
 
 static int
-arm_return_in_memory (struct gdbarch *gdbarch, struct type *type)
+arm_return_in_memory(struct gdbarch *gdbarch ATTRIBUTE_UNUSED,
+                     struct type *type)
 {
   int nRc;
   enum type_code code;
 
-  CHECK_TYPEDEF (type);
+  CHECK_TYPEDEF(type);
 
   /* In the ARM ABI, "integer" like aggregate types are returned in
      registers.  For an aggregate type to be integer like, its size
@@ -5167,14 +5164,14 @@ arm_return_in_memory (struct gdbarch *gdbarch, struct type *type)
 
   /* All aggregate types that will NOT fit in a register must be returned
      in memory.  */
-  if (TYPE_LENGTH (type) > DEPRECATED_REGISTER_SIZE)
+  if (TYPE_LENGTH(type) > DEPRECATED_REGISTER_SIZE)
     {
       return 1;
     }
 
   /* The only aggregate types that can be returned in a register are
      structs and unions. Arrays must be returned in memory.  */
-  code = TYPE_CODE (type);
+  code = TYPE_CODE(type);
   if ((TYPE_CODE_STRUCT != code) && (TYPE_CODE_UNION != code))
     {
       return 1;
@@ -5202,10 +5199,10 @@ arm_return_in_memory (struct gdbarch *gdbarch, struct type *type)
          --> yes, nRc = 1
        */
 
-      for (i = 0; i < TYPE_NFIELDS (type); i++)
+      for (i = 0; i < TYPE_NFIELDS(type); i++)
 	{
 	  enum type_code field_type_code;
-	  field_type_code = TYPE_CODE (check_typedef (TYPE_FIELD_TYPE (type, i)));
+	  field_type_code = TYPE_CODE(check_typedef(TYPE_FIELD_TYPE(type, i)));
 
 	  /* Is it a floating point type field?  */
 	  if (field_type_code == TYPE_CODE_FLT)
@@ -5215,12 +5212,12 @@ arm_return_in_memory (struct gdbarch *gdbarch, struct type *type)
 	    }
 
 	  /* If bitpos != 0, then we have to care about it.  */
-	  if (TYPE_FIELD_BITPOS (type, i) != 0)
+	  if (TYPE_FIELD_BITPOS(type, i) != 0)
 	    {
 	      /* Bitfields are not addressable.  If the field bitsize is
 	         zero, then the field is not packed.  Hence it cannot be
 	         a bitfield or any other packed type.  */
-	      if (TYPE_FIELD_BITSIZE (type, i) == 0)
+	      if (TYPE_FIELD_BITSIZE(type, i) == 0)
 		{
 		  nRc = 1;
 		  break;
@@ -5236,77 +5233,79 @@ arm_return_in_memory (struct gdbarch *gdbarch, struct type *type)
    TYPE, given in virtual format.  */
 
 static void
-arm_store_return_value (struct type *type, struct regcache *regs,
-			const gdb_byte *valbuf)
+arm_store_return_value(struct type *type, struct regcache *regs,
+                       const gdb_byte *valbuf)
 {
-  if (TYPE_CODE (type) == TYPE_CODE_FLT)
+  if (TYPE_CODE(type) == TYPE_CODE_FLT)
     {
       gdb_byte buf[MAX_REGISTER_SIZE];
 
-      switch (gdbarch_tdep (current_gdbarch)->fp_model)
+      switch (gdbarch_tdep(current_gdbarch)->fp_model)
 	{
 	case ARM_FLOAT_FPA:
-
-	  convert_to_extended (floatformat_from_type (type), buf, valbuf);
-	  regcache_cooked_write (regs, ARM_F0_REGNUM, buf);
+	  convert_to_extended(floatformat_from_type(type), buf, valbuf);
+	  regcache_cooked_write(regs, ARM_F0_REGNUM, buf);
 	  break;
 
 	case ARM_FLOAT_SOFT_FPA:
 	case ARM_FLOAT_SOFT_VFP:
 	case ARM_FLOAT_NONE:
 	case ARM_FLOAT_VFP:
-	  regcache_cooked_write (regs, ARM_A1_REGNUM, valbuf);
-	  if (TYPE_LENGTH (type) > 4)
-	    regcache_cooked_write (regs, ARM_A1_REGNUM + 1,
-				   valbuf + INT_REGISTER_SIZE);
+	  regcache_cooked_write(regs, ARM_A1_REGNUM, valbuf);
+	  if (TYPE_LENGTH(type) > 4)
+	    regcache_cooked_write(regs, ARM_A1_REGNUM + 1,
+				  valbuf + INT_REGISTER_SIZE);
 	  break;
 
 /*	APPLE FUTURE ADDITION: We may need to comment out the ARM_FLOAT_VFP
 	case above and use this code if we decide to send and return float
 	and double values in the VFP registers in the future. Currently we
-	do NOT adopt this optional procedure call standard.
+	do NOT adopt this optional procedure call standard.  */
+#if defined(FUTURE_ADDITION)
 	case ARM_FLOAT_VFP:
-	  if (TYPE_LENGTH (type) <= 4)
-	    regcache_cooked_read (regs, ARM_VFP_REGNUM_S0, valbuf);
-	  else if (TYPE_LENGTH (type) <= 8)
-	    regcache_cooked_read (regs, ARM_FIRST_VFP_PSEUDO_REGNUM, valbuf);
+	  if (TYPE_LENGTH(type) <= 4)
+	    regcache_cooked_read(regs, ARM_VFP_REGNUM_S0, valbuf);
+	  else if (TYPE_LENGTH(type) <= 8)
+	    regcache_cooked_read(regs, ARM_FIRST_VFP_PSEUDO_REGNUM, valbuf);
 	  break;
-*/
+#endif /* FUTURE_ADDITION */
 	default:
 	  internal_error
 	    (__FILE__, __LINE__,
 	     _("arm_store_return_value: Floating point model not supported"));
+#ifndef __clang__
 	  break;
+#endif /* !__clang__ */
 	}
     }
-  else if (TYPE_CODE (type) == TYPE_CODE_INT
-	   || TYPE_CODE (type) == TYPE_CODE_CHAR
-	   || TYPE_CODE (type) == TYPE_CODE_BOOL
-	   || TYPE_CODE (type) == TYPE_CODE_PTR
-	   || TYPE_CODE (type) == TYPE_CODE_REF
-	   || TYPE_CODE (type) == TYPE_CODE_ENUM)
+  else if ((TYPE_CODE(type) == TYPE_CODE_INT)
+	   || (TYPE_CODE(type) == TYPE_CODE_CHAR)
+	   || (TYPE_CODE(type) == TYPE_CODE_BOOL)
+	   || (TYPE_CODE(type) == TYPE_CODE_PTR)
+	   || (TYPE_CODE(type) == TYPE_CODE_REF)
+	   || (TYPE_CODE(type) == TYPE_CODE_ENUM))
     {
-      if (TYPE_LENGTH (type) <= 4)
+      if (TYPE_LENGTH(type) <= 4)
 	{
 	  /* Values of one word or less are zero/sign-extended and
 	     returned in r0.  */
 	  bfd_byte tmpbuf[INT_REGISTER_SIZE];
-	  LONGEST val = unpack_long (type, valbuf);
+	  LONGEST val = unpack_long(type, valbuf);
 
-	  store_signed_integer (tmpbuf, INT_REGISTER_SIZE, val);
-	  regcache_cooked_write (regs, ARM_A1_REGNUM, tmpbuf);
+	  store_signed_integer(tmpbuf, INT_REGISTER_SIZE, val);
+	  regcache_cooked_write(regs, ARM_A1_REGNUM, tmpbuf);
 	}
       else
 	{
 	  /* Integral values greater than one word are stored in consecutive
 	     registers starting with r0.  This will always be a multiple of
 	     the regiser size.  */
-	  int len = TYPE_LENGTH (type);
+	  int len = TYPE_LENGTH(type);
 	  int regno = ARM_A1_REGNUM;
 
 	  while (len > 0)
 	    {
-	      regcache_cooked_write (regs, regno++, valbuf);
+	      regcache_cooked_write(regs, regno++, valbuf);
 	      len -= INT_REGISTER_SIZE;
 	      valbuf += INT_REGISTER_SIZE;
 	    }
@@ -5317,15 +5316,15 @@ arm_store_return_value (struct type *type, struct regcache *regs,
       /* For a structure or union the behaviour is as if the value had
          been stored to word-aligned memory and then loaded into
          registers with 32-bit load instruction(s).  */
-      int len = TYPE_LENGTH (type);
+      int len = TYPE_LENGTH(type);
       int regno = ARM_A1_REGNUM;
       bfd_byte tmpbuf[INT_REGISTER_SIZE];
 
       while (len > 0)
 	{
-	  memcpy (tmpbuf, valbuf,
-		  len > INT_REGISTER_SIZE ? INT_REGISTER_SIZE : len);
-	  regcache_cooked_write (regs, regno++, tmpbuf);
+	  memcpy(tmpbuf, valbuf,
+		 ((len > INT_REGISTER_SIZE) ? INT_REGISTER_SIZE : len));
+	  regcache_cooked_write(regs, regno++, tmpbuf);
 	  len -= INT_REGISTER_SIZE;
 	  valbuf += INT_REGISTER_SIZE;
 	}
@@ -5415,7 +5414,7 @@ arm_skip_stub(CORE_ADDR pc)
   if (find_pc_partial_function(pc, &name, &start_addr, NULL) == 0)
     return 0;
 
-  /* Call thunks always start with "_call_via_".  */
+  /* Call thunks always start with "_call_via_": */
   if (strncmp(name, "_call_via_", 10) == 0)
     {
       /* Use the name suffix to determine which register contains the
@@ -5435,7 +5434,7 @@ arm_skip_stub(CORE_ADDR pc)
 }
 
 static void
-set_arm_command(char *args, int from_tty)
+set_arm_command(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
   printf_unfiltered(_("\
 \"set arm\" must be followed by an apporpriate subcommand.\n"));
@@ -5443,7 +5442,7 @@ set_arm_command(char *args, int from_tty)
 }
 
 static void
-show_arm_command(char *args, int from_tty)
+show_arm_command(char *args ATTRIBUTE_UNUSED, int from_tty)
 {
   cmd_show_list(showarmcmdlist, from_tty, "");
 }
@@ -5457,7 +5456,7 @@ arm_update_current_architecture(void)
   if (gdbarch_bfd_arch_info(current_gdbarch)->arch != bfd_arch_arm)
     return;
 
-  /* Update the architecture.  */
+  /* Update the architecture: */
   gdbarch_info_init(&info);
 
   if (!gdbarch_update_p(info))
@@ -5465,8 +5464,9 @@ arm_update_current_architecture(void)
 }
 
 static void
-set_fp_model_sfunc(char *args, int from_tty,
-		   struct cmd_list_element *c)
+set_fp_model_sfunc(char *args ATTRIBUTE_UNUSED,
+                   int from_tty ATTRIBUTE_UNUSED,
+		   struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
   enum arm_float_model fp_model;
 
@@ -5485,56 +5485,58 @@ set_fp_model_sfunc(char *args, int from_tty,
 }
 
 static void
-show_fp_model (struct ui_file *file, int from_tty,
-	       struct cmd_list_element *c, const char *value)
+show_fp_model(struct ui_file *file, int from_tty ATTRIBUTE_UNUSED,
+	      struct cmd_list_element *c ATTRIBUTE_UNUSED,
+              const char *value ATTRIBUTE_UNUSED)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
 
-  if (arm_fp_model == ARM_FLOAT_AUTO
-      && gdbarch_bfd_arch_info (current_gdbarch)->arch == bfd_arch_arm)
-    fprintf_filtered (file, _("\
+  if ((arm_fp_model == ARM_FLOAT_AUTO)
+      && (gdbarch_bfd_arch_info(current_gdbarch)->arch == bfd_arch_arm))
+    fprintf_filtered(file, _("\
 The current ARM floating point model is \"auto\" (currently \"%s\").\n"),
-		      fp_model_strings[tdep->fp_model]);
+                     fp_model_strings[tdep->fp_model]);
   else
-    fprintf_filtered (file, _("\
+    fprintf_filtered(file, _("\
 The current ARM floating point model is \"%s\".\n"),
-		      fp_model_strings[arm_fp_model]);
+                     fp_model_strings[arm_fp_model]);
 }
 
 static void
-arm_set_abi (char *args, int from_tty,
-	     struct cmd_list_element *c)
+arm_set_abi(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED,
+	    struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
   enum arm_abi_kind arm_abi;
 
   for (arm_abi = ARM_ABI_AUTO; arm_abi != ARM_ABI_LAST; arm_abi++)
-    if (strcmp (arm_abi_string, arm_abi_strings[arm_abi]) == 0)
+    if (strcmp(arm_abi_string, arm_abi_strings[arm_abi]) == 0)
       {
 	arm_abi_global = arm_abi;
 	break;
       }
 
   if (arm_abi == ARM_ABI_LAST)
-    internal_error (__FILE__, __LINE__, _("Invalid ABI accepted: %s."),
-		    arm_abi_string);
+    internal_error(__FILE__, __LINE__, _("Invalid ABI accepted: %s."),
+		   arm_abi_string);
 
-  arm_update_current_architecture ();
+  arm_update_current_architecture();
 }
 
 static void
-arm_show_abi (struct ui_file *file, int from_tty,
-	     struct cmd_list_element *c, const char *value)
+arm_show_abi(struct ui_file *file, int from_tty ATTRIBUTE_UNUSED,
+	     struct cmd_list_element *c ATTRIBUTE_UNUSED,
+             const char *value ATTRIBUTE_UNUSED)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
 
   if (arm_abi_global == ARM_ABI_AUTO
-      && gdbarch_bfd_arch_info (current_gdbarch)->arch == bfd_arch_arm)
-    fprintf_filtered (file, _("\
+      && gdbarch_bfd_arch_info(current_gdbarch)->arch == bfd_arch_arm)
+    fprintf_filtered(file, _("\
 The current ARM ABI is \"auto\" (currently \"%s\").\n"),
-		      arm_abi_strings[tdep->arm_abi]);
+                     arm_abi_strings[tdep->arm_abi]);
   else
-    fprintf_filtered (file, _("The current ARM ABI is \"%s\".\n"),
-		      arm_abi_string);
+    fprintf_filtered(file, _("The current ARM ABI is \"%s\".\n"),
+                     arm_abi_string);
 }
 
 /* If the user changes the register disassembly style used for info
@@ -5543,17 +5545,20 @@ The current ARM ABI is \"auto\" (currently \"%s\").\n"),
    arm disassembly" command, and does that.  */
 
 static void
-set_disassembly_style_sfunc (char *args, int from_tty,
-			      struct cmd_list_element *c)
+set_disassembly_style_sfunc(char *args ATTRIBUTE_UNUSED,
+                            int from_tty ATTRIBUTE_UNUSED,
+                            struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
-  set_disassembly_style ();
+  set_disassembly_style();
 }
 
 static void
-set_arm_single_step_mode_sfunc (char *args, int from_tty, struct cmd_list_element *c)
+set_arm_single_step_mode_sfunc(char *args ATTRIBUTE_UNUSED,
+                               int from_tty ATTRIBUTE_UNUSED,
+                               struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
   int i;
-  for (i=0; arm_single_step_mode_strings[i] != NULL; i++)
+  for (i = 0; arm_single_step_mode_strings[i] != NULL; i++)
     {
       if (strcmp(arm_single_step_mode_str, arm_single_step_mode_strings[i]) == 0)
 	{
@@ -5593,38 +5598,40 @@ get_arm_single_step_mode(void)
 }
 
 void
-arm_set_show_opcode_bytes(char *args, int from_tty, struct cmd_list_element *c)
+arm_set_show_opcode_bytes(char *args ATTRIBUTE_UNUSED,
+                          int from_tty ATTRIBUTE_UNUSED,
+                          struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
   set_arm_show_opcode_bytes_option(show_opcode_bytes);
 }
 
 /* Return the ARM register name corresponding to register I.  */
 static const char *
-arm_register_name (int i)
+arm_register_name(int i)
 {
   return g_register_info[i].name;
 }
 
 static void
-set_disassembly_style (void)
+set_disassembly_style(void)
 {
   const char *setname, *setdesc, *const *regnames;
   int numregs, j;
 
-  /* Find the style that the user wants in the opcodes table.  */
+  /* Find the style that the user wants in the opcodes table: */
   int current = 0;
-  numregs = get_arm_regnames (current, &setname, &setdesc, &regnames);
+  numregs = get_arm_regnames(current, &setname, &setdesc, &regnames);
   while ((disassembly_style != setname)
 	 && (current < num_disassembly_options))
-    get_arm_regnames (++current, &setname, &setdesc, &regnames);
+    get_arm_regnames(++current, &setname, &setdesc, &regnames);
   current_option = current;
 
-  /* Fill our copy.  */
+  /* Fill our copy: */
   for (j = 0; j < numregs; j++)
-    g_register_info[j].name = (char *) regnames[j];
+    g_register_info[j].name = (char *)regnames[j];
 
-  /* Adjust case.  */
-  if (isupper (*regnames[ARM_PC_REGNUM]))
+  /* Adjust case: */
+  if (isupper(*regnames[ARM_PC_REGNUM]))
     {
       g_register_info[ARM_FPS_REGNUM].name = "FPS";
       g_register_info[ARM_PS_REGNUM].name = "CPSR";
@@ -5635,8 +5642,8 @@ set_disassembly_style (void)
       g_register_info[ARM_PS_REGNUM].name = "cpsr";
     }
 
-  /* Synchronize the disassembler.  */
-  set_arm_regname_option (current);
+  /* Synchronize the disassembler: */
+  set_arm_regname_option(current);
 }
 
 /* Test whether the coff symbol specific value corresponds to a Thumb
@@ -6040,15 +6047,15 @@ arm_gdbarch_init(struct gdbarch_info info, struct gdbarch_list *arches)
 	}
       else
 	{
-	  set_gdbarch_double_format (gdbarch, &floatformat_ieee_double_little);
-	  set_gdbarch_long_double_format (gdbarch,
-					  &floatformat_ieee_double_little);
+	  set_gdbarch_double_format(gdbarch, &floatformat_ieee_double_little);
+	  set_gdbarch_long_double_format(gdbarch,
+					 &floatformat_ieee_double_little);
 	}
       break;
 
     default:
-      internal_error (__FILE__, __LINE__,
-		      _("arm_gdbarch_init: bad byte order for float format"));
+      internal_error(__FILE__, __LINE__,
+		     _("arm_gdbarch_init: bad byte order for float format"));
     }
 
   return gdbarch;
@@ -6096,12 +6103,12 @@ _initialize_arm_tdep(void)
 
   gdbarch_register(bfd_arch_arm, arm_gdbarch_init, arm_dump_tdep);
 
-  /* Register an ELF OS ABI sniffer for ARM binaries.  */
-  gdbarch_register_osabi_sniffer(bfd_arch_arm,
-				 bfd_target_elf_flavour,
+  /* Register an ELF OS ABI sniffer for ARM binaries: */
+  gdbarch_register_osabi_sniffer(bfd_arch_arm, bfd_target_elf_flavour,
 				 arm_elf_osabi_sniffer);
 
-  /* Get the number of possible sets of register names defined in opcodes: */
+  /* Get the number of possible sets of register names defined in
+   * libopcodes (specifically ../opcodes/arm-dis.c): */
   num_disassembly_options = get_arm_regname_num_options();
 
   /* Add root prefix command for all "set arm"/"show arm" commands: */
@@ -6122,101 +6129,98 @@ _initialize_arm_tdep(void)
     (const char **)xmalloc((num_disassembly_options + 1) * sizeof(char *));
   for (i = 0; (int)i < num_disassembly_options; i++)
     {
-      numregs = get_arm_regnames (i, &setname, &setdesc, &regnames);
+      numregs = get_arm_regnames(i, &setname, &setdesc, &regnames);
       valid_disassembly_styles[i] = setname;
-      length = snprintf (rdptr, rest, "%s - %s\n", setname, setdesc);
+      length = snprintf(rdptr, rest, "%s - %s\n", setname, setdesc);
       rdptr += length;
       rest -= length;
-      /* Copy the default names (if found) and synchronize disassembler.  */
-      if (!strcmp (setname, "std"))
+      /* Copy the default names (if found) and synchronize disassembler: */
+      if (!strcmp(setname, "std"))
 	{
           disassembly_style = setname;
           current_option = i;
 	  for (j = 0; j < numregs; j++)
-            g_register_info[j].name = (char *) regnames[j];
-          set_arm_regname_option (i);
+            g_register_info[j].name = (char *)regnames[j];
+          set_arm_regname_option(i);
 	}
     }
-  /* Mark the end of valid options.  */
+  /* Mark the end of valid options: */
   valid_disassembly_styles[num_disassembly_options] = NULL;
 
-  /* Create the help text.  */
-  stb = mem_fileopen ();
-  fprintf_unfiltered (stb, "%s%s%s",
-		      _("The valid values are:\n"),
-		      regdesc,
-		      _("The default is \"std\"."));
-  helptext = ui_file_xstrdup (stb, &length);
-  ui_file_delete (stb);
+  /* Create the help text: */
+  stb = mem_fileopen();
+  fprintf_unfiltered(stb, "%s%s%s",
+		     _("The valid values are:\n"),
+		     regdesc,
+		     _("The default is \"std\"."));
+  helptext = ui_file_xstrdup(stb, &length);
+  ui_file_delete(stb);
 
   add_setshow_enum_cmd("disassembler", no_class,
 		       valid_disassembly_styles, &disassembly_style,
 		       _("Set the disassembly style."),
 		       _("Show the disassembly style."),
-		       helptext,
-		       set_disassembly_style_sfunc,
+		       helptext, set_disassembly_style_sfunc,
 		       NULL, /* FIXME: i18n: The disassembly style is \"%s\".  */
 		       &setarmcmdlist, &showarmcmdlist);
 
-  add_setshow_boolean_cmd ("show-opcode-bytes", no_class, &show_opcode_bytes,
-			   _("Set ARM and Thumb opcode byte display in disassembly."),
-			   _("Show ARM and Thumb opcode byte display in disassembly."),
-			   _("When on, the hex representation of the opcode "
-			     "bytes will be displayed along\nwith any disassembly."),
-			   arm_set_show_opcode_bytes, NULL,
-			   &setarmcmdlist, &showarmcmdlist);
+  add_setshow_boolean_cmd("show-opcode-bytes", no_class, &show_opcode_bytes,
+			  _("Set ARM and Thumb opcode byte display in disassembly."),
+			  _("Show ARM and Thumb opcode byte display in disassembly."),
+			  _("When on, the hex representation of the opcode "
+			    "bytes will be displayed along\nwith any disassembly."),
+			  arm_set_show_opcode_bytes, NULL,
+			  &setarmcmdlist, &showarmcmdlist);
 
-  add_setshow_enum_cmd ("single-step", no_class,
-			arm_single_step_mode_strings, &arm_single_step_mode_str,
-			_("Set the ARM stepping mode."),
-			_("Show the ARM stepping mode."),
-			_("Valid values are 'auto', 'software' or 'hardware'.\n"
-			  "auto: lets each OS ABI automatically determine "
-			  "which single stepping mode to use.\n"
-			  "software: always use software single step ('s' "
-			  "packets will NOT be used in 'target remote' variants).\n"
-			  "hardware: let targets step using hardware ('s' "
-			  "packets will be used in 'target remote' variants)."),
-			set_arm_single_step_mode_sfunc, NULL, &setarmcmdlist,
-			&showarmcmdlist);
+  add_setshow_enum_cmd("single-step", no_class,
+                       arm_single_step_mode_strings, &arm_single_step_mode_str,
+                       _("Set the ARM stepping mode."),
+                       _("Show the ARM stepping mode."),
+                       _("Valid values are 'auto', 'software' or 'hardware'.\n"
+                         "auto: lets each OS ABI automatically determine "
+                         "which single stepping mode to use.\n"
+                         "software: always use software single step ('s' "
+                         "packets will NOT be used in 'target remote' variants).\n"
+                         "hardware: let targets step using hardware ('s' "
+                         "packets will be used in 'target remote' variants)."),
+                       set_arm_single_step_mode_sfunc, NULL, &setarmcmdlist,
+                       &showarmcmdlist);
 
-  add_setshow_boolean_cmd ("apcs32", no_class, &arm_apcs_32,
-			   _("Set usage of ARM 32-bit mode."),
-			   _("Show usage of ARM 32-bit mode."),
-			   _("When off, a 26-bit PC will be used."),
-			   NULL,
-			   NULL, /* FIXME: i18n: Usage of ARM 32-bit mode is %s.  */
-			   &setarmcmdlist, &showarmcmdlist);
+  add_setshow_boolean_cmd("apcs32", no_class, &arm_apcs_32,
+			  _("Set usage of ARM 32-bit mode."),
+			  _("Show usage of ARM 32-bit mode."),
+			  _("When off, a 26-bit PC will be used."),
+			  NULL,
+			  NULL, /* FIXME: i18n: Usage of ARM 32-bit mode is %s.  */
+			  &setarmcmdlist, &showarmcmdlist);
 
-  /* Add a command to allow the user to force the FPU model.  */
-  add_setshow_enum_cmd ("fpu", no_class, fp_model_strings, &current_fp_model,
-			_("Set the floating point type."),
-			_("Show the floating point type."),
-			_("auto - Determine the FP typefrom the OS-ABI.\n\
+  /* Add a command to allow the user to force the FPU model: */
+  add_setshow_enum_cmd("fpu", no_class, fp_model_strings, &current_fp_model,
+                       _("Set the floating point type."),
+                       _("Show the floating point type."),
+                       _("auto - Determine the FP typefrom the OS-ABI.\n\
 softfpa - Software FP, mixed-endian doubles on little-endian ARMs.\n\
 fpa - FPA co-processor (GCC compiled).\n\
 softvfp - Software FP with pure-endian doubles.\n\
 vfp - VFP co-processor.\n\
 none - No floating point hardware or software emulation."),
-			set_fp_model_sfunc, show_fp_model,
-			&setarmcmdlist, &showarmcmdlist);
+                       set_fp_model_sfunc, show_fp_model,
+                       &setarmcmdlist, &showarmcmdlist);
 
-  /* Add a command to allow the user to force the ABI.  */
-  add_setshow_enum_cmd ("abi", class_support, arm_abi_strings, &arm_abi_string,
-			_("Set the ABI."),
-			_("Show the ABI."),
-			NULL, arm_set_abi, arm_show_abi,
-			&setarmcmdlist, &showarmcmdlist);
+  /* Add a command to allow the user to force the ABI: */
+  add_setshow_enum_cmd("abi", class_support, arm_abi_strings, &arm_abi_string,
+                       _("Set the ABI."),
+                       _("Show the ABI."),
+                       NULL, arm_set_abi, arm_show_abi,
+                       &setarmcmdlist, &showarmcmdlist);
 
-  /* Debugging flag.  */
-  add_setshow_zinteger_cmd ("arm", class_maintenance, &arm_debug,
-			   _("Set ARM debugging."),
-			   _("Show ARM debugging."),
-			   _("When non-zero, arm-specific debugging is enabled."),
-			   NULL,
-			   show_arm_debug,
-			   &setdebuglist, &showdebuglist);
+  /* Debugging flag: */
+  add_setshow_zinteger_cmd("arm", class_maintenance, &arm_debug,
+			  _("Set ARM debugging."),
+			  _("Show ARM debugging."),
+			  _("When non-zero, arm-specific debugging is enabled."),
+			  NULL, show_arm_debug,
+			  &setdebuglist, &showdebuglist);
 }
 
 /* EOF */
-

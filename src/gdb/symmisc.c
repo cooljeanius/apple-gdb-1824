@@ -44,8 +44,8 @@
 #include "readline/readline.h"
 
 #ifndef DEV_TTY
-#define DEV_TTY "/dev/tty"
-#endif
+# define DEV_TTY "/dev/tty"
+#endif /* !DEV_TTY */
 
 /* Unfortunately for debugging, stderr is usually a macro.  This is painful
    when calling functions that take FILE *'s from the debugger.
@@ -1536,9 +1536,11 @@ find_equivalent_msymbol (struct minimal_symbol *msymbol)
 
 /* Do early runtime initializations. */
 void
-_initialize_symmisc (void)
+_initialize_symmisc(void)
 {
   std_in = stdin;
   std_out = stdout;
   std_err = stderr;
 }
+
+/* EOF */

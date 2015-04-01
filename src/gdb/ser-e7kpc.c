@@ -21,17 +21,17 @@
 
 #include "defs.h"
 #if defined __GO32__ || defined _WIN32
-#include "serial.h"
-#include "gdb_string.h"
+# include "serial.h"
+# include "gdb_string.h"
 
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
+# ifdef _WIN32
+#  define WIN32_LEAN_AND_MEAN
+#  include <windows.h>
+# endif /* _WIN32 */
 
-#ifdef __GO32__
-#include <sys/dos.h>
-#endif
+# ifdef __GO32__
+#  include <sys/dos.h>
+# endif /* __GO32__ */
 
 static int e7000pc_open (struct serial *scb, const char *name);
 static void e7000pc_raw (struct serial *scb);
@@ -316,7 +316,7 @@ e7000pc_noop (struct serial *scb)
 static void
 e7000pc_raw (struct serial *scb)
 {
-  /* Always in raw mode */
+  ; /* Always in raw mode */
 }
 
 static int
@@ -378,28 +378,29 @@ e7000pc_print_tty_state (struct serial *scb,
 }
 
 static int
-e7000pc_setbaudrate (struct serial *scb, int rate)
+e7000pc_setbaudrate(struct serial *scb, int rate)
 {
   return 0;
 }
 
 static int
-e7000pc_setstopbits (struct serial *scb, int rate)
+e7000pc_setstopbits(struct serial *scb, int rate)
 {
   return 0;
 }
 
 static int
-e7000pc_write (struct serial *scb, const char *str, int len)
+e7000pc_write(struct serial *scb, const char *str, int len)
 {
-  dosasync_write (scb->fd, str, len);
+  dosasync_write(scb->fd, str, len);
 
   return 0;
 }
 
 static void
-e7000pc_close (struct serial *scb)
+e7000pc_close(struct serial *scb)
 {
+  return;
 }
 
 static struct serial_ops e7000pc_ops =
@@ -428,9 +429,11 @@ static struct serial_ops e7000pc_ops =
 extern initialize_file_ftype _initialize_ser_e7000pc; /* -Wmissing-prototypes */
 
 void
-_initialize_ser_e7000pc (void)
+_initialize_ser_e7000pc(void)
 {
 #if defined __GO32__ || defined _WIN32
-  serial_add_interface (&e7000pc_ops);
-#endif  
+  serial_add_interface(&e7000pc_ops);
+#endif /* __GO32__ || _WIN32 */
 }
+
+/* EOF */

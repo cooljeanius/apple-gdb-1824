@@ -11,7 +11,6 @@ struct _bfd;
 
 typedef enum dyld_objfile_reason
 {
-
   dyld_reason_deallocated = 0x0000,
 
   dyld_reason_user = 0x0001,
@@ -105,14 +104,14 @@ struct dyld_objfile_entry
   CORE_ADDR loaded_addr;
   CORE_ADDR loaded_offset;
 
-  /* God as my witness, I can't figure out what this one is for.  It seems
+  /* God as my witness, I cannot figure out what this one is for.  It seems
      to indicate that the LOADED_ADDR field is the slide (aka offset) instead
      of an absolute address.  Huh?  Like it gets set for the main executable
-     which is at 0x0, and if the DYLD_VALID isn't set and
-     IMAGE_ADDR_VALID isn't set, dyld_load_symfile will set it to
+     which is at 0x0, and if the DYLD_VALID is NOT set and
+     IMAGE_ADDR_VALID is NOT set, then dyld_load_symfile will set it to
      the slide, which I guess somehow got set without DYLD_VALID getting set...
      uh....
-     I don't think it actually does anything.  jsm/2004-12-15*/
+     I do NOT think that it actually does anything.  jsm/2004-12-15 */
 
   int loaded_addrisoffset;
 
@@ -249,9 +248,9 @@ enum gdb_osabi dyld_objfile_entry_osabi(const struct dyld_objfile_entry *e);
         break;
 */
 #define DYLD_ALL_OBJFILE_INFO_ENTRIES(info, o, n)                  \
-  for ((n) = dyld_next_allocated_shlib ((info), 0);                \
+  for ((n) = dyld_next_allocated_shlib((info), 0);                 \
        ((n) < (info)->nents) ? (o = &(info)->entries[(n)], 1) : 0; \
-       (n) = dyld_next_allocated_shlib (info, (n) + 1))
+       (n) = dyld_next_allocated_shlib(info, (n) + 1))
 
 #endif /* __GDB_MACOSX_NAT_DYLD_INFO_H__ */
 

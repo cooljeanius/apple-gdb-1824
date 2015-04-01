@@ -23,12 +23,12 @@
 #include "defs.h"
 
 #ifdef HAVE_PTRACE_H
-#include <ptrace.h>
+# include <ptrace.h>
 #else
-#ifdef HAVE_SYS_PTRACE_H
-#include <sys/ptrace.h>
-#endif
-#endif
+# ifdef HAVE_SYS_PTRACE_H
+#  include <sys/ptrace.h>
+# endif /* HAVE_SYS_PTRACE_H */
+#endif /* HAVE_PTRACE_H */
 
 #include "frame.h"
 #include "inferior.h"
@@ -43,15 +43,15 @@
 #include <fcntl.h>
 
 #ifdef TARGET_HAS_HARDWARE_WATCHPOINTS
-#include <sys/debugreg.h>
-#endif
+# include <sys/debugreg.h>
+#endif /* TARGET_HAS_HARDWARE_WATCHPOINTS */
 
 #include <sys/file.h>
 #include "gdb_stat.h"
 
 #ifdef HAVE_SYS_REG_H
-#include <sys/reg.h>
-#endif
+# include <sys/reg.h>
+#endif /* HAVE_SYS_REG_H */
 
 #include "floatformat.h"
 

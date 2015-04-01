@@ -177,22 +177,24 @@ target_auxv_search (struct target_ops *ops, CORE_ADDR match, CORE_ADDR *valp)
 }
 
 
-/* Print the contents of the target's AUXV on the specified file. */
+/* Put this out here for '-Wnested-externs': */
+extern int addressprint;
+
+/* Print the contents of the target's AUXV on the specified file: */
 int
-fprint_target_auxv (struct ui_file *file, struct target_ops *ops)
+fprint_target_auxv(struct ui_file *file, struct target_ops *ops)
 {
   CORE_ADDR type, val;
   gdb_byte *data;
-  int len = target_auxv_read (ops, &data);
+  int len = target_auxv_read(ops, &data);
   gdb_byte *ptr = data;
   int ents = 0;
 
   if (len <= 0)
     return len;
 
-  while (target_auxv_parse (ops, &ptr, data + len, &type, &val) > 0)
+  while (target_auxv_parse(ops, &ptr, data + len, &type, &val) > 0)
     {
-      extern int addressprint;
       const char *name = "???";
       const char *description = "";
       enum { dec, hex, str } flavor = hex;

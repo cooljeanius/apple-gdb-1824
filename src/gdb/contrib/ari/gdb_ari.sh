@@ -60,8 +60,8 @@ Options:
   -Werror        Treat all problems as errors.
   -Wall          Report all problems.
   -Wari          Report problems that should be fixed in new code.
-  -W<category>   Report problems in the specifed category.  Vaid categories
-                 are: ${all}
+  -W<category>   Report problems in the specified category.  Valid
+                 categories are: ${all}
 EOF
     exit 1
 }
@@ -877,7 +877,7 @@ get_frame_locals_address, or get_frame_args_address."
 }
 
 BEGIN { doc["floatformat_to_double"] = "\
-Do not use floatformat_to_double() from libierty, \
+Do not use floatformat_to_double() from libiberty, \
 instead use floatformat_to_doublest()"
     fix("floatformat_to_double", "gdb/doublest.c", 1)
     category["floatformat_to_double"] = ari_regression
@@ -887,7 +887,7 @@ instead use floatformat_to_doublest()"
 }
 
 BEGIN { doc["floatformat_from_double"] = "\
-Do not use floatformat_from_double() from libierty, \
+Do not use floatformat_from_double() from libiberty, \
 instead use floatformat_from_doublest()"
     category["floatformat_from_double"] = ari_regression
 }

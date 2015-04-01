@@ -39,14 +39,31 @@
 #include "symfile.h"
 /* APPLE LOCAL objfiles.h */
 #include "objfiles.h"
-/* APPLE LOCAL: For objfile_changed function. */
+/* APPLE LOCAL: For objfile_changed function: */
 #include "objc-lang.h"
 #include "exceptions.h"
 
-/* Local function declarations.  */
 
-extern void _initialize_core (void);
-static void call_extra_exec_file_hooks (char *filename);
+#ifndef __4_12_OR_LATER__
+/* FIXME: these two defines are strings; we should have a numerical
+ * equivalent: */
+# if defined(PACKAGE_VERSION) && defined(VERSION)
+#  define __4_12_OR_LATER__ 1
+# endif /* PACKAGE_VERSION && VERSION */
+#endif /* !__4_12_OR_LATER__ */
+#ifndef IT_IS_TESTED
+# define IT_IS_TESTED 1
+#endif /* !IT_IS_TESTED */
+#if 0
+# ifndef FIXMES_ARE_FIXED
+#  define FIXMES_ARE_FIXED 1
+# endif /* !FIXMES_ARE_FIXED */
+#endif /* 0 */
+
+/* Local function declarations: */
+
+extern void _initialize_core(void);
+static void call_extra_exec_file_hooks(char *filename);
 
 /* You can have any number of hooks for `exec_file_command' command to
    call.  If there is only one hook, then it is set in exec_file_display
@@ -453,7 +470,7 @@ write_memory(CORE_ADDR memaddr, const bfd_byte *myaddr, int len)
 void
 write_memory_unsigned_integer(CORE_ADDR addr, int len, ULONGEST value)
 {
-  char *buf = alloca(len);
+  char *buf = (char *)alloca(len);
   store_unsigned_integer((gdb_byte *)buf, len, value);
   write_memory(addr, (const bfd_byte *)buf, len);
 }
@@ -484,7 +501,7 @@ generic_search(int len, char *data, char *mask, CORE_ADDR startaddr,
 
   while ((curaddr >= lorange) && (curaddr < hirange))
     {
-      read_memory(curaddr, data_found, len);
+      read_memory(curaddr, (gdb_byte *)data_found, len);
       for (i = 0; i < len; ++i)
 	if ((data_found[i] & mask[i]) != data[i])
 	  goto try_again;
@@ -495,7 +512,7 @@ generic_search(int len, char *data, char *mask, CORE_ADDR startaddr,
     try_again:
       curaddr += increment;
     }
-  *addr_found = (CORE_ADDR)0;
+  *addr_found = (CORE_ADDR)0UL;
   return;
 }
 #endif /* __4_12_OR_LATER__ && IT_IS_TESTED */
@@ -504,59 +521,62 @@ generic_search(int len, char *data, char *mask, CORE_ADDR startaddr,
    gnutarget_string.  */
 char *gnutarget;
 
-/* Same thing, except it is "auto" not NULL for the default case.  */
+/* Same thing, except it is "auto" not NULL for the default case: */
 static char *gnutarget_string;
 static void
-show_gnutarget_string (struct ui_file *file, int from_tty,
-		       struct cmd_list_element *c, const char *value)
+show_gnutarget_string(struct ui_file *file, int from_tty,
+		      struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("The current BFD target is \"%s\".\n"), value);
+  fprintf_filtered(file, _("The current BFD target is \"%s\".\n"), value);
 }
 
-static void set_gnutarget_command (char *, int, struct cmd_list_element *);
+static void set_gnutarget_command(char *, int, struct cmd_list_element *);
 
 static void
-set_gnutarget_command (char *ignore, int from_tty, struct cmd_list_element *c)
+set_gnutarget_command(char *ignore, int from_tty, struct cmd_list_element *c)
 {
-  if (strcmp (gnutarget_string, "auto") == 0)
+  if (strcmp(gnutarget_string, "auto") == 0)
     gnutarget = NULL;
   else
     gnutarget = gnutarget_string;
 }
 
-/* Set the gnutarget.  */
+/* Set the gnutarget: */
 void
-set_gnutarget (char *newtarget)
+set_gnutarget(char *newtarget)
 {
   if (gnutarget_string != NULL)
-    xfree (gnutarget_string);
-  gnutarget_string = savestring (newtarget, strlen (newtarget));
-  set_gnutarget_command (NULL, 0, NULL);
+    xfree(gnutarget_string);
+  gnutarget_string = savestring(newtarget, strlen(newtarget));
+  set_gnutarget_command(NULL, 0, NULL);
 }
 
 void
-_initialize_core (void)
+_initialize_core(void)
 {
   struct cmd_list_element *c;
-  c = add_cmd ("core-file", class_files, core_file_command, _("\
+  c = add_cmd("core-file", class_files, core_file_command, _("\
 Use FILE as core dump for examining memory and registers.\n\
 No arg means have no core file.  This command has been superseded by the\n\
 `target core' and `detach' commands."), &cmdlist);
-  set_cmd_completer (c, filename_completer);
-  /* c->completer_word_break_characters = gdb_completer_filename_word_break_characters; */ /* FIXME */
+  set_cmd_completer(c, filename_completer);
+#ifdef FIXMES_ARE_FIXED
+  c->completer_word_break_characters = gdb_completer_filename_word_break_characters; /* FIXME */
+#endif /* FIXMES_ARE_FIXED */
 
-
-  add_setshow_string_noescape_cmd ("gnutarget", class_files,
-				   &gnutarget_string, _("(\
+  add_setshow_string_noescape_cmd("gnutarget", class_files,
+				  &gnutarget_string, _("(\
 Set the current BFD target."), _("\
 Show the current BFD target."), _("\
 Use `set gnutarget auto' to specify automatic detection."),
-				   set_gnutarget_command,
-				   show_gnutarget_string,
-				   &setlist, &showlist);
+				  set_gnutarget_command,
+				  show_gnutarget_string,
+				  &setlist, &showlist);
 
-  if (getenv ("GNUTARGET"))
-    set_gnutarget (getenv ("GNUTARGET"));
+  if (getenv("GNUTARGET"))
+    set_gnutarget(getenv("GNUTARGET"));
   else
-    set_gnutarget ("auto");
+    set_gnutarget("auto");
 }
+
+/* EOF */

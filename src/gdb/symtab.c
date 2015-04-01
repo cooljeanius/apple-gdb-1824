@@ -3048,14 +3048,14 @@ find_pc_sect_symtab (CORE_ADDR pc, asection *section)
    read in another symtab if necessary.  Backward compatibility, no section */
 
 struct symtab *
-find_pc_symtab (CORE_ADDR pc)
+find_pc_symtab(CORE_ADDR pc)
 {
-  return find_pc_sect_symtab (pc, find_pc_mapped_section (pc));
+  return find_pc_sect_symtab(pc, find_pc_mapped_section(pc));
 }
 
 /* APPLE LOCAL begin cache lookup values for improved performance  */
 struct symtab_and_line *
-copy_sal (struct symtab_and_line *orig)
+copy_sal(struct symtab_and_line *orig)
 {
   struct symtab_and_line *copy;
   struct symtab_and_line *copy_eol;
@@ -3067,7 +3067,7 @@ copy_sal (struct symtab_and_line *orig)
 
   /* Copy the main sal entry.  */
 
-  copy = (struct symtab_and_line *) xmalloc (sizeof (struct symtab_and_line));
+  copy = (struct symtab_and_line *)xmalloc(sizeof(struct symtab_and_line));
 
   copy->symtab = orig->symtab;
   copy->section = orig->section;
@@ -3088,8 +3088,8 @@ copy_sal (struct symtab_and_line *orig)
     {
       /* Create the next copy to go into the linked list.  */
 
-      tmp = (struct symtab_and_line *) xmalloc (sizeof
-						  (struct symtab_and_line));
+      tmp = ((struct symtab_and_line *)
+             xmalloc(sizeof(struct symtab_and_line)));
       tmp->symtab = current->symtab;
       tmp->section = current->section;
       tmp->line = current->line;
@@ -4352,7 +4352,7 @@ file_matches (char *file, char *files[], int nfiles)
 
 /* Free any memory associated with a search. */
 void
-free_search_symbols (struct symbol_search *symbols)
+free_search_symbols(struct symbol_search *symbols)
 {
   struct symbol_search *p;
   struct symbol_search *next;
@@ -4360,32 +4360,32 @@ free_search_symbols (struct symbol_search *symbols)
   for (p = symbols; p != NULL; p = next)
     {
       next = p->next;
-      xfree (p);
+      xfree(p);
     }
 }
 
 static void
-do_free_search_symbols_cleanup (void *symbols)
+do_free_search_symbols_cleanup(void *symbols)
 {
-  free_search_symbols (symbols);
+  free_search_symbols((struct symbol_search *)symbols);
 }
 
 struct cleanup *
-make_cleanup_free_search_symbols (struct symbol_search *symbols)
+make_cleanup_free_search_symbols(struct symbol_search *symbols)
 {
-  return make_cleanup (do_free_search_symbols_cleanup, symbols);
+  return make_cleanup(do_free_search_symbols_cleanup, symbols);
 }
 
 /* Helper function for sort_search_symbols and qsort.  Can only
    sort symbols, not minimal symbols.  */
 static int
-compare_search_syms (const void *sa, const void *sb)
+compare_search_syms(const void *sa, const void *sb)
 {
-  struct symbol_search **sym_a = (struct symbol_search **) sa;
-  struct symbol_search **sym_b = (struct symbol_search **) sb;
+  struct symbol_search **sym_a = (struct symbol_search **)sa;
+  struct symbol_search **sym_b = (struct symbol_search **)sb;
 
-  return strcmp (SYMBOL_PRINT_NAME ((*sym_a)->symbol),
-		 SYMBOL_PRINT_NAME ((*sym_b)->symbol));
+  return strcmp(SYMBOL_PRINT_NAME((*sym_a)->symbol),
+                SYMBOL_PRINT_NAME((*sym_b)->symbol));
 }
 
 /* Sort the ``nfound'' symbols in the list after prevtail.  Leave
@@ -4936,29 +4936,29 @@ rbreak_command_wrapper (char *regexp, int from_tty)
 }
 
 static void
-rbreak_command (char *regexp, int from_tty)
+rbreak_command(char *regexp, int from_tty)
 {
   struct symbol_search *ss;
   struct symbol_search *p;
   struct cleanup *old_chain;
   struct cleanup *objc_selectors_cleanup;
 
-  search_symbols (regexp, FUNCTIONS_DOMAIN, 0, (char **) NULL, &ss);
-  old_chain = make_cleanup_free_search_symbols (ss);
-
-  // a buffer big enough to hold any function name or any
-  // shlib + function name
+  /* a buffer big enough to hold any function name or any
+   * shlib + function name: */
   char string[4096 + 4096 + 32];
+
+  search_symbols(regexp, FUNCTIONS_DOMAIN, 0, (char **)NULL, &ss);
+  old_chain = make_cleanup_free_search_symbols(ss);
 
   for (p = ss; p != NULL; p = p->next)
     {
       /* We don't want to make people wade through dyld_stub trampolines;
          just skip those symbols.  */
-      if (p->symbol && SYMBOL_LINKAGE_NAME (p->symbol)
-          && strncmp (SYMBOL_LINKAGE_NAME (p->symbol), "dyld_stub_", 10) == 0)
+      if (p->symbol && SYMBOL_LINKAGE_NAME(p->symbol)
+          && (strncmp(SYMBOL_LINKAGE_NAME(p->symbol), "dyld_stub_", 10) == 0))
         continue;
-      if (p->msymbol && SYMBOL_LINKAGE_NAME (p->msymbol)
-          && strncmp (SYMBOL_LINKAGE_NAME (p->msymbol), "dyld_stub_", 10) == 0)
+      if (p->msymbol && SYMBOL_LINKAGE_NAME(p->msymbol)
+          && (strncmp(SYMBOL_LINKAGE_NAME(p->msymbol), "dyld_stub_", 10) == 0))
         continue;
 
       if (p->msymbol == NULL)
@@ -4966,11 +4966,11 @@ rbreak_command (char *regexp, int from_tty)
 	  char *shlib_ptr = NULL;
 	  int shlib_len = 0;
 
-	  if (p->symtab->objfile != NULL && p->symtab->objfile->name != NULL)
+	  if ((p->symtab->objfile != NULL) && (p->symtab->objfile->name != NULL))
 	    {
 	      shlib_ptr = p->symtab->objfile->name;
-	      shlib_len = strlen (p->symtab->objfile->name)
-		+ strlen("-shlib \"\" ");
+	      shlib_len = (strlen(p->symtab->objfile->name)
+                           + strlen("-shlib \"\" "));
 	    }
 
           /* APPLE LOCAL: To make it easier for decode_line_1() to decode
@@ -4988,26 +4988,23 @@ rbreak_command (char *regexp, int from_tty)
           string[0] = '\0';
 	  if (shlib_ptr != NULL)
 	    {
-	      strcpy (string, "-shlib \"");
-	      strlcat (string, p->symtab->objfile->name, 4096);
-	      strcat (string, "\" \"");
+	      strcpy(string, "-shlib \"");
+	      strlcat(string, p->symtab->objfile->name, 4096);
+	      strcat(string, "\" \"");
 	    }
 	  else
 	    {
-	      strcpy (string, "\"");
+	      strcpy(string, "\"");
 	    }
 
-	  strcat (string, p->symtab->filename);
-	  strcat (string, ":");
-	  strlcat (string, SYMBOL_LINKAGE_NAME (p->symbol), 4096);
-	  strcat (string, "\"");
+	  strcat(string, p->symtab->filename);
+	  strcat(string, ":");
+	  strlcat(string, SYMBOL_LINKAGE_NAME (p->symbol), 4096);
+	  strcat(string, "\"");
 	  /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps.  */
-	  rbr_break_command (string, from_tty, 0);
-	  print_symbol_info (FUNCTIONS_DOMAIN,
-			     p->symtab,
-			     p->symbol,
-			     p->block,
-			     p->symtab->filename);
+	  rbr_break_command(string, from_tty, 0);
+	  print_symbol_info(FUNCTIONS_DOMAIN, p->symtab, p->symbol,
+			    p->block, p->symtab->filename);
 	}
       else
 	{
@@ -5015,50 +5012,49 @@ rbreak_command (char *regexp, int from_tty)
              we need to disable allow_objc_selectors_flag or else we might
              have an ambiguous break command if the function name matches
              some random ObjC selectors.
-	     Also add -shlib so we don't move all the breakpoints to the
+	     Also add -shlib so we do NOT move all the breakpoints to the
 	     same symbol...  */
 	  const char *shlib_ptr = NULL;
 	  int shlib_len = 0;
 
-
-	  if (p->msymbol->ginfo.bfd_section != NULL
-	      && p->msymbol->ginfo.bfd_section->owner != NULL
-              && p->msymbol->ginfo.bfd_section->owner->filename != NULL)
+	  if ((p->msymbol->ginfo.bfd_section != NULL)
+	      && (p->msymbol->ginfo.bfd_section->owner != NULL)
+              && (p->msymbol->ginfo.bfd_section->owner->filename != NULL))
 
 	    {
 	      shlib_ptr = p->msymbol->ginfo.bfd_section->owner->filename;
-	      shlib_len = strlen (shlib_ptr)
-		+ strlen("-shlib \"\" ");
+	      shlib_len = (strlen(shlib_ptr)
+                           + strlen("-shlib \"\" "));
 	    }
 
           string[0] = '\0';
 	  if (shlib_ptr != NULL)
 	    {
-	      strcpy (string, "-shlib \"");
-	      strcat (string, shlib_ptr);
-	      strcat (string, "\" '");
+	      strcpy(string, "-shlib \"");
+	      strcat(string, shlib_ptr);
+	      strcat(string, "\" '");
 	    }
 	  else
 	    {
-	      strcpy (string, "'");
+	      strcpy(string, "'");
 	    }
 
-	  strlcat (string, SYMBOL_LINKAGE_NAME (p->msymbol), 4096);
-	  strcat (string, "'");
+	  strlcat(string, SYMBOL_LINKAGE_NAME(p->msymbol), 4096);
+	  strcat(string, "'");
 
           allow_objc_selectors_flag = 0;
           objc_selectors_cleanup =
-              make_cleanup (reset_allow_objc_selectors_flag, 0);
+              make_cleanup(reset_allow_objc_selectors_flag, 0);
 
 
 	  /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps.  */
-	  rbr_break_command (string, from_tty, 1);
-	  printf_filtered ("<function, no debug info> %s;\n",
-			   SYMBOL_PRINT_NAME (p->msymbol));
+	  rbr_break_command(string, from_tty, 1);
+	  printf_filtered("<function, no debug info> %s;\n",
+			  SYMBOL_PRINT_NAME(p->msymbol));
 	}
     }
 
-  do_cleanups (old_chain);
+  do_cleanups(old_chain);
 }
 
 
@@ -5077,14 +5073,13 @@ static char **return_val;
    characters.  If so, add it to the current completion list. */
 
 static void
-completion_list_add_name (char *symname, char *sym_text, int sym_text_len,
-			  char *text, char *word)
+completion_list_add_name(char *symname, char *sym_text, int sym_text_len,
+			 char *text, char *word)
 {
   int newsize;
 
-  /* clip symbols that cannot match */
-
-  if (strncmp (symname, sym_text, sym_text_len) != 0)
+  /* clip symbols that cannot match: */
+  if (strncmp(symname, sym_text, sym_text_len) != 0)
     {
       return;
     }
@@ -5093,33 +5088,33 @@ completion_list_add_name (char *symname, char *sym_text, int sym_text_len,
      of matches. Note that the name is moved to freshly malloc'd space. */
 
   {
-    char *new;
+    char *newstr;
     if (word == sym_text)
       {
-	new = xmalloc (strlen (symname) + 5);
-	strcpy (new, symname);
+	newstr = (char *)xmalloc(strlen(symname) + 5UL);
+	strcpy(newstr, symname);
       }
     else if (word > sym_text)
       {
-	/* Return some portion of symname.  */
-	new = xmalloc (strlen (symname) + 5);
-	strcpy (new, symname + (word - sym_text));
+	/* Return some portion of symname: */
+	newstr = (char *)xmalloc(strlen(symname) + 5UL);
+	strcpy(newstr, (symname + (word - sym_text)));
       }
     else
       {
-	/* Return some of SYM_TEXT plus symname.  */
-	new = xmalloc (strlen (symname) + (sym_text - word) + 5);
-	strncpy (new, word, sym_text - word);
-	new[sym_text - word] = '\0';
-	strcat (new, symname);
+	/* Return some of SYM_TEXT plus symname: */
+	newstr = (char *)xmalloc(strlen(symname) + (sym_text - word) + 5U);
+	strncpy(newstr, word, (sym_text - word));
+	newstr[sym_text - word] = '\0';
+	strcat(newstr, symname);
       }
 
-    if (return_val_index + 3 > return_val_size)
+    if ((return_val_index + 3) > return_val_size)
       {
-	newsize = (return_val_size *= 2) * sizeof (char *);
-	return_val = (char **) xrealloc ((char *) return_val, newsize);
+	newsize = ((return_val_size *= 2) * sizeof(char *));
+	return_val = (char **)xrealloc((char *)return_val, newsize);
       }
-    return_val[return_val_index++] = new;
+    return_val[return_val_index++] = newstr;
     return_val[return_val_index] = NULL;
   }
 }
@@ -5128,58 +5123,61 @@ completion_list_add_name (char *symname, char *sym_text, int sym_text_len,
    again and feed all the selectors into the mill.  */
 
 static void
-completion_list_objc_symbol (struct minimal_symbol *msymbol, char *sym_text,
-			     int sym_text_len, char *text, char *word)
+completion_list_objc_symbol(struct minimal_symbol *msymbol, char *sym_text,
+			    int sym_text_len, char *text, char *word)
 {
   static char *tmp = NULL;
-  static unsigned int tmplen = 0;
+  static unsigned int tmplen = 0U;
 
   char *method, *category, *selector;
   char *tmp2 = NULL;
 
-  method = SYMBOL_NATURAL_NAME (msymbol);
+  method = SYMBOL_NATURAL_NAME(msymbol);
 
   /* Is it a method?  */
   if ((method[0] != '-') && (method[0] != '+'))
     return;
 
   if (sym_text[0] == '[')
-    /* Complete on shortened method method.  */
-    completion_list_add_name (method + 1, sym_text, sym_text_len, text, word);
+    /* Complete on shortened method method: */
+    completion_list_add_name((method + 1), sym_text, sym_text_len, text,
+                             word);
 
-  while ((strlen (method) + 1) >= tmplen)
+  while ((strlen(method) + 1UL) >= tmplen)
     {
       if (tmplen == 0)
 	tmplen = 1024;
       else
 	tmplen *= 2;
-      tmp = xrealloc (tmp, tmplen);
+      tmp = (char *)xrealloc(tmp, tmplen);
     }
-  selector = strchr (method, ' ');
+  selector = strchr(method, ' ');
   if (selector != NULL)
     selector++;
 
-  category = strchr (method, '(');
+  category = strchr(method, '(');
 
   if ((category != NULL) && (selector != NULL))
     {
-      memcpy (tmp, method, (category - method));
+      memcpy(tmp, method, (category - method));
       tmp[category - method] = ' ';
-      memcpy (tmp + (category - method) + 1, selector, strlen (selector) + 1);
-      completion_list_add_name (tmp, sym_text, sym_text_len, text, word);
+      memcpy((tmp + (category - method) + 1), selector,
+             (strlen(selector) + 1UL));
+      completion_list_add_name(tmp, sym_text, sym_text_len, text, word);
       if (sym_text[0] == '[')
-	completion_list_add_name (tmp + 1, sym_text, sym_text_len, text, word);
+	completion_list_add_name((tmp + 1), sym_text, sym_text_len, text,
+                                 word);
     }
 
   if (selector != NULL)
     {
-      /* Complete on selector only.  */
-      strcpy (tmp, selector);
-      tmp2 = strchr (tmp, ']');
+      /* Complete on selector only: */
+      strcpy(tmp, selector);
+      tmp2 = strchr(tmp, ']');
       if (tmp2 != NULL)
 	*tmp2 = '\0';
 
-      completion_list_add_name (tmp, sym_text, sym_text_len, text, word);
+      completion_list_add_name(tmp, sym_text, sym_text_len, text, word);
     }
 }
 
@@ -5533,40 +5531,40 @@ make_file_symbol_completion_list (char *text, char *word, char *srcfile)
    list as necessary.  */
 
 static void
-add_filename_to_list (const char *fname, char *text, char *word,
-		      char ***list, int *list_used, int *list_alloced)
+add_filename_to_list(const char *fname, char *text, char *word,
+		     char ***list, int *list_used, int *list_alloced)
 {
-  char *new;
-  size_t fnlen = strlen (fname);
+  char *newstr;
+  size_t fnlen = strlen(fname);
 
-  if (*list_used + 1 >= *list_alloced)
+  if ((*list_used + 1) >= *list_alloced)
     {
       *list_alloced *= 2;
-      *list = (char **) xrealloc ((char *) *list,
-				  *list_alloced * sizeof (char *));
+      *list = (char **)xrealloc((char *)*list,
+                                (*list_alloced * sizeof(char *)));
     }
 
   if (word == text)
     {
-      /* Return exactly fname.  */
-      new = xmalloc (fnlen + 5);
-      strcpy (new, fname);
+      /* Return exactly fname: */
+      newstr = (char *)xmalloc(fnlen + 5UL);
+      strcpy(newstr, fname);
     }
   else if (word > text)
     {
-      /* Return some portion of fname.  */
-      new = xmalloc (fnlen + 5);
-      strcpy (new, fname + (word - text));
+      /* Return some portion of fname: */
+      newstr = (char *)xmalloc(fnlen + 5UL);
+      strcpy(newstr, (fname + (word - text)));
     }
   else
     {
-      /* Return some of TEXT plus fname.  */
-      new = xmalloc (fnlen + (text - word) + 5);
-      strncpy (new, word, text - word);
-      new[text - word] = '\0';
-      strcat (new, fname);
+      /* Return some of TEXT plus fname: */
+      newstr = (char *)xmalloc(fnlen + (text - word) + 5UL);
+      strncpy(newstr, word, (text - word));
+      newstr[text - word] = '\0';
+      strcat(newstr, fname);
     }
-  (*list)[*list_used] = new;
+  (*list)[*list_used] = newstr;
   (*list)[++*list_used] = NULL;
 }
 
@@ -6064,3 +6062,5 @@ symtab_clear_cached_lookup_values (void)
   last_overlay_section_lookup_pc = INVALID_ADDRESS;
 }
 /* APPLE LOCAL end cache lookup values for improved performance  */
+
+/* EOF */

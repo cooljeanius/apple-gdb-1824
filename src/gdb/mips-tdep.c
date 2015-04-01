@@ -4,8 +4,8 @@
    1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
-   Contributed by Alessandro Forin(af@cs.cmu.edu) at CMU
-   and by Per Bothner(bothner@cs.wisc.edu) at U.Wisconsin.
+   Contributed by Alessandro Forin <af@cs.cmu.edu> at CMU
+   and by Per Bothner <bothner@cs.wisc.edu> at U.Wisconsin.
 
    This file is part of GDB.
 
@@ -1638,7 +1638,7 @@ mips_insn16_frame_cache (struct frame_info *next_frame, void **this_cache)
 
     mips16_scan_prologue (start_addr, pc, next_frame, *this_cache);
   }
-  
+
   /* SP_REGNUM, contains the value and not the address.  */
   trad_frame_set_value (cache->saved_regs, NUM_REGS + MIPS_SP_REGNUM, cache->base);
 
@@ -1731,7 +1731,7 @@ reset_saved_regs (struct mips_frame_cache *this_cache)
 }
 
 /* Analyze the function prologue from START_PC to LIMIT_PC. Builds
-   the associated FRAME_CACHE if not null.  
+   the associated FRAME_CACHE if not null.
    Return the address of the first instruction past the prologue.  */
 
 static CORE_ADDR
@@ -1899,7 +1899,7 @@ restart:
 
   if (this_cache != NULL)
     {
-      this_cache->base = 
+      this_cache->base =
         (frame_unwind_register_signed (next_frame, NUM_REGS + frame_reg)
          + frame_offset);
       /* FIXME: brobecker/2004-09-15: We should be able to get rid of
@@ -1917,7 +1917,7 @@ restart:
      end_prologue_addr.  */
   if (end_prologue_addr == 0)
     end_prologue_addr = cur_pc;
-     
+
   /* In a frameless function, we might have incorrectly
      skipped some load immediate instructions. Undo the skipping
      if the load immediate was not followed by a stack adjustment.  */
@@ -1959,7 +1959,7 @@ mips_insn32_frame_cache (struct frame_info *next_frame, void **this_cache)
 
     mips32_scan_prologue (start_addr, pc, next_frame, *this_cache);
   }
-  
+
   /* SP_REGNUM, contains the value and not the address.  */
   trad_frame_set_value (cache->saved_regs, NUM_REGS + MIPS_SP_REGNUM, cache->base);
 
@@ -5080,7 +5080,7 @@ show_mips_abi (struct ui_file *file,
 {
   if (gdbarch_bfd_arch_info (current_gdbarch)->arch != bfd_arch_mips)
     fprintf_filtered
-      (file, 
+      (file,
        "The MIPS ABI is unknown because the current architecture "
        "is not MIPS.\n");
   else
@@ -5091,7 +5091,7 @@ show_mips_abi (struct ui_file *file,
 
       if (global_abi == MIPS_ABI_UNKNOWN)
 	fprintf_filtered
-	  (file, 
+	  (file,
 	   "The MIPS ABI is set automatically (currently \"%s\").\n",
 	   actual_abi_str);
       else if (global_abi == actual_abi)

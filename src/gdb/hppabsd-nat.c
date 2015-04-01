@@ -1,4 +1,4 @@
-/* Native-dependent code for HP PA-RISC BSD's.
+/* hppabsd-nat.c: Native-dependent code for HP PA-RISC BSD's.
 
    Copyright 2004, 2005 Free Software Foundation, Inc.
 
@@ -32,41 +32,40 @@
 #include "inf-ptrace.h"
 
 static int
-hppabsd_gregset_supplies_p (int regnum)
+hppabsd_gregset_supplies_p(int regnum)
 {
-  return (regnum >= HPPA_R0_REGNUM && regnum <= HPPA_PCOQ_TAIL_REGNUM);
+  return ((regnum >= HPPA_R0_REGNUM) && (regnum <= HPPA_PCOQ_TAIL_REGNUM));
 }
 
-/* Supply the general-purpose registers stored in GREGS to REGCACHE.  */
-
+/* Supply the general-purpose registers stored in GREGS to REGCACHE: */
 static void
-hppabsd_supply_gregset (struct regcache *regcache, const void *gregs)
+hppabsd_supply_gregset(struct regcache *regcache, const void *gregs)
 {
   const char *regs = gregs;
   int regnum;
 
   for (regnum = HPPA_R1_REGNUM; regnum <= HPPA_R31_REGNUM; regnum++)
-    regcache_raw_supply (regcache, regnum, regs + regnum * 4);
+    regcache_raw_supply(regcache, regnum, regs + regnum * 4);
 
-  regcache_raw_supply (regcache, HPPA_SAR_REGNUM, regs);
-  regcache_raw_supply (regcache, HPPA_PCOQ_HEAD_REGNUM, regs + 32 * 4);
-  regcache_raw_supply (regcache, HPPA_PCOQ_TAIL_REGNUM, regs + 33 * 4);
+  regcache_raw_supply(regcache, HPPA_SAR_REGNUM, regs);
+  regcache_raw_supply(regcache, HPPA_PCOQ_HEAD_REGNUM, regs + 32 * 4);
+  regcache_raw_supply(regcache, HPPA_PCOQ_TAIL_REGNUM, regs + 33 * 4);
 }
 
 /* Collect the general-purpose registers from REGCACHE and store them
    in GREGS.  */
 
 static void
-hppabsd_collect_gregset (const struct regcache *regcache,
-			  void *gregs, int regnum)
+hppabsd_collect_gregset(const struct regcache *regcache,
+                        void *gregs, int regnum)
 {
   char *regs = gregs;
   int i;
 
   for (i = HPPA_R1_REGNUM; i <= HPPA_R31_REGNUM; i++)
     {
-      if (regnum == -1 || regnum == i)
-	regcache_raw_collect (regcache, i, regs + i * 4);
+      if ((regnum == -1) || (regnum == i))
+	regcache_raw_collect(regcache, i, regs + i * 4);
     }
 
   if (regnum == -1 || regnum == HPPA_SAR_REGNUM)
@@ -82,19 +81,19 @@ hppabsd_collect_gregset (const struct regcache *regcache,
    for all registers (including the floating-point registers).  */
 
 static void
-hppabsd_fetch_registers (int regnum)
+hppabsd_fetch_registers(int regnum)
 {
   struct regcache *regcache = current_regcache;
 
-  if (regnum == -1 || hppabsd_gregset_supplies_p (regnum))
+  if (regnum == -1 || hppabsd_gregset_supplies_p(regnum))
     {
       struct reg regs;
 
-      if (ptrace (PT_GETREGS, PIDGET (inferior_ptid),
-		  (PTRACE_TYPE_ARG3) &regs, 0) == -1)
-	perror_with_name (_("Couldn't get registers"));
+      if (ptrace(PT_GETREGS, PIDGET(inferior_ptid),
+		 (PTRACE_TYPE_ARG3)&regs, 0) == -1)
+	perror_with_name(_("Could NOT get registers"));
 
-      hppabsd_supply_gregset (regcache, &regs);
+      hppabsd_supply_gregset(regcache, &regs);
     }
 }
 
@@ -102,35 +101,37 @@ hppabsd_fetch_registers (int regnum)
    this for all registers (including the floating-point registers).  */
 
 static void
-hppabsd_store_registers (int regnum)
+hppabsd_store_registers(int regnum)
 {
-  if (regnum == -1 || hppabsd_gregset_supplies_p (regnum))
+  if (regnum == -1 || hppabsd_gregset_supplies_p(regnum))
     {
       struct reg regs;
 
-      if (ptrace (PT_GETREGS, PIDGET (inferior_ptid),
-                  (PTRACE_TYPE_ARG3) &regs, 0) == -1)
-        perror_with_name (_("Couldn't get registers"));
+      if (ptrace(PT_GETREGS, PIDGET(inferior_ptid),
+                 (PTRACE_TYPE_ARG3)&regs, 0) == -1)
+        perror_with_name(_("Could NOT get registers"));
 
-      hppabsd_collect_gregset (current_regcache, &regs, regnum);
+      hppabsd_collect_gregset(current_regcache, &regs, regnum);
 
-      if (ptrace (PT_SETREGS, PIDGET (inferior_ptid),
-	          (PTRACE_TYPE_ARG3) &regs, 0) == -1)
-        perror_with_name (_("Couldn't write registers"));
+      if (ptrace(PT_SETREGS, PIDGET(inferior_ptid),
+	         (PTRACE_TYPE_ARG3)&regs, 0) == -1)
+        perror_with_name(_("Could NOT write registers"));
     }
 }
 
 /* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_hppabsd_nat (void);
+void _initialize_hppabsd_nat(void);
 
 void
-_initialize_hppabsd_nat (void)
+_initialize_hppabsd_nat(void)
 {
   struct target_ops *t;
 
-  /* Add in local overrides.  */
-  t = inf_ptrace_target ();
+  /* Add in local overrides: */
+  t = inf_ptrace_target();
   t->to_fetch_registers = hppabsd_fetch_registers;
   t->to_store_registers = hppabsd_store_registers;
-  add_target (t);
+  add_target(t);
 }
+
+/* EOF */

@@ -55,7 +55,7 @@
 #include <signal.h>
 #include "gdbcmd.h"
 #include "serial.h"
-#include "bfd.h"
+/* we already included "bfd.h" once above */
 #include "target.h"
 #include "demangle.h"
 #include "expression.h"
@@ -2067,11 +2067,12 @@ init_page_info (void)
         }
 
       /* FIXME: Get rid of this junk, or at least figure out the correct
-       * ifdef (TARGET_POWERPC is just when it started failing on me): */
+       * ifdef (GDB_XM_FILE is undefined when building a cross-debugger,
+       * and so far that has been when this has been failing on me): */
 # if defined(SIGWINCH) && defined(SIGWINCH_HANDLER) && \
-     defined(SIGWINCH_HANDLER_BODY) && !defined(TARGET_POWERPC)
+     defined(SIGWINCH_HANDLER_BODY) && defined(GDB_XM_FILE)
       SIGWINCH_HANDLER((void *)SIGWINCH);
-# endif /* SIGWINCH && SIGWINCH_HANDLER && SIGWINCH_HANDLER_BODY && !TARGET_POWERPC */
+# endif /* SIGWINCH && SIGWINCH_HANDLER && SIGWINCH_HANDLER_BODY && GDB_XM_FILE */
 
       /* If the output is not a terminal, do NOT paginate it.  */
       if (!ui_file_isatty(gdb_stdout))
@@ -2998,13 +2999,13 @@ Show demangling of C++/ObjC names in disassembly listings."), NULL,
 }
 
 /* Machine specific function to handle SIGWINCH signal: */
-/* FIXME: not sure the correct ifdef, but TARGET_POWERPC is when it started
- * failing on me: */
-#if defined(SIGWINCH_HANDLER_BODY) && !defined(TARGET_POWERPC)
+/* FIXME: not sure of the correct ifdef, but GDB_XM_FILE is undefined when
+ * building a cross-debugger, which is when this started failing on me: */
+#if defined(SIGWINCH_HANDLER_BODY) && defined(GDB_XM_FILE)
 SIGWINCH_HANDLER_BODY
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__) && defined(SIGWINCH) \
-     && defined(SIGWINCH_HANDLER) && !defined(TARGET_POWERPC)
+     && defined(SIGWINCH_HANDLER) && defined(GDB_XM_FILE)
 #  warning "utils.c will not be able to handle SIGWINCH"
 # endif /* __GNUC__ && !__STRICT_ANSI__ && SIGWINCH && SIGWINCH_HANDLER */
 #endif /* SIGWINCH_HANDLER_BODY && !TARGET_POWERPC */

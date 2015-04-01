@@ -1,4 +1,4 @@
-/* Manages interpreters for GDB, the GNU debugger.
+/* interps.c: Manages interpreters for GDB, the GNU debugger.
 
    Copyright 2000, 2002, 2003 Free Software Foundation, Inc.
 
@@ -62,12 +62,12 @@ struct interp
      initialized midway, and didn't fix the API's.  This is set by
      the init_proc for the interpreter.  The "data" that is passed
      into gdb_new_interpreter is ignored.  We should just take it
-     out...  
+     out...
 
      Other than that, it is just some data to use.  The mi
      uses it to store a copy to the mi_interp structure, which happens
-     to hold the interpreter's various uiout's.  
-     The cli doesn't need this. 
+     to hold the interpreter's various uiout's.
+     The cli doesn't need this.
 
   */
 
@@ -87,7 +87,7 @@ struct interp
 
 /* Functions local to this file. */
 static void initialize_interps (void);
-static void set_interpreter_cmd (char *args, int from_tty, 
+static void set_interpreter_cmd (char *args, int from_tty,
 				 struct cmd_list_element *c);
 static void list_interpreter_cmd (char *args, int from_tty);
 
@@ -223,7 +223,7 @@ interp_set (struct interp *interp)
       return NULL;
     }
 
-  /* Finally, put up the new prompt to show that we are indeed here. 
+  /* Finally, put up the new prompt to show that we are indeed here.
      Also, display_gdb_prompt for the console does some readline magic
      which is needed for the console interpreter, at least... */
 
@@ -238,7 +238,7 @@ interp_set (struct interp *interp)
       display_gdb_prompt (NULL);
     }
 
-  /* If there wasn't any interp before, return the current interp.  
+  /* If there wasn't any interp before, return the current interp.
      That way if somebody is grabbing the return value and using
      it, it will actually work first time through.  */
   if (old_interp == NULL)
@@ -285,23 +285,23 @@ interp_ui_out (struct interp *interp)
 }
 
 /* APPLE LOCAL: Ira uses this for the MacsBug plugin, where he wants to
-   run the standard CLI interpreter, but he wants to also monkey with 
+   run the standard CLI interpreter, but he wants to also monkey with
    it's output so he can divert it to various places in the display.
-   It's arguable that creating a whole new interpreter (like the TUI 
+   It's arguable that creating a whole new interpreter (like the TUI
    does) is cleaner.  But if all you need to do is reformat output
    that seems like overkill.
    Given an input INTERP and NEW_UIOUT, sets the uiout of INTERP
-   to NEW_UIOUT, and returns INTERP's previous INTERP.  
+   to NEW_UIOUT, and returns INTERP's previous INTERP.
    If INTERP == NULL, uses the current interpreter.  */
 
 struct ui_out *
 interp_set_ui_out (struct interp *interp, struct ui_out *new_uiout)
 {
   struct ui_out *prev_uiout;
-  
+
   if (new_uiout == NULL)
     error ("Must provide a new uiout.");
-  
+
   if (interp != NULL)
     {
       prev_uiout = interp->interpreter_out;
@@ -312,7 +312,7 @@ interp_set_ui_out (struct interp *interp, struct ui_out *new_uiout)
       prev_uiout = current_interp()->interpreter_out;
       current_interp()->interpreter_out = new_uiout; /* use current_interpreter */
     }
-  
+
   return prev_uiout;
 }
 
@@ -376,7 +376,7 @@ interp_set_quiet (struct interp *interp, int quiet)
   return old_val;
 }
 
-/* interp_exec - This executes COMMAND_STR in the current 
+/* interp_exec - This executes COMMAND_STR in the current
    interpreter. */
 int
 interp_exec_p (struct interp *interp)
@@ -396,15 +396,15 @@ interp_exec (struct interp *interp, const char *command_str)
 
 
 int
-interp_complete (struct interp *interp, 
+interp_complete (struct interp *interp,
 		 char *word, char *command_buffer, int cursor, int limit)
 {
   if (interp->procs->complete_proc != NULL)
     {
-      return interp->procs->complete_proc (interp->data, word, command_buffer, 
+      return interp->procs->complete_proc (interp->data, word, command_buffer,
                                            cursor, limit);
     }
-  
+
   return 0;
 }
 
@@ -576,7 +576,7 @@ list_interpreter_cmd (char *args, int from_tty)
   struct cleanup *list_cleanup;
 
   list_cleanup = make_cleanup_ui_out_list_begin_end (uiout, "interpreters");
-  for (interp_ptr = interp_list; interp_ptr != NULL; 
+  for (interp_ptr = interp_list; interp_ptr != NULL;
        interp_ptr = interp_ptr->next)
     {
       ui_out_text (uiout, "  * ");
@@ -586,10 +586,10 @@ list_interpreter_cmd (char *args, int from_tty)
   do_cleanups (list_cleanup);
 }
 
-/* APPLE LOCAL: Keith cut this command out, but I like it... 
+/* APPLE LOCAL: Keith cut this command out, but I like it...
     set_interpreter_cmd - This implements "set interpreter foo". */
 
-static void 
+static void
 set_interpreter_cmd (char *args, int from_tty, struct cmd_list_element * c)
 {
   struct interp *interp_ptr;
@@ -608,7 +608,7 @@ set_interpreter_cmd (char *args, int from_tty, struct cmd_list_element * c)
 	return;
 
       if (!interp_set (interp_ptr))
-	error ("\nCould not switch to interpreter \"%s\", %s%s\".\n", 
+	error ("\nCould not switch to interpreter \"%s\", %s%s\".\n",
 	       interp_ptr->name, "reverting to interpreter \"",
 	       current_interpreter->name);
     }
@@ -633,9 +633,9 @@ Set the interpreter for gdb."), _("\
 Show the interpreter for gdb."), NULL,
 			  set_interpreter_cmd, NULL,
 			  &setlist, &showlist);
-  /* APPLE MERGE 
-  set_cmd_completer (c, interpreter_completer);
-  */
+#if defined(__APPLE__) && defined(APPLE_MERGE)
+  set_cmd_completer(c, interpreter_completer);
+#endif /* __APPLE__ && APPLE_MERGE */
 
   add_cmd ("interpreters", class_support,
 	       list_interpreter_cmd,
@@ -649,3 +649,5 @@ The first argument is the name of the interpreter to use.\n\
 The second argument is the command to execute.\n"), &cmdlist);
   set_cmd_completer (c, interpreter_completer);
 }
+
+/* EOF */

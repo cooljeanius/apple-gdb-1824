@@ -4,7 +4,7 @@
    2002, 2004, 2005 Free Software Foundation, Inc.
 
    Contributed by Cygnus Support.
-   Steve Chamberlain (sac@cygnus.com).
+   Steve Chamberlain <sac@cygnus.com>.
 
    This file is part of GDB.
 
@@ -883,18 +883,18 @@ init_gdbsim_ops(void)
   gdbsim_ops.to_magic = OPS_MAGIC;
 
 #ifdef TARGET_REDEFINE_DEFAULT_OPS
-  TARGET_REDEFINE_DEFAULT_OPS (&gdbsim_ops);
-#endif
+  TARGET_REDEFINE_DEFAULT_OPS(&gdbsim_ops);
+#endif /* TARGET_REDEFINE_DEFAULT_OPS */
 }
 
 void
-_initialize_remote_sim (void)
+_initialize_remote_sim(void)
 {
-  init_gdbsim_ops ();
-  add_target (&gdbsim_ops);
+  init_gdbsim_ops();
+  add_target(&gdbsim_ops);
 
-  add_com ("sim", class_obscure, simulator_command,
-	   _("Send a command to the simulator."));
+  add_com("sim", class_obscure, simulator_command,
+	  _("Send a command to the simulator."));
 }
 
 /* EOF */

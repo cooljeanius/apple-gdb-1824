@@ -864,13 +864,13 @@ extern void allocate_cplus_struct_type (struct type *);
    But check_typedef does set the TYPE_LENGTH of the TYPEDEF type,
    so you only have to call check_typedef once.  Since allocate_value
    calls check_typedef, TYPE_LENGTH (VALUE_TYPE (X)) is safe.  */
-/* APPLE LOCAL: Like with TYPE_FIELD_BITPOS for an ObjC class you can't
+/* APPLE LOCAL: Like with TYPE_FIELD_BITPOS for an ObjC class you cannot
    actually trust the debug info for ivar offsets OR type lengths for
    objc classes.  I set the length to -1, and then test it here,
    and return the actual value if not -1, or I fix it up and
    return the fixed up value.  I also need an ASSIGN version.  */
 #define TYPE_LENGTH_ASSIGN(thistype) (thistype)->length
-#define TYPE_LENGTH(thistype) (TYPE_LENGTH_ASSIGN(thistype) < 0 \
+#define TYPE_LENGTH(thistype) ((TYPE_LENGTH_ASSIGN(thistype) < 0) \
 			       ? objc_fixup_class_length(thistype)  \
 			       : TYPE_LENGTH_ASSIGN(thistype))
 

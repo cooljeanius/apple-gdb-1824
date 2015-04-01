@@ -1,10 +1,10 @@
-/* Target-dependent code for Motorola 68HC11 & 68HC12
-
-   Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software
-   Foundation, Inc.
-
-   Contributed by Stephane Carrez, stcarrez@nerim.fr
-
+/* m68hc11-tdep.c: Target-dependent code for Motorola 68HC11 & 68HC12
+ *
+ * Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software
+ * Foundation, Inc.
+ *
+ * Contributed by Stephane Carrez, <stcarrez@nerim.fr>  */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA.  */
 
 
 #include "defs.h"
@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include "gdb_string.h"
 #include "value.h"
 #include "inferior.h"
-#include "dis-asm.h"  
+#include "dis-asm.h"
 #include "symfile.h"
 #include "objfiles.h"
 #include "arch-utils.h"
@@ -51,7 +51,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
    For 68HC11/68HC12 we have two flags that tell which return
    type the function is using.  This is used for prologue and frame
    analysis to compute correct stack frame layout.
-   
+
    The MSB of the minimal symbol's "info" field is used for this purpose.
 
    MSYMBOL_SET_RTC	Actually sets the "RTC" bit.
@@ -79,7 +79,7 @@ enum insn_return_kind {
   RETURN_RTI
 };
 
-  
+
 /* Register numbers of various important registers.
    Note that some of these values are "real" register numbers,
    and correspond to the general registers of the machine,
@@ -189,7 +189,7 @@ m68hc11_register_names[] =
   "d29",  "d30",  "d31",  "d32"
 };
 
-struct m68hc11_soft_reg 
+struct m68hc11_soft_reg
 {
   const char *name;
   CORE_ADDR   addr;
@@ -239,14 +239,14 @@ m68hc11_initialize_register_info (void)
 
   if (soft_reg_initialized)
     return;
-  
+
   soft_min_addr = INT_MAX;
   soft_max_addr = 0;
   for (i = 0; i < M68HC11_ALL_REGS; i++)
     {
       soft_regs[i].name = 0;
     }
-  
+
   m68hc11_get_register_info (&soft_regs[SOFT_FP_REGNUM], "_.frame");
   m68hc11_get_register_info (&soft_regs[SOFT_TMP_REGNUM], "_.tmp");
   m68hc11_get_register_info (&soft_regs[SOFT_ZS_REGNUM], "_.z");
@@ -273,10 +273,10 @@ static int
 m68hc11_which_soft_register (CORE_ADDR addr)
 {
   int i;
-  
+
   if (addr < soft_min_addr || addr > soft_max_addr)
     return -1;
-  
+
   for (i = SOFT_FP_REGNUM; i < M68HC11_ALL_REGS; i++)
     {
       if (soft_regs[i].name && soft_regs[i].addr == addr)
@@ -315,7 +315,7 @@ m68hc11_pseudo_register_read (struct gdbarch *gdbarch,
     }
 
   m68hc11_initialize_register_info ();
-  
+
   /* Fetch a soft register: translate into a memory read.  */
   if (soft_regs[regno].name)
     {
@@ -357,7 +357,7 @@ m68hc11_pseudo_register_write (struct gdbarch *gdbarch,
         regcache_cooked_write_unsigned (regcache, HARD_PC_REGNUM, pc);
       return;
     }
-  
+
   m68hc11_initialize_register_info ();
 
   /* Store a soft register: translate into a memory write.  */
@@ -377,7 +377,7 @@ m68hc11_register_name (int reg_nr)
     return "pc";
   if (reg_nr == HARD_PC_REGNUM && USE_PAGE_REGISTER)
     return "ppc";
-  
+
   if (reg_nr < 0)
     return NULL;
   if (reg_nr >= M68HC11_ALL_REGS)
@@ -396,7 +396,7 @@ static const unsigned char *
 m68hc11_breakpoint_from_pc (CORE_ADDR *pcptr, int *lenptr)
 {
   static unsigned char breakpoint[] = {0x0};
-  
+
   *lenptr = sizeof (breakpoint);
   return breakpoint;
 }
@@ -489,7 +489,7 @@ static struct insn_sequence m6811_prologue[] = {
 
 
 /* Sequence of instructions in the 68HC12 function prologue.  */
-static struct insn_sequence m6812_prologue[] = {  
+static struct insn_sequence m6812_prologue[] = {
   { P_SAVE_REG,  5, { M6812_OP_PAGE2, M6812_OP_MOVW, M6812_PB_PSHW,
                       OP_IMM_HIGH, OP_IMM_LOW } },
   { P_SET_FRAME, 2, { M6812_OP_STS, OP_DIRECT } },
@@ -529,10 +529,10 @@ m68hc11_analyze_instruction (struct insn_sequence *seq, CORE_ADDR pc,
           /* Continue while we match the opcode.  */
           if (seq->code[j] == buffer[j])
             continue;
-          
+
           if ((seq->code[j] & 0xf00) == 0)
             break;
-          
+
           /* Extract a sequence parameter (address or constant).  */
           switch (seq->code[j])
             {
@@ -635,7 +635,7 @@ m68hc11_scan_prologue (CORE_ADDR pc, CORE_ADDR current_pc,
     }
 
   seq_table = gdbarch_tdep (current_gdbarch)->prologue;
-  
+
   /* The 68hc11 stack is as follows:
 
 
@@ -666,7 +666,7 @@ m68hc11_scan_prologue (CORE_ADDR pc, CORE_ADDR current_pc,
      of locals in this function.  An alternative to this is to use
      DWARF2 info.  This would be better but I don't know how to
      access dwarf2 debug from this function.
-     
+
      Walk from the function entry point to the point where we save
      the frame.  While walking instructions, compute the size of bytes
      which are pushed.  This gives us the index to access the previous
@@ -1119,7 +1119,7 @@ m68hc11_print_registers_info (struct gdbarch *gdbarch, struct ui_file *file,
 
       fprintf_filtered (file, "\nCCR=");
       m68hc11_print_register (gdbarch, file, frame, HARD_CCR_REGNUM);
-      
+
       fprintf_filtered (file, "\nD=");
       m68hc11_print_register (gdbarch, file, frame, HARD_D_REGNUM);
 
@@ -1128,7 +1128,7 @@ m68hc11_print_registers_info (struct gdbarch *gdbarch, struct ui_file *file,
 
       fprintf_filtered (file, " Y=");
       m68hc11_print_register (gdbarch, file, frame, HARD_Y_REGNUM);
-  
+
       if (gdbarch_tdep (gdbarch)->use_page_register)
         {
           fprintf_filtered (file, "\nPage=");
@@ -1142,7 +1142,7 @@ m68hc11_print_registers_info (struct gdbarch *gdbarch, struct ui_file *file,
           /* Skip registers which are not defined in the symbol table.  */
           if (soft_regs[i].name == 0)
             continue;
-          
+
           fprintf_filtered (file, "D%d=", i - SOFT_D1_REGNUM + 1);
           m68hc11_print_register (gdbarch, file, frame, i);
           nr++;
@@ -1174,7 +1174,7 @@ m68hc11_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
   char *val;
   int len;
   char buf[2];
-  
+
   first_stack_argnum = 0;
   if (struct_return)
     {
@@ -1285,7 +1285,7 @@ m68hc11_store_return_value (struct type *type, struct regcache *regcache,
 }
 
 
-/* Given a return value in `regcache' with a type `type', 
+/* Given a return value in `regcache' with a type `type',
    extract and copy its value into `valbuf'.  */
 
 static void
@@ -1330,7 +1330,7 @@ m68hc11_return_value (struct gdbarch *gdbarch, struct type *valtype,
 {
   if (TYPE_CODE (valtype) == TYPE_CODE_STRUCT
       || TYPE_CODE (valtype) == TYPE_CODE_UNION
-      || TYPE_CODE (valtype) == TYPE_CODE_ARRAY 
+      || TYPE_CODE (valtype) == TYPE_CODE_ARRAY
       || TYPE_LENGTH (valtype) > 4)
     return RETURN_VALUE_STRUCT_CONVENTION;
   else
@@ -1345,7 +1345,7 @@ m68hc11_return_value (struct gdbarch *gdbarch, struct type *valtype,
 
 /* Test whether the ELF symbol corresponds to a function using rtc or
    rti to return.  */
-   
+
 static void
 m68hc11_elf_make_msymbol_special (asymbol *sym, struct minimal_symbol *msym)
 {
@@ -1539,7 +1539,7 @@ m68hc11_gdbarch_init (struct gdbarch_info info,
 
   frame_unwind_append_sniffer (gdbarch, m68hc11_frame_sniffer);
   frame_base_set_default (gdbarch, &m68hc11_frame_base);
-  
+
   /* Methods for saving / extracting a dummy frame's ID.  The ID's
      stack address must match the SP value returned by
      PUSH_DUMMY_CALL, and saved by generic_save_dummy_frame_tos.  */
@@ -1565,5 +1565,5 @@ _initialize_m68hc11_tdep (void)
   register_gdbarch_init (bfd_arch_m68hc11, m68hc11_gdbarch_init);
   register_gdbarch_init (bfd_arch_m68hc12, m68hc11_gdbarch_init);
   m68hc11_init_reggroups ();
-} 
+}
 

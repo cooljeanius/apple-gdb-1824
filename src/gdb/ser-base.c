@@ -28,8 +28,8 @@
 #include "gdb_string.h"
 #include <sys/time.h>
 #ifdef USE_WIN32API
-#include <winsock2.h>
-#endif
+# include <winsock2.h>
+#endif /* USE_WIN32API */
 
 
 static timer_handler_func push_event;

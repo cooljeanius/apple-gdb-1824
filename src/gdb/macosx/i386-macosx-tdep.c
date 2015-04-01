@@ -300,47 +300,47 @@ x86_64_macosx_fetch_fp_registers_raw (gdb_x86_float_state64_t *fp_regs)
    inferior -- this function returns 0.  */
 
 int
-i386_macosx_store_fp_registers (gdb_i386_float_state_t *fp_regs)
+i386_macosx_store_fp_registers(gdb_i386_float_state_t *fp_regs)
 {
-  memset (fp_regs, 0, sizeof (gdb_i386_float_state_t));
-  i387_fill_fxsave ((unsigned char *) &fp_regs->fpu_fcw, -1);
-  i387_swap_fxsave (current_regcache, (uint8_t *) &fp_regs->fpu_fcw);
+  memset(fp_regs, 0, sizeof(gdb_i386_float_state_t));
+  i387_fill_fxsave((unsigned char *)&fp_regs->fpu_fcw, -1);
+  i387_swap_fxsave(current_regcache, (uint8_t *)&fp_regs->fpu_fcw);
 
   return 1;
 }
 
 int
-i386_macosx_store_fp_registers_raw (gdb_i386_float_state_t *fp_regs)
+i386_macosx_store_fp_registers_raw(gdb_i386_float_state_t *fp_regs)
 {
-  memset (fp_regs, 0, sizeof (gdb_i386_float_state_t));
-  i387_fill_fxsave ((unsigned char *) &fp_regs->fpu_fcw, -1);
+  memset(fp_regs, 0, sizeof(gdb_i386_float_state_t));
+  i387_fill_fxsave((unsigned char *)&fp_regs->fpu_fcw, -1);
 
   return 1;
 }
 
 
 int
-x86_64_macosx_store_fp_registers (gdb_x86_float_state64_t *fp_regs)
+x86_64_macosx_store_fp_registers(gdb_x86_float_state64_t *fp_regs)
 {
-  memset (fp_regs, 0, sizeof (gdb_x86_float_state64_t));
-  i387_fill_fxsave ((unsigned char *) &fp_regs->fpu_fcw, -1);
-  i387_swap_fxsave (current_regcache, (uint8_t *) &fp_regs->fpu_fcw);
+  memset(fp_regs, 0, sizeof(gdb_x86_float_state64_t));
+  i387_fill_fxsave((unsigned char *)&fp_regs->fpu_fcw, -1);
+  i387_swap_fxsave(current_regcache, (uint8_t *)&fp_regs->fpu_fcw);
 
   return 1;
 }
 
 int
-x86_64_macosx_store_fp_registers_raw (gdb_x86_float_state64_t *fp_regs)
+x86_64_macosx_store_fp_registers_raw(gdb_x86_float_state64_t *fp_regs)
 {
-  memset (fp_regs, 0, sizeof (gdb_x86_float_state64_t));
-  i387_fill_fxsave ((unsigned char *) &fp_regs->fpu_fcw, -1);
+  memset(fp_regs, 0, sizeof(gdb_x86_float_state64_t));
+  i387_fill_fxsave((unsigned char *)&fp_regs->fpu_fcw, -1);
 
   return 1;
 }
 
 static CORE_ADDR
-i386_macosx_thread_state_addr_1 (CORE_ADDR start_of_func, CORE_ADDR pc,
-                                 CORE_ADDR ebp, CORE_ADDR esp);
+i386_macosx_thread_state_addr_1(CORE_ADDR start_of_func, CORE_ADDR pc,
+                                CORE_ADDR ebp, CORE_ADDR esp);
 
 /* On entry to _sigtramp, the ESP points to the start of a
    'struct sigframe' (cf xnu's bsd/dev/i386/unix_signal.c).

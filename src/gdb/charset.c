@@ -29,8 +29,8 @@
 #include <ctype.h>
 
 #ifdef HAVE_ICONV
-#include <iconv.h>
-#endif
+# include <iconv.h>
+#endif /* HAVE_ICONV */
 
 
 /* How GDB's character set support works

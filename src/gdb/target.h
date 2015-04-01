@@ -424,40 +424,38 @@ struct target_ops
     struct section_table
      *to_sections_end;
     /* ASYNC target controls */
-    int (*to_can_async_p) (void);
-    int (*to_is_async_p) (void);
-    void (*to_async) (void (*cb) (enum inferior_event_type, void *context),
-		      void *context);
+    int (*to_can_async_p)(void);
+    int (*to_is_async_p)(void);
+    void (*to_async)(void (*cb)(enum inferior_event_type, void *context),
+		     void *context);
     int to_async_mask_value;
-    int (*to_find_memory_regions) (int (*) (CORE_ADDR,
-					    unsigned long,
-					    int, int, int,
-					    void *),
-				   void *);
-    char * (*to_make_corefile_notes) (bfd *, int *);
-    int (*to_bind_function) (char *);
+    int (*to_find_memory_regions)(int (*)(CORE_ADDR, unsigned long,
+                                          int, int, int, void *),
+				  void *);
+    char *(*to_make_corefile_notes)(bfd *, int *);
+    int (*to_bind_function)(char *);
 
     /* Return the thread-local address at OFFSET in the
        thread-local storage for the thread PTID and the shared library
        or executable file given by OBJFILE.  If that block of
        thread-local storage hasn't been allocated yet, this function
        may return an error.  */
-    CORE_ADDR (*to_get_thread_local_address) (ptid_t ptid,
-					      CORE_ADDR load_module_addr,
-					      CORE_ADDR offset);
+    CORE_ADDR (*to_get_thread_local_address)(ptid_t ptid,
+					     CORE_ADDR load_module_addr,
+					     CORE_ADDR offset);
 
     /* Perform partial transfers on OBJECT.  See target_read_partial
        and target_write_partial for details of each variant.  One, and
        only one, of readbuf or writebuf must be non-NULL.  */
-    LONGEST (*to_xfer_partial) (struct target_ops *ops,
-				enum target_object object, const char *annex,
-				gdb_byte *readbuf, const gdb_byte *writebuf,
-				ULONGEST offset, LONGEST len);
+    LONGEST (*to_xfer_partial)(struct target_ops *ops,
+                               enum target_object object, const char *annex,
+                               gdb_byte *readbuf, const gdb_byte *writebuf,
+                               ULONGEST offset, LONGEST len);
 
     /* APPLE LOCAL: If this system supports setting names on threads, return
        the name of this thread in a static buffer that will be reused on
        subsequent calls.  */
-   char *(*to_get_thread_name) (ptid_t ptid);
+   char *(*to_get_thread_name)(ptid_t ptid);
 
     /* APPLE LOCAL: Return a string that uniquely identifies a given thread
        in a way meaningful to the given target. */
@@ -1397,21 +1395,22 @@ extern int target_signal_to_host_p (enum target_signal signo);
    gdb_signal'' would probably be better as it is refering to GDB's
    internal representation of a target operating system's signal.  */
 
-extern enum target_signal target_signal_from_host (int);
-extern int target_signal_to_host (enum target_signal);
+extern enum target_signal target_signal_from_host(int);
+extern int target_signal_to_host(enum target_signal);
 
-/* Convert from a number used in a GDB command to an enum target_signal.  */
-extern enum target_signal target_signal_from_command (int);
+/* Convert from a number used in a GDB command to an enum target_signal: */
+extern enum target_signal target_signal_from_command(int);
 
 /* Any target can call this to switch to remote protocol (in remote.c). */
-extern void push_remote_target (char *name, int from_tty);
-/* APPLE LOCAL: target remote-macosx equivalent of push_remote_target().  */
-extern void push_remote_macosx_target (char *name, int from_tty);
+extern void push_remote_target(char *name, int from_tty);
+
+/* APPLE LOCAL: target remote-macosx equivalent of push_remote_target(): */
+extern void push_remote_macosx_target(char *name, int from_tty);
 
 /* Imported from machine dependent code */
 
 /* Blank target vector entries are initialized to target_ignore. */
-void target_ignore (void);
+void target_ignore(void);
 
 /* APPLE LOCAL update current target: */
 void update_current_target(void);
@@ -1425,6 +1424,13 @@ void set_trust_readonly_cleanup(void *);
 
 /* APPLE LOCAL */
 int length_of_this_instruction(CORE_ADDR memaddr);
-#endif /* !defined (TARGET_H) */
+
+/* other: */
+void do_restore_target_async_mask(int mask);
+
+int debug_to_enable_exception_callback(enum exception_event_kind kind,
+                                       int enable);
+
+#endif /* !defined(TARGET_H) */
 
 /* EOF */

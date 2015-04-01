@@ -1,4 +1,4 @@
-/* Floating point routines for GDB, the GNU debugger.
+/* doublest.c: Floating point routines for GDB, the GNU debugger.
 
    Copyright 1986, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
    1996, 1997, 1998, 1999, 2000, 2001, 2003, 2004, 2005 Free Software
@@ -958,10 +958,10 @@ const struct floatformat *floatformat_ieee_quad[BFD_ENDIAN_UNKNOWN];
 const struct floatformat *floatformat_arm_ext[BFD_ENDIAN_UNKNOWN];
 const struct floatformat *floatformat_ia64_spill[BFD_ENDIAN_UNKNOWN];
 
-extern void _initialize_doublest (void);
+extern void _initialize_doublest(void);
 
 extern void
-_initialize_doublest (void)
+_initialize_doublest(void)
 {
   floatformat_ieee_single[BFD_ENDIAN_LITTLE] = &floatformat_ieee_single_little;
   floatformat_ieee_single[BFD_ENDIAN_BIG] = &floatformat_ieee_single_big;
@@ -974,3 +974,5 @@ _initialize_doublest (void)
   floatformat_ieee_quad[BFD_ENDIAN_LITTLE] = &floatformat_ia64_quad_little;
   floatformat_ieee_quad[BFD_ENDIAN_BIG] = &floatformat_ia64_quad_big;
 }
+
+/* EOF */

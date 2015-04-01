@@ -44,7 +44,7 @@
 # define DEFAULT_DEMANGLING_STYLE AUTO_DEMANGLING_STYLE_STRING
 #endif /* !DEFAULT_DEMANGLING_STYLE */
 
-extern void _initialize_demangler (void);
+extern void _initialize_demangler(void);
 
 /* String name for the current demangling style.  Set by the
    "set demangle-style" command, printed as part of the output by the
@@ -184,7 +184,7 @@ _initialize_demangler(void)
 {
   int i, ndems;
 
-  /* Fill the demangling_style_names[] array.  */
+  /* Fill the demangling_style_names[] array: */
   for (ndems = 0;
        libiberty_demanglers[ndems].demangling_style != unknown_demangling;
        ndems++)
@@ -194,24 +194,24 @@ _initialize_demangler(void)
        libiberty_demanglers[i].demangling_style != unknown_demangling;
        i++)
     demangling_style_names[i] =
-      xstrdup (libiberty_demanglers[i].demangling_style_name);
+      xstrdup(libiberty_demanglers[i].demangling_style_name);
 
   /* FIXME: cagney/2005-02-20: The code implementing this variable are
      malloc-ing and free-ing current_demangling_style_string when it
      should instead just point to an element of
      demangling_style_names.  */
-  add_setshow_enum_cmd ("demangle-style", class_support,
-			demangling_style_names,
-			(const char **) &current_demangling_style_string, _("\
+  add_setshow_enum_cmd("demangle-style", class_support,
+                       demangling_style_names,
+                       (const char **)&current_demangling_style_string, _("\
 Set the current C++ demangling style."), _("\
 Show the current C++ demangling style."), _("\
 Use `set demangle-style' without arguments for a list of demangling styles."),
-			set_demangling_command,
-			show_demangling_style_names,
-			&setlist, &showlist);
+                       set_demangling_command,
+                       show_demangling_style_names,
+                       &setlist, &showlist);
 
   /* Set the default demangling style chosen at compilation time. */
-  set_demangling_style (DEFAULT_DEMANGLING_STYLE);
+  set_demangling_style(DEFAULT_DEMANGLING_STYLE);
 }
 
 /* EOF */

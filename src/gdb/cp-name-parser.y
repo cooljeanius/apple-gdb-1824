@@ -2120,16 +2120,16 @@ main(int argc, char **argv)
       }
   else
     {
-      result = cp_demangled_name_to_comp (argv[arg], &memory, &errmsg);
+      result = cp_demangled_name_to_comp(argv[arg], &memory, &errmsg);
       if (result == NULL)
 	{
-	  fputs (errmsg, stderr);
-	  fputc ('\n', stderr);
+	  fputs(errmsg, stderr);
+	  fputc('\n', stderr);
 	  return 0;
 	}
-      cp_print (result);
-      putchar ('\n');
-      free (memory);
+      cp_print(result);
+      putchar('\n');
+      free(memory);
     }
   return 0;
 }

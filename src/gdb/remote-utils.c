@@ -54,24 +54,24 @@
 #include "regcache.h"
 
 
-void _initialize_sr_support (void);
+void _initialize_sr_support(void);
 
 struct _sr_settings sr_settings =
 {
-  4,				/* timeout:
-				   remote-hms.c had 2
-				   remote-bug.c had "with a timeout of 2, we time out waiting for
-				   the prompt after an s-record dump."
+  4,	/* timeout:
+	   remote-hms.c had 2
+	   remote-bug.c had "with a timeout of 2, we time out waiting for
+	   the prompt after an s-record dump."
 
-				   remote.c had (2): This was 5 seconds, which is a long time to
-				   sit and wait. Unless this is going though some terminal server
-				   or multiplexer or other form of hairy serial connection, I
-				   would think 2 seconds would be plenty.
-				 */
+	   remote.c had (2): This was 5 seconds, which is a long time to
+	   sit and wait. Unless this is going though some terminal server
+	   or multiplexer or other form of hairy serial connection, I
+	   would think 2 seconds would be plenty.
+	 */
 
-  10,				/* retries */
-  NULL,				/* device */
-  NULL,				/* descriptor */
+  10,	/* retries */
+  NULL,	/* device */
+  NULL,	/* descriptor */
 };
 
 struct gr_settings *gr_settings = NULL;
@@ -587,24 +587,25 @@ gr_multi_scan(char *list[], int passthrough)
    debugged.  */
 
 void
-gr_prepare_to_store (void)
+gr_prepare_to_store(void)
 {
-  /* Do nothing, since we assume we can store individual regs */
+  ; /* Do nothing, since we assume we can store individual regs */
 }
 
 void
-_initialize_sr_support (void)
+_initialize_sr_support(void)
 {
   /* FIXME-now: if target is open... */
-  add_setshow_filename_cmd ("remotedevice", no_class, &sr_settings.device, _("\
+  add_setshow_filename_cmd("remotedevice", no_class, &sr_settings.device, _("\
 Set device for remote serial I/O."), _("\
 Show device for remote serial I/O."), _("\
 This device is used as the serial port when debugging using remote targets."),
-			    NULL,
-			    NULL, /* FIXME: i18n: */
-			    &setlist, &showlist);
+			   NULL,
+			   NULL, /* FIXME: i18n: */
+			   &setlist, &showlist);
 
-  add_com ("remote", class_obscure, sr_com,
-	   _("Send a command to the remote monitor."));
-
+  add_com("remote", class_obscure, sr_com,
+	  _("Send a command to the remote monitor."));
 }
+
+/* EOF */

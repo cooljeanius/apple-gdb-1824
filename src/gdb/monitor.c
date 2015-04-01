@@ -1,4 +1,4 @@
-/* Remote debugging interface for boot monitors, for GDB.
+/* monitor.c: Remote debugging interface for boot monitors, for GDB.
 
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
    1999, 2000, 2001, 2002 Free Software Foundation, Inc.
@@ -81,7 +81,7 @@ static void monitor_fetch_registers (int regno);
 static void monitor_store_registers (int regno);
 static void monitor_prepare_to_store (void);
 static int monitor_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len,
-				int write, 
+				int write,
 				struct mem_attrib *attrib,
 				struct target_ops *target);
 static void monitor_files_info (struct target_ops *ops);
@@ -103,7 +103,7 @@ static void monitor_dump_regs (void);
 #if 0
 static int from_hex (int a);
 static unsigned long get_hex_word (void);
-#endif
+#endif /* 0 */
 static void parse_register_dump (char *, int);
 
 static struct monitor_ops *current_monitor;
@@ -114,7 +114,7 @@ static int timeout = 30;
 
 static int in_monitor_wait = 0;	/* Non-zero means we are in monitor_wait() */
 
-static void (*ofunc) ();	/* Old SIGINT signal handler */
+static void (*ofunc)();	/* Old SIGINT signal handler */
 
 static CORE_ADDR *breakaddr;
 
@@ -141,7 +141,7 @@ static char setreg_resp_delim_fastmap[256];
 static int dump_reg_flag;	/* Non-zero means do a dump_registers cmd when
 				   monitor_wait wakes up.  */
 
-static int first_time = 0;	/* is this the first time we're executing after 
+static int first_time = 0;	/* is this the first time we're executing after
 				   gaving created the child proccess? */
 
 #define TARGET_BUF_SIZE 2048
@@ -761,7 +761,7 @@ monitor_open (char *args, struct monitor_ops *mon_ops, int from_tty)
   if (mon_ops->setreg.resp_delim)
     compile_pattern (mon_ops->setreg.resp_delim, &setreg_resp_delim_pattern,
                      setreg_resp_delim_fastmap);
-  
+
   unpush_target (targ_ops);
 
   if (dev_name)
@@ -897,7 +897,7 @@ monitor_supply_register (int regno, char *valstr)
     {
       if (*p == '\r' || *p == '\n')
         {
-          while (*p != '\0') 
+          while (*p != '\0')
               p++;
           break;
         }
@@ -1331,12 +1331,12 @@ monitor_store_register (int regno)
 {
   const char *name;
   ULONGEST val;
-  
+
   if (current_monitor->regname != NULL)
     name = current_monitor->regname (regno);
   else
     name = current_monitor->regnames[regno];
-  
+
   if (!name || (*name == '\0'))
     {
       monitor_debug ("MON Cannot store unknown register\n");
@@ -1492,7 +1492,7 @@ monitor_write_memory (CORE_ADDR memaddr, char *myaddr, int len)
       if (current_monitor->setmem.resp_delim)
         {
           monitor_debug ("EXP setmem.resp_delim");
-          monitor_expect_regexp (&setmem_resp_delim_pattern, NULL, 0); 
+          monitor_expect_regexp (&setmem_resp_delim_pattern, NULL, 0);
 	  monitor_printf ("%x\r", val);
        }
       if (current_monitor->setmem.term)
@@ -1739,7 +1739,7 @@ monitor_read_memory_single (CORE_ADDR memaddr, char *myaddr, int len)
       if ((c == '0') && ((c = readchar (timeout)) == 'x'))
 	;
       else
-	monitor_error ("monitor_read_memory_single", 
+	monitor_error ("monitor_read_memory_single",
 		       "bad response from monitor",
 		       memaddr, 0, NULL, 0);
     }
@@ -1757,7 +1757,7 @@ monitor_read_memory_single (CORE_ADDR memaddr, char *myaddr, int len)
 	      break;
 	    if (c == ' ')
 	      continue;
-	    
+
 	    monitor_error ("monitor_read_memory_single",
 			   "bad response from monitor",
 			   memaddr, i, membuf, 0);
@@ -2312,3 +2312,5 @@ is displayed."),
 			    NULL, /* FIXME: i18n: */
 			    &setdebuglist, &showdebuglist);
 }
+
+/* EOF */

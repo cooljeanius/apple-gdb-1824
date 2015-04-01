@@ -1,4 +1,4 @@
-/* i386-macosx-tdep.h */
+/* i386-macosx-tdep.h -*- C -*- */
 
 #ifndef __GDB_I386_MACOSX_TDEP_H__
 #define __GDB_I386_MACOSX_TDEP_H__
@@ -49,24 +49,26 @@
    register structure argument is already in target endian format and
    will copy the values in without swapping.  */
 
-void i386_macosx_fetch_gp_registers (gdb_i386_thread_state_t *sp_regs);
-void i386_macosx_fetch_gp_registers_raw (gdb_i386_thread_state_t *sp_regs);
-void i386_macosx_store_gp_registers (gdb_i386_thread_state_t *sp_regs);
-void i386_macosx_store_gp_registers_raw (gdb_i386_thread_state_t *sp_regs);
-void x86_64_macosx_fetch_gp_registers (gdb_x86_thread_state64_t *sp_regs);
-void x86_64_macosx_fetch_gp_registers_raw (gdb_x86_thread_state64_t *sp_regs);
-void x86_64_macosx_store_gp_registers (gdb_x86_thread_state64_t *sp_regs);
-void x86_64_macosx_store_gp_registers_raw (gdb_x86_thread_state64_t *sp_regs);
-void i386_macosx_fetch_fp_registers (gdb_i386_float_state_t *fp_regs);
-void i386_macosx_fetch_fp_registers_raw (gdb_i386_float_state_t *fp_regs);
-int  i386_macosx_store_fp_registers (gdb_i386_float_state_t *fp_regs);
-int  i386_macosx_store_fp_registers_raw (gdb_i386_float_state_t *fp_regs);
-void x86_64_macosx_fetch_fp_registers (gdb_x86_float_state64_t *fp_regs);
-void x86_64_macosx_fetch_fp_registers_raw (gdb_x86_float_state64_t *fp_regs);
-int  x86_64_macosx_store_fp_registers (gdb_x86_float_state64_t *fp_regs);
-int  x86_64_macosx_store_fp_registers_raw (gdb_x86_float_state64_t *fp_regs);
+void i386_macosx_fetch_gp_registers(gdb_i386_thread_state_t *sp_regs);
+void i386_macosx_fetch_gp_registers_raw(gdb_i386_thread_state_t *sp_regs);
+void i386_macosx_store_gp_registers(gdb_i386_thread_state_t *sp_regs);
+void i386_macosx_store_gp_registers_raw(gdb_i386_thread_state_t *sp_regs);
+void x86_64_macosx_fetch_gp_registers(gdb_x86_thread_state64_t *sp_regs);
+void x86_64_macosx_fetch_gp_registers_raw(gdb_x86_thread_state64_t *sp_regs);
+void x86_64_macosx_store_gp_registers(gdb_x86_thread_state64_t *sp_regs);
+void x86_64_macosx_store_gp_registers_raw(gdb_x86_thread_state64_t *sp_regs);
+void i386_macosx_fetch_fp_registers(gdb_i386_float_state_t *fp_regs);
+void i386_macosx_fetch_fp_registers_raw(gdb_i386_float_state_t *fp_regs);
+int i386_macosx_store_fp_registers(gdb_i386_float_state_t *fp_regs);
+int i386_macosx_store_fp_registers_raw(gdb_i386_float_state_t *fp_regs);
+void x86_64_macosx_fetch_fp_registers(gdb_x86_float_state64_t *fp_regs);
+void x86_64_macosx_fetch_fp_registers_raw(gdb_x86_float_state64_t *fp_regs);
+int x86_64_macosx_store_fp_registers(gdb_x86_float_state64_t *fp_regs);
+int x86_64_macosx_store_fp_registers_raw(gdb_x86_float_state64_t *fp_regs);
 
-#define INVALID_ADDRESS ((CORE_ADDR) (-1))
+#ifndef INVALID_ADDRESS
+# define INVALID_ADDRESS ((CORE_ADDR)(-1L))
+#endif /* !INVALID_ADDRESS */
 
 #endif /* __GDB_I386_MACOSX_TDEP_H__ */
 

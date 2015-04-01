@@ -1,4 +1,4 @@
-/* Print in infix form a struct expression.
+/* expprint.c: Print in infix form a struct expression.
 
    Copyright 1986, 1988, 1989, 1991, 1992, 1993, 1994, 1995, 1996, 1997,
    1998, 1999, 2000, 2003 Free Software Foundation, Inc.
@@ -33,11 +33,11 @@
 #include "block.h"
 
 #ifdef HAVE_CTYPE_H
-#include <ctype.h>
-#endif
+# include <ctype.h>
+#endif /* HAVE_CTYPE_H */
 
 void
-print_expression (struct expression *exp, struct ui_file *stream)
+print_expression(struct expression *exp, struct ui_file *stream)
 {
   int pc = 0;
   print_subexp (exp, &pc, stream, PREC_NULL);
@@ -789,7 +789,7 @@ dump_raw_expression (struct expression *exp, struct ui_file *stream,
 }
 
 /* Dump the subexpression of prefix expression EXP whose operator is at
-   position ELT onto STREAM.  Returns the position of the next 
+   position ELT onto STREAM.  Returns the position of the next
    subexpression in EXP.  */
 
 int
@@ -815,7 +815,7 @@ dump_subexp (struct expression *exp, struct ui_file *stream, int elt)
 }
 
 /* Dump the operands of prefix expression EXP whose opcode is at
-   position ELT onto STREAM.  Returns the position of the next 
+   position ELT onto STREAM.  Returns the position of the next
    subexpression in EXP.  */
 
 static int
@@ -827,7 +827,7 @@ dump_subexp_body (struct expression *exp, struct ui_file *stream, int elt)
 /* Default value for subexp_body in exp_descriptor vector.  */
 
 int
-dump_subexp_body_standard (struct expression *exp, 
+dump_subexp_body_standard (struct expression *exp,
 			   struct ui_file *stream, int elt)
 {
   int opcode = exp->elts[elt++].opcode;
@@ -1046,23 +1046,25 @@ dump_subexp_body_standard (struct expression *exp,
 }
 
 void
-dump_prefix_expression (struct expression *exp, struct ui_file *stream)
+dump_prefix_expression(struct expression *exp, struct ui_file *stream)
 {
   int elt;
 
-  fprintf_filtered (stream, "Dump of expression @ ");
-  gdb_print_host_address (exp, stream);
-  fputs_filtered (", after conversion to prefix form:\nExpression: `", stream);
+  fprintf_filtered(stream, "Dump of expression @ ");
+  gdb_print_host_address(exp, stream);
+  fputs_filtered(", after conversion to prefix form:\nExpression: `", stream);
   if (exp->elts[0].opcode != OP_TYPE)
-    print_expression (exp, stream);
+    print_expression(exp, stream);
   else
-    fputs_filtered ("Type printing not yet supported....", stream);
-  fprintf_filtered (stream, "'\n\tLanguage %s, %d elements, %ld bytes each.\n",
-		    exp->language_defn->la_name, exp->nelts,
-		    (long) sizeof (union exp_element));
-  fputs_filtered ("\n", stream);
+    fputs_filtered("Type printing not yet supported....", stream);
+  fprintf_filtered(stream, "'\n\tLanguage %s, %d elements, %ld bytes each.\n",
+		   exp->language_defn->la_name, exp->nelts,
+		   (long)sizeof(union exp_element));
+  fputs_filtered("\n", stream);
 
   for (elt = 0; elt < exp->nelts;)
-    elt = dump_subexp (exp, stream, elt);
-  fputs_filtered ("\n", stream);
+    elt = dump_subexp(exp, stream, elt);
+  fputs_filtered("\n", stream);
 }
+
+/* EOF */

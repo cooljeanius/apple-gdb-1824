@@ -2490,7 +2490,6 @@
 		A5159A0819870F560079DD4F /* buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = buffer.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/common/buffer.h"; sourceTree = "<absolute>"; };
 		A5159A0919870F560079DD4F /* common-utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "common-utils.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/common/common-utils.c"; sourceTree = "<absolute>"; };
 		A5159A0A19870F560079DD4F /* common-utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "common-utils.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/common/common-utils.h"; sourceTree = "<absolute>"; };
-		A5159A0B19870F560079DD4F /* common.m4 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = common.m4; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/common/common.m4"; sourceTree = "<absolute>"; };
 		A5159A0C19870F560079DD4F /* create-version.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "create-version.sh"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/common/create-version.sh"; sourceTree = "<absolute>"; };
 		A5159A0D19870F560079DD4F /* filestuff.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = filestuff.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/common/filestuff.c"; sourceTree = "<absolute>"; };
 		A5159A0E19870F560079DD4F /* filestuff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = filestuff.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/common/filestuff.h"; sourceTree = "<absolute>"; };
@@ -5001,6 +5000,11 @@
 		A5CA6DC51AC5933100716574 /* filesystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = filesystem.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/filesystem.h"; sourceTree = "<absolute>"; };
 		A5CA6DC61AC5933100716574 /* findcmd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = findcmd.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/findcmd.c"; sourceTree = "<absolute>"; };
 		A5CA6DC71AC5933F00716574 /* fr30-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "fr30-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/fr30-tdep.c"; sourceTree = "<absolute>"; };
+		A5CA6E3D1AC5CD8C00716574 /* arm-macosx-nat-exec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "arm-macosx-nat-exec.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/macosx/arm-macosx-nat-exec.h"; sourceTree = "<absolute>"; };
+		A5CA6E9A1AC614F900716574 /* cleanups.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cleanups.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/cleanups.c"; sourceTree = "<absolute>"; };
+		A5CA6E9B1AC614F900716574 /* cleanups.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cleanups.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/cleanups.h"; sourceTree = "<absolute>"; };
+		A5CA715B1ACA2AF900716574 /* symread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = symread.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/macosx/symread.h"; sourceTree = "<absolute>"; };
+		A5CA71831ACA392E00716574 /* remote-kdp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "remote-kdp.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/macosx/remote-kdp.h"; sourceTree = "<absolute>"; };
 		A5FE698F1A9E935D005583F9 /* macosx-nat-info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "macosx-nat-info.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/macosx/macosx-nat-info.h"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
@@ -5736,6 +5740,8 @@
 				2609D30A0E82C40A008125DE /* charset.h */,
 				2609D30B0E82C40A008125DE /* checkpoint.c */,
 				2609D30C0E82C40A008125DE /* checkpoint.h */,
+				A5CA6E9A1AC614F900716574 /* cleanups.c */,
+				A5CA6E9B1AC614F900716574 /* cleanups.h */,
 				2609D31C0E82C40A008125DE /* cli-out.c */,
 				2609D31D0E82C40A008125DE /* cli-out.h */,
 				A5AFD2051A58B6DD006C21FE /* CodeFragmentTypes.r */,
@@ -7392,6 +7398,7 @@
 			isa = PBXGroup;
 			children = (
 				2609D6960E82C40B008125DE /* arm-macosx-nat-exec.c */,
+				A5CA6E3D1AC5CD8C00716574 /* arm-macosx-nat-exec.h */,
 				2609D6970E82C40B008125DE /* arm-macosx-regnums.h */,
 				2609D6980E82C40B008125DE /* arm-macosx-tdep.c */,
 				2609D6990E82C40C008125DE /* arm-macosx-tdep.h */,
@@ -7485,8 +7492,10 @@
 				2609D6E40E82C40C008125DE /* ppc-macosx-tdep.h */,
 				2609D6E50E82C40C008125DE /* ppc-macosx-thread-status.h */,
 				2609D6E60E82C40C008125DE /* remote-kdp.c */,
+				A5CA71831ACA392E00716574 /* remote-kdp.h */,
 				2609D6E70E82C40C008125DE /* remote-mobile.c */,
 				2609D6E80E82C40C008125DE /* symread.c */,
+				A5CA715B1ACA2AF900716574 /* symread.h */,
 				A5558E801992732500A45587 /* tm-arm-macosx.h */,
 				A5558E811992732500A45587 /* tm-arm.h */,
 				2609D6E90E82C40C008125DE /* tm-i386-macosx.h */,
@@ -8595,7 +8604,6 @@
 				A5159A0819870F560079DD4F /* buffer.h */,
 				A5159A0919870F560079DD4F /* common-utils.c */,
 				A5159A0A19870F560079DD4F /* common-utils.h */,
-				A5159A0B19870F560079DD4F /* common.m4 */,
 				A5159A0C19870F560079DD4F /* create-version.sh */,
 				A5159A0D19870F560079DD4F /* filestuff.c */,
 				A5159A0E19870F560079DD4F /* filestuff.h */,

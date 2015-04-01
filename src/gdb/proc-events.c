@@ -33,18 +33,18 @@
 #include "defs.h"
 
 #ifdef NEW_PROC_API
-#define _STRUCTURED_PROC 1
-#endif
+# define _STRUCTURED_PROC 1
+#endif /* NEW_PROC_API */
 
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/procfs.h>
 #ifdef HAVE_SYS_SYSCALL_H
-#include <sys/syscall.h>
-#endif
+# include <sys/syscall.h>
+#endif /* HAVE_SYS_SYSCALL_H */
 #ifdef HAVE_SYS_FAULT_H
-#include <sys/fault.h>
-#endif
+# include <sys/fault.h>
+#endif /* HAVE_SYS_FAULT_H */
 
 /* Much of the information used in the /proc interface, particularly
    for printing status information, is kept as tables of structures of
@@ -1437,9 +1437,9 @@ proc_prettyprint_syscalls (sysset_t *sysset, int verbose)
 
 /* Signal translation table.  */
 
-static struct trans signal_table[] = 
+static struct trans signal_table[] =
 {
-  { 0,      "<no signal>", "no signal" }, 
+  { 0,      "<no signal>", "no signal" },
 #ifdef SIGHUP
   { SIGHUP, "SIGHUP", "Hangup" },
 #endif
@@ -1714,7 +1714,7 @@ proc_prettyfprint_fault (FILE *file, int faultno, int verbose)
 	return;
       }
 
-  fprintf (file, "Unknown hardware fault %d%c", 
+  fprintf (file, "Unknown hardware fault %d%c",
 	   faultno, verbose ? '\n' : ' ');
 }
 

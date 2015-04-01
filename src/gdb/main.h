@@ -1,4 +1,4 @@
-/* Main interface for GDB, the GNU debugger.
+/* main.h: Main interface for GDB, the GNU debugger.
 
    Copyright 2002 Free Software Foundation, Inc.
 
@@ -30,6 +30,8 @@ struct captured_main_args
   const char *interpreter_p;
 };
 
-extern int gdb_main (struct captured_main_args *);
+extern int gdb_main(struct captured_main_args *);
 
 #endif /* !MAIN_H */
+
+/* EOF */

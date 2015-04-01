@@ -229,6 +229,11 @@ BFD = -L../bfd -L../bfd/.libs -lbfd
 BFD_SRC = $(srcdir)/$(BFD_DIR)
 BFD_CFLAGS = -I$(BFD_DIR) -I$(BFD_SRC)
 
+# Where is zlib?  Typically in ../zlib, but the configure script will subst
+# that for us:
+ZLIB = @zlibdir@ -lz
+ZLIBINC = @zlibinc@
+
 # Where is the READLINE library?  Typically in ../readline.
 READLINE_DIR = ../readline
 READLINE_DEP = ../readline/libreadline.a
@@ -500,7 +505,7 @@ CONFIGURED_CXXFLAGS = @CXXFLAGS@
 # INTERNAL_CFLAGS is the aggregate of all other *CFLAGS macros.
 INTERNAL_WARN_CFLAGS = \
 	$(CFLAGS) $(C_ARCHFLAGS) $(GLOBAL_CFLAGS) $(PROFILE_CFLAGS) \
-	$(GDB_CFLAGS) $(OPCODES_CFLAGS) $(READLINE_CFLAGS) \
+	$(GDB_CFLAGS) $(OPCODES_CFLAGS) $(READLINE_CFLAGS) $(ZLIBINC) \
 	$(BFD_CFLAGS) $(INCLUDE_CFLAGS) \
 	$(MMALLOC_CFLAGS) \
 	$(INTL_CFLAGS) $(ENABLE_CFLAGS) \
@@ -527,13 +532,13 @@ INTERNAL_LDFLAGS = $(CFLAGS) $(C_ARCHFLAGS) $(GLOBAL_CFLAGS) $(MH_LDFLAGS) $(LDF
 
 # Libraries and corresponding dependencies for compiling gdb.
 # {X,T}M_CLIBS, defined in *config files, have host/target-dependent libs.
-# LIBIBERTY appears twice on purpose.
+# LIBIBERTY appears twice on purpose (but why though?).
 # If you have the Cygnus libraries installed,
 # you can use 'CLIBS=$(INSTALLED_LIBS)' 'CDEPS='
 INSTALLED_LIBS=-lbfd -lreadline -lopcodes -liberty \
 	$(XM_CLIBS) $(TM_CLIBS) $(NAT_CLIBS) $(GDBTKLIBS) @LIBS@ \
 	-lintl -liberty
-CLIBS = $(SIM) $(READLINE) $(OPCODES) $(BFD) $(INTL) $(LIBIBERTY) \
+CLIBS = $(SIM) $(READLINE) $(OPCODES) $(BFD) $(ZLIB) $(INTL) $(LIBIBERTY) \
 	$(XM_CLIBS) $(TM_CLIBS) $(NAT_CLIBS) $(GDBTKLIBS) @LIBS@ \
 	$(LIBICONV) \
         $(CARBON_LDFLAGS) \
@@ -745,6 +750,7 @@ aout_stabs_gnu_h =	$(INCLUDE_DIR)/aout/stabs_gnu.h
 getopt_h =	$(INCLUDE_DIR)/getopt.h
 floatformat_h =	$(INCLUDE_DIR)/floatformat.h $(ansidecl_h)
 bfd_h =		$(BFD_DIR)/bfd.h $(ansidecl_h) $(symcat_h)
+__bfd_bfd_h = $(bfd_h)
 bfdlink_h = $(INCLUDE_DIR)/bfdlink.h
 coff_sym_h =	$(INCLUDE_DIR)/coff/sym.h
 coff_symconst_h =	$(INCLUDE_DIR)/coff/symconst.h
@@ -779,6 +785,7 @@ readline_history_h =	$(READLINE_SRC)/history.h
 rlstdc_h = $(READLINE_SRC)/rlstdc.h
 rltypedefs_h = $(READLINE_SRC)/rltypedefs.h
 frv_desc_h =	$(OPCODES_SRC)/frv-desc.h $(opcode_cgen_h)
+opcodes_frv_desc_h = $(frv_desc_h)
 sh_opc_h = 	$(OPCODES_SRC)/sh-opc.h $(bfd_h)
 gdb_callback_h = $(INCLUDE_DIR)/gdb/callback.h $(bfd_h)
 gdb_sim_arm_h =	$(INCLUDE_DIR)/gdb/sim-arm.h
@@ -793,6 +800,7 @@ hashtab_h =	$(INCLUDE_DIR)/hashtab.h $(ansidecl_h)
 mmalloc_h = $(MMALLOC_DIR)/mmalloc.h $(ansidecl_h)
 mmprivate_h = $(MMALLOC_DIR)/mmprivate.h $(config_h) $(mmalloc_h)
 mach_o_h = $(BFD_SRC)/mach-o.h $(bfd_h)
+xsym_h = $(BFD_SRC)/xsym.h $(bfd_h)
 
 #
 # ${BUILD}/ headers
@@ -826,71 +834,76 @@ alphabsd_tdep_h = alphabsd-tdep.h
 alpha_tdep_h = alpha-tdep.h
 amd64_nat_h = amd64-nat.h
 amd64_tdep_h = amd64-tdep.h $(i386_tdep_h)
-annotate_h = annotate.h $(symtab_h) $(gdbtypes_h)
-arch_utils_h = arch-utils.h
+annotate_h = annotate.h $(ansidecl_h) $(symtab_h) $(gdbtypes_h)
+arch_utils_h = arch-utils.h $(ansidecl_h)
 arm_tdep_h = arm-tdep.h $(defs_h) $(gdbarch_h) $(reggroups_h)
 auxv_h = auxv.h
 ax_gdb_h = ax-gdb.h
 ax_h = ax.h $(doublest_h)
-bcache_h = bcache.h
+bcache_h = bcache.h $(ansidecl_h)
 bfd_target_h = bfd-target.h $(defs_h)
-block_h = block.h
-breakpoint_h = breakpoint.h $(frame_h) $(value_h) $(gdb_events_h)
+block_h = block.h $(defs_h) $(bfd_h)
+breakpoint_h = breakpoint.h $(ansidecl_h) $(frame_h) $(value_h) \
+  $(gdb_events_h)
 bsd_kvm_h = bsd-kvm.h
 bsd_uthread_h = bsd-uthread.h
 buildsym_h = buildsym.h
-call_cmds_h = call-cmds.h
+call_cmds_h = call-cmds.h $(ansidecl_h)
 charset_h = charset.h
 c_lang_h = c-lang.h $(value_h) $(macroexp_h)
 checkpoint_h = checkpoint.h
+cleanups_h = cleanups.h
 cli_out_h = cli-out.h
 coff_pe_read_h = coff-pe-read.h
 coff_solib_h = coff-solib.h
-command_h = command.h
+command_h = command.h $(ansidecl_h)
 complaints_h = complaints.h
 completer_h = completer.h
 cp_abi_h = cp-abi.h
 cp_support_h = cp-support.h $(symtab_h)
+db_access_functions_h = db-access-functions.h $(objfiles_h)
 dcache_h = dcache.h
 defs_h = defs.h $(config_h) $(ansidecl_h) $(gdb_locale_h) \
   $(gdb_signals_h) $(libiberty_h) $(bfd_h) $(ui_file_h) \
   $(xm_h) $(nm_h) $(tm_h) $(fopen_bin_h) $(gdbarch_h)
 dictionary_h = dictionary.h
 disasm_h = disasm.h
-doublest_h = doublest.h $(floatformat_h)
+doublest_h = doublest.h $(ansidecl_h) $(floatformat_h)
 dummy_frame_h = dummy-frame.h
-dwarf2expr_h = dwarf2expr.h
+dwarf2expr_h = dwarf2expr.h $(dwarf2loc_h)
 dwarf2_frame_h = dwarf2-frame.h
-dwarf2loc_h = dwarf2loc.h
+dwarf2loc_h = dwarf2loc.h $(dwarf2read_h)
+dwarf2read_h = dwarf2read.h $(bfd_h)
 environ_h = environ.h
 event_loop_h = event-loop.h
 event_top_h = event-top.h
-exceptions_h = exceptions.h $(ui_out_h)
+exceptions_h = exceptions.h $(ansidecl_h) $(ui_out_h)
 exec_h = exec.h $(target_h)
 expression_h = expression.h $(symtab_h) $(doublest_h)
 fbsd_nat_h = fbsd-nat.h
 f_lang_h = f-lang.h
 frame_base_h = frame-base.h
 frame_h = frame.h
-frame_unwind_h = frame-unwind.h $(frame_h)
+frame_unwind_h = frame-unwind.h $(frame_h) $(value_h)
 frv_tdep_h = frv-tdep.h
 gdbarch_h = gdbarch.h
 gdb_assert_h = gdb_assert.h
-gdbcmd_h = gdbcmd.h $(command_h) $(ui_out_h)
-gdbcore_h = gdbcore.h $(bfd_h)
+gdbcmd_h = gdbcmd.h $(ansidecl_h) $(command_h) $(ui_out_h)
+gdbcore_h = gdbcore.h $(ansidecl_h) $(bfd_h)
 gdb_curses_h = gdb_curses.h
 gdb_dirent_h = gdb_dirent.h
-gdb_events_h = gdb-events.h
+gdb_events_h = gdb-events.h $(ansidecl_h)
 gdb_h = gdb.h
 gdb_locale_h = gdb_locale.h $(config_h)
 gdb_obstack_h = gdb_obstack.h $(obstack_h)
 gdb_proc_service_h = gdb_proc_service.h $(gregset_h)
 gdb_ptrace_h = gdb_ptrace.h
+gdb_regex_h = gdb_regex.h
 gdb_stabs_h = gdb-stabs.h
 gdb_stat_h = gdb_stat.h
 gdb_string_h = gdb_string.h
 gdb_thread_db_h = gdb_thread_db.h
-gdbthread_h = gdbthread.h $(breakpoint_h) $(frame_h)
+gdbthread_h = gdbthread.h $(breakpoint_h) $(frame_h) $(inlining_h)
 gdbtypes_h = gdbtypes.h
 gdb_vfork_h = gdb_vfork.h
 gdb_wait_h = gdb_wait.h
@@ -901,23 +914,25 @@ gregset_h = gregset.h
 hppa_tdep_h = hppa-tdep.h
 i386bsd_nat_h = i386bsd-nat.h
 i386_linux_tdep_h = i386-linux-tdep.h
-i386_tdep_h = i386-tdep.h
+i386_tdep_h = i386-tdep.h $(ansidecl_h)
 i387_tdep_h = i387-tdep.h
 ia64_tdep_h = ia64-tdep.h
 infcall_h = infcall.h
-inf_child_h = inf-child.h
+inf_child_h = inf-child.h $(symtab_h) $(target_h)
+infcmd_h = infcmd.h
 inferior_h = inferior.h $(breakpoint_h) $(target_h) $(frame_h)
 inf_loop_h = inf-loop.h
 inflow_h = inflow.h $(terminal_h)
 inf_ptrace_h = inf-ptrace.h
 inf_ttrace_h = inf-ttrace.h
 # APPLE LOCAL begin subroutine inlining:
-inlining_h = inlining.h
+inlining_h = inlining.h $(frame_h) $(bfd_h)
 # APPLE LOCAL end subroutine inlining
 interps_h = interps.h $(exceptions_h)
 jv_lang_h = jv-lang.h
 kod_h = kod.h
 language_h = language.h
+libunwind_h = ## FIXME: where is this?
 libunwind_frame_h = libunwind-frame.h $(libunwind_h)
 linespec_h = linespec.h
 linux_nat_h = linux-nat.h $(target_h)
@@ -929,17 +944,19 @@ macroexp_h = macroexp.h
 macroscope_h = macroscope.h $(macrotab_h) $(symtab_h)
 macrotab_h = macrotab.h
 main_h = main.h
+maint_h = maint.h
 mdebugread_h = mdebugread.h $(coff_sym_h) $(coff_symconst_h)
 memattr_h = memattr.h
 mips_mdebug_tdep_h = mips-mdebug-tdep.h
 mipsnbsd_tdep_h = mipsnbsd-tdep.h
-mips_tdep_h = mips-tdep.h
+mips_tdep_h = mips-tdep.h $(ansidecl_h)
 mn10300_tdep_h = mn10300-tdep.h
-monitor_h = monitor.h
+monitor_h = monitor.h $(ansidecl_h)
 nbsd_tdep_h = nbsd-tdep.h
 nto_tdep_h = nto-tdep.h $(defs_h) $(solist_h) $(osabi_h) $(regset_h)
 objc_lang_h = objc-lang.h
-objfiles_h = objfiles.h $(gdb_obstack_h) $(symfile_h)
+objfiles_h = objfiles.h $(ansidecl_h) $(gdb_obstack_h) $(symfile_h) \
+  $(inlining_h)
 ocd_h = ocd.h
 osabi_h = osabi.h
 parser_defs_h = parser-defs.h $(doublest_h)
@@ -948,17 +965,17 @@ ppcnbsd_tdep_h = ppcnbsd-tdep.h
 ppcobsd_tdep_h = ppcobsd-tdep.h
 ppc_tdep_h = ppc-tdep.h
 proc_utils_h = proc-utils.h
-regcache_h = regcache.h
+regcache_h = regcache.h $(ansidecl_h)
 reggroups_h = reggroups.h
 regset_h = regset.h
 remote_fileio_h = remote-fileio.h
-remote_h = remote.h
+remote_h = remote.h $(ansidecl_h)
 remote_utils_h = remote-utils.h $(target_h)
 s390_tdep_h = s390-tdep.h
 scm_lang_h = scm-lang.h $(scm_tags_h)
 scm_tags_h = scm-tags.h
 sentinel_frame_h = sentinel-frame.h
-serial_h = serial.h
+serial_h = serial.h $(ansidecl_h)
 ser_base_h = ser-base.h
 ser_unix_h = ser-unix.h
 shnbsd_tdep_h = shnbsd-tdep.h
@@ -976,27 +993,28 @@ sparc_tdep_h = sparc-tdep.h
 srec_h = srec.h
 stabsread_h = stabsread.h
 stack_h = stack.h
-symfile_h = symfile.h
-symtab_h = symtab.h
+symfile_h = symfile.h $(symtab_h)
+symtab_h = symtab.h $(defs_h) $(ansidecl_h)
 target_h = target.h $(bfd_h) $(symtab_h) $(dcache_h) $(memattr_h)
 terminal_h = terminal.h
 top_h = top.h
-tracepoint_h = tracepoint.h
+tracepoint_h = tracepoint.h $(ansidecl_h)
 trad_frame_h = trad-frame.h $(frame_h)
 tramp_frame_h = tramp-frame.h $(frame_h)
 typeprint_h = typeprint.h
 ui_file_h = ui-file.h
 ui_out_h = ui-out.h
 user_regs_h = user-regs.h
-utils_h = utils.h
+utils_h = utils.h $(ansidecl_h) $(cleanups_h) $(exceptions_h) \
+  $(common_print_utils_h)
 valprint_h = valprint.h
-value_h = value.h $(doublest_h) $(frame_h) $(symtab_h) $(gdbtypes_h) \
-  $(expression_h)
+value_h = value.h $(ansidecl_h) $(doublest_h) $(gdb_regex_h) $(frame_h) \
+  $(symtab_h) $(gdbtypes_h) $(expression_h)
 varobj_h = varobj.h $(symtab_h) $(gdbtypes_h)
 vax_tdep_h = vax-tdep.h
 version_h = version.h
 wince_stub_h = wince-stub.h
-wrapper_h = wrapper.h $(gdb_h)
+wrapper_h = wrapper.h $(gdb_h) $(varobj_h)
 # APPLE LOCAL header:
 x86_shared_tdep_h = x86-shared-tdep.h
 # END APPLE LOCAL header
@@ -1015,22 +1033,36 @@ cli_script_h = $(cli_srcdir)/cli-script.h
 cli_setshow_h = $(cli_srcdir)/cli-setshow.h
 cli_utils_h = $(cli_srcdir)/cli-utils.h
 
+##
+# gdb/common/ headers
+#
+
+common_srcdir = $(srcdir)/common
+common_print_utils_h = $(common_srcdir)/print-utils.h
+
 #
 # gdb/macosx/ headers
 #
 
 macosx_srcdir = $(srcdir)/macosx
+arm_macosx_nat_exec_h = $(macosx_srcdir)/arm-macosx-nat-exec.h $(target_h)
 arm_macosx_thread_status_h = $(macosx_srcdir)/arm-macosx-thread-status.h
 arm_macosx_regnums_h = $(macosx_srcdir)/arm-macosx-regnums.h
 arm_macosx_tdep_h = $(macosx_srcdir)/arm-macosx-tdep.h $(defs_h) \
   $(arm_macosx_thread_status_h) $(arm_macosx_regnums_h) $(macosx_tdep_h)
 cached_symfile_h = $(macosx_srcdir)/cached-symfile.h $(defs_h)
+i386_macosx_nat_exec_h = $(macosx_srcdir)/i386-macosx-nat-exec.h \
+  $(defs_h) $(target_h)
+i386_macosx_tdep_h = $(macosx_srcdir)/i386-macosx-tdep.h \
+  $(i386_macosx_thread_status_h)
+i386_macosx_thread_status_h = $(macosx_srcdir)/i386-macosx-thread-status.h
 kdp_protocol_h = $(macosx_srcdir)/kdp-protocol.h
 kdp_transactions_h = $(macosx_srcdir)/kdp-transactions.h $(kdp_udp_h)
 kdp_udp_h = $(macosx_srcdir)/kdp-udp.h $(kdp_protocol_h)
 macosx_nat_dyld_h = $(macosx_srcdir)/macosx-nat-dyld.h $(defs_h) \
   $(macosx_nat_mutils_h) $(macosx_nat_threads_h)
 macosx_nat_dyld_info_h = $(macosx_srcdir)/macosx-nat-dyld-info.h $(defs_h)
+macosx_nat_dyld_io_h = $(macosx_srcdir)/macosx-nat-dyld-io.h $(symtab_h)
 macosx_nat_dyld_path_h = $(macosx_srcdir)/macosx-nat-dyld-path.h $(defs_h)
 macosx_nat_dyld_process_h = $(macosx_srcdir)/macosx-nat-dyld-process.h \
   $(defs_h)
@@ -1049,8 +1081,21 @@ macosx_nat_sigthread_h = $(macosx_srcdir)/macosx-nat-sigthread.h \
 macosx_nat_threads_h = $(macosx_srcdir)/macosx-nat-threads.h
 macosx_nat_utils_h = $(macosx_srcdir)/macosx-nat-utils.h
 macosx_tdep_h = $(macosx_srcdir)/macosx-tdep.h $(defs_h) $(symtab_h)
+macosx_xdep_h = $(macosx_srcdir)/macosx-xdep.h
+macosx_defs = $(macosx_srcdir)/macosx.defs $(config_h)
+nm_macosx_h = $(macosx_srcdir)/nm-macosx.h
+ppc_macosx_frameinfo_h = $(macosx_srcdir)/ppc-macosx-frameinfo.h $(defs_h)
+ppc_macosx_regnums_h = $(macosx_srcdir)/ppc-macosx-regnums.h
+ppc_macosx_regs_h = $(macosx_srcdir)/ppc-macosx-regs.h \
+  $(ppc_macosx_thread_status_h)
+ppc_macosx_tdep_h = $(macosx_srcdir)/ppc-macosx-tdep.h $(defs_h) \
+  $(reggroups_h)
+ppc_macosx_thread_status_h = $(macosx_srcdir)/ppc-macosx-thread-status.h
+remote_kdp_h = $(macosx_srcdir)/remote-kdp.h $(defs_h) $(target_h)
+symread_h = $(macosx_srcdir)/symread.h $(objfiles_h)
 tm_arm_macosx_h = $(macosx_srcdir)/tm-arm-macosx.h $(tm_macosx_h)
 tm_macosx_h = $(macosx_srcdir)/tm-macosx.h $(macosx_tdep_h)
+xm_macosx_h = $(macosx_srcdir)/xm-macosx.h
 
 #
 # gdb/mi/ headers
@@ -1064,7 +1109,7 @@ mi_console_h = $(mi_srcdir)/mi-console.h
 mi_getopt_h = $(mi_srcdir)/mi-getopt.h
 mi_main_h = $(mi_srcdir)/mi-main.h
 mi_out_h = $(mi_srcdir)/mi-out.h
-mi_parse_h = $(mi_srcdir)/mi-parse.h
+mi_parse_h = $(mi_srcdir)/mi-parse.h $(remote_h)
 
 #
 # gdb/tui/ headers
@@ -2028,11 +2073,12 @@ ada-exp.o: ada-exp.c $(defs_h) $(gdb_string_h) $(expression_h) $(value_h) \
   $(parser_defs_h) $(language_h) $(ada_lang_h) $(bfd_h) $(symfile_h) \
   $(objfiles_h) $(frame_h) $(block_h) $(ada_lex_c)
 ada-lang.o: ada-lang.c $(defs_h) $(gdb_string_h) $(demangle_h) \
-  $(frame_h) $(symtab_h) $(gdbtypes_h) $(gdbcmd_h) $(expression_h) \
-  $(parser_defs_h) $(language_h) $(c_lang_h) $(inferior_h) $(symfile_h) \
-  $(objfiles_h) $(breakpoint_h) $(gdbcore_h) $(hashtab_h) \
-  $(gdb_obstack_h) $(ada_lang_h) $(completer_h) $(gdb_stat_h) $(ui_out_h) \
-  $(block_h) $(infcall_h) $(dictionary_h) $(exceptions_h)
+  $(gdb_regex_h) $(frame_h) $(symtab_h) $(gdbtypes_h) $(gdbcmd_h) \
+  $(expression_h) $(parser_defs_h) $(language_h) $(c_lang_h) \
+  $(inferior_h) $(symfile_h) $(objfiles_h) $(breakpoint_h) $(gdbcore_h) \
+  $(hashtab_h) $(gdb_obstack_h) $(ada_lang_h) $(completer_h) \
+  $(gdb_stat_h) $(ui_out_h) $(block_h) $(infcall_h) $(dictionary_h) \
+  $(exceptions_h)
 ada-typeprint.o: ada-typeprint.c $(defs_h) $(gdb_obstack_h) $(bfd_h) \
   $(symtab_h) $(gdbtypes_h) $(expression_h) $(value_h) $(gdbcore_h) \
   $(target_h) $(command_h) $(gdbcmd_h) $(language_h) $(demangle_h) \
@@ -2103,14 +2149,14 @@ amd64-sol2-tdep.o: amd64-sol2-tdep.c $(defs_h) $(frame_h) $(gdbcore_h) \
 amd64-tdep.o: amd64-tdep.c $(defs_h) $(arch_utils_h) $(block_h) \
   $(dummy_frame_h) $(frame_h) $(frame_base_h) $(frame_unwind_h) \
   $(inferior_h) $(gdbcmd_h) $(gdbcore_h) $(objfiles_h) $(regcache_h) \
-  $(regset_h) $(symfile_h) $(gdb_assert_h) $(amd64_tdep_h) $(i387_tdep_h) \
-  $(x86_shared_tdep_h)
+  $(regset_h) $(symfile_h) $(complaints_h) $(gdb_assert_h) \
+  $(amd64_tdep_h) $(i387_tdep_h) $(x86_shared_tdep_h)
 annotate.o: annotate.c $(defs_h) $(annotate_h) $(value_h) $(target_h) \
-  $(gdbtypes_h) $(breakpoint_h)
-arch-utils.o: arch-utils.c $(defs_h) $(arch_utils_h) $(buildsym_h) \
-  $(gdbcmd_h) $(inferior_h) $(gdb_string_h) $(regcache_h) $(gdb_assert_h) \
-  $(sim_regno_h) $(gdbcore_h) $(osabi_h) $(version_h) $(floatformat_h) \
-  $(config_h)
+  $(gdbtypes_h) $(breakpoint_h) $(ansidecl_h)
+arch-utils.o: arch-utils.c $(defs_h) $(config_h) $(arch_utils_h) \
+  $(buildsym_h) $(gdbcmd_h) $(inferior_h) $(gdb_string_h) $(regcache_h) \
+  $(gdb_assert_h) $(sim_regno_h) $(gdbcore_h) $(osabi_h) $(libbfd_h) \
+  $(version_h) $(floatformat_h)
 arm-linux-nat.o: arm-linux-nat.c $(defs_h) $(inferior_h) $(gdbcore_h) \
   $(gdb_string_h) $(regcache_h) $(arm_tdep_h) $(gregset_h)
 arm-linux-tdep.o: arm-linux-tdep.c $(defs_h) $(target_h) $(value_h) \
@@ -2140,7 +2186,7 @@ bcache.o: bcache.c $(defs_h) $(gdb_obstack_h) $(bcache_h) $(gdb_string_h) \
 bfd-target.o: bfd-target.c $(defs_h) $(target_h) $(bfd_target_h) \
   $(gdb_assert_h) $(gdb_string_h)
 block.o: block.c $(defs_h) $(block_h) $(symtab_h) $(symfile_h) \
-  $(gdb_obstack_h) $(cp_support_h)
+  $(gdb_obstack_h) $(cp_support_h) $(inferior_h)
 blockframe.o: blockframe.c $(defs_h) $(symtab_h) $(bfd_h) $(objfiles_h) \
   $(frame_h) $(gdbcore_h) $(value_h) $(target_h) $(inferior_h) \
   $(annotate_h) $(regcache_h) $(gdb_assert_h) $(dummy_frame_h) \
@@ -2151,9 +2197,10 @@ breakpoint.o: breakpoint.c $(defs_h) $(symtab_h) $(frame_h) \
   $(value_h) $(command_h) $(inferior_h) $(gdbthread_h) $(target_h) \
   $(language_h) $(gdb_string_h) $(demangle_h) $(annotate_h) $(symfile_h) \
   $(objfiles_h) $(source_h) $(linespec_h) $(completer_h) $(gdb_h) \
-  $(ui_out_h) $(cli_script_h) $(gdb_assert_h) $(block_h) $(solib_h) \
-  $(solist_h) $(observer_h) $(exceptions_h) $(gdb_events_h) \
-  $(mi_common_h) $(inlining_h) $(srcdir)/config/i386/nm-i386.h
+  $(ui_out_h) $(cli_script_h) $(cli_out_h) $(gdb_assert_h) $(block_h) \
+  $(wrapper_h) $(solib_h) $(solist_h) $(observer_h) $(exceptions_h) \
+  $(gdb_regex_h) $(gdb_events_h) $(readline_tilde_h) $(mi_common_h) \
+  $(inlining_h) $(objc_lang_h) $(srcdir)/config/i386/nm-i386.h
 # APPLE LOCAL end subroutine inlining
 bsd-kvm.o: bsd-kvm.c $(defs_h) $(cli_cmds_h) $(command_h) $(frame_h) \
   $(regcache_h) $(target_h) $(value_h) $(gdbcore_h) $(gdb_assert_h) \
@@ -2166,18 +2213,23 @@ buildsym.o: buildsym.c $(defs_h) $(bfd_h) $(gdb_obstack_h) $(symtab_h) \
   $(symfile_h) $(objfiles_h) $(gdbtypes_h) $(gdb_assert_h) \
   $(complaints_h) $(gdb_string_h) $(expression_h) $(bcache_h) \
   $(filenames_h) $(macrotab_h) $(demangle_h) $(block_h) $(cp_support_h) \
-  $(dictionary_h) $(buildsym_h) $(stabsread_h)
+  $(dictionary_h) $(inlining_h) $(buildsym_h) $(stabsread_h)
 c-exp.o: c-exp.c $(defs_h) $(gdb_string_h) $(expression_h) $(value_h) \
   $(parser_defs_h) $(language_h) $(c_lang_h) $(bfd_h) $(symfile_h) \
-  $(objfiles_h) $(charset_h) $(block_h) $(cp_support_h)
+  $(objfiles_h) $(charset_h) $(block_h) $(cp_support_h) $(objc_lang_h)
 charset.o: charset.c $(defs_h) $(charset_h) $(gdbcmd_h) $(gdb_assert_h) \
   $(gdb_string_h)
 c-lang.o: c-lang.c $(defs_h) $(symtab_h) $(gdbtypes_h) $(expression_h) \
   $(parser_defs_h) $(language_h) $(c_lang_h) $(valprint_h) \
   $(macroscope_h) $(gdb_assert_h) $(charset_h) $(gdb_string_h) \
   $(demangle_h) $(cp_support_h)
+# APPLE LOCAL checkpoints:
+checkpoint.o: checkpoint.c $(defs_h) $(symtab_h) $(target_h) $(frame_h) \
+  $(command_h) $(gdbcmd_h) $(regcache_h) $(inferior_h) $(checkpoint_h) \
+  $(macosx_nat_inferior_h)
+# END APPLE LOCAL target
 cli-out.o: cli-out.c $(defs_h) $(ui_out_h) $(cli_out_h) $(gdb_string_h) \
-  $(gdb_assert_h)
+  $(gdb_assert_h) $(mi_console_h)
 coff-pe-read.o: coff-pe-read.c $(coff_pe_read_h) $(bfd_h) $(defs_h) \
   $(gdbtypes_h) $(symtab_h) $(symfile_h) $(objfiles_h)
 coffread.o: coffread.c $(defs_h) $(symtab_h) $(gdbtypes_h) $(demangle_h) \
@@ -2197,12 +2249,13 @@ core-aout.o: core-aout.c $(defs_h) $(gdbcore_h) $(value_h) $(regcache_h) \
   $(gdb_dirent_h) $(gdb_stat_h)
 corefile.o: corefile.c $(defs_h) $(gdb_string_h) $(inferior_h) \
   $(symtab_h) $(command_h) $(gdbcmd_h) $(bfd_h) $(target_h) $(gdbcore_h) \
-  $(dis_asm_h) $(gdb_stat_h) $(completer_h) $(exceptions_h)
+  $(dis_asm_h) $(gdb_stat_h) $(completer_h) $(symfile_h) $(objfiles_h) \
+  $(objc_lang_h) $(exceptions_h)
 corelow.o: corelow.c $(defs_h) $(arch_utils_h) $(gdb_string_h) $(frame_h) \
   $(inferior_h) $(symtab_h) $(command_h) $(bfd_h) $(target_h) \
   $(gdbcore_h) $(gdbthread_h) $(regcache_h) $(regset_h) $(symfile_h) \
   $(exec_h) $(readline_h) $(observer_h) $(gdb_assert_h) $(exceptions_h) \
-  $(solib_h)
+  $(solib_h) $(inlining_h)
 core-regset.o: core-regset.c $(defs_h) $(command_h) $(gdbcore_h) \
   $(inferior_h) $(target_h) $(gdb_string_h) $(gregset_h)
 cp-abi.o: cp-abi.c $(defs_h) $(value_h) $(cp_abi_h) $(command_h) \
@@ -2234,13 +2287,19 @@ c-typeprint.o: c-typeprint.c $(defs_h) $(gdb_obstack_h) $(bfd_h) \
 c-valprint.o: c-valprint.c $(defs_h) $(gdb_string_h) $(symtab_h) \
   $(gdbtypes_h) $(expression_h) $(value_h) $(valprint_h) $(language_h) \
   $(c_lang_h) $(cp_abi_h) $(target_h)
-d10v-tdep.o: d10v-tdep.c
+d10v-tdep.o: d10v-tdep.c $(defs_h) $(frame_h) $(frame_unwind_h) \
+  $(frame_base_h) $(symtab_h) $(gdbtypes_h) $(gdbcmd_h) $(gdbcore_h) \
+  $(gdb_string_h) $(value_h) $(inferior_h) $(dis_asm_h) $(symfile_h) \
+  $(objfiles_h) $(language_h) $(arch_utils_h) $(regcache_h) $(remote_h) \
+  $(floatformat_h) $(gdb_sim_d10v_h) $(sim_regno_h) $(disasm_h) \
+  $(trad_frame_h) $(gdb_assert_h)
 dbug-rom.o: dbug-rom.c $(defs_h) $(gdbcore_h) $(target_h) $(monitor_h) \
   $(serial_h) $(regcache_h) $(m68k_tdep_h)
 dbxread.o: dbxread.c $(defs_h) $(gdb_string_h) $(gdb_obstack_h) \
-  $(gdb_stat_h) $(symtab_h) $(breakpoint_h) $(target_h) $(gdbcore_h) \
-  $(libaout_h) $(objfiles_h) $(buildsym_h) $(stabsread_h) $(gdb_stabs_h) \
-  $(demangle_h) $(complaints_h) $(cp_abi_h) $(gdb_assert_h) \
+  $(gdb_stat_h) $(symtab_h) $(breakpoint_h) $(command_h) $(gdbcmd_h) \
+  $(target_h) $(gdbcore_h) $(libaout_h) $(objfiles_h) $(buildsym_h) \
+  $(stabsread_h) $(gdb_stabs_h) $(demangle_h) $(complaints_h) $(cp_abi_h) \
+  $(mach_o_h) $(block_h) $(macosx_nat_dyld_h) $(gdb_assert_h) \
   $(gdb_string_h) $(aout_aout64_h) $(aout_stab_gnu_h)
 dcache.o: dcache.c $(defs_h) $(dcache_h) $(gdbcmd_h) $(gdb_string_h) \
   $(gdbcore_h) $(target_h)
@@ -2251,34 +2310,36 @@ dictionary.o: dictionary.c $(defs_h) $(gdb_obstack_h) $(symtab_h) \
 dink32-rom.o: dink32-rom.c $(defs_h) $(gdbcore_h) $(target_h) \
   $(monitor_h) $(serial_h) $(symfile_h) $(inferior_h) $(regcache_h)
 disasm.o: disasm.c $(defs_h) $(target_h) $(value_h) $(ui_out_h) \
-  $(gdb_string_h) $(disasm_h) $(gdbcore_h) $(dis_asm_h)
+  $(gdb_string_h) $(disasm_h) $(gdbcore_h) $(dis_asm_h) $(gdb_assert_h)
 doublest.o: doublest.c $(defs_h) $(doublest_h) $(floatformat_h) \
   $(gdb_assert_h) $(gdb_string_h) $(gdbtypes_h)
 dsrec.o: dsrec.c $(defs_h) $(serial_h) $(srec_h) $(gdb_assert_h) \
   $(gdb_string_h)
 dummy-frame.o: dummy-frame.c $(defs_h) $(dummy_frame_h) $(regcache_h) \
   $(frame_h) $(inferior_h) $(gdb_assert_h) $(frame_unwind_h) $(command_h) \
-  $(gdbcmd_h) $(gdb_string_h)
+  $(gdbcmd_h) $(gdb_string_h) $(inlining_h)
 dve3900-rom.o: dve3900-rom.c $(defs_h) $(gdbcore_h) $(target_h) \
   $(monitor_h) $(serial_h) $(inferior_h) $(command_h) $(gdb_string_h) \
   $(regcache_h) $(mips_tdep_h)
 dwarf2expr.o: dwarf2expr.c $(defs_h) $(symtab_h) $(gdbtypes_h) $(value_h) \
-  $(gdbcore_h) $(elf_dwarf2_h) $(dwarf2expr_h)
+  $(gdbcore_h) $(elf_dwarf2_h) $(dwarf2expr_h) $(exceptions_h) \
+  $(dwarf2_frame_h) $(dwarf2loc_h) $(objfiles_h)
 dwarf2-frame.o: dwarf2-frame.c $(defs_h) $(dwarf2expr_h) $(elf_dwarf2_h) \
   $(frame_h) $(frame_base_h) $(frame_unwind_h) $(gdbcore_h) $(gdbtypes_h) \
-  $(symtab_h) $(objfiles_h) $(regcache_h) $(gdb_assert_h) $(gdb_string_h) \
-  $(complaints_h) $(dwarf2_frame_h)
+  $(symtab_h) $(objfiles_h) $(regcache_h) $(value_h) $(dwarf2read_h) \
+  $(gdb_assert_h) $(gdb_string_h) $(complaints_h) $(dwarf2_frame_h)
 dwarf2loc.o: dwarf2loc.c $(defs_h) $(ui_out_h) $(value_h) $(frame_h) \
   $(gdbcore_h) $(target_h) $(inferior_h) $(ax_h) $(ax_gdb_h) \
   $(regcache_h) $(objfiles_h) $(exceptions_h) $(elf_dwarf2_h) \
-  $(dwarf2expr_h) $(dwarf2loc_h) $(gdb_string_h)
+  $(dwarf2expr_h) $(dwarf2loc_h) $(dwarf2read_h) $(gdb_string_h)
 # APPLE LOCAL begin subroutine inlining:
 dwarf2read.o: dwarf2read.c $(defs_h) $(bfd_h) $(symtab_h) $(gdbtypes_h) \
   $(objfiles_h) $(elf_dwarf2_h) $(buildsym_h) $(demangle_h) \
   $(expression_h) $(filenames_h) $(macrotab_h) $(language_h) \
   $(complaints_h) $(bcache_h) $(dwarf2expr_h) $(dwarf2loc_h) \
   $(cp_support_h) $(hashtab_h) $(command_h) $(gdbcmd_h) $(gdb_string_h) \
-  $(gdb_assert_h) $(inlining_h)
+  $(gdb_assert_h) $(db_access_functions_h) $(symfile_h) $(inlining_h) \
+  $(block_h) $(gdbcore_h) $(dwarf2read_h) $(objc_lang_h)
 # APPLE LOCAL end subroutine inlining
 dwarfread.o: dwarfread.c $(defs_h) $(symtab_h) $(gdbtypes_h) \
   $(objfiles_h) $(elf_dwarf_h) $(buildsym_h) $(demangle_h) \
@@ -2292,7 +2353,7 @@ eval.o: eval.c $(defs_h) $(gdb_string_h) $(symtab_h) $(gdbtypes_h) \
   $(f_lang_h) $(cp_abi_h) $(infcall_h) $(objc_lang_h) $(block_h) \
   $(parser_defs_h) $(cp_support_h)
 event-loop.o: event-loop.c $(defs_h) $(event_loop_h) $(event_top_h) \
-  $(gdb_string_h) $(exceptions_h) $(gdb_assert_h)
+  $(interps_h) $(ui_out_h) $(gdb_string_h) $(exceptions_h) $(gdb_assert_h)
 event-top.o: event-top.c $(defs_h) $(top_h) $(inferior_h) $(target_h) \
   $(terminal_h) $(event_loop_h) $(event_top_h) $(interps_h) \
   $(exceptions_h) $(gdbcmd_h) $(readline_h) $(readline_history_h)
@@ -2301,8 +2362,9 @@ exceptions.o: exceptions.c $(defs_h) $(exceptions_h) $(breakpoint_h) \
   $(gdb_string_h) $(serial_h)
 exec.o: exec.c $(defs_h) $(frame_h) $(inferior_h) $(target_h) $(gdbcmd_h) \
   $(language_h) $(symfile_h) $(objfiles_h) $(completer_h) $(value_h) \
-  $(exec_h) $(readline_h) $(gdb_string_h) $(gdbcore_h) $(gdb_stat_h) \
-  $(xcoffsolib_h) $(observer_h)
+  $(exec_h) $(observer_h) $(exceptions_h) $(osabi_h) $(readline_h) \
+  $(gdb_string_h) $(gdbcore_h) $(gdb_stat_h) $(xcoffsolib_h) \
+  $(macosx_nat_dyld_h)
 expprint.o: expprint.c $(defs_h) $(symtab_h) $(gdbtypes_h) \
   $(expression_h) $(value_h) $(language_h) $(parser_defs_h) \
   $(user_regs_h) $(target_h) $(gdb_string_h) $(block_h)
@@ -2318,9 +2380,16 @@ findvar.o: findvar.c $(defs_h) $(symtab_h) $(gdbtypes_h) $(frame_h) \
 f-lang.o: f-lang.c $(defs_h) $(gdb_string_h) $(symtab_h) $(gdbtypes_h) \
   $(expression_h) $(parser_defs_h) $(language_h) $(f_lang_h) \
   $(valprint_h) $(value_h)
+fix-and-continue.o: fix-and-continue.c $(defs_h) $(value_h) \
+  $(gdbthread_h) $(gdbtypes_h) $(objfiles_h) $(command_h) $(completer_h) \
+  $(frame_h) $(target_h) $(gdbcore_h) $(inferior_h) $(symfile_h) $(gdb_h) \
+  $(ui_out_h) $(cli_out_h) $(symtab_h) $(readline_h) $(regcache_h) \
+  $(gdbcmd_h) $(language_h) macosx/ppc-macosx-frameinfo.h \
+  macosx/ppc-macosx-tdep.h $(macosx_nat_dyld_process_h)
 fork-child.o: fork-child.c $(defs_h) $(gdb_string_h) $(frame_h) \
   $(inferior_h) $(target_h) $(gdb_wait_h) $(gdb_vfork_h) $(gdbcore_h) \
-  $(terminal_h) $(gdbthread_h) $(command_h) $(solib_h)
+  $(terminal_h) $(gdbthread_h) $(gdbcmd_h) $(command_h) $(solib_h) \
+  $(osabi_h)
 frame-base.o: frame-base.c $(defs_h) $(frame_base_h) $(frame_h) \
   $(gdb_obstack_h)
 # APPLE LOCAL begin subroutine inlining:
@@ -2329,7 +2398,7 @@ frame.o: frame.c $(defs_h) $(frame_h) $(target_h) $(value_h) \
   $(user_regs_h) $(gdb_obstack_h) $(dummy_frame_h) $(sentinel_frame_h) \
   $(gdbcore_h) $(annotate_h) $(language_h) $(frame_unwind_h) \
   $(frame_base_h) $(command_h) $(gdbcmd_h) $(observer_h) $(objfiles_h) \
-  $(exceptions_h) $(inlining_h)
+  $(exceptions_h) $(inlining_h) $(top_h)
 frame-unwind.o: frame-unwind.c $(defs_h) $(frame_h) $(frame_unwind_h) \
   $(gdb_assert_h) $(dummy_frame_h) $(gdb_obstack_h) $(inlining_h)
 # APPLE LOCAL end subroutine inlining
@@ -2357,7 +2426,7 @@ gdb-events.o: gdb-events.c $(defs_h) $(gdb_events_h) $(gdbcmd_h)
 gdbtypes.o: gdbtypes.c $(defs_h) $(gdb_string_h) $(bfd_h) $(symtab_h) \
   $(symfile_h) $(objfiles_h) $(gdbtypes_h) $(expression_h) $(language_h) \
   $(target_h) $(value_h) $(demangle_h) $(complaints_h) $(gdbcmd_h) \
-  $(wrapper_h) $(cp_abi_h) $(gdb_assert_h)
+  $(varobj_h) $(wrapper_h) $(cp_abi_h) $(gdb_assert_h) $(exceptions_h)
 glibc-tdep.o: glibc-tdep.c $(defs_h) $(frame_h) $(symtab_h) $(symfile_h) \
   $(objfiles_h) $(glibc_tdep_h)
 gnu-nat.o: gnu-nat.c $(gdb_string_h) $(defs_h) $(inferior_h) $(symtab_h) \
@@ -2376,8 +2445,8 @@ go32-nat.o: go32-nat.c $(defs_h) $(inferior_h) $(gdb_wait_h) $(gdbcore_h) \
 h8300-tdep.o: h8300-tdep.c $(defs_h) $(value_h) $(arch_utils_h) \
   $(regcache_h) $(gdbcore_h) $(objfiles_h) $(gdb_assert_h) $(dis_asm_h) \
   $(dwarf2_frame_h) $(frame_base_h) $(frame_unwind_h)
-hpacc-abi.o: hpacc-abi.c $(defs_h) $(value_h)  $(gdb_string_h) \
-  $(gdbtypes_h) $(gdbcore_h) $(cp_abi_h) $(gnu_v2_abi_h)
+hpacc-abi.o: hpacc-abi.c $(defs_h) $(value_h) $(gdb_regex_h) \
+  $(gdb_string_h) $(gdbtypes_h) $(gdbcore_h) $(cp_abi_h) $(gnu_v2_abi_h)
 hppabsd-nat.o: hppabsd-nat.c $(defs_h) $(inferior_h) $(regcache_h) \
   $(target_h) $(hppa_tdep_h) $(inf_ptrace_h)
 hppabsd-tdep.o: hppabsd-tdep.c $(defs_h) $(arch_utils_h) $(symtab_h) \
@@ -2401,16 +2470,13 @@ hppa-linux-tdep.o: hppa-linux-tdep.c $(defs_h) $(gdbcore_h) $(osabi_h) \
 hppa-tdep.o: hppa-tdep.c $(defs_h) $(bfd_h) $(inferior_h) $(regcache_h) \
   $(completer_h) $(osabi_h) $(gdb_assert_h) $(arch_utils_h) $(symtab_h) \
   $(dis_asm_h) $(trad_frame_h) $(frame_unwind_h) $(frame_base_h) \
-  $(gdbcore_h) $(gdbcmd_h) $(objfiles_h) $(hppa_tdep_h)
+  $(gdbcore_h) $(gdbcmd_h) $(objfiles_h) $(hppa_tdep_h) $(value_h)
 hpread.o: hpread.c $(defs_h) $(bfd_h) $(gdb_string_h) $(hp_symtab_h) \
   $(syms_h) $(symtab_h) $(symfile_h) $(objfiles_h) $(buildsym_h) \
   $(complaints_h) $(gdb_stabs_h) $(gdbtypes_h) $(demangle_h) \
   $(solib_som_h) $(gdb_assert_h) $(hppa_tdep_h) $(gdb_string_h)
 hpux-thread.o: hpux-thread.c $(defs_h) $(gdbthread_h) $(target_h) \
   $(inferior_h) $(regcache_h) $(gdb_stat_h) $(gdbcore_h) $(hppa_tdep_h)
-# APPLE LOCAL target:
-x86-shared-tdep.o: x86-shared-tdep.c $(defs_h) $(x86_shared_tdep_h)
-# END APPLE LOCAL target
 i386bsd-nat.o: i386bsd-nat.c $(defs_h) $(inferior_h) $(regcache_h) \
   $(gdb_assert_h) $(i386_tdep_h) $(i387_tdep_h) $(i386bsd_nat_h) \
   $(inf_ptrace_h)
@@ -2460,8 +2526,9 @@ i386-tdep.o: i386-tdep.c $(defs_h) $(arch_utils_h) $(command_h) \
   $(frame_h) $(frame_base_h) $(frame_unwind_h) $(inferior_h) $(gdbcmd_h) \
   $(gdbcore_h) $(objfiles_h) $(osabi_h) $(regcache_h) $(reggroups_h) \
   $(regset_h) $(symfile_h) $(symtab_h) $(target_h) $(value_h) \
-  $(dis_asm_h) $(gdb_assert_h) $(gdb_string_h) $(i386_tdep_h) \
-  $(i387_tdep_h) $(x86_shared_tdep_h)
+  $(gdb_assert_h) $(reggroups_h) $(bfd_h) $(elf_bfd_h) $(dis_asm_h) \
+  $(gdb_string_h) $(i386_tdep_h) $(i387_tdep_h) $(x86_shared_tdep_h) \
+  $(macosx_tdep_h)
 i386v4-nat.o: i386v4-nat.c $(defs_h) $(value_h) $(inferior_h) \
   $(regcache_h) $(i386_tdep_h) $(i387_tdep_h) $(gregset_h)
 i386v-nat.o: i386v-nat.c $(defs_h) $(frame_h) $(inferior_h) $(language_h) \
@@ -2483,22 +2550,24 @@ ia64-tdep.o: ia64-tdep.c $(defs_h) $(inferior_h) $(gdbcore_h) \
 infcall.o: infcall.c $(defs_h) $(breakpoint_h) $(target_h) $(regcache_h) \
   $(inferior_h) $(gdb_assert_h) $(block_h) $(gdbcore_h) $(language_h) \
   $(objfiles_h) $(gdbcmd_h) $(command_h) $(gdb_string_h) $(infcall_h) \
-  $(dummy_frame_h) $(macosx_srcdir)/macosx-nat-infthread.h
+  $(dummy_frame_h) $(exceptions_h) $(objc_lang_h) $(macosx_nat_infthread_h)
 inf-child.o: inf-child.c $(defs_h) $(regcache_h) $(memattr_h) $(symtab_h) \
-  $(target_h) $(inferior_h) $(gdb_string_h)
+  $(target_h) $(inferior_h) $(gdb_string_h) $(inf_child_h)
 # APPLE LOCAL begin subroutine inlining:
 infcmd.o: infcmd.c $(defs_h) $(gdb_string_h) $(symtab_h) $(gdbtypes_h) \
   $(frame_h) $(inferior_h) $(environ_h) $(value_h) $(gdbcmd_h) \
-  $(symfile_h) $(gdbcore_h) $(target_h) $(language_h) $(symfile_h) \
+  $(symfile_h) $(gdbcore_h) $(target_h) $(language_h) $(annotate_h) \
   $(objfiles_h) $(completer_h) $(ui_out_h) $(event_top_h) \
-  $(parser_defs_h) $(regcache_h) $(reggroups_h) $(block_h) $(solib_h) \
-  $(gdb_assert_h) $(inlining_h)
+  $(parser_defs_h) $(top_h) $(regcache_h) $(reggroups_h) $(block_h) \
+  $(solib_h) $(gdb_assert_h) $(infcmd_h) $(inlining_h) \
+  $(macosx_nat_dyld_h) $(macosx_nat_inferior_h) $(nm_macosx_h) \
+  $(checkpoint_h)
 # APPLE LOCAL end subroutine inlining
 inf-loop.o: inf-loop.c $(defs_h) $(inferior_h) $(target_h) \
   $(event_loop_h) $(event_top_h) $(inf_loop_h) $(remote_h) $(exceptions_h)
 inflow.o: inflow.c $(defs_h) $(frame_h) $(inferior_h) $(command_h) \
   $(serial_h) $(terminal_h) $(target_h) $(gdbthread_h) $(gdb_string_h) \
-  $(inflow_h)
+  $(inflow_h) $(ui_out_h)
 inf-ptrace.o: inf-ptrace.c $(defs_h) $(command_h) $(inferior_h) \
   $(inflow_h) $(gdbcore_h) $(observer_h) $(regcache_h) $(gdb_assert_h) \
   $(gdb_string_h) $(gdb_ptrace_h) $(gdb_wait_h) $(inf_child_h)
@@ -2509,20 +2578,22 @@ infptrace.o: infptrace.c $(defs_h) $(command_h) $(frame_h) $(gdbcore_h) \
 infrun.o: infrun.c $(defs_h) $(gdb_string_h) $(symtab_h) $(frame_h) \
   $(inferior_h) $(exceptions_h) $(breakpoint_h) $(gdb_wait_h) \
   $(gdbcore_h) $(gdbcmd_h) $(cli_script_h) $(target_h) $(gdbthread_h) \
-  $(annotate_h) $(symfile_h) $(top_h) $(inf_loop_h) $(regcache_h) \
-  $(value_h) $(observer_h) $(language_h) $(solib_h) $(gdb_assert_h) \
-  $(mi_common_h) $(inlining_h)
+  $(annotate_h) $(symfile_h) $(top_h) $(inf_loop_h) $(event_top_h) \
+  $(regcache_h) $(value_h) $(observer_h) $(language_h) $(solib_h) \
+  $(gdb_assert_h) $(mi_common_h) $(inlining_h) $(macosx_nat_dyld_h) \
+  $(objfiles_h) $(ppc_macosx_regnums_h) $(checkpoint_h)
 # APPLE LOCAL end subroutine inlining
 inftarg.o: inftarg.c $(defs_h) $(frame_h) $(inferior_h) $(target_h) \
-  $(gdbcore_h) $(command_h) $(gdb_stat_h) $(observer_h) $(gdb_wait_h) \
-  $(inflow_h)
+  $(gdbcore_h) $(command_h) $(gdb_stat_h) $(event_loop_h) $(observer_h) \
+  $(gdb_wait_h) $(inflow_h)
 inf-ttrace.o: inf-ttrace.c $(defs_h) $(command_h) $(gdbcore_h) \
   $(gdbthread_h) $(inferior_h) $(observer_h) $(target_h) $(gdb_assert_h) \
   $(gdb_string_h) $(inf_child_h) $(inf_ttrace_h)
 # APPLE LOCAL begin subroutine inlining:
 inlining.o: inlining.c $(defs_h) $(symtab_h) $(frame_h) $(breakpoint_h) \
   $(symfile_h) $(source_h) $(demangle_h) $(inferior_h) $(gdb_assert_h) \
-  $(frame_unwind_h) $(annotate_h) $(ui_out_h) $(inlining_h)
+  $(frame_unwind_h) $(annotate_h) $(ui_out_h) $(inlining_h) $(objfiles_h) \
+  $(gdbthread_h) $(complaints_h) $(buildsym_h)
 # APPLE LOCAL end subroutine inlining
 interps.o: interps.c $(defs_h) $(gdbcmd_h) $(ui_out_h) $(event_loop_h) \
   $(event_top_h) $(interps_h) $(completer_h) $(gdb_string_h) \
@@ -2535,7 +2606,7 @@ irix5-nat.o: irix5-nat.c $(defs_h) $(inferior_h) $(gdbcore_h) $(target_h) \
   $(regcache_h) $(gdb_string_h) $(gregset_h) $(mips_tdep_h)
 jv-exp.o: jv-exp.c $(defs_h) $(gdb_string_h) $(expression_h) $(value_h) \
   $(parser_defs_h) $(language_h) $(jv_lang_h) $(bfd_h) $(symfile_h) \
-  $(objfiles_h) $(block_h)
+  $(objfiles_h) $(block_h) $(completer_h)
 jv-lang.o: jv-lang.c $(defs_h) $(symtab_h) $(gdbtypes_h) $(expression_h) \
   $(parser_defs_h) $(language_h) $(gdbtypes_h) $(symtab_h) $(symfile_h) \
   $(objfiles_h) $(gdb_string_h) $(value_h) $(c_lang_h) $(jv_lang_h) \
@@ -2554,12 +2625,13 @@ language.o: language.c $(defs_h) $(gdb_string_h) $(symtab_h) \
   $(target_h) $(parser_defs_h) $(jv_lang_h) $(demangle_h)
 libunwind-frame.o: libunwind-frame.c $(defs_h) $(inferior_h) $(frame_h) \
   $(frame_base_h) $(frame_unwind_h) $(gdbcore_h) $(gdbtypes_h) \
-  $(symtab_h) $(objfiles_h) $(regcache_h) $(gdb_assert_h) $(gdb_string_h) \
-  $(libunwind_frame_h) $(complaints_h) $(config_h)
+  $(symtab_h) $(objfiles_h) $(regcache_h) $(config_h) $(gdb_assert_h) \
+  $(gdb_string_h) $(libunwind_frame_h) $(complaints_h)
 linespec.o: linespec.c $(defs_h) $(symtab_h) $(frame_h) $(command_h) \
   $(symfile_h) $(objfiles_h) $(source_h) $(demangle_h) $(value_h) \
   $(completer_h) $(cp_abi_h) $(parser_defs_h) $(block_h) $(objc_lang_h) \
-  $(linespec_h) $(exceptions_h)
+  $(linespec_h) $(language_h) $(ui_out_h) $(exceptions_h) $(gdb_assert_h) \
+  $(breakpoint_h)
 linux-nat.o: linux-nat.c $(defs_h) $(inferior_h) $(target_h) \
   $(gdb_string_h) $(gdb_wait_h) $(gdb_assert_h) $(linux_nat_h) \
   $(gdbthread_h) $(gdbcmd_h) $(regcache_h) $(elf_bfd_h) $(gregset_h) \
@@ -2571,7 +2643,7 @@ linux-thread-db.o: linux-thread-db.c $(defs_h) $(gdb_assert_h) \
   $(regcache_h) $(solib_svr4_h) $(inlining_h)
 # APPLE LOCAL end subroutine inlining
 lynx-nat.o: lynx-nat.c $(defs_h) $(frame_h) $(inferior_h) $(target_h) \
-  $(gdbcore_h) $(regcache_h)
+  $(gdbcore_h) $(regcache_h) $(gdb_wait_h)
 m2-exp.o: m2-exp.c $(defs_h) $(gdb_string_h) $(expression_h) \
   $(language_h) $(value_h) $(parser_defs_h) $(m2_lang_h) $(bfd_h) \
   $(symfile_h) $(objfiles_h) $(block_h)
@@ -2621,7 +2693,7 @@ m68k-tdep.o: m68k-tdep.c $(defs_h) $(dwarf2_frame_h) $(frame_h) \
   $(frame_base_h) $(frame_unwind_h) $(floatformat_h) $(symtab_h) \
   $(gdbcore_h) $(value_h) $(gdb_string_h) $(gdb_assert_h) $(inferior_h) \
   $(regcache_h) $(arch_utils_h) $(osabi_h) $(dis_asm_h) $(m68k_tdep_h) \
- $(gregset_h)
+  $(gregset_h)
 m88kbsd-nat.o: m88kbsd-nat.c $(defs_h) $(inferior_h) $(regcache_h) \
   $(target_h) $(m88k_tdep_h) $(inf_ptrace_h)
 m88k-tdep.o: m88k-tdep.c $(defs_h) $(arch_utils_h) $(dis_asm_h) \
@@ -2639,10 +2711,12 @@ macrotab.o: macrotab.c $(defs_h) $(gdb_obstack_h) $(splay_tree_h) \
   $(bcache_h) $(complaints_h)
 main.o: main.c $(defs_h) $(top_h) $(target_h) $(inferior_h) $(symfile_h) \
   $(gdbcore_h) $(exceptions_h) $(getopt_h) $(gdb_stat_h) $(gdb_string_h) \
-  $(event_loop_h) $(ui_out_h) $(interps_h) $(main_h)
+  $(event_loop_h) $(ui_out_h) $(osabi_h) $(arch_utils_h) $(interps_h) \
+  $(main_h) $(cli_cmds_h) $(cli_decode_h)
 maint.o: maint.c $(defs_h) $(command_h) $(gdbcmd_h) $(symtab_h) \
   $(gdbtypes_h) $(demangle_h) $(gdbcore_h) $(expression_h) $(language_h) \
-  $(symfile_h) $(objfiles_h) $(value_h) $(cli_decode_h)
+  $(maint_h) $(symfile_h) $(objfiles_h) $(value_h) $(cli_decode_h) \
+  $(objc_lang_h)
 mdebugread.o: mdebugread.c $(defs_h) $(symtab_h) $(gdbtypes_h) \
   $(gdbcore_h) $(objfiles_h) $(gdb_obstack_h) $(buildsym_h) \
   $(stabsread_h) $(complaints_h) $(demangle_h) $(gdb_assert_h) $(block_h) \
@@ -2689,12 +2763,13 @@ mips-tdep.o: mips-tdep.c $(defs_h) $(gdb_string_h) $(gdb_assert_h) \
 mipsv4-nat.o: mipsv4-nat.c $(defs_h) $(inferior_h) $(gdbcore_h) \
   $(target_h) $(regcache_h) $(gregset_h)
 mn10300-tdep.o: mn10300-tdep.c $(defs_h) $(arch_utils_h) $(dis_asm_h) \
-  $(gdbtypes_h) $(regcache_h) $(gdb_string_h) $(gdb_assert_h) $(frame_h) \
-  $(frame_unwind_h) $(frame_base_h) $(trad_frame_h) $(symtab_h) \
-  $(dwarf2_frame_h) $(regcache_h) $(mn10300_tdep_h)
+  $(gdbtypes_h) $(regcache_h) $(gdb_string_h) $(gdb_assert_h) \
+  $(gdbcore_h) $(value_h) $(gdbtypes_h) $(frame_h) $(frame_unwind_h) \
+  $(frame_base_h) $(trad_frame_h) $(symtab_h) $(dwarf2_frame_h) \
+  $(regcache_h) $(mn10300_tdep_h)
 monitor.o: monitor.c $(defs_h) $(gdbcore_h) $(target_h) $(exceptions_h) \
   $(gdb_string_h) $(command_h) $(serial_h) $(monitor_h) $(gdbcmd_h) \
-  $(inferior_h)  $(srec_h) $(regcache_h)
+  $(inferior_h) $(gdb_regex_h) $(srec_h) $(regcache_h)
 nbsd-tdep.o: nbsd-tdep.c $(defs_h) $(gdb_string_h) $(solib_svr4_h)
 nlmread.o: nlmread.c $(defs_h) $(bfd_h) $(symtab_h) $(symfile_h) \
   $(objfiles_h) $(buildsym_h) $(stabsread_h) $(block_h)
@@ -2712,11 +2787,14 @@ objc-lang.o: objc-lang.c $(defs_h) $(symtab_h) $(gdbtypes_h) \
   $(objc_lang_h) $(exceptions_h) $(complaints_h) $(value_h) $(symfile_h) \
   $(objfiles_h) $(gdb_string_h) $(target_h) $(gdbcore_h) $(gdbcmd_h) \
   $(frame_h)  $(regcache_h) $(block_h) $(infcall_h) $(valprint_h) \
-  $(gdb_assert_h)
+  $(gdb_assert_h) $(inferior_h) $(demangle_h) $(osabi_h) $(inlining_h) \
+  $(ui_out_h) $(cli_out_h) $(breakpoint_h)
 objfiles.o: objfiles.c $(defs_h) $(bfd_h) $(symtab_h) $(symfile_h) \
-  $(objfiles_h) $(gdb_stabs_h) $(target_h) $(bcache_h) $(mdebugread_h) \
-  $(gdb_assert_h) $(gdb_stat_h) $(gdb_obstack_h) $(gdb_string_h) \
-  $(hashtab_h) $(breakpoint_h) $(block_h) $(dictionary_h)
+  $(objfiles_h) $(gdb_stabs_h) $(target_h) $(gdbcmd_h) $(bcache_h) \
+  $(mdebugread_h) $(gdb_assert_h) $(gdb_stat_h) $(gdb_obstack_h) \
+  $(gdb_string_h) $(hashtab_h) $(varobj_h) $(breakpoint_h) $(block_h) \
+  $(dictionary_h) $(objc_lang_h) $(macosx_nat_inferior_h) \
+  $(db_access_functions_h) $(inferior_h) $(macosx_nat_dyld_h) $(mach_o_h)
 observer.o: observer.c $(defs_h) $(observer_h) $(command_h) $(gdbcmd_h) \
   $(observer_inc)
 # APPLE LOCAL begin subroutine inlining:
@@ -2733,7 +2811,7 @@ parse.o: parse.c $(defs_h) $(gdb_string_h) $(symtab_h) $(gdbtypes_h) \
   $(gdb_assert_h) $(block_h)
 p-exp.o: p-exp.c $(defs_h) $(gdb_string_h) $(expression_h) $(value_h) \
   $(parser_defs_h) $(language_h) $(p_lang_h) $(bfd_h) $(symfile_h) \
-  $(objfiles_h) $(block_h)
+  $(objfiles_h) $(block_h) $(top_h) $(completer_h)
 p-lang.o: p-lang.c $(defs_h) $(gdb_string_h) $(symtab_h) $(gdbtypes_h) \
   $(expression_h) $(parser_defs_h) $(language_h) $(p_lang_h) \
   $(valprint_h) $(value_h)
@@ -2772,7 +2850,7 @@ printcmd.o: printcmd.c $(defs_h) $(gdb_string_h) $(frame_h) $(symtab_h) \
   $(gdbtypes_h) $(value_h) $(language_h) $(expression_h) $(gdbcore_h) \
   $(gdbcmd_h) $(target_h) $(breakpoint_h) $(demangle_h) $(valprint_h) \
   $(annotate_h) $(symfile_h) $(objfiles_h) $(completer_h) $(ui_out_h) \
-  $(gdb_assert_h) $(block_h) $(disasm_h) $(tui_h)
+  $(gdb_assert_h) $(block_h) $(disasm_h) $(objc_lang_h) $(tui_h)
 proc-api.o: proc-api.c $(defs_h) $(gdbcmd_h) $(completer_h) $(gdb_wait_h) \
   $(proc_utils_h)
 proc-events.o: proc-events.c $(defs_h)
@@ -2800,8 +2878,10 @@ regset.o: regset.c $(defs_h) $(regset_h) $(gdb_assert_h)
 remote.o: remote.c $(defs_h) $(gdb_string_h) $(inferior_h) $(bfd_h) \
   $(symfile_h) $(exceptions_h) $(target_h) $(gdbcmd_h) $(objfiles_h) \
   $(gdb_stabs_h) $(gdbthread_h) $(remote_h) $(regcache_h) $(value_h) \
-  $(gdb_assert_h) $(event_loop_h) $(event_top_h) $(inf_loop_h) \
-  $(serial_h) $(gdbcore_h) $(remote_fileio_h) $(solib_h) $(observer_h)
+  $(gdb_assert_h) $(observer_h) $(solib_h) $(event_loop_h) $(event_top_h) \
+  $(inf_loop_h) $(serial_h) $(gdbcore_h) $(remote_fileio_h) \
+  $(objc_lang_h) $(macosx_tdep_h) $(macosx_nat_dyld_h) \
+  $(macosx_nat_dyld_process_h) $(arm_macosx_tdep_h) $(arm_tdep_h)
 # APPLE LOCAL begin subroutine inlining:
 remote-e7000.o: remote-e7000.c $(defs_h) $(gdbcore_h) $(gdbarch_h) \
   $(inferior_h) $(target_h) $(value_h) $(command_h) $(gdb_string_h) \
@@ -2915,13 +2995,13 @@ sh-tdep.o: sh-tdep.c $(defs_h) $(frame_h) $(frame_base_h) \
   $(solib_svr4_h) $(elf_sh_h) $(gdb_sim_sh_h)
 solib-aix5.o: solib-aix5.c $(defs_h) $(gdb_string_h) $(elf_external_h) \
   $(symtab_h) $(bfd_h) $(symfile_h) $(objfiles_h) $(gdbcore_h) \
-  $(command_h) $(target_h) $(frame_h)  $(inferior_h) $(environ_h) \
-  $(language_h) $(gdbcmd_h) $(solist_h)
+  $(command_h) $(target_h) $(frame_h) $(gdb_regex_h) $(inferior_h) \
+  $(environ_h) $(language_h) $(gdbcmd_h) $(solist_h)
 solib.o: solib.c $(defs_h) $(gdb_string_h) $(symtab_h) $(bfd_h) \
   $(symfile_h) $(objfiles_h) $(exceptions_h) $(gdbcore_h) $(command_h) \
-  $(target_h) $(frame_h)  $(inferior_h) $(environ_h) $(language_h) \
-  $(gdbcmd_h) $(completer_h) $(filenames_h) $(exec_h) $(solist_h) \
-  $(observer_h) $(readline_h)
+  $(target_h) $(frame_h) $(gdb_regex_h) $(inferior_h) $(environ_h) \
+  $(language_h) $(gdbcmd_h) $(completer_h) $(filenames_h) $(exec_h) \
+  $(solist_h) $(observer_h) $(readline_h)
 solib-frv.o: solib-frv.c $(defs_h) $(gdb_string_h) $(inferior_h) \
   $(gdbcore_h) $(solist_h) $(frv_tdep_h) $(objfiles_h) $(symtab_h) \
   $(language_h) $(command_h) $(gdbcmd_h) $(elf_frv_h)
@@ -2952,10 +3032,10 @@ somread.o: somread.c $(defs_h) $(bfd_h) $(symtab_h) $(symfile_h) \
   $(complaints_h) $(gdb_string_h) $(demangle_h) $(som_h) $(libhppa_h) \
   $(solib_som_h)
 source.o: source.c $(defs_h) $(symtab_h) $(expression_h) $(language_h) \
-  $(command_h) $(source_h) $(gdbcmd_h) $(frame_h) $(value_h) \
-  $(gdb_string_h) $(gdb_stat_h) $(gdbcore_h) $(symfile_h) $(objfiles_h) \
-  $(annotate_h) $(gdbtypes_h) $(linespec_h) $(filenames_h) $(completer_h) \
-  $(ui_out_h) $(readline_h)
+  $(command_h) $(source_h) $(gdbcmd_h) $(frame_h) $(value_h) $(top_h) \
+  $(gdb_string_h) $(gdb_stat_h) $(gdbcore_h) $(gdb_regex_h) $(symfile_h) \
+  $(objfiles_h) $(annotate_h) $(gdbtypes_h) $(linespec_h) $(filenames_h) \
+  $(completer_h) $(ui_out_h) $(readline_h)
 sparc64fbsd-nat.o: sparc64fbsd-nat.c $(defs_h) $(regcache_h) $(target_h) \
   $(fbsd_nat_h) $(sparc64_tdep_h) $(sparc_nat_h) $(bsd_kvm_h)
 sparc64fbsd-tdep.o: sparc64fbsd-tdep.c $(defs_h) $(frame_h) \
@@ -3018,14 +3098,15 @@ stabsread.o: stabsread.c $(defs_h) $(gdb_string_h) $(bfd_h) \
   $(gdb_obstack_h) $(symtab_h) $(gdbtypes_h) $(expression_h) $(symfile_h) \
   $(objfiles_h) $(aout_stab_gnu_h) $(libaout_h) $(aout_aout64_h) \
   $(gdb_stabs_h) $(buildsym_h) $(complaints_h) $(demangle_h) \
-  $(language_h) $(doublest_h) $(cp_abi_h) $(cp_support_h) $(stabsread_h)
+  $(language_h) $(doublest_h) $(cp_abi_h) $(cp_support_h) $(gdb_assert_h) \
+  $(stabsread_h)
 # APPLE LOCAL begin subroutine inlining:
 stack.o: stack.c $(defs_h) $(gdb_string_h) $(value_h) $(symtab_h) \
   $(gdbtypes_h) $(expression_h) $(language_h) $(frame_h) $(gdbcmd_h) \
   $(gdbcore_h) $(target_h) $(source_h) $(breakpoint_h) $(demangle_h) \
   $(inferior_h) $(annotate_h) $(ui_out_h) $(block_h) $(stack_h) \
   $(gdb_assert_h) $(dictionary_h) $(exceptions_h) $(reggroups_h) \
-  $(regcache_h) $(solib_h) $(inlining_h)
+  $(regcache_h) $(symfile_h) $(objfiles_h) $(solib_h) $(inlining_h)
 # APPLE LOCAL end subroutine inlining
 std-regs.o: std-regs.c $(defs_h) $(user_regs_h) $(frame_h) $(gdbtypes_h) \
   $(value_h) $(gdb_string_h)
@@ -3035,64 +3116,69 @@ symfile.o: symfile.c $(defs_h) $(bfdlink_h) $(symtab_h) $(gdbtypes_h) \
   $(objfiles_h) $(source_h) $(gdbcmd_h) $(breakpoint_h) $(language_h) \
   $(complaints_h) $(demangle_h) $(inferior_h) $(filenames_h) \
   $(gdb_stabs_h) $(gdb_obstack_h) $(completer_h) $(bcache_h) $(hashtab_h) \
-  $(readline_h) $(gdb_assert_h) $(block_h) $(gdb_string_h) $(gdb_stat_h) \
-  $(observer_h) $(exec_h)
+  $(readline_h) $(gdb_assert_h) $(block_h) $(observer_h) $(libbfd_h) \
+  $(objc_lang_h) $(exceptions_h) $(exec_h) $(macosx_nat_inferior_h) \
+  $(macosx_nat_utils_h) $(mach_o_h) $(osabi_h) $(gdb_string_h) \
+  $(gdb_stat_h) $(macosx_nat_dyld_h) $(macosx_nat_dyld_process_h)
 symfile-mem.o: symfile-mem.c $(defs_h) $(symtab_h) $(gdbcore_h) \
   $(objfiles_h) $(exceptions_h) $(gdbcmd_h) $(target_h) $(value_h) \
   $(symfile_h) $(observer_h) $(auxv_h) $(elf_common_h)
 symmisc.o: symmisc.c $(defs_h) $(symtab_h) $(gdbtypes_h) $(bfd_h) \
   $(symfile_h) $(objfiles_h) $(breakpoint_h) $(command_h) \
-  $(gdb_obstack_h) $(exceptions_h) $(language_h) $(bcache_h) $(block_h) \
-  $(dictionary_h) $(gdb_string_h) $(readline_h)
+  $(gdb_obstack_h) $(exceptions_h) $(language_h) $(bcache_h) \
+  $(demangle_h) $(block_h) $(gdb_regex_h) $(gdb_stat_h) $(dictionary_h) \
+  $(gdb_assert_h) $(gdb_string_h) $(readline_h)
 symtab.o: symtab.c $(defs_h) $(symtab_h) $(gdbtypes_h) $(gdbcore_h) \
   $(frame_h) $(target_h) $(value_h) $(symfile_h) $(objfiles_h) \
-  $(gdbcmd_h) $(call_cmds_h) $(expression_h) $(language_h) $(demangle_h) \
-  $(inferior_h) $(linespec_h) $(source_h) $(filenames_h) $(objc_lang_h) \
-  $(ada_lang_h) $(hashtab_h) $(gdb_obstack_h) $(block_h) $(dictionary_h) \
-  $(gdb_string_h) $(gdb_stat_h) $(cp_abi_h) $(observer_h)
+  $(gdbcmd_h) $(call_cmds_h) $(gdb_regex_h) $(expression_h) $(language_h) \
+  $(demangle_h) $(inferior_h) $(linespec_h) $(source_h) $(filenames_h) \
+  $(objc_lang_h) $(ada_lang_h) $(hashtab_h) $(gdb_obstack_h) \
+  $(gdb_assert_h) $(block_h) $(dictionary_h) $(gdb_string_h) \
+  $(gdb_stat_h) $(cp_abi_h) $(observer_h) $(complaints_h)
 target.o: target.c $(defs_h) $(gdb_string_h) $(target_h) $(gdbcmd_h) \
   $(symtab_h) $(inferior_h) $(bfd_h) $(symfile_h) $(objfiles_h) \
-  $(gdb_wait_h) $(dcache_h) $(regcache_h) $(gdb_assert_h) $(gdbcore_h)
+  $(gdb_wait_h) $(dcache_h) $(regcache_h) $(gdb_assert_h) $(event_loop_h) \
+  $(memattr_h) $(gdbcore_h) $(objc_lang_h) $(checkpoint_h) $(ui_out_h) \
+  $(dis_asm_h) $(gdbarch_h) $(exceptions_h) $(exec_h)
 # APPLE LOCAL begin subroutine inlining:
 thread.o: thread.c $(defs_h) $(symtab_h) $(frame_h) $(inferior_h) \
   $(environ_h) $(value_h) $(target_h) $(gdbthread_h) $(exceptions_h) \
   $(command_h) $(gdbcmd_h) $(regcache_h) $(gdb_h) $(gdb_string_h) \
-  $(ui_out_h) $(inlining_h)
+  $(wrapper_h) $(ui_out_h) $(inlining_h) $(macosx_nat_infthread_h)
 top.o: top.c $(defs_h) $(gdbcmd_h) $(call_cmds_h) $(cli_cmds_h) \
   $(cli_script_h) $(cli_setshow_h) $(cli_decode_h) $(symtab_h) \
   $(inferior_h) $(exceptions_h) $(target_h) $(breakpoint_h) $(gdbtypes_h) \
   $(expression_h) $(value_h) $(language_h) $(terminal_h) $(annotate_h) \
   $(completer_h) $(top_h) $(version_h) $(serial_h) $(doublest_h) \
-  $(gdb_assert_h) $(readline_h) $(readline_history_h) $(event_top_h) \
-  $(gdb_string_h) $(gdb_stat_h) $(ui_out_h) $(cli_out_h) $(inlining_h) \
-  $(mi_common_h) $(mi_cmds_h) $(mi_main_h)
+  $(gdb_assert_h) $(inlining_h) $(checkpoint_h) $(readline_h) \
+  $(readline_history_h) $(event_top_h) $(gdb_string_h) $(gdb_stat_h) \
+  $(ui_out_h) $(cli_out_h) $(mi_common_h) $(mi_cmds_h) $(mi_main_h)
 tracepoint.o: tracepoint.c $(defs_h) $(symtab_h) $(frame_h) $(gdbtypes_h) \
   $(expression_h) $(gdbcmd_h) $(value_h) $(target_h) $(language_h) \
   $(gdb_string_h) $(inferior_h) $(tracepoint_h) $(remote_h) $(linespec_h) \
   $(regcache_h) $(completer_h) $(gdb_events_h) $(block_h) $(dictionary_h) \
-  $(ax_h) $(ax_gdb_h) $(readline_h) $(readline_history_h) $(inlining_h)
+  $(inlining_h) $(ax_h) $(ax_gdb_h) $(readline_h) $(readline_history_h)
 # APPLE LOCAL end subroutine inlining
 trad-frame.o: trad-frame.c $(defs_h) $(frame_h) $(trad_frame_h) \
-  $(regcache_h)
+  $(regcache_h) $(value_h)
 tramp-frame.o: tramp-frame.c $(defs_h) $(tramp_frame_h) $(frame_unwind_h) \
   $(gdbcore_h) $(symtab_h) $(objfiles_h) $(target_h) $(trad_frame_h) \
   $(frame_base_h) $(gdb_assert_h)
 typeprint.o: typeprint.c $(defs_h) $(gdb_obstack_h) $(bfd_h) $(symtab_h) \
   $(gdbtypes_h) $(expression_h) $(value_h) $(gdbcore_h) $(command_h) \
   $(gdbcmd_h) $(target_h) $(language_h) $(cp_abi_h) $(typeprint_h) \
-  $(gdb_string_h)
+  $(gdb_string_h) $(exceptions_h)
 ui-file.o: ui-file.c $(defs_h) $(ui_file_h) $(gdb_string_h)
 ui-out.o: ui-out.c $(defs_h) $(gdb_string_h) $(expression_h) \
   $(language_h) $(ui_out_h) $(gdb_assert_h)
 user-regs.o: user-regs.c $(defs_h) $(user_regs_h) $(gdbtypes_h) \
   $(gdb_string_h) $(gdb_assert_h) $(frame_h)
 utils.o: utils.c $(defs_h) $(gdb_assert_h) $(gdb_string_h) $(event_top_h) \
-  $(exceptions_h) $(bfd_h) $(tui_h) $(gdbcmd_h) $(serial_h) $(target_h) \
-  $(demangle_h) $(expression_h) $(language_h) $(charset_h) $(annotate_h) \
-  $(filenames_h) $(symfile_h) $(inferior_h) $(gdb_curses_h) $(ui_out_h) \
-  $(cli_out_h) $(readline_h) $(mmalloc_h) $(mach_o_h) $(utils_h) \
-  $(macosx_srcdir)/macosx-xdep.c $(macosx_srcdir)/xm-macosx.h \
-  $(srcdir)/config/xm-macosx.h macosx-xdep.o
+  $(exceptions_h) $(bfd_h) $(tui_h) $(xm_macosx_h) $(gdbcmd_h) \
+  $(serial_h) $(target_h) $(demangle_h) $(expression_h) $(language_h) \
+  $(charset_h) $(annotate_h) $(filenames_h) $(symfile_h) $(inferior_h) \
+  $(gdb_curses_h) $(ui_out_h) $(cli_out_h) $(readline_h) $(mmalloc_h) \
+  $(mach_o_h) $(utils_h) $(srcdir)/config/xm-macosx.h
 uw-thread.o: uw-thread.c $(defs_h) $(gdbthread_h) $(target_h) \
   $(inferior_h) $(regcache_h) $(gregset_h)
 v850-tdep.o: v850-tdep.c $(defs_h) $(frame_h) $(frame_base_h) \
@@ -3101,13 +3187,12 @@ v850-tdep.o: v850-tdep.c $(defs_h) $(frame_h) $(frame_base_h) \
   $(arch_utils_h) $(regcache_h) $(dis_asm_h) $(osabi_h)
 valarith.o: valarith.c $(defs_h) $(value_h) $(symtab_h) $(gdbtypes_h) \
   $(expression_h) $(target_h) $(language_h) $(gdb_string_h) $(doublest_h) \
-  $(infcall_h)
+  $(infcall_h) $(parser_defs_h)
 valops.o: valops.c $(defs_h) $(symtab_h) $(gdbtypes_h) $(value_h) \
   $(frame_h) $(inferior_h) $(gdbcore_h) $(target_h) $(demangle_h) \
-  $(language_h) $(gdbcmd_h) $(regcache_h) $(cp_abi_h) $(block_h) \
-  $(infcall_h) $(dictionary_h) $(cp_support_h) $(gdb_string_h) \
-  $(gdb_assert_h) $(cp_support_h) $(observer_h) \
-  $(macosx_srcdir)/macosx-nat-infthread.h
+  $(language_h) $(block_h) $(gdbcmd_h) $(regcache_h) $(cp_abi_h) \
+  $(exceptions_h) $(dictionary_h) $(gdbthread_h) $(gdb_h) $(gdb_string_h) \
+  $(gdb_assert_h) $(cp_support_h) $(observer_h) $(macosx_nat_infthread_h)
 valprint.o: valprint.c $(defs_h) $(gdb_string_h) $(symtab_h) \
   $(gdbtypes_h) $(value_h) $(gdbcore_h) $(gdbcmd_h) $(target_h) \
   $(language_h) $(annotate_h) $(valprint_h) $(floatformat_h) $(doublest_h)
@@ -3115,8 +3200,10 @@ value.o: value.c $(defs_h) $(gdb_string_h) $(symtab_h) $(gdbtypes_h) \
   $(value_h) $(gdbcore_h) $(command_h) $(gdbcmd_h) $(target_h) \
   $(language_h) $(scm_lang_h) $(demangle_h) $(doublest_h) $(gdb_assert_h) \
   $(regcache_h) $(block_h)
-varobj.o: varobj.c $(defs_h) $(value_h) $(expression_h) $(frame_h) \
-  $(language_h) $(wrapper_h) $(gdbcmd_h) $(gdb_string_h) $(varobj_h)
+varobj.o: varobj.c $(defs_h) $(exceptions_h) $(value_h) $(cp_abi_h) \
+  $(expression_h) $(frame_h) $(language_h) $(wrapper_h) $(gdbcmd_h) \
+  $(gdb_assert_h) $(gdb_string_h) $(block_h) $(target_h) $(objfiles_h) \
+  $(varobj_h) $(parser_defs_h)
 vaxbsd-nat.o: vaxbsd-nat.c $(defs_h) $(inferior_h) $(regcache_h) \
   $(target_h) $(vax_tdep_h) $(inf_ptrace_h) $(bsd_kvm_h)
 vax-nat.o: vax-nat.c $(defs_h) $(inferior_h) $(gdb_assert_h) \
@@ -3137,7 +3224,14 @@ wince.o: wince.c $(defs_h) $(frame_h) $(inferior_h) $(target_h) \
   $(wince_stub_h) $(regcache_h) $(mips_tdep_h)
 wince-stub.o: wince-stub.c $(wince_stub_h)
 wrapper.o: wrapper.c $(defs_h) $(value_h) $(exceptions_h) $(wrapper_h) \
-  $(ui_out_h)
+  $(ui_out_h) $(varobj_h) $(objc_lang_h)
+# APPLE LOCAL target:
+x86-shared-tdep.o: x86-shared-tdep.c $(defs_h) $(gdb_assert_h) \
+  $(dis_asm_h) $(gdbcore_h) $(gdbarch_h) $(ui_out_h) $(target_h) \
+  $(gdbtypes_h) $(frame_h) $(objfiles_h) $(exceptions_h) $(inferior_h) \
+  $(objc_lang_h) $(regcache_h) $(comman_h) $(gdbcmd_h) \
+  $(x86_shared_tdep_h) $(i386_tdep_h) $(amd64_tdep_h)
+# END APPLE LOCAL target
 xcoffread.o: xcoffread.c $(defs_h) $(bfd_h) $(gdb_string_h) $(gdb_stat_h) \
   $(coff_internal_h) $(libcoff_h) $(coff_xcoff_h) $(libxcoff_h) \
   $(coff_rs6000_h) $(symtab_h) $(gdbtypes_h) $(symfile_h) $(objfiles_h) \
@@ -3145,15 +3239,6 @@ xcoffread.o: xcoffread.c $(defs_h) $(bfd_h) $(gdb_string_h) $(gdb_stat_h) \
   $(gdb_stabs_h) $(aout_stab_gnu_h)
 xcoffsolib.o: xcoffsolib.c $(defs_h) $(bfd_h) $(xcoffsolib_h) \
   $(inferior_h) $(gdbcmd_h) $(symfile_h) $(frame_h) 
-fix-and-continue.o: fix-and-continue.c $(defs_h) $(value_h) \
-  $(gdbthread_h) $(gdbtypes_h) $(objfiles_h) $(command_h) $(completer_h) \
-  $(frame_h) $(target_h) $(gdbcore_h) $(inferior_h) $(symfile_h) $(gdb_h) \
-  $(ui_out_h) $(cli_out_h) $(symtab_h) $(readline_h) $(regcache_h) \
-  $(gdbcmd_h) $(language_h) macosx/ppc-macosx-frameinfo.h \
-  macosx/ppc-macosx-tdep.h macosx/macosx-nat-dyld-process.h
-# APPLE LOCAL checkpoints:
-checkpoint.o: checkpoint.c $(checkpoint_h) macosx-nat-inferior.o
-# END APPLE LOCAL target
 xstormy16-tdep.o: xstormy16-tdep.c $(defs_h) $(frame_h) $(frame_base_h) \
   $(frame_unwind_h) $(dwarf2_frame_h) $(symtab_h) $(gdbtypes_h) \
   $(gdbcmd_h) $(gdbcore_h) $(value_h) $(dis_asm_h) $(inferior_h) \
@@ -3364,7 +3449,8 @@ gdbtk-wrapper.o: $(srcdir)/gdbtk/generic/gdbtk-wrapper.c \
 arm-macosx-nat-exec.o: $(macosx_srcdir)/arm-macosx-nat-exec.c $(defs_h) \
   $(frame_h) $(inferior_h) $(symtab_h) $(target_h) $(gdbcore_h) \
   $(symfile_h) $(objfiles_h) $(regcache_h) $(gdbarch_h) $(arch_utils_h) \
-  $(arm_tdep_h) $(arm_macosx_thread_status_h) $(arm_macosx_tdep_h)
+  $(arm_tdep_h) $(arm_macosx_nat_exec_h) $(arm_macosx_thread_status_h) \
+  $(arm_macosx_tdep_h)
 arm-macosx-tdep.o: $(macosx_srcdir)/arm-macosx-tdep.c $(config_h) \
   $(defs_h) $(frame_h) $(inferior_h) $(symtab_h) $(target_h) $(gdbcore_h) \
   $(symfile_h) $(objfiles_h) $(gdbcmd_h) $(arch_utils_h) $(floatformat_h) \
@@ -3388,6 +3474,30 @@ core-macho.o: $(macosx_srcdir)/core-macho.c $(defs_h) $(gdb_string_h) \
 darwin-kernel.o: $(macosx_srcdir)/darwin-kernel.c $(defs_h) $(inferior_h) \
   $(gdbcmd_h) $(event_loop_h) $(event_top_h) $(inf_loop_h) $(regcache_h) \
   $(infcall_h)
+i386-macosx-nat-exec.o: $(macosx_srcdir)/i386-macosx-nat-exec.c $(defs_h) \
+  $(frame_h) $(inferior_h) $(target_h) $(symfile_h) $(symtab_h) \
+  $(objfiles_h) $(gdbcmd_h) $(regcache_h) $(gdb_assert_h) $(i386_tdep_h) \
+  $(i387_tdep_h) $(gdbarch_h) $(arch_utils_h) $(i386_macosx_nat_exec_h) \
+  $(i386_macosx_tdep_h) $(macosx_nat_mutils_h) $(macosx_nat_inferior_h)
+i386-macosx-nat-float.o: $(macosx_srcdir)/i386-macosx-nat-float.c \
+  $(defs_h) $(inferior_h) $(target_h) $(symfile_h) $(symtab_h) \
+  $(objfiles_h) $(gdbcmd_h)
+i386-macosx-tdep.o: $(macosx_srcdir)/i386-macosx-tdep.c $(defs_h) \
+  $(frame_h) $(inferior_h) $(gdbcore_h) $(target_h) $(floatformat_h) \
+  $(symtab_h) $(regcache_h) $(libbfd_h) $(objfiles_h) $(i387_tdep_h) \
+  $(i386_tdep_h) $(amd64_tdep_h) $(osabi_h) $(ui_out_h) $(symtab_h) \
+  $(frame_h) $(gdb_assert_h) $(i386_macosx_tdep_h)
+kdp-protocol.o: $(macosx_srcdir)/kdp-protocol.c $(kdp_protocol_h) \
+  $(kdp_udp_h) $(defs_h)
+kdp-transactions.o: $(macosx_srcdir)/kdp-transactions.c \
+  $(kdp_transactions_h) $(kdp_protocol_h) $(defs_h)
+kdp-udp.o: $(macosx_srcdir)/kdp-udp.c $(kdp_udp_h) $(defs_h) \
+  $(event_loop_h)
+machoread.o: $(macosx_srcdir)/machoread.c $(defs_h) $(symtab_h) \
+  $(gdbtypes_h) $(breakpoint_h) $(bfd_h) $(symfile_h) $(objfiles_h) \
+  $(buildsym_h) $(obstack_h) $(gdb_stabs_h) $(stabsread_h) $(gdbcmd_h) \
+  $(completer_h) $(dwarf2read_h) $(gdbarch_h) $(mach_o_h) $(gdb_assert_h) \
+  $(macosx_nat_dyld_io_h) $(macosx_nat_inferior_h)
 macosx-tdep.o: $(macosx_srcdir)/macosx-tdep.c $(defs_h) $(inferior_h) \
   $(target_h) $(symfile_h) $(symtab_h) $(objfiles_h) $(gdbcmd_h) \
   $(language_h) $(block_h) $(libaout_h) $(aout_aout64_h) $(complaints_h) \
@@ -3396,11 +3506,45 @@ macosx-tdep.o: $(macosx_srcdir)/macosx-tdep.c $(defs_h) $(inferior_h) \
   $(readline_tilde_h) $(arch_utils_h) $(macosx_nat_utils_h) \
   $(x86_shared_tdep_h) $(osabi_h) $(macosx_nat_dyld_h) $(gdbarch_h) \
   $(macosx_nat_infthread_h)
+macosx-xdep.o: $(macosx_srcdir)/macosx-xdep.c $(defs_h) $(inferior_h) \
+  $(target_h) $(symfile_h) $(symtab_h) $(objfiles_h) $(gdbcmd_h) \
+  $(regcache_h) $(xm_macosx_h) $(macosx_xdep_h)
+pefread.o: $(macosx_srcdir)/pefread.c $(defs_h) $(symtab_h) $(gdbtypes_h) \
+  $(breakpoint_h) $(bfd_h) $(symfile_h) $(objfiles_h) $(buildsym_h) \
+  $(obstack_h) $(gdb_stabs_h) $(stabsread_h) $(gdbcmd_h) $(mach_o_h)
+ppc-macosx-frameinfo.o: $(macosx_srcdir)/ppc-macosx-frameinfo.c \
+  $(ppc_macosx_regs_h) $(ppc_macosx_regnums_h) $(ppc_macosx_frameinfo_h) \
+  $(ppc_macosx_tdep_h) $(defs_h) $(frame_h) $(inferior_h) $(symtab_h) \
+  $(target_h) $(gdbcore_h) $(symfile_h) $(objfiles_h) $(command_h) \
+  $(regcache_h) $(ppc_tdep_h)
+ppc-macosx-nat-exec.o: $(macosx_srcdir)/ppc-macosx-nat-exec.c $(defs_h) \
+  $(frame_h) $(inferior_h) $(symtab_h) $(target_h) $(gdbcore_h) \
+  $(symfile_h) $(objfiles_h) $(regcache_h) $(ppc_macosx_regs_h) \
+  $(ppc_macosx_regnums_h) $(ppc_macosx_thread_status_h) \
+  $(macosx_nat_mutils_h) $(macosx_nat_inferior_h)
+ppc-macosx-regs.o: $(macosx_srcdir)/ppc-macosx-regs.c \
+  $(ppc_macosx_regs_h) $(ppc_macosx_regnums_h) $(defs_h) $(frame_h) \
+  $(inferior_h) $(symtab_h) $(target_h) $(gdbcore_h) $(symfile_h) \
+  $(objfiles_h) $(regcache_h)
+ppc-macosx-tdep.o: $(macosx_srcdir)/ppc-macosx-tdep.c $(defs_h) \
+  $(frame_h) $(inferior_h) $(symtab_h) $(target_h) $(gdbcore_h) \
+  $(symfile_h) $(objfiles_h) $(gdbcmd_h) $(arch_utils_h) $(floatformat_h) \
+  $(gdbtypes_h) $(regcache_h) $(reggroups_h) $(frame_base_h) \
+  $(frame_unwind_h) $(dummy_frame_h) $(gdb_assert_h) $(complaints_h) \
+  $(user_regs_h) $(objfiles_h) $(libbfd_h) $(elf_bfd_h) $(dis_asm_h) \
+  $(ppc_tdep_h) $(gdbarch_h) $(osabi_h) $(ppc_macosx_tdep_h) \
+  $(ppc_macosx_regs_h) $(ppc_macosx_regnums_h) $(ppc_macosx_frameinfo_h)
 remote-kdp.o: $(macosx_srcdir)/remote-kdp.c $(defs_h) $(value_h) \
   $(infcall_h) $(gdbarch_h) $(arch_utils_h) $(gdbcore_h) $(bfd_h) \
   $(mach_o_h) $(objfiles_h) $(inferior_h) $(gdbcmd_h) $(event_loop_h) \
   $(event_top_h) $(inf_loop_h) $(regcache_h) $(exceptions_h) $(osabi_h) \
-  $(kdp_udp_h) $(kdp_transactions_h)
+  $(kdp_udp_h) $(kdp_transactions_h) $(remote_kdp_h)
+remote-mobile.o: $(macosx_srcdir)/remote-mobile.c $(defs_h) $(target_h) \
+  $(serial_h) $(ser_base_h) $(ser_unix_h)
+symread.o: $(macosx_srcdir)/symread.c $(defs_h) $(symtab_h) $(gdtypes_h) \
+  $(breakpoint_h) $(bfd_h) $(symfile_h) $(objfiles_h) $(buildsym_h) \
+  $(obstack_h) $(gdb_stabs_h) $(stabsread_h) $(gdbcmd_h) $(complaints_h) \
+  $(block_h) $(dictionary_h) $(readline_tilde_h) $(xsym_h) $(symread_h)
 
 #
 # gdb/mi/ dependencies

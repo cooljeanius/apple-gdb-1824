@@ -1,4 +1,4 @@
-/* C language support routines for GDB, the GNU debugger.
+/* c-lang.c: C language support routines for GDB, the GNU debugger.
 
    Copyright 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2002,
    2003, 2004, 2005 Free Software Foundation, Inc.
@@ -35,8 +35,8 @@
 #include "demangle.h"
 #include "cp-support.h"
 
-extern void _initialize_c_language (void);
-static void c_emit_char (int c, struct ui_file * stream, int quoter);
+extern void _initialize_c_language(void);
+static void c_emit_char(int c, struct ui_file * stream, int quoter);
 
 /* Print the character C on STREAM as part of the contents of a literal
    string whose delimiter is QUOTER.  Note that that format for printing
@@ -746,10 +746,12 @@ const struct language_defn minimal_language_defn =
 };
 
 void
-_initialize_c_language (void)
+_initialize_c_language(void)
 {
-  add_language (&c_language_defn);
-  add_language (&cplus_language_defn);
-  add_language (&asm_language_defn);
-  add_language (&minimal_language_defn);
+  add_language(&c_language_defn);
+  add_language(&cplus_language_defn);
+  add_language(&asm_language_defn);
+  add_language(&minimal_language_defn);
 }
+
+/* EOF */

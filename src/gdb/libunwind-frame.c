@@ -527,3 +527,5 @@ _initialize_libunwind_frame (void)
 
   libunwind_initialized = libunwind_load ();
 }
+
+/* EOF */

@@ -47,18 +47,23 @@
 
 #if defined(NM_NEXTSTEP) || defined(TM_NEXTSTEP)
 # include "macosx-nat-infthread.h"
-# include "macosx/macosx-nat-infthread.h"
+/* make sure we got the correct one: */
+# ifndef __GDB_MACOSX_NAT_INFTHREAD_H__
+#  include "macosx/macosx-nat-infthread.h"
+# endif /* !__GDB_MACOSX_NAT_INFTHREAD_H__ */
 #else
 # define THREAD_C_NOT_ON_NEXTSTEP 1
 #endif /* NM_NEXTSTEP || TM_NEXTSTEP */
 
-/*#include "lynxos-core.h" */
+#if 0
+# include "lynxos-core.h"
+#endif /* 0 */
 
 /* Definition of struct thread_info exported to gdbthread.h */
 
 /* Prototypes for exported functions. */
 
-void _initialize_thread (void);
+void _initialize_thread(void);
 
 /* Prototypes for local functions. */
 
@@ -71,9 +76,10 @@ static int thread_alive (struct thread_info *);
 static void info_threads_command (char *, int);
 static void thread_apply_command (char *, int);
 static void restore_current_thread (ptid_t, int);
-/* APPLE LOCAL: I need this, move it to gdbthreads.h
-static void prune_threads (void);
-*/
+/* APPLE LOCAL: I need this; move it to "gdbthreads.h": */
+#if defined(__APPLE__) && !defined(GDBTHREAD_H)
+static void prune_threads(void);
+#endif /* __APPLE__ && !GDBTHREAD_H */
 
 void
 delete_step_resume_breakpoint (void *arg)
@@ -876,8 +882,8 @@ gdb_thread_select (struct ui_out *uiout, char *tidstr, int print,
   args.tidstr = tidstr;
   args.print = print;
 
-  return catch_exceptions_with_msg (uiout, do_captured_thread_select, &args,
-				    error_message, RETURN_MASK_ALL);
+  return catch_exceptions_with_msg(uiout, do_captured_thread_select, &args,
+				   error_message, RETURN_MASK_ALL);
 }
 
 /* Commands with a prefix of `thread'.  */

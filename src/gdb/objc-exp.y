@@ -49,7 +49,7 @@
 #include "c-lang.h"
 #include "bfd.h" /* Required by objfiles.h.  */
 #include "symfile.h" /* Required by objfiles.h.  */
-#include "objfiles.h" /* For have_full_symbols and have_partial_symbols.  */
+#include "objfiles.h" /* For have_full_symbols and have_partial_symbols. */
 #include "top.h"
 #include "completer.h" /* For skip_quoted().  */
 #include "block.h"

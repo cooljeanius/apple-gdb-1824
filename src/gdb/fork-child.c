@@ -33,7 +33,7 @@
 #include "terminal.h"
 #include "gdbthread.h"
 #include "gdbcmd.h"
-#include "command.h" /* for dont_repeat () */
+#include "command.h" /* for dont_repeat() */
 #include "solib.h"
 #include "osabi.h"
 #include <signal.h>
@@ -142,17 +142,17 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
   len = 33;
 #else
   len = 5;
-#endif
-  len += 4 * strlen (exec_file) + 1 + strlen (allargs) + 1 + /*slop */ 12;
+#endif /* USE_ARCH_FOR_EXEC */
+  len += 4 * strlen(exec_file) + 1 + strlen(allargs) + 1 + /*slop */ 12;
   /* If desired, concat something onto the front of ALLARGS.
      SHELL_COMMAND is the result.  */
 #ifdef SHELL_COMMAND_CONCAT
-  shell_command = (char *) alloca (strlen (SHELL_COMMAND_CONCAT) + len);
-  strcpy (shell_command, SHELL_COMMAND_CONCAT);
+  shell_command = (char *)alloca(strlen(SHELL_COMMAND_CONCAT) + len);
+  strcpy(shell_command, SHELL_COMMAND_CONCAT);
 #else
-  shell_command = (char *) alloca (len);
+  shell_command = (char *)alloca(len);
   shell_command[0] = '\0';
-#endif
+#endif /* SHELL_COMMAND_CONCAT */
 
   if (!shell)
     {
@@ -190,39 +190,39 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
 #ifdef USE_ARCH_FOR_EXEC
       {
 	char *arch_string = NULL;
-	const char *osabi_name = gdbarch_osabi_name (gdbarch_osabi (current_gdbarch));
-#if defined (TARGET_POWERPC)
-	if (strcmp (osabi_name, "Darwin") == 0)
+	const char *osabi_name = gdbarch_osabi_name(gdbarch_osabi(current_gdbarch));
+# if defined (TARGET_POWERPC)
+	if (strcmp(osabi_name, "Darwin") == 0)
 	  arch_string = "ppc";
-	else if (strcmp (osabi_name, "Darwin64") == 0)
+	else if (strcmp(osabi_name, "Darwin64") == 0)
 	  arch_string = "ppc64";
-#elif defined (TARGET_I386)
-	if (strcmp (osabi_name, "Darwin") == 0)
+# elif defined(TARGET_I386)
+	if (strcmp(osabi_name, "Darwin") == 0)
 	  arch_string = "i386";
-	else if (strcmp (osabi_name, "Darwin64") == 0)
+	else if (strcmp(osabi_name, "Darwin64") == 0)
 	  arch_string = "x86_64";
-#elif defined (TARGET_ARM)
-	if (strcmp (osabi_name, "Darwin") == 0)
+# elif defined(TARGET_ARM)
+	if (strcmp(osabi_name, "Darwin") == 0)
 	  arch_string = "arm";
-	else if (strcmp (osabi_name, "DarwinV6") == 0)
+	else if (strcmp(osabi_name, "DarwinV6") == 0)
 	  arch_string = "armv6";
-	else if (strcmp (osabi_name, "DarwinV7") == 0)
+	else if (strcmp(osabi_name, "DarwinV7") == 0)
 	  arch_string = "armv7";
-	else if (strcmp (osabi_name, "DarwinV7S") == 0)
+	else if (strcmp(osabi_name, "DarwinV7S") == 0)
 	  arch_string = "armv7s";
-	else if (strcmp (osabi_name, "DarwinV7K") == 0)
+	else if (strcmp(osabi_name, "DarwinV7K") == 0)
 	  arch_string = "armv7k";
-	else if (strcmp (osabi_name, "DarwinV7F") == 0)
+	else if (strcmp(osabi_name, "DarwinV7F") == 0)
 	  arch_string = "armv7f";
-#endif
+# endif /* TARGET_[POWERPC|I386|ARM] */
 	if (arch_string != NULL)
-	  sprintf (shell_command, "%s exec /usr/bin/arch -arch %s ", shell_command, arch_string);
+	  sprintf(shell_command, "%s exec /usr/bin/arch -arch %s ", shell_command, arch_string);
 	else
-	  strcat (shell_command, "exec ");
+	  strcat(shell_command, "exec ");
       }
 #else
-      strcat (shell_command, "exec ");
-#endif
+      strcat(shell_command, "exec ");
+#endif /* USE_ARCH_FOR_EXEC */
 
       /* Quoting in this style is said to work with all shells.  But
          csh on IRIX 4.0.1 can't deal with it.  So we only quote it if
@@ -329,21 +329,21 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
      and the parent side, which doesn't work with vfork.  So I #if 0'ed out
      all the vfork stuff.  */
 
-  pid = fork ();
+  pid = fork();
 #if 0
   if (pre_trace_fun || debug_fork)
-    pid = fork ();
+    pid = fork();
   else
-    pid = vfork ();
-#endif
+    pid = vfork();
+#endif /* 0 */
 
   if (pid < 0)
-    perror_with_name (("vfork"));
+    perror_with_name(("vfork"));
 
   if (pid == 0)
     {
       if (debug_fork)
-	sleep (debug_fork);
+	sleep(debug_fork);
 
       /* Run inferior in a separate process group.  */
       debug_setpgrp = gdb_setpgid ();
@@ -424,67 +424,68 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
 	    cpu_type_t cpu = 0;
 	    int count = 0;
 	    pid_t pid;
-	    const char *osabi_name = gdbarch_osabi_name (gdbarch_osabi (current_gdbarch));
+	    const char *osabi_name = gdbarch_osabi_name(gdbarch_osabi(current_gdbarch));
 
-#if defined (TARGET_POWERPC)
-	    if (strcmp (osabi_name, "Darwin") == 0)
+# if defined(TARGET_POWERPC)
+	    if (strcmp(osabi_name, "Darwin") == 0)
 	      {
 		cpu = CPU_TYPE_POWERPC;
 		count = 1;
 	      }
-	    else if (strcmp (osabi_name, "Darwin64") == 0)
+	    else if (strcmp(osabi_name, "Darwin64") == 0)
 	      {
 		cpu = CPU_TYPE_POWERPC64;
 		count = 1;
 	      }
-#elif defined (TARGET_I386)
-	    if (strcmp (osabi_name, "Darwin") == 0)
+# elif defined(TARGET_I386)
+	    if (strcmp(osabi_name, "Darwin") == 0)
 	      {
 		cpu = CPU_TYPE_I386;
 		count = 1;
 	      }
-	    else if (strcmp (osabi_name, "Darwin64") == 0)
+	    else if (strcmp(osabi_name, "Darwin64") == 0)
 	      {
 		cpu = CPU_TYPE_X86_64;
 		count = 1;
 	      }
-#elif defined (TARGET_ARM)
-	    if (strcmp (osabi_name, "Darwin") == 0)
+# elif defined(TARGET_ARM)
+	    if (strcmp(osabi_name, "Darwin") == 0)
 	      {
 		cpu = CPU_TYPE_ARM;
 		count = 1;
 	      }
-	    else if (strcmp (osabi_name, "DarwinV6") == 0)
+	    else if (strcmp(osabi_name, "DarwinV6") == 0)
 	      {
 		cpu = CPU_TYPE_ARM;
 		count = 1;
 	      }
-	    else if (strcmp (osabi_name, "DarwinV7") == 0)
+	    else if (strcmp(osabi_name, "DarwinV7") == 0)
 	      {
 		cpu = CPU_TYPE_ARM;
 		count = 1;
 	      }
-	    else if (strcmp (osabi_name, "DarwinV7K") == 0)
+	    else if (strcmp(osabi_name, "DarwinV7K") == 0)
 	      {
 		cpu = CPU_TYPE_ARM;
 		count = 1;
 	      }
-	    else if (strcmp (osabi_name, "DarwinV7F") == 0)
+	    else if (strcmp(osabi_name, "DarwinV7F") == 0)
 	      {
 		cpu = CPU_TYPE_ARM;
 		count = 1;
 	      }
-	    else if (strcmp (osabi_name, "DarwinV7S") == 0)
+	    else if (strcmp(osabi_name, "DarwinV7S") == 0)
 	      {
 		cpu = CPU_TYPE_ARM;
 		count = 1;
 	      }
+# endif /* TARGET_POWERPC || TARGET_I386 || TARGET_ARM */
 
-#endif
-	    retval = posix_spawnattr_init (&attr);
+	    retval = posix_spawnattr_init(&attr);
 	    if (retval != 0)
 	      {
-		warning ("Couldn't initialize attributes for posix_spawn, error: %d", retval);
+		warning("Could NOT initialize attributes for posix_spawn, error: %d",
+                        retval);
 		goto try_execvp;
 	      }
 
@@ -506,17 +507,17 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
 
 	    ps_flags = POSIX_SPAWN_SETEXEC;
 
-#if defined (TM_NEXTSTEP)
+# if defined(TM_NEXTSTEP)
 
-// NOTE: for arm native debugging, a separate posix_spawnp with its own flags
-// is in macosx-nat-inferior.c:macosx_child_create_inferior() - and further
-// note that there are two verisons of this function, selected via an #ifdef.
-// If you change the flags to posix_spawn here, be sure to change them there
-// as well.
+/* NOTE: for arm native debugging, a separate posix_spawnp with its own
+ * flags is in macosx-nat-inferior.c:macosx_child_create_inferior() - and
+ * further note that there are two verisons of this function, selected via
+ * an #ifdef.  If you change the flags to posix_spawn here, be sure to
+ * change them there as well.  */
 
-#ifndef _POSIX_SPAWN_DISABLE_ASLR
-#define _POSIX_SPAWN_DISABLE_ASLR 0x0100
-#endif
+#  ifndef _POSIX_SPAWN_DISABLE_ASLR
+#   define _POSIX_SPAWN_DISABLE_ASLR 0x0100
+#  endif /* !_POSIX_SPAWN_DISABLE_ASLR */
 	    if (disable_aslr_flag)
 	      ps_flags |= _POSIX_SPAWN_DISABLE_ASLR;
 
@@ -524,53 +525,55 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
 
 	    if (retval != 0)
 	      {
-		warning ("Couldn't set the posix_spawn flags, error: %d trying execvp", retval);
+		warning("Could NOT set the posix_spawn flags, error: %d trying execvp",
+                        retval);
 		goto try_execvp;
 	      }
 
-	    retval = posix_spawnp (&pid, fileptr, NULL,  &attr, argv, env);
-	    warning ("posix_spawn failed, trying execvp, error: %d", retval);
+	    retval = posix_spawnp(&pid, fileptr, NULL,  &attr, argv, env);
+	    warning("posix_spawn failed, trying execvp, error: %d", retval);
 	  }
-#endif /* #if defined (TM_NEXTSTEP)  */
+# endif /* #if defined (TM_NEXTSTEP)  */
 
-#endif
+#endif /* USE_POSIX_SPAWN */
 	try_execvp:
-	  execvp (fileptr, argv);
+	  execvp(fileptr, argv);
 
-	  /* If we get here, it's an error.  */
-	  errstring = safe_strerror (errno);
-	  fprintf_unfiltered (gdb_stderr, "Cannot exec %s ", fileptr);
+	  /* If we get here, then it is an error: */
+	  errstring = safe_strerror(errno);
+	  fprintf_unfiltered(gdb_stderr, "Cannot exec %s ", fileptr);
 
 	  i = 1;
 	  while (argv[i] != NULL)
 	    {
 	      if (i != 1)
-		fprintf_unfiltered (gdb_stderr, " ");
-	      fprintf_unfiltered (gdb_stderr, "%s", argv[i]);
+		fprintf_unfiltered(gdb_stderr, " ");
+	      fprintf_unfiltered(gdb_stderr, "%s", argv[i]);
 	      i++;
 	    }
-	  fprintf_unfiltered (gdb_stderr, ".\n");
-#if 0
-	  /* This extra info seems to be useless.  */
-	  fprintf_unfiltered (gdb_stderr, "Got error %s.\n", errstring);
-#endif
-	  gdb_flush (gdb_stderr);
-	  _exit (0177);
+	  fprintf_unfiltered(gdb_stderr, ".\n");
+#if defined(PRINT_SEEMINGLY_USELESS_INFO) || 1
+	  /* This extra info seems to be useless, but otherwise errstring
+           * goes unused: */
+	  fprintf_unfiltered(gdb_stderr, "Got error %s.\n", errstring);
+#endif /* PRINT_SEEMINGLY_USELESS_INFO || 1 */
+	  gdb_flush(gdb_stderr);
+	  _exit(0177);
 	}
     }
 
-  /* Restore our environment in case a vforked child clob'd it.  */
+  /* Restore our environment in case a vforked child clob'd it: */
   environ = save_our_env;
 
-  init_thread_list ();
+  init_thread_list();
 
-  /* Needed for wait_for_inferior stuff below.  */
-  inferior_ptid = pid_to_ptid (pid);
+  /* Needed for wait_for_inferior stuff below: */
+  inferior_ptid = pid_to_ptid(pid);
 
   /* Now that we have a child process, make it our target, and
      initialize anything target-vector-specific that needs
      initializing.  */
-  (*init_trace_fun) (pid);
+  (*init_trace_fun)(pid);
 
   /* We are now in the child process of interest, having exec'd the
      correct program, and are poised at the first instruction of the
@@ -579,13 +582,13 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
   /* Allow target dependent code to play with the new process.  This
      might be used to have target-specific code initialize a variable
      in the new process prior to executing the first instruction.  */
-  TARGET_CREATE_INFERIOR_HOOK (pid);
+  TARGET_CREATE_INFERIOR_HOOK(pid);
 
 #ifdef SOLIB_CREATE_INFERIOR_HOOK
-  SOLIB_CREATE_INFERIOR_HOOK (pid);
+  SOLIB_CREATE_INFERIOR_HOOK(pid);
 #else
-  solib_create_inferior_hook ();
-#endif
+  solib_create_inferior_hook();
+#endif /* SOLIB_CREATE_INFERIOR_HOOK */
 }
 
 /* Accept NTRAPS traps from the inferior: */
@@ -620,18 +623,18 @@ startup_inferior(int ntraps)
            happen when you have "start-with-shell" non-zero, and
            the shell crashes.  */
 #ifdef NM_NEXTSTEP
-        if (stop_signal == TARGET_EXC_BAD_ACCESS
-          || stop_signal == TARGET_EXC_BAD_INSTRUCTION)
+        if ((stop_signal == TARGET_EXC_BAD_ACCESS)
+            || (stop_signal == TARGET_EXC_BAD_INSTRUCTION))
           {
-            warning ("The target crashed on startup, maybe the shell is crashing.\n"
+            warning("The target crashed on startup, maybe the shell is crashing.\n"
                     "\"Try set start-with-shell 0\" to workaround.");
 	    /* For now we don't seem to be able to unwind successfully
 		from this error, so I am just aborting.  Throwing
 		an error or just breaking both lead to gdb just
 		hanging, which isn't helpful...  */
-            abort ();
+            abort();
           }
-#endif
+#endif /* NM_NEXTSTEP */
         /* END APPLE LOCAL */
 
 	  /* Let shell child handle its own signals in its own way.
@@ -707,3 +710,5 @@ Show if GDB should use shell to invoke inferior (performs argument expansion in 
 			   &setlist, &showlist);
 }
 /* APPLE LOCAL end start with shell */
+
+/* EOF */

@@ -103,7 +103,7 @@ static const char *inferior_thisrun_terminal;
 
 int terminal_is_ours;
 
-enum {
+enum terminal_flag_possibilities {
     yes, no, have_not_checked
 } gdb_has_a_terminal_flag = have_not_checked;
 
@@ -160,9 +160,9 @@ gdb_has_a_terminal(void)
 #define	OOPSY(what)	\
   if (result == -1)	\
     fprintf_unfiltered(gdb_stderr, "[%s failed in terminal_inferior: %s]\n", \
-	    what, safe_strerror (errno))
+	    what, safe_strerror(errno))
 
-static void terminal_ours_1 (int);
+static void terminal_ours_1(int);
 
 /* Initialize the terminal settings we record for the inferior,
    before we actually run the inferior.  */

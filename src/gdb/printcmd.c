@@ -46,8 +46,8 @@
 #include "objc-lang.h"
 
 #ifdef TUI
-#include "tui/tui.h"		/* For tui_active et.al.   */
-#endif
+# include "tui/tui.h"		/* For tui_active et.al.   */
+#endif /* TUI */
 
 extern int asm_demangle;	/* Whether to demangle syms in asm printouts */
 extern int addressprint;	/* Whether to print hex addresses in HLL " */

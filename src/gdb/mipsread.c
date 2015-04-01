@@ -4,7 +4,7 @@
    1998, 1999, 2000, 2001, 2003, 2004
    Free Software Foundation, Inc.
 
-   Contributed by Alessandro Forin (af@cs.cmu.edu) at CMU.  Major work
+   Contributed by Alessandro Forin <af@cs.cmu.edu> at CMU.  Major work
    by Per Bothner, John Gilmore and Ian Lance Taylor at Cygnus Support.
 
    This file is part of GDB.
@@ -327,7 +327,8 @@ read_alphacoff_dynamic_symtab(struct section_offsets *section_offsets,
 	      bfd_size_type got_entry_offset =
 		((i - dt_mips_gotsym + dt_mips_local_gotno) * got_entry_size);
 
-	      if ((got_entry_offset < 0) || (got_entry_offset >= got_secsize))
+	      if ((got_entry_offset < 0UL)
+                  || (got_entry_offset >= got_secsize))
 		continue;
 	      sym_value =
 		bfd_h_get_64(abfd,

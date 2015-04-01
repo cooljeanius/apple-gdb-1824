@@ -40,86 +40,96 @@ struct frame_unwind_table_entry
 struct frame_unwind_table
 {
   struct frame_unwind_table_entry *list;
-  /* The head of the OSABI part of the search list.  */
+  /* The head of the OSABI part of the search list: */
   struct frame_unwind_table_entry **osabi_head;
 };
 
 static void *
-frame_unwind_init (struct obstack *obstack)
+frame_unwind_init(struct obstack *obstack)
 {
-  struct frame_unwind_table *table
-    = OBSTACK_ZALLOC (obstack, struct frame_unwind_table);
+  struct frame_unwind_table *table =
+    (struct frame_unwind_table *)OBSTACK_ZALLOC(obstack,
+                                                struct frame_unwind_table);
   /* Start the table out with a few default sniffers.  OSABI code
-     can't override this.  */
-  table->list = OBSTACK_ZALLOC (obstack, struct frame_unwind_table_entry);
+     cannot override this.  */
+  table->list =
+    ((struct frame_unwind_table_entry *)
+     OBSTACK_ZALLOC(obstack, struct frame_unwind_table_entry));
   table->list->unwinder = dummy_frame_unwind;
 
   /* APPLE LOCAL begin subroutine inlining  */
-  table->list->next = OBSTACK_ZALLOC (obstack, struct frame_unwind_table_entry);
+  table->list->next =
+    ((struct frame_unwind_table_entry *)
+     OBSTACK_ZALLOC(obstack, struct frame_unwind_table_entry));
   table->list->next->unwinder = inlined_frame_unwind;
 
-  /* The insertion point for OSABI sniffers.  */
+  /* The insertion point for OSABI sniffers: */
   table->osabi_head = &table->list->next->next;
   /* APPLE LOCAL end subroutine inlining  */
   return table;
 }
 
 void
-frame_unwind_append_sniffer (struct gdbarch *gdbarch,
-			     frame_unwind_sniffer_ftype *sniffer)
+frame_unwind_append_sniffer(struct gdbarch *gdbarch,
+			    frame_unwind_sniffer_ftype *sniffer)
 {
-  struct frame_unwind_table *table = gdbarch_data (gdbarch, frame_unwind_data);
+  struct frame_unwind_table *table =
+    (struct frame_unwind_table *)gdbarch_data(gdbarch, frame_unwind_data);
   struct frame_unwind_table_entry **ip;
 
-  /* Find the end of the list and insert the new entry there.  */
+  /* Find the end of the list and insert the new entry there: */
   for (ip = table->osabi_head; (*ip) != NULL; ip = &(*ip)->next);
-  (*ip) = GDBARCH_OBSTACK_ZALLOC (gdbarch, struct frame_unwind_table_entry);
+  (*ip) = GDBARCH_OBSTACK_ZALLOC(gdbarch, struct frame_unwind_table_entry);
   (*ip)->sniffer = sniffer;
 }
 
 void
-frame_unwind_prepend_unwinder (struct gdbarch *gdbarch,
-				const struct frame_unwind *unwinder)
+frame_unwind_prepend_unwinder(struct gdbarch *gdbarch,
+                              const struct frame_unwind *unwinder)
 {
-  struct frame_unwind_table *table = gdbarch_data (gdbarch, frame_unwind_data);
+  struct frame_unwind_table *table =
+    (struct frame_unwind_table *)gdbarch_data(gdbarch, frame_unwind_data);
   struct frame_unwind_table_entry *entry;
 
-  /* Insert the new entry at the start of the list.  */
-  entry = GDBARCH_OBSTACK_ZALLOC (gdbarch, struct frame_unwind_table_entry);
+  /* Insert the new entry at the start of the list: */
+  entry = GDBARCH_OBSTACK_ZALLOC(gdbarch, struct frame_unwind_table_entry);
   entry->unwinder = unwinder;
   entry->next = (*table->osabi_head);
   (*table->osabi_head) = entry;
 }
 
 const struct frame_unwind *
-frame_unwind_find_by_frame (struct frame_info *next_frame, void **this_cache)
+frame_unwind_find_by_frame(struct frame_info *next_frame, void **this_cache)
 {
-  struct gdbarch *gdbarch = get_frame_arch (next_frame);
-  struct frame_unwind_table *table = gdbarch_data (gdbarch, frame_unwind_data);
+  struct gdbarch *gdbarch = get_frame_arch(next_frame);
+  struct frame_unwind_table *table =
+    (struct frame_unwind_table *)gdbarch_data(gdbarch, frame_unwind_data);
   struct frame_unwind_table_entry *entry;
   for (entry = table->list; entry != NULL; entry = entry->next)
     {
       if (entry->sniffer != NULL)
 	{
 	  const struct frame_unwind *desc = NULL;
-	  desc = entry->sniffer (next_frame);
+	  desc = entry->sniffer(next_frame);
 	  if (desc != NULL)
 	    return desc;
 	}
       if (entry->unwinder != NULL)
 	{
-	  if (entry->unwinder->sniffer (entry->unwinder, next_frame,
-					this_cache))
+	  if (entry->unwinder->sniffer(entry->unwinder, next_frame,
+                                       this_cache))
 	    return entry->unwinder;
 	}
     }
-  internal_error (__FILE__, __LINE__, _("frame_unwind_find_by_frame failed"));
+  internal_error(__FILE__, __LINE__, _("frame_unwind_find_by_frame failed"));
 }
 
 extern initialize_file_ftype _initialize_frame_unwind; /* -Wmissing-prototypes */
 
 void
-_initialize_frame_unwind (void)
+_initialize_frame_unwind(void)
 {
-  frame_unwind_data = gdbarch_data_register_pre_init (frame_unwind_init);
+  frame_unwind_data = gdbarch_data_register_pre_init(frame_unwind_init);
 }
+
+/* EOF */

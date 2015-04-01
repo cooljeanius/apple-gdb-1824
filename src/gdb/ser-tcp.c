@@ -28,37 +28,37 @@
 #include <sys/types.h>
 
 #ifdef HAVE_SYS_FILIO_H
-#include <sys/filio.h>  /* For FIONBIO. */
-#endif
+# include <sys/filio.h>  /* For FIONBIO. */
+#endif /* HAVE_SYS_FILIO_H */
 #ifdef HAVE_SYS_IOCTL_H
-#include <sys/ioctl.h>  /* For FIONBIO. */
-#endif
+# include <sys/ioctl.h>  /* For FIONBIO. */
+#endif /* HAVE_SYS_IOCTL_H */
 
 #include <sys/time.h>
 
 #ifdef USE_WIN32API
-#include <winsock2.h>
-#define ETIMEDOUT WSAETIMEDOUT
-#define close(fd) closesocket (fd)
-#define ioctl ioctlsocket
+# include <winsock2.h>
+# define ETIMEDOUT WSAETIMEDOUT
+# define close(fd) closesocket (fd)
+# define ioctl ioctlsocket
 #else
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <netinet/tcp.h>
-#endif
+# include <netinet/in.h>
+# include <arpa/inet.h>
+# include <netdb.h>
+# include <sys/socket.h>
+# include <netinet/tcp.h>
+#endif /* USE_WIN32API */
 
 #include <signal.h>
 #include "gdb_string.h"
 
 #ifndef HAVE_SOCKLEN_T
 typedef int socklen_t;
-#endif
+#endif /* !HAVE_SOCKLEN_T */
 
-static int net_open (struct serial *scb, const char *name);
-static void net_close (struct serial *scb);
-void _initialize_ser_tcp (void);
+static int net_open(struct serial *scb, const char *name);
+static void net_close(struct serial *scb);
+void _initialize_ser_tcp(void);
 
 /* seconds to wait for connect */
 #define TIMEOUT 15
@@ -119,7 +119,7 @@ net_open (struct serial *scb, const char *name)
 
   if (scb->fd < 0)
     return -1;
-  
+
   sockaddr.sin_family = PF_INET;
   sockaddr.sin_port = htons (port);
   memcpy (&sockaddr.sin_addr.s_addr, hostent->h_addr,
@@ -157,10 +157,10 @@ net_open (struct serial *scb, const char *name)
       int polls = 0;
       FD_ZERO (&rset);
 
-      do 
+      do
 	{
-	  /* While we wait for the connect to complete, 
-	     poll the UI so it can update or the user can 
+	  /* While we wait for the connect to complete,
+	     poll the UI so it can update or the user can
 	     interrupt.  */
 	  if (deprecated_ui_loop_hook)
 	    {
@@ -171,15 +171,15 @@ net_open (struct serial *scb, const char *name)
 		  return -1;
 		}
 	    }
-	  
+
 	  FD_SET (scb->fd, &rset);
 	  wset = rset;
 	  t.tv_sec = 0;
 	  t.tv_usec = 1000000 / POLL_INTERVAL;
-	  
+
 	  n = select (scb->fd + 1, &rset, &wset, NULL, &t);
 	  polls++;
-	} 
+	}
       while (n == 0 && polls <= TIMEOUT * POLL_INTERVAL);
       if (n < 0 || polls > TIMEOUT * POLL_INTERVAL)
 	{
@@ -207,7 +207,7 @@ net_open (struct serial *scb, const char *name)
 	net_close (scb);
 	return -1;
       }
-  } 
+  }
 
   /* turn off nonblocking */
   ioarg = 0;
@@ -284,5 +284,7 @@ _initialize_ser_tcp (void)
   ops->async = ser_base_async;
   ops->read_prim = net_read_prim;
   ops->write_prim = net_write_prim;
-  serial_add_interface (ops);
+  serial_add_interface(ops);
 }
+
+/* EOF */

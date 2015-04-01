@@ -1,4 +1,4 @@
-/* BSD Kernel Data Access Library (libkvm) interface.
+/* bsd-kvm.c: BSD Kernel Data Access Library (libkvm) interface.
 
    Copyright 2004, 2005 Free Software Foundation, Inc.
 
@@ -32,8 +32,8 @@
 #include <fcntl.h>
 #include <kvm.h>
 #ifdef HAVE_NLIST_H
-#include <nlist.h>
-#endif
+# include <nlist.h>
+#endif /* HAVE_NLIST_H */
 #include <paths.h>
 #include "readline/readline.h"
 #include <sys/param.h>
@@ -306,9 +306,9 @@ bsd_kvm_pcb_cmd (char *arg, int fromtty)
    block interpreter.  */
 
 void
-bsd_kvm_add_target (int (*supply_pcb)(struct regcache *, struct pcb *))
+bsd_kvm_add_target(int (*supply_pcb)(struct regcache *, struct pcb *))
 {
-  gdb_assert (bsd_kvm_supply_pcb == NULL);
+  gdb_assert(bsd_kvm_supply_pcb == NULL);
   bsd_kvm_supply_pcb = supply_pcb;
 
   bsd_kvm_ops.to_shortname = "kvm";
@@ -326,17 +326,19 @@ Optionally specify the filename of a core dump.");
   bsd_kvm_ops.to_has_registers = 1;
   bsd_kvm_ops.to_magic = OPS_MAGIC;
 
-  add_target (&bsd_kvm_ops);
-  
-  add_prefix_cmd ("kvm", class_obscure, bsd_kvm_cmd, _("\
+  add_target(&bsd_kvm_ops);
+
+  add_prefix_cmd("kvm", class_obscure, bsd_kvm_cmd, _("\
 Generic command for manipulating the kernel memory interface."),
-		  &bsd_kvm_cmdlist, "kvm ", 0, &cmdlist);
+                 &bsd_kvm_cmdlist, "kvm ", 0, &cmdlist);
 
 #ifndef HAVE_STRUCT_THREAD_TD_PCB
-  add_cmd ("proc", class_obscure, bsd_kvm_proc_cmd,
-	   _("Set current context from proc address"), &bsd_kvm_cmdlist);
-#endif
-  add_cmd ("pcb", class_obscure, bsd_kvm_pcb_cmd,
-	   /* i18n: PCB == "Process Control Block" */
-	   _("Set current context from pcb address"), &bsd_kvm_cmdlist);
+  add_cmd("proc", class_obscure, bsd_kvm_proc_cmd,
+	  _("Set current context from proc address"), &bsd_kvm_cmdlist);
+#endif /* !HAVE_STRUCT_THREAD_TD_PCB */
+  add_cmd("pcb", class_obscure, bsd_kvm_pcb_cmd,
+	  /* i18n: PCB == "Process Control Block" */
+	  _("Set current context from pcb address"), &bsd_kvm_cmdlist);
 }
+
+/* EOF */

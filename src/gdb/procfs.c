@@ -30,17 +30,17 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include "gdbcmd.h"
 #include "gdbthread.h"
 
-#if defined (NEW_PROC_API)
-#define _STRUCTURED_PROC 1	/* Should be done by configure script. */
-#endif
+#if defined(NEW_PROC_API)
+# define _STRUCTURED_PROC 1	/* Should be done by configure script. */
+#endif /* NEW_PROC_API */
 
 #include <sys/procfs.h>
 #ifdef HAVE_SYS_FAULT_H
-#include <sys/fault.h>
-#endif
+# include <sys/fault.h>
+#endif /* HAVE_SYS_FAULT_H */
 #ifdef HAVE_SYS_SYSCALL_H
-#include <sys/syscall.h>
-#endif
+# include <sys/syscall.h>
+#endif /* HAVE_SYS_SYSCALL_H */
 #include <sys/errno.h>
 #include "gdb_wait.h"
 #include <signal.h>
@@ -88,9 +88,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
    the read/write (multiple fd) API never does.  */
 
 #ifdef NEW_PROC_API
-#include <sys/types.h>
-#include "gdb_dirent.h"	/* opendir/readdir, for listing the LWP's */
-#endif
+# include <sys/types.h>
+# include "gdb_dirent.h"  /* opendir/readdir, for listing the LWP's */
+#endif /* NEW_PROC_API */
 
 #include <fcntl.h>	/* for O_RDONLY */
 #include <unistd.h>	/* for "X_OK" */
@@ -3743,7 +3743,7 @@ procfs_prepare_to_store (void)
    NOTE: Since the /proc interface will not read individual registers,
    we will cache these requests until the process is resumed, and only
    then write them back to the inferior process.
- 
+
    FIXME: is that a really bad idea?  Have to think about cases where
    writing one register might affect the value of others, etc.  */
 
@@ -4876,7 +4876,7 @@ procfs_init_inferior (int pid)
      the -init code is executed. Unfortuantely, this is not straightforward,
      as rld is not part of the executable we are running, and thus we need
      the inferior to run until rld itself has been mapped in memory.
-     
+
      For this, we trace all syssgi() syscall exit events.  Each time
      we detect such an event, we iterate over each text memory maps,
      get its associated fd, and scan the symbol table for __dbx_link().
@@ -5094,7 +5094,7 @@ procfs_create_inferior (char *exec_file, char *allargs, char **env,
 		 procfs_init_inferior, NULL, shell_file);
 
 #ifdef SYS_syssgi
-  /* Make sure to cancel the syssgi() syscall-exit notifications.  
+  /* Make sure to cancel the syssgi() syscall-exit notifications.
      They should normally have been removed by now, but they may still
      be activated if the inferior doesn't use shared libraries, or if
      we didn't locate __dbx_link, or if we never stopped in __dbx_link.
@@ -5102,7 +5102,7 @@ procfs_create_inferior (char *exec_file, char *allargs, char **env,
   proc_trace_syscalls_1 (find_procinfo_or_die (PIDGET (inferior_ptid), 0),
                          SYS_syssgi, PR_SYSEXIT, FLAG_RESET, 0);
 #endif
-  
+
   /* We are at the first instruction we care about.  */
   /* Pedal to the metal... */
 
@@ -5659,7 +5659,7 @@ insert_dbx_link_bpt_in_file (int fd, CORE_ADDR ignored)
 
   bfd_close (abfd);
   return 0;
-} 
+}
 
 /* If the given memory region MAP contains a symbol named __dbx_link,
    insert a breakpoint at this location and return nonzero.  Return
@@ -5669,16 +5669,16 @@ static int
 insert_dbx_link_bpt_in_region (struct prmap *map,
                                int (*child_func) (),
                                void *data)
-{     
+{
   procinfo *pi = (procinfo *) data;
-        
+
   /* We know the symbol we're looking for is in a text region, so
      only look for it if the region is a text one.  */
   if (map->pr_mflags & MA_EXEC)
     return solib_mappings_callback (map, insert_dbx_link_bpt_in_file, pi);
- 
+
   return 0;
-}           
+}
 
 /* Search all memory regions for a symbol named __dbx_link.  If found,
    insert a breakpoint at its location, and return nonzero.  Return zero
@@ -5892,7 +5892,7 @@ proc_trace_syscalls_1 (procinfo *pi, int syscallnum, int entry_or_exit,
                       int mode, int from_tty)
 {
   sysset_t *sysset;
-  
+
   if (entry_or_exit == PR_SYSENTRY)
     sysset = proc_get_traced_sysentry (pi, NULL);
   else

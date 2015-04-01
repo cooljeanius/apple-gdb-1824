@@ -43,33 +43,35 @@
 /* readline defines this.  */
 #undef savestring
 
-static void rl_callback_read_char_wrapper (gdb_client_data client_data);
-static void command_line_handler (char *rl);
-static void command_line_handler_continuation (struct continuation_arg *arg);
-static void change_line_handler (void);
-static void change_annotation_level (void);
-static void command_handler (char *command);
-static void async_do_nothing (gdb_client_data arg);
-static void async_disconnect (gdb_client_data arg);
-static void async_stop_sig (gdb_client_data arg);
-static void async_float_handler (gdb_client_data arg);
+static void rl_callback_read_char_wrapper(gdb_client_data client_data);
+static void command_line_handler(char *rl);
+static void command_line_handler_continuation(struct continuation_arg *arg);
+static void change_line_handler(void);
+static void change_annotation_level(void);
+static void command_handler(char *command);
+static void async_do_nothing(gdb_client_data arg);
+static void async_disconnect(gdb_client_data arg);
+static void async_stop_sig(gdb_client_data arg);
+static void async_float_handler(gdb_client_data arg);
+
+extern void _initialize_event_loop(void);
 
 /* Signal handlers. */
 #ifdef SIGQUIT
-static void handle_sigquit (int sig);
-#endif
-static void handle_sighup (int sig);
-static void handle_sigfpe (int sig);
+static void handle_sigquit(int sig);
+#endif /* SIGQUIT */
+static void handle_sighup(int sig);
+static void handle_sigfpe(int sig);
 #if defined(SIGWINCH) && defined(SIGWINCH_HANDLER)
-static void handle_sigwinch (int sig);
-#endif
+static void handle_sigwinch(int sig);
+#endif /* SIGWINCH && SIGWINCH_HANDLER */
 
 /* Functions to be invoked by the event loop in response to
    signals. */
-static void async_do_nothing (gdb_client_data);
-static void async_disconnect (gdb_client_data);
-static void async_float_handler (gdb_client_data);
-static void async_stop_sig (gdb_client_data);
+static void async_do_nothing(gdb_client_data);
+static void async_disconnect(gdb_client_data);
+static void async_float_handler(gdb_client_data);
+static void async_stop_sig(gdb_client_data);
 
 /* Readline offers an alternate interface, via callback
    functions. These are all included in the file callback.c in the
@@ -91,8 +93,8 @@ static void async_stop_sig (gdb_client_data);
    line of input is ready.  CALL_READLINE is to be set to the function
    that readline offers as callback to the event_loop. */
 
-void (*input_handler) (char *);
-void (*call_readline) (gdb_client_data);
+void (*input_handler)(char *);
+void (*call_readline)(gdb_client_data);
 
 /* Important variables for the event loop. */
 
@@ -134,17 +136,17 @@ struct prompts the_prompts;
 void *sigint_token;
 #ifdef SIGHUP
 void *sighup_token;
-#endif
+#endif /* SIGHUP */
 #ifdef SIGQUIT
 void *sigquit_token;
-#endif
+#endif /* SIGQUIT */
 void *sigfpe_token;
 #if defined(SIGWINCH) && defined(SIGWINCH_HANDLER)
 void *sigwinch_token;
-#endif
+#endif /* SIGWINCH && SIGWINCH_HANDLER */
 #ifdef STOP_SIGNAL
 void *sigtstp_token;
-#endif
+#endif /* STOP_SIGNAL */
 
 /* APPLE LOCAL - Inform user about debugging optimized code  */
 int gdb_prompt_is_optimized = 0;
@@ -165,28 +167,28 @@ readline_input_state;
 
 /* This hook is called by rl_callback_read_char_wrapper after each
    character is processed.  */
-void (*after_char_processing_hook) ();
+void (*after_char_processing_hook)(void);
 
 
 /* Wrapper function for calling into the readline library. The event
    loop expects the callback function to have a paramter, while readline
    expects none. */
 static void
-rl_callback_read_char_wrapper (gdb_client_data client_data)
+rl_callback_read_char_wrapper(gdb_client_data client_data)
 {
-  rl_callback_read_char ();
+  rl_callback_read_char();
   if (after_char_processing_hook)
-    (*after_char_processing_hook) ();
+    (*after_char_processing_hook)();
 }
 
 /* Initialize all the necessary variables, start the event loop,
    register readline, and stdin, start the loop. */
 void
-cli_command_loop (void *data /* unused */)
+cli_command_loop(void *data /* unused */)
 {
   int length;
   char *a_prompt;
-  char *gdb_prompt = get_prompt ();
+  char *gdb_prompt = get_prompt();
 
   /* If we are using readline, set things up and display the first
      prompt, otherwise just print the prompt. */
@@ -658,10 +660,10 @@ command_line_handler_continuation (struct continuation_arg *arg)
    obsolete once we use the event loop as the default mechanism in
    GDB. */
 static void
-command_line_handler (char *rl)
+command_line_handler(char *rl)
 {
   static char *linebuffer = 0;
-  static unsigned linelength = 0;
+  static unsigned int linelength = 0U;
   char *p;
   char *p1;
   extern char *line;
@@ -672,158 +674,158 @@ command_line_handler (char *rl)
 
   int repeat = (instream == stdin);
 
-  if (annotation_level > 1 && instream == stdin)
+  if ((annotation_level > 1) && (instream == stdin))
     {
-      printf_unfiltered (("\n\032\032post-"));
-      puts_unfiltered (async_annotation_suffix);
-      printf_unfiltered (("\n"));
+      printf_unfiltered(("\n\032\032post-"));
+      puts_unfiltered(async_annotation_suffix);
+      printf_unfiltered(("\n"));
     }
 
   if (linebuffer == 0)
     {
       linelength = 80;
-      linebuffer = (char *) xmalloc (linelength);
+      linebuffer = (char *)xmalloc(linelength);
     }
 
   p = linebuffer;
 
   if (more_to_come)
     {
-      strcpy (linebuffer, readline_input_state.linebuffer);
+      strcpy(linebuffer, readline_input_state.linebuffer);
       p = readline_input_state.linebuffer_ptr;
-      xfree (readline_input_state.linebuffer);
+      xfree(readline_input_state.linebuffer);
       more_to_come = 0;
-      pop_prompt ();
+      pop_prompt();
     }
 
 #ifdef STOP_SIGNAL
   if (job_control)
-    signal (STOP_SIGNAL, handle_stop_sig);
-#endif
+    signal(STOP_SIGNAL, handle_stop_sig);
+#endif /* STOP_SIGNAL */
 
   /* Make sure that all output has been output.  Some machines may let
      you get away with leaving out some of the gdb_flush, but not all.  */
-  wrap_here ("");
-  gdb_flush (gdb_stdout);
-  gdb_flush (gdb_stderr);
+  wrap_here("");
+  gdb_flush(gdb_stdout);
+  gdb_flush(gdb_stderr);
 
   if (source_file_name != NULL)
     ++source_line_number;
 
   /* If we are in this case, then command_handler will call quit
      and exit from gdb. */
-  if (!rl || rl == (char *) EOF)
+  if (!rl || (rl == (char *)EOF))
     {
       got_eof = 1;
-      command_handler (0);
+      command_handler(0);
     }
-  if (strlen (rl) + 1 + (p - linebuffer) > linelength)
+  if ((strlen(rl) + 1 + (p - linebuffer)) > linelength)
     {
-      linelength = strlen (rl) + 1 + (p - linebuffer);
-      nline = (char *) xrealloc (linebuffer, linelength);
-      p += nline - linebuffer;
+      linelength = (strlen(rl) + 1UL + (p - linebuffer));
+      nline = (char *)xrealloc(linebuffer, linelength);
+      p += (nline - linebuffer);
       linebuffer = nline;
     }
   p1 = rl;
-  /* Copy line.  Don't copy null at end.  (Leaves line alone
+  /* Copy line.  Do NOT copy null at end.  (Leaves line alone
      if this was just a newline)  */
   while (*p1)
     *p++ = *p1++;
 
   xfree (rl);			/* Allocated in readline.  */
 
-  if (p > linebuffer && *(p - 1) == '\\')
+  if ((p > linebuffer) && (*(p - 1) == '\\'))
     {
       p--;			/* Put on top of '\'.  */
 
-      readline_input_state.linebuffer = savestring (linebuffer,
-						    strlen (linebuffer));
+      readline_input_state.linebuffer = savestring(linebuffer,
+						   strlen(linebuffer));
       readline_input_state.linebuffer_ptr = p;
 
       /* We will not invoke a execute_command if there is more
 	 input expected to complete the command. So, we need to
 	 print an empty prompt here. */
       more_to_come = 1;
-      push_prompt ("", "", "");
-      display_gdb_prompt (0);
+      push_prompt("", "", "");
+      display_gdb_prompt(0);
       return;
     }
 
 #ifdef STOP_SIGNAL
   if (job_control)
-    signal (STOP_SIGNAL, SIG_DFL);
-#endif
+    signal(STOP_SIGNAL, SIG_DFL);
+#endif /* STOP_SIGNAL */
 
 #define SERVER_COMMAND_LENGTH 7
   server_command =
-    (p - linebuffer > SERVER_COMMAND_LENGTH)
-    && strncmp (linebuffer, "server ", SERVER_COMMAND_LENGTH) == 0;
+    (((p - linebuffer) > SERVER_COMMAND_LENGTH)
+     && (strncmp(linebuffer, "server ", SERVER_COMMAND_LENGTH) == 0));
   if (server_command)
     {
       /* Note that we don't set `line'.  Between this and the check in
          dont_repeat, this insures that repeating will still do the
          right thing.  */
       *p = '\0';
-      command_handler (linebuffer + SERVER_COMMAND_LENGTH);
-      display_gdb_prompt (0);
+      command_handler(linebuffer + SERVER_COMMAND_LENGTH);
+      display_gdb_prompt(0);
       return;
     }
 
-  /* Do history expansion if that is wished.  */
-  if (history_expansion_p && instream == stdin
-      && ISATTY (instream))
+  /* Do history expansion if that is wished: */
+  if (history_expansion_p && (instream == stdin)
+      && ISATTY(instream))
     {
       char *history_value;
       int expanded;
 
       *p = '\0';		/* Insert null now.  */
-      expanded = history_expand (linebuffer, &history_value);
+      expanded = history_expand(linebuffer, &history_value);
       if (expanded)
 	{
 	  /* Print the changes.  */
-	  printf_unfiltered ("%s\n", history_value);
+	  printf_unfiltered("%s\n", history_value);
 
 	  /* If there was an error, call this function again.  */
 	  if (expanded < 0)
 	    {
-	      xfree (history_value);
+	      xfree(history_value);
 	      return;
 	    }
-	  if (strlen (history_value) > linelength)
+	  if (strlen(history_value) > linelength)
 	    {
-	      linelength = strlen (history_value) + 1;
-	      linebuffer = (char *) xrealloc (linebuffer, linelength);
+	      linelength = (strlen(history_value) + 1UL);
+	      linebuffer = (char *)xrealloc(linebuffer, linelength);
 	    }
-	  strcpy (linebuffer, history_value);
-	  p = linebuffer + strlen (linebuffer);
-	  xfree (history_value);
+	  strcpy(linebuffer, history_value);
+	  p = (linebuffer + strlen(linebuffer));
+	  xfree(history_value);
 	}
     }
 
   /* If we just got an empty line, and that is supposed
      to repeat the previous command, return the value in the
      global buffer.  */
-  if (repeat && p == linebuffer && *p != '\\')
+  if (repeat && (p == linebuffer) && (*p != '\\'))
     {
-      command_handler (line);
-      display_gdb_prompt (0);
+      command_handler(line);
+      display_gdb_prompt(0);
       return;
     }
 
-  for (p1 = linebuffer; *p1 == ' ' || *p1 == '\t'; p1++);
+  for (p1 = linebuffer; (*p1 == ' ') || (*p1 == '\t'); p1++);
   if (repeat && !*p1)
     {
-      command_handler (line);
-      display_gdb_prompt (0);
+      command_handler(line);
+      display_gdb_prompt(0);
       return;
     }
 
   *p = 0;
 
-  /* Add line to history if appropriate.  */
-  if (instream == stdin
-      && ISATTY (stdin) && *linebuffer)
-    add_history (linebuffer);
+  /* Add line to history if appropriate: */
+  if ((instream == stdin)
+      && ISATTY(stdin) && *linebuffer)
+    add_history(linebuffer);
 
   /* Note: lines consisting solely of comments are added to the command
      history.  This is useful when you type a command, and then
@@ -837,22 +839,22 @@ command_line_handler (char *rl)
   /* Save into global buffer if appropriate.  */
   if (repeat)
     {
-      if (linelength > linesize)
+      if (linelength > (size_t)linesize)
 	{
-	  line = xrealloc (line, linelength);
+	  line = (char *)xrealloc(line, linelength);
 	  linesize = linelength;
 	}
-      strcpy (line, linebuffer);
+      strcpy(line, linebuffer);
       if (!more_to_come)
 	{
-	  command_handler (line);
-	  display_gdb_prompt (0);
+	  command_handler(line);
+	  display_gdb_prompt(0);
 	}
       return;
     }
 
-  command_handler (linebuffer);
-  display_gdb_prompt (0);
+  command_handler(linebuffer);
+  display_gdb_prompt(0);
   return;
 }
 
@@ -1345,3 +1347,5 @@ _initialize_event_loop(void)
   if (deprecated_command_loop_hook == NULL)
     deprecated_command_loop_hook = (void (*)(void))cli_command_loop;
 }
+
+/* EOF */

@@ -40,8 +40,8 @@
 #include <sys/procfs.h>
 
 #ifdef HAVE_SYS_REG_H
-#include <sys/reg.h>
-#endif
+# include <sys/reg.h>
+#endif /* HAVE_SYS_REG_H */
 
 #include <sys/file.h>
 #include "gdb_stat.h"
@@ -158,7 +158,7 @@ fetch_register (int regno)
       regaddr += sizeof (PTRACE_XFER_TYPE);
       if (errno != 0)
 	{
-	  sprintf (mess, "reading register %s (#%d)", 
+	  sprintf (mess, "reading register %s (#%d)",
 		   REGISTER_NAME (regno), regno);
 	  perror_with_name (mess);
 	}
@@ -226,7 +226,7 @@ store_register (int regno)
       regaddr += sizeof (PTRACE_XFER_TYPE);
       if (errno != 0)
 	{
-	  sprintf (mess, "writing register %s (#%d)", 
+	  sprintf (mess, "writing register %s (#%d)",
 		   REGISTER_NAME (regno), regno);
 	  perror_with_name (mess);
 	}
@@ -261,9 +261,9 @@ old_store_inferior_registers (int regno)
 /* Note both m68k-tdep.c and m68klinux-nat.c contain definitions
    for supply_gregset and supply_fpregset. The definitions
    in m68k-tdep.c are valid if USE_PROC_FS is defined. Otherwise,
-   the definitions in m68klinux-nat.c will be used. This is a 
-   bit of a hack. The supply_* routines do not belong in 
-   *_tdep.c files. But, there are several lynx ports that currently 
+   the definitions in m68klinux-nat.c will be used. This is a
+   bit of a hack. The supply_* routines do not belong in
+   *_tdep.c files. But, there are several lynx ports that currently
    depend on these definitions. */
 
 #ifndef USE_PROC_FS

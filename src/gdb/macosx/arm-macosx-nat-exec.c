@@ -39,10 +39,11 @@
 #include "macosx-nat-mutils.h"
 
 #include "arm-tdep.h"
+#include "arm-macosx-nat-exec.h"
 #include "arm-macosx-thread-status.h"
 #include "arm-macosx-tdep.h"
 
-extern enum gdb_osabi arm_set_osabi_from_host_info();
+extern enum gdb_osabi arm_set_osabi_from_host_info(void);
 
 static inline uint32_t collect_uint32(int regnum)
 {
@@ -68,7 +69,7 @@ static inline void supply_uint32(int regnum, uint32_t val)
 static inline void supply_uint64(int regnum, uint64_t val)
 {
   gdb_byte buf[sizeof(val)];
-  store_unsigned_integer(buf, sizeof(val), val);
+  store_unsigned_integer(buf, sizeof(val), (ULONGEST)val);
   regcache_raw_supply(current_regcache, regnum, buf);
 }
 
@@ -216,7 +217,7 @@ static void validate_inferior_registers(int regno)
 void fetch_inferior_registers(int regno)
 {
   int i;
-  thread_t current_thread = ptid_get_tid(inferior_ptid);
+  thread_t current_thread = (thread_t)ptid_get_tid(inferior_ptid);
   kern_return_t ret = KERN_SUCCESS;
 
   if (TARGET_OSABI == GDB_OSABI_UNKNOWN) {
@@ -250,8 +251,9 @@ void fetch_inferior_registers(int regno)
 
   if ((regno == -1) || ARM_MACOSX_IS_VFP_RELATED_REGNUM(regno)) {
       enum arm_vfp_version vfp_version;
+      int fp_byte_size;
       vfp_version = gdbarch_tdep(current_gdbarch)->vfp_version;
-      int fp_byte_size = -1;
+      fp_byte_size = -1;
 
       switch (vfp_version) {
 	  case ARM_VFP_UNSUPPORTED:
@@ -294,7 +296,9 @@ void fetch_inferior_registers(int regno)
 	  default:
 	    error("fetch_inferior_registers: unable to fetch ARM_THREAD_FPSTATE: "
                   "unsupported vfp version: %d", (int)vfp_version);
+#ifndef __clang__
 	    break;
+#endif /* !__clang__ */
       }
   }
 }
@@ -309,7 +313,7 @@ void store_inferior_registers(int regno)
   kern_return_t ret;
 
   current_pid = ptid_get_pid(inferior_ptid);
-  current_thread = ptid_get_tid(inferior_ptid);
+  current_thread = (thread_t)ptid_get_tid(inferior_ptid);
 
   validate_inferior_registers(regno);
 
@@ -317,15 +321,16 @@ void store_inferior_registers(int regno)
       struct gdb_arm_thread_state gp_regs;
       arm_macosx_store_gp_registers(&gp_regs);
       ret = thread_set_state(current_thread, GDB_ARM_THREAD_STATE,
-                             (thread_state_t) & gp_regs,
+                             (thread_state_t)&gp_regs,
                              GDB_ARM_THREAD_STATE_COUNT);
       MACH_CHECK_ERROR(ret);
   }
 
   if ((regno == -1) || ARM_MACOSX_IS_VFP_RELATED_REGNUM(regno)) {
       enum arm_vfp_version vfp_version;
+      int fp_byte_size;
       vfp_version = gdbarch_tdep(current_gdbarch)->vfp_version;
-      int fp_byte_size = -1;
+      fp_byte_size = -1;
 
       switch (vfp_version) {
 	  case ARM_VFP_UNSUPPORTED:
@@ -349,7 +354,7 @@ void store_inferior_registers(int regno)
 	      gdb_arm_thread_vfpv3_state_t fp_regs;
 	      arm_macosx_store_vfpv3_regs(&fp_regs);
 	      ret = thread_set_state(current_thread, GDB_ARM_THREAD_FPSTATE,
-                                     (thread_state_t) & fp_regs,
+                                     (thread_state_t)&fp_regs,
                                      GDB_ARM_THREAD_FPSTATE_VFPV3_COUNT);
 	      MACH_CHECK_ERROR(ret);
             }
@@ -358,7 +363,9 @@ void store_inferior_registers(int regno)
  	  default:
 	    error("store_inferior_registers: unable to store ARM_THREAD_FPSTATE: "
                   "unsupported vfp version: %d", (int)vfp_version);
+#ifndef __clang__
 	    break;
+#endif /* !__clang__ */
       }
   }
 }

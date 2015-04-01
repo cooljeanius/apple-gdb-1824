@@ -1,4 +1,4 @@
-/* Target-dependent code for Renesas D10V, for GDB.
+/* d10v-tdep.c: Target-dependent code for Renesas D10V, for GDB.
 
    Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003 Free Software
    Foundation, Inc.
@@ -20,7 +20,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/*  Contributed by Martin Hunt, hunt@cygnus.com */
+/*  Contributed by Martin Hunt, <hunt@cygnus.com> */
 
 #include "defs.h"
 #include "frame.h"
@@ -1577,3 +1577,5 @@ When on source code is included in the d10v instruction trace display.", "\
 Display of source code with trace is %s.",
 			   NULL, NULL, &setlist, &showlist);
 }
+
+/* EOF */

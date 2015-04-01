@@ -1,4 +1,4 @@
-/* Print values for GDB, the GNU debugger.
+/* valprint.c: Print values for GDB, the GNU debugger.
 
    Copyright 1986, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
    1996, 1997, 1998, 1999, 2000, 2001, 2002, 2005 Free Software
@@ -242,7 +242,7 @@ value_check_printable (struct value *val, struct ui_file *stream)
       return 0;
     case opt_evicted:
     case opt_other:
-      fprintf_filtered (stream, 
+      fprintf_filtered (stream,
 		      _("<value temporarily unavailable, due to optimizations>"));
       return 0;
     default:
@@ -309,7 +309,7 @@ val_print_type_code_int (struct type *type, const gdb_byte *valaddr,
 
       if (TYPE_UNSIGNED (type)
 	  /* APPLE LOCAL byte order */
-	  && extract_long_unsigned_integer_with_byte_order 
+	  && extract_long_unsigned_integer_with_byte_order
 	  (valaddr, TYPE_LENGTH (type), &val, TYPE_BYTE_ORDER (type)))
 	{
 	  print_longest (stream, 'u', 0, val);
@@ -333,15 +333,15 @@ val_print_type_code_int (struct type *type, const gdb_byte *valaddr,
 }
 
 /* Print a number according to FORMAT which is one of d,u,x,o,b,h,w,g.
-   The raison d'etre of this function is to consolidate printing of 
-   LONG_LONG's into this one function. The format chars b,h,w,g are 
+   The raison d'etre of this function is to consolidate printing of
+   LONG_LONG's into this one function. The format chars b,h,w,g are
    from print_scalar_formatted().  Numbers are printed using C
-   format. 
+   format.
 
-   USE_C_FORMAT means to use C format in all cases.  Without it, 
+   USE_C_FORMAT means to use C format in all cases.  Without it,
    'o' and 'x' format do not include the standard C radix prefix
-   (leading 0 or 0x). 
-   
+   (leading 0 or 0x).
+
    Hilfinger/2004-09-09: USE_C_FORMAT was originally called USE_LOCAL
    and was intended to request formating according to the current
    language and would be used for most integers that GDB prints.  The
@@ -378,7 +378,7 @@ print_longest (struct ui_file *stream, int format, int use_c_format,
       val = int_string (val_long, 8, 0, 0, use_c_format); break;
     default:
       internal_error (__FILE__, __LINE__, _("failed internal consistency check"));
-    } 
+    }
   fputs_filtered (val, stream);
 }
 
@@ -809,7 +809,7 @@ print_decimal_chars (struct ui_file *stream, const gdb_byte *valaddr,
    * the nibbles by 16, add Y and re-decimalize.  Repeat with Z.
    *
    * The trick is that "digits" holds a base-10 number, but sometimes
-   * the individual digits are > 10. 
+   * the individual digits are > 10.
    *
    * Outer loop is per nibble (hex digit) of input, from MSD end to
    * LSD end.
@@ -940,7 +940,7 @@ print_hex_chars_with_byte_order (struct ui_file *stream, const bfd_byte *valaddr
     }
 }
 
-/* VALADDR points to a char integer of LEN bytes.  Print it out in appropriate language form on stream.  
+/* VALADDR points to a char integer of LEN bytes.  Print it out in appropriate language form on stream.
    Omit any leading zero chars.  */
 
 void

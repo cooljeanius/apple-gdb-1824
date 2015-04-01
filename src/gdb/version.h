@@ -1,4 +1,4 @@
-/* Version information for GDB.
+/* version.h: Version information for GDB.
    Copyright 1999 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -21,19 +21,21 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-/* Version number of GDB, as a string.  */
+/* Version number of GDB, as a string: */
 extern const char version[];
 
-/* APPLE LOCAL: The RC version number of gdb.  */
+/* APPLE LOCAL: The RC version number of gdb: */
 extern const char rc_version[];
 
-/* Canonical host name as a string. */
+/* Canonical host name as a string: */
 extern const char host_name[];
 
-/* Canonical target name as a string. */
+/* Canonical target name as a string: */
 extern const char target_name[];
 
-/* Canonical build date as a string. */
+/* Canonical build date as a string: */
 extern const char build_date[];
 
 #endif /* #ifndef VERSION_H */
+
+/* EOF */

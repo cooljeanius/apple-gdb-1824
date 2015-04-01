@@ -59,31 +59,31 @@ extern int objectprint;
 
 /* Prototypes for local functions. */
 
-static struct value *evaluate_subexp_for_sizeof (struct expression *, int *);
+static struct value *evaluate_subexp_for_sizeof(struct expression *, int *);
 
-static struct value *evaluate_subexp_for_address (struct expression *,
-						  int *, enum noside);
+static struct value *evaluate_subexp_for_address(struct expression *,
+						 int *, enum noside);
 
-static struct value *evaluate_subexp (struct type *, struct expression *,
-				      int *, enum noside);
+static struct value *evaluate_subexp(struct type *, struct expression *,
+				     int *, enum noside);
 
-static char *get_label (struct expression *, int *);
+static char *get_label(struct expression *, int *);
 
-static struct value *evaluate_struct_tuple (struct value *,
-					    struct expression *, int *,
-					    enum noside, int);
+static struct value *evaluate_struct_tuple(struct value *,
+					   struct expression *, int *,
+					   enum noside, int);
 
-static LONGEST init_array_element (struct value *, struct value *,
-				   struct expression *, int *, enum noside,
-				   LONGEST, LONGEST);
+static LONGEST init_array_element(struct value *, struct value *,
+				  struct expression *, int *, enum noside,
+				  LONGEST, LONGEST);
 
 /* APPLE LOCAL: Closures.  */
 int print_closure = 1;
 
 static void
-do_restore_print_closure (void *in_oldval)
+do_restore_print_closure(void *in_oldval)
 {
-  print_closure = (int) in_oldval;
+  print_closure = (int)in_oldval;
 }
 
 struct cleanup *
@@ -242,9 +242,8 @@ get_label (struct expression *exp, int *pos)
 /* This function evaluates tuples (in (the deleted) Chill) or
  * brace-initializers (in C/C++) for structure types: */
 static struct value *
-evaluate_struct_tuple(struct value *struct_val,
-					  struct expression *exp,
-					  int *pos, enum noside noside, int nargs)
+evaluate_struct_tuple(struct value *struct_val, struct expression *exp,
+                      int *pos, enum noside noside, int nargs)
 {
   struct type *struct_type = check_typedef(value_type(struct_val));
   struct type *substruct_type = struct_type;
@@ -2479,20 +2478,22 @@ parse_and_eval_type (char *p, int length)
 }
 
 int
-calc_f77_array_dims (struct type *array_type)
+calc_f77_array_dims(struct type *array_type)
 {
   int ndimen = 1;
   struct type *tmp_type;
 
-  if ((TYPE_CODE (array_type) != TYPE_CODE_ARRAY))
-    error (_("Can't get dimensions for a non-array type"));
+  if ((TYPE_CODE(array_type) != TYPE_CODE_ARRAY))
+    error(_("Cannot get dimensions for a non-array type"));
 
   tmp_type = array_type;
 
-  while ((tmp_type = TYPE_TARGET_TYPE (tmp_type)))
+  while ((tmp_type = TYPE_TARGET_TYPE(tmp_type)))
     {
-      if (TYPE_CODE (tmp_type) == TYPE_CODE_ARRAY)
+      if (TYPE_CODE(tmp_type) == TYPE_CODE_ARRAY)
 	++ndimen;
     }
   return ndimen;
 }
+
+/* EOF */

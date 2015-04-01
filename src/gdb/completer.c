@@ -27,7 +27,7 @@
 
 #include "cli/cli-decode.h"
 
-/* FIXME: This is needed because of lookup_cmd_1 ().  We should be
+/* FIXME: This is needed because of lookup_cmd_1().  We should be
    calling a hook instead so we eliminate the CLI dependency.  */
 #include "gdbcmd.h"
 
@@ -66,7 +66,7 @@ char *line_completion_function (const char *text, int matches,
    a leading quote. */
 static char *gdb_completer_command_word_break_characters =
 /* APPLE LOCAL begin completer */
-/* Don't include '/' in this list.  See also the copy of this string
+/* Do NOT include '/' in this list.  See also the copy of this string
    in language.c:default_word_break_characters().  */
 " \t\n!@#$%^&*()+=|~`}{[]\"';:?>.<,";
 /* APPLE LOCAL end completer */
@@ -81,7 +81,7 @@ static char *gdb_completer_command_word_break_characters =
 static char *gdb_completer_file_name_break_characters = " \t\n*|\"';?><@";
 #else
 static char *gdb_completer_file_name_break_characters = " \t\n*|\"';:?><";
-#endif
+#endif /* HAVE_DOS_BASED_FILE_SYSTEM */
 
 /* APPLE LOCAL begin completer */
 /* When completing a file name, only a space should be considered a
@@ -90,7 +90,7 @@ char *gdb_completer_filename_word_break_characters = " ";
 /* APPLE LOCAL end completer */
 
 /* Characters that can be used to quote completion strings.  Note that we
-   can't include '"' because the gdb C parser treats such quoted sequences
+   cannot include '"' because the gdb C parser treats such quoted sequences
    as strings. */
 static char *gdb_completer_quote_characters = "'";
 

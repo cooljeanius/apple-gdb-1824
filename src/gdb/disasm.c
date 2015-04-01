@@ -1,4 +1,4 @@
-/* Disassemble support for GDB.
+/* disasm.c: Disassemble support for GDB.
 
    Copyright 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -244,7 +244,7 @@ do_mixed_source_and_assembly (struct ui_out *uiout,
 		    {
 		      struct cleanup *ui_out_list_chain_line;
 		      struct cleanup *ui_out_tuple_chain_line;
-		      
+
 		      ui_out_tuple_chain_line
 			= make_cleanup_ui_out_tuple_begin_end (uiout,
 							       "src_and_asm_line");
@@ -398,7 +398,7 @@ gdb_disassembly (struct ui_out *uiout,
 
 /* If the architecture in GDBARCH has fixed-length instructions,
    return that length.  Otherwise, or if we do not know the length of
-   an instruction, return -1. 
+   an instruction, return -1.
 
    FIXME: This should really be a gdbarch method.  That's a more
    appropriate change to make post-turmeric, though.
@@ -445,7 +445,7 @@ int gdbarch_instruction_length (struct gdbarch *gdbarch)
 */
 
 int
-find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit, 
+find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
                 int peeklimit)
 {
   CORE_ADDR low = INVALID_ADDRESS;
@@ -477,7 +477,7 @@ find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
 
   /* If the architecture has fixed-sized instructions, just use simple
      arithmetic. */
-  
+
   length = gdbarch_instruction_length (current_gdbarch);
   if (length > 0)
     {
@@ -495,7 +495,7 @@ find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
       *result = constrained;
       return (constrained != cur);
     }
-  
+
   /* From here, we must assume variable-sized instructions. */
 
   if ((! funclimit) && (offset < 0))
@@ -513,14 +513,14 @@ find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
     {
       cur += TARGET_PRINT_INSN (cur, &di);
       offset--;
-      
+
       if (funclimit && (cur > high))
 	{
 	  /* We went past the end of the function without ever
 	     reaching the purportedly final instruction. */
 	  return -1;
 	}
-      
+
       if (funclimit && (cur == high))
 	{
 	  /* We reached the end of the function.  Return 1 if we had
@@ -542,13 +542,13 @@ find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
   gdb_assert (offset < 0);
 
   /* A sanity check:  If we've stepped into some area of memory where
-     gdb doesn't have symbols and the GUI requests we disassemble from $pc, 
+     gdb doesn't have symbols and the GUI requests we disassemble from $pc,
      gdb can come up with very large LOW-HIGH regions of memory to disassemble
      through.  As a sanity check, if this function starts four pages before
-     the given $pc and we're in MI mode (so we have a GUI that may be 
+     the given $pc and we're in MI mode (so we have a GUI that may be
      requesting nonsensical things), shortcircuit this operation.  */
-     
-  if (start - low > -offset && start - low > 16384 
+
+  if (start - low > -offset && start - low > 16384
       && ui_out_is_mi_like_p (uiout))
     {
       *result = start;
@@ -562,7 +562,7 @@ find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
 
   if (peeklimit < 0 || peeklimit > (start - low))
     peeklimit = start - low;
-  
+
   /* If PEEKLIMIT is less than (start - low), we can still attempt the
      search --- maybe enough of the instruction stream will be
      multi-byte that we'll find our address regardless. */
@@ -607,7 +607,7 @@ find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
 	  *result = low;
 	  do_cleanups (cleanup);
 	  return 1;
-	} 
+	}
       else
 	{
 	  *result = addrs[index + offset];
@@ -628,12 +628,12 @@ find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
     {
       /* We went past PEEKLIMIT instructions, and hence, weren't able
 	 to complete the backwards seek.  */
-      do_cleanups (cleanup);
+      do_cleanups(cleanup);
       return -1;
     }
 
-  internal_error (__FILE__, __LINE__, "should never have reached here");
-  do_cleanups (cleanup);
+  internal_error(__FILE__, __LINE__, "should never have reached here");
+  do_cleanups(cleanup);
   return -1;
 }
 
@@ -641,8 +641,10 @@ find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
    on STREAM.  Returns length of the instruction, in bytes.  */
 
 int
-gdb_print_insn (CORE_ADDR memaddr, struct ui_file *stream)
+gdb_print_insn(CORE_ADDR memaddr, struct ui_file *stream)
 {
-  struct disassemble_info di = gdb_disassemble_info (current_gdbarch, stream);
-  return TARGET_PRINT_INSN (memaddr, &di);
+  struct disassemble_info di = gdb_disassemble_info(current_gdbarch, stream);
+  return TARGET_PRINT_INSN(memaddr, &di);
 }
+
+/* EOF */

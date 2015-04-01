@@ -1,8 +1,8 @@
-/* DWARF 2 Expression Evaluator.
+/* dwarf2expr.c: DWARF 2 Expression Evaluator.
 
    Copyright 2001, 2002, 2003, 2005 Free Software Foundation, Inc.
 
-   Contributed by Daniel Berlin (dan@dberlin.org)
+   Contributed by Daniel Berlin <dan@dberlin.org>
 
    This file is part of GDB.
 
@@ -36,33 +36,31 @@
 
 /* Local prototypes.  */
 
-static void execute_stack_op (struct dwarf_expr_context *,
-			      gdb_byte *, gdb_byte *, int eh_frame_p,
-                              struct dwarf2_address_translation *addr_translation);
+static void execute_stack_op(struct dwarf_expr_context *,
+			     gdb_byte *, gdb_byte *, int eh_frame_p,
+                             struct dwarf2_address_translation *addr_translation);
 
-/* Create a new context for the expression evaluator.  */
-
+/* Create a new context for the expression evaluator: */
 struct dwarf_expr_context *
-new_dwarf_expr_context (void)
+new_dwarf_expr_context(void)
 {
   struct dwarf_expr_context *retval;
-  retval = xcalloc (1, sizeof (struct dwarf_expr_context));
+  retval = xcalloc(1, sizeof(struct dwarf_expr_context));
   retval->stack_len = 0;
   retval->stack_allocated = 10;
-  retval->stack = xmalloc (retval->stack_allocated * sizeof (CORE_ADDR));
+  retval->stack = xmalloc(retval->stack_allocated * sizeof(CORE_ADDR));
   retval->num_pieces = 0;
   retval->pieces = 0;
   return retval;
 }
 
-/* Release the memory allocated to CTX.  */
-
+/* Release the memory allocated to CTX: */
 void
-free_dwarf_expr_context (struct dwarf_expr_context *ctx)
+free_dwarf_expr_context(struct dwarf_expr_context *ctx)
 {
-  xfree (ctx->stack);
-  xfree (ctx->pieces);
-  xfree (ctx);
+  xfree(ctx->stack);
+  xfree(ctx->pieces);
+  xfree(ctx);
 }
 
 /* Expand the memory allocated to CTX's stack to contain at least
@@ -432,15 +430,15 @@ execute_stack_op (struct dwarf_expr_context *ctx,
 	case DW_OP_reg30:
 	case DW_OP_reg31:
 	  /* APPLE LOCAL begin variable initialized status  */
-	  if (op_ptr != op_end 
-	      && *op_ptr != DW_OP_piece 
+	  if (op_ptr != op_end
+	      && *op_ptr != DW_OP_piece
 	      && *op_ptr != DW_OP_APPLE_uninit)
 	  /* APPLE LOCAL end variable initialized status  */
 	    error (_("DWARF-2 expression error: DW_OP_reg operations must be "
 		   "used either alone or in conjuction with DW_OP_piece."));
 
 	  result = op - DW_OP_reg0;
-          result = dwarf2_frame_adjust_regnum (current_gdbarch, result, 
+          result = dwarf2_frame_adjust_regnum (current_gdbarch, result,
                                                eh_frame_p);
 	  ctx->in_reg = 1;
 
@@ -449,14 +447,14 @@ execute_stack_op (struct dwarf_expr_context *ctx,
 	case DW_OP_regx:
 	  op_ptr = read_uleb128 (op_ptr, op_end, &reg);
 	  /* APPLE LOCAL begin variable initialized status  */
-	  if (op_ptr != op_end 
+	  if (op_ptr != op_end
 	      && *op_ptr != DW_OP_piece
 	      && *op_ptr != DW_OP_APPLE_uninit)
 	  /* APPLE LOCAL end variable initialized status  */
 	    error (_("DWARF-2 expression error: DW_OP_reg operations must be "
 		   "used either alone or in conjuction with DW_OP_piece."));
 
-          result = dwarf2_frame_adjust_regnum (current_gdbarch, reg, 
+          result = dwarf2_frame_adjust_regnum (current_gdbarch, reg,
                                                eh_frame_p);
 	  ctx->in_reg = 1;
 	  break;
@@ -504,7 +502,7 @@ execute_stack_op (struct dwarf_expr_context *ctx,
 	case DW_OP_bregx:
 	  {
 	    op_ptr = read_uleb128 (op_ptr, op_end, &reg);
-            reg = dwarf2_frame_adjust_regnum (current_gdbarch, reg, 
+            reg = dwarf2_frame_adjust_regnum (current_gdbarch, reg,
                                                eh_frame_p);
 	    op_ptr = read_sleb128 (op_ptr, op_end, &offset);
 	    result = (ctx->read_reg) (ctx->baton, reg);
@@ -772,7 +770,7 @@ execute_stack_op (struct dwarf_expr_context *ctx,
             CORE_ADDR addr_or_regnum;
 
             /* APPLE LOCAL: DW_OP_piece requires that a register or address
-               be pushed on the stack.  The dwarf_expr_pop () call below will 
+               be pushed on the stack.  The dwarf_expr_pop () call below will
                error() if the stack doesn't have something there.
                (NB: The standard allows for a DW_OP_piece operator with NO
                 location specified -- this would indicate a variable which
@@ -788,7 +786,7 @@ execute_stack_op (struct dwarf_expr_context *ctx,
 	       specified, then they have another one or two DW_OP_piece
 	       operators specifying additional data.  Here is an example:
 
-         TAG_variable [31]  
+         TAG_variable [31]
           AT_name( "loffset" )
           AT_decl_file( 0x01 )
           AT_decl_line( 0x75 )
@@ -798,7 +796,7 @@ execute_stack_op (struct dwarf_expr_context *ctx,
              0x0003ad58 - 0x0003b050: reg20, piece 0x0004, reg21, piece 0x0004, piece 0x0008, reg21 , piece 0x0004
              0x0003b050 - 0x0003b118: reg20, piece 0x0004, reg21, piece 0x0004 )
 
-               As a hack, instead of error()ing out here, we will recgonize 
+               As a hack, instead of error()ing out here, we will recgonize
                that we're facing this broken debug info from the compiler
                and stop evaluating this expression at this point.  We've
                already retrieved the full variable location by now.  */
@@ -820,22 +818,24 @@ execute_stack_op (struct dwarf_expr_context *ctx,
 	/* APPLE LOCAL begin variable initialized status  */
 	case DW_OP_APPLE_uninit:
 #if 0
-          /* gcc-4.2 is not outputting trustworthy DW_OP_APPLE_uninit flags; 
+          /* gcc-4.2 is not outputting trustworthy DW_OP_APPLE_uninit flags;
              ignore them for now.  */
 	  ctx->var_status = 0;
 	  /* If the variable is uninitialized, throw an error instead of
 	     trying to evaluate it.  */
-	  throw_error (GENERIC_ERROR, "Variable is currently uninitialized.");
-#endif
+	  throw_error(GENERIC_ERROR, "Variable is currently uninitialized.");
+#endif /* 0 */
 	  goto no_push;
 	/* APPLE LOCAL end variable initialized status  */
 
 	default:
-	  error (_("Unhandled dwarf expression opcode 0x%x"), op);
+	  error(_("Unhandled dwarf expression opcode 0x%x"), op);
 	}
 
-      /* Most things push a result value.  */
-      dwarf_expr_push (ctx, result);
+      /* Most things push a result value: */
+      dwarf_expr_push(ctx, result);
     no_push:;
     }
 }
+
+/* EOF */

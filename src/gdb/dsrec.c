@@ -1,4 +1,4 @@
-/* S-record download support for GDB, the GNU debugger.
+/* dsrec.c: S-record download support for GDB, the GNU debugger.
    Copyright 1995, 1996, 1997, 1999, 2000, 2001, 2003, 2004
    Free Software Foundation, Inc.
 
@@ -26,13 +26,13 @@
 #include "gdb_assert.h"
 #include "gdb_string.h"
 
-extern void report_transfer_performance (unsigned long, time_t, time_t);
+extern void report_transfer_performance(unsigned long, time_t, time_t);
 
 extern int remote_debug;
 
-static int make_srec (char *srec, CORE_ADDR targ_addr, bfd * abfd,
-		      asection * sect, int sectoff, int *maxrecsize,
-		      int flags);
+static int make_srec(char *srec, CORE_ADDR targ_addr, bfd *abfd,
+		     asection *sect, int sectoff, int *maxrecsize,
+		     int flags);
 
 /* Download an executable by converting it to S records.  DESC is a
    `struct serial *' to send the data to.  FILE is the name of the
@@ -203,7 +203,7 @@ load_srec (struct serial *desc, const char *file, bfd_vma load_offset,
  *        7) four byte address termination record
  *        8) three byte address termination record
  *        9) two byte address termination record
- *       
+ *
  *      - address
  *        is the start address of the data following, or in the case of
  *        a termination record, the start address of the image
@@ -310,6 +310,8 @@ make_srec (char *srec, CORE_ADDR targ_addr, bfd *abfd, asection *sect,
   *p++ = hextab[checksum & 0xf];
   *p++ = '\r';
 
-  *maxrecsize = p - srec;
+  *maxrecsize = (p - srec);
   return payload_size;
 }
+
+/* EOF */

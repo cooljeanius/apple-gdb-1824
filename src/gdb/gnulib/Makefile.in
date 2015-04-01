@@ -121,7 +121,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_check_compile_flag.m4 \
 	$(top_srcdir)/m4/setpgrp.m4 $(top_srcdir)/m4/wait3.m4 \
 	$(top_srcdir)/acinclude.m4 $(top_srcdir)/../bfd/bfd.m4 \
 	$(top_srcdir)/../config/acinclude.m4 \
-	$(top_srcdir)/../config/zlib.m4 \
+	$(top_srcdir)/../config/acx.m4 $(top_srcdir)/../config/zlib.m4 \
 	$(top_srcdir)/../libiberty/m4/libiberty.m4 \
 	$(top_srcdir)/m4/build-with-cxx.m4 \
 	$(top_srcdir)/../lcmessage.m4 $(top_srcdir)/../gettext.m4 \
@@ -469,6 +469,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PKGVERSION = @PKGVERSION@
 POFILES = @POFILES@
 POSUB = @POSUB@
 POW_LIB = @POW_LIB@
@@ -487,6 +488,8 @@ REPLACE_STRCASESTR = @REPLACE_STRCASESTR@
 REPLACE_STRERROR = @REPLACE_STRERROR@
 REPLACE_STRSIGNAL = @REPLACE_STRSIGNAL@
 REPLACE_STRSTR = @REPLACE_STRSTR@
+REPORT_BUGS_TEXI = @REPORT_BUGS_TEXI@
+REPORT_BUGS_TO = @REPORT_BUGS_TO@
 RESMERGER = @RESMERGER@
 REZ = @REZ@
 REZDET = @REZDET@
@@ -641,6 +644,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 unused_subdirs = @unused_subdirs@
 xm_h = @xm_h@
+zlibdir = @zlibdir@
+zlibinc = @zlibinc@
 ACLOCAL_AMFLAGS = -I./import/m4 -I./m4 --install
 AUTOMAKE_OPTIONS = 1.11.1 gnits -Wall no-dist
 SUBDIRS = import

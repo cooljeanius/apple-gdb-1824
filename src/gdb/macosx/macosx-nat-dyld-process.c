@@ -44,7 +44,12 @@
 #include <mach-o/loader.h>
 
 #ifdef USE_MMALLOC
-# include "mmprivate.h"
+/* FIXME: remove this part once the "config.h" for mmalloc guards against
+ * inclusions of other "config.h" headers: */
+# if !defined(PACKAGE_NAME) && !defined(PACKAGE_STRING) && \
+     !defined(PACKAGE_TARNAME) && !defined(PACKAGE_VERSION)
+#  include "mmprivate.h"
+# endif /* !PACKAGE_NAME && !PACKAGE_STRING && !PACKAGE_TARNAME && !PACKAGE_VERSION */
 #endif /* USE_MMALLOC */
 
 #if defined (TARGET_POWERPC)
@@ -67,7 +72,9 @@
 #include "macosx-nat-mutils.h"
 #include "macosx-nat-dyld-process.h"
 
-#define INVALID_ADDRESS ((CORE_ADDR) (-1))
+#ifndef INVALID_ADDRESS
+# define INVALID_ADDRESS ((CORE_ADDR)(-1L))
+#endif /* !INVALID_ADDRESS */
 
 extern int dyld_preload_libraries_flag;
 extern int dyld_filter_events_flag;
