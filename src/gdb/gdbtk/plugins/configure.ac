@@ -17,8 +17,21 @@ AC_PROG_CC
 AC_PROG_MAKE_SET
 
 # Automake:
-AM_INIT_AUTOMAKE([foreign dejagnu -Wall -Wno-obsolete])
+AM_INIT_AUTOMAKE([foreign no-dist dejagnu -Wall -Wno-obsolete])
 AM_MAINTAINER_MODE
+
+dnl########################################################################
+dnl# Port to Automake 1.11.
+dnl# This section can be removed once we assume Automake 1.14 or later.
+: ${AM_DEFAULT_VERBOSITY=1}
+: ${AM_V=${AM_DEFAULT_VERBOSITY}}
+: ${AM_DEFAULT_V=${AM_DEFAULT_VERBOSITY}}
+dnl# now subst:
+AC_SUBST([AM_V])dnl
+AM_SUBST_NOTMAKE([AM_V])dnl
+AC_SUBST([AM_DEFAULT_V])dnl
+AM_SUBST_NOTMAKE([AM_DEFAULT_V])dnl
+AC_SUBST([AM_DEFAULT_VERBOSITY])dnl
 
 # Find Tcl, Tk, and things related to them:
 CYG_AC_PATH_TCLCONFIG

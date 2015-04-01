@@ -5005,6 +5005,156 @@
 		A5CA6E9B1AC614F900716574 /* cleanups.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cleanups.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/cleanups.h"; sourceTree = "<absolute>"; };
 		A5CA715B1ACA2AF900716574 /* symread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = symread.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/macosx/symread.h"; sourceTree = "<absolute>"; };
 		A5CA71831ACA392E00716574 /* remote-kdp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "remote-kdp.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/macosx/remote-kdp.h"; sourceTree = "<absolute>"; };
+		A5CA732F1ACC384300716574 /* gdbtool.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; name = gdbtool.ico; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/gdbtool.ico"; sourceTree = "<absolute>"; };
+		A5CA73351ACC384300716574 /* gdbtk-bp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gdbtk-bp.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/generic/gdbtk-bp.c"; sourceTree = "<absolute>"; };
+		A5CA73361ACC384300716574 /* gdbtk-cmds.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gdbtk-cmds.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/generic/gdbtk-cmds.c"; sourceTree = "<absolute>"; };
+		A5CA73371ACC384300716574 /* gdbtk-cmds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "gdbtk-cmds.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/generic/gdbtk-cmds.h"; sourceTree = "<absolute>"; };
+		A5CA73381ACC384300716574 /* gdbtk-hooks.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gdbtk-hooks.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/generic/gdbtk-hooks.c"; sourceTree = "<absolute>"; };
+		A5CA73391ACC384300716574 /* gdbtk-interp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gdbtk-interp.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/generic/gdbtk-interp.c"; sourceTree = "<absolute>"; };
+		A5CA733A1ACC384300716574 /* gdbtk-main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gdbtk-main.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/generic/gdbtk-main.c"; sourceTree = "<absolute>"; };
+		A5CA733B1ACC384300716574 /* gdbtk-register.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gdbtk-register.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/generic/gdbtk-register.c"; sourceTree = "<absolute>"; };
+		A5CA733C1ACC384300716574 /* gdbtk-stack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gdbtk-stack.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/generic/gdbtk-stack.c"; sourceTree = "<absolute>"; };
+		A5CA733D1ACC384300716574 /* gdbtk-varobj.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gdbtk-varobj.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/generic/gdbtk-varobj.c"; sourceTree = "<absolute>"; };
+		A5CA733E1ACC384300716574 /* gdbtk-wrapper.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gdbtk-wrapper.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/generic/gdbtk-wrapper.c"; sourceTree = "<absolute>"; };
+		A5CA733F1ACC384300716574 /* gdbtk-wrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "gdbtk-wrapper.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/generic/gdbtk-wrapper.h"; sourceTree = "<absolute>"; };
+		A5CA73401ACC384300716574 /* gdbtk.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gdbtk.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/generic/gdbtk.c"; sourceTree = "<absolute>"; };
+		A5CA73411ACC384300716574 /* gdbtk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gdbtk.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/generic/gdbtk.h"; sourceTree = "<absolute>"; };
+		A5CA73661ACC384300716574 /* breakpoint.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = breakpoint.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/breakpoint.html"; sourceTree = "<absolute>"; };
+		A5CA73671ACC384300716574 /* browser.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = browser.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/browser.html"; sourceTree = "<absolute>"; };
+		A5CA73681ACC384300716574 /* console.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = console.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/console.html"; sourceTree = "<absolute>"; };
+		A5CA73691ACC384300716574 /* debug.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = debug.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/debug.html"; sourceTree = "<absolute>"; };
+		A5CA736A1ACC384300716574 /* gbl_pref.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gbl_pref.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/gbl_pref.html"; sourceTree = "<absolute>"; };
+		A5CA736C1ACC384300716574 /* help.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = help.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/help.html"; sourceTree = "<absolute>"; };
+		A5CA736E1ACC384300716574 /* browser1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = browser1.png; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/browser1.png"; sourceTree = "<absolute>"; };
+		A5CA736F1ACC384300716574 /* browser2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = browser2.png; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/browser2.png"; sourceTree = "<absolute>"; };
+		A5CA73701ACC384300716574 /* frame_info.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = frame_info.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/frame_info.gif"; sourceTree = "<absolute>"; };
+		A5CA73711ACC384300716574 /* insightbwr.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = insightbwr.png; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/insightbwr.png"; sourceTree = "<absolute>"; };
+		A5CA73721ACC384300716574 /* mem_menu.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = mem_menu.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/mem_menu.gif"; sourceTree = "<absolute>"; };
+		A5CA73731ACC384300716574 /* mem_popup.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = mem_popup.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/mem_popup.gif"; sourceTree = "<absolute>"; };
+		A5CA73741ACC384300716574 /* mem_pref.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = mem_pref.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/mem_pref.gif"; sourceTree = "<absolute>"; };
+		A5CA73751ACC384300716574 /* reg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = reg.png; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/reg.png"; sourceTree = "<absolute>"; };
+		A5CA73761ACC384300716574 /* reg_menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = reg_menu.png; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/reg_menu.png"; sourceTree = "<absolute>"; };
+		A5CA73771ACC384300716574 /* src_bal.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = src_bal.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/src_bal.gif"; sourceTree = "<absolute>"; };
+		A5CA73781ACC384300716574 /* src_bp_bal.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = src_bp_bal.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/src_bp_bal.gif"; sourceTree = "<absolute>"; };
+		A5CA73791ACC384300716574 /* src_bpop.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = src_bpop.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/src_bpop.gif"; sourceTree = "<absolute>"; };
+		A5CA737A1ACC384300716574 /* src_menu.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = src_menu.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/src_menu.gif"; sourceTree = "<absolute>"; };
+		A5CA737B1ACC384300716574 /* src_pop.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = src_pop.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/src_pop.gif"; sourceTree = "<absolute>"; };
+		A5CA737C1ACC384300716574 /* src_stat.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = src_stat.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/src_stat.gif"; sourceTree = "<absolute>"; };
+		A5CA737D1ACC384300716574 /* src_thread.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = src_thread.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/src_thread.gif"; sourceTree = "<absolute>"; };
+		A5CA737E1ACC384300716574 /* src_toolbar.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = src_toolbar.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/src_toolbar.gif"; sourceTree = "<absolute>"; };
+		A5CA737F1ACC384300716574 /* watch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = watch.png; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images/watch.png"; sourceTree = "<absolute>"; };
+		A5CA73801ACC384300716574 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/index.html"; sourceTree = "<absolute>"; };
+		A5CA73811ACC384300716574 /* license.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = license.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/license.html"; sourceTree = "<absolute>"; };
+		A5CA73821ACC384300716574 /* locals.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = locals.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/locals.html"; sourceTree = "<absolute>"; };
+		A5CA73831ACC384300716574 /* memory.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = memory.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/memory.html"; sourceTree = "<absolute>"; };
+		A5CA73851ACC384300716574 /* ingham.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = ingham.pdf; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/pdf/ingham.pdf"; sourceTree = "<absolute>"; };
+		A5CA73861ACC384300716574 /* register.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = register.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/register.html"; sourceTree = "<absolute>"; };
+		A5CA73871ACC384300716574 /* session.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = session.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/session.html"; sourceTree = "<absolute>"; };
+		A5CA73881ACC384300716574 /* source.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = source.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/source.html"; sourceTree = "<absolute>"; };
+		A5CA73891ACC384300716574 /* src_pref.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = src_pref.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/src_pref.html"; sourceTree = "<absolute>"; };
+		A5CA738A1ACC384300716574 /* stack.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stack.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/stack.html"; sourceTree = "<absolute>"; };
+		A5CA738B1ACC384300716574 /* target.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = target.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/target.html"; sourceTree = "<absolute>"; };
+		A5CA738C1ACC384300716574 /* thread.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = thread.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/thread.html"; sourceTree = "<absolute>"; };
+		A5CA738E1ACC384300716574 /* console.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = console.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/trace/console.html"; sourceTree = "<absolute>"; };
+		A5CA738F1ACC384300716574 /* gbl_pref.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gbl_pref.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/trace/gbl_pref.html"; sourceTree = "<absolute>"; };
+		A5CA73901ACC384300716574 /* help.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = help.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/trace/help.html"; sourceTree = "<absolute>"; };
+		A5CA73921ACC384300716574 /* license.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = license.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/trace/license.html"; sourceTree = "<absolute>"; };
+		A5CA73931ACC384300716574 /* locals.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = locals.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/trace/locals.html"; sourceTree = "<absolute>"; };
+		A5CA73941ACC384300716574 /* memory.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = memory.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/trace/memory.html"; sourceTree = "<absolute>"; };
+		A5CA73951ACC384300716574 /* reg_pref.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = reg_pref.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/trace/reg_pref.html"; sourceTree = "<absolute>"; };
+		A5CA73961ACC384300716574 /* register.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = register.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/trace/register.html"; sourceTree = "<absolute>"; };
+		A5CA73971ACC384300716574 /* source.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = source.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/trace/source.html"; sourceTree = "<absolute>"; };
+		A5CA73981ACC384300716574 /* src_pref.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = src_pref.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/trace/src_pref.html"; sourceTree = "<absolute>"; };
+		A5CA73991ACC384300716574 /* stack.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stack.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/trace/stack.html"; sourceTree = "<absolute>"; };
+		A5CA739A1ACC384300716574 /* target.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = target.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/trace/target.html"; sourceTree = "<absolute>"; };
+		A5CA739B1ACC384300716574 /* tdump.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tdump.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/trace/tdump.html"; sourceTree = "<absolute>"; };
+		A5CA739C1ACC384300716574 /* tp.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tp.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/trace/tp.html"; sourceTree = "<absolute>"; };
+		A5CA739D1ACC384300716574 /* tracedlg.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tracedlg.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/trace/tracedlg.html"; sourceTree = "<absolute>"; };
+		A5CA739E1ACC384300716574 /* watch.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = watch.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/trace/watch.html"; sourceTree = "<absolute>"; };
+		A5CA739F1ACC384300716574 /* watch.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = watch.html; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/watch.html"; sourceTree = "<absolute>"; };
+		A5CA73A21ACC384300716574 /* bottom.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = bottom.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/bottom.gif"; sourceTree = "<absolute>"; };
+		A5CA73A31ACC384300716574 /* bp.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = bp.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/bp.gif"; sourceTree = "<absolute>"; };
+		A5CA73A41ACC384300716574 /* check.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = check.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/check.gif"; sourceTree = "<absolute>"; };
+		A5CA73A51ACC384300716574 /* console.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = console.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/console.gif"; sourceTree = "<absolute>"; };
+		A5CA73A61ACC384300716574 /* continue.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = continue.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/continue.gif"; sourceTree = "<absolute>"; };
+		A5CA73A71ACC384300716574 /* down.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = down.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/down.gif"; sourceTree = "<absolute>"; };
+		A5CA73A81ACC384300716574 /* edit.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = edit.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/edit.gif"; sourceTree = "<absolute>"; };
+		A5CA73A91ACC384300716574 /* finish.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = finish.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/finish.gif"; sourceTree = "<absolute>"; };
+		A5CA73AA1ACC384300716574 /* gdbtk_icon.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = gdbtk_icon.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/gdbtk_icon.gif"; sourceTree = "<absolute>"; };
+		A5CA73AB1ACC384300716574 /* help.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = help.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/help.gif"; sourceTree = "<absolute>"; };
+		A5CA73AC1ACC384300716574 /* home.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = home.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/home.gif"; sourceTree = "<absolute>"; };
+		A5CA73AE1ACC384300716574 /* insight.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = insight.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/insight.gif"; sourceTree = "<absolute>"; };
+		A5CA73AF1ACC384300716574 /* less.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = less.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/less.gif"; sourceTree = "<absolute>"; };
+		A5CA73B01ACC384300716574 /* memory.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = memory.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/memory.gif"; sourceTree = "<absolute>"; };
+		A5CA73B11ACC384300716574 /* more.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = more.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/more.gif"; sourceTree = "<absolute>"; };
+		A5CA73B21ACC384300716574 /* Movie_off.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = Movie_off.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/Movie_off.gif"; sourceTree = "<absolute>"; };
+		A5CA73B31ACC384300716574 /* Movie_on.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = Movie_on.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/Movie_on.gif"; sourceTree = "<absolute>"; };
+		A5CA73B41ACC384300716574 /* next.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = next.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/next.gif"; sourceTree = "<absolute>"; };
+		A5CA73B51ACC384300716574 /* next_check.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = next_check.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/next_check.gif"; sourceTree = "<absolute>"; };
+		A5CA73B61ACC384300716574 /* next_frame.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = next_frame.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/next_frame.gif"; sourceTree = "<absolute>"; };
+		A5CA73B71ACC384300716574 /* next_hit.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = next_hit.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/next_hit.gif"; sourceTree = "<absolute>"; };
+		A5CA73B81ACC384300716574 /* next_line.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = next_line.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/next_line.gif"; sourceTree = "<absolute>"; };
+		A5CA73B91ACC384300716574 /* nexti.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = nexti.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/nexti.gif"; sourceTree = "<absolute>"; };
+		A5CA73BA1ACC384300716574 /* open.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = open.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/open.gif"; sourceTree = "<absolute>"; };
+		A5CA73BB1ACC384300716574 /* prev_hit.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = prev_hit.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/prev_hit.gif"; sourceTree = "<absolute>"; };
+		A5CA73BC1ACC384300716574 /* reg.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = reg.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/reg.gif"; sourceTree = "<absolute>"; };
+		A5CA73BD1ACC384300716574 /* rewind.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = rewind.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/rewind.gif"; sourceTree = "<absolute>"; };
+		A5CA73BE1ACC384300716574 /* run.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = run.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/run.gif"; sourceTree = "<absolute>"; };
+		A5CA73BF1ACC384300716574 /* run_expt.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = run_expt.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/run_expt.gif"; sourceTree = "<absolute>"; };
+		A5CA73C01ACC384300716574 /* src.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = src.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/src.gif"; sourceTree = "<absolute>"; };
+		A5CA73C11ACC384300716574 /* stack.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = stack.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/stack.gif"; sourceTree = "<absolute>"; };
+		A5CA73C21ACC384300716574 /* step.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = step.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/step.gif"; sourceTree = "<absolute>"; };
+		A5CA73C31ACC384300716574 /* stepi.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = stepi.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/stepi.gif"; sourceTree = "<absolute>"; };
+		A5CA73C41ACC384300716574 /* stop.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = stop.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/stop.gif"; sourceTree = "<absolute>"; };
+		A5CA73C51ACC384300716574 /* tdump.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = tdump.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/tdump.gif"; sourceTree = "<absolute>"; };
+		A5CA73C61ACC384300716574 /* tp.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = tp.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/tp.gif"; sourceTree = "<absolute>"; };
+		A5CA73C71ACC384300716574 /* up.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = up.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/up.gif"; sourceTree = "<absolute>"; };
+		A5CA73C81ACC384300716574 /* vars.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = vars.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/vars.gif"; sourceTree = "<absolute>"; };
+		A5CA73C91ACC384300716574 /* watch.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = watch.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/watch.gif"; sourceTree = "<absolute>"; };
+		A5CA73CA1ACC384300716574 /* watch_movie.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = watch_movie.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images/watch_movie.gif"; sourceTree = "<absolute>"; };
+		A5CA73CC1ACC384300716574 /* bottom.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = bottom.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/bottom.gif"; sourceTree = "<absolute>"; };
+		A5CA73CD1ACC384300716574 /* bp.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = bp.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/bp.gif"; sourceTree = "<absolute>"; };
+		A5CA73CE1ACC384300716574 /* check.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = check.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/check.gif"; sourceTree = "<absolute>"; };
+		A5CA73CF1ACC384300716574 /* console.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = console.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/console.gif"; sourceTree = "<absolute>"; };
+		A5CA73D01ACC384300716574 /* continue.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = continue.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/continue.gif"; sourceTree = "<absolute>"; };
+		A5CA73D11ACC384300716574 /* down.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = down.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/down.gif"; sourceTree = "<absolute>"; };
+		A5CA73D21ACC384300716574 /* edit.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = edit.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/edit.gif"; sourceTree = "<absolute>"; };
+		A5CA73D31ACC384300716574 /* finish.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = finish.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/finish.gif"; sourceTree = "<absolute>"; };
+		A5CA73D41ACC384300716574 /* function.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = function.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/function.gif"; sourceTree = "<absolute>"; };
+		A5CA73D51ACC384300716574 /* gdbtk_icon.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = gdbtk_icon.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/gdbtk_icon.gif"; sourceTree = "<absolute>"; };
+		A5CA73D61ACC384300716574 /* help.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = help.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/help.gif"; sourceTree = "<absolute>"; };
+		A5CA73D71ACC384300716574 /* home.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = home.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/home.gif"; sourceTree = "<absolute>"; };
+		A5CA73D91ACC384300716574 /* insight.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = insight.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/insight.gif"; sourceTree = "<absolute>"; };
+		A5CA73DA1ACC384300716574 /* less.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = less.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/less.gif"; sourceTree = "<absolute>"; };
+		A5CA73DB1ACC384300716574 /* memory.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = memory.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/memory.gif"; sourceTree = "<absolute>"; };
+		A5CA73DC1ACC384300716574 /* more.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = more.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/more.gif"; sourceTree = "<absolute>"; };
+		A5CA73DD1ACC384300716574 /* Movie_off.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = Movie_off.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/Movie_off.gif"; sourceTree = "<absolute>"; };
+		A5CA73DE1ACC384300716574 /* Movie_on.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = Movie_on.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/Movie_on.gif"; sourceTree = "<absolute>"; };
+		A5CA73DF1ACC384300716574 /* next.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = next.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/next.gif"; sourceTree = "<absolute>"; };
+		A5CA73E01ACC384300716574 /* next_check.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = next_check.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/next_check.gif"; sourceTree = "<absolute>"; };
+		A5CA73E11ACC384300716574 /* next_frame.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = next_frame.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/next_frame.gif"; sourceTree = "<absolute>"; };
+		A5CA73E21ACC384300716574 /* next_hit.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = next_hit.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/next_hit.gif"; sourceTree = "<absolute>"; };
+		A5CA73E31ACC384300716574 /* next_line.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = next_line.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/next_line.gif"; sourceTree = "<absolute>"; };
+		A5CA73E41ACC384300716574 /* nexti.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = nexti.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/nexti.gif"; sourceTree = "<absolute>"; };
+		A5CA73E51ACC384300716574 /* open.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = open.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/open.gif"; sourceTree = "<absolute>"; };
+		A5CA73E61ACC384300716574 /* prev_hit.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = prev_hit.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/prev_hit.gif"; sourceTree = "<absolute>"; };
+		A5CA73E71ACC384300716574 /* reg.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = reg.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/reg.gif"; sourceTree = "<absolute>"; };
+		A5CA73E81ACC384300716574 /* rewind.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = rewind.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/rewind.gif"; sourceTree = "<absolute>"; };
+		A5CA73E91ACC384300716574 /* run.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = run.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/run.gif"; sourceTree = "<absolute>"; };
+		A5CA73EA1ACC384300716574 /* run_expt.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = run_expt.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/run_expt.gif"; sourceTree = "<absolute>"; };
+		A5CA73EB1ACC384300716574 /* src.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = src.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/src.gif"; sourceTree = "<absolute>"; };
+		A5CA73EC1ACC384300716574 /* stack.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = stack.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/stack.gif"; sourceTree = "<absolute>"; };
+		A5CA73ED1ACC384300716574 /* step.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = step.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/step.gif"; sourceTree = "<absolute>"; };
+		A5CA73EE1ACC384300716574 /* stepi.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = stepi.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/stepi.gif"; sourceTree = "<absolute>"; };
+		A5CA73EF1ACC384300716574 /* stop.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = stop.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/stop.gif"; sourceTree = "<absolute>"; };
+		A5CA73F01ACC384300716574 /* target.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = target.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/target.gif"; sourceTree = "<absolute>"; };
+		A5CA73F11ACC384300716574 /* tdump.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = tdump.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/tdump.gif"; sourceTree = "<absolute>"; };
+		A5CA73F21ACC384300716574 /* tp.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = tp.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/tp.gif"; sourceTree = "<absolute>"; };
+		A5CA73F31ACC384300716574 /* up.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = up.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/up.gif"; sourceTree = "<absolute>"; };
+		A5CA73F41ACC384300716574 /* vars.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = vars.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/vars.gif"; sourceTree = "<absolute>"; };
+		A5CA73F51ACC384300716574 /* watch.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = watch.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/watch.gif"; sourceTree = "<absolute>"; };
+		A5CA73F61ACC384300716574 /* watch_movie.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = watch_movie.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/watch_movie.gif"; sourceTree = "<absolute>"; };
+		A5CA74481ACC384400716574 /* rhabout.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rhabout.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/plugins/rhabout/rhabout.c"; sourceTree = "<absolute>"; };
 		A5FE698F1A9E935D005583F9 /* macosx-nat-info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "macosx-nat-info.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/macosx/macosx-nat-info.h"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
@@ -5612,6 +5762,7 @@
 				A5159A4D198713F10079DD4F /* contrib */,
 				A5159A5C198714430079DD4F /* features */,
 				2609D4C90E82C40B008125DE /* gdbserver */,
+				A5CA73221ACC384300716574 /* gdbtk */,
 				A5159B521987158C0079DD4F /* hp-include */,
 				2609D6950E82C40B008125DE /* macosx */,
 				2609D6FC0E82C40C008125DE /* mi */,
@@ -11290,6 +11441,254 @@
 			);
 			name = z8k;
 			path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/z8k";
+			sourceTree = "<absolute>";
+		};
+		A5CA73221ACC384300716574 /* gdbtk */ = {
+			isa = PBXGroup;
+			children = (
+				A5CA732F1ACC384300716574 /* gdbtool.ico */,
+				A5CA73301ACC384300716574 /* generic */,
+				A5CA73431ACC384300716574 /* library */,
+				A5CA742C1ACC384300716574 /* plugins */,
+			);
+			name = gdbtk;
+			path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk";
+			sourceTree = "<absolute>";
+		};
+		A5CA73301ACC384300716574 /* generic */ = {
+			isa = PBXGroup;
+			children = (
+				A5CA73351ACC384300716574 /* gdbtk-bp.c */,
+				A5CA73361ACC384300716574 /* gdbtk-cmds.c */,
+				A5CA73371ACC384300716574 /* gdbtk-cmds.h */,
+				A5CA73381ACC384300716574 /* gdbtk-hooks.c */,
+				A5CA73391ACC384300716574 /* gdbtk-interp.c */,
+				A5CA733A1ACC384300716574 /* gdbtk-main.c */,
+				A5CA733B1ACC384300716574 /* gdbtk-register.c */,
+				A5CA733C1ACC384300716574 /* gdbtk-stack.c */,
+				A5CA733D1ACC384300716574 /* gdbtk-varobj.c */,
+				A5CA733E1ACC384300716574 /* gdbtk-wrapper.c */,
+				A5CA733F1ACC384300716574 /* gdbtk-wrapper.h */,
+				A5CA73401ACC384300716574 /* gdbtk.c */,
+				A5CA73411ACC384300716574 /* gdbtk.h */,
+			);
+			name = generic;
+			path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/generic";
+			sourceTree = "<absolute>";
+		};
+		A5CA73431ACC384300716574 /* library */ = {
+			isa = PBXGroup;
+			children = (
+				A5CA73651ACC384300716574 /* help */,
+				A5CA73A11ACC384300716574 /* images */,
+				A5CA73CB1ACC384300716574 /* images2 */,
+			);
+			name = library;
+			path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library";
+			sourceTree = "<absolute>";
+		};
+		A5CA73651ACC384300716574 /* help */ = {
+			isa = PBXGroup;
+			children = (
+				A5CA73661ACC384300716574 /* breakpoint.html */,
+				A5CA73671ACC384300716574 /* browser.html */,
+				A5CA73681ACC384300716574 /* console.html */,
+				A5CA73691ACC384300716574 /* debug.html */,
+				A5CA736A1ACC384300716574 /* gbl_pref.html */,
+				A5CA736C1ACC384300716574 /* help.html */,
+				A5CA736D1ACC384300716574 /* images */,
+				A5CA73801ACC384300716574 /* index.html */,
+				A5CA73811ACC384300716574 /* license.html */,
+				A5CA73821ACC384300716574 /* locals.html */,
+				A5CA73831ACC384300716574 /* memory.html */,
+				A5CA73841ACC384300716574 /* pdf */,
+				A5CA73861ACC384300716574 /* register.html */,
+				A5CA73871ACC384300716574 /* session.html */,
+				A5CA73881ACC384300716574 /* source.html */,
+				A5CA73891ACC384300716574 /* src_pref.html */,
+				A5CA738A1ACC384300716574 /* stack.html */,
+				A5CA738B1ACC384300716574 /* target.html */,
+				A5CA738C1ACC384300716574 /* thread.html */,
+				A5CA738D1ACC384300716574 /* trace */,
+				A5CA739F1ACC384300716574 /* watch.html */,
+			);
+			name = help;
+			path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help";
+			sourceTree = "<absolute>";
+		};
+		A5CA736D1ACC384300716574 /* images */ = {
+			isa = PBXGroup;
+			children = (
+				A5CA736E1ACC384300716574 /* browser1.png */,
+				A5CA736F1ACC384300716574 /* browser2.png */,
+				A5CA73701ACC384300716574 /* frame_info.gif */,
+				A5CA73711ACC384300716574 /* insightbwr.png */,
+				A5CA73721ACC384300716574 /* mem_menu.gif */,
+				A5CA73731ACC384300716574 /* mem_popup.gif */,
+				A5CA73741ACC384300716574 /* mem_pref.gif */,
+				A5CA73751ACC384300716574 /* reg.png */,
+				A5CA73761ACC384300716574 /* reg_menu.png */,
+				A5CA73771ACC384300716574 /* src_bal.gif */,
+				A5CA73781ACC384300716574 /* src_bp_bal.gif */,
+				A5CA73791ACC384300716574 /* src_bpop.gif */,
+				A5CA737A1ACC384300716574 /* src_menu.gif */,
+				A5CA737B1ACC384300716574 /* src_pop.gif */,
+				A5CA737C1ACC384300716574 /* src_stat.gif */,
+				A5CA737D1ACC384300716574 /* src_thread.gif */,
+				A5CA737E1ACC384300716574 /* src_toolbar.gif */,
+				A5CA737F1ACC384300716574 /* watch.png */,
+			);
+			name = images;
+			path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/images";
+			sourceTree = "<absolute>";
+		};
+		A5CA73841ACC384300716574 /* pdf */ = {
+			isa = PBXGroup;
+			children = (
+				A5CA73851ACC384300716574 /* ingham.pdf */,
+			);
+			name = pdf;
+			path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/pdf";
+			sourceTree = "<absolute>";
+		};
+		A5CA738D1ACC384300716574 /* trace */ = {
+			isa = PBXGroup;
+			children = (
+				A5CA738E1ACC384300716574 /* console.html */,
+				A5CA738F1ACC384300716574 /* gbl_pref.html */,
+				A5CA73901ACC384300716574 /* help.html */,
+				A5CA73921ACC384300716574 /* license.html */,
+				A5CA73931ACC384300716574 /* locals.html */,
+				A5CA73941ACC384300716574 /* memory.html */,
+				A5CA73951ACC384300716574 /* reg_pref.html */,
+				A5CA73961ACC384300716574 /* register.html */,
+				A5CA73971ACC384300716574 /* source.html */,
+				A5CA73981ACC384300716574 /* src_pref.html */,
+				A5CA73991ACC384300716574 /* stack.html */,
+				A5CA739A1ACC384300716574 /* target.html */,
+				A5CA739B1ACC384300716574 /* tdump.html */,
+				A5CA739C1ACC384300716574 /* tp.html */,
+				A5CA739D1ACC384300716574 /* tracedlg.html */,
+				A5CA739E1ACC384300716574 /* watch.html */,
+			);
+			name = trace;
+			path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/help/trace";
+			sourceTree = "<absolute>";
+		};
+		A5CA73A11ACC384300716574 /* images */ = {
+			isa = PBXGroup;
+			children = (
+				A5CA73A21ACC384300716574 /* bottom.gif */,
+				A5CA73A31ACC384300716574 /* bp.gif */,
+				A5CA73A41ACC384300716574 /* check.gif */,
+				A5CA73A51ACC384300716574 /* console.gif */,
+				A5CA73A61ACC384300716574 /* continue.gif */,
+				A5CA73A71ACC384300716574 /* down.gif */,
+				A5CA73A81ACC384300716574 /* edit.gif */,
+				A5CA73A91ACC384300716574 /* finish.gif */,
+				A5CA73AA1ACC384300716574 /* gdbtk_icon.gif */,
+				A5CA73AB1ACC384300716574 /* help.gif */,
+				A5CA73AC1ACC384300716574 /* home.gif */,
+				A5CA73AE1ACC384300716574 /* insight.gif */,
+				A5CA73AF1ACC384300716574 /* less.gif */,
+				A5CA73B01ACC384300716574 /* memory.gif */,
+				A5CA73B11ACC384300716574 /* more.gif */,
+				A5CA73B21ACC384300716574 /* Movie_off.gif */,
+				A5CA73B31ACC384300716574 /* Movie_on.gif */,
+				A5CA73B41ACC384300716574 /* next.gif */,
+				A5CA73B51ACC384300716574 /* next_check.gif */,
+				A5CA73B61ACC384300716574 /* next_frame.gif */,
+				A5CA73B71ACC384300716574 /* next_hit.gif */,
+				A5CA73B81ACC384300716574 /* next_line.gif */,
+				A5CA73B91ACC384300716574 /* nexti.gif */,
+				A5CA73BA1ACC384300716574 /* open.gif */,
+				A5CA73BB1ACC384300716574 /* prev_hit.gif */,
+				A5CA73BC1ACC384300716574 /* reg.gif */,
+				A5CA73BD1ACC384300716574 /* rewind.gif */,
+				A5CA73BE1ACC384300716574 /* run.gif */,
+				A5CA73BF1ACC384300716574 /* run_expt.gif */,
+				A5CA73C01ACC384300716574 /* src.gif */,
+				A5CA73C11ACC384300716574 /* stack.gif */,
+				A5CA73C21ACC384300716574 /* step.gif */,
+				A5CA73C31ACC384300716574 /* stepi.gif */,
+				A5CA73C41ACC384300716574 /* stop.gif */,
+				A5CA73C51ACC384300716574 /* tdump.gif */,
+				A5CA73C61ACC384300716574 /* tp.gif */,
+				A5CA73C71ACC384300716574 /* up.gif */,
+				A5CA73C81ACC384300716574 /* vars.gif */,
+				A5CA73C91ACC384300716574 /* watch.gif */,
+				A5CA73CA1ACC384300716574 /* watch_movie.gif */,
+			);
+			name = images;
+			path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images";
+			sourceTree = "<absolute>";
+		};
+		A5CA73CB1ACC384300716574 /* images2 */ = {
+			isa = PBXGroup;
+			children = (
+				A5CA73CC1ACC384300716574 /* bottom.gif */,
+				A5CA73CD1ACC384300716574 /* bp.gif */,
+				A5CA73CE1ACC384300716574 /* check.gif */,
+				A5CA73CF1ACC384300716574 /* console.gif */,
+				A5CA73D01ACC384300716574 /* continue.gif */,
+				A5CA73D11ACC384300716574 /* down.gif */,
+				A5CA73D21ACC384300716574 /* edit.gif */,
+				A5CA73D31ACC384300716574 /* finish.gif */,
+				A5CA73D41ACC384300716574 /* function.gif */,
+				A5CA73D51ACC384300716574 /* gdbtk_icon.gif */,
+				A5CA73D61ACC384300716574 /* help.gif */,
+				A5CA73D71ACC384300716574 /* home.gif */,
+				A5CA73D91ACC384300716574 /* insight.gif */,
+				A5CA73DA1ACC384300716574 /* less.gif */,
+				A5CA73DB1ACC384300716574 /* memory.gif */,
+				A5CA73DC1ACC384300716574 /* more.gif */,
+				A5CA73DD1ACC384300716574 /* Movie_off.gif */,
+				A5CA73DE1ACC384300716574 /* Movie_on.gif */,
+				A5CA73DF1ACC384300716574 /* next.gif */,
+				A5CA73E01ACC384300716574 /* next_check.gif */,
+				A5CA73E11ACC384300716574 /* next_frame.gif */,
+				A5CA73E21ACC384300716574 /* next_hit.gif */,
+				A5CA73E31ACC384300716574 /* next_line.gif */,
+				A5CA73E41ACC384300716574 /* nexti.gif */,
+				A5CA73E51ACC384300716574 /* open.gif */,
+				A5CA73E61ACC384300716574 /* prev_hit.gif */,
+				A5CA73E71ACC384300716574 /* reg.gif */,
+				A5CA73E81ACC384300716574 /* rewind.gif */,
+				A5CA73E91ACC384300716574 /* run.gif */,
+				A5CA73EA1ACC384300716574 /* run_expt.gif */,
+				A5CA73EB1ACC384300716574 /* src.gif */,
+				A5CA73EC1ACC384300716574 /* stack.gif */,
+				A5CA73ED1ACC384300716574 /* step.gif */,
+				A5CA73EE1ACC384300716574 /* stepi.gif */,
+				A5CA73EF1ACC384300716574 /* stop.gif */,
+				A5CA73F01ACC384300716574 /* target.gif */,
+				A5CA73F11ACC384300716574 /* tdump.gif */,
+				A5CA73F21ACC384300716574 /* tp.gif */,
+				A5CA73F31ACC384300716574 /* up.gif */,
+				A5CA73F41ACC384300716574 /* vars.gif */,
+				A5CA73F51ACC384300716574 /* watch.gif */,
+				A5CA73F61ACC384300716574 /* watch_movie.gif */,
+			);
+			name = images2;
+			path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2";
+			sourceTree = "<absolute>";
+		};
+		A5CA742C1ACC384300716574 /* plugins */ = {
+			isa = PBXGroup;
+			children = (
+				A5CA74441ACC384400716574 /* rhabout */,
+			);
+			name = plugins;
+			path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/plugins";
+			sourceTree = "<absolute>";
+		};
+		A5CA74441ACC384400716574 /* rhabout */ = {
+			isa = PBXGroup;
+			children = (
+				A5CA74481ACC384400716574 /* rhabout.c */,
+			);
+			name = rhabout;
+			path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/plugins/rhabout";
 			sourceTree = "<absolute>";
 		};
 /* End PBXGroup section */

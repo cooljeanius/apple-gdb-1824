@@ -3262,15 +3262,19 @@ if test "x${enable_gdbtk}" = "xyes"; then
 
 	     ITCLLIB="${ITCL_BUILD_LIB_SPEC}"
 	     ITCL_DEPS="${ITCL_LIB_FULL_PATH}"
+           else
+             AC_MSG_WARN([cannot load itclConfig.sh; it is missing])
            fi
 
 	   # now look for Itk library stuff:
 	   CY_AC_PATH_ITKCONFIG
-           if test -z "${no_itcl}"; then
+           if test -z "${no_itk}"; then
              CY_AC_LOAD_ITKCONFIG
 
 	     ITKLIB="${ITK_BUILD_LIB_SPEC}"
 	     ITK_DEPS="${ITK_LIB_FULL_PATH}"
+           else
+             AC_MSG_WARN([cannot load itkConfig.sh; it is missing])
            fi
 
            ENABLE_CFLAGS="${ENABLE_CFLAGS} \$(SUBDIR_GDBTK_CFLAGS)"
@@ -3297,12 +3301,19 @@ if test "x${enable_gdbtk}" = "xyes"; then
 	      WIN32LDAPP="-Wl,--subsystem,console"
 	      CONFIG_OBS="${CONFIG_OBS} gdbres.o"
 	   fi
+        else
+           AC_MSG_WARN([skipping any further checks for tk, because it is missing (gdbtk will therefore not be built)])
 	fi
+    else
+        AC_MSG_WARN([skipping any further checks for tcltk, because tcl is missing (gdbtk will therefore not be built)])
     fi
 
     AC_CONFIG_SUBDIRS([gdbtk])
 else
     AC_MSG_NOTICE([skipping gdbtk tests])
+    if test -d gdbtk; then
+        export unused_subdirs="${unused_subdirs} gdbtk"
+    fi
 fi
 
 AC_SUBST([X_CFLAGS])dnl
@@ -3487,6 +3498,10 @@ if test "x${enable_multi_ice}" != "xno"; then
      :
    elif test -d rem-multi; then
      AC_MSG_WARN([rem-multi remains un-renamed])
+   fi
+else
+   if test -d rem-multi_old; then
+     export unused_subdirs="${unused_subdirs} rem-multi_old"
    fi
 fi
 

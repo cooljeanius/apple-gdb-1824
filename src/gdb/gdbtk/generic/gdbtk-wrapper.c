@@ -1,4 +1,4 @@
-/* longjmp-free interface between gdb and gdbtk.
+/* gdbtk-wrapper.c: longjmp-free interface between gdb and gdbtk.
    Copyright (C) 1999, 2000, 2002 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -676,7 +676,7 @@ GDB_find_relative_frame (struct frame_info *fi, int *start,
   args.args[0] = (char *) fi;
   args.args[1] = (char *) start;
 
-  r = call_wrapped_function ((catch_errors_ftype *) wrap_find_relative_frame, 
+  r = call_wrapped_function ((catch_errors_ftype *) wrap_find_relative_frame,
 			     &args);
   if (r != GDB_OK)
     return r;
@@ -702,7 +702,7 @@ GDB_get_current_frame (struct frame_info **result)
   struct gdb_wrapper_arguments args;
   gdb_result r;
 
-  r = call_wrapped_function ((catch_errors_ftype *) wrap_get_current_frame, 
+  r = call_wrapped_function ((catch_errors_ftype *) wrap_get_current_frame,
 			     &args);
   if (r != GDB_OK)
     return r;

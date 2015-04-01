@@ -24,6 +24,7 @@ version.c-tmp
 init.c
 version.c
 gdb
+insight
 core
 make.log
 gdb[0-9]

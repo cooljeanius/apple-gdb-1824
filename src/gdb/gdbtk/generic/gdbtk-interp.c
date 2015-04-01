@@ -1,4 +1,4 @@
-/* Insight Definitions for GDB, the GNU debugger.
+/* gdbtk-interp.c: Insight Definitions for GDB, the GNU debugger.
    Written by Keith Seitz <kseitz@sources.redhat.com>
 
    Copyright 2003, 2004 Free Software Foundation, Inc.
@@ -122,7 +122,7 @@ gdbtk_interpreter_exec (void *data, const char *command_str)
 }
 
 /* This function is called instead of gdb's internal command loop.  This is the
-   last chance to do anything before entering the main Tk event loop. 
+   last chance to do anything before entering the main Tk event loop.
    At the end of the command, we enter the main loop. */
 
 static void
@@ -167,7 +167,7 @@ _initialize_gdbtk_interp (void)
   };
   struct interp *gdbtk_interp;
 
-  gdbtk_data = 
+  gdbtk_data =
     (struct gdbtk_interp_data *) xmalloc (sizeof (struct gdbtk_interp_data));
   memset (gdbtk_data, 0, sizeof (struct gdbtk_interp_data));
   gdbtk_data->_stdout = gdbtk_fileopen ();

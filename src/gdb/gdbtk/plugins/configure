@@ -3901,6 +3901,10 @@ fi
 
 
 
+: ${AM_DEFAULT_VERBOSITY=1}
+: ${AM_V=${AM_DEFAULT_VERBOSITY}}
+: ${AM_DEFAULT_V=${AM_DEFAULT_VERBOSITY}}
+
 # Find Tcl, Tk, and things related to them:
 
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."

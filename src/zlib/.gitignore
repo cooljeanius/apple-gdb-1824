@@ -36,3 +36,4 @@ Makefile
 build/*
 *.build
 conf*/*.awk
+site.bak

@@ -1,4 +1,4 @@
-/* Tcl/Tk command definitions for Insight - Breakpoints.
+/* gdbtk-bp.c: Tcl/Tk command definitions for Insight - Breakpoints.
    Copyright 2001, 2002 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -174,11 +174,11 @@ Gdbtk_Breakpoint_Init (Tcl_Interp *interp)
 
 /* set a breakpoint by source file and line number
    flags are as follows:
-   least significant 2 bits are disposition, rest is 
+   least significant 2 bits are disposition, rest is
    type (normally 0).
 
    enum bptype {
-   bp_breakpoint,                Normal breakpoint 
+   bp_breakpoint,                Normal breakpoint
    bp_hardware_breakpoint,      Hardware assisted breakpoint
    }
 
@@ -186,8 +186,8 @@ Gdbtk_Breakpoint_Init (Tcl_Interp *interp)
    enum bpdisp {
    del,                         Delete it
    del_at_next_stop,            Delete at next stop, whether hit or not
-   disable,                     Disable it 
-   donttouch                    Leave it alone 
+   disable,                     Disable it
+   donttouch                    Leave it alone
    };
 */
 
@@ -212,7 +212,7 @@ gdb_find_bp_at_addr (ClientData clientData, Tcl_Interp *interp,
       Tcl_WrongNumArgs (interp, 1, objv, "address");
       return TCL_ERROR;
     }
-  
+
   if (Tcl_GetWideIntFromObj (interp, objv[1], &waddr) != TCL_OK)
     return TCL_ERROR;
   addr = waddr;
@@ -558,7 +558,7 @@ gdb_set_bp (ClientData clientData, Tcl_Interp *interp,
 static int
 gdb_set_bp_addr (ClientData clientData, Tcl_Interp *interp, int objc,
 		 Tcl_Obj *CONST objv[])
-     
+
 {
   struct symtab_and_line sal;
   int thread = -1;
@@ -618,7 +618,7 @@ gdb_set_bp_addr (ClientData clientData, Tcl_Interp *interp, int objc,
  * events from gdb.
  */
 
-/* The next three functions use breakpoint_notify to allow the GUI 
+/* The next three functions use breakpoint_notify to allow the GUI
  * to handle creating, deleting and modifying breakpoints.  These three
  * functions are put into the appropriate gdb hooks in gdbtk_init.
  */
@@ -693,7 +693,7 @@ breakpoint_notify (int num, const char *action)
 
   if (Tcl_Eval (gdbtk_interp, buf) != TCL_OK)
     report_error ();
-  free(buf); 
+  free(buf);
 }
 
 /*
@@ -991,5 +991,5 @@ tracepoint_notify (int num, const char *action)
 
   if (Tcl_Eval (gdbtk_interp, buf) != TCL_OK)
     report_error ();
-  free(buf); 
+  free(buf);
 }

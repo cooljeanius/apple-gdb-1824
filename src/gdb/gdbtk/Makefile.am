@@ -7,12 +7,18 @@ AUTOMAKE_OPTIONS = foreign dejagnu no-dist
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 SUBDIRS = plugins
 
+## extend the automake verbosity control:
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
+am__v_v_0 =
+am__v_v_1 = -v
+
 EXTRA_DIST = generic/gdbtk.h
 
-DISTCLEANFILES = autoscan.log
+DISTCLEANFILES = autoscan.log .DS_Store
 
 distclean-local:
-	rm -rfv autom4te.cache || rmdir autom4te.cache
+	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 .PHONY: distclean-local
 
 pdf-local:

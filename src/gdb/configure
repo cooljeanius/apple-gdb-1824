@@ -46912,6 +46912,9 @@ $as_echo "$as_me: sourcing ${ITCLCONFIG}" >&6;}
 
 	     ITCLLIB="${ITCL_BUILD_LIB_SPEC}"
 	     ITCL_DEPS="${ITCL_LIB_FULL_PATH}"
+           else
+             { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: cannot load itclConfig.sh; it is missing" >&5
+$as_echo "$as_me: WARNING: cannot load itclConfig.sh; it is missing" >&2;}
            fi
 
 	   # now look for Itk library stuff:
@@ -46997,7 +47000,7 @@ $as_echo "found ${ITKCONFIG}" >&6; }
   fi
 fi
 
-           if test -z "${no_itcl}"; then
+           if test -z "${no_itk}"; then
 
 
     if test -f "${ITKCONFIG}"; then
@@ -47010,6 +47013,9 @@ $as_echo "$as_me: sourcing ${ITKCONFIG}" >&6;}
 
 	     ITKLIB="${ITK_BUILD_LIB_SPEC}"
 	     ITK_DEPS="${ITK_LIB_FULL_PATH}"
+           else
+             { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: cannot load itkConfig.sh; it is missing" >&5
+$as_echo "$as_me: WARNING: cannot load itkConfig.sh; it is missing" >&2;}
            fi
 
            ENABLE_CFLAGS="${ENABLE_CFLAGS} \$(SUBDIR_GDBTK_CFLAGS)"
@@ -47036,7 +47042,13 @@ $as_echo "$as_me: sourcing ${ITKCONFIG}" >&6;}
 	      WIN32LDAPP="-Wl,--subsystem,console"
 	      CONFIG_OBS="${CONFIG_OBS} gdbres.o"
 	   fi
+        else
+           { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: skipping any further checks for tk, because it is missing (gdbtk will therefore not be built)" >&5
+$as_echo "$as_me: WARNING: skipping any further checks for tk, because it is missing (gdbtk will therefore not be built)" >&2;}
 	fi
+    else
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: skipping any further checks for tcltk, because tcl is missing (gdbtk will therefore not be built)" >&5
+$as_echo "$as_me: WARNING: skipping any further checks for tcltk, because tcl is missing (gdbtk will therefore not be built)" >&2;}
     fi
 
     subdirs="$subdirs gdbtk"
@@ -47044,6 +47056,9 @@ $as_echo "$as_me: sourcing ${ITKCONFIG}" >&6;}
 else
     { $as_echo "$as_me:${as_lineno-$LINENO}: skipping gdbtk tests" >&5
 $as_echo "$as_me: skipping gdbtk tests" >&6;}
+    if test -d gdbtk; then
+        export unused_subdirs="${unused_subdirs} gdbtk"
+    fi
 fi
 
 
@@ -47898,6 +47913,10 @@ if test "x${enable_multi_ice}" != "xno"; then
    elif test -d rem-multi; then
      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: rem-multi remains un-renamed" >&5
 $as_echo "$as_me: WARNING: rem-multi remains un-renamed" >&2;}
+   fi
+else
+   if test -d rem-multi_old; then
+     export unused_subdirs="${unused_subdirs} rem-multi_old"
    fi
 fi
 

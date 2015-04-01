@@ -1,4 +1,4 @@
-/* Tcl/Tk command definitions for Insight - Stack.
+/* gdbtk-stack.c: Tcl/Tk command definitions for Insight - Stack.
    Copyright 2001, 2002, 2003 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -102,7 +102,7 @@ gdb_block_vars (ClientData clientData, Tcl_Interp *interp,
 
   start = string_to_core_addr (Tcl_GetStringFromObj (objv[1], NULL));
   end   = string_to_core_addr (Tcl_GetStringFromObj (objv[2], NULL));
-  
+
   block = get_frame_block (deprecated_selected_frame, 0);
 
   while (block != 0)
@@ -169,7 +169,7 @@ gdb_get_blocks (ClientData clientData, Tcl_Interp *interp,
   CORE_ADDR pc;
 
   Tcl_SetListObj (result_ptr->obj_ptr, 0, NULL);
-  
+
   if (deprecated_selected_frame != NULL)
     {
       block = get_frame_block (deprecated_selected_frame, 0);
@@ -211,10 +211,10 @@ gdb_get_blocks (ClientData clientData, Tcl_Interp *interp,
 		}
 	    }
 
-	  /* If we found a block with locals in it, add it to the list. 
+	  /* If we found a block with locals in it, add it to the list.
 	     Note that the ranges of start and end address for blocks
 	     are exclusive, so double-check against the PC */
-	  
+
 	  /* APPLE LOCAL begin address ranges  */
 	  if (!junk && block_contains_pc (block, pc))
 	    {
@@ -240,12 +240,12 @@ gdb_get_blocks (ClientData clientData, Tcl_Interp *interp,
 
 		  for (i = 0; i < BLOCK_RANGES (block)->nelts; i++)
 		    {
-		      xasprintf (&addr, "0x%s", 
+		      xasprintf (&addr, "0x%s",
 				 paddr_nz (BLOCK_RANGE_START (block, i)));
 		      Tcl_ListObjAppendElement (interp, elt,
 						Tcl_NewStringObj (addr, -1));
 		      free(addr);
-		      xasprintf (&addr, "0x%s", 
+		      xasprintf (&addr, "0x%s",
 				 paddr_nz (BLOCK_RANGE_END (block, i)));
 		      Tcl_ListObjAppendElement (interp, elt,
 					    Tcl_NewStringObj (addr, -1));
@@ -527,7 +527,7 @@ gdb_stack (ClientData clientData, Tcl_Interp *interp,
          stack, so point it to the requested start */
       start = -start;
       r = GDB_find_relative_frame (top, &start, &top);
-      
+
       result_ptr->obj_ptr = Tcl_NewListObj (0, NULL);
       if (r != GDB_OK)
 	return TCL_OK;
@@ -536,7 +536,7 @@ gdb_stack (ClientData clientData, Tcl_Interp *interp,
          frames beyond the innermost stack frame */
       if (start == 0)
         {
-          fi = top; 
+          fi = top;
           while (fi && count--)
             {
               get_frame_name (interp, result_ptr->obj_ptr, fi);

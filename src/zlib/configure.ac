@@ -25,7 +25,7 @@ AC_SUBST([mkinstalldirs])dnl
 AC_REQUIRE_AUX_FILE([mkinstalldirs])dnl
 AC_REQUIRE_AUX_FILE([depcomp])dnl
 
-AM_INIT_AUTOMAKE([1.8 foreign dejagnu])dnl
+AM_INIT_AUTOMAKE([1.8 foreign dejagnu no-dist])dnl
 
 AM_MAINTAINER_MODE
 
