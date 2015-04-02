@@ -54,7 +54,7 @@ extern void _initialize_macosx_info_commands(void);
 { if ((NULL == args) || ((args[0] != '0') && (args[1] != 'x'))) error(what" must be specified with 0x..."); }
 
 #define PRINT_FIELD(structure, field) \
-printf_unfiltered(#field":\t%#lx\n", (unsigned long) (structure)->field)
+  printf_unfiltered(#field":\t%#lx\n", (unsigned long)(structure)->field)
 
 #define task_self mach_task_self
 #define port_names mach_port_names

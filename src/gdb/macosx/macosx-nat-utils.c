@@ -401,11 +401,10 @@ macosx_print_extra_stop_info(int code, CORE_ADDR address)
     case KERN_INVALID_ADDRESS:
       ui_out_field_string(uiout, "access-reason", "KERN_INVALID_ADDRESS");
       break;
-#if defined (TARGET_ARM)
+#if defined(TARGET_ARM)
     case 0x101:
       ui_out_field_string(uiout, "access-reason", "EXC_ARM_DA_ALIGN");
       break;
-
     case 0x102:
       ui_out_field_string(uiout, "access-reason", "EXC_ARM_DA_DEBUG");
       break;
@@ -420,25 +419,7 @@ macosx_print_extra_stop_info(int code, CORE_ADDR address)
 
 
 void
-mach_check_error (kern_return_t ret, const char *file,
-                  unsigned int line, const char *func)
-{
-  if (ret == KERN_SUCCESS)
-    {
-      return;
-    }
-  if (func == NULL)
-    {
-      func = "[UNKNOWN]";
-    }
-
-  error ("error on line %u of \"%s\" in function \"%s\": %s (0x%lx)\n",
-         line, file, func, MACH_ERROR_STRING (ret), (unsigned long) ret);
-}
-
-
-void
-mach_warn_error (kern_return_t ret, const char *file,
+mach_check_error(kern_return_t ret, const char *file,
                  unsigned int line, const char *func)
 {
   if (ret == KERN_SUCCESS)
@@ -450,8 +431,26 @@ mach_warn_error (kern_return_t ret, const char *file,
       func = "[UNKNOWN]";
     }
 
-  warning ("error on line %u of \"%s\" in function \"%s\": %s (0x%ux)",
-           line, file, func, MACH_ERROR_STRING (ret), ret);
+  error("error on line %u of \"%s\" in function \"%s\": %s (0x%lx)\n",
+        line, file, func, MACH_ERROR_STRING(ret), (unsigned long)ret);
+}
+
+
+void
+mach_warn_error(kern_return_t ret, const char *file,
+                unsigned int line, const char *func)
+{
+  if (ret == KERN_SUCCESS)
+    {
+      return;
+    }
+  if (func == NULL)
+    {
+      func = "[UNKNOWN]";
+    }
+
+  warning("error on line %u of \"%s\" in function \"%s\": %s (0x%ux)",
+          line, file, func, MACH_ERROR_STRING(ret), ret);
 }
 
 
@@ -517,7 +516,7 @@ macosx_check_malloc_is_unsafe(void)
                                         0, NULL);
     }
 
-  do_cleanups (scheduler_cleanup);
+  do_cleanups(scheduler_cleanup);
 
   /* If we got an error calling the malloc_check_fn, assume it is not
      safe to call... */
@@ -582,20 +581,19 @@ macosx_check_safe_call(int which, enum check_which_threads thread_mode)
       for (i = 0; i < LAST_SUBSYSTEM_INDEX; i++)
 	{
 	  int err_code;
-	  err_code = regcomp (&(macosx_unsafe_patterns[i]),
-			      macosx_unsafe_regexes[i],
-			      REG_EXTENDED|REG_NOSUB);
+	  err_code = regcomp(&(macosx_unsafe_patterns[i]),
+			     macosx_unsafe_regexes[i],
+			     (REG_EXTENDED | REG_NOSUB));
 	  if (err_code != 0)
 	    {
 	      char err_str[512];
-	      regerror (err_code, &(macosx_unsafe_patterns[i]),
-			err_str, 512);
-	      internal_error (__FILE__, __LINE__,
-			      "Could NOT compile unsafe call pattern %s, error %s",
-			      macosx_unsafe_regexes[i], err_str);
+	      regerror(err_code, &(macosx_unsafe_patterns[i]),
+                       err_str, 512);
+	      internal_error(__FILE__, __LINE__,
+			     "Could NOT compile unsafe call pattern %s, error %s",
+			     macosx_unsafe_regexes[i], err_str);
 	    }
 	}
-
     }
 
   /* Because check_safe_call will potentially scan all threads, which can be
@@ -605,29 +603,29 @@ macosx_check_safe_call(int which, enum check_which_threads thread_mode)
   if (which & MALLOC_SUBSYSTEM)
     {
       int malloc_unsafe;
-      if (macosx_get_malloc_inited () == 0)
+      if (macosx_get_malloc_inited() == 0)
 	{
-	  ui_out_text (uiout, "Unsafe to run code: ");
-	  ui_out_field_string (uiout, "problem", "malloc library is not initialized yet");
-	  ui_out_text (uiout, ".\n");
+	  ui_out_text(uiout, "Unsafe to run code: ");
+	  ui_out_field_string(uiout, "problem", "malloc library is not initialized yet");
+	  ui_out_text(uiout, ".\n");
 	  return 0;
 	}
 
       /* macosx_check_malloc_is_unsafe does NOT tell us about the current thread.
-	   * So if the caller has asked explicitly about the current thread only, or
-	   * the scheduler mode is set to off, just try the patterns.  */
+       * So if the caller has asked explicitly about the current thread only, or
+       * the scheduler mode is set to off, just try the patterns.  */
 
-      if (thread_mode == CHECK_CURRENT_THREAD
-	  || (thread_mode == CHECK_SCHEDULER_VALUE && !scheduler_lock_on_p ()))
+      if ((thread_mode == CHECK_CURRENT_THREAD)
+	  || ((thread_mode == CHECK_SCHEDULER_VALUE) && !scheduler_lock_on_p()))
           malloc_unsafe = -1;
       else
-	malloc_unsafe = macosx_check_malloc_is_unsafe ();
+	malloc_unsafe = macosx_check_malloc_is_unsafe();
 
       if (malloc_unsafe == 1)
 	{
-	  ui_out_text (uiout, "Unsafe to run code: ");
-	  ui_out_field_string (uiout, "problem", "malloc zone lock is held for some zone.");
-	  ui_out_text (uiout, ".\n");
+	  ui_out_text(uiout, "Unsafe to run code: ");
+	  ui_out_field_string(uiout, "problem", "malloc zone lock is held for some zone.");
+	  ui_out_text(uiout, ".\n");
 	  return 0;
 	}
       else if (malloc_unsafe == -1)
@@ -645,15 +643,14 @@ macosx_check_safe_call(int which, enum check_which_threads thread_mode)
       struct cleanup *runtime_cleanup;
       enum objc_debugger_mode_result objc_retval = objc_debugger_mode_unknown;
 
-      /* Again, the debugger mode requires you only run the current thread. If the
-	   * caller requested information about the current thread, that means she will
-	   * be running the all threads - just with code on the current thread. So we
-	   * should NOT use the debugger mode.  */
-
-      if (thread_mode == CHECK_ALL_THREADS
-          || (thread_mode == CHECK_SCHEDULER_VALUE && scheduler_lock_on_p ()))
+      /* Again, the debugger mode requires you only run the current thread.
+       * If the caller requested information about the current thread, then
+       * that means she will be running the all threads - just with code on
+       * the current thread.  So we should NOT use the debugger mode: */
+      if ((thread_mode == CHECK_ALL_THREADS)
+          || ((thread_mode == CHECK_SCHEDULER_VALUE) && scheduler_lock_on_p()))
 	{
-	  objc_retval = make_cleanup_set_restore_debugger_mode (&runtime_cleanup, 1);
+	  objc_retval = make_cleanup_set_restore_debugger_mode(&runtime_cleanup, 1);
 	  do_cleanups (runtime_cleanup);
 	  if (objc_retval == objc_debugger_mode_success)
 	    {
@@ -663,42 +660,42 @@ macosx_check_safe_call(int which, enum check_which_threads thread_mode)
 	    }
 	}
 
-      if (thread_mode == CHECK_CURRENT_THREAD
-          || (thread_mode == CHECK_SCHEDULER_VALUE && !scheduler_lock_on_p ())
-	  || objc_retval == objc_debugger_mode_fail_objc_api_unavailable)
+      if ((thread_mode == CHECK_CURRENT_THREAD)
+          || ((thread_mode == CHECK_SCHEDULER_VALUE) && !scheduler_lock_on_p())
+	  || (objc_retval == objc_debugger_mode_fail_objc_api_unavailable))
         {
-
           /* If we have the new objc runtime, I am going to be a little more
              paranoid, and if any frames in the first 5 stack frames are in
              libobjc, then I will bail. According to Greg, pretty much any routine
              in libobjc in the new runtime is likely to hold an objc lock.  */
 
-          if (new_objc_runtime_internals ())
+          if (new_objc_runtime_internals())
             {
               struct objfile *libobjc_objfile;
 
-              libobjc_objfile = find_libobjc_objfile ();
+              libobjc_objfile = find_libobjc_objfile();
               if (libobjc_objfile != NULL)
                 {
                   struct frame_info *fi;
-                  fi = get_current_frame ();
+                  fi = get_current_frame();
                   if (!fi)
                     {
-                      warning ("Cancelling operation - cannot find base frame of "
-                               "the current thread to determine whether it is safe.");
+                      warning("Cancelling operation - cannot find base frame of "
+                              "the current thread to determine whether it is safe.");
                       return 0;
                     }
 
-                  while (frame_relative_level (fi) < 5)
+                  while (frame_relative_level(fi) < 5)
                     {
-                      struct obj_section *obj_sect = find_pc_section (get_frame_pc (fi));
-                      if (obj_sect == NULL || obj_sect->objfile == libobjc_objfile)
+                      struct obj_section *obj_sect = find_pc_section(get_frame_pc(fi));
+                      if ((obj_sect == NULL)
+                          || (obj_sect->objfile == libobjc_objfile))
                         {
-                          warning ("Cancelling call - objc code on the current "
-                                   "thread's stack makes this unsafe.");
+                          warning("Cancelling call - objc code on the current "
+                                  "thread's stack makes this unsafe.");
                           return 0;
                         }
-                      fi = get_prev_frame (fi);
+                      fi = get_prev_frame(fi);
                       if (fi == NULL)
                         break;
                     }
@@ -715,9 +712,9 @@ macosx_check_safe_call(int which, enum check_which_threads thread_mode)
         }
       else
         {
-          ui_out_text (uiout, "Unsafe to run code: ");
-          ui_out_field_string (uiout, "problem", "objc runtime lock is held");
-          ui_out_text (uiout, ".\n");
+          ui_out_text(uiout, "Unsafe to run code: ");
+          ui_out_field_string(uiout, "problem", "objc runtime lock is held");
+          ui_out_text(uiout, ".\n");
           return 0;
         }
     }
@@ -727,13 +724,13 @@ macosx_check_safe_call(int which, enum check_which_threads thread_mode)
       /* FIXME - There is a better way to do this in SL (and later(?)). */
       struct minimal_symbol *dyld_lock_p;
       int got_it_easy = 0;
-      dyld_lock_p = lookup_minimal_symbol ("_dyld_global_lock_held", 0, 0);
+      dyld_lock_p = lookup_minimal_symbol("_dyld_global_lock_held", 0, 0);
       if (dyld_lock_p != NULL)
 	{
 	  ULONGEST locked;
 
-	  if (safe_read_memory_unsigned_integer (SYMBOL_VALUE_ADDRESS (dyld_lock_p),
-						 4, &locked))
+	  if (safe_read_memory_unsigned_integer(SYMBOL_VALUE_ADDRESS(dyld_lock_p),
+                                                4, &locked))
 	    {
 	      got_it_easy = 1;
 	      if (locked == 1)
@@ -762,8 +759,8 @@ macosx_check_safe_call(int which, enum check_which_threads thread_mode)
 
   if (num_unsafe_patterns > 0)
     {
-      retval = check_safe_call (unsafe_patterns, num_unsafe_patterns, depth,
-				thread_mode);
+      retval = check_safe_call(unsafe_patterns, num_unsafe_patterns, depth,
+                               thread_mode);
     }
 
   return retval;
@@ -787,7 +784,7 @@ macosx_check_safe_call(int which, enum check_which_threads thread_mode)
 static struct cached_value *dlerror_function;
 
 struct value *
-macosx_load_dylib (char *name, char *flags)
+macosx_load_dylib(char *name, char *flags)
 {
   /* We are basically just going to call dlopen, and return the
      cookie that it returns.  BUT, we also have to make sure that
@@ -803,27 +800,27 @@ macosx_load_dylib (char *name, char *flags)
   int int_flags;
   enum objc_debugger_mode_result objc_retval;
 
-  if (!macosx_check_safe_call (LOADER_SUBSYSTEM, CHECK_ALL_THREADS))
-    error ("Cannot call into the loader at present, it is locked.");
+  if (!macosx_check_safe_call(LOADER_SUBSYSTEM, CHECK_ALL_THREADS))
+    error("Cannot call into the loader at present, it is locked.");
 
   if (dlopen_function == NULL)
     {
-      if (lookup_minimal_symbol ("dlopen", 0, 0))
+      if (lookup_minimal_symbol("dlopen", 0, 0))
 	{
-	  dlopen_function = create_cached_function ("dlopen",
-						    builtin_type_voidptrfuncptr);
+	  dlopen_function = create_cached_function("dlopen",
+						   builtin_type_voidptrfuncptr);
 	}
     }
 
-	if (dlopen_function == NULL) {
-		error ("Cannot find dlopen function, so it is not possible to load shared libraries.");
-	}
+  if (dlopen_function == NULL) {
+    error("Cannot find dlopen function, so it is not possible to load shared libraries.");
+  }
 
   if (dlerror_function == NULL)
     {
-      if (lookup_minimal_symbol ("dlerror", 0, 0))
+      if (lookup_minimal_symbol("dlerror", 0, 0))
 	{
-	  dlerror_function = create_cached_function ("dlerror",
+	  dlerror_function = create_cached_function("dlerror",
 						    builtin_type_voidptrfuncptr);
 	}
     }
@@ -834,62 +831,62 @@ macosx_load_dylib (char *name, char *flags)
     {
       /* The list of flags should be in the form A|B|C, but I am actually going to
          do an even cheesier job of parsing, and just look for the elements I want.  */
-      if (strstr (flags, "RTLD_LAZY") != NULL)
+      if (strstr(flags, "RTLD_LAZY") != NULL)
 	int_flags |= RTLD_LAZY;
-      if (strstr (flags, "RTLD_NOW") != NULL)
+      if (strstr(flags, "RTLD_NOW") != NULL)
 	int_flags |= RTLD_NOW;
-      if (strstr (flags, "RTLD_LOCAL") != NULL)
+      if (strstr(flags, "RTLD_LOCAL") != NULL)
 	int_flags |= RTLD_LOCAL;
-      if (strstr (flags, "RTLD_GLOBAL") != NULL)
+      if (strstr(flags, "RTLD_GLOBAL") != NULL)
 	int_flags |= RTLD_GLOBAL;
-      if (strstr (flags, "RTLD_NOLOAD") != NULL)
+      if (strstr(flags, "RTLD_NOLOAD") != NULL)
 	int_flags |= RTLD_NOLOAD;
-      if (strstr (flags, "RTLD_NODELETE") != NULL)
+      if (strstr(flags, "RTLD_NODELETE") != NULL)
 	int_flags |= RTLD_NODELETE;
-      if (strstr (flags, "RTLD_FIRST") != NULL)
+      if (strstr(flags, "RTLD_FIRST") != NULL)
 	int_flags |= RTLD_FIRST;
     }
 
-  /* If the user did NOT pass in anything, set some sensible defaults.  */
-	if (int_flags == 0) {
-		int_flags = RTLD_GLOBAL|RTLD_NOW;
-	}
+  /* If the user did NOT pass in anything, set some sensible defaults: */
+  if (int_flags == 0) {
+    int_flags = RTLD_GLOBAL|RTLD_NOW;
+  }
 
-  arg_val[1] = value_from_longest (builtin_type_int, int_flags);
+  arg_val[1] = value_from_longest(builtin_type_int, int_flags);
 
   /* Have to do the hand_call function cleanups here, since if the debugger mode is
      already turned on, it may be turned on more permissively than we want.  */
-  do_hand_call_cleanups (ALL_CLEANUPS);
+  do_hand_call_cleanups(ALL_CLEANUPS);
 
-  sched_cleanup = make_cleanup_set_restore_scheduler_locking_mode (scheduler_locking_on);
+  sched_cleanup = make_cleanup_set_restore_scheduler_locking_mode(scheduler_locking_on);
 
   /* Pass in level of -1 since loading a dylib will very likely change the ObjC runtime, and so
      we will have to get the write lock.  */
 
-  objc_retval = make_cleanup_set_restore_debugger_mode (&debugger_mode_cleanup, -1);
+  objc_retval = make_cleanup_set_restore_debugger_mode(&debugger_mode_cleanup, -1);
 
   if (objc_retval == objc_debugger_mode_fail_objc_api_unavailable)
-    if (target_check_safe_call (OBJC_SUBSYSTEM, CHECK_SCHEDULER_VALUE))
+    if (target_check_safe_call(OBJC_SUBSYSTEM, CHECK_SCHEDULER_VALUE))
       objc_retval = objc_debugger_mode_success;
 
   if (objc_retval != objc_debugger_mode_success)
-    error ("Not safe to call dlopen at this time.");
+    error("Not safe to call dlopen at this time.");
 
-  arg_val[0] = value_coerce_array (value_string (name, strlen (name) + 1));
+  arg_val[0] = value_coerce_array(value_string(name, strlen(name) + 1UL));
 
-  ret_val = call_function_by_hand (lookup_cached_function (dlopen_function),
-				   2, arg_val);
-  do_cleanups (debugger_mode_cleanup);
-  do_cleanups (sched_cleanup);
+  ret_val = call_function_by_hand(lookup_cached_function(dlopen_function),
+				  2, arg_val);
+  do_cleanups(debugger_mode_cleanup);
+  do_cleanups(sched_cleanup);
 
   /* Again we have to clear this out, since we do NOT want to preserve
      this version of the debugger mode.  */
 
-  do_hand_call_cleanups (ALL_CLEANUPS);
+  do_hand_call_cleanups(ALL_CLEANUPS);
   if (ret_val != NULL)
     {
       CORE_ADDR dlopen_token;
-      dlopen_token = value_as_address (ret_val);
+      dlopen_token = value_as_address(ret_val);
       if (dlopen_token == 0)
 	{
 	  /* This indicates an error in the attempt to
@@ -910,25 +907,37 @@ macosx_load_dylib (char *name, char *flags)
 	  scheduler_cleanup =
 	    make_cleanup_set_restore_scheduler_locking_mode(scheduler_locking_on);
 
+          if (scheduler_cleanup == NULL) {
+            ; /* do nothing; just silence '-Wunused-but-set-variable' */
+          }
+
 	  ret_val = call_function_by_hand(lookup_cached_function(dlerror_function),
                                           0, NULL);
 	  /* Now read the string out of the target: */
 	  error_addr = value_as_address(ret_val);
-	  error_str_len = target_read_string(error_addr, &error_str, INT_MAX,
-					     &read_error);
+	  error_str_len = target_read_string(error_addr, &error_str,
+                                             INT_MAX, &read_error);
+
+          if (error_str_len > 1) {
+            ; /* do nothing; just silence '-Wunused-but-set-variable' */
+          }
+
 	  if (read_error == 0)
 	    {
 	      make_cleanup(xfree, error_str);
-	      error("Error calling dlopen for: \"%s\": \"%s\"", name, error_str);
+	      error("Error calling dlopen for: \"%s\": \"%s\"",
+                    name, error_str);
 	    }
 	  else
-	    error("Error calling dlopen for \"%s\", could not fetch error string.",
-		  name);
-
+            {
+              error("Error calling dlopen for \"%s\", could not fetch error string.",
+                    name);
+            }
 	}
       else
 	{
-	  ui_out_field_core_addr(uiout, "handle", value_as_address(ret_val));
+	  ui_out_field_core_addr(uiout, "handle",
+                                 value_as_address(ret_val));
 	  if (info_verbose)
 	    printf_unfiltered("Return token was: %s.\n",
                               paddr_nz(value_as_address(ret_val)));

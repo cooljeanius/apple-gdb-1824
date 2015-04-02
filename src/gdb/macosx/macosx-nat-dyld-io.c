@@ -128,8 +128,8 @@ inferior_read_memory_partial(CORE_ADDR addr, int nbytes, gdb_byte *mbuf)
 
 
 static file_ptr
-inferior_read_generic(bfd *abfd, void *stream, void *data, file_ptr nbytes,
-                      file_ptr offset)
+inferior_read_generic(bfd *abfd ATTRIBUTE_UNUSED, void *stream, void *data,
+                      file_ptr nbytes, file_ptr offset)
 {
   struct inferior_info *iptr = (struct inferior_info *)stream;
 

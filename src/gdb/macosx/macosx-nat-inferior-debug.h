@@ -3,7 +3,7 @@
  */
 
 #ifndef __GDB_MACOSX_NAT_INFERIOR_DEBUG_H__
-#define __GDB_MACOSX_NAT_INFERIOR_DEBUG_H__
+#define __GDB_MACOSX_NAT_INFERIOR_DEBUG_H__ 1
 
 #include <stdio.h>
 #include <mach/mach.h>

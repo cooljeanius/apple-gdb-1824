@@ -352,29 +352,31 @@ tui_get_cmd_list(void)
 void
 _initialize_tui_win(void)
 {
-  struct cmd_list_element *c = (struct cmd_list_element *)NULL;
+  struct cmd_list_element *c;
   static struct cmd_list_element *tui_setlist;
   static struct cmd_list_element *tui_showlist;
 
+  c = (struct cmd_list_element *)NULL;
+
   /* Define the classes of commands.
      They will appear in the help list in the reverse of this order.  */
-  add_prefix_cmd ("tui", class_tui, set_tui_cmd,
-                  _("TUI configuration variables"),
-		  &tui_setlist, "set tui ",
-		  0/*allow-unknown*/, &setlist);
-  add_prefix_cmd ("tui", class_tui, show_tui_cmd,
-                  _("TUI configuration variables"),
-		  &tui_showlist, "show tui ",
-		  0/*allow-unknown*/, &showlist);
+  add_prefix_cmd("tui", class_tui, set_tui_cmd,
+                 _("TUI configuration variables"),
+		 &tui_setlist, "set tui ",
+		 0/*allow-unknown*/, &setlist);
+  add_prefix_cmd("tui", class_tui, show_tui_cmd,
+                 _("TUI configuration variables"),
+		 &tui_showlist, "show tui ",
+		 0/*allow-unknown*/, &showlist);
 
-  add_com ("refresh", class_tui, tui_refresh_all_command,
-           _("Refresh the terminal display.\n"));
+  add_com("refresh", class_tui, tui_refresh_all_command,
+          _("Refresh the terminal display.\n"));
   if (xdb_commands)
-    add_com_alias ("U", "refresh", class_tui, 0);
-  add_com ("tabset", class_tui, tui_set_tab_width_command, _("\
+    add_com_alias("U", "refresh", class_tui, 0);
+  add_com("tabset", class_tui, tui_set_tab_width_command, _("\
 Set the width (in characters) of tab stops.\n\
 Usage: tabset <n>\n"));
-  add_com ("winheight", class_tui, tui_set_win_height_command, _("\
+  add_com("winheight", class_tui, tui_set_win_height_command, _("\
 Set the height of a specified window.\n\
 Usage: winheight <win_name> [+ | -] <#lines>\n\
 Window names are:\n\
@@ -1163,20 +1165,19 @@ tui_adjust_win_heights (struct tui_win_info * primary_win_info, int new_height)
 	      else
 		{
 		  first_win = TUI_DATA_WIN;
-		  second_win = (struct tui_win_info *) (tui_source_windows ())->list[0];
+		  second_win = (struct tui_win_info *)(tui_source_windows())->list[0];
 		}
 	      if (primary_win_info == TUI_CMD_WIN)
-		{		/*
-				   ** Split the change in height accross the 1st & 2nd windows
-				   ** adjusting them as well.
-				 */
-		  int first_split_diff = diff / 2;	/* subtract the locator */
+		{ /*
+		   ** Split the change in height accross the 1st & 2nd windows
+		   ** adjusting them as well.
+		   */
+		  int first_split_diff = (diff / 2); /* subtract the locator */
 		  int second_split_diff = first_split_diff;
 
 		  if (diff % 2)
 		    {
-		      if (first_win->generic.height >
-			  second_win->generic.height)
+		      if (first_win->generic.height > second_win->generic.height)
 			if (diff < 0)
 			  first_split_diff--;
 			else

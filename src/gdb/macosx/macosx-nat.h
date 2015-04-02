@@ -1,7 +1,7 @@
-/* macosx-nat.h */
+/* macosx-nat.h -*- C -*- */
 
 #ifndef __GDB_MACOSX_NAT_H__
-#define __GDB_MACOSX_NAT_H__
+#define __GDB_MACOSX_NAT_H__ 1
 
 int is_pid_classic(pid_t pid);
 int can_attach(pid_t target_pid);

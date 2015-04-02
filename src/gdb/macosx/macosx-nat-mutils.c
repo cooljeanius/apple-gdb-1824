@@ -83,7 +83,7 @@
    implicitly be a int, not an unsigned int, and would overflow on 2's
    complement machines. */
 
-#define MINUS_INT_MIN (((unsigned int) (- (INT_MAX + INT_MIN))) + INT_MAX)
+#define MINUS_INT_MIN (((unsigned int)(-(INT_MAX + INT_MIN))) + INT_MAX)
 
 static FILE *mutils_stderr = NULL;
 static int mutils_debugflag = 0;
@@ -1644,20 +1644,20 @@ get_symbol_at_address_on_stack(CORE_ADDR stack_address, int *frame_level)
   found_frame = 0;
   *frame_level = -1;
 
-  while (this_frame != NULL && !found_frame)
+  while ((this_frame != NULL) && !found_frame)
     {
       struct gdb_exception e;
-      TRY_CATCH (e, RETURN_MASK_ERROR)
+      TRY_CATCH(e, RETURN_MASK_ERROR)
 	{
-	  this_sp = get_frame_base (this_frame);
+	  this_sp = get_frame_base(this_frame);
 	  if (stack_address <= this_sp)
 	    {
-	      /* You cannot break here, because of the TRY_CATCH.  */
-	      *frame_level = frame_relative_level (this_frame);
+	      /* You cannot break here, because of the TRY_CATCH: */
+	      *frame_level = frame_relative_level(this_frame);
 	      found_frame = 1;
 	    }
 	  else
-	    this_frame = get_prev_frame (this_frame);
+	    this_frame = get_prev_frame(this_frame);
 	}
       if (e.reason == RETURN_ERROR)
 	{
@@ -1668,8 +1668,8 @@ get_symbol_at_address_on_stack(CORE_ADDR stack_address, int *frame_level)
 
   if (found_frame == 1)
     {
-      struct symbol *this_symbol = NULL;
-      struct block *block = get_frame_block (this_frame, 0);
+      struct symbol *this_symbol = (struct symbol *)NULL;
+      struct block *block = get_frame_block(this_frame, 0);
       if (block != NULL)
 	{
 	  while (block != 0)
@@ -1679,7 +1679,7 @@ get_symbol_at_address_on_stack(CORE_ADDR stack_address, int *frame_level)
 	      struct dict_iterator iter;
 	      struct symbol *sym;
 
-	      ALL_BLOCK_SYMBOLS (block, iter, sym)
+	      ALL_BLOCK_SYMBOLS(block, iter, sym)
 		{
 		  struct value *val = NULL;
 		  struct gdb_exception e;
@@ -1688,9 +1688,9 @@ get_symbol_at_address_on_stack(CORE_ADDR stack_address, int *frame_level)
 		  /* This is a little inefficient, but without repeating
 		     a lot of code in findvar.c, there is no way to get this
 		     information...  */
-		  TRY_CATCH (e, RETURN_MASK_ERROR)
+		  TRY_CATCH(e, RETURN_MASK_ERROR)
 		    {
-		      val = value_of_variable (sym, block);
+		      val = value_of_variable(sym, block);
 		    }
 
 		  if (val == NULL)
@@ -1700,36 +1700,39 @@ get_symbol_at_address_on_stack(CORE_ADDR stack_address, int *frame_level)
 		     the address lines up with a struct or array, we still
 		     pass it to build_path_to_element to get the first member
 		     right.  */
-		  val_type = value_type (val);
-		  val_address = VALUE_ADDRESS (val);
-		  if (val_address == stack_address
-		      && TYPE_CODE (val_type) != TYPE_CODE_STRUCT
-		      && TYPE_CODE (val_type) != TYPE_CODE_ARRAY)
+		  val_type = value_type(val);
+		  val_address = VALUE_ADDRESS(val);
+		  if ((val_address == stack_address)
+		      && (TYPE_CODE(val_type) != TYPE_CODE_STRUCT)
+		      && (TYPE_CODE(val_type) != TYPE_CODE_ARRAY))
 		    {
-		      symbol_name = xstrdup (SYMBOL_PRINT_NAME (sym));
+		      symbol_name = xstrdup(SYMBOL_PRINT_NAME(sym));
 		      goto found_symbol;
 		    }
-		  else if (stack_address >= val_address
-			   && ( stack_address
-				< val_address
-				+ TYPE_LENGTH (val_type)))
+		  else if ((stack_address >= val_address)
+			   && (stack_address < (val_address
+                                                + TYPE_LENGTH(val_type))))
 		    {
-		      CORE_ADDR offset = stack_address - val_address;
+		      CORE_ADDR offset = (stack_address - val_address);
 		      this_symbol = sym;
-		      symbol_name = xstrdup (SYMBOL_PRINT_NAME (sym));
-		      build_path_to_element (val_type, offset, &symbol_name);
+		      symbol_name = xstrdup(SYMBOL_PRINT_NAME(sym));
+		      build_path_to_element(val_type, offset, &symbol_name);
 		      goto found_symbol;
 		    }
 		}
 
-	      if (BLOCK_FUNCTION (block))
+	      if (BLOCK_FUNCTION(block))
 		{
 		  this_symbol = NULL;
 		  break;
 		}
-	      block = BLOCK_SUPERBLOCK (block);
+	      block = BLOCK_SUPERBLOCK(block);
 	    }
 	}
+
+      if (this_symbol == NULL) {
+        ; /* do nothing; just silence '-Wunused-but-set-variable' */
+      }
     }
  found_symbol:
   return symbol_name;
@@ -1741,17 +1744,19 @@ get_symbol_at_address_on_stack(CORE_ADDR stack_address, int *frame_level)
 #define AUTO_BLOCK_BYTES        3
 #define AUTO_BLOCK_ASSOCIATION  4
 
-static char *auto_kind_strings[5] = {"global", "stack", "object", "bytes", "assoc"};
-static char *auto_kind_spacer[5] = {"", " ", "", " ", " "};
+static char *auto_kind_strings[5] = {
+  "global", "stack", "object", "bytes", "assoc"
+};
+static char *auto_kind_spacer[5] = { "", " ", "", " ", " " };
 static CORE_ADDR
 gc_print_references(volatile CORE_ADDR list_addr, int wordsize)
 {
   volatile int ref_index;
   LONGEST num_refs;
 
-  if (safe_read_memory_integer (list_addr, 4, &num_refs) == 0)
-    error ("Could not read number of references at %s",
-	   paddr_nz (list_addr));
+  if (safe_read_memory_integer(list_addr, 4, &num_refs) == 0)
+    error("Could not read number of references at %s",
+	  paddr_nz(list_addr));
   /* The struct we are reading looks like:
        struct auto_memory_reference_list {
          uint32_t count;
@@ -1764,8 +1769,8 @@ gc_print_references(volatile CORE_ADDR list_addr, int wordsize)
 
   list_addr += wordsize;
 #if 0
-  ui_out_field_int (uiout, "depth", num_refs);
-  ui_out_text (uiout, "\n");
+  ui_out_field_int(uiout, "depth", num_refs);
+  ui_out_text(uiout, "\n");
 #endif /* 0 */
 
   for (ref_index = 0; ref_index < num_refs; ref_index++)
@@ -1776,51 +1781,51 @@ gc_print_references(volatile CORE_ADDR list_addr, int wordsize)
       ULONGEST kind;
       ULONGEST retain_cnt;
 
-      ref_cleanup = make_cleanup_ui_out_tuple_begin_end (uiout, "reference");
+      ref_cleanup = make_cleanup_ui_out_tuple_begin_end(uiout, "reference");
 
-      if (safe_read_memory_unsigned_integer (list_addr, wordsize, &address) == 0)
-	error ("Could not read address and reference %d at %s.",
-	       ref_index, paddr_nz (list_addr));
+      if (safe_read_memory_unsigned_integer(list_addr, wordsize, &address) == 0)
+	error("Could not read address and reference %d at %s.",
+	      ref_index, paddr_nz(list_addr));
       list_addr += wordsize;
-      if (safe_read_memory_integer (list_addr, wordsize, &offset) == 0)
-	error ("Could not read offset and reference %d at %s.",
-	       ref_index, paddr_nz (list_addr));
+      if (safe_read_memory_integer(list_addr, wordsize, &offset) == 0)
+	error("Could not read offset and reference %d at %s.",
+	      ref_index, paddr_nz(list_addr));
       list_addr += wordsize;
-      if (safe_read_memory_unsigned_integer (list_addr, 4, &kind) == 0)
-	error ("Could not read kind and reference %d at %s.",
-	       ref_index, paddr_nz (list_addr));
+      if (safe_read_memory_unsigned_integer(list_addr, 4, &kind) == 0)
+	error("Could not read kind and reference %d at %s.",
+	      ref_index, paddr_nz(list_addr));
       list_addr += 4;
-      if (safe_read_memory_unsigned_integer (list_addr, 4, &retain_cnt) == 0)
-	error ("Could not read retainCount and reference %d at %s.",
-	       ref_index, paddr_nz (list_addr));
+      if (safe_read_memory_unsigned_integer(list_addr, 4, &retain_cnt) == 0)
+	error("Could not read retainCount and reference %d at %s.",
+	      ref_index, paddr_nz(list_addr));
       list_addr += 4;
 
       if (ref_index < 10)
-	ui_out_text (uiout, "   ");
+	ui_out_text(uiout, "   ");
       else
-	ui_out_text (uiout, "  ");
+	ui_out_text(uiout, "  ");
 
-      ui_out_field_int (uiout, "depth", ref_index);
+      ui_out_field_int(uiout, "depth", ref_index);
 
-      ui_out_text (uiout, " Kind: ");
+      ui_out_text(uiout, " Kind: ");
 
-      if (kind >= AUTO_BLOCK_GLOBAL && kind <= AUTO_BLOCK_ASSOCIATION)
+      if ((kind >= AUTO_BLOCK_GLOBAL) && (kind <= AUTO_BLOCK_ASSOCIATION))
 	{
-	  ui_out_field_string (uiout, "kind", auto_kind_strings[kind]);
-	  ui_out_text (uiout, auto_kind_spacer[kind]);
+	  ui_out_field_string(uiout, "kind", auto_kind_strings[kind]);
+	  ui_out_text(uiout, auto_kind_spacer[kind]);
 	}
       else
-	ui_out_field_int (uiout, "kind", kind);
+	ui_out_field_int(uiout, "kind", kind);
 
-      ui_out_text (uiout, "  rc: ");
+      ui_out_text(uiout, "  rc: ");
       /* Cheesy spacing, if we ever get retain counts over 9999 we will NOT
-	   * space right.  */
+       * space right: */
       if (retain_cnt < 10)
-	ui_out_text (uiout, "  ");
+	ui_out_text(uiout, "  ");
       else if (retain_cnt < 100)
-	ui_out_text (uiout, " ");
+	ui_out_text(uiout, " ");
 
-      ui_out_field_int (uiout, "retain-count", retain_cnt);
+      ui_out_field_int(uiout, "retain-count", retain_cnt);
 
       if (kind == AUTO_BLOCK_STACK)
 	{
@@ -1828,36 +1833,36 @@ gc_print_references(volatile CORE_ADDR list_addr, int wordsize)
 	  int frame_level;
 	  char *symbol_name;
 
-	  stack_address = address + offset;
+	  stack_address = (address + offset);
 
-	  ui_out_text (uiout, "  Address: ");
-	  ui_out_field_core_addr (uiout, "address", stack_address);
+	  ui_out_text(uiout, "  Address: ");
+	  ui_out_field_core_addr(uiout, "address", stack_address);
 
-	  symbol_name = get_symbol_at_address_on_stack (stack_address, &frame_level);
+	  symbol_name = get_symbol_at_address_on_stack(stack_address, &frame_level);
 
 	  if (frame_level >= 0)
 	    {
-	      ui_out_text (uiout, "  Frame level: ");
-	      ui_out_field_int (uiout, "frame", frame_level);
-	      ui_out_text (uiout, "  Symbol: ");
+	      ui_out_text(uiout, "  Frame level: ");
+	      ui_out_field_int(uiout, "frame", frame_level);
+	      ui_out_text(uiout, "  Symbol: ");
 	      if (symbol_name == NULL)
-		ui_out_field_string (uiout, "symbol", "<unknown>");
+		ui_out_field_string(uiout, "symbol", "<unknown>");
 	      else
 		{
-		  ui_out_field_string (uiout, "symbol", symbol_name);
-		  xfree (symbol_name);
+		  ui_out_field_string(uiout, "symbol", symbol_name);
+		  xfree(symbol_name);
 		}
 	    }
 	  else
 	    {
-	      ui_out_text (uiout, "  Frame:");
-	      ui_out_field_string (uiout, "frame", "<unknown>");
+	      ui_out_text(uiout, "  Frame:");
+	      ui_out_field_string(uiout, "frame", "<unknown>");
 	    }
 	}
-      else if (kind == AUTO_BLOCK_OBJECT
-	       || kind == AUTO_BLOCK_ASSOCIATION)
+      else if ((kind == AUTO_BLOCK_OBJECT)
+	       || (kind == AUTO_BLOCK_ASSOCIATION))
 	{
-	  /* This is an ObjC object. */
+	  /* This is an ObjC object: */
 	  struct gdb_exception e;
 
 	  struct type *dynamic_type = NULL;
@@ -1866,21 +1871,21 @@ gc_print_references(volatile CORE_ADDR list_addr, int wordsize)
           struct ui_file *saved_gdb_stderr;
           static struct ui_file *null_stderr = NULL;
 
-	  ui_out_text (uiout, "  Address: ");
-	  ui_out_field_core_addr (uiout, "address", address);
+	  ui_out_text(uiout, "  Address: ");
+	  ui_out_field_core_addr(uiout, "address", address);
 
           /* suppress error messages */
           if (null_stderr == NULL)
-            null_stderr = ui_file_new ();
+            null_stderr = ui_file_new();
 
           saved_gdb_stderr = gdb_stderr;
           gdb_stderr = null_stderr;
 
-	  TRY_CATCH (e, RETURN_MASK_ERROR)
+	  TRY_CATCH(e, RETURN_MASK_ERROR)
 	    {
-	      dynamic_type = objc_target_type_from_object (address, NULL,
-                                                           wordsize,
-							   &dynamic_name);
+	      dynamic_type = objc_target_type_from_object(address, NULL,
+                                                          wordsize,
+							  &dynamic_name);
 	    }
 	  if (e.reason == RETURN_ERROR)
 	    dynamic_type = NULL;
@@ -1890,33 +1895,38 @@ gc_print_references(volatile CORE_ADDR list_addr, int wordsize)
 	  if (dynamic_type != NULL)
 	    {
 	      char *ivar_name = NULL;
-	      ui_out_text (uiout, "  Class: ");
-	      ui_out_field_string (uiout, "class", TYPE_NAME (dynamic_type));
+	      ui_out_text(uiout, "  Class: ");
+	      ui_out_field_string(uiout, "class", TYPE_NAME(dynamic_type));
 	      if (kind == AUTO_BLOCK_ASSOCIATION)
 		{
 		  ui_out_text (uiout, "  Key: ");
-		  ui_out_field_core_addr (uiout, "key", offset);
+		  ui_out_field_core_addr(uiout, "key", offset);
 		  if (dynamic_name != NULL)
 		    {
-		      ui_out_text (uiout, "  Class: ");
-		      ui_out_field_string (uiout, "class", dynamic_name);
+		      ui_out_text(uiout, "  Class: ");
+		      ui_out_field_string(uiout, "class", dynamic_name);
 		    }
 		}
 	      else if (offset > 0)
 		{
 		  int remaining_offset;
-		  remaining_offset = build_path_to_element (dynamic_type, offset,
-							    &ivar_name);
+		  remaining_offset = build_path_to_element(dynamic_type, offset,
+							   &ivar_name);
+
+                  if (remaining_offset > 0) {
+                    ; /* do nothing for now... */
+                  }
+
 		  if (ivar_name != NULL)
 		    {
-		      ui_out_text (uiout, "  ivar: ");
-		      ui_out_field_string (uiout, "ivar", ivar_name);
-		      xfree (ivar_name);
+		      ui_out_text(uiout, "  ivar: ");
+		      ui_out_field_string(uiout, "ivar", ivar_name);
+		      xfree(ivar_name);
 		    }
 		  else
 		    {
-		      ui_out_text (uiout, "  Offset: ");
-		      ui_out_field_core_addr (uiout, "offset", offset);
+		      ui_out_text(uiout, "  Offset: ");
+		      ui_out_field_core_addr(uiout, "offset", offset);
 		    }
 		}
 	    }
@@ -1924,56 +1934,56 @@ gc_print_references(volatile CORE_ADDR list_addr, int wordsize)
 	    {
 	      if (kind == AUTO_BLOCK_ASSOCIATION)
 		{
-		  ui_out_text (uiout, "  Key: ");
-		  ui_out_field_core_addr (uiout, "key", offset);
+		  ui_out_text(uiout, "  Key: ");
+		  ui_out_field_core_addr(uiout, "key", offset);
 		}
 	      else
 		{
-		  ui_out_text (uiout, "  Offset: ");
-		  ui_out_field_core_addr (uiout, "offset", offset);
+		  ui_out_text(uiout, "  Offset: ");
+		  ui_out_field_core_addr(uiout, "offset", offset);
 		}
 	      if (dynamic_name != NULL)
 		{
-		  ui_out_text (uiout, "  Class: ");
-		  ui_out_field_string (uiout, "class", dynamic_name);
+		  ui_out_text(uiout, "  Class: ");
+		  ui_out_field_string(uiout, "class", dynamic_name);
 		}
 	    }
 	  if (dynamic_name != NULL)
-	    xfree (dynamic_name);
+	    xfree(dynamic_name);
 	}
       else
 	{
-	  ui_out_text (uiout, "  Address: ");
-	  ui_out_field_core_addr (uiout, "address", address);
+	  ui_out_text(uiout, "  Address: ");
+	  ui_out_field_core_addr(uiout, "address", address);
 
 	  if (offset != 0)
 	    {
-	      ui_out_text (uiout, "  Offset: ");
-	      ui_out_field_core_addr (uiout, "offset", offset);
+	      ui_out_text(uiout, "  Offset: ");
+	      ui_out_field_core_addr(uiout, "offset", offset);
 	    }
 	  if (kind == AUTO_BLOCK_GLOBAL)
 	    {
 	      struct obj_section *the_sect;
 	      struct minimal_symbol *msymbol = NULL;
 
-	      the_sect = find_pc_sect_section (address, NULL);
+	      the_sect = find_pc_sect_section(address, NULL);
 	      if (the_sect != NULL)
 		{
-		  msymbol
-		    = lookup_minimal_symbol_by_pc_section (address,
-							   the_sect->the_bfd_section);
+		  msymbol =
+                    lookup_minimal_symbol_by_pc_section(address,
+                                                        the_sect->the_bfd_section);
 		}
-	      ui_out_text (uiout, " Symbol: ");
+	      ui_out_text(uiout, " Symbol: ");
 	      if (msymbol)
-		ui_out_field_string (uiout, "symbol", SYMBOL_PRINT_NAME (msymbol));
+		ui_out_field_string(uiout, "symbol", SYMBOL_PRINT_NAME(msymbol));
 	      else
-		ui_out_field_string (uiout, "symbol", "<unknown>");
+		ui_out_field_string(uiout, "symbol", "<unknown>");
 	    }
 	}
 
-      ui_out_text (uiout, "\n");
+      ui_out_text(uiout, "\n");
 
-      do_cleanups (ref_cleanup);
+      do_cleanups(ref_cleanup);
     }
   return list_addr;
 }

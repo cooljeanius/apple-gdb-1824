@@ -1,4 +1,4 @@
-/* macosx-nat-cmds-load.h */
+/* macosx-nat-cmds-load.h -*- C -*- */
 
 #ifndef __GDB_MACOSX_NAT_CMDS_LOAD_H__
 #define __GDB_MACOSX_NAT_CMDS_LOAD_H__ 1

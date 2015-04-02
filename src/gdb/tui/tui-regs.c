@@ -303,17 +303,18 @@ tui_show_register_group (struct gdbarch *gdbarch, struct reggroup *group,
    of the display height.  No checking for displaying past the end of
    the registers is done here.  */
 void
-tui_display_registers_from (int start_element_no)
+tui_display_registers_from(int start_element_no)
 {
   struct tui_data_info *display_info = &TUI_DATA_WIN->detail.data_display_info;
 
-  if (display_info->regs_content != (tui_win_content) NULL &&
-      display_info->regs_content_count > 0)
+  if ((display_info->regs_content != (tui_win_content)NULL)
+      && (display_info->regs_content_count > 0))
     {
       int i = start_element_no;
       int j, value_chars_wide, item_win_width, cur_y;
 
       int max_len = 0;
+      value_chars_wide = 0;
       for (i = 0; i < display_info->regs_content_count; i++)
         {
           struct tui_data_element *data;
@@ -330,7 +331,7 @@ tui_display_registers_from (int start_element_no)
             while (*p)
               {
                 if (*p++ == '\t')
-                  len = 8 * ((len / 8) + 1);
+                  len = (8 * ((len / 8) + 1));
                 else
                   len++;
               }
@@ -338,18 +339,18 @@ tui_display_registers_from (int start_element_no)
           if (len > max_len)
             max_len = len;
         }
-      item_win_width = max_len + 1;
+      item_win_width = (max_len + 1);
       i = start_element_no;
 
       display_info->regs_column_count =
-        (TUI_DATA_WIN->generic.width - 2) / item_win_width;
+        ((TUI_DATA_WIN->generic.width - 2) / item_win_width);
       if (display_info->regs_column_count == 0)
         display_info->regs_column_count = 1;
       item_win_width =
         (TUI_DATA_WIN->generic.width - 2) / display_info->regs_column_count;
 
       /*
-         ** Now create each data "sub" window, and write the display into it.
+      ** Now create each data "sub" window, and write the display into it.
        */
       cur_y = 1;
       while (i < display_info->regs_content_count &&
@@ -480,18 +481,19 @@ tui_display_registers_from_line (int line_no, int force_display)
    given a particular frame.  If the values have changed, they are
    updated with the new value and highlighted.  */
 void
-tui_check_register_values (struct frame_info *frame)
+tui_check_register_values(struct frame_info *frame)
 {
-  if (TUI_DATA_WIN != NULL && TUI_DATA_WIN->generic.is_visible)
+  if ((TUI_DATA_WIN != NULL) && TUI_DATA_WIN->generic.is_visible)
     {
       struct tui_data_info *display_info
         = &TUI_DATA_WIN->detail.data_display_info;
 
-      if (display_info->regs_content_count <= 0 && display_info->display_regs)
-	tui_show_registers (display_info->current_group);
+      if ((display_info->regs_content_count <= 0) && display_info->display_regs)
+	tui_show_registers(display_info->current_group);
       else
 	{
 	  int i, j;
+          j = 0;
 
 	  for (i = 0; (i < display_info->regs_content_count); i++)
 	    {
@@ -499,18 +501,18 @@ tui_check_register_values (struct frame_info *frame)
 	      struct tui_gen_win_info *data_item_win_ptr;
 	      int was_hilighted;
 
-	      data_item_win_ptr = &display_info->regs_content[i]->
-                which_element.data_window;
+	      data_item_win_ptr =
+                &display_info->regs_content[i]->which_element.data_window;
 	      data = &((struct tui_win_element *)
                        data_item_win_ptr->content[0])->which_element.data;
 	      was_hilighted = data->highlight;
 
-              tui_get_register (current_gdbarch, frame, data,
-                                data->item_no, &data->highlight);
+              tui_get_register(current_gdbarch, frame, data,
+                               data->item_no, &data->highlight);
 
 	      if (data->highlight || was_hilighted)
 		{
-                  tui_display_register (data, data_item_win_ptr);
+                  tui_display_register(data, data_item_win_ptr);
 		}
 	    }
 	}
@@ -646,18 +648,18 @@ tui_restore_gdbout (void *ui)
 /* Get the register from the frame and make a printable representation
    of it in the data element.  */
 static void
-tui_register_format (struct gdbarch *gdbarch, struct frame_info *frame,
-                     struct tui_data_element *data_element, int regnum)
+tui_register_format(struct gdbarch *gdbarch, struct frame_info *frame,
+                    struct tui_data_element *data_element, int regnum)
 {
   struct ui_file *stream;
   struct ui_file *old_stdout;
   const char *name;
   struct cleanup *cleanups;
   char *p, *s;
-  int pos;
-  struct type *type = gdbarch_register_type (gdbarch, regnum);
+  int pos = 0;
+  struct type *type = gdbarch_register_type(gdbarch, regnum);
 
-  name = gdbarch_register_name (gdbarch, regnum);
+  name = gdbarch_register_name(gdbarch, regnum);
   if (name == 0)
     {
       return;
@@ -665,36 +667,36 @@ tui_register_format (struct gdbarch *gdbarch, struct frame_info *frame,
 
   pagination_enabled = 0;
   old_stdout = gdb_stdout;
-  stream = tui_sfileopen (256);
+  stream = tui_sfileopen(256);
   gdb_stdout = stream;
-  cleanups = make_cleanup (tui_restore_gdbout, (void*) old_stdout);
-  if (TYPE_VECTOR (type) != 0 && 0)
+  cleanups = make_cleanup(tui_restore_gdbout, (void *)old_stdout);
+  if ((TYPE_VECTOR(type) != 0) && 0)
     {
       gdb_byte buf[MAX_REGISTER_SIZE];
       int len;
 
-      len = register_size (current_gdbarch, regnum);
-      fprintf_filtered (stream, "%-14s ", name);
-      get_frame_register (frame, regnum, buf);
-      print_scalar_formatted (buf, type, 'f', len, stream);
+      len = register_size(current_gdbarch, regnum);
+      fprintf_filtered(stream, "%-14s ", name);
+      get_frame_register(frame, regnum, buf);
+      print_scalar_formatted(buf, type, 'f', len, stream);
     }
   else
     {
-      gdbarch_print_registers_info (current_gdbarch, stream,
-                                    frame, regnum, 1);
+      gdbarch_print_registers_info(current_gdbarch, stream,
+                                   frame, regnum, 1);
     }
 
-  /* Save formatted output in the buffer.  */
-  p = tui_file_get_strbuf (stream);
+  /* Save formatted output in the buffer: */
+  p = tui_file_get_strbuf(stream);
 
-  /* Remove the possible \n.  */
-  s = strrchr (p, '\n');
-  if (s && s[1] == 0)
+  /* Remove the possible '\n': */
+  s = strrchr(p, '\n');
+  if (s && (s[1] == 0))
     *s = 0;
 
-  xfree (data_element->content);
-  data_element->content = xstrdup (p);
-  do_cleanups (cleanups);
+  xfree(data_element->content);
+  data_element->content = xstrdup(p);
+  do_cleanups(cleanups);
 }
 
 /* Get the register value from the given frame and format it for

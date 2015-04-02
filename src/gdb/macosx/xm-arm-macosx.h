@@ -16,7 +16,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA.  */
 
 #ifndef _XM_ARM_MACOSX_H_
 # define _XM_ARM_MACOSX_H_
@@ -29,3 +29,5 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 # include "xm-macosx.h"
 
 #endif /* _XM_ARM_MACOSX_H_ */
+
+/* EOF */

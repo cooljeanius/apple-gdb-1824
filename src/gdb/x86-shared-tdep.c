@@ -1044,7 +1044,7 @@ x86_frame_cache(struct frame_info *next_frame, void **this_cache,
 {
   struct x86_frame_cache *cache;
   int potentially_frameless;
-  CORE_ADDR prologue_parsed_to = 0;
+  CORE_ADDR prologue_parsed_to = 0UL;
   CORE_ADDR current_pc;
 
   if (*this_cache)
@@ -1134,7 +1134,11 @@ x86_frame_cache(struct frame_info *next_frame, void **this_cache,
       cache->ebp_is_frame_pointer = 1;
     }
 
-  /* It is frameless or we haven't executed the frame setup insns yet.  */
+  if (prologue_parsed_to == INVALID_ADDRESS) {
+    ; /* do nothing; just silence '-Wunused-but-set-variable' for now */
+  }
+
+  /* It is frameless or we have NOT executed the frame setup insns yet: */
   return cache;
 }
 

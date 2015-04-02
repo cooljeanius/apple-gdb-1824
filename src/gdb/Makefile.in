@@ -1053,58 +1053,88 @@ gdbtk_h = $(gdbtk_c_srcdir)/gdbtk.h
 # gdb/macosx/ headers
 #
 
-macosx_srcdir = $(srcdir)/macosx
-arm_macosx_nat_exec_h = $(macosx_srcdir)/arm-macosx-nat-exec.h $(target_h)
-arm_macosx_thread_status_h = $(macosx_srcdir)/arm-macosx-thread-status.h
-arm_macosx_regnums_h = $(macosx_srcdir)/arm-macosx-regnums.h
-arm_macosx_tdep_h = $(macosx_srcdir)/arm-macosx-tdep.h $(defs_h) \
+macosxsrcdir = $(srcdir)/macosx
+arm_macosx_nat_exec_h = $(macosxsrcdir)/arm-macosx-nat-exec.h $(target_h)
+arm_macosx_thread_status_h = $(macosxsrcdir)/arm-macosx-thread-status.h
+arm_macosx_regnums_h = $(macosxsrcdir)/arm-macosx-regnums.h
+arm_macosx_tdep_h = $(macosxsrcdir)/arm-macosx-tdep.h $(defs_h) \
   $(arm_macosx_thread_status_h) $(arm_macosx_regnums_h) $(macosx_tdep_h)
-cached_symfile_h = $(macosx_srcdir)/cached-symfile.h $(defs_h)
-i386_macosx_nat_exec_h = $(macosx_srcdir)/i386-macosx-nat-exec.h \
+cached_symfile_h = $(macosxsrcdir)/cached-symfile.h $(defs_h)
+i386_macosx_nat_exec_h = $(macosxsrcdir)/i386-macosx-nat-exec.h \
   $(defs_h) $(target_h)
-i386_macosx_tdep_h = $(macosx_srcdir)/i386-macosx-tdep.h \
+i386_macosx_tdep_h = $(macosxsrcdir)/i386-macosx-tdep.h \
   $(i386_macosx_thread_status_h)
-i386_macosx_thread_status_h = $(macosx_srcdir)/i386-macosx-thread-status.h
-kdp_protocol_h = $(macosx_srcdir)/kdp-protocol.h
-kdp_transactions_h = $(macosx_srcdir)/kdp-transactions.h $(kdp_udp_h)
-kdp_udp_h = $(macosx_srcdir)/kdp-udp.h $(kdp_protocol_h)
-macosx_nat_dyld_h = $(macosx_srcdir)/macosx-nat-dyld.h $(defs_h) \
+i386_macosx_thread_status_h = $(macosxsrcdir)/i386-macosx-thread-status.h
+kdp_protocol_h = $(macosxsrcdir)/kdp-protocol.h
+kdp_transactions_h = $(macosxsrcdir)/kdp-transactions.h $(kdp_udp_h)
+kdp_udp_h = $(macosxsrcdir)/kdp-udp.h $(kdp_protocol_h)
+macosx_bundle_utils_h = $(macosxsrcdir)/macosx-bundle-utils.h
+macosx_fat_utils_h = $(macosxsrcdir)/macosx-fat-utils.h $(bfd_h)
+macosx_nat_cfm_io_h = $(macosxsrcdir)/macosx-nat-cfm-io.h $(symtab_h) \
+  $(macosx_nat_dyld_info_h) $(macosx_nat_dyld_path_h)
+macosx_nat_cfm_h = $(macosxsrcdir)/macosx-nat-cfm.h
+macosx_nat_cfmthread_h = $(macosxsrcdir)/macosx-nat-cfmthread.h \
+  $(defs_h) $(macosx_nat_mutils_h) $(macosx_nat_threads_h) \
+  $(macosx_nat_cfm_h)
+macosx_nat_cmds_load_h = $(macosxsrcdir)/macosx-nat-cmds-load.h
+macosx_nat_dyld_h = $(macosxsrcdir)/macosx-nat-dyld.h $(defs_h) \
   $(macosx_nat_mutils_h) $(macosx_nat_threads_h)
-macosx_nat_dyld_info_h = $(macosx_srcdir)/macosx-nat-dyld-info.h $(defs_h)
-macosx_nat_dyld_io_h = $(macosx_srcdir)/macosx-nat-dyld-io.h $(symtab_h)
-macosx_nat_dyld_path_h = $(macosx_srcdir)/macosx-nat-dyld-path.h $(defs_h)
-macosx_nat_dyld_process_h = $(macosx_srcdir)/macosx-nat-dyld-process.h \
+macosx_nat_dyld_info_h = $(macosxsrcdir)/macosx-nat-dyld-info.h $(defs_h)
+macosx_nat_dyld_io_h = $(macosxsrcdir)/macosx-nat-dyld-io.h $(symtab_h)
+macosx_nat_dyld_path_h = $(macosxsrcdir)/macosx-nat-dyld-path.h $(defs_h)
+macosx_nat_dyld_process_h = $(macosxsrcdir)/macosx-nat-dyld-process.h \
   $(defs_h)
-macosx_nat_excthread_h = $(macosx_srcdir)/macosx-nat-excthread.h \
+macosx_nat_excthread_h = $(macosxsrcdir)/macosx-nat-excthread.h \
   $(defs_h) $(macosx_nat_mutils_h) $(macosx_nat_threads_h)
-macosx_nat_inferior_h = $(macosx_srcdir)/macosx-nat-inferior.h \
+macosx_nat_inferior_h = $(macosxsrcdir)/macosx-nat-inferior.h \
   $(macosx_nat_threads_h) $(macosx_nat_sigthread_h) \
   $(macosx_nat_excthread_h) $(macosx_nat_dyld_h) \
   $(macosx_nat_dyld_info_h) $(defs_h) $(target_h) $(checkpoint_h)
-macosx_nat_inferior_debug_h = $(macosx_srcdir)/macosx-nat-inferior-debug.h
-macosx_nat_infthread_h = $(macosx_srcdir)/macosx-nat-infthread.h
-macosx_nat_mutils_h = $(macosx_srcdir)/macosx-nat-mutils.h $(defs_h) \
+macosx_nat_inferior_debug_h = $(macosxsrcdir)/macosx-nat-inferior-debug.h \
+  $(defs_h)
+macosx_nat_inferior_stubs_h = $(macosxsrcdir)/macosx-nat-inferior-stubs.h \
+  $(defs_h) $(target_h)
+macosx_nat_inferior_util_h = $(macosxsrcdir)/macosx-nat-inferior-util.h \
+  $(macosx_nat_inferior_h) $(inferior_h)
+macosx_nat_info_h = $(macosxsrcdir)/macosx-nat-info.h
+macosx_nat_infthread_h = $(macosxsrcdir)/macosx-nat-infthread.h
+macosx_nat_mutils_h = $(macosxsrcdir)/macosx-nat-mutils.h $(defs_h) \
   $(memattr_h) $(target_h) $(inferior_h) $(macosx_nat_utils_h)
-macosx_nat_sigthread_h = $(macosx_srcdir)/macosx-nat-sigthread.h \
+macosx_nat_sigthread_h = $(macosxsrcdir)/macosx-nat-sigthread.h \
   $(defs_h) $(macosx_nat_mutils_h) $(macosx_nat_threads_h)
-macosx_nat_threads_h = $(macosx_srcdir)/macosx-nat-threads.h
-macosx_nat_utils_h = $(macosx_srcdir)/macosx-nat-utils.h
-macosx_tdep_h = $(macosx_srcdir)/macosx-tdep.h $(defs_h) $(symtab_h)
-macosx_xdep_h = $(macosx_srcdir)/macosx-xdep.h
-macosx_defs = $(macosx_srcdir)/macosx.defs $(config_h)
-nm_macosx_h = $(macosx_srcdir)/nm-macosx.h
-ppc_macosx_frameinfo_h = $(macosx_srcdir)/ppc-macosx-frameinfo.h $(defs_h)
-ppc_macosx_regnums_h = $(macosx_srcdir)/ppc-macosx-regnums.h
-ppc_macosx_regs_h = $(macosx_srcdir)/ppc-macosx-regs.h \
+macosx_nat_threads_h = $(macosxsrcdir)/macosx-nat-threads.h
+macosx_nat_utils_h = $(macosxsrcdir)/macosx-nat-utils.h
+macosx_nat_watchpoint_h = $(macosxsrcdir)/macosx-nat-watchpoint.h \
+  $(defs_h) $(target_h)
+macosx_nat_h = $(macosxsrcdir)/macosx-nat.h
+macosx_self_backtrace_h = $(macosxsrcdir)/macosx-self-backtrace.h
+macosx_tdep_h = $(macosxsrcdir)/macosx-tdep.h $(defs_h) $(symtab_h)
+macosx_xdep_h = $(macosxsrcdir)/macosx-xdep.h
+macosx_defs = $(macosxsrcdir)/macosx.defs $(config_h)
+nm_arm_macosx_h = $(macosxsrcdir)/nm-arm-macosx.h $(nm_macosx_h)
+nm_i386_macosx_h = $(macosxsrcdir)/nm-i386-macosx.h $(nm_macosx_h)
+nm_macos_h = $(macosxsrcdir)/nm-macos.h
+nm_macosx_h = $(macosxsrcdir)/nm-macosx.h
+nm_ppc_macosx_h = $(macosxsrcdir)/nm-ppc-macosx.h $(nm_macosx_h)
+ppc_macosx_frameinfo_h = $(macosxsrcdir)/ppc-macosx-frameinfo.h $(defs_h)
+ppc_macosx_regnums_h = $(macosxsrcdir)/ppc-macosx-regnums.h
+ppc_macosx_regs_h = $(macosxsrcdir)/ppc-macosx-regs.h \
   $(ppc_macosx_thread_status_h)
-ppc_macosx_tdep_h = $(macosx_srcdir)/ppc-macosx-tdep.h $(defs_h) \
+ppc_macosx_tdep_h = $(macosxsrcdir)/ppc-macosx-tdep.h $(defs_h) \
   $(reggroups_h)
-ppc_macosx_thread_status_h = $(macosx_srcdir)/ppc-macosx-thread-status.h
-remote_kdp_h = $(macosx_srcdir)/remote-kdp.h $(defs_h) $(target_h)
-symread_h = $(macosx_srcdir)/symread.h $(objfiles_h)
-tm_arm_macosx_h = $(macosx_srcdir)/tm-arm-macosx.h $(tm_macosx_h)
-tm_macosx_h = $(macosx_srcdir)/tm-macosx.h $(macosx_tdep_h)
-xm_macosx_h = $(macosx_srcdir)/xm-macosx.h
+ppc_macosx_thread_status_h = $(macosxsrcdir)/ppc-macosx-thread-status.h
+remote_kdp_h = $(macosxsrcdir)/remote-kdp.h $(defs_h) $(target_h)
+symread_h = $(macosxsrcdir)/symread.h $(objfiles_h)
+tm_arm_macosx_h = $(macosxsrcdir)/tm-arm-macosx.h $(tm_macosx_h)
+tm_arm_h = $(macosxsrcdir)/tm-arm.h
+tm_i386_macosx_h = $(macosxsrcdir)/tm-i386-macosx.h
+tm_macos_h = $(macosxsrcdir)/tm-macos.h
+tm_macosx_h = $(macosxsrcdir)/tm-macosx.h $(macosx_tdep_h)
+tm_ppc_macosx_h = $(macosxsrcdir)/tm-ppc-macosx.h
+xm_arm_macosx_h = $(macosxsrcdir)/xm-arm-macosx.h $(xm_macosx_h)
+xm_i386_macosx_h = $(macosxsrcdir)/xm-i386-macosx.h $(xm_macosx_h)
+xm_macosx_h = $(macosxsrcdir)/xm-macosx.h
+xm_ppc_macosx_h = $(macosxsrcdir)/xm-ppc-macosx.h $(xm_macosx_h)
 
 #
 # gdb/mi/ headers
@@ -1589,7 +1619,7 @@ TAGS: $(TAGFILES_NO_SRCDIR) $(TAGFILES_WITH_SRCDIR)
 	`(for i in $(DEPFILES) $(TAGFILES_NO_SRCDIR); do \
 	    j=$${i/\.o/\.c}; \
 	    if [ -f $(srcdir)/$${j} ] ; then \
-	      echo $(srcdir)/$${j}; else echo $(macosx_srcdir)/$${j}; fi; \
+	      echo $(srcdir)/$${j}; else echo $(macosxsrcdir)/$${j}; fi; \
 	done; for i in $(TAGFILES_WITH_SRCDIR); do \
 		echo $${i}; \
 	done)` \
@@ -3364,10 +3394,11 @@ insight$(EXEEXT): gdbtk-main.o libgdb.a $(ADD_DEPS) \
 	-$(STRIP) -R $(TMPDIR)/macosx-syms-to-remove -X insight$(EXEEXT)
 	$(AM_V_at)rm -f $(AM_V_v) $(TMPDIR)/macosx-syms-to-remove;
 
+# This object is for Cygwin only:
 gdbres.o: $(srcdir)/gdbtk/gdb.rc $(srcdir)/gdbtk/gdbtool.ico
 	$(WINDRES) --include $(srcdir)/gdbtk $(srcdir)/gdbtk/gdb.rc \
 	  gdbres.o
-
+# The rest of these gdbtk objects are made from the gdbtk C sources:
 gdbtk.o: $(gdbtk_c_srcdir)/gdbtk.c $(defs_h) $(inferior_h) $(symfile_h) \
   $(objfiles_h) $(gdbcore_h) $(tracepoint_h) $(demangle_h) $(version_h) \
   $(top_h) $(annotate_h) $(exceptions_h) $(gdbtk_h) $(gdb_string_h) \
@@ -3378,7 +3409,6 @@ gdbtk.o: $(gdbtk_c_srcdir)/gdbtk.c $(defs_h) $(inferior_h) $(symfile_h) \
 	  $(gdbtk_c_srcdir)/gdbtk.c \
 	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\" \
 	  -DSRC_DIR=\"$(GDBTK_SRC_DIR)\"
-
 gdbtk-bp.o: $(gdbtk_c_srcdir)/gdbtk-bp.c $(defs_h) $(symtab_h) \
   $(symfile_h) $(source_h) $(linespec_h) $(breakpoint_h) $(tracepoint_h) \
   $(gdb_string_h) $(gdbtk_h) $(gdbtk_cmds_h)
@@ -3386,7 +3416,6 @@ gdbtk-bp.o: $(gdbtk_c_srcdir)/gdbtk-bp.c $(defs_h) $(symtab_h) \
 	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(gdbtk_c_srcdir)/gdbtk-bp.c \
 	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
-
 gdbtk-cmds.o: $(gdbtk_c_srcdir)/gdbtk-cmds.c $(defs_h) $(inferior_h) \
   $(source_h) $(symfile_h) $(objfiles_h) $(gdbcore_h) $(demangle_h) \
   $(linespec_h) $(tui_file_h) $(top_h) $(annotate_h) $(block_h) \
@@ -3397,7 +3426,6 @@ gdbtk-cmds.o: $(gdbtk_c_srcdir)/gdbtk-cmds.c $(defs_h) $(inferior_h) \
 	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(gdbtk_c_srcdir)/gdbtk-cmds.c \
 	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
-
 gdbtk-hooks.o: $(gdbtk_c_srcdir)/gdbtk-hooks.c $(defs_h) $(inferior_h) \
   $(symfile_h) $(objfiles_h) $(gdbcore_h) $(tracepoint_h) $(demangle_h) \
   $(gdb_events_h) $(top_h) $(annotate_h) $(cli_decode_h) $(gdbtk_h) \
@@ -3406,21 +3434,18 @@ gdbtk-hooks.o: $(gdbtk_c_srcdir)/gdbtk-hooks.c $(defs_h) $(inferior_h) \
 	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(gdbtk_c_srcdir)/gdbtk-hooks.c \
 	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
-
 gdbtk-interp.o: $(gdbtk_c_srcdir)/gdbtk-interp.c $(defs_h) \
   $(interps_h) $(ui_file_h) $(ui_out_h) $(cli_out_h) $(gdb_string_h) \
   $(cli_cmds_h) $(cli_decode_h) $(exceptions_h) $(gdbtk_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
 	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(gdbtk_c_srcdir)/gdbtk-interp.c
-
 gdbtk-main.o: $(gdbtk_c_srcdir)/gdbtk-main.c $(defs_h) $(main_h) \
   $(gdb_string_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
 	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(gdbtk_c_srcdir)/gdbtk-main.c \
 	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
-
 gdbtk-register.o: $(gdbtk_c_srcdir)/gdbtk-register.c $(defs_h) $(frame_h) \
   $(regcache_h) $(reggroups_h) $(value_h) $(target_h) $(gdb_string_h) \
   $(gdbtk_h) $(gdbtk_cmds_h)
@@ -3428,7 +3453,6 @@ gdbtk-register.o: $(gdbtk_c_srcdir)/gdbtk-register.c $(defs_h) $(frame_h) \
 	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(gdbtk_c_srcdir)/gdbtk-register.c \
 	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
-
 gdbtk-stack.o: $(gdbtk_c_srcdir)/gdbtk-stack.c $(defs_h) $(target_h) \
   $(breakpoint_h) $(linespec_h) $(block_h) $(dictionary_h) \
   $(gdbtk_h) $(gdbtk_cmds_h) $(gdbtk_wrapper_h)
@@ -3436,7 +3460,6 @@ gdbtk-stack.o: $(gdbtk_c_srcdir)/gdbtk-stack.c $(defs_h) $(target_h) \
 	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(gdbtk_c_srcdir)/gdbtk-stack.c \
 	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
-
 gdbtk-varobj.o: $(gdbtk_c_srcdir)/gdbtk-varobj.c $(defs_h) $(value_h) \
   $(gdb_string_h) $(varobj_h) $(gdbtk_h) $(gdbtk_cmds_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
@@ -3454,12 +3477,12 @@ gdbtk-wrapper.o: $(gdbtk_c_srcdir)/gdbtk-wrapper.c $(defs_h) $(frame_h) \
 # No need to explicitly specify the compile rule for this subdir, because
 # we use a vpath hack for it, unlike the rest of them.
 
-arm-macosx-nat-exec.o: $(macosx_srcdir)/arm-macosx-nat-exec.c $(defs_h) \
+arm-macosx-nat-exec.o: $(macosxsrcdir)/arm-macosx-nat-exec.c $(defs_h) \
   $(frame_h) $(inferior_h) $(symtab_h) $(target_h) $(gdbcore_h) \
   $(symfile_h) $(objfiles_h) $(regcache_h) $(gdbarch_h) $(arch_utils_h) \
   $(arm_tdep_h) $(arm_macosx_nat_exec_h) $(arm_macosx_thread_status_h) \
   $(arm_macosx_tdep_h)
-arm-macosx-tdep.o: $(macosx_srcdir)/arm-macosx-tdep.c $(config_h) \
+arm-macosx-tdep.o: $(macosxsrcdir)/arm-macosx-tdep.c $(config_h) \
   $(defs_h) $(frame_h) $(inferior_h) $(symtab_h) $(target_h) $(gdbcore_h) \
   $(symfile_h) $(objfiles_h) $(gdbcmd_h) $(arch_utils_h) $(floatformat_h) \
   $(gdbtypes_h) $(regcache_h) $(reggroups_h) $(frame_base_h) \
@@ -3467,46 +3490,173 @@ arm-macosx-tdep.o: $(macosx_srcdir)/arm-macosx-tdep.c $(config_h) \
   $(elf_bfd_h) $(dis_asm_h) $(gdbarch_h) $(osabi_h) $(mach_o_h) \
   $(macosx_tdep_h) $(arm_macosx_regnums_h) $(arm_macosx_tdep_h) \
   $(tm_arm_macosx_h)
-cached-symfile.o: $(macosx_srcdir)/cached-symfile.c $(defs_h) $(bfd_h) \
+cached-symfile.o: $(macosxsrcdir)/cached-symfile.c $(defs_h) $(bfd_h) \
   $(symtab_h) $(symfile_h) $(objfiles_h) $(gdb_stabs_h) $(target_h) \
   $(gdbcmd_h) $(gdb_stat_h) $(obstack_h) $(mmprivate_h) \
   $(macosx_nat_dyld_h) $(macosx_nat_dyld_path_h) $(macosx_nat_inferior_h) \
   $(macosx_nat_inferior_debug_h) $(macosx_nat_mutils_h) \
   $(macosx_nat_dyld_info_h) $(macosx_nat_dyld_process_h) \
   $(cached_symfile_h)
-core-macho.o: $(macosx_srcdir)/core-macho.c $(defs_h) $(gdb_string_h) \
+core-macho.o: $(macosxsrcdir)/core-macho.c $(defs_h) $(gdb_string_h) \
   $(frame_h) $(inferior_h) $(symtab_h) $(command_h) $(bfd_h) $(target_h) \
   $(gdbcore_h) $(gdbthread_h) $(regcache_h) $(exec_h) $(readline_h) \
   $(mach_o_h) $(inlining_h) $(gdb_assert_h) $(osabi_h) $(gdbarch_h) \
   $(objfiles_h) $(ui_out_h)
-darwin-kernel.o: $(macosx_srcdir)/darwin-kernel.c $(defs_h) $(inferior_h) \
+darwin-kernel.o: $(macosxsrcdir)/darwin-kernel.c $(defs_h) $(inferior_h) \
   $(gdbcmd_h) $(event_loop_h) $(event_top_h) $(inf_loop_h) $(regcache_h) \
   $(infcall_h)
-i386-macosx-nat-exec.o: $(macosx_srcdir)/i386-macosx-nat-exec.c $(defs_h) \
+i386-macosx-nat-exec.o: $(macosxsrcdir)/i386-macosx-nat-exec.c $(defs_h) \
   $(frame_h) $(inferior_h) $(target_h) $(symfile_h) $(symtab_h) \
   $(objfiles_h) $(gdbcmd_h) $(regcache_h) $(gdb_assert_h) $(i386_tdep_h) \
   $(i387_tdep_h) $(gdbarch_h) $(arch_utils_h) $(i386_macosx_nat_exec_h) \
   $(i386_macosx_tdep_h) $(macosx_nat_mutils_h) $(macosx_nat_inferior_h)
-i386-macosx-nat-float.o: $(macosx_srcdir)/i386-macosx-nat-float.c \
+i386-macosx-nat-float.o: $(macosxsrcdir)/i386-macosx-nat-float.c \
   $(defs_h) $(inferior_h) $(target_h) $(symfile_h) $(symtab_h) \
   $(objfiles_h) $(gdbcmd_h)
-i386-macosx-tdep.o: $(macosx_srcdir)/i386-macosx-tdep.c $(defs_h) \
+i386-macosx-tdep.o: $(macosxsrcdir)/i386-macosx-tdep.c $(defs_h) \
   $(frame_h) $(inferior_h) $(gdbcore_h) $(target_h) $(floatformat_h) \
   $(symtab_h) $(regcache_h) $(libbfd_h) $(objfiles_h) $(i387_tdep_h) \
   $(i386_tdep_h) $(amd64_tdep_h) $(osabi_h) $(ui_out_h) $(symtab_h) \
   $(frame_h) $(gdb_assert_h) $(i386_macosx_tdep_h)
-kdp-protocol.o: $(macosx_srcdir)/kdp-protocol.c $(kdp_protocol_h) \
+kdp-protocol.o: $(macosxsrcdir)/kdp-protocol.c $(kdp_protocol_h) \
   $(kdp_udp_h) $(defs_h)
-kdp-transactions.o: $(macosx_srcdir)/kdp-transactions.c \
+kdp-transactions.o: $(macosxsrcdir)/kdp-transactions.c \
   $(kdp_transactions_h) $(kdp_protocol_h) $(defs_h)
-kdp-udp.o: $(macosx_srcdir)/kdp-udp.c $(kdp_udp_h) $(defs_h) \
+kdp-udp.o: $(macosxsrcdir)/kdp-udp.c $(kdp_udp_h) $(defs_h) \
   $(event_loop_h)
-machoread.o: $(macosx_srcdir)/machoread.c $(defs_h) $(symtab_h) \
+machoread.o: $(macosxsrcdir)/machoread.c $(defs_h) $(symtab_h) \
   $(gdbtypes_h) $(breakpoint_h) $(bfd_h) $(symfile_h) $(objfiles_h) \
   $(buildsym_h) $(obstack_h) $(gdb_stabs_h) $(stabsread_h) $(gdbcmd_h) \
   $(completer_h) $(dwarf2read_h) $(gdbarch_h) $(mach_o_h) $(gdb_assert_h) \
   $(macosx_nat_dyld_io_h) $(macosx_nat_inferior_h)
-macosx-tdep.o: $(macosx_srcdir)/macosx-tdep.c $(defs_h) $(inferior_h) \
+macosx-bundle-utils.o: $(macosxsrcdir)/macosx-bundle-utils.c $(defs_h) \
+  $(gdb_assert_h) $(macosx_bundle_utils_h)
+macosx-fat-utils.o: $(macosxsrcdir)/macosx-fat-utils.c $(defs_h) \
+  $(osabi_h) $(gdbarch_h) $(arch_utils_h) $(macosx_fat_utils_h)
+macosx-metrowerks.o: $(macosxsrcdir)/macosx-metrowerks.c \
+  $(macosx_nat_inferior_h) $(macosx_nat_cfm_h) $(macosx_nat_dyld_info_h) \
+  $(defs_h) $(inferior_h) $(gdbcmd_h) $(symfile_h) $(frame_h) \
+  $(breakpoint_h) $(symtab_h) $(annotate_h) $(target_h) $(breakpoint_h) \
+  $(gdbcore_h) $(event_top_h)
+macosx-nat-cfm-io.o: $(macosxsrcdir)/macosx-cfm-io.c $(defs_h) \
+  $(inferior_h) $(symfile_h) $(symtab_h) $(gdbcmd_h) $(objfiles_h) \
+  $(macosx_nat_inferior_h) $(macosx_nat_mutils_h) $(macosx_nat_dyld_io_h) \
+  $(macosx_nat_cfm_io_h)
+macosx-nat-cfm.o: $(macosxsrcdir)/macosx-nat-cfm.c $(defs_h) \
+  $(breakpoint_h) $(gdbcmd_h) $(gdbcore_h) $(symfile_h) $(symtab_h) \
+  $(target_h) $(macosx_nat_inferior_h) $(macosx_nat_inferior_util_h) \
+  $(macosx_nat_mutils_h) $(macosx_nat_cfm_h) $(macosx_nat_cfm_io_h) \
+  $(macosx_nat_dyld_info_h) $(macosx_nat_dyld_io_h)
+macosx-nat-cfmthread.o: $(macosxsrcdir)/macosx-nat-cfmthread.c $(defs_h) \
+  $(gdbcmd_h) $(breakpoint_h) $(annotate_h) $(inferior_h) \
+  $(macosx_nat_inferior_h) $(macosx_nat_cfmthread_h) $(macosx_nat_cfm_h)
+macosx-nat-cmds-load.o: $(macosxsrcdir)/macosx-nat-cmds-load.c $(defs_h) \
+  $(top_h) $(command_h) $(gdbcmd_h) $(completer_h) $(readline_h) \
+  $(filenames_h) $(macosx_nat_cmds_load_h)
+macosx-nat-dyld-info.o: $(macosxsrcdir)/macosx-nat-dyld-info.c \
+  $(macosx_nat_dyld_info_h) $(macosx_nat_dyld_h) \
+  $(macosx_nat_dyld_path_h) $(macosx_nat_dyld_process_h) $(defs_h) \
+  $(inferior_h) $(symfile_h) $(symtab_h) $(gdbcmd_h) $(objfiles_h) \
+  $(ui_out_h) $(mach_o_h)
+macosx-nat-dyld-io.o: $(macosxsrcdir)/macosx-nat-dyld-io.c $(defs_h) \
+  $(inferior_h) $(symfile_h) $(symtab_h) $(gdbcmd_h) $(objfiles_h) \
+  $(target_h) $(exceptions_h) $(gdbcore_h) $(libbfd_h) $(mach_o_h) \
+  $(macosx_nat_inferior_h) $(macosx_nat_mutils_h) \
+  $(macosx_nat_dyld_info_h) $(macosx_nat_dyld_io_h)
+macosx-nat-dyld-path.o: $(macosxsrcdir)/macosx-nat-dyld-path.c $(defs_h) \
+  $(inferior_h) $(environ_h) $(gdbcore_h) $(macosx_nat_dyld_path_h) \
+  $(macosx_nat_dyld_info_h) $(macosx_nat_dyld_h) $(macosx_nat_inferior_h)
+macosx-nat-dyld-process.o: $(macosxsrcdir)/macosx-nat-dyld-process.c \
+  $(defs_h) $(inferior_h) $(symtab_h) $(gdbcmd_h) $(objfiles_h) \
+  $(mach_o_h) $(gdbcore_h) $(gdb_regex_h) $(gdb_stabs_h) $(gdb_assert_h) \
+  $(interps_h) $(objc_lang_h) $(gdb_stat_h) $(arch_utils_h) $(gdbarch_h) \
+  $(symfile_h) $(mmprivate_h) $(macosx_nat_dyld_info_h) \
+  $(macosx_nat_dyld_path_h) $(macosx_nat_dyld_io_h) $(macosx_nat_dyld_h) \
+  $(macosx_nat_inferior_h) $(macosx_nat_mutils_h) \
+  $(macosx_nat_dyd_process_h)
+macosx-nat-dyld.o: $(macosxsrcdir)/macosx-nat-dyld.c $(defs_h) \
+  $(inferior_h) $(target_h) $(gdbcmd_h) $(annotate_h) $(mach_o_h) \
+  $(gdbcore_h) $(symfile_h) $(objfiles_h) $(gdb_assert_h) $(regcache_h) \
+  $(bfd_h) $(gdb_stabs_h) $(objc_lang_h) $(gdbarch_h) $(arch_utils_h) \
+  $(ui_out_h) $(osabi_h) $(exceptions_h) $(remote_h) $(macosx_nat_dyld_h) \
+  $(macosx_nat_dyld_path_h) $(macosx_nat_inferior_h) \
+  $(macosx_nat_inferior_debug_h) $(macosx_nat_mutils_h) \
+  $(macosx_nat_dyld_io_h) $(macosx_nat_info_h) \
+  $(macosx_nat_dyld_process_h) $(macosx_tdep_h) $(macosx_nat_cfm_h)
+macosx-nat-excthread.o: $(macosxsrcdir)/macosx-nat-excthread.c $(defs_h) \
+  $(gdbcmd_h) $(event_loop_h) $(inferior_h) $(exceptions_h) \
+  $(macosx_nat_inferior_h) $(macosx_nat_excthread_h) \
+  $(macosx_nat_mutils_h) $(macosx_nat_inferior_debug_h) \
+  $(macosx_nat_inferior_util_h)
+macosx-nat-inferior-debug.o: $(macosxsrcdir)/macosx-nat-inferior-debug.c \
+  $(defs_h) $(inferior_h) $(target_h) $(symfile_h) $(symtab_h) \
+  $(objfiles_h) $(gdbcmd_h) $(gdbcore_h) $(gdbthread_h) $(bfd_h) \
+  $(macosx_nat_inferior_debug_h) $(macosx_nat_dyld_h) \
+  $(macosx_nat_inferior_h) $(macosx_nat_mutils_h) \
+  $(macosx_nat_sigthread_h) $(macosx_nat_threads_h) $(macosx_xdep_h)
+macosx-nat-inferior-stubs.o: $(macosxsrcdir)/macosx-nat-inferior-stubs.c \
+  $(defs_h) $(target_h) $(event_loop_h) $(macosx_nat_inferior_stubs_h)
+macosx-nat-inferior-util.o: $(macosxsrcdir)/macosx-nat-inferior-util.c \
+  $(defs_h) $(inferior_h) $(symfile_h) $(symtab_h) $(gdbcmd_h) \
+  $(objfiles_h) $(mach_o_h) $(macosx_nat_inferior_util_h) \
+  $(macosx_nat_dyld_process_h) $(macosx_nat_inferior_debug_h) \
+  $(macosx_nat_dyld_info_h) $(macosx_nat_dyld_path_h) \
+  $(macosx_nat_inferior_h) $(macosx_nat_mutils_h)
+macosx-nat-inferior.o: $(macosxsrcdir)/macosx-nat-inferior.c $(defs_h) \
+  $(top_h) $(inferior_h) $(target_h) $(symfile_h) $(symtab_h) \
+  $(objfiles_h) $(gdb_h) $(gdbcmd_h) $(gdbcore_h) $(gdbthread_h) \
+  $(regcache_h) $(environ_h) $(event_top_h) $(event_loop_h) $(inf_loop_h) \
+  $(gdb_stat_h) $(exceptions_h) $(checkpoint_h) $(value_h) $(gdb_regex_h) \
+  $(osabi_h) $(gdb_assert_h) $(objc_lang_h) $(bfd_h) $(macosx_nat_dyld_h) \
+  $(macosx_nat_inferior_h) $(macosx_nat_infthread_h) \
+  $(macosx_nat_inferior_debug_h) $(macosx_nat_mutils_h) \
+  $(macosx_nat_excthread_h) $(macosx_nat_sigthread_h) \
+  $(macosx_nat_threads_h) $(macosx_xdep_h) $(macosx_nat_h) \
+  $(macosx_nat_inferior_util_h) $(macosx_nat_dyld_process_h) \
+  $(macosx_nat_cfm_h) $(arm_macosx_tdep_h)
+macosx-nat-info.o: $(macosxsrcdir)/macosx-nat-info.c $(defs_h) \
+  $(symtab_h) $(gdbtypes_h) $(gdbcore_h) $(value_h) $(gdbcmd_h) \
+  $(inferior_h) $(macosx_nat_mutils_h) $(macosx_nat_inferior_h) \
+  $(macosx_nat_inferior_debug_h) $(macosx_nat_info_h)
+macosx-nat-infthread.o: $(macosxsrcdir)/macosx-nat-infthread.c $(defs_h) \
+  $(inferior_h) $(target_h) $(symfile_h) $(symtab_h) $(objfiles_h) \
+  $(gdbcmd_h) $(gdbthread_h) $(gdbcore_h) $(macosx_nat_inferior_h) \
+  $(macosx_nat_inferior_util_h) $(macosx_nat_inferior_debug_h) \
+  $(macosx_nat_mutils_h) $(macosx_nat_infthread_h) \
+  $(ppc_macosx_thread_status_h) $(arm_macosx_thread_status_h) $(arm_tdep_h)
+macosx-nat-mutils.o: $(macosxsrcdir)/macosx-nat-mutils.c $(defs_h) \
+  $(inferior_h) $(symtab_h) $(symfile_h) $(objfiles_h) $(target_h) \
+  $(terminal_h) $(gdbcmd_h) $(regcache_h) $(value_h) $(exceptions_h) \
+  $(cli_out_h) $(environ_h) $(gdbcore_h) $(dictionary_h) $(block_h) \
+  $(objc_lang_h) $(macosx_nat_mutils_h) $(macosx_nat_inferior_h) \
+  $(macosx_nat_inferior_debug_h)
+macosx-nat-sigthread.o: $(macosxsrcdir)/macosx-nat-sigthread.c $(defs_h) \
+  $(gdbcmd_h) $(event_loop_h) $(inferior_h) $(exceptions_h) \
+  $(macosx_nat_sigthread_h) $(macosx_nat_inferior_h) $(macosx_nat_mutils_h)
+macosx-nat-threads.o: $(macosxsrcdir)/macosx-nat-threads.c $(defs_h) \
+  $(inferior_h) $(target_h) $(symfile_h) $(symtab_h) $(objfiles_h) \
+  $(gdbcmd_h) $(gdbthread_h) $(macosx_nat_inferior_h) \
+  $(macosx_nat_mutils_h) $(macosx_nat_threads_h)
+macosx-nat-utils.o: $(macosxsrcdir)/macosx-nat-utils.c $(defs_h) $(top_h) \
+  $(inferior_h) $(target_h) $(symfile_h) $(symtab_h) $(objfiles_h) \
+  $(gdb_h) $(gdbcmd_h) $(gdbcore_h) $(gdbthread_h) $(regcache_h) \
+  $(environ_h) $(event_top_h) $(event_loop_h) $(inf_loop_h) $(gdb_stat_h) \
+  $(gdb_assert_h) $(exceptions_h) $(checkpoint_h) $(objc_lang_h) $(bfd_h) \
+  $(macosx_nat_inferior_debug_h) $(macosx_nat_utils_h) $(macosx_nat_dyld_h)
+macosx-nat-watchpoint.o: $(macosxsrcdir)/macosx-nat-watchpoint.c \
+  $(defs_h) $(inferior_h) $(target_h) $(symfile_h) $(symtab_h) \
+  $(objfiles_h) $(gdbcmd_h) $(gdbcore_h) $(gdbthread_h) \
+  $(macosx_nat_watchpoint_h) $(macosx_nat_dyld_h) \
+  $(macosx_nat_inferior_h) $(macosx_nat_mutils_h) \
+  $(macosx_nat_sigthread_h) $(macosx_nat_threads_h) $(macosx_xdep_h)
+macosx-nat.o: $(macosxsrcdir)/macosx-nat.c $(bfd_h) $(defs_h) \
+  $(gdbcore_h) $(serial_h) $(ser_base_h) $(ser_unix_h) $(inferior_h) \
+  $(objc_lang_h) $(infcall_h) $(macosx_nat_h) $(macosx_nat_dyld_h) \
+  $(macosx_nat_dyld_info_h) $(macosx_nat_inferior_h) \
+  $(macosx_nat_dyld_process_h)
+macosx-self-backtrace.o: $(macosxsrcdir)/macosx-self-backtrace.c \
+  $(macosx_self_backtrace_h)
+macosx-tdep.o: $(macosxsrcdir)/macosx-tdep.c $(defs_h) $(inferior_h) \
   $(target_h) $(symfile_h) $(symtab_h) $(objfiles_h) $(gdbcmd_h) \
   $(language_h) $(block_h) $(libaout_h) $(aout_aout64_h) $(complaints_h) \
   $(mach_o_h) $(objc_lang_h) $(macosx_tdep_h) $(regcache_h) $(source_h) \
@@ -3514,27 +3664,27 @@ macosx-tdep.o: $(macosx_srcdir)/macosx-tdep.c $(defs_h) $(inferior_h) \
   $(readline_tilde_h) $(arch_utils_h) $(macosx_nat_utils_h) \
   $(x86_shared_tdep_h) $(osabi_h) $(macosx_nat_dyld_h) $(gdbarch_h) \
   $(macosx_nat_infthread_h)
-macosx-xdep.o: $(macosx_srcdir)/macosx-xdep.c $(defs_h) $(inferior_h) \
+macosx-xdep.o: $(macosxsrcdir)/macosx-xdep.c $(defs_h) $(inferior_h) \
   $(target_h) $(symfile_h) $(symtab_h) $(objfiles_h) $(gdbcmd_h) \
   $(regcache_h) $(xm_macosx_h) $(macosx_xdep_h)
-pefread.o: $(macosx_srcdir)/pefread.c $(defs_h) $(symtab_h) $(gdbtypes_h) \
+pefread.o: $(macosxsrcdir)/pefread.c $(defs_h) $(symtab_h) $(gdbtypes_h) \
   $(breakpoint_h) $(bfd_h) $(symfile_h) $(objfiles_h) $(buildsym_h) \
   $(obstack_h) $(gdb_stabs_h) $(stabsread_h) $(gdbcmd_h) $(mach_o_h)
-ppc-macosx-frameinfo.o: $(macosx_srcdir)/ppc-macosx-frameinfo.c \
+ppc-macosx-frameinfo.o: $(macosxsrcdir)/ppc-macosx-frameinfo.c \
   $(ppc_macosx_regs_h) $(ppc_macosx_regnums_h) $(ppc_macosx_frameinfo_h) \
   $(ppc_macosx_tdep_h) $(defs_h) $(frame_h) $(inferior_h) $(symtab_h) \
   $(target_h) $(gdbcore_h) $(symfile_h) $(objfiles_h) $(command_h) \
   $(regcache_h) $(ppc_tdep_h)
-ppc-macosx-nat-exec.o: $(macosx_srcdir)/ppc-macosx-nat-exec.c $(defs_h) \
+ppc-macosx-nat-exec.o: $(macosxsrcdir)/ppc-macosx-nat-exec.c $(defs_h) \
   $(frame_h) $(inferior_h) $(symtab_h) $(target_h) $(gdbcore_h) \
   $(symfile_h) $(objfiles_h) $(regcache_h) $(ppc_macosx_regs_h) \
   $(ppc_macosx_regnums_h) $(ppc_macosx_thread_status_h) \
   $(macosx_nat_mutils_h) $(macosx_nat_inferior_h)
-ppc-macosx-regs.o: $(macosx_srcdir)/ppc-macosx-regs.c \
+ppc-macosx-regs.o: $(macosxsrcdir)/ppc-macosx-regs.c \
   $(ppc_macosx_regs_h) $(ppc_macosx_regnums_h) $(defs_h) $(frame_h) \
   $(inferior_h) $(symtab_h) $(target_h) $(gdbcore_h) $(symfile_h) \
   $(objfiles_h) $(regcache_h)
-ppc-macosx-tdep.o: $(macosx_srcdir)/ppc-macosx-tdep.c $(defs_h) \
+ppc-macosx-tdep.o: $(macosxsrcdir)/ppc-macosx-tdep.c $(defs_h) \
   $(frame_h) $(inferior_h) $(symtab_h) $(target_h) $(gdbcore_h) \
   $(symfile_h) $(objfiles_h) $(gdbcmd_h) $(arch_utils_h) $(floatformat_h) \
   $(gdbtypes_h) $(regcache_h) $(reggroups_h) $(frame_base_h) \
@@ -3542,14 +3692,14 @@ ppc-macosx-tdep.o: $(macosx_srcdir)/ppc-macosx-tdep.c $(defs_h) \
   $(user_regs_h) $(objfiles_h) $(libbfd_h) $(elf_bfd_h) $(dis_asm_h) \
   $(ppc_tdep_h) $(gdbarch_h) $(osabi_h) $(ppc_macosx_tdep_h) \
   $(ppc_macosx_regs_h) $(ppc_macosx_regnums_h) $(ppc_macosx_frameinfo_h)
-remote-kdp.o: $(macosx_srcdir)/remote-kdp.c $(defs_h) $(value_h) \
+remote-kdp.o: $(macosxsrcdir)/remote-kdp.c $(defs_h) $(value_h) \
   $(infcall_h) $(gdbarch_h) $(arch_utils_h) $(gdbcore_h) $(bfd_h) \
   $(mach_o_h) $(objfiles_h) $(inferior_h) $(gdbcmd_h) $(event_loop_h) \
   $(event_top_h) $(inf_loop_h) $(regcache_h) $(exceptions_h) $(osabi_h) \
   $(kdp_udp_h) $(kdp_transactions_h) $(remote_kdp_h)
-remote-mobile.o: $(macosx_srcdir)/remote-mobile.c $(defs_h) $(target_h) \
+remote-mobile.o: $(macosxsrcdir)/remote-mobile.c $(defs_h) $(target_h) \
   $(serial_h) $(ser_base_h) $(ser_unix_h)
-symread.o: $(macosx_srcdir)/symread.c $(defs_h) $(symtab_h) $(gdtypes_h) \
+symread.o: $(macosxsrcdir)/symread.c $(defs_h) $(symtab_h) $(gdtypes_h) \
   $(breakpoint_h) $(bfd_h) $(symfile_h) $(objfiles_h) $(buildsym_h) \
   $(obstack_h) $(gdb_stabs_h) $(stabsread_h) $(gdbcmd_h) $(complaints_h) \
   $(block_h) $(dictionary_h) $(readline_tilde_h) $(xsym_h) $(symread_h)

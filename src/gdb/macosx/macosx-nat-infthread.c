@@ -128,7 +128,7 @@ modify_trace_bit(thread_t thread, int value)
   return KERN_SUCCESS;
 }
 
-#elif defined (TARGET_POWERPC)
+#elif defined(TARGET_POWERPC)
 
 # include "ppc-macosx-thread-status.h"
 
@@ -156,7 +156,7 @@ modify_trace_bit(thread_t thread, int value)
 
 }
 
-#elif defined (TARGET_ARM)
+#elif defined(TARGET_ARM)
 
 # include "arm-macosx-thread-status.h"
 # include "arm-tdep.h"
@@ -219,7 +219,7 @@ modify_trace_bit(thread_t thread, int value)
 
   if (value) {
       /* Enable trace bit: */
-      arm_macosx_tdep_inf_status.macosx_half_step_pc = (CORE_ADDR)-1;
+      arm_macosx_tdep_inf_status.macosx_half_step_pc = (CORE_ADDR)-1L;
 
       /* Read the general regs first so we can get the PC: */
       gdb_arm_thread_state_t gpr;
@@ -340,7 +340,7 @@ prepare_threads_after_stop(struct macosx_inferior_status *inferior)
           kret =
             thread_info(thread_list[i], THREAD_BASIC_INFO,
 			(thread_info_t)&info, &info_count);
-          MACH_CHECK_ERROR (kret);
+          MACH_CHECK_ERROR(kret);
 
 	  if (tp->private->gdb_suspend_count > 0) {
             inferior_debug(3, "**  Resuming thread 0x%x, gdb suspend count: "
@@ -519,7 +519,7 @@ unparse_run_state(int run_state)
  * with the same port number they would see if they store away the thread id in
  * their program. It is for display purposes only. */
 thread_t
-get_application_thread_port (thread_t our_name)
+get_application_thread_port(thread_t our_name)
 {
   mach_msg_type_number_t i;
   mach_port_name_array_t names;
@@ -534,10 +534,10 @@ get_application_thread_port (thread_t our_name)
    * the port name in our port namespace, so we can use that to find the
    * thread we are looking for. Of course, we do NOT actually need another
    * right to each of these ports, so we deallocate it when we are done: */
-  ret = mach_port_names (macosx_status->task, &names, &names_count, &types,
-                   &types_count);
+  ret = mach_port_names(macosx_status->task, &names, &names_count, &types,
+                        &types_count);
   if (ret != KERN_SUCCESS) {
-      warning ("Error %d getting port names from mach_port_names", ret);
+      warning("Error %d getting port names from mach_port_names", ret);
       return (thread_t)0x0;
   }
 
@@ -577,7 +577,7 @@ struct dispatch_offsets_info {
  * from /usr/lib/libc.dylib and ignoring our defintion here: */
 #if !defined(dispatch_queue_offsets_s) && !defined(dispatch_queue_offsets) && \
     !defined(__DISPATCH_QUEUE_PRIVATE__) && !defined(__cplusplus)
-const struct dispatch_queue_offsets_s {
+extern const struct dispatch_queue_offsets_s {
   /* always add new fields at the end: */
   const uint16_t dqo_version;
   const uint16_t dqo_label;
@@ -613,7 +613,7 @@ read_dispatch_offsets(void)
                                                  NULL, NULL);
   if ((dispatch_queue_offsets == NULL)
       || (SYMBOL_VALUE_ADDRESS(dispatch_queue_offsets) == 0)
-      || (SYMBOL_VALUE_ADDRESS(dispatch_queue_offsets) == (CORE_ADDR)-1))
+      || (SYMBOL_VALUE_ADDRESS(dispatch_queue_offsets) == (CORE_ADDR)-1L))
     return NULL;
 
   dispatch_offsets = (struct dispatch_offsets_info *)
@@ -635,9 +635,8 @@ read_dispatch_offsets(void)
       return NULL;
     }
 
-  if (safe_read_memory_unsigned_integer
-       (SYMBOL_VALUE_ADDRESS (dispatch_queue_offsets) + 4, 2,
-        &dispatch_offsets->label_size) == 0)
+  if (safe_read_memory_unsigned_integer((SYMBOL_VALUE_ADDRESS(dispatch_queue_offsets) + 4),
+                                        2, &dispatch_offsets->label_size) == 0)
     {
       xfree (dispatch_offsets);
       dispatch_offsets = NULL;
@@ -710,7 +709,7 @@ get_dispatch_queue_name(CORE_ADDR dispatch_qaddr)
     {
       char *queue_buf = NULL;
       errno = 0;
-      if ((target_read_string(queue + dispatch_offsets->label_offset,
+      if ((target_read_string((queue + dispatch_offsets->label_offset),
                               &queue_buf, sizeof(namebuf) - 1, &errno) > 1)
           && (errno == 0))
         {
@@ -936,9 +935,8 @@ parse_thread(char *tidstr, int *gdb_thread_id)
 
       if (ptid_equal(ptid, minus_one_ptid))
         {
-          error
-            ("Thread ID %d not known.  Use the \"info threads\" command to\n"
-             "see the IDs of currently known threads.", num);
+          error("Thread ID %d not known.  Use the \"info threads\" command to\n"
+                "see the IDs of currently known threads.", num);
         }
     }
   else
@@ -1072,7 +1070,7 @@ thread_resume_command(char *tidstr, int from_tty)
     error("Attempt to resume a thread with suspend count of 0");
   }
 
-  kret = thread_resume (tid);
+  kret = thread_resume(tid);
 
   MACH_CHECK_ERROR(kret);
 }
@@ -1194,7 +1192,7 @@ void
 _initialize_threads(void)
 {
 #if defined(TARGET_ARM)
-  arm_macosx_tdep_inf_status.macosx_half_step_pc = (CORE_ADDR)-1;
+  arm_macosx_tdep_inf_status.macosx_half_step_pc = (CORE_ADDR)-1L;
 #endif /* TARGET_ARM */
 
   add_cmd("suspend", class_run, thread_suspend_command,

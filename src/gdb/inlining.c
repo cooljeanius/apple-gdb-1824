@@ -1481,7 +1481,7 @@ insert_pending_node (struct pending_node *node, struct pending_node **list)
    no longer valid, and to find and add any newly valid records.  */
 
 void
-inlined_function_update_call_stack (CORE_ADDR pc)
+inlined_function_update_call_stack(CORE_ADDR pc)
 {
   struct symtab *s;
   struct symtab *orig_s;
@@ -1506,7 +1506,7 @@ inlined_function_update_call_stack (CORE_ADDR pc)
   if (!dwarf2_allow_inlined_stepping)
     {
       if (global_inlined_call_stack.nelts > 0)
-	inlined_function_reinitialize_call_stack ();
+	inlined_function_reinitialize_call_stack();
       return;
     }
 
@@ -1522,8 +1522,8 @@ inlined_function_update_call_stack (CORE_ADDR pc)
      stepping_over_inlined_subroutine is on).  */
 
   if (stepping_over_inlined_subroutine
-      && stop_pc > step_range_end
-      && frame_id_eq (get_frame_id (get_current_frame ()), step_frame_id))
+      && (stop_pc > step_range_end)
+      && frame_id_eq(get_frame_id(get_current_frame()), step_frame_id))
     stepping_over_inlined_subroutine = 0;
 
   /* FIRST, remove anything in stack that no longer belongs there!
@@ -1555,13 +1555,13 @@ inlined_function_update_call_stack (CORE_ADDR pc)
       if (i == 0)
 	done = 1;
       else if ((global_inlined_call_stack.records[i].ranges
-		&& !record_ranges_contains_pc (i, pc))
+		&& !record_ranges_contains_pc(i, pc))
 	       || (!global_inlined_call_stack.records[i].ranges
-		   && (global_inlined_call_stack.records[i].start_pc > pc
+		   && ((global_inlined_call_stack.records[i].start_pc > pc)
 		       || global_inlined_call_stack.records[i].end_pc <= pc)))
 	{
-	  memset (&global_inlined_call_stack.records[i], 0,
-		  sizeof (struct inlined_call_stack_record));
+	  memset(&global_inlined_call_stack.records[i], 0,
+		 sizeof(struct inlined_call_stack_record));
 	  global_inlined_call_stack.nelts--;
 	}
       else
@@ -1578,22 +1578,27 @@ inlined_function_update_call_stack (CORE_ADDR pc)
      added to the stack.  The following code was largely lifted from
      find_pc_sect_line, in symtab.c  */
 
-  section_tmp = find_pc_overlay (pc);
-  if (pc_in_unmapped_range (pc, section_tmp))
-    pc = overlay_mapped_address (pc, section_tmp);
-  section = (struct bfd_section *) section_tmp;
+  section_tmp = find_pc_overlay(pc);
+  if (pc_in_unmapped_range(pc, section_tmp))
+    pc = overlay_mapped_address(pc, section_tmp);
+  section = (struct bfd_section *)section_tmp;
 
-  s = find_pc_sect_symtab (pc, section);
+  s = find_pc_sect_symtab(pc, section);
   orig_s = s;
+
+  if (orig_s == NULL) {
+    ; /* do nothing for now; just silence '-Wunused-but-set-variable' */
+  }
+
   if (s)
     {
-      bv = BLOCKVECTOR (s);
+      bv = BLOCKVECTOR(s);
 
       /* Look at all the symtabs that share this blockvector.
          They all have the same apriori range, that we found was right;
          but they have different line tables.  */
 
-      for ( ; s && BLOCKVECTOR (s) == bv; s = s->next)
+      for ( ; s && (BLOCKVECTOR(s) == bv); s = s->next)
 	{
 	  l = LINETABLE (s);
 	  if (!l)
@@ -1605,7 +1610,7 @@ inlined_function_update_call_stack (CORE_ADDR pc)
 	  pending_list = NULL;
 	  prev = NULL;
 	  item = l->item;
-	  if (item->pc > pc && (!alt || item->pc < alt->pc))
+	  if ((item->pc > pc) && (!alt || (item->pc < alt->pc)))
 	    {
 	      alt = item;
 	      alt_symtab = s;
@@ -1613,27 +1618,24 @@ inlined_function_update_call_stack (CORE_ADDR pc)
 
 	  for (i = 0; i < len; i++, item++)
 	    {
-	      if ((item->entry_type == INLINED_SUBROUTINE_LT_ENTRY
-		   || item->entry_type == INLINED_CALL_SITE_LT_ENTRY)
-		  && item->pc <= pc
-		  && item->end_pc > pc)
+	      if (((item->entry_type == INLINED_SUBROUTINE_LT_ENTRY)
+		   || (item->entry_type == INLINED_CALL_SITE_LT_ENTRY))
+		  && (item->pc <= pc) && (item->end_pc > pc))
 		{
 		  /* Store the item(s) in a sorted list; after all
 		     of the items for a particular pc have been
 		     collected and sorted, they get added to the
 		     call stack in the correct order.  */
 
-		  temp = (struct pending_node *) xmalloc (sizeof (struct pending_node));
+		  temp = (struct pending_node *)xmalloc(sizeof(struct pending_node));
 		  temp->entry = item;
 		  temp->s = s;
 		  temp->next = NULL;
-		  insert_pending_node (temp, &pending_list);
+		  insert_pending_node(temp, &pending_list);
 		}
 
-	      if (item->pc > pc
-		  || (item->pc == pc
-		      && prev
-		      && item->pc == prev->pc))
+	      if ((item->pc > pc) || ((item->pc == pc) && prev
+                                      && (item->pc == prev->pc)))
 		break;
 
 	      prev = item;
@@ -1648,38 +1650,35 @@ inlined_function_update_call_stack (CORE_ADDR pc)
 		best_end = 0;
 	    }
 
-	  if (best_symtab
-	      && best->line != 0
-	      && prev
-	      && prev->pc == item->pc)
+	  if (best_symtab && (best->line != 0) && prev
+              && (prev->pc == item->pc))
 	    {
 	      while (prev->pc == item->pc)
 		{
 		  prev = item;
 		  item++;
-		  if ((item->entry_type ==  INLINED_SUBROUTINE_LT_ENTRY
-		       || item->entry_type == INLINED_CALL_SITE_LT_ENTRY)
-		      && item->pc <= pc
-		      && item->end_pc > pc)
+		  if (((item->entry_type == INLINED_SUBROUTINE_LT_ENTRY)
+		       || (item->entry_type == INLINED_CALL_SITE_LT_ENTRY))
+		      && (item->pc <= pc) && (item->end_pc > pc))
 		    {
 		      /* Store the item(s) in a sorted list; after all
 			 of the items for a particular pc have been
 			 collected and sorted, they get added to the
 			 call stack in the correct order.  */
 
-		      temp = (struct pending_node *) xmalloc (sizeof (struct pending_node));
+		      temp = (struct pending_node *)xmalloc(sizeof(struct pending_node));
 		      temp->entry = item;
 		      temp->s = s;
 		      temp->next = NULL;
-		      insert_pending_node (temp, &pending_list);
+		      insert_pending_node(temp, &pending_list);
 		    }
 		}
 	      best = prev;
 	    }
 
 	  for (cur_pend = pending_list; cur_pend; cur_pend = cur_pend->next)
-	    add_item_to_inlined_subroutine_stack (cur_pend->entry, cur_pend->s,
-						  section);
+	    add_item_to_inlined_subroutine_stack(cur_pend->entry, cur_pend->s,
+						 section);
 	}
     }
 
@@ -1688,11 +1687,11 @@ inlined_function_update_call_stack (CORE_ADDR pc)
      the stack pointer should be pointing at the first real entry
      in the stack (the zeroth entry is not "real").  */
 
-  if (current_inlined_subroutine_stack_position () == 0
-      && current_inlined_subroutine_stack_size () > 0)
+  if ((current_inlined_subroutine_stack_position() == 0)
+      && (current_inlined_subroutine_stack_size() > 0))
     {
-      int i = find_correct_current_position ();
-      adjust_current_inlined_subroutine_stack_position (i);
+      int i = find_correct_current_position();
+      adjust_current_inlined_subroutine_stack_position(i);
       /* APPLE LOCAL begin remember stepping into inlined subroutine
 	 across intervening function calls.  */
       if (stepping_into_inlined_subroutine
@@ -1701,10 +1700,10 @@ inlined_function_update_call_stack (CORE_ADDR pc)
       /* APPLE LOCAL end remember stepping into inlined subroutine
 	 across intervening function calls.  */
 	{
-	  step_into_current_inlined_subroutine ();
+	  step_into_current_inlined_subroutine();
 	  stepping_into_inlined_subroutine = 0;
 	  /* APPLE LOCAL radar 6534195  */
-	  inlined_step_range_end = (CORE_ADDR) 0;
+	  inlined_step_range_end = (CORE_ADDR)0;
 	}
       else if (step_range_start && step_range_end
 	       && step_range_start != step_range_end
@@ -1723,7 +1722,7 @@ inlined_function_update_call_stack (CORE_ADDR pc)
 
   if (global_inlined_call_stack.nelts > 0)
     global_inlined_call_stack.last_inlined_pc = pc;
-  inlined_function_update_call_stack_pc (pc);
+  inlined_function_update_call_stack_pc(pc);
 }
 
 /* This function is call from check_inlined_function_calls in
@@ -2133,6 +2132,7 @@ static const struct frame_unwind inlined_frame_unwinder =
   inlined_frame_prev_register,
   NULL,
   inlined_frame_sniffer,
+  (frame_prev_pc_ftype *)NULL
 };
 
 /* Necessary data structure for creating new frame type, INLINED_FRAME  */
@@ -3347,7 +3347,7 @@ inlined_function_find_first_line (struct symtab_and_line sal)
   struct linetable_entry *item;
   struct linetable_entry *prev;
 
-  l = LINETABLE (sal.symtab);
+  l = LINETABLE(sal.symtab);
   if (l)
     {
       len = l->nitems;
@@ -3356,9 +3356,8 @@ inlined_function_find_first_line (struct symtab_and_line sal)
 	  prev = NULL;
 	  item = l->item;
 	  for (i = 0; i < len; i++, item++)
-	    if (item->line >= sal.line
-		&& item->pc >= sal.pc
-		&& item->entry_type == NORMAL_LT_ENTRY)
+	    if ((item->line >= sal.line) && (item->pc >= sal.pc)
+		&& (item->entry_type == NORMAL_LT_ENTRY))
 	      {
 		first_line = item->line;
 		break;

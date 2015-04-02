@@ -137,9 +137,9 @@ void arm_macosx_fetch_vfpv1_regs_raw(gdb_arm_thread_vfpv1_state_t *fp_regs)
 {
   int i;
   for (i = 0; i < ARM_MACOSX_NUM_VFP_REGS; i++)
-    regcache_raw_supply (current_regcache, ARM_VFP_REGNUM_S0 + i,
-			 &fp_regs->r[i]);
-  regcache_raw_supply (current_regcache, ARM_VFP_REGNUM_FPSCR, &fp_regs->fpscr);
+    regcache_raw_supply(current_regcache, ARM_VFP_REGNUM_S0 + i,
+                        &fp_regs->r[i]);
+  regcache_raw_supply(current_regcache, ARM_VFP_REGNUM_FPSCR, &fp_regs->fpscr);
 }
 
 void arm_macosx_fetch_vfpv3_regs_raw(gdb_arm_thread_vfpv3_state_t *fp_regs)
@@ -167,19 +167,19 @@ void arm_macosx_store_vfpv3_regs(gdb_arm_thread_vfpv3_state_t *fp_regs)
 {
   int i;
   for (i = 0; i < ARM_MACOSX_NUM_VFP_REGS; i++)
-    fp_regs->s[i] = collect_uint32 (ARM_VFP_REGNUM_S0 + i);
+    fp_regs->s[i] = collect_uint32(ARM_VFP_REGNUM_S0 + i);
   for (i = 0; i < ARM_MACOSX_NUM_VFPV3_REGS; i++)
-    fp_regs->d[i] = collect_uint64 (ARM_VFPV3_REGNUM_D16 + i);
-  fp_regs->fpscr = collect_uint32 (ARM_VFP_REGNUM_FPSCR);
+    fp_regs->d[i] = collect_uint64(ARM_VFPV3_REGNUM_D16 + i);
+  fp_regs->fpscr = collect_uint32(ARM_VFP_REGNUM_FPSCR);
 }
 
 void arm_macosx_store_vfpv1_regs_raw(gdb_arm_thread_vfpv1_state_t *fp_regs)
 {
   int i;
   for (i = 0; i < ARM_MACOSX_NUM_VFP_REGS; i++)
-    regcache_raw_collect (current_regcache, ARM_VFP_REGNUM_S0 + i,
-			  &fp_regs->r[i]);
-  regcache_raw_collect (current_regcache, ARM_VFP_REGNUM_FPSCR, &fp_regs->fpscr);
+    regcache_raw_collect(current_regcache, ARM_VFP_REGNUM_S0 + i,
+			 &fp_regs->r[i]);
+  regcache_raw_collect(current_regcache, ARM_VFP_REGNUM_FPSCR, &fp_regs->fpscr);
 }
 
 void arm_macosx_store_vfpv3_regs_raw(gdb_arm_thread_vfpv3_state_t *fp_regs)
@@ -314,6 +314,10 @@ void store_inferior_registers(int regno)
 
   current_pid = ptid_get_pid(inferior_ptid);
   current_thread = (thread_t)ptid_get_tid(inferior_ptid);
+
+  if (current_pid == 0) {
+    ; /* do nothing; just silence '-Wunused-but-set-variable' */
+  }
 
   validate_inferior_registers(regno);
 

@@ -4000,10 +4000,11 @@ arm_macosx_fast_show_stack(unsigned int count_limit,
 	      CORE_ADDR mcontext_addr;
 	      CORE_ADDR gpr_addr;
 	      /* We are in signal trampoline: */
-	      mcontext_addr = read_memory_unsigned_integer(fp + 104, GP_REG_SIZE);
-	      gpr_addr = mcontext_addr + EXC_STATE_SIZE;
-	      next_fp_addr = gpr_addr + (ARM_FP_REGNUM * GP_REG_SIZE);
-	      next_pc_addr = gpr_addr + (ARM_PC_REGNUM * GP_REG_SIZE);
+	      mcontext_addr = read_memory_unsigned_integer((fp + 104),
+	                                                   GP_REG_SIZE);
+	      gpr_addr = (mcontext_addr + EXC_STATE_SIZE);
+	      next_fp_addr = (gpr_addr + (ARM_FP_REGNUM * GP_REG_SIZE));
+	      next_pc_addr = (gpr_addr + (ARM_PC_REGNUM * GP_REG_SIZE));
 	    }
 	  else
 	    {
@@ -4075,7 +4076,11 @@ arm_macosx_fast_show_stack(unsigned int count_limit,
     }
 
   if (print_fun)
-    ui_out_end (uiout, ui_out_type_list);
+    ui_out_end(uiout, ui_out_type_list);
+
+  if (prev_fp == INVALID_ADDRESS) {
+    ; /* do nothing; just silence '-Wunused-but-set-variable' */
+  }
 
   *count = i;
   return success;

@@ -578,36 +578,36 @@ info_threads_command (char *arg, int from_tty)
    to restore the original thread state anyway. */
 
 void
-switch_to_thread (ptid_t ptid)
+switch_to_thread(ptid_t ptid)
 {
-  if (ptid_equal (ptid, inferior_ptid))
+  if (ptid_equal(ptid, inferior_ptid))
     return;
 
   /* APPLE LOCAL: If we switch threads, then we need to turn off
      the cleanups for calling functions on THIS thread.  */
 
-  do_hand_call_cleanups (ALL_CLEANUPS);
+  do_hand_call_cleanups(ALL_CLEANUPS);
 
-  save_thread_inlined_call_stack (inferior_ptid);
+  save_thread_inlined_call_stack(inferior_ptid);
   inferior_ptid = ptid;
-  flush_cached_frames ();
-  registers_changed ();
-  stop_pc = read_pc ();
-  restore_thread_inlined_call_stack (inferior_ptid);
+  flush_cached_frames();
+  registers_changed();
+  stop_pc = read_pc();
+  restore_thread_inlined_call_stack(inferior_ptid);
   /* APPLE LOCAL begin subroutine inlining  */
   /* If the PC has changed since the last time we updated the
      global_inlined_call_stack data, we need to verify the current
      data and possibly update it.  */
-  if (stop_pc != inlined_function_call_stack_pc ())
-    inlined_function_update_call_stack (stop_pc);
+  if (stop_pc != inlined_function_call_stack_pc())
+    inlined_function_update_call_stack(stop_pc);
   /* APPLE LOCAL end subroutine inlining  */
 
-  select_frame (get_current_frame ());
+  select_frame(get_current_frame());
 
   /* APPPLE LOCAL Finally, if the scheduler-locking is on, then we should
      reset the thread we are trying to run. */
-  if (scheduler_lock_on_p ())
-    scheduler_run_this_ptid (inferior_ptid);
+  if (scheduler_lock_on_p())
+    scheduler_run_this_ptid(inferior_ptid);
 
 }
 
@@ -794,27 +794,27 @@ thread_command (char *tidstr, int from_tty)
 			 pid_to_thread_id (inferior_ptid),
 			 target_tid_to_str (inferior_ptid));
       else
-	error (_("No stack."));
+	error(_("No stack."));
       return;
     }
 
-  gdb_thread_select (uiout, tidstr, 1, NULL);
+  gdb_thread_select(uiout, tidstr, 1, NULL);
 }
 
-extern int scheduler_lock_on ();
+extern int scheduler_lock_on(void);
 extern struct ptid scheduler_lock_ptid;
 
 static int
-do_captured_thread_select (struct ui_out *uiout,
-			   void *in_args)
+do_captured_thread_select(struct ui_out *uiout,
+			  void *in_args)
 {
   int num;
   struct thread_info *tp;
-  struct select_thread_args *args = (struct select_thread_args *) in_args;
+  struct select_thread_args *args = (struct select_thread_args *)in_args;
 
-  num = value_as_long (parse_and_eval (args->tidstr));
+  num = value_as_long(parse_and_eval(args->tidstr));
 
-  tp = find_thread_id (num);
+  tp = find_thread_id(num);
 
   if (!tp)
     error (_("Thread ID %d not known."), num);

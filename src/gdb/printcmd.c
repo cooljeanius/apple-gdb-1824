@@ -384,33 +384,33 @@ print_formatted (struct value *val, int format, int size,
    with a format.  */
 
 void
-print_scalar_formatted (const void *valaddr, struct type *type,
-			int format, int size, struct ui_file *stream)
+print_scalar_formatted(const void *valaddr, struct type *type,
+                       int format, int size, struct ui_file *stream)
 {
-  LONGEST val_long = 0;
-  unsigned int len = TYPE_LENGTH (type);
+  LONGEST val_long = 0L;
+  unsigned int len = TYPE_LENGTH(type);
 
-  if (len > sizeof(LONGEST) &&
-      (TYPE_CODE (type) == TYPE_CODE_INT
-       || TYPE_CODE (type) == TYPE_CODE_ENUM))
+  if ((len > sizeof(LONGEST)) &&
+      ((TYPE_CODE(type) == TYPE_CODE_INT)
+       || (TYPE_CODE(type) == TYPE_CODE_ENUM)))
     {
       switch (format)
 	{
 	case 'o':
-	  print_octal_chars (stream, valaddr, len);
+	  print_octal_chars(stream, valaddr, len);
 	  return;
 	case 'u':
 	case 'd':
-	  print_decimal_chars (stream, valaddr, len);
+	  print_decimal_chars(stream, valaddr, len);
 	  return;
 	case 't':
-	  print_binary_chars (stream, valaddr, len);
+	  print_binary_chars(stream, valaddr, len);
 	  return;
 	case 'x':
-	  print_hex_chars (stream, valaddr, len);
+	  print_hex_chars(stream, valaddr, len);
 	  return;
 	case 'c':
-	  print_char_chars (stream, valaddr, len);
+	  print_char_chars(stream, valaddr, len);
 	  return;
 	default:
 	  break;
@@ -420,26 +420,26 @@ print_scalar_formatted (const void *valaddr, struct type *type,
   /* APPLE LOCAL: OSType formatting */
   if (format == 'T')
     {
-      print_ostype (stream, type, (unsigned char *) valaddr);
+      print_ostype(stream, type, (unsigned char *)valaddr);
       return;
     }
 
-  if (format != 'f' && format != 'A')
-    val_long = unpack_long (type, valaddr);
+  if ((format != 'f') && (format != 'A'))
+    val_long = unpack_long(type, valaddr);
 
   /* If the value is a pointer, and pointers and addresses are not the
      same, then at this point, the value's length (in target bytes) is
-     TARGET_ADDR_BIT/TARGET_CHAR_BIT, not TYPE_LENGTH (type).  */
-  if (TYPE_CODE (type) == TYPE_CODE_PTR)
-    len = TARGET_ADDR_BIT / TARGET_CHAR_BIT;
+     TARGET_ADDR_BIT/TARGET_CHAR_BIT, not TYPE_LENGTH(type).  */
+  if (TYPE_CODE(type) == TYPE_CODE_PTR)
+    len = (TARGET_ADDR_BIT / TARGET_CHAR_BIT);
 
   /* If we are printing it as unsigned, truncate it in case it is actually
      a negative signed value (e.g. "print/u (short)-1" should print 65535
      (if shorts are 16 bits) instead of 4294967295).  */
   if (format != 'd')
     {
-      if (len < sizeof (LONGEST))
-	val_long &= ((LONGEST) 1 << HOST_CHAR_BIT * len) - 1;
+      if (len < sizeof(LONGEST))
+	val_long &= (((LONGEST)1L << HOST_CHAR_BIT * len) - 1);
     }
 
   switch (format)
@@ -448,7 +448,7 @@ print_scalar_formatted (const void *valaddr, struct type *type,
       if (!size)
 	{
 	  /* no size specified, like in print.  Print varying # of digits. */
-	  print_longest (stream, 'x', 1, val_long);
+	  print_longest(stream, 'x', 1, val_long);
 	}
       else
 	switch (size)
@@ -457,38 +457,38 @@ print_scalar_formatted (const void *valaddr, struct type *type,
 	  case 'h':
 	  case 'w':
 	  case 'g':
-	    print_longest (stream, size, 1, val_long);
+	    print_longest(stream, size, 1, val_long);
 	    break;
 	  default:
-	    error (_("Undefined output size \"%c\"."), size);
+	    error(_("Undefined output size \"%c\"."), size);
 	  }
       break;
 
     case 'd':
-      print_longest (stream, 'd', 1, val_long);
+      print_longest(stream, 'd', 1, val_long);
       break;
 
     case 'u':
-      print_longest (stream, 'u', 0, val_long);
+      print_longest(stream, 'u', 0, val_long);
       break;
 
     case 'o':
       if (val_long)
-	print_longest (stream, 'o', 1, val_long);
+	print_longest(stream, 'o', 1, val_long);
       else
-	fprintf_filtered (stream, "0");
+	fprintf_filtered(stream, "0");
       break;
 
     case 'a':
       {
-	CORE_ADDR addr = unpack_pointer (type, valaddr);
-	print_address (addr, stream);
+	CORE_ADDR addr = unpack_pointer(type, valaddr);
+	print_address(addr, stream);
       }
       break;
 
     case 'c':
-      value_print (value_from_longest (builtin_type_true_char, val_long),
-		   stream, 0, Val_pretty_default);
+      value_print(value_from_longest(builtin_type_true_char, val_long),
+		  stream, 0, Val_pretty_default);
       break;
 
     case 'f':
@@ -501,29 +501,29 @@ print_scalar_formatted (const void *valaddr, struct type *type,
          in gdb) so simply replacing it with builtin_type_float will print
          it backwards (it'll treat the bytes as a little-endian formatted
          floating point value).  */
-      if (TYPE_CODE (type) != TYPE_CODE_FLT)
+      if (TYPE_CODE(type) != TYPE_CODE_FLT)
         {
-          if (len == TYPE_LENGTH (builtin_type_float))
+          if (len == TYPE_LENGTH(builtin_type_float))
             type = builtin_type_float;
-          else if (len == TYPE_LENGTH (builtin_type_double))
+          else if (len == TYPE_LENGTH(builtin_type_double))
             type = builtin_type_double;
-          else if (len == TYPE_LENGTH (builtin_type_long_double))
+          else if (len == TYPE_LENGTH(builtin_type_long_double))
             type = builtin_type_long_double;
         }
       if (format == 'A')
-        print_floating_in_hex (valaddr, type, stream);
+        print_floating_in_hex(valaddr, type, stream);
       else
-        print_floating (valaddr, type, stream);
+        print_floating(valaddr, type, stream);
       break;
 
     case 0:
-      internal_error (__FILE__, __LINE__, _("failed internal consistency check"));
+      internal_error(__FILE__, __LINE__, _("failed internal consistency check"));
 
     case 't':
       /* Binary; 't' stands for "two".  */
       {
-	char bits[8 * (sizeof val_long) + 1];
-	char buf[8 * (sizeof val_long) + 32];
+	char bits[8 * (sizeof(val_long)) + 1];
+	char buf[8 * (sizeof(val_long)) + 32];
 	char *cp = bits;
 	int width;
 
@@ -614,19 +614,20 @@ print_address_symbolic (CORE_ADDR addr, struct ui_file *stream, int do_demangle,
 
   int addr_bit = TARGET_ADDR_BIT;
 
-  if (addr_bit < (sizeof (CORE_ADDR) * HOST_CHAR_BIT))
-    addr &= ((CORE_ADDR) 1 << addr_bit) - 1;
+  if (addr_bit < (sizeof(CORE_ADDR) * HOST_CHAR_BIT))
+    addr &= (((CORE_ADDR)1UL << addr_bit) - 1);
   /* APPLE LOCAL end */
 
-  make_cleanup (free_current_contents, &filename);
+  make_cleanup(free_current_contents, &filename);
 
-  if (build_address_symbolic (addr, do_demangle, &name, &offset, &filename, &line, &unmapped))
+  if (build_address_symbolic(addr, do_demangle, &name, &offset, &filename,
+                             &line, &unmapped))
     {
-      do_cleanups (cleanup_chain);
+      do_cleanups(cleanup_chain);
       return;
     }
 
-  fputs_filtered (leadin, stream);
+  fputs_filtered(leadin, stream);
   if (unmapped)
     fputs_filtered ("<*", stream);
   else
@@ -761,17 +762,17 @@ build_address_symbolic (CORE_ADDR addr,  /* IN */
      CORE_ADDR math, we ignore this test and print the offset,
      because addr+max_symbolic_offset has wrapped through the end
      of the address space back to the beginning, giving bogus comparison.  */
-  if (addr > name_location + max_symbolic_offset
-      && name_location + max_symbolic_offset > name_location)
+  if ((addr > (name_location + max_symbolic_offset))
+      && ((name_location + max_symbolic_offset) > name_location))
     return 1;
 
-  *offset = addr - name_location;
+  *offset = (addr - name_location);
 
-  *name = xstrdup (name_temp);
-  /* APPLE LOCAL: Truncate the name in the disassembly output  */
+  *name = xstrdup(name_temp);
+  /* APPLE LOCAL: Truncate the name in the disassembly output: */
   if (disassembly_name_length >= 0)
     {
-      if (strlen (*name) > disassembly_name_length)
+      if (strlen(*name) > disassembly_name_length)
 	(*name)[disassembly_name_length] = '\0';
     }
   /* END APPLE LOCAL */
@@ -780,7 +781,7 @@ build_address_symbolic (CORE_ADDR addr,  /* IN */
     {
       struct symtab_and_line sal;
 
-      sal = find_pc_sect_line (addr, section, 0);
+      sal = find_pc_sect_line(addr, section, 0);
 
       if (sal.symtab)
 	{
@@ -804,18 +805,18 @@ build_address_symbolic (CORE_ADDR addr,  /* IN */
 /* Print address ADDR on STREAM.  USE_LOCAL means the same thing as for
    print_longest.  */
 void
-deprecated_print_address_numeric (CORE_ADDR addr, int use_local,
-				  struct ui_file *stream)
+deprecated_print_address_numeric(CORE_ADDR addr, int use_local,
+				 struct ui_file *stream)
 {
   if (use_local)
-    fputs_filtered (paddress (addr), stream);
+    fputs_filtered(paddress(addr), stream);
   else
     {
       int addr_bit = TARGET_ADDR_BIT;
 
-      if (addr_bit < (sizeof (CORE_ADDR) * HOST_CHAR_BIT))
-	addr &= ((CORE_ADDR) 1 << addr_bit) - 1;
-      print_longest (stream, 'x', 0, (ULONGEST) addr);
+      if (addr_bit < (sizeof(CORE_ADDR) * HOST_CHAR_BIT))
+	addr &= (((CORE_ADDR)1UL << addr_bit) - 1);
+      print_longest(stream, 'x', 0, (ULONGEST)addr);
     }
 }
 
@@ -1061,25 +1062,26 @@ print_command_1 (char *exp, int inspect, int voidprint)
 }
 
 static void
-print_command (char *exp, int from_tty)
+print_command(char *exp, int from_tty)
 {
-  print_command_1 (exp, 0, 1);
+  print_command_1(exp, 0, 1);
 }
 
-/* Same as print, except in epoch, it gets its own window */
-static void
-inspect_command (char *exp, int from_tty)
-{
-  extern int epoch_interface;
+/* This is up here for '-Wnested-externs': */
+extern int epoch_interface;
 
-  print_command_1 (exp, epoch_interface, 1);
+/* Same as print, except in epoch, it gets its own window: */
+static void
+inspect_command(char *exp, int from_tty)
+{
+  print_command_1(exp, epoch_interface, 1);
 }
 
-/* Same as print, except it doesn't print void results. */
+/* Same as print, except it does NOT print void results: */
 static void
-call_command (char *exp, int from_tty)
+call_command(char *exp, int from_tty)
 {
-  print_command_1 (exp, 0, 0);
+  print_command_1(exp, 0, 0);
 }
 
 void
@@ -1889,16 +1891,25 @@ disable_display_command (char *args, int from_tty)
    specified by a struct symbol.  */
 
 void
-print_variable_value (struct symbol *var, struct frame_info *frame,
-		      struct ui_file *stream)
+print_variable_value(struct symbol *var, struct frame_info *frame,
+		     struct ui_file *stream)
 {
-  struct value *val = read_var_value (var, frame);
+  struct value *val = read_var_value(var, frame);
 
-  value_print (val, stream, 0, Val_pretty_default);
+  value_print(val, stream, 0, Val_pretty_default);
 }
 
+/* A comment in Makefile.in mentions these warnings being a problem in this
+ * file, so just ignore them for now: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wformat-nonliteral"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 static void
-printf_command (char *arg, int from_tty)
+printf_command(char *arg, int from_tty)
 {
   char *f = NULL;
   char *s = arg;
@@ -1910,26 +1921,26 @@ printf_command (char *arg, int from_tty)
   int allocated_args = 20;
   struct cleanup *old_cleanups;
 
-  val_args = (struct value **) xmalloc (allocated_args
-					* sizeof (struct value *));
-  old_cleanups = make_cleanup (free_current_contents, &val_args);
-  target_setup_safe_print (NULL);
+  val_args = (struct value **)xmalloc(allocated_args
+                                      * sizeof(struct value *));
+  old_cleanups = make_cleanup(free_current_contents, &val_args);
+  target_setup_safe_print(NULL);
 
   if (s == 0)
-    error_no_arg (_("format-control string and values to print"));
+    error_no_arg(_("format-control string and values to print"));
 
   /* Skip white space before format string */
-  while (*s == ' ' || *s == '\t')
+  while ((*s == ' ') || (*s == '\t'))
     s++;
 
   /* A format string should follow, enveloped in double quotes */
   if (*s++ != '"')
-    error (_("Bad format string, missing '\"'."));
+    error(_("Bad format string, missing '\"'."));
 
   /* Parse the format-control string and copy it into the string STRING,
      processing some kinds of escape sequence.  */
 
-  f = string = (char *) alloca (strlen (s) + 1);
+  f = string = (char *)alloca(strlen(s) + 1UL);
 
   while (*s != '"')
     {
@@ -1937,7 +1948,7 @@ printf_command (char *arg, int from_tty)
       switch (c)
 	{
 	case '\0':
-	  error (_("Bad format string, non-terminated '\"'."));
+	  error(_("Bad format string, non-terminated '\"'."));
 
 	case '\\':
 	  switch (c = *s++)
@@ -1971,8 +1982,8 @@ printf_command (char *arg, int from_tty)
 	      break;
 	    default:
 	      /* ??? TODO: handle other escape sequences */
-	      error (_("Unrecognized escape character \\%c in format string."),
-		     c);
+	      error(_("Unrecognized escape character \\%c in format string."),
+		    c);
 	    }
 	  break;
 
@@ -2016,7 +2027,7 @@ printf_command (char *arg, int from_tty)
     int lcount;
     int i;
 
-    argclass = (enum argclass *) alloca (strlen (s) * sizeof *argclass);
+    argclass = (enum argclass *)alloca(strlen(s) * sizeof(*argclass));
     nargs_wanted = 0;
     f = string;
     last_arg = string;
@@ -2024,9 +2035,9 @@ printf_command (char *arg, int from_tty)
       if (*f++ == '%')
 	{
 	  lcount = 0;
-	  while (strchr ("0123456789.hlL-+ #", *f))
+	  while (strchr("0123456789.hlL-+ #", *f))
 	    {
-	      if (*f == 'l' || *f == 'L')
+	      if ((*f == 'l') || (*f == 'L'))
 		lcount++;
 	      f++;
 	    }
@@ -2046,10 +2057,10 @@ printf_command (char *arg, int from_tty)
 	      this_argclass = pointer_arg;
               break;
 	    case '*':
-	      error (_("`*' not supported for precision or width in printf"));
+	      error(_("`*' not supported for precision or width in printf"));
 
 	    case 'n':
-	      error (_("Format specifier `n' not supported in printf"));
+	      error(_("Format specifier `n' not supported in printf"));
 
 	    case '%':
 	      this_argclass = no_arg;
@@ -2065,8 +2076,8 @@ printf_command (char *arg, int from_tty)
 	  f++;
 	  if (this_argclass != no_arg)
 	    {
-	      strncpy (current_substring, last_arg, f - last_arg);
-	      current_substring += f - last_arg;
+	      strncpy(current_substring, last_arg, (f - last_arg));
+	      current_substring += (f - last_arg);
 	      *current_substring++ = '\0';
 	      last_arg = f;
 	      argclass[nargs_wanted++] = this_argclass;
@@ -2080,22 +2091,22 @@ printf_command (char *arg, int from_tty)
       {
 	char *s1;
 	if (nargs == allocated_args)
-	  val_args = (struct value **) xrealloc ((char *) val_args,
-						 (allocated_args *= 2)
-						 * sizeof (struct value *));
+	  val_args = (struct value **)xrealloc((char *)val_args,
+                                               (allocated_args *= 2)
+                                               * sizeof(struct value *));
 	s1 = s;
-	val_args[nargs] = parse_to_comma_and_eval (&s1);
+	val_args[nargs] = parse_to_comma_and_eval(&s1);
 
 	/* If format string wants a float, unchecked-convert the value to
 	   floating point of the same size */
 
 	if (argclass[nargs] == double_arg)
 	  {
-	    struct type *type = value_type (val_args[nargs]);
-	    if (TYPE_LENGTH (type) == sizeof (float))
-	      deprecated_set_value_type (val_args[nargs], builtin_type_float);
-	    if (TYPE_LENGTH (type) == sizeof (double))
-	      deprecated_set_value_type (val_args[nargs], builtin_type_double);
+	    struct type *type = value_type(val_args[nargs]);
+	    if (TYPE_LENGTH(type) == sizeof(float))
+	      deprecated_set_value_type(val_args[nargs], builtin_type_float);
+	    if (TYPE_LENGTH(type) == sizeof(double))
+	      deprecated_set_value_type(val_args[nargs], builtin_type_double);
 	  }
 	nargs++;
 	s = s1;
@@ -2104,9 +2115,9 @@ printf_command (char *arg, int from_tty)
       }
 
     if (nargs != nargs_wanted)
-      error (_("Wrong number of arguments for specified format-string"));
+      error(_("Wrong number of arguments for specified format-string"));
 
-    /* Now actually print them.  */
+    /* Now actually print them: */
     current_substring = substrings;
     for (i = 0; i < nargs; i++)
       {
@@ -2117,9 +2128,9 @@ printf_command (char *arg, int from_tty)
 	      char *str;
 	      CORE_ADDR tem;
 	      int j;
-	      tem = value_as_address (val_args[i]);
+	      tem = value_as_address(val_args[i]);
 
-	      /* This is a %s argument.  Find the length of the string.  */
+	      /* This is a %s argument.  Find the length of the string: */
 	      for (j = 0;; j++)
 		{
 		  char c;
@@ -2145,44 +2156,51 @@ printf_command (char *arg, int from_tty)
 	      break;
 	    }
 	  case long_long_arg:
-#if defined (CC_HAS_LONG_LONG) && defined (PRINTF_HAS_LONG_LONG)
+#if defined(CC_HAS_LONG_LONG) && defined(PRINTF_HAS_LONG_LONG)
 	    {
-	      long long val = value_as_long (val_args[i]);
-	      printf_filtered (current_substring, val);
+	      long long val = value_as_long(val_args[i]);
+	      printf_filtered(current_substring, val);
 	      break;
 	    }
 #else
-	    error (_("long long not supported in printf"));
-#endif
+	    error(_("long long not supported in printf"));
+#endif /* CC_HAS_LONG_LONG && PRINTF_HAS_LONG_LONG */
 	  case int_arg:
 	    {
 	      /* FIXME: there should be separate int_arg and long_arg.  */
-	      long val = value_as_long (val_args[i]);
-	      printf_filtered (current_substring, val);
+	      long val = value_as_long(val_args[i]);
+	      printf_filtered(current_substring, val);
 	      break;
 	    }
 	  case pointer_arg:
 	    {
 	      /* APPLE LOCAL: Handle "%p".  */
-	      CORE_ADDR val = value_as_address (val_args[i]);
-	      printf_filtered (current_substring, val);
+	      CORE_ADDR val = value_as_address(val_args[i]);
+	      printf_filtered(current_substring, val);
 	      break;
 	    }
 	  default:		/* purecov: deadcode */
-	    error (_("internal error in printf_command"));		/* purecov: deadcode */
+	    error(_("internal error in printf_command")); /* purecov: deadcode */
 	  }
-	/* Skip to the next substring.  */
-	current_substring += strlen (current_substring) + 1;
+	/* Skip to the next substring: */
+	current_substring += (strlen(current_substring) + 1);
       }
     /* Print the portion of the format string after the last argument.  */
-    puts_filtered (last_arg);
+    puts_filtered(last_arg);
   }
-  do_cleanups (old_cleanups);
+  do_cleanups(old_cleanups);
 }
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* APPLE LOCAL: invoke-block */
 static void
-invoke_block_command (char *args, int from_tty)
+invoke_block_command(char *args, int from_tty)
 {
   char **argv;
   struct cleanup *argv_cleanup;

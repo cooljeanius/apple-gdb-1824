@@ -52,7 +52,7 @@
 
 extern int child_suppress_run;
 
-extern void _initialize_hpux_thread (void);
+extern void _initialize_hpux_thread(void);
 
 struct string_map
   {
@@ -452,7 +452,7 @@ hpux_thread_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len,
 
   inferior_ptid = main_ptid;
 
-  retval = 
+  retval =
     deprecated_child_ops.deprecated_xfer_memory (memaddr, myaddr, len, dowrite, attribs, target);
 
   do_cleanups (old_chain);
@@ -506,7 +506,7 @@ hpux_thread_create_inferior (char *exec_file, char *allargs, char **env,
    those variables don't show up until the library gets mapped and the symbol
    table is read in.  */
 
-/* This new_objfile event is now managed by a chained function pointer. 
+/* This new_objfile event is now managed by a chained function pointer.
  * It is the callee's responsability to call the next client on the chain.
  */
 

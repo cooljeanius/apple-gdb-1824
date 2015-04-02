@@ -199,7 +199,7 @@ look_up_sigtramp_addr_range(void **sigtramp_start, void **sigtramp_end)
                                 can be quite long.  */
 
 char **
-gdb_self_backtrace_symbols (void **addrbuf, int num_of_addrs)
+gdb_self_backtrace_symbols(void **addrbuf, int num_of_addrs)
 {
   int count = 0;
   char *buf;

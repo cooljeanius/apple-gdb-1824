@@ -58,7 +58,6 @@ struct dyld_cache_range
 
 struct macosx_dyld_thread_status
 {
-
   CORE_ADDR dyld_image_infos;
   unsigned long dyld_version;
   CORE_ADDR dyld_notify;
@@ -80,7 +79,7 @@ struct macosx_dyld_thread_status
   CORE_ADDR dyld_slide;
   const char *dyld_name;
 
-  /* The dyld mach header as found in inferior memory.  */
+  /* The dyld mach header as found in inferior memory: */
   struct mach_header dyld_mem_header;
   /* When we are attaching to a process and dyld has slid (e.g. when attaching
      to something running under Rosetta translation, there is a native dyld

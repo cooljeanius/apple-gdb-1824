@@ -331,7 +331,7 @@ macosx_inferior_resume_ptrace(macosx_inferior_status *s, unsigned int thread,
   if ((s->stopped_in_ptrace && (!s->stopped_in_softexc))
       || (val == PTRACE_DETACH))
     {
-      if (call_ptrace(val, s->pid, (PTRACE_ARG3_TYPE) 1, nsignal) != 0)
+      if (call_ptrace(val, s->pid, (PTRACE_ARG3_TYPE)1, nsignal) != 0)
         warning("Error calling ptrace (%s (0x%lx), %d, %d, %d): %s",
                 ptrace_request_unparse(val), (unsigned long)val,
                 s->pid, 1, nsignal, strerror(errno));

@@ -43,6 +43,9 @@
 
 #include <mach/mach_vm.h>
 
+/* TODO: convert references to HPUX in this file to refer to Mac OS X
+ * instead, when relevant... */
+
 extern macosx_inferior_status *macosx_status;
 
 /* Our implementation of hardware watchpoints involves making memory
@@ -107,7 +110,7 @@ require_memory_page_dictionary(void)
 
   for (i = 0; i < MEMORY_PAGE_DICTIONARY_BUCKET_COUNT; i++)
     {
-      memory_page_dictionary.buckets[i].page_start = (CORE_ADDR) 0;
+      memory_page_dictionary.buckets[i].page_start = (CORE_ADDR)0UL;
       memory_page_dictionary.buckets[i].reference_count = 0;
       memory_page_dictionary.buckets[i].next = NULL;
       memory_page_dictionary.buckets[i].previous = NULL;
@@ -118,7 +121,7 @@ require_memory_page_dictionary(void)
  *
  * Returns the original permissions of the page: */
 static int
-write_protect_page(int pid, CORE_ADDR page_start)
+write_protect_page(int pid ATTRIBUTE_UNUSED, CORE_ADDR page_start)
 {
   mach_vm_address_t r_start;
   mach_vm_size_t r_size;
@@ -143,9 +146,8 @@ write_protect_page(int pid, CORE_ADDR page_start)
   if (memory_page_dictionary.page_protections_allowed)
     {
 
-      kret =
-        mach_vm_protect(macosx_status->task, r_start, 4096, 0,
-                        (r_data.protection & ~VM_PROT_WRITE));
+      kret = mach_vm_protect(macosx_status->task, r_start, 4096, 0,
+                             (r_data.protection & ~VM_PROT_WRITE));
       if (kret != KERN_SUCCESS)
         return -1;
     }
@@ -156,12 +158,17 @@ write_protect_page(int pid, CORE_ADDR page_start)
 /* Unwrite-protect the memory page that starts at this address, restoring
  * (what we must assume are) its original permissions: */
 static void
-unwrite_protect_page(int pid, CORE_ADDR page_start, int original_permissions)
+unwrite_protect_page(int pid ATTRIBUTE_UNUSED, CORE_ADDR page_start,
+                     int original_permissions)
 {
   kern_return_t kret;
-  kret =
-    mach_vm_protect(macosx_status->task, page_start, 4096, 0,
-                    original_permissions);
+  kret = mach_vm_protect(macosx_status->task, page_start, 4096, 0,
+                         original_permissions);
+
+  /* This conditional is just to silence '-Wunused-but-set-variable': */
+  if (kret != KERN_SUCCESS) {
+    return;
+  }
 }
 
 
@@ -293,6 +300,10 @@ hppa_insert_hw_watchpoint(int pid, CORE_ADDR start, LONGEST len, int type)
 #if 0
   if (dictionary_was_empty)
     hppa_enable_syscall_events(pid);
+#else
+  if (dictionary_was_empty) {
+    ; /* do nothing; just silence '-Wunused-but-set-variable' */
+  }
 #endif /* 0 */
 
   return 1;
@@ -354,6 +365,10 @@ hppa_remove_hw_watchpoint(int pid, CORE_ADDR start, LONGEST len,
 #if 0
   if (dictionary_is_empty && memory_page_dictionary.page_protections_allowed)
     hppa_disable_syscall_events(pid);
+#else
+  if (dictionary_is_empty) {
+    ; /* do nothing; just silence '-Wunused-but-set-variable' */
+  }
 #endif /* 0 */
 
   return 1;
@@ -370,13 +385,15 @@ hppa_remove_hw_watchpoint(int pid, CORE_ADDR start, LONGEST len,
    hardware support.
  */
 int
-macosx_can_use_hw_watchpoint(int type, int cnt, int ot)
+macosx_can_use_hw_watchpoint(int type, int cnt ATTRIBUTE_UNUSED,
+                             int ot ATTRIBUTE_UNUSED)
 {
   return (type == bp_hardware_watchpoint);
 }
 
 int
-macosx_region_ok_for_hw_watchpoint(CORE_ADDR start, LONGEST len)
+macosx_region_ok_for_hw_watchpoint(CORE_ADDR start ATTRIBUTE_UNUSED,
+                                   LONGEST len ATTRIBUTE_UNUSED)
 {
   return 1;
 }
@@ -403,8 +420,8 @@ static memory_page_t *
 get_dictionary_entry_of_page(int pid, CORE_ADDR page_start)
 {
   int bucket;
-  memory_page_t *page = NULL;
-  memory_page_t *previous_page = NULL;
+  memory_page_t *page = (memory_page_t *)NULL;
+  memory_page_t *previous_page = (memory_page_t *)NULL;
 
   /* We are going to be using the dictionary now, than-kew: */
   require_memory_page_dictionary();
@@ -458,7 +475,7 @@ remove_dictionary_entry_of_page(int pid, memory_page_t * page)
     page->next->previous = page->previous;
 
   /* Just in case someone retains a handle to this after it is freed: */
-  page->page_start = (CORE_ADDR)0;
+  page->page_start = (CORE_ADDR)0UL;
 
   memory_page_dictionary.page_count--;
 
@@ -482,11 +499,10 @@ int
 macosx_stopped_by_watchpoint(struct target_waitstatus *w, int stop_signal,
                              int stepped_after_stopped_by_watchpoint)
 {
-  return
-    ((w->kind == TARGET_WAITKIND_STOPPED)
-     && (stop_signal == TARGET_EXC_BAD_ACCESS)
-     && (!stepped_after_stopped_by_watchpoint)
-     && bpstat_have_active_hw_watchpoints());
+  return ((w->kind == TARGET_WAITKIND_STOPPED)
+          && (stop_signal == TARGET_EXC_BAD_ACCESS)
+          && (!stepped_after_stopped_by_watchpoint)
+          && bpstat_have_active_hw_watchpoints());
 }
 
 void

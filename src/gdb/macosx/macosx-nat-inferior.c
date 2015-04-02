@@ -1248,18 +1248,24 @@ macosx_check_new_threads(thread_array_t thread_list, unsigned int nthreads)
 */
 
 static void
-macosx_child_stop (void)
+macosx_child_stop(void)
 {
-  pid_t pid = PIDGET (inferior_ptid);
+  pid_t pid = PIDGET(inferior_ptid);
   int ret;
 
-  ret = kill (pid, SIGINT);
+  ret = kill(pid, SIGINT);
+
+  if (ret == -1) {
+    warning("Unable to kill process-id %d: %s (%d).\n",
+            pid, strerror(errno), errno);
+    /* If we got here, errno should be one of EINVAL, EPERM, or ESRCH */
+  }
 }
 
 static void
-macosx_child_resume (ptid_t ptid, int step, enum target_signal signal)
+macosx_child_resume(ptid_t ptid, int step, enum target_signal signal)
 {
-  int nsignal = target_signal_to_host (signal);
+  int nsignal = target_signal_to_host(signal);
   struct target_waitstatus status;
   int stop_others = 1;
   int pid;
@@ -1267,19 +1273,23 @@ macosx_child_resume (ptid_t ptid, int step, enum target_signal signal)
 
   status.code = -1;
 
-  if (ptid_equal (ptid, minus_one_ptid))
+  if (ptid_equal(ptid, minus_one_ptid))
     {
       ptid = inferior_ptid;
       stop_others = 0;
     }
 
-  pid = ptid_get_pid (ptid);
-  thread = ptid_get_tid (ptid);
+  pid = ptid_get_pid(ptid);
+  thread = ptid_get_tid(ptid);
 
-  CHECK_FATAL (macosx_status != NULL);
+  if (pid == 0) {
+    ; /* should probably do something; right now just silence a warning */
+  }
 
-  macosx_inferior_check_stopped (macosx_status);
-  if (!macosx_inferior_valid (macosx_status))
+  CHECK_FATAL(macosx_status != NULL);
+
+  macosx_inferior_check_stopped(macosx_status);
+  if (!macosx_inferior_valid(macosx_status))
     return;
 
   /* Check for pending events.  If we find any, then we will NOT really resume,
@@ -1287,42 +1297,42 @@ macosx_child_resume (ptid_t ptid, int step, enum target_signal signal)
      queue, and post it to the gdb event queue, and then "pretend" that we
      have in fact resumed. */
 
-  inferior_debug (2, "macosx_child_resume: checking for pending events\n");
+  inferior_debug(2, "macosx_child_resume: checking for pending events\n");
   status.kind = TARGET_WAITKIND_SPURIOUS;
-  macosx_process_events (macosx_status, &status, 0, 0);
+  macosx_process_events(macosx_status, &status, 0, 0);
 
-  inferior_debug (1, "macosx_child_resume: %s process with signal %d\n",
-                  step ? "stepping" : "continuing", nsignal);
+  inferior_debug(1, "macosx_child_resume: %s process with signal %d\n",
+                 (step ? "stepping" : "continuing"), nsignal);
 
-  if (macosx_post_pending_event ())
+  if (macosx_post_pending_event())
     {
       /* QUESTION: Do I need to lie about target_executing here? */
       macosx_fake_resume = 1;
-      if (target_is_async_p ())
+      if (target_is_async_p())
         target_executing = 1;
       return;
     }
 
   if (macosx_status->stopped_in_ptrace || macosx_status->stopped_in_softexc)
     {
-      macosx_inferior_resume_ptrace (macosx_status, thread, nsignal,
-                                     PTRACE_CONT);
+      macosx_inferior_resume_ptrace(macosx_status, thread, nsignal,
+                                    PTRACE_CONT);
     }
 
-  if (!macosx_inferior_valid (macosx_status))
+  if (!macosx_inferior_valid(macosx_status))
     return;
 
   if (step)
-    prepare_threads_before_run (macosx_status, step, thread, 1);
+    prepare_threads_before_run(macosx_status, step, thread, 1);
   else
-    prepare_threads_before_run (macosx_status, 0, thread, stop_others);
+    prepare_threads_before_run(macosx_status, 0, thread, stop_others);
 
-  macosx_inferior_resume_mach (macosx_status, -1);
+  macosx_inferior_resume_mach(macosx_status, -1);
 
-  if (target_can_async_p ())
-    target_async (inferior_event_handler, 0);
+  if (target_can_async_p())
+    target_async(inferior_event_handler, 0);
 
-  if (target_is_async_p ())
+  if (target_is_async_p())
     target_executing = 1;
 }
 
@@ -1584,21 +1594,20 @@ macosx_lookup_task_local (char *pid_str, int pid, task_t * ptask, int *ppid,
              ret[0]);
         }
       tmp++;
-      lpid = strtoul (tmp, &tmp2, 10);
-      if (!isdigit (*tmp) || (*tmp2 != '\0'))
+      lpid = strtoul(tmp, &tmp2, 10);
+      if (!isdigit(*tmp) || (*tmp2 != '\0'))
         {
-          error
-            ("Unable to parse process-specifier \"%s\" (does not contain process-id)",
-             ret[0]);
+          error("Unable to parse process-specifier \"%s\" (does not contain process-id)",
+                ret[0]);
         }
       if ((lpid > INT_MAX) || ((lpid == ULONG_MAX) && (errno == ERANGE)))
         {
-          error ("Unable to parse process-id \"%s\" (integer overflow).",
-                 ret[0]);
+          error("Unable to parse process-id \"%s\" (integer overflow).",
+                ret[0]);
         }
       pid = lpid;
 
-      kret = task_for_pid (mach_task_self (), pid, &itask);
+      kret = task_for_pid(mach_task_self(), pid, &itask);
       if (kret != KERN_SUCCESS)
 	{
 	  if (macosx_get_task_for_pid_rights () == 1)
@@ -1787,6 +1796,9 @@ macosx_lookup_task (char *args, task_t *ptask, int *ppid)
 }
 
 
+/* Used in the following function; moved up here for '-Wnested-externs': */
+extern char *dyld_symbols_prefix;
+
 static void
 macosx_child_attach(char *args, int from_tty ATTRIBUTE_UNUSED)
 {
@@ -1839,7 +1851,7 @@ macosx_child_attach(char *args, int from_tty ATTRIBUTE_UNUSED)
 
   /* A native (i386) gdb trying to attach to a translated (ppc) app will
      result in a gdb crash.  Let us flag it as an error instead.  */
-  if ((is_pid_classic(getpid()) == 0) && (is_pid_classic (pid) == 1))
+  if ((is_pid_classic(getpid()) == 0) && (is_pid_classic(pid) == 1))
     warning("Attempting to attach to a PPC process with an i386 "
             "native gdb - attach will not succeed.");
 
@@ -1975,7 +1987,6 @@ macosx_child_attach(char *args, int from_tty ATTRIBUTE_UNUSED)
      relying on the fact that it is currently _dyld_start. Yecch...
      But I cannot think of anything better to do.  */
   {
-    extern char *dyld_symbols_prefix;
     int result;
     char *name;
     CORE_ADDR addr;
@@ -2123,7 +2134,7 @@ macosx_kill_inferior(void *arg)
       if (call_ptrace(PTRACE_KILL, macosx_status->pid, 0, 0) != 0)
         {
           error("macosx_child_detach: ptrace (%d, %d, %d, %d): %s",
-                PTRACE_KILL, macosx_status->pid, 0, 0, strerror (errno));
+                PTRACE_KILL, macosx_status->pid, 0, 0, strerror(errno));
         }
       macosx_status->stopped_in_ptrace = 0;
       macosx_status->stopped_in_softexc = 0;
@@ -2563,7 +2574,7 @@ macosx_get_task_for_pid_rights(void)
 {
   OSStatus stat;
   AuthorizationItem taskport_item[] = {
-    { "system.privilege.taskport.debug" }
+    { "system.privilege.taskport.debug", 0UL, NULL, 0U }
   };
   AuthorizationRights rights = { 1, taskport_item }, *out_rights = NULL;
   AuthorizationRef author;
@@ -2606,9 +2617,9 @@ macosx_get_task_for_pid_rights(void)
       char *login_name;
       char entered_login[256];
       AuthorizationItem auth_items[] = {
-	{ kAuthorizationEnvironmentUsername },
-	{ kAuthorizationEnvironmentPassword },
-	{ kAuthorizationEnvironmentShared }
+	{ kAuthorizationEnvironmentUsername, 0UL, NULL, 0U },
+	{ kAuthorizationEnvironmentPassword, 0UL, NULL, 0U },
+	{ kAuthorizationEnvironmentShared, 0UL, NULL, 0U }
       };
       AuthorizationEnvironment env = { 3, auth_items };
       /* However, if we are running under the mi, I cannot do hidden
@@ -2762,38 +2773,38 @@ macosx_get_thread_name (ptid_t ptid)
    reused on subsequent calls.  */
 
 static char *
-macosx_get_thread_id_str (ptid_t ptid)
+macosx_get_thread_id_str(ptid_t ptid)
 {
   static char buf[128];
   struct thread_info *tp;
 
-  tp = find_thread_pid (ptid);
-  if (tp->private == NULL || tp->private->app_thread_port == 0)
+  tp = find_thread_pid(ptid);
+  if ((tp->private == NULL) || (tp->private->app_thread_port == 0))
     {
-      thread_t thread = ptid_get_tid (ptid);
-      sprintf (buf, "local thread 0x%lx", (unsigned long) thread);
+      thread_t thread = ptid_get_tid(ptid);
+      sprintf(buf, "local thread 0x%lx", (unsigned long)thread);
       return buf;
     }
 
-  sprintf (buf, "port# 0x%s", paddr_nz (tp->private->app_thread_port));
+  sprintf(buf, "port# 0x%s", paddr_nz(tp->private->app_thread_port));
 
   return buf;
 }
 
 static int
-macosx_child_thread_alive (ptid_t ptid)
+macosx_child_thread_alive(ptid_t ptid)
 {
-  return macosx_thread_valid (macosx_status->task, ptid_get_tid (ptid));
+  return macosx_thread_valid(macosx_status->task, ptid_get_tid(ptid));
 }
 
 void
-macosx_create_inferior_for_task (struct macosx_inferior_status *inferior,
-                                 task_t task, int pid)
+macosx_create_inferior_for_task(struct macosx_inferior_status *inferior,
+                                task_t task, int pid)
 {
-  CHECK_FATAL (inferior != NULL);
+  CHECK_FATAL(inferior != NULL);
 
-  macosx_inferior_destroy (inferior);
-  macosx_inferior_reset (inferior);
+  macosx_inferior_destroy(inferior);
+  macosx_inferior_reset(inferior);
 
   inferior->task = task;
   inferior->pid = pid;
@@ -2804,34 +2815,34 @@ macosx_create_inferior_for_task (struct macosx_inferior_status *inferior,
 
   inferior->suspend_count = 0;
 
-  inferior->last_thread = macosx_primary_thread_of_task (inferior->task);
+  inferior->last_thread = macosx_primary_thread_of_task(inferior->task);
 }
 
 static int remote_async_terminal_ours_p = 1;
-static void (*ofunc) (int);
+static void (*ofunc)(int);
 static PTR sigint_remote_twice_token;
 static PTR sigint_remote_token;
 
-static void remote_interrupt_twice (int signo);
-static void remote_interrupt (int signo);
-static void handle_remote_sigint_twice (int sig);
-static void handle_remote_sigint (int sig);
-static void async_remote_interrupt_twice (gdb_client_data arg);
-static void async_remote_interrupt (gdb_client_data arg);
+static void remote_interrupt_twice(int signo);
+static void remote_interrupt(int signo);
+static void handle_remote_sigint_twice(int sig);
+static void handle_remote_sigint(int sig);
+static void async_remote_interrupt_twice(gdb_client_data arg);
+static void async_remote_interrupt(gdb_client_data arg);
 
 static void
-interrupt_query (void)
+interrupt_query(void)
 {
-  target_terminal_ours ();
+  target_terminal_ours();
 
-  if (query ("Interrupted while waiting for the program.\n\
+  if (query("Interrupted while waiting for the program.\n\
 Give up (and stop debugging it)? "))
     {
-      target_mourn_inferior ();
-      deprecated_throw_reason (RETURN_QUIT);
+      target_mourn_inferior();
+      deprecated_throw_reason(RETURN_QUIT);
     }
 
-  target_terminal_inferior ();
+  target_terminal_inferior();
 }
 
 static void

@@ -3,7 +3,7 @@
  */
 
 #ifndef __GDB_TM_PPC_MACOSX_H__
-#define __GDB_TM_PPC_MACOSX_H__
+#define __GDB_TM_PPC_MACOSX_H__ 1
 
 #ifndef GDB_MULTI_ARCH
 # define GDB_MULTI_ARCH 1

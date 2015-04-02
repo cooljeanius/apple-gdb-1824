@@ -922,19 +922,22 @@ ppc_sigtramp_frame_prev_register(struct frame_info *next_frame,
           if (reg_size > size)
             bzero ((char *) valuep, reg_size - size);
 
-          read_memory (*addrp, valuep + offset, size);
+          read_memory(*addrp, valuep + offset, size);
         }
       return;
     }
 
-  frame_register_unwind (next_frame, regnum,
-                         optimizedp, lvalp, addrp, realnump, valuep);
+  frame_register_unwind(next_frame, regnum,
+                        optimizedp, lvalp, addrp, realnump, valuep);
 }
 
 static const struct frame_unwind ppc_sigtramp_frame_unwind = {
   SIGTRAMP_FRAME,
   ppc_sigtramp_frame_this_id,
-  ppc_sigtramp_frame_prev_register
+  ppc_sigtramp_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *
@@ -953,11 +956,14 @@ ppc_sigtramp_frame_sniffer(struct frame_info *next_frame)
 static const struct frame_unwind ppc_frame_unwind = {
   NORMAL_FRAME,
   ppc_frame_this_id,
-  ppc_frame_prev_register
+  ppc_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *
-ppc_frame_sniffer (struct frame_info *next_frame)
+ppc_frame_sniffer(struct frame_info *next_frame)
 {
   return &ppc_frame_unwind;
 }

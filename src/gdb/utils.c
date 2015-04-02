@@ -1555,7 +1555,7 @@ gdb_print_host_address (const void *addr, struct ui_file *stream)
 
 /* VARARGS */
 int
-query (const char *ctlstr, ...)
+query(const char *ctlstr, ...)
 {
   va_list args;
   int answer;
@@ -1564,49 +1564,47 @@ query (const char *ctlstr, ...)
 
   if (deprecated_query_hook)
     {
-      va_start (args, ctlstr);
-      return deprecated_query_hook (ctlstr, args);
+      va_start(args, ctlstr);
+      return deprecated_query_hook(ctlstr, args);
     }
 
   /* Automatically answer "yes" if input is not from a terminal.  */
-  if (!input_from_terminal_p ())
+  if (!input_from_terminal_p())
     /* APPLE LOCAL - return 2 for the auto-answered case.  */
     return 2;
 
   while (1)
     {
-      wrap_here ("");		/* Flush any buffered output */
-      gdb_flush (gdb_stdout);
+      wrap_here("");		/* Flush any buffered output */
+      gdb_flush(gdb_stdout);
 
       if (annotation_level > 1)
-	printf_filtered (("\n\032\032pre-query\n"));
+	printf_filtered(("\n\032\032pre-query\n"));
 
-      va_start (args, ctlstr);
-      vfprintf_filtered (gdb_stdout, ctlstr, args);
-      va_end (args);
-      printf_filtered (_("(y or n) "));
+      va_start(args, ctlstr);
+      vfprintf_filtered(gdb_stdout, ctlstr, args);
+      va_end(args);
+      printf_filtered(_("(y or n) "));
 
       if (annotation_level > 1)
-	printf_filtered (("\n\032\032query\n"));
+	printf_filtered(("\n\032\032query\n"));
 
-      wrap_here ("");
-      gdb_flush (gdb_stdout);
+      wrap_here("");
+      gdb_flush(gdb_stdout);
 
-      answer = fgetc (stdin);
-      clearerr (stdin);		/* in case of C-d */
+      answer = fgetc(stdin);
+      clearerr(stdin);		/* in case of C-d */
       if (answer == EOF)	/* C-d */
 	{
 	  retval = 1;
 	  break;
 	}
-      /* Eat rest of input line, to EOF or newline */
+      /* Eat rest of input line, to EOF or newline: */
       if (answer != '\n')
-	do
-	  {
-	    ans2 = fgetc (stdin);
-	    clearerr (stdin);
-	  }
-	while (ans2 != EOF && ans2 != '\n' && ans2 != '\r');
+	do {
+          ans2 = fgetc(stdin);
+          clearerr(stdin);
+        } while ((ans2 != EOF) && (ans2 != '\n') && (ans2 != '\r'));
 
       if (answer >= 'a')
 	answer -= 040;
@@ -1620,7 +1618,7 @@ query (const char *ctlstr, ...)
 	  retval = 0;
 	  break;
 	}
-      printf_filtered (_("Please answer y or n.\n"));
+      printf_filtered(_("Please answer y or n.\n"));
     }
   /* APPLE LOCAL: Reset QUIT_FLAG since this loop will continue until
      the user answers the question and will fail at some point in the
@@ -1633,7 +1631,7 @@ query (const char *ctlstr, ...)
      continue and gdb will crash.  */
   quit_flag = 0;
   if (annotation_level > 1)
-    printf_filtered (("\n\032\032post-query\n"));
+    printf_filtered(("\n\032\032post-query\n"));
   return retval;
 }
 

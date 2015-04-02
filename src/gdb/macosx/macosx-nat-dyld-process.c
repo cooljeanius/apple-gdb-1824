@@ -38,7 +38,7 @@
 #include "gdbarch.h"
 #include "symfile.h"
 
-#include "gdb_stat.h"
+/* we already included "gdb_stat.h" once above */
 
 #include <mach-o/nlist.h>
 #include <mach-o/loader.h>
@@ -52,7 +52,7 @@
 # endif /* !PACKAGE_NAME && !PACKAGE_STRING && !PACKAGE_TARNAME && !PACKAGE_VERSION */
 #endif /* USE_MMALLOC */
 
-#if defined (TARGET_POWERPC)
+#if defined(TARGET_POWERPC)
 # include "ppc-macosx-tdep.h"
 #elif defined(TARGET_I386)
 # include "i386-tdep.h"
@@ -93,10 +93,10 @@ static int dyld_check_uuids_flag = 0;
 /* For the gdbarch_tdep structure so we can get the wordsize. */
 #if defined(TARGET_POWERPC)
 # include "ppc-tdep.h"
-#elif defined (TARGET_I386)
+#elif defined(TARGET_I386)
 # include "amd64-tdep.h"
 # include "i386-tdep.h"
-#elif defined (TARGET_ARM)
+#elif defined(TARGET_ARM)
 # include "arm-tdep.h"
 #else
 # error "Unrecognized target architecture."
@@ -1451,30 +1451,35 @@ dyld_load_library(const struct dyld_path_info *d,
 	      if (!matches)
 		{
                   if (!info_verbose)
-		    warning (_("UUID mismatch detected with the loaded library "
-			     "- on disk is:\n\t%s"),
-			   e->abfd->filename);
+		    warning(_("UUID mismatch detected with the loaded library "
+			    "- on disk is:\n\t%s"),
+                            e->abfd->filename);
                   else
-		    warning (_("UUID mismatch detected with the loaded library "
-			     "- on host side:\n\t%s (UUID %s)\n"
-                             "- on device side:\n\tUUID %s"),
-			   e->abfd->filename, puuid (file_uuid),
-                           puuid (mem_uuid));
+		    warning(_("UUID mismatch detected with the loaded library "
+			    "- on host side:\n\t%s (UUID %s)\n"
+                            "- on device side:\n\tUUID %s"),
+                            e->abfd->filename, puuid(file_uuid),
+                            puuid(mem_uuid));
 
-		  if (ui_out_is_mi_like_p (uiout))
+		  if (ui_out_is_mi_like_p(uiout))
 		    {
 		      struct cleanup *notify_cleanup =
-			make_cleanup_ui_out_notify_begin_end (uiout,
-							      "uuid-mismatch-with-loaded-file");
-		      ui_out_field_string (uiout, "file", e->abfd->filename);
-		      do_cleanups (notify_cleanup);
+			make_cleanup_ui_out_notify_begin_end(uiout,
+							     "uuid-mismatch-with-loaded-file");
+		      ui_out_field_string(uiout, "file", e->abfd->filename);
+		      do_cleanups(notify_cleanup);
 		    }
-		  bfd_close (e->abfd);
+		  bfd_close(e->abfd);
 		  e->abfd = NULL;
 		  e->loaded_name = NULL;
 		  read_from_memory = 1;
 		  goto try_again_please;
 		}
+
+              if (found_uuid == 1)
+                {
+                  ; /* do nothing; just use value stored to found_uuid */
+                }
 	    }
 	}
     }

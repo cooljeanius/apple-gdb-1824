@@ -61,12 +61,12 @@ extern void _initialize_macosx_nat(void);
    things the least amount possible.  jmolenda/2005-05-02  */
 
 static void
-macosx_classic_unix_close (struct serial *scb)
+macosx_classic_unix_close(struct serial *scb)
 {
   if (scb->fd < 0)
     return;
 
-  close (scb->fd);
+  close(scb->fd);
   scb->fd = -1;
 }
 
@@ -74,32 +74,32 @@ macosx_classic_unix_close (struct serial *scb)
    This should really be over in serial.c.  */
 
 static int
-macosx_classic_unix_open (struct serial *scb, const char *name)
+macosx_classic_unix_open(struct serial *scb, const char *name)
 {
   struct sockaddr_un sockaddr;
   int n;
 
-  if (strncmp (name, "unix:", 5) != 0)
+  if (strncmp(name, "unix:", 5) != 0)
     return -1;
 
   name += 5;
 
-  scb->fd = socket (PF_UNIX, SOCK_STREAM, 0);
+  scb->fd = socket(PF_UNIX, SOCK_STREAM, 0);
   if (scb->fd == -1)
     return -1;
 
   sockaddr.sun_family = PF_UNIX;
-  strcpy (sockaddr.sun_path, name);
-  sockaddr.sun_len = sizeof (sockaddr);
+  strcpy(sockaddr.sun_path, name);
+  sockaddr.sun_len = sizeof(sockaddr);
 
-  n = connect (scb->fd, (struct sockaddr *)&sockaddr, sizeof (sockaddr));
+  n = connect(scb->fd, (struct sockaddr *)&sockaddr, sizeof(sockaddr));
   if (n == -1)
     {
-      macosx_classic_unix_close (scb);
+      macosx_classic_unix_close(scb);
       return -1;
     }
 
-  signal (SIGPIPE, SIG_IGN);
+  signal(SIGPIPE, SIG_IGN);
 
   return 0;
 }
@@ -108,76 +108,76 @@ macosx_classic_unix_open (struct serial *scb, const char *name)
    This should really be over in serial.c.  */
 
 static void
-macosx_classic_deliver_signal (int sig)
+macosx_classic_deliver_signal(int sig)
 {
-  printf_filtered ("sending signal %d to pid %d\n", sig, macosx_status->pid);
-  kill (macosx_status->pid, sig);
+  printf_filtered("sending signal %d to pid %d\n", sig, macosx_status->pid);
+  kill(macosx_status->pid, sig);
 }
 
 /* classic-inferior-support
    This should really be over in serial.c.  */
 
 static void
-macosx_classic_stop_inferior (void)
+macosx_classic_stop_inferior(void)
 {
-  macosx_classic_deliver_signal (SIGINT);
+  macosx_classic_deliver_signal(SIGINT);
 }
 
 /* classic-inferior-support */
 
 static void
-macosx_classic_create_inferior (pid_t pid)
+macosx_classic_create_inferior(pid_t pid)
 {
   int kr;
 
   task_t task;
-  kr = task_for_pid (mach_task_self (),  pid, &task);
+  kr = task_for_pid(mach_task_self(),  pid, &task);
   if (kr != KERN_SUCCESS)
     {
-      if (macosx_get_task_for_pid_rights () == 1)
-	kr = task_for_pid (mach_task_self (), pid, &task);
+      if (macosx_get_task_for_pid_rights() == 1)
+	kr = task_for_pid(mach_task_self(), pid, &task);
     }
 
   if (kr != KERN_SUCCESS)
     {
-      error ("task_for_pid failed for pid %d: %s", pid,
-             mach_error_string (kr));
+      error("task_for_pid failed for pid %d: %s", pid,
+            mach_error_string(kr));
     }
    else
     {
-      macosx_create_inferior_for_task (macosx_status, task, pid);
-      printf_filtered ("pid %d -> mach task %d\n", macosx_status->pid,
-                        macosx_status->task);
+      macosx_create_inferior_for_task(macosx_status, task, pid);
+      printf_filtered("pid %d -> mach task %d\n", macosx_status->pid,
+                      macosx_status->task);
       if (inferior_auto_start_dyld_flag)
         {
           int i;
           struct dyld_objfile_entry *e;
 
-          // remove all the currently cached objfiles since we've started
-          // a new session
+          /* remove all the currently cached objfiles since we have started
+           * a new session */
 
-          DYLD_ALL_OBJFILE_INFO_ENTRIES (&macosx_dyld_status.current_info, e, i)
+          DYLD_ALL_OBJFILE_INFO_ENTRIES(&macosx_dyld_status.current_info, e, i)
           {
-              dyld_remove_objfile (e);
-              dyld_objfile_entry_clear (e);
+              dyld_remove_objfile(e);
+              dyld_objfile_entry_clear(e);
           }
 
-          macosx_dyld_init (&macosx_dyld_status, exec_bfd);
-          // remove all the old objfiles to work around rdar://4091532
-          DYLD_ALL_OBJFILE_INFO_ENTRIES (&macosx_dyld_status.current_info, e, i)
+          macosx_dyld_init(&macosx_dyld_status, exec_bfd);
+          /* remove all the old objfiles to work around rdar://4091532 */
+          DYLD_ALL_OBJFILE_INFO_ENTRIES(&macosx_dyld_status.current_info, e, i)
           {
-              dyld_remove_objfile (e);
-              dyld_objfile_entry_clear (e);
+              dyld_remove_objfile(e);
+              dyld_objfile_entry_clear(e);
           }
           macosx_dyld_status.dyld_minsyms_have_been_relocated = 1;
-          macosx_dyld_update (1);
+          macosx_dyld_update(1);
         }
-#if WITH_CFM
+#if defined(WITH_CFM) && WITH_CFM
       if (inferior_auto_start_cfm_flag)
         {
-          macosx_cfm_thread_init (&macosx_status->cfm_status);
+          macosx_cfm_thread_init(&macosx_status->cfm_status);
         }
-#endif
+#endif /* WITH_CFM */
     }
 }
 
@@ -188,15 +188,15 @@ macosx_classic_create_inferior (pid_t pid)
    Returns 0 if the socket doesn't exist, or there was an error in checking.  */
 
 static int
-classic_socket_exists_p (pid_t pid)
+classic_socket_exists_p(pid_t pid)
 {
   char name[PATH_MAX];
   struct stat sb;
 
-  sprintf (name, "/tmp/translate.gdb.%d", pid);
-  if (stat (name, &sb) != 0)
+  sprintf(name, "/tmp/translate.gdb.%d", pid);
+  if (stat(name, &sb) != 0)
     return 0;
-  if (S_ISSOCK (sb.st_mode))
+  if (S_ISSOCK(sb.st_mode))
     return 1;
 
   return 0;
@@ -206,19 +206,19 @@ classic_socket_exists_p (pid_t pid)
 /* classic-inferior-support
    Determine if PID is a classic process or not.
    Returns
-   1 if it's classic,
-   0 if it's a normal process, or
+   1 if it is classic,
+   0 if it is a normal process, or
    -1 if there was an error making the determination (most likely
-   because the process is running under a different uid and gdb isn't
+   because the process is running under a different uid and gdb is NOT
    being run by root.)  */
 
 int
-is_pid_classic (pid_t pid)
+is_pid_classic(pid_t pid)
 {
   int mib[] = { CTL_KERN, KERN_CLASSIC, pid };
-  size_t len = sizeof (int);
+  size_t len = sizeof(int);
   int ret = 0;
-  if (sysctl (mib, 3, &ret, &len, NULL, 0) == -1)
+  if (sysctl(mib, 3, &ret, &len, NULL, 0) == -1)
     return -1;
   return ret;
 }
@@ -230,29 +230,29 @@ is_pid_classic (pid_t pid)
    Returns 0 if not.  */
 
 int
-can_attach (pid_t target_pid)
+can_attach(pid_t target_pid)
 {
   int gdb_is_classic, target_is_classic;
 
-  target_is_classic = is_pid_classic (target_pid);
-  gdb_is_classic = is_pid_classic (getpid ());
+  target_is_classic = is_pid_classic(target_pid);
+  gdb_is_classic = is_pid_classic(getpid());
 
-  /* We can't tell if we're classic ourselves -- the kernel probably
-     doesn't support this call, so let's assume everything is attachable.  */
+  /* We cannot tell if we are classic ourselves -- the kernel probably does
+   * NOT support this call, so let us assume everything is attachable: */
   if (gdb_is_classic == -1)
-      return 1;
+    return 1;
 
   if (gdb_is_classic == 1)
     {
       if (target_is_classic == 1)
-        target_is_classic = classic_socket_exists_p (target_pid);
+        target_is_classic = classic_socket_exists_p(target_pid);
 
       if (target_is_classic == 1)
         return 1;
       if (target_is_classic == 0)
         return 0;
 
-      /* Couldn't tell -- don't include it in list of process.  */
+      /* Could NOT tell -- do NOT include it in list of process: */
       if (target_is_classic == -1)
         return 0;
     }
@@ -260,10 +260,10 @@ can_attach (pid_t target_pid)
   if (gdb_is_classic == 0)
     {
       if (target_is_classic == 0)
-          return 1;
+        return 1;
 
       /* List processes we couldn't get classic status of.  Fixme - these
-         are all processes running under other uids so we can't inspect
+         are all processes running under other uids so we cannot inspect
          them.  It'd be a nice refinement to suppress these.  Could look
          at errno after the call to see if we got EPERM.  */
       if (target_is_classic == -1)
@@ -281,16 +281,16 @@ can_attach (pid_t target_pid)
    If this is a normal process attach, return 0. */
 
 int
-attaching_to_classic_process_p (pid_t target_pid)
+attaching_to_classic_process_p(pid_t target_pid)
 {
   int gdb_is_classic, target_is_classic;
 
-  target_is_classic = is_pid_classic (target_pid);
-  gdb_is_classic = is_pid_classic (getpid ());
+  target_is_classic = is_pid_classic(target_pid);
+  gdb_is_classic = is_pid_classic(getpid());
 
-  /* gdb and target are classic - we're set. */
-  if (gdb_is_classic == 1 && target_is_classic == 1)
-      return 1;
+  /* gdb and target are classic - we are set: */
+  if ((gdb_is_classic == 1) && (target_is_classic == 1))
+    return 1;
 
   /* When in doubt, follow the standard dyld/mach attach procedure.  */
 
@@ -307,9 +307,9 @@ void
 attach_to_classic_process(pid_t pid)
 {
   char name[PATH_MAX];
-  sprintf (name, "unix:/tmp/translate.gdb.%d", pid);
-  push_remote_target (name, 0);
-  macosx_classic_create_inferior (pid);
+  sprintf(name, "unix:/tmp/translate.gdb.%d", pid);
+  push_remote_target(name, 0);
+  macosx_classic_create_inferior(pid);
   remote_ops.to_stop = macosx_classic_stop_inferior;
 
   /* Debugging translated processes means no inferior function calls.  So
