@@ -195,10 +195,13 @@ _initialize_tui_interp(void)
     tui_exec,
     tui_display_prompt_p,
     tui_command_loop,
+    (interp_complete_ftype *)NULL
   };
-  struct interp *tui_interp;
+#ifdef ALLOW_UNUSED_VARIABLES
+  struct interp *tui_interp = (struct interp *)NULL;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
-  /* Create a default uiout builder for the TUI. */
+  /* Create a default uiout builder for the TUI: */
   tui_out = tui_out_new(gdb_stdout);
   interp_add(interp_new("tui", NULL, tui_out, &procs));
   if (interpreter_p && (strcmp(interpreter_p, "tui") == 0))

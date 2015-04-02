@@ -311,10 +311,12 @@ tui_display_registers_from(int start_element_no)
       && (display_info->regs_content_count > 0))
     {
       int i = start_element_no;
-      int j, value_chars_wide, item_win_width, cur_y;
+      int j, item_win_width, cur_y;
 
       int max_len = 0;
-      value_chars_wide = 0;
+#ifdef ALLOW_UNUSED_VARIABLES
+      int value_chars_wide = 0;
+#endif /* ALLOW_UNUSED_VARIABLES */
       for (i = 0; i < display_info->regs_content_count; i++)
         {
           struct tui_data_element *data;
@@ -492,8 +494,10 @@ tui_check_register_values(struct frame_info *frame)
 	tui_show_registers(display_info->current_group);
       else
 	{
-	  int i, j;
-          j = 0;
+	  int i;
+#ifdef ALLOW_UNUSED_VARIABLES
+          int j = 0;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
 	  for (i = 0; (i < display_info->regs_content_count); i++)
 	    {
@@ -656,7 +660,9 @@ tui_register_format(struct gdbarch *gdbarch, struct frame_info *frame,
   const char *name;
   struct cleanup *cleanups;
   char *p, *s;
+#ifdef ALLOW_UNUSED_VARIABLES
   int pos = 0;
+#endif /* ALLOW_UNUSED_VARIABLES */
   struct type *type = gdbarch_register_type(gdbarch, regnum);
 
   name = gdbarch_register_name(gdbarch, regnum);

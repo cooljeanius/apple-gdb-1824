@@ -202,6 +202,10 @@ tui_set_disassem_content(CORE_ADDR pc)
 
   line_width = (TUI_DISASM_WIN->generic.width - 1);
 
+  if (line_width == 0) {
+    ; /* do nothing; just silence '-Wunused-but-set-variable' */
+  }
+
   tui_disassemble(asm_lines, pc, max_lines);
 
   /* See what is the maximum length of an address and of a line: */

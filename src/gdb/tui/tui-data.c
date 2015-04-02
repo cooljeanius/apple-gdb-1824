@@ -904,13 +904,13 @@ free_content_elements (tui_win_content content, int content_size, enum tui_win_t
 		         ** in a single block, but individually, as needed.
 		       */
 		      if (element->which_element.data.type != TUI_REGISTER)
-			xfree ((void *)element->which_element.data.name);
-		      xfree (element->which_element.data.value);
-                      xfree (element->which_element.data.content);
-		      xfree (element);
+			xfree((void *)element->which_element.data.name);
+		      xfree(element->which_element.data.value);
+                      xfree(element->which_element.data.content);
+		      xfree(element);
 		      break;
 		    case CMD_WIN:
-		      xfree (element->which_element.command.line);
+		      xfree(element->which_element.command.line);
 		      break;
 		    default:
 		      break;
@@ -918,7 +918,9 @@ free_content_elements (tui_win_content content, int content_size, enum tui_win_t
 		}
 	    }
 	}
-      if (type != DATA_WIN && type != DATA_ITEM_WIN)
-	xfree (content[0]);	/* free the element block */
+      if ((type != DATA_WIN) && (type != DATA_ITEM_WIN))
+	xfree(content[0]);	/* free the element block */
     }
 }
+
+/* EOF */

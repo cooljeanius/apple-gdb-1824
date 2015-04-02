@@ -49,7 +49,7 @@
 #include "readline/readline.h"
 
 int
-key_is_start_sequence (int ch)
+key_is_start_sequence(int ch)
 {
   return (ch == 27);
 }
@@ -194,7 +194,7 @@ tui_puts (const char *string)
    Redisplay the command line with its prompt after readline has
    changed the edited text.  */
 void
-tui_redisplay_readline (void)
+tui_redisplay_readline(void)
 {
   int prev_col;
   int height;
@@ -208,8 +208,8 @@ tui_redisplay_readline (void)
 
   /* Detect when we temporarily left SingleKey and now the readline
      edit buffer is empty, automatically restore the SingleKey mode.  */
-  if (tui_current_key_mode == TUI_ONE_COMMAND_MODE && rl_end == 0)
-    tui_set_key_mode (TUI_SINGLE_KEY_MODE);
+  if ((tui_current_key_mode == TUI_ONE_COMMAND_MODE) && (rl_end == 0))
+    tui_set_key_mode(TUI_SINGLE_KEY_MODE);
 
   if (tui_current_key_mode == TUI_SINGLE_KEY_MODE)
     prompt = "";
@@ -220,13 +220,13 @@ tui_redisplay_readline (void)
   c_line = -1;
   w = TUI_CMD_WIN->generic.handle;
   start_line = TUI_CMD_WIN->detail.command_info.start_line;
-  wmove (w, start_line, 0);
+  wmove(w, start_line, 0);
   prev_col = 0;
   height = 1;
   for (in = 0; prompt && prompt[in]; in++)
     {
-      waddch (w, prompt[in]);
-      getyx (w, line, col);
+      waddch(w, prompt[in]);
+      getyx(w, line, col);
       if (col < prev_col)
         height++;
       prev_col = col;
@@ -235,63 +235,69 @@ tui_redisplay_readline (void)
     {
       unsigned char c;
 
-      c = (unsigned char) rl_line_buffer[in];
+      c = (unsigned char)rl_line_buffer[in];
       if (in == rl_point)
 	{
-          getyx (w, c_line, c_pos);
+          getyx(w, c_line, c_pos);
 	}
 
-      if (CTRL_CHAR (c) || c == RUBOUT)
+      if (CTRL_CHAR(c) || (c == RUBOUT))
 	{
-          waddch (w, '^');
-          waddch (w, CTRL_CHAR (c) ? UNCTRL (c) : '?');
+          waddch(w, '^');
+          waddch(w, CTRL_CHAR(c) ? UNCTRL(c) : '?');
 	}
       else
 	{
-          waddch (w, c);
+          waddch(w, c);
 	}
       if (c == '\n')
         {
-          getyx (w, TUI_CMD_WIN->detail.command_info.start_line,
-                 TUI_CMD_WIN->detail.command_info.curch);
+          getyx(w, TUI_CMD_WIN->detail.command_info.start_line,
+                TUI_CMD_WIN->detail.command_info.curch);
         }
-      getyx (w, line, col);
+      getyx(w, line, col);
       if (col < prev_col)
         height++;
       prev_col = col;
     }
-  wclrtobot (w);
-  getyx (w, TUI_CMD_WIN->detail.command_info.start_line,
-         TUI_CMD_WIN->detail.command_info.curch);
+  wclrtobot(w);
+  getyx(w, TUI_CMD_WIN->detail.command_info.start_line,
+        TUI_CMD_WIN->detail.command_info.curch);
   if (c_line >= 0)
     {
-      wmove (w, c_line, c_pos);
+      wmove(w, c_line, c_pos);
       TUI_CMD_WIN->detail.command_info.cur_line = c_line;
       TUI_CMD_WIN->detail.command_info.curch = c_pos;
     }
-  TUI_CMD_WIN->detail.command_info.start_line -= height - 1;
+  TUI_CMD_WIN->detail.command_info.start_line -= (height - 1);
 
-  wrefresh (w);
+  wrefresh(w);
   fflush(stdout);
+
+  /* this conditional is just to silence '-Wunused-but-set-variable': */
+  if (line == 0) {
+    return;
+  }
 }
 
 /* Readline callback to prepare the terminal.  It is called once
    each time we enter readline.  Terminal is already setup in curses mode.  */
 static void
-tui_prep_terminal (int notused1)
+tui_prep_terminal(int notused1 ATTRIBUTE_UNUSED)
 {
   /* Save the prompt registered in readline to correctly display it.
      (we can't use gdb_prompt() due to secondary prompts and can't use
      rl_prompt because it points to an alloca buffer).  */
-  xfree (tui_rl_saved_prompt);
-  tui_rl_saved_prompt = xstrdup (rl_prompt);
+  xfree(tui_rl_saved_prompt);
+  tui_rl_saved_prompt = xstrdup(rl_prompt);
 }
 
 /* Readline callback to restore the terminal.  It is called once
    each time we leave readline.  There is nothing to do in curses mode.  */
 static void
-tui_deprep_terminal (void)
+tui_deprep_terminal(void)
 {
+  return;
 }
 
 #ifdef TUI_USE_PIPE_FOR_READLINE
@@ -356,24 +362,26 @@ printable_part (char *pathname)
     } while (0)
 
 static int
-print_filename (char *to_print, char *full_pathname)
+print_filename(char *to_print, char *full_pathname)
 {
   int printed_len = 0;
   char *s;
 
   for (s = to_print; *s; s++)
     {
-      PUTX (*s);
+      PUTX(*s);
     }
   return printed_len;
 }
+
+/* Moved up here for '-Wnested-externs': */
+extern int _rl_abort_internal(void);
 
 /* The user must press "y" or "n".  Non-zero return means "y" pressed.
    Comes from readline/complete.c  */
 static int
 get_y_or_n(void)
 {
-  extern int _rl_abort_internal(void);
   int c;
 
   for (;;)
@@ -389,6 +397,10 @@ get_y_or_n(void)
     }
 }
 
+/* Moved up here for '-Wnested-externs': */
+extern int _rl_qsort_string_compare(const void *, const void *);
+extern int _rl_print_completions_horizontally;
+
 /* A convenience function for displaying a list of strings in
    columnar format on readline's output stream.  MATCHES is the list
    of strings, in argv format, LEN is the number of strings in MATCHES,
@@ -400,8 +412,6 @@ static void
 tui_rl_display_match_list(char **matches, int len, int max)
 {
   typedef int QSFUNC(const void *, const void *);
-  extern int _rl_qsort_string_compare(const void*, const void*);
-  extern int _rl_print_completions_horizontally;
 
   int count, limit, printed_len;
   int i, j, k, l;
@@ -494,6 +504,9 @@ tui_rl_display_match_list(char **matches, int len, int max)
     }
 }
 
+/* Moved up here for '-Wnested-externs': */
+extern int readline_echoing_p;
+
 /* Setup the IO for curses or non-curses mode.
    - In non-curses mode, readline and gdb use the standard input and
    standard output/error directly.
@@ -505,8 +518,6 @@ tui_rl_display_match_list(char **matches, int len, int max)
 void
 tui_setup_io(int mode)
 {
-  extern int readline_echoing_p;
-
   if (mode)
     {
       /* Redirect readline to TUI: */

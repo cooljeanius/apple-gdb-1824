@@ -161,13 +161,13 @@ tui_make_status_line(struct tui_locator_element* loc)
   if (target_width > 0UL)
     {
       sprintf(buf, "%*.*s ",
-              -target_width, target_width, target_shortname);
+              (int)-target_width, (int)target_width, target_shortname);
       strcat_to_buf(string, status_size, buf);
     }
   if (pid_width > 0UL)
     {
       sprintf(buf, "%*.*s ",
-              -pid_width, pid_width, pid_name);
+              (int)-pid_width, (int)pid_width, pid_name);
       strcat_to_buf(string, status_size, buf);
     }
 
@@ -183,17 +183,17 @@ tui_make_status_line(struct tui_locator_element* loc)
     {
       if (strlen(pname) > proc_width)
         sprintf(buf, "%s%*.*s* ", PROC_PREFIX,
-                1 - proc_width, proc_width - 1, pname);
+                (int)(1 - proc_width), (int)(proc_width - 1), pname);
       else
         sprintf(buf, "%s%*.*s ", PROC_PREFIX,
-                -proc_width, proc_width, pname);
+                (int)-proc_width, (int)proc_width, pname);
       strcat_to_buf(string, status_size, buf);
     }
 
   if (line_width > 0UL)
     {
       sprintf(buf, "%s%*.*s ", LINE_PREFIX,
-              -line_width, line_width, line_buf);
+              (int)-line_width, (int)line_width, line_buf);
       strcat_to_buf(string, status_size, buf);
     }
   if (pc_width > 0UL)
@@ -400,13 +400,13 @@ tui_show_frame_info (struct frame_info *fi)
     }
   else
     {
-      tui_set_locator_info (NULL, NULL, 0, (CORE_ADDR) 0);
-      tui_show_locator_content ();
-      for (i = 0; i < (tui_source_windows ())->count; i++)
+      tui_set_locator_info(NULL, NULL, 0, (CORE_ADDR)0UL);
+      tui_show_locator_content();
+      for (i = 0; i < (tui_source_windows())->count; i++)
 	{
-	  win_info = (struct tui_win_info *) (tui_source_windows ())->list[i];
-	  tui_clear_source_content (win_info, EMPTY_SOURCE_PROMPT);
-	  tui_update_exec_info (win_info);
+	  win_info = (struct tui_win_info *)(tui_source_windows())->list[i];
+	  tui_clear_source_content(win_info, EMPTY_SOURCE_PROMPT);
+	  tui_update_exec_info(win_info);
 	}
     }
 }
@@ -420,12 +420,14 @@ _initialize_tui_stack(void)
 Update the source window and locator to display the current execution point.\n"));
 }
 
-/* Command to update the display with the current execution point.  */
+/* Command to update the display with the current execution point: */
 static void
-tui_update_command (char *arg, int from_tty)
+tui_update_command(char *arg, int from_tty)
 {
   char cmd[sizeof("frame 0")];
 
-  strcpy (cmd, "frame 0");
-  execute_command (cmd, from_tty);
+  strcpy(cmd, "frame 0");
+  execute_command(cmd, from_tty);
 }
+
+/* EOF */

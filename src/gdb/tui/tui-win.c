@@ -352,11 +352,11 @@ tui_get_cmd_list(void)
 void
 _initialize_tui_win(void)
 {
-  struct cmd_list_element *c;
+#ifdef ALLOW_UNUSED_VARIABLES
+  struct cmd_list_element *c = (struct cmd_list_element *)NULL;
+#endif /* ALLOW_UNUSED_VARIABLES */
   static struct cmd_list_element *tui_setlist;
   static struct cmd_list_element *tui_showlist;
-
-  c = (struct cmd_list_element *)NULL;
 
   /* Define the classes of commands.
      They will appear in the help list in the reverse of this order.  */

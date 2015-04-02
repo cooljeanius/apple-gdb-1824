@@ -196,7 +196,8 @@ static struct gdb_events tui_event_hooks =
   (gdb_events_breakpoint_resolve_ftype *)NULL, /* FIXME */
   tui_event_default,
   tui_event_default,
-  tui_event_default
+  tui_event_default,
+  (gdb_events_architecture_changed_ftype *)NULL
 };
 
 /* Called when going to wait for the target.

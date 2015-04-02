@@ -92,20 +92,22 @@ static struct ui_out_impl tui_ui_out_impl =
   tui_message,
   tui_wrap_hint,
   tui_flush,
-  NULL,
+  (redirect_ftype *)NULL,
+  (notify_begin_ftype *)NULL,
+  (notify_end_ftype *)NULL,
   0, /* Does not need MI hacks (i.e. needs CLI hacks).  */
 };
 
 
 /* Prototypes for local functions */
 
-extern void _initialize_tui_out (void);
+extern void _initialize_tui_out(void);
 
-static void field_separator (void);
+static void field_separator(void);
 
-static void out_field_fmt (struct ui_out *uiout, int fldno,
-			   const char *fldname,
-			   const char *format,...) ATTR_FORMAT (printf, 4, 5);
+static void out_field_fmt(struct ui_out *uiout, int fldno,
+			  const char *fldname,
+			  const char *format, ...) ATTR_FORMAT(printf, 4, 5);
 
 /* local variables */
 

@@ -1,4 +1,4 @@
-/* Main function for TUI gdb.
+/* tui-main.c: Main function for TUI gdb.
 
    Copyright 2002, 2004 Free Software Foundation, Inc.
 
@@ -25,13 +25,15 @@
 #include "interps.h"
 
 int
-main (int argc, char **argv)
+main(int argc, char **argv)
 {
   struct captured_main_args args;
-  memset (&args, 0, sizeof args);
+  memset(&args, 0, sizeof(args));
   args.argc = argc;
   args.argv = argv;
   args.use_windows = 0;
   args.interpreter_p = INTERP_TUI;
-  return gdb_main (&args);
+  return gdb_main(&args);
 }
+
+/* EOF */

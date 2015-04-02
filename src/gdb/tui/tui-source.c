@@ -28,7 +28,7 @@
 #include "frame.h"
 #include "breakpoint.h"
 #include "source.h"
-#include "symtab.h"
+/* we already included "symtab.h" once above */
 
 #include "tui/tui.h"
 #include "tui/tui-data.h"
@@ -346,6 +346,8 @@ tui_vertical_source_scroll (enum tui_scroll_direction scroll_direction,
 	    l.line_no = 1;
 	}
 
-      print_source_lines (s, l.line_no, l.line_no + 1, 0);
+      print_source_lines(s, l.line_no, l.line_no + 1, 0);
     }
 }
+
+/* EOF */

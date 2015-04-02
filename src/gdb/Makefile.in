@@ -1579,9 +1579,19 @@ gdb$(EXEEXT): gdb.o libgdb.a $(CONFIG_OBS) $(ADD_DEPS) $(CDEPS) $(TDEPLIBS)
 
 $(TUI)$(EXEEXT): tui-main.o libgdb.a $(ADD_DEPS) $(CDEPS) $(TDEPLIBS)
 	$(AM_V_at)rm -f $(AM_V_v) $(TUI)$(EXEEXT)
+	$(AM_V_at)rm -f -r $(AM_V_v) $(TUI)$(EXEEXT).dSYM
 	$(AM_V_CCLD)$(LINK) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
+	  $(ADD_INFO_PLIST) \
 	  -o $(TUI)$(EXEEXT) tui-main.o libgdb.a \
 	  $(TDEPLIBS) $(TUI_LIBRARY) $(CLIBS) $(LOADLIBES)
+	@echo "stripping __objcInit from $@";
+	echo "__objcInit" > $(TMPDIR)/macosx-syms-to-remove;
+	-if [ -f .libs/$(TUI)$(EXEEXT) ]; then \
+	  $(STRIP) -R $(TMPDIR)/macosx-syms-to-remove -X .libs/$(TUI)$(EXEEXT); \
+	else \
+	  $(STRIP) -R $(TMPDIR)/macosx-syms-to-remove -X $(TUI)$(EXEEXT); \
+	fi
+	$(AM_V_at)rm -f $(AM_V_v) $(TMPDIR)/macosx-syms-to-remove;
 
 nlm:	force
 	rootme=`pwd`; export rootme; $(MAKE) $(TARGET_FLAGS_TO_PASS) \
@@ -3392,8 +3402,10 @@ clean-gdbtk:
 # at least on SunOS:
 insight$(EXEEXT): gdbtk-main.o libgdb.a $(ADD_DEPS) \
   $(CDEPS) $(TDEPLIBS)
-	rm -f $(AM_V_v) insight$(EXEEXT)
+	$(AM_V_at)rm -f $(AM_V_v) insight$(EXEEXT)
+	$(AM_V_at)rm -f -r $(AM_V_v) insight$(EXEEXT).dSYM
 	$(AM_V_CCLD)$(CC_LD) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
+		$(ADD_INFO_PLIST) \
 		-o insight$(EXEEXT) gdbtk-main.o libgdb.a \
 		$(TDEPLIBS) $(TUI_LIBRARY) $(CLIBS) $(LOADLIBES)
 	@echo "stripping __objcInit from $@";
@@ -3833,7 +3845,8 @@ tui.o: $(tui_srcdir)/tui.c $(defs_h) $(gdbcmd_h) $(tui_h) $(tui_hooks_h) \
   $(readline_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui.c
 tui-command.o: $(tui_srcdir)/tui-command.c $(defs_h) $(tui_h) \
-  $(tui_data_h) $(tui_win_h) $(tui_io_h) $(gdb_curses_h) $(gdb_string_h)
+  $(tui_command_h) $(tui_data_h) $(tui_win_h) $(tui_io_h) $(gdb_curses_h) \
+  $(gdb_string_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-command.c
 tui-data.o: $(tui_srcdir)/tui-data.c $(defs_h) $(symtab_h) $(tui_h) \
   $(tui_data_h) $(tui_wingeneral_h) $(gdb_string_h) $(gdb_curses_h)
@@ -3856,7 +3869,8 @@ tui-hooks.o: $(tui_srcdir)/tui-hooks.c $(defs_h) $(symtab_h) \
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-hooks.c
 tui-interp.o: $(tui_srcdir)/tui-interp.c $(defs_h) $(interps_h) $(top_h) \
   $(event_top_h) $(event_loop_h) $(ui_out_h) $(cli_out_h) \
-  $(tui_data_h) $(readline_h) $(tui_win_h) $(tui_h) $(tui_io_h)
+  $(tui_data_h) $(readline_h) $(tui_win_h) $(tui_h) $(tui_io_h) \
+  $(exceptions_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-interp.c
 tui-io.o: $(tui_srcdir)/tui-io.c $(defs_h) $(target_h) $(event_loop_h) \
   $(event_top_h) $(command_h) $(top_h) $(tui_h) $(tui_data_h) $(tui_io_h) \
@@ -3865,9 +3879,9 @@ tui-io.o: $(tui_srcdir)/tui-io.c $(defs_h) $(target_h) $(event_loop_h) \
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-io.c
 tui-layout.o: $(tui_srcdir)/tui-layout.c $(defs_h) $(command_h) \
   $(symtab_h) $(frame_h) $(source_h) $(tui_h) $(tui_data_h) \
-  $(tui_windata_h) $(tui_wingeneral_h) $(tui_stack_h) $(tui_regs_h) \
-  $(tui_win_h) $(tui_winsource_h) $(tui_disasm_h) $(gdb_string_h) \
-  $(gdb_curses_h)
+  $(tui_layout_h) $(tui_windata_h) $(tui_wingeneral_h) $(tui_stack_h) \
+  $(tui_regs_h) $(tui_win_h) $(tui_winsource_h) $(tui_disasm_h) \
+  $(gdb_string_h) $(gdb_curses_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-layout.c
 tui-main.o: $(tui_srcdir)/tui-main.c $(defs_h) $(main_h) $(gdb_string_h) \
   $(interps_h)
@@ -3877,14 +3891,13 @@ tui-out.o: $(tui_srcdir)/tui-out.c $(defs_h) $(ui_out_h) $(tui_h) \
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-out.c
 tui-regs.o: $(tui_srcdir)/tui-regs.c $(defs_h) $(tui_h) $(tui_data_h) \
   $(symtab_h) $(gdbtypes_h) $(gdbcmd_h) $(frame_h) $(regcache_h) \
-  $(inferior_h) $(target_h) $(gdb_string_h) $(tui_layout_h) \
+  $(inferior_h) $(target_h) $(gdb_string_h) $(tui_layout_h) $(tui_regs_h) \
   $(tui_win_h) $(tui_windata_h) $(tui_wingeneral_h) $(tui_file_h) \
   $(reggroups_h) $(gdb_curses_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-regs.c
 tui-source.o: $(tui_srcdir)/tui-source.c $(defs_h) $(symtab_h) $(frame_h) \
-  $(breakpoint_h) $(source_h) $(symtab_h) $(tui_h) $(tui_data_h) \
-  $(tui_stack_h) $(tui_winsource_h) $(tui_source_h) $(gdb_string_h) \
-  $(gdb_curses_h)
+  $(breakpoint_h) $(source_h) $(tui_h) $(tui_data_h) $(tui_stack_h) \
+  $(tui_winsource_h) $(tui_source_h) $(gdb_string_h) $(gdb_curses_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-source.c
 tui-stack.o: $(tui_srcdir)/tui-stack.c $(defs_h) $(symtab_h) \
   $(breakpoint_h) $(frame_h) $(command_h) $(inferior_h) $(target_h) \
@@ -3894,7 +3907,7 @@ tui-stack.o: $(tui_srcdir)/tui-stack.c $(defs_h) $(symtab_h) \
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-stack.c
 tui-win.o: $(tui_srcdir)/tui-win.c $(defs_h) $(command_h) $(symtab_h) \
   $(breakpoint_h) $(frame_h) $(cli_cmds_h) $(top_h) $(source_h) \
-  $(tui_h) $(tui_data_h) $(tui_wingeneral_h) $(tui_stack_h) \
+  $(tui_h) $(tui_data_h) $(tui_win_h) $(tui_wingeneral_h) $(tui_stack_h) \
   $(tui_regs_h) $(tui_disasm_h) $(tui_source_h) $(tui_winsource_h) \
   $(tui_windata_h) $(gdb_curses_h) $(gdb_string_h) $(readline_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-win.c
