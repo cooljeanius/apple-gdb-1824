@@ -16,7 +16,20 @@ if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
   AM_ENABLE_MULTILIB([],[..])
 fi
 
+# architecture stuff:
 AC_CANONICAL_TARGET
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
 
 # This works around an automake problem.
 mkinstalldirs="`cd ${ac_aux_dir} && ${PWDCMD-pwd}`/mkinstalldirs"
@@ -178,7 +191,11 @@ AC_CHECK_HEADERS([Carbon/Carbon.h CHUD/CHUD.h direct.h fcntl.h io.h \
                   mach/mach_types.h mach/message.h malloc.h \
                   malloc/malloc.h math.h stdarg.h stddef.h stdio.h \
                   sys/sysctl.h sys/time.h utime.h windows.h])dnl
-AC_CHECK_HEADERS_ONCE([unistd.h])dnl
+  ## probably unnecessary:
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  AC_CHECK_HEADERS([unistd.h])
+fi
 
 dnl# using ${host_os} instead of just ${host} leaves out the architecture
 AC_MSG_CHECKING([cpu-specific header for ${host}])
@@ -230,10 +247,14 @@ if test "x${ac_cv_func_mmap}" = "x" && test "x${ac_cv_func_mmap_fixed_mapped}" =
 fi
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([access atexit chmod exit fprintf fseeko ftruncate \
-                gettimeofday localeconv memchr memmove memset mkdir munmap \
-                snprintf sprintf strchr strdup strrchr strtol \
+                gettimeofday localeconv memchr memmove memset mkdir \
+                munmap snprintf sprintf strchr strdup strrchr strtol \
                 system utime vsnprintf vsprintf])dnl
-AC_CHECK_FUNCS_ONCE([strerror])dnl
+  ## just in case:
+if test "x${ac_cv_func_strerror}" = "x"; then
+  test -z "${ac_cv_func_strerror}"
+  AC_CHECK_FUNCS([strerror])
+fi
 
 # Output.
 if test -n "${with_cross_host}" &&

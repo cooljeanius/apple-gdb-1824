@@ -1,4 +1,4 @@
-/* MI Command Set - disassemble commands.
+/* mi-cmd-disas.c: MI Command Set - disassemble commands.
    Copyright 2000, 2001, 2002 Free Software Foundation, Inc.
    Contributed by Cygnus Solutions (a Red Hat company).
 
@@ -29,7 +29,7 @@
 #include "disasm.h"
 
 /* The arguments to be passed on the command line and parsed here are:
-   
+
    -s START-ADDRESS | -s START-ADDRESS -e END-ADDRESS | -f FILENAME -n
     LINENUM [-n HOW-MANY] [-p PREV-INSTRUCTIONS] [-P PEEK-LIMIT] --
     MIXED-MODE
@@ -38,7 +38,7 @@
    END-ADDRESS: address to end the disassembly at.
 
    or:
-   
+
    START-ADDRESS: address to start the disassembly at.
 
    or:
@@ -64,12 +64,12 @@
    instructions backwards GDB will search.
 
    The MIXED-MODE arguemnt is always required.  Zero means disassembly
-   only; 1 means mixed source and disassembly, respectively. 
+   only; 1 means mixed source and disassembly, respectively.
 */
 
 static void mi_cmd_disassemble_usage (const char *message)
 {
-  const char *const usage = 
+  const char *const usage =
     "[-P peeklimit]"
     " ("
     " [-f filename -l linenum [-n howmany] [-p startprev]]"
@@ -194,7 +194,7 @@ mi_cmd_disassemble (char *command, char **argv, int argc)
     }
   else if (! start_seen)
     mi_cmd_disassemble_usage ("No starting point specified.");
-  
+
   if (end_seen)
     {
       if (num_seen || prev_seen)
@@ -206,28 +206,30 @@ mi_cmd_disassemble (char *command, char **argv, int argc)
 
   if (find_pc_partial_function_no_inlined (start, NULL, &low, &high) == 0)
     error ("mi_cmd_disassemble: No function contains the specified address.");
-  
+
   if (! num_seen)
     {
       /* If only the start address is given, disassemble the entire
 	 function around the start address.  */
-      
-      gdb_disassembly (uiout, low, high, mixed_source_and_assembly, how_many);
+
+      gdb_disassembly(uiout, low, high, mixed_source_and_assembly, how_many);
       return MI_CMD_DONE;
     }
 
   /* And finally, now we know start_seen, !line_seen, !file_seen, !end_seen, and num_seen. */
-  
+
   if (prev_seen)
     {
       CORE_ADDR tmp;
       int ret;
 
-      ret = find_pc_offset (start, &tmp, -prev, 1, peeklimit);
+      ret = find_pc_offset(start, &tmp, -prev, 1, peeklimit);
       if (tmp != INVALID_ADDRESS)
 	start = tmp;
     }
 
-  gdb_disassembly (uiout, start, high, mixed_source_and_assembly, how_many);
+  gdb_disassembly(uiout, start, high, mixed_source_and_assembly, how_many);
   return MI_CMD_DONE;
 }
+
+/* EOF */

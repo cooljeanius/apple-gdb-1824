@@ -37,8 +37,8 @@
 #include "gdb_string.h"
 #include "gdb_stat.h"
 
-static void env_mod_path (char *dirname, char **which_path);
-extern void _initialize_mi_cmd_env (void);
+static void env_mod_path(char *dirname, char **which_path);
+extern void _initialize_mi_cmd_env(void);
 
 static const char path_var_name[] = "PATH";
 static char *orig_path = NULL;
@@ -269,15 +269,17 @@ mi_cmd_inferior_tty_show (char *command, char **argv, int argc)
 }
 
 void
-_initialize_mi_cmd_env (void)
+_initialize_mi_cmd_env(void)
 {
   char *env;
 
-  /* We want original execution path to reset to, if desired later.  */
-  env = get_in_environ (inferior_environ, path_var_name);
+  /* We want original execution path to reset to, if desired later: */
+  env = get_in_environ(inferior_environ, path_var_name);
 
-  /* Can be null if path is not set.  */
+  /* Can be null if path is not set: */
   if (!env)
     env = "";
-  orig_path = xstrdup (env);
+  orig_path = xstrdup(env);
 }
+
+/* EOF */

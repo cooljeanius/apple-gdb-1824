@@ -43,7 +43,9 @@
 #if (defined(__i386__) && !defined(THROW_CATCH_FIND_TYPEINFO)) || \
     defined(TARGET_I386)
 # include "tm-i386-macosx.h"
-# include "config/i386/tm-i386-macosx.h"
+# if !defined(TM_I386NEXT_H) && !defined(HAVE_I387_REGS)
+#  include "config/i386/tm-i386-macosx.h"
+# endif /* !TM_I386NEXT_H && !HAVE_I387_REGS */
 #else
 # define MI_CMD_STACK_C_NOT_ON_i386 1
 #endif /* (__i386__ && !THROW_CATCH_FIND_TYPEINFO) || TARGET_I386 */
@@ -1498,39 +1500,40 @@ mi_interp_stack_changed_hook (void)
 }
 
 void
-mi_interp_frame_changed_hook (int new_frame_number)
+mi_interp_frame_changed_hook(int new_frame_number)
 {
   struct ui_out *saved_ui_out = uiout;
   struct cleanup *list_cleanup;
 
-  /* APPLE LOCAL: Don't report new_frame_number == -1, that is just the
+  /* APPLE LOCAL: Do NOT report new_frame_number == -1, that is just the
      invalidate frame message, and there is not much the UI can do with
      that.  */
 
   if (new_frame_number == -1)
     return;
 
-  uiout = interp_ui_out (mi_interp);
+  uiout = interp_ui_out(mi_interp);
 
-  list_cleanup = make_cleanup_ui_out_list_begin_end (uiout, "MI_HOOK_RESULT");
-  ui_out_field_string (uiout, "HOOK_TYPE", "frame_changed");
-  ui_out_field_int (uiout, "frame", new_frame_number);
-  do_cleanups (list_cleanup);
+  list_cleanup = make_cleanup_ui_out_list_begin_end(uiout, "MI_HOOK_RESULT");
+  ui_out_field_string(uiout, "HOOK_TYPE", "frame_changed");
+  ui_out_field_int(uiout, "frame", new_frame_number);
+  do_cleanups(list_cleanup);
   uiout = saved_ui_out;
-
 }
 
 void
-mi_interp_context_hook (int thread_id)
+mi_interp_context_hook(int thread_id)
 {
   struct ui_out *saved_ui_out = uiout;
   struct cleanup *list_cleanup;
-  uiout = interp_ui_out (mi_interp);
+  uiout = interp_ui_out(mi_interp);
 
-  list_cleanup = make_cleanup_ui_out_list_begin_end (uiout, "MI_HOOK_RESULT");
-  ui_out_field_string (uiout, "HOOK_TYPE", "thread_changed");
-  ui_out_field_int (uiout, "thread", thread_id);
-  do_cleanups (list_cleanup);
+  list_cleanup = make_cleanup_ui_out_list_begin_end(uiout, "MI_HOOK_RESULT");
+  ui_out_field_string(uiout, "HOOK_TYPE", "thread_changed");
+  ui_out_field_int(uiout, "thread", thread_id);
+  do_cleanups(list_cleanup);
   uiout = saved_ui_out;
 }
 /* APPLE LOCAL end hooks */
+
+/* EOF */

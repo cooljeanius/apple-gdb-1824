@@ -1132,7 +1132,7 @@ get_register (int regnum, int format)
    given as pairs. The corresponding MI command is
    -data-write-register-values <format> [<regnum1> <value1>...<regnumN> <valueN>]*/
 enum mi_cmd_result
-mi_cmd_data_write_register_values (char *command, char **argv, int argc)
+mi_cmd_data_write_register_values(char *command, char **argv, int argc)
 {
   int regnum;
   int i;
@@ -1146,42 +1146,45 @@ mi_cmd_data_write_register_values (char *command, char **argv, int argc)
      case, some entries of REGISTER_NAME will change depending upon
      the particular processor being debugged.  */
 
-  numregs = NUM_REGS + NUM_PSEUDO_REGS;
+  numregs = (NUM_REGS + NUM_PSEUDO_REGS);
 
   if (argc == 0)
     {
-      mi_error_message = xstrprintf ("mi_cmd_data_write_register_values: Usage: -data-write-register-values <format> [<regnum1> <value1>...<regnumN> <valueN>]");
+      mi_error_message = xstrprintf("mi_cmd_data_write_register_values: Usage: -data-write-register-values <format> [<regnum1> <value1>...<regnumN> <valueN>]");
       return MI_CMD_ERROR;
     }
 
-  format = (int) argv[0][0];
+  format = (int)argv[0][0];
+
+  if (format == 0) {
+    ; /* do nothing; just silence '-Wunused-but-set-variable' */
+  }
 
   if (!target_has_registers)
     {
-      mi_error_message = xstrprintf ("mi_cmd_data_write_register_values: No registers.");
+      mi_error_message = xstrprintf("mi_cmd_data_write_register_values: No registers.");
       return MI_CMD_ERROR;
     }
 
   if (!(argc - 1))
     {
-      mi_error_message = xstrprintf ("mi_cmd_data_write_register_values: No regs and values specified.");
+      mi_error_message = xstrprintf("mi_cmd_data_write_register_values: No regs and values specified.");
       return MI_CMD_ERROR;
     }
 
   if ((argc - 1) % 2)
     {
-      mi_error_message = xstrprintf ("mi_cmd_data_write_register_values: Regs and vals are not in pairs.");
+      mi_error_message = xstrprintf("mi_cmd_data_write_register_values: Regs and vals are not in pairs.");
       return MI_CMD_ERROR;
     }
 
   for (i = 1; i < argc; i = i + 2)
     {
-      regnum = atoi (argv[i]);
+      regnum = atoi(argv[i]);
 
-      if (regnum >= 0
-          && regnum < numregs
-          && REGISTER_NAME (regnum) != NULL
-          && *REGISTER_NAME (regnum) != '\000')
+      if ((regnum >= 0) && (regnum < numregs)
+          && (REGISTER_NAME(regnum) != NULL)
+          && (*REGISTER_NAME(regnum) != '\000'))
         {
           void *buffer;
           struct cleanup *old_chain;
@@ -1209,15 +1212,15 @@ mi_cmd_data_write_register_values (char *command, char **argv, int argc)
   return MI_CMD_DONE;
 }
 
-#if 0
-/*This is commented out because we decided it was not useful. I leave
+#if defined(I_FIND_THIS_USEFUL)
+/* This is commented out because we decided it was not useful. I leave
    it, just in case. ezannoni:1999-12-08 */
 
 /* Assign a value to a variable. The expression argument must be in
    the form A=2 or "A = 2" (I.e. if there are spaces it needs to be
    quoted. */
 enum mi_cmd_result
-mi_cmd_data_assign (char *command, char **argv, int argc)
+mi_cmd_data_assign(char *command, char **argv, int argc)
 {
   struct expression *expr;
   struct cleanup *old_chain;
@@ -1238,7 +1241,7 @@ mi_cmd_data_assign (char *command, char **argv, int argc)
   do_cleanups (old_chain);
   return MI_CMD_DONE;
 }
-#endif
+#endif /* I_FIND_THIS_USEFUL */
 
 /* Evaluate the value of the argument. The argument is an
    expression. If the expression contains spaces it needs to be
@@ -1730,7 +1733,7 @@ mi_cmd_data_write_memory(char *command, char **argv, int argc)
     };
   static struct mi_opt opts[] =
   {
-    {"o", OFFSET_OPT, 1},
+    { "o", OFFSET_OPT, 1 },
     { 0, 0, 0 },
   };
 
@@ -1766,6 +1769,10 @@ mi_cmd_data_write_memory(char *command, char **argv, int argc)
   word_format = argv[1][0];
   /* The size of the memory word: */
   word_size = atol(argv[2]);
+
+  if (word_format == 'x') {
+    ; /* do nothing; just silence '-Wunused-but-set-variable' */
+  }
 
   /* Calculate the real address of the write destination: */
   addr += (offset * word_size);
@@ -2013,11 +2020,11 @@ captured_mi_execute_command (struct ui_out *uiout, void *data)
 
 #if 0
 	char *argv[2];
-	/* Call the "console" interpreter.  */
+	/* Call the "console" interpreter: */
 	argv[0] = "console";
 	argv[1] = context->command;
-	mi_cmd_interpreter_exec ("-interpreter-exec", argv, 2);
-#endif
+	mi_cmd_interpreter_exec("-interpreter-exec", argv, 2);
+#endif /* 0 */
 
 	/* FIXME: If the command string has something that looks like
 	   a format spec (e.g. %s) we will get a core dump */
@@ -2718,19 +2725,19 @@ mi_interp_hand_call_function_hook(void)
      on another thread to change, and so the UI should refresh it's
      stack info.  */
 
-    if (!scheduler_lock_on_p ())
+    if (!scheduler_lock_on_p())
       {
 	struct cleanup *list_cleanup;
 	struct ui_out *saved_ui_out = uiout;
 
-	uiout = interp_ui_out (mi_interp);
+	uiout = interp_ui_out(mi_interp);
 
-	list_cleanup = make_cleanup_ui_out_list_begin_end (uiout, "MI_HOOK_RESULT");
-	ui_out_field_string (uiout, "HOOK_TYPE", "function-called");
-	do_cleanups (list_cleanup);
+	list_cleanup = make_cleanup_ui_out_list_begin_end(uiout, "MI_HOOK_RESULT");
+	ui_out_field_string(uiout, "HOOK_TYPE", "function-called");
+	do_cleanups(list_cleanup);
 	uiout = saved_ui_out;
 #if 0
-  mi_output_async_notification ("rerun");
+  mi_output_async_notification("rerun");
 #endif /* 0 */
       }
 }

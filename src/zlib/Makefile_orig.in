@@ -20,6 +20,11 @@ ACLOCAL_AMFLAGS="-I m4 --install"
 CC=@CC@
 CC_HARDCODED=cc
 
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
+
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+
 CFLAGS=-O1
 CFLAGS_WITH_DEFINES="-O1 -DMAX_WBITS=14 -DMAX_MEM_LEVEL=7"
 DEBUG_CFLAGS="-ggdb -DDEBUG"
@@ -43,6 +48,7 @@ AR_HARDCODED=ar
 ARFLAGS=rc
 RANLIB=@RANLIB@
 RANLIB_HARDCODED=ranlib
+SED=@SED@
 LDCONFIG=ldconfig
 LDSHAREDLIBC=-lc
 TAR=tar
@@ -238,10 +244,10 @@ zlib.3.pdf: zlib.3
 
 zconf.h.cmakein: zconf.h.in
 	-@ TEMPFILE=zconfh_$$; \
-	echo "/#define ZCONF_H/ a\\\\\n#cmakedefine Z_PREFIX\\\\\n#cmakedefine Z_HAVE_UNISTD_H\n" >> $$TEMPFILE &&\
-	sed -f $$TEMPFILE zconf.h.in > zconf.h.cmakein &&\
-	touch -r zconf.h.in zconf.h.cmakein &&\
-	rm $$TEMPFILE
+	echo "/#define ZCONF_H/ a\\\\\n#cmakedefine Z_PREFIX\\\\\n#cmakedefine Z_HAVE_UNISTD_H\n" >> $${TEMPFILE} && \
+	$(SED) -f $${TEMPFILE} zconf.h.in > zconf.h.cmakein && \
+	touch -r zconf.h.in zconf.h.cmakein && \
+	rm $${TEMPFILE}
 
 zconf: zconf.h.in
 	cp -p zconf.h.in zconf.h
@@ -264,7 +270,7 @@ clean:
 
 maintainer-clean: distclean
 distclean: clean zconf zconf.h.cmakein docs
-	rm -f Makefile zlib.pc configure.log
+	rm -f Makefile Makefile_orig zlib.pc configure.log autoscan.log
 	rm -rf autom4te.cache || rmdir autom4te.cache
 	-if test -e zlib.xcodeproj; then (rm -rf build || rmdir build); fi
 	-if test -e contrib/perl/Compress-Raw-Zlib-2.063/Makefile; then (cd contrib/perl/Compress-Raw-Zlib-2.063 && make distclean); fi

@@ -1,4 +1,4 @@
-/* MI Command Set - information commands.
+/* mi-cmd-info.c: MI Command Set - information commands.
    Copyright (C) 2011-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -14,25 +14,31 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>  */
 
 #include "defs.h"
 #include "osdata.h"
 #include "mi-cmds.h"
 
+/* Just put this prototype here for now; decide a better place for it
+ * (such as a header) later: */
+extern void mi_cmd_info_os(char *, char **, int);
+
 void
-mi_cmd_info_os (char *command, char **argv, int argc)
+mi_cmd_info_os(char *command, char **argv, int argc)
 {
   switch (argc)
     {
     case 0:
-      info_osdata_command ("", 0);
+      info_osdata_command("", 0);
       break;
     case 1:
-      info_osdata_command (argv[0], 0);
+      info_osdata_command(argv[0], 0);
       break;
     default:
-      error (_("Usage: -info-os [INFOTYPE]"));
+      error(_("Usage: -info-os [INFOTYPE]"));
       break;
     }
 }
+
+/* EOF */

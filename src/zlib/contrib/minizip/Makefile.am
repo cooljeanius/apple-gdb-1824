@@ -1,3 +1,5 @@
+## automake Makefile for the minizip contrib subdir for zlib
+
 lib_LTLIBRARIES = libminizip.la
 
 if COND_DEMOS
@@ -8,6 +10,10 @@ zlib_top_srcdir = $(top_srcdir)/../..
 zlib_top_builddir = $(top_builddir)/../..
 
 ACLOCAL_AMFLAGS = -I../../m4 --install
+
+## configure should subst HOST_ARCHITECTURE for us:
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+AM_CFLAGS = $(C_ARCHFLAGS)
 AM_CPPFLAGS = -I$(zlib_top_srcdir)
 AM_LDFLAGS = -L$(zlib_top_builddir)
 
@@ -46,3 +52,6 @@ minizip_SOURCES = minizip.c
 minizip_LDADD = libminizip.la -lz
 
 CLEANFILES = *~ autoscan.log .DS_Store
+
+distclean-local:
+	rm -rf autom4te.cache || rmdir autom4te.cache

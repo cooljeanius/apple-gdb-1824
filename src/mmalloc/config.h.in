@@ -1,5 +1,25 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+
+#ifndef HAVE_CONFIG_H
+# define HAVE_CONFIG_H 1
+#endif /* !HAVE_CONFIG_H */
+
+
+
+/* Check that config.h is #included before system headers
+ * (this works only for glibc, but that should be enough). */
+#if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "config.h should be #included before system headers"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
+#ifndef __CONFIG_H__
+# define __CONFIG_H__ 1
+# ifndef __MMALLOC_CONFIG_H__
+#  define __MMALLOC_CONFIG_H__ 1
+# endif /* __MMALLOC_CONFIG_H__ */
+
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
 
@@ -216,3 +236,7 @@
 /* Define to the type of an unsigned integer type of width exactly 32 bits if
    such a type exists and the standard includes do not define it. */
 #undef uint32_t
+
+
+#endif /* __CONFIG_H__ */
+

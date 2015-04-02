@@ -63,7 +63,11 @@ struct gdb_events mi_async_hooks =
     NULL, /* breakpoint_create */
     NULL, /* breakpoint_delete */
     NULL, /* breakpoint_modify */
-    mi_async_breakpoint_resolve_event
+    mi_async_breakpoint_resolve_event,
+    (gdb_events_tracepoint_create_ftype *)NULL,
+    (gdb_events_tracepoint_delete_ftype *)NULL,
+    (gdb_events_tracepoint_modify_ftype *)NULL,
+    (gdb_events_architecture_changed_ftype *)NULL
   };
 /* END APPLE LOCAL */
 
@@ -694,7 +698,7 @@ mi_load_progress(const char *section_name, unsigned long sent_so_far,
 extern initialize_file_ftype _initialize_mi_interp; /* -Wmissing-prototypes */
 
 void
-_initialize_mi_interp (void)
+_initialize_mi_interp(void)
 {
   static const struct interp_procs procs =
   {
@@ -702,19 +706,23 @@ _initialize_mi_interp (void)
     mi_interpreter_resume,	/* resume_proc */
     mi_interpreter_suspend,	/* suspend_proc */
     mi_interpreter_exec,	/* exec_proc */
-    mi_interpreter_prompt_p	/* prompt_proc_p */
+    mi_interpreter_prompt_p,	/* prompt_proc_p */
+    (interp_command_loop_ftype *)NULL,
+    (interp_complete_ftype *)NULL
   };
 
-  /* The various interpreter levels.  */
-  interp_add (interp_new (INTERP_MI1, NULL, mi_out_new (1), &procs));
-  interp_add (interp_new (INTERP_MI2, NULL, mi_out_new (2), &procs));
-  interp_add (interp_new (INTERP_MI3, NULL, mi_out_new (3), &procs));
+  /* The various interpreter levels: */
+  interp_add(interp_new(INTERP_MI1, NULL, mi_out_new(1), &procs));
+  interp_add(interp_new(INTERP_MI2, NULL, mi_out_new(2), &procs));
+  interp_add(interp_new(INTERP_MI3, NULL, mi_out_new(3), &procs));
 
   /* "mi" selects the most recent released version.  "mi2" was
      released as part of GDB 6.0.  */
 
   /* APPLE LOCAL: Set this back to mi0, since CodeWarrior just asks for
-     the "mi" and doesn't specify a version, but chokes on mi2.  */
+     the "mi" and does NOT specify a version, but chokes on mi2.  */
 
-  interp_add (interp_new (INTERP_MI, NULL, mi_out_new (0), &procs));
+  interp_add(interp_new(INTERP_MI, NULL, mi_out_new(0), &procs));
 }
+
+/* EOF */

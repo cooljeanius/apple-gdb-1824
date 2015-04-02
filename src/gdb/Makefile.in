@@ -767,6 +767,7 @@ elf_external_h = $(INCLUDE_DIR)/elf/external.h
 elf_frv_h =	$(INCLUDE_DIR)/elf/frv.h $(elf_reloc_macros_h)
 elf_internal_h = $(INCLUDE_DIR)/elf/internal.h
 filenames_h = $(INCLUDE_DIR)/filenames.h
+gnulib_regex_h = $(INCLUDE_DIR)/gnulib_regex.h
 libaout_h =	$(BFD_SRC)/libaout.h $(bfdlink_h)
 libiberty_h =	$(INCLUDE_DIR)/libiberty.h $(ansidecl_h)
 libbfd_h =	$(BFD_SRC)/libbfd.h $(hashtab_h)
@@ -784,6 +785,8 @@ readline_tilde_h =	$(READLINE_SRC)/tilde.h
 readline_history_h =	$(READLINE_SRC)/history.h
 rlstdc_h = $(READLINE_SRC)/rlstdc.h
 rltypedefs_h = $(READLINE_SRC)/rltypedefs.h
+regex_internal_h = $(INCLUDE_DIR)/regex_internal.h
+regex_quote_h = $(INCLUDE_DIR)/regex-quote.h
 frv_desc_h =	$(OPCODES_SRC)/frv-desc.h $(opcode_cgen_h)
 opcodes_frv_desc_h = $(frv_desc_h)
 sh_opc_h = 	$(OPCODES_SRC)/sh-opc.h $(bfd_h)
@@ -801,6 +804,8 @@ mmalloc_h = $(MMALLOC_DIR)/mmalloc.h $(ansidecl_h)
 mmprivate_h = $(MMALLOC_DIR)/mmprivate.h $(config_h) $(mmalloc_h)
 mach_o_h = $(BFD_SRC)/mach-o.h $(bfd_h)
 xsym_h = $(BFD_SRC)/xsym.h $(bfd_h)
+xregex_h = $(INCLUDE_DIR)/xregex.h $(xregex2_h)
+xregex2_h = $(INCLUDE_DIR)/xregex2.h
 
 #
 # ${BUILD}/ headers
@@ -959,6 +964,7 @@ objfiles_h = objfiles.h $(ansidecl_h) $(gdb_obstack_h) $(symfile_h) \
   $(inlining_h)
 ocd_h = ocd.h
 osabi_h = osabi.h
+osdata_h = osdata.h $(vec_h)
 parser_defs_h = parser-defs.h $(doublest_h)
 p_lang_h = p-lang.h
 ppcnbsd_tdep_h = ppcnbsd-tdep.h
@@ -1012,6 +1018,7 @@ value_h = value.h $(ansidecl_h) $(doublest_h) $(gdb_regex_h) $(frame_h) \
   $(symtab_h) $(gdbtypes_h) $(expression_h)
 varobj_h = varobj.h $(symtab_h) $(gdbtypes_h)
 vax_tdep_h = vax-tdep.h
+vec_h = vec.h $(gdb_string_h) $(gdb_assert_h)
 version_h = version.h
 wince_stub_h = wince-stub.h
 wrapper_h = wrapper.h $(gdb_h) $(varobj_h)
@@ -2808,7 +2815,7 @@ mn10300-tdep.o: mn10300-tdep.c $(defs_h) $(arch_utils_h) $(dis_asm_h) \
   $(regcache_h) $(mn10300_tdep_h)
 monitor.o: monitor.c $(defs_h) $(gdbcore_h) $(target_h) $(exceptions_h) \
   $(gdb_string_h) $(command_h) $(serial_h) $(monitor_h) $(gdbcmd_h) \
-  $(inferior_h) $(gdb_regex_h) $(srec_h) $(regcache_h)
+  $(inferior_h) $(gdb_regex_h) $(srec_h) $(regcache_h) $(regex_quote_h)
 nbsd-tdep.o: nbsd-tdep.c $(defs_h) $(gdb_string_h) $(solib_svr4_h)
 nlmread.o: nlmread.c $(defs_h) $(bfd_h) $(symtab_h) $(symfile_h) \
   $(objfiles_h) $(buildsym_h) $(stabsread_h) $(block_h)
@@ -3715,6 +3722,10 @@ mi-cmd-break.o: $(mi_srcdir)/mi-cmd-break.c $(defs_h) $(target_h) \
   $(mi_getopt_h) $(mi_main_h) $(gdb_events_h) $(interps_h) $(gdb_h) \
   $(gdbcmd_h) $(filenames_h) $(mi_cmd_break_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-break.c
+mi-cmd-catch.o: $(mi_srcdir)/mi-cmd-catch.c $(defs_h) $(arch_utils_h) \
+  $(breakpoint_h) $(gdb_h) $(libiberty_h) $(ada_lang_h) $(mi_cmds_h) \
+  $(mi_getopt_h) $(mi_cmd_break_h)
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-catch.c
 mi-cmd-disas.o: $(mi_srcdir)/mi-cmd-disas.c $(defs_h) $(target_h) \
   $(value_h) $(mi_cmds_h) $(mi_getopt_h) $(gdb_string_h) $(ui_out_h) \
   $(disasm_h)
@@ -3725,21 +3736,33 @@ mi-cmd-env.o: $(mi_srcdir)/mi-cmd-env.c $(defs_h) $(inferior_h) \
   $(gdb_string_h) $(gdb_stat_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-env.c
 mi-cmd-file.o: $(mi_srcdir)/mi-cmd-file.c $(defs_h) $(mi_cmds_h) \
-  $(mi_getopt_h) $(ui_out_h) $(symtab_h) $(source_h) $(objfiles_h)
+  $(mi_getopt_h) $(ui_out_h) $(symtab_h) $(source_h) $(objfiles_h) \
+  $(gdbcore_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-file.c
+mi-cmd-info.o: $(mi_srcdir)/mi-cmd-info.c $(defs_h) $(osdata_h) \
+  $(mi_cmds_h)
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-info.c
 mi-cmds.o: $(mi_srcdir)/mi-cmds.c $(defs_h) $(top_h) $(mi_cmds_h) \
   $(gdb_string_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmds.c
 # APPLE LOCAL begin subroutine inlining:
 mi-cmd-stack.o: $(mi_srcdir)/mi-cmd-stack.c $(defs_h) $(target_h) \
-  $(frame_h) $(value_h) $(mi_cmds_h) $(ui_out_h) $(symtab_h) $(block_h) \
-  $(stack_h) $(dictionary_h) $(gdb_string_h) $(inlining_h) \
-  $(srcdir)/config/i386/tm-i386-macosx.h
+  $(frame_h) $(value_h) $(mi_cmds_h) $(mi_main_h) $(ui_out_h) $(varobj_h) \
+  $(wrapper_h) $(interps_h) $(symtab_h) $(block_h) $(stack_h) \
+  $(dictionary_h) $(gdb_string_h) $(objfiles_h) $(gdb_regex_h) \
+  $(inlining_h) $(tm_i386_macosx_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-stack.c
 # APPLE LOCAL end subroutine inlining
+mi-cmd-target.o: $(mi_srcdir)/mi-cmd-target.c $(defs_h) $(mi_cmds_h) \
+  $(mi_getopt_h) $(remote_h)
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-target.c
 mi-cmd-var.o: $(mi_srcdir)/mi-cmd-var.c $(defs_h) $(mi_cmds_h) \
-  $(ui_out_h) $(mi_out_h) $(varobj_h) $(value_h) $(gdb_string_h)
+  $(ui_out_h) $(mi_out_h) $(varobj_h) $(value_h) $(gdb_string_h) \
+  $(frame_h) $(block_h) $(linespec_h) $(exceptions_h) $(inlining_h) \
+  $(breakpoint_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-var.c
+mi-common.o: $(mi_srcdir)/mi-common.c $(defs_h) $(mi_common_h)
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-common.c
 mi-console.o: $(mi_srcdir)/mi-console.c $(defs_h) $(mi_console_h) \
   $(gdb_string_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-console.c
@@ -3749,17 +3772,20 @@ mi-getopt.o: $(mi_srcdir)/mi-getopt.c $(defs_h) $(mi_getopt_h) \
 mi-interp.o: $(mi_srcdir)/mi-interp.c $(defs_h) $(gdb_string_h) \
   $(interps_h) $(event_top_h) $(event_loop_h) $(inferior_h) $(ui_out_h) \
   $(top_h) $(exceptions_h) $(mi_main_h) $(mi_cmds_h) $(mi_out_h) \
-  $(mi_console_h)
+  $(mi_console_h) $(mi_common_h) $(inlining_h) $(gdbthread_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-interp.c
 # APPLE LOCAL begin subroutine inlining:
 mi-main.o: $(mi_srcdir)/mi-main.c $(defs_h) $(target_h) $(inferior_h) \
-  $(gdb_string_h) $(exceptions_h) $(top_h) $(gdbthread_h) $(mi_cmds_h) \
-  $(mi_parse_h) $(mi_getopt_h) $(mi_console_h) $(ui_out_h) $(mi_out_h) \
-  $(interps_h) $(event_loop_h) $(event_top_h) $(gdbcore_h) $(value_h) \
-  $(regcache_h) $(gdb_h) $(frame_h) $(mi_main_h) $(inlining_h)
+  $(gdb_string_h) $(exceptions_h) $(top_h) $(gdbthread_h) $(gdbcmd_h) \
+  $(mi_cmds_h) $(mi_parse_h) $(mi_getopt_h) $(mi_console_h) $(ui_out_h) \
+  $(mi_out_h) $(interps_h) $(event_loop_h) $(event_top_h) $(gdbcore_h) \
+  $(value_h) $(regcache_h) $(gdb_h) $(frame_h) $(wrapper_h) $(source_h) \
+  $(mi_main_h) $(block_h) $(version_h) $(mi_common_h) $(inlining_h) \
+  $(objc_lang_h) $(breakpoint_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-main.c
 # APPLE LOCAL end subroutine inlining
-mi-out.o: $(mi_srcdir)/mi-out.c $(defs_h) $(ui_out_h) $(mi_out_h)
+mi-out.o: $(mi_srcdir)/mi-out.c $(defs_h) $(ui_out_h) $(ui_file_h) \
+  $(mi_out_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-out.c
 mi-parse.o: $(mi_srcdir)/mi-parse.c $(defs_h) $(mi_cmds_h) $(mi_parse_h) \
   $(gdb_string_h)
@@ -3767,8 +3793,6 @@ mi-parse.o: $(mi_srcdir)/mi-parse.c $(defs_h) $(mi_cmds_h) $(mi_parse_h) \
 mi-symbol-cmds.o: $(mi_srcdir)/mi-symbol-cmds.c $(defs_h) $(mi_cmds_h) \
   $(symtab_h) $(ui_out_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-symbol-cmds.c
-mi-common.o: $(mi_srcdir)/mi-common.c $(defs_h) $(mi_common_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-common.c
 
 #
 # rdi-share sub-directory

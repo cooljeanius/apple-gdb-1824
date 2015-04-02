@@ -633,7 +633,6 @@ ac_includes_default="\
 #endif"
 
 ac_header_list=
-ac_func_list=
 enable_option_checking=no
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
@@ -738,6 +737,9 @@ INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
 mkinstalldirs
+TARGET_ARCHITECTURE
+HOST_ARCHITECTURE
+BUILD_ARCHITECTURE
 target_os
 target_vendor
 target_cpu
@@ -2568,7 +2570,6 @@ fi
 as_fn_append ac_header_list " stdlib.h"
 as_fn_append ac_header_list " unistd.h"
 as_fn_append ac_header_list " sys/param.h"
-as_fn_append ac_func_list " strerror"
 # Check that the precious variables saved in the cache have kept the same
 # value.
 ac_cache_corrupted=false
@@ -2685,6 +2686,7 @@ ac_config_commands="$ac_config_commands multilib-default-1"
 
 fi
 
+# architecture stuff:
 ac_aux_dir=
 for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
   if test -f "$ac_dir/install-sh"; then
@@ -2824,6 +2826,18 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+
+fi
 
 # This works around an automake problem.
 mkinstalldirs="`cd ${ac_aux_dir} && ${PWDCMD-pwd}`/mkinstalldirs"
@@ -19437,6 +19451,22 @@ _ACEOF
 fi
 
 done
+  ## probably unnecessary:
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  for ac_header in unistd.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "unistd.h" "ac_cv_header_unistd_h" "$ac_includes_default"
+if test "x$ac_cv_header_unistd_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_UNISTD_H 1
+_ACEOF
+
+fi
+
+done
+
+fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking cpu-specific header for ${host}" >&5
 $as_echo_n "checking cpu-specific header for ${host}... " >&6; }
@@ -20466,8 +20496,8 @@ fi
 
 
 for ac_func in access atexit chmod exit fprintf fseeko ftruncate \
-                gettimeofday localeconv memchr memmove memset mkdir munmap \
-                snprintf sprintf strchr strdup strrchr strtol \
+                gettimeofday localeconv memchr memmove memset mkdir \
+                munmap snprintf sprintf strchr strdup strrchr strtol \
                 system utime vsnprintf vsprintf
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
@@ -20479,23 +20509,21 @@ _ACEOF
 
 fi
 done
-
-
-
-  for ac_func in $ac_func_list
+  ## just in case:
+if test "x${ac_cv_func_strerror}" = "x"; then
+  test -z "${ac_cv_func_strerror}"
+  for ac_func in strerror
 do :
-  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
-ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
-if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
+  ac_fn_c_check_func "$LINENO" "strerror" "ac_cv_func_strerror"
+if test "x$ac_cv_func_strerror" = xyes; then :
   cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
+#define HAVE_STRERROR 1
 _ACEOF
 
 fi
 done
 
-
-
+fi
 
 # Output.
 if test -n "${with_cross_host}" &&

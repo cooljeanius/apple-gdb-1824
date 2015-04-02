@@ -44,12 +44,9 @@
 #include <mach-o/loader.h>
 
 #ifdef USE_MMALLOC
-/* FIXME: remove this part once the "config.h" for mmalloc guards against
- * inclusions of other "config.h" headers: */
-# if !defined(PACKAGE_NAME) && !defined(PACKAGE_STRING) && \
-     !defined(PACKAGE_TARNAME) && !defined(PACKAGE_VERSION)
+# if !defined(__MMPRIVATE_H)
 #  include "mmprivate.h"
-# endif /* !PACKAGE_NAME && !PACKAGE_STRING && !PACKAGE_TARNAME && !PACKAGE_VERSION */
+# endif /* !__MMPRIVATE_H */
 #endif /* USE_MMALLOC */
 
 #if defined(TARGET_POWERPC)
