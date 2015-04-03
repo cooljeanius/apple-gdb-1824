@@ -662,6 +662,8 @@ WIN32LDFLAGS
 LIBM
 COREFLAG
 COREFILE
+zlibinc
+zlibdir
 XGETTEXT_EXTRA_OPTIONS
 MSGMERGE
 XGETTEXT_015
@@ -757,6 +759,7 @@ CXXDEPMODE
 ac_ct_CXX
 CXXFLAGS
 CXX
+ifGNUmake
 CAN_BUILD_IN_SANDBOX
 sb_build_profile
 MAKE_BIN
@@ -6868,6 +6871,33 @@ $as_echo "no" >&6; }
     fi
   fi
 fi
+
+                { $as_echo "$as_me:${as_lineno-$LINENO}: checking for GNU make" >&5
+$as_echo_n "checking for GNU make... " >&6; }
+if ${ax_cv_gnu_make_command+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+                ax_cv_gnu_make_command=''
+                for a in "${MAKE}" make gmake gnumake remake; do
+                        if test -z "${a}"; then continue; fi
+                        if (${SHELL} -c "${a} --version" 2>/dev/null | ${GREP} GNU  2>&1 > /dev/null); then
+                                ax_cv_gnu_make_command=${a};
+                                break;
+                        fi
+                done
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_gnu_make_command" >&5
+$as_echo "$ax_cv_gnu_make_command" >&6; }
+        if test "x${ax_cv_gnu_make_command}" != "x"; then
+                ifGNUmake=''
+        else
+                ifGNUmake='#'
+                { $as_echo "$as_me:${as_lineno-$LINENO}: result: Not found" >&5
+$as_echo "Not found" >&6; }
+        fi
+
 
 # Check whether --enable-shared was given.
 if test "${enable_shared+set}" = set; then :
@@ -18782,6 +18812,43 @@ fi
     ;;
   esac;
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Werror -Wunknown-warning-option" >&5
+$as_echo_n "checking whether C compiler handles -Werror -Wunknown-warning-option... " >&6; }
+if ${gl_cv_warn_c__Werror__Wunknown_warning_option+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Werror -Wunknown-warning-option"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__Werror__Wunknown_warning_option=yes
+else
+  gl_cv_warn_c__Werror__Wunknown_warning_option=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Werror__Wunknown_warning_option" >&5
+$as_echo "$gl_cv_warn_c__Werror__Wunknown_warning_option" >&6; }
+if test "x$gl_cv_warn_c__Werror__Wunknown_warning_option" = xyes; then :
+  gl_unknown_warnings_are_errors='-Wunknown-warning-option -Werror'
+else
+  gl_unknown_warnings_are_errors=
+fi
+
 
 # "-W" and "-Wextra" are redundant.
 WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
@@ -18865,6 +18932,7 @@ if test "x${PEDANTIC_WARNINGS}" = "xyes"; then
     WARN_DEFS="${WARN_DEFS} -D__STRICT_ANSI__"
 fi
 
+
 # Check whether --enable-build-warnings was given.
 if test "${enable_build_warnings+set}" = set; then :
   enableval=$enable_build_warnings; case "${enableval}" in
@@ -18929,7 +18997,7 @@ $as_echo_n "checking compiler warning flags to use... " >&6; }
 	case ${w} in
 	*) # Check that GCC accepts it:
 	    saved_CFLAGS="${CFLAGS}"
-	    CFLAGS="${CFLAGS} ${w}"
+	    CFLAGS="${CFLAGS} ${w} ${gl_unknown_warnings_are_errors}"
 	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -21001,9 +21069,10 @@ _ACEOF
 
 else
 
-  PRE_INTL_LDFLAGS="${LDFLAGS}"
-  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lintl" >&5
+  if test -x "`which ld`"; then
+    PRE_INTL_LDFLAGS="${LDFLAGS}"
+    LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lintl" >&5
 $as_echo_n "checking for main in -lintl... " >&6; }
 if ${ac_cv_lib_intl_main+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -21041,8 +21110,9 @@ _ACEOF
   LIBS="-lintl $LIBS"
 
 fi
-  ## reset:
-  LDFLAGS="${PRE_INTL_LDFLAGS}"
+    ## reset:
+    LDFLAGS="${PRE_INTL_LDFLAGS}"
+  fi
 
 fi
   ## TODO: might want to make sure the in-tree libiberty is found first:
@@ -21136,9 +21206,10 @@ _ACEOF
 
 else
 
-    PRE_LIBERTY_LDFLAGS="${LDFLAGS}"
-    LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -liberty" >&5
+    if test -x "`which ld`"; then
+      PRE_LIBERTY_LDFLAGS="${LDFLAGS}"
+      LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -liberty" >&5
 $as_echo_n "checking for main in -liberty... " >&6; }
 if ${ac_cv_lib_iberty_main+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -21176,8 +21247,9 @@ _ACEOF
   LIBS="-liberty $LIBS"
 
 fi
-    ## reset:
-    LDFLAGS="${PRE_LIBERTY_LDFLAGS}"
+      ## reset:
+      LDFLAGS="${PRE_LIBERTY_LDFLAGS}"
+    fi
 
 fi
 
@@ -21318,9 +21390,10 @@ _ACEOF
 
 else
 
-      PRE_GNU_LDFLAGS="${LDFLAGS}"
-      LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lgnu" >&5
+      if test -x "`which ld`"; then
+        PRE_GNU_LDFLAGS="${LDFLAGS}"
+        LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lgnu" >&5
 $as_echo_n "checking for main in -lgnu... " >&6; }
 if ${ac_cv_lib_gnu_main+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -21358,8 +21431,9 @@ _ACEOF
   LIBS="-lgnu $LIBS"
 
 fi
-      ## reset:
-      LDFLAGS="${PRE_GNU_LDFLAGS}"
+        ## reset:
+        LDFLAGS="${PRE_GNU_LDFLAGS}"
+      fi
 
 fi
 
@@ -24874,7 +24948,7 @@ $as_echo_n "checking zlib... " >&6; }
 $as_echo " " >&6; }
 
 
-  # See if the user specified whether he wants zlib support or not.
+  # See if the user specified whether he or she wants zlib support or not:
 
 # Check whether --with-zlib was given.
 if test "${with_zlib+set}" = set; then :
@@ -24954,6 +25028,14 @@ fi
     if test "x${with_zlib}" = "yes" -a "x${ac_cv_header_zlib_h}" != "xyes"; then
       as_fn_error $? "zlib (libz) library was explicitly requested but not found" "$LINENO" 5
     fi
+  fi
+
+  # for the in-tree one:
+  if test "x${zlibdir}" = "x"; then
+    test -z "${zlibdir}" && zlibdir=-L../zlib
+  fi
+  if test "x${zlibinc}" = "x"; then
+    test -z "${zlibinc}" && zlibinc="-I\$(srcdir)/../zlib"
   fi
 
 # If we are configured native, pick a core file support file.

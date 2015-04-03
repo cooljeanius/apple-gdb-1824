@@ -28,9 +28,19 @@ Boston, MA 02111-1307, USA.
 #define __MMPRIVATE_H 1
 
 #ifdef HAVE_CONFIG_H
-/* FIXME: guard against inclusion of other "config.h" headers
- * from sister subdirs: */
-# include "config.h"
+# if !defined(__CONFIG_H__)
+#  include "config.h"
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   if defined(__MMALLOC_CONFIG_H__)
+#    warning "The mmalloc config.h has already been included once."
+#   else
+#    if defined(__GDB_CONFIG_H__)
+#     warning "The config.h for gdb was included before the mmalloc one."
+#    endif /* __GDB_CONFIG_H__ */
+#   endif /* __MMALLOC_CONFIG_H__ */
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* !__CONFIG_H__ */
 #else
 # ifndef _MMPRIVATE_H_NON_AUTOTOOLS_BUILD
 #  define _MMPRIVATE_H_NON_AUTOTOOLS_BUILD 1

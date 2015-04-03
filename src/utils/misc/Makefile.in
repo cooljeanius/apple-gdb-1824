@@ -80,7 +80,9 @@ install:
 		fi; \
 	    done
 
-clean:
+mostlyclean:
+	-rm -f .DS_Store
+clean: mostlyclean
 	-rm -f *~ core *.o a.out 
 	@for dir in ${SUBDIRS}; do \
 	    echo "$${dir}:"; \

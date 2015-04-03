@@ -12,6 +12,7 @@ export RC_OS=macos
 export RC_PRIVATE=/private
 export RC_RELEASE=Leopard
 export RC_XBS=YES
+export SDKROOT_FOR_BUILD=/Developer/SDKs/MacOSX10.5.sdk
 export SEPARATE_STRIP=YES
 export UNAME_RELEASE=9.8.0
 export UNAME_SYSNAME=Darwin

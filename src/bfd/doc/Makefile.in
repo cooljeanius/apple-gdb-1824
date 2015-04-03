@@ -112,7 +112,7 @@ noinst_PROGRAMS = chew_am$(EXEEXT)
 @GENINSRC_NEVER_TRUE@am__append_1 = bfd.info
 subdir = doc
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps =  \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_check_gnu_make.m4 \
 	$(top_srcdir)/m4/ax_maintainer_mode_auto_silent.m4 \
 	$(top_srcdir)/m4/ax_patch_libtool_changing_cmds_ifs.m4 \
 	$(top_srcdir)/m4/gettext-sister.m4 \
@@ -463,6 +463,7 @@ host_noncanonical = @host_noncanonical@
 host_os = @host_os@
 host_vendor = @host_vendor@
 htmldir = @htmldir@
+ifGNUmake = @ifGNUmake@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
@@ -503,6 +504,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 wordsize = @wordsize@
+zlibdir = @zlibdir@
+zlibinc = @zlibinc@
 AUTOMAKE_OPTIONS = 1.9 gnits -Wno-override no-dependencies subdir-objects
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 AM_V_redir = $(am__v_redir_$(V))
@@ -1202,7 +1205,7 @@ $(MKDOC): $(srcdir)/chew.c $(PATH_TO_MOVEIFCHANGE)
 	  $(AM_CPPFLAGS); \
 	$(RUN_MOVEIFCHANGE) chew.$$$$ $(MKDOC)
 
-chew.o: chew.c
+chew.o: chew.c $(srcdir_high)/include/ansidecl.h @MAINT@ Makefile
 	$(AM_V_CC)$(CC_FOR_BUILD) -c $(AM_CPPFLAGS) $(H_CFLAGS) \
 	  $(CFLAGS_FOR_BUILD) $(srcdir)/chew.c
 
@@ -1445,6 +1448,24 @@ libcoff.h: $(LIBCOFF_H_DEP) @MAINT@ $(src_MKDOC)
 		$(src_MKDOC) -i -f $(srcdir)/proto.str < $${file} >>$@ ;; \
 	  esac; \
 	done
+
+am--refresh: Makefile $(srcdir_up)/Makefile
+	@pwd || echo "am--refresh"
+
+$(srcdir_up)/Makefile: $(srcdir_up)/Makefile.in $(top_builddir)/config.status
+	if test $(srcdir) != "."; then \
+	  if test -e ../Makefile -a ! -e $(srcdir_up)/Makefile; then \
+	    cp $(AM_V_v) ../Makefile $(srcdir_up)/Makefile; \
+	  elif test -e $(srcdir_up)/config.status; then \
+	    echo ' $(SHELL) $(srcdir_up)/config.status'; \
+	    $(SHELL) $(srcdir_up)/config.status; \
+	  fi; \
+	else \
+	  if test -e $(top_builddir)/config.status; then \
+	    echo ' $(SHELL) $(top_builddir)/config.status'; \
+	    $(SHELL) $(top_builddir)/config.status; \
+	  fi; \
+	fi
 
 bfd.h: $(BFD_H_DEP) @MAINT@ $(src_MKDOC)
 	echo "$(BFD_H_DEP)" | $(SED) -f $(srcdir)/header.sed \

@@ -401,17 +401,18 @@ _obstack_memory_used (struct obstack *h)
   return nbytes;
 }
 
-/* Define the error handler.  */
+/* Define the error handler: */
 #ifndef _
-# if (HAVE_LIBINTL_H && (defined(ENABLE_NLS) && ENABLE_NLS)) || defined _LIBC
+# if ((defined(HAVE_LIBINTL_H) && HAVE_LIBINTL_H) && \
+      (defined(ENABLE_NLS) && ENABLE_NLS)) || defined _LIBC
 #  include <libintl.h>
 #  ifndef _
 #   define _(Str) gettext (Str)
-#  endif
+#  endif /* !_ */
 # else
 #  define _(Str) (Str)
-# endif
-#endif
+# endif /* (HAVE_LIBINTL_H && ENABLE_NLS) || _LIBC */
+#endif /* !_ */
 
 static void
 print_and_abort (void)

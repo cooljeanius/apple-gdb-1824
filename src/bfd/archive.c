@@ -127,6 +127,11 @@ DESCRIPTION
  " 18             " - Long name 18 characters long, extended pseudo-BSD.
  */
 
+#if defined(HAVE_CONFIG_H) && !defined(__CONFIG_H__) && \
+    !defined(__BFD_CONFIG_H__) && !defined(__BFD_H_SEEN__) && 0
+# include "config.h"
+#endif /* HAVE_CONFIG_H && !__CONFIG_H__ && !__BFD_CONFIG_H__ && !__BFD_H_SEEN__ && 0 */
+
 #include "bfd.h"
 #include "sysdep.h"
 #include "libiberty.h"

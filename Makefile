@@ -130,7 +130,9 @@ BINUTILS_HEADERS = $(BINUTILS_FRAMEWORK)/Headers
 INTL_FRAMEWORK = $(BINUTILS_BUILD_ROOT)/usr/lib/libintl.dylib
 INTL_HEADERS = $(BINUTILS_BUILD_ROOT)/usr/include
 
+ifndef SDKROOT_FOR_BUILD
 export SDKROOT_FOR_BUILD = $(shell xcodebuild -version -sdk macosx Path 2>/dev/null | head -1)
+endif
 
 export AR       = $(shell xcrun -find ar)
 export CC       = $(shell (xcrun -find clang 2>/dev/null || xcrun -find gcc))
@@ -202,11 +204,13 @@ CONFIG_ENABLE_GDBTK=--enable-gdbtk=no
 CONFIG_ENABLE_GDBMI=--enable-gdbmi
 CONFIG_ENABLE_BUILD_WARNINGS=--enable-build-warnings --disable-werror
 CONFIG_ENABLE_TUI=--disable-tui
-CONFIG_ALL_BFD_TARGETS=--enable-targets
+CONFIG_ALL_BFD_TARGETS=--enable-targets#=all
+CONFIG_ALL_BFD_APPLE_TARGETS=--enable-targets=m68k-apple-aux,powerpc-apple-rhapsody,arm-apple-darwin,i386-apple-darwin,x86_64-apple-darwin,powerpc-apple-macos
 CONFIG_64_BIT_BFD=--enable-64-bit-bfd
 CONFIG_WITH_MMAP=--with-mmap
 CONFIG_ENABLE_SHARED=--disable-shared
-CONFIG_MAINTAINER_MODE=
+CONFIG_MAINTAINER_MODE=#--enable-maintainer-mode
+CONFIG_SILENT_RULES=
 CONFIG_BUILD=--build=$(BUILD_ARCH)
 CONFIG_OTHER_OPTIONS?=--disable-serial-configure --disable-opts-test --with-x --enable-carbon-framework --enable-debug-symbols-framework
 
@@ -249,7 +253,6 @@ CONFIGURE_OPTIONS = $(filter-out ,\
 	$(CONFIG_ENABLE_GDBMI) \
 	$(CONFIG_ENABLE_BUILD_WARNINGS) \
 	$(CONFIG_ENABLE_TUI) \
-	$(CONFIG_ALL_BFD_TARGETS) \
 	$(CONFIG_ALL_BFD_TARGETS) \
 	$(CONFIG_64_BIT_BFD) \
 	$(CONFIG_WITH_MMAP) \
@@ -796,8 +799,12 @@ install-source:
 all: build
 	if test -e src/Makefile; then unset CPP && $(MAKE) -C src; fi
 
-clean:
-	if test -e src/Makefile; then unset CPP && $(MAKE) -i -C src clean; fi
+mostlyclean:
+	if test -e src/Makefile; then \
+	  unset CPP && $(MAKE) -i -C src mostlyclean; fi
+clean: mostlyclean
+	if test -e src/Makefile; then \
+	  unset CPP && $(MAKE) -i -C src clean; fi
 	$(RM) -r $(OBJROOT)
 	$(RM) *~
 	$(RM) .DS_Store
@@ -805,9 +812,10 @@ clean:
 	$(RM) autoscan.log
 
 distclean: clean
-	if test -e src/Makefile; then unset CPP && $(MAKE) -i -C src distclean; fi
+	if test -e src/Makefile; then \
+	  unset CPP && $(MAKE) -i -C src distclean; fi
 	$(RM) configure config.log
-.PHONY: distclean
+.PHONY: mostlyclean distclean
 
 check-args:
 ifneq (,$(filter-out i386-apple-darwin, $(filter-out powerpc-apple-darwin, $(filter-out x86_64-apple-darwin, $(filter-out arm-apple-darwin, $(CANONICAL_ARCHS))))))

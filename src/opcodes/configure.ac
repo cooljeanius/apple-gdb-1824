@@ -717,6 +717,7 @@ fi
 
 dnl# ...and the 3rd one:
 AC_CONFIG_COMMANDS([broken_libtool_hack_fix3],[
+if test -x ./config.status; then
   if test -z "${our_libtool_script}"; then
     if test -x ./libtool; then
       our_libtool_script="./libtool"
@@ -743,7 +744,7 @@ AC_CONFIG_COMMANDS([broken_libtool_hack_fix3],[
       echo "error: my_libtooldir should be defined if ${our_libtool_script} already defines objdir" >&2
       exit 1
     fi
-  else
+  elif test -e ${our_libtool_script}; then
     echo "" >> ${our_libtool_script}
     if test -n "${lt_cv_objdir}"; then
       echo "using lt_cv_objdir ('${lt_cv_objdir}') to define objdir in ${our_libtool_script}"
@@ -763,7 +764,10 @@ AC_CONFIG_COMMANDS([broken_libtool_hack_fix3],[
     else
       echo "warning: need to define objdir in ${our_libtool_script}, but cannot figure out how to do so"
     fi
+  else
+    echo "I hate libtool..."
   fi
+fi
 ],[])dnl
 
 # Output happens for real now.

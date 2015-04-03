@@ -102,6 +102,7 @@ if test -n "${SANDBOX_EXEC}" -a -n "${MAKE_BIN}"; then
     fi
   fi
 fi
+AX_CHECK_GNU_MAKE
 
 dnl# Default to a non shared library. This may be overridden by the
 dnl# configure option --enable-shared.
@@ -516,37 +517,45 @@ if test -z "${SYSTEM_FRAMEWORK_LIBS}"; then
   AC_MSG_ERROR([Missing some required system libraries.])
 fi
 AC_SUBST([SYSTEM_FRAMEWORK_LIBS])dnl
+dnl#FIXME: the darwin linker sometimes crashes somewhere in these next
+dnl# few parts...
 AC_CHECK_LIB([c],[printf])dnl
 dnl# the libtool checks will already check for dlopen, so use a different
 dnl# symbol here:
 AC_CHECK_LIB([dl],[dlsym])dnl
 # ../intl is added to LDFLAGS above, so this should work:
 AC_CHECK_LIB([intl],[gettext],[],[
-  PRE_INTL_LDFLAGS="${LDFLAGS}"
-  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-  AC_CHECK_LIB([intl],[main],[],[])dnl
-  ## reset:
-  LDFLAGS="${PRE_INTL_LDFLAGS}"
+  if test -x "`which ld`"; then
+    PRE_INTL_LDFLAGS="${LDFLAGS}"
+    LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+    AC_CHECK_LIB([intl],[main],[],[])dnl
+    ## reset:
+    LDFLAGS="${PRE_INTL_LDFLAGS}"
+  fi
 ])dnl
   ## TODO: might want to make sure the in-tree libiberty is found first:
 AC_CHECK_LIB([iberty],[rpl_malloc],[],[
   AC_CHECK_LIB([iberty],[xmalloc],[],[
-    PRE_LIBERTY_LDFLAGS="${LDFLAGS}"
-    LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-    AC_CHECK_LIB([iberty],[main])dnl
-    ## reset:
-    LDFLAGS="${PRE_LIBERTY_LDFLAGS}"
+    if test -x "`which ld`"; then
+      PRE_LIBERTY_LDFLAGS="${LDFLAGS}"
+      LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+      AC_CHECK_LIB([iberty],[main])dnl
+      ## reset:
+      LDFLAGS="${PRE_LIBERTY_LDFLAGS}"
+    fi
   ])dnl
 ])dnl
   ## just in case:
 AC_CHECK_LIB([gnu],[rpl_malloc],[],[
   AC_CHECK_LIB([gnu],[xmalloc],[],[
     AC_CHECK_LIB([gnu],[gl_dummy_symbol],[],[
-      PRE_GNU_LDFLAGS="${LDFLAGS}"
-      LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-      AC_CHECK_LIB([gnu],[main])dnl
-      ## reset:
-      LDFLAGS="${PRE_GNU_LDFLAGS}"
+      if test -x "`which ld`"; then
+        PRE_GNU_LDFLAGS="${LDFLAGS}"
+        LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+        AC_CHECK_LIB([gnu],[main])dnl
+        ## reset:
+        LDFLAGS="${PRE_GNU_LDFLAGS}"
+      fi
     ])dnl
   ])dnl
 ])dnl

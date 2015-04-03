@@ -1029,12 +1029,12 @@ LIBTOOL_SOVERSION = `cat libtool-soversion`
 
 noinst_LIBRARIES = libbfd.a
 libbfd_a_SOURCES = libbfd.h $(BFD32_LIBS_CFILES) $(BFD64_LIBS_CFILES)
-MY_EXTRA_libbfd_a_SOURCES_COMMENTED_OUT = $(CFILES)
-EXTRA_libbfd_a_SOURCES = $(CFILES)
-libbfd_a_DEPENDENCIES = stamp-ofiles ofiles $(srcdir)/ofiles
+MY_EXTRA_libbfd_a_SOURCES_COMMENTED_OUT = $(BFD_H) $(CFILES)
+EXTRA_libbfd_a_SOURCES = bfd.h $(CFILES)
+libbfd_a_DEPENDENCIES = stamp-ofiles ofiles $(srcdir)/ofiles @MAINT@ bfd.h
 ## '$(OFILES)' does NOT work as a dependency here any more, now that
 ## it is actually a command, so use 'stamp-staticlib' for it instead:
-EXTRA_libbfd_a_DEPENDENCIES = stamp-staticlib @MAINT@ Makefile
+EXTRA_libbfd_a_DEPENDENCIES = stamp-staticlib @MAINT@ Makefile # $(BFD_H)
 libbfd_a_LIBADD = `cat ofiles` @WIN32LIBADD@
 ## see if this will cause automake to give its objfiles a different name:
 libbfd_a_CFLAGS = $(AM_CFLAGS) # -fkeep-inline-functions
@@ -1042,6 +1042,7 @@ libbfd_a_LDFLAGS = -static
 
 # FIXME: Even the hack fails now... (does it still? I think we are okay...)
 stamp-lib: libbfd.la @MAINT@ ofiles $(PATH_TO_MOVEIFCHANGE) ltmain.sh
+	if test ! -e stamp-staticlib; then $(MAKE) stamp-staticlib; fi
 	libtooldir=`$(LIBTOOL) --config | $(SED) -n -e 's/^objdir=//p'`; \
 	if test -z "$${libtooldir}"; then \
 	  echo "" && echo "error: libtooldir is unset" >&2 && exit 1; \
@@ -1065,7 +1066,11 @@ stamp-lib: libbfd.la @MAINT@ ofiles $(PATH_TO_MOVEIFCHANGE) ltmain.sh
 # as part of a rule instead:
 stamp-staticlib: stamp-ofiles @MAINT@ bfd.h
 	rm -f $(AM_V_v) stamp-staticlib
+	if test ! -e $(BFD_H); then $(MAKE) $(BFD_H); fi
 	$(MAKE) $(OFILES)
+	if test -n "$(libbfd_a_OBJECTS)"; then \
+	  $(MAKE) $(libbfd_a_OBJECTS); \
+	fi
 	if [ -f libbfd.a ]; then \
 	  $(RANLIB) libbfd.a; \
 	fi
@@ -1111,12 +1116,15 @@ targets.o: targets.lo
 libbfd_a-targets.o: targets.c @MAINT@ Makefile
 	$(AM_V_CC)$(COMPILE) -c $(TDEFAULTS) $(srcdir)/targets.c -o $@
 
+libbfd_a-archive.o: archive.c @MAINT@ Makefile config.h bfd.h
+	$(AM_V_CC)$(COMPILE) -c $(TDEFAULTS) $(srcdir)/archive.c -o $@
+
 archures.lo: archures.c @MAINT@ Makefile ltmain.sh
 	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	  $(LIBTOOLFLAGS) --mode=compile $(COMPILE) -c $(TDEFAULTS) \
 	  $(srcdir)/archures.c
 archures.o: archures.lo
-libbfd_a-archures.o: archures.c @MAINT@ Makefile
+libbfd_a-archures.o: archures.c @MAINT@ Makefile bfd.h
 	$(AM_V_CC)$(COMPILE) -c $(TDEFAULTS) $(srcdir)/archures.c -o $@
 
 dwarf2.lo: dwarf2.c @MAINT@ Makefile ltmain.sh
@@ -1300,6 +1308,7 @@ dep-am: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(AM_V_at)touch $(srcdir)/Makefile.am
 
 # Some manually-specified dependencies:
+archive64.o: archive64.lo
 host-aout.lo: Makefile
 host-aout.o: host-aout.lo
 mach-o.lo: $(BFD_H) bfd.h bfd-in2.h bfd-in3.h mach-o-target.c \
@@ -1319,8 +1328,13 @@ gen-aout: $(srcdir)/gen-aout.c @MAINT@ Makefile
 	$(AM_V_CCLD)$(CC) -o gen-aout $(AM_CFLAGS) $(CFLAGS) $(LFLAGS) \
 	  $(srcdir)/gen-aout.c
 
-$(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h $(srcdir)/libbfd.h $(srcdir)/libcoff.h
-	(cd $(srcdir) && $(MAKE) headers $(FLAGS_TO_PASS))
+$(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h $(srcdir)/libbfd.h \
+  $(srcdir)/libcoff.h @MAINT@ $(srcdir)/Makefile
+	if test -e $(srcdir)/Makefile; then \
+	  (cd $(srcdir) && $(MAKE) headers $(FLAGS_TO_PASS)); \
+	elif test -e ./Makefile; then \
+	  (cd . && $(MAKE) headers $(FLAGS_TO_PASS)); \
+	fi
 
 stmp-bfd-h: bfd-in3.h @MAINT@ headers @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	rm -f $(AM_V_v) bfd-tmp.h
@@ -1409,6 +1423,39 @@ headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH
 	$(AM_V_at)touch $(srcdir)/libcoff.h
 .PHONY: headers
 
+$(sdocdir)/Makefile: $(sdocdir)/Makefile.in $(top_builddir)/config.status
+	if test $(srcdir) != "."; then \
+	  if test -e ./doc/Makefile -a ! -e $(sdocdir)/Makefile; then \
+	    cp $(AM_V_v) ./doc/Makefile $(sdocdir)/Makefile; \
+	  elif test -e $(srcdir)/config.status; then \
+	    echo ' $(SHELL) $(srcdir)/config.status'; \
+	    $(SHELL) $(srcdir)/config.status; \
+	  fi; \
+	else \
+	  if test -e $(top_builddir)/config.status; then \
+	    echo ' $(SHELL) $(top_builddir)/config.status'; \
+	    $(SHELL) $(top_builddir)/config.status; \
+	  fi; \
+	fi
+	if test ! -e $(srcdir)/Makefile; then $(MAKE) $(srcdir)/Makefile; fi
+
+@ifGNUmake@ifneq ($(srcdir),.)
+@ifGNUmake@$(srcdir)/Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+@ifGNUmake@	if test $(srcdir) != "."; then \
+@ifGNUmake@	  if test -e ./Makefile -a ! -e $(srcdir)/Makefile; then \
+@ifGNUmake@	    cp $(AM_V_v) ./Makefile $(srcdir)/Makefile; \
+@ifGNUmake@	  elif test -e $(srcdir)/config.status; then \
+@ifGNUmake@	    echo ' $(SHELL) $(srcdir)/config.status'; \
+@ifGNUmake@	    $(SHELL) $(srcdir)/config.status; \
+@ifGNUmake@	  fi; \
+@ifGNUmake@	else \
+@ifGNUmake@	  if test -e $(top_builddir)/config.status; then \
+@ifGNUmake@	    echo ' $(SHELL) $(top_builddir)/config.status'; \
+@ifGNUmake@	    $(SHELL) $(top_builddir)/config.status; \
+@ifGNUmake@	  fi; \
+@ifGNUmake@	fi
+@ifGNUmake@endif
+
 # We only rebuild the header files automatically if we have been
 # configured with --enable-maintainer-mode.
 
@@ -1452,10 +1499,12 @@ MOSTLYCLEANFILES = tofiles ofiles stamp-ofiles
 MOSTLYCLEANFILES += tlofiles lofiles stamp-lofiles
 MOSTLYCLEANFILES += tplistfiles plistfiles stamp-plistfiles 
 
-CLEANFILES = bfd.h dep.sed stmp-bfd-h DEP DEPA DEP1 DEP2 libbfd.a \
-	stamp-lib stamp-staticlib stmp-bin2-h stmp-lbfd-h stmp-lcoff-h
+CLEANFILES = dep.sed stmp-bfd-h DEP DEPA DEP1 DEP2 libbfd.a stamp-lib \
+  stamp-staticlib stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ bfd.h
 
 DISTCLEANFILES = $(BUILD_CFILES) $(BUILD_HFILES) libtool-soversion *~
+
+MAINTAINERCLEANFILES = bfd.h @MAINT@ bfd-in2.h
 
 apple-clean: @MAINT@ mostlyclean
 	(cd $(sdocdir); $(MAKE) apple-clean $(FLAGS_TO_PASS))

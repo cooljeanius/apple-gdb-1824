@@ -147,7 +147,8 @@
 # endif /* _LIBC */
 
 /* This is for other GNU distributions with internationalized messages: */
-# if (HAVE_LIBINTL_H && (defined(ENABLE_NLS) && ENABLE_NLS)) || defined _LIBC
+# if ((defined(HAVE_LIBINTL_H) && HAVE_LIBINTL_H) && \
+      (defined(ENABLE_NLS) && ENABLE_NLS)) || defined _LIBC
 #  include <libintl.h>
 #  ifdef _LIBC
 #   undef gettext

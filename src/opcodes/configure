@@ -17397,6 +17397,43 @@ esac
 test -n "${commonbfdlib}"
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Werror -Wunknown-warning-option" >&5
+$as_echo_n "checking whether C compiler handles -Werror -Wunknown-warning-option... " >&6; }
+if ${gl_cv_warn_c__Werror__Wunknown_warning_option+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Werror -Wunknown-warning-option"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__Werror__Wunknown_warning_option=yes
+else
+  gl_cv_warn_c__Werror__Wunknown_warning_option=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Werror__Wunknown_warning_option" >&5
+$as_echo "$gl_cv_warn_c__Werror__Wunknown_warning_option" >&6; }
+if test "x$gl_cv_warn_c__Werror__Wunknown_warning_option" = xyes; then :
+  gl_unknown_warnings_are_errors='-Wunknown-warning-option -Werror'
+else
+  gl_unknown_warnings_are_errors=
+fi
+
 
 # "-W" and "-Wextra" are redundant.
 WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
@@ -17480,6 +17517,7 @@ if test "x${PEDANTIC_WARNINGS}" = "xyes"; then
     WARN_DEFS="${WARN_DEFS} -D__STRICT_ANSI__"
 fi
 
+
 # Check whether --enable-build-warnings was given.
 if test "${enable_build_warnings+set}" = set; then :
   enableval=$enable_build_warnings; case "${enableval}" in
@@ -17544,7 +17582,7 @@ $as_echo_n "checking compiler warning flags to use... " >&6; }
 	case ${w} in
 	*) # Check that GCC accepts it:
 	    saved_CFLAGS="${CFLAGS}"
-	    CFLAGS="${CFLAGS} ${w}"
+	    CFLAGS="${CFLAGS} ${w} ${gl_unknown_warnings_are_errors}"
 	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -24877,6 +24915,7 @@ else
 fi
  ;;
     "broken_libtool_hack_fix3":C)
+if test -x ./config.status; then
   if test -z "${our_libtool_script}"; then
     if test -x ./libtool; then
       our_libtool_script="./libtool"
@@ -24903,7 +24942,7 @@ fi
       echo "error: my_libtooldir should be defined if ${our_libtool_script} already defines objdir" >&2
       exit 1
     fi
-  else
+  elif test -e ${our_libtool_script}; then
     echo "" >> ${our_libtool_script}
     if test -n "${lt_cv_objdir}"; then
       echo "using lt_cv_objdir ('${lt_cv_objdir}') to define objdir in ${our_libtool_script}"
@@ -24923,7 +24962,10 @@ fi
     else
       echo "warning: need to define objdir in ${our_libtool_script}, but cannot figure out how to do so"
     fi
+  else
+    echo "I hate libtool..."
   fi
+fi
  ;;
 
   esac

@@ -121,7 +121,7 @@ $(MKDOC): $(srcdir)/chew.c $(PATH_TO_MOVEIFCHANGE)
 	  $(AM_CPPFLAGS); \
 	$(RUN_MOVEIFCHANGE) chew.$$$$ $(MKDOC)
 
-chew.o: chew.c
+chew.o: chew.c $(srcdir_high)/include/ansidecl.h @MAINT@ Makefile
 	$(AM_V_CC)$(CC_FOR_BUILD) -c $(AM_CPPFLAGS) $(H_CFLAGS) \
 	  $(CFLAGS_FOR_BUILD) $(srcdir)/chew.c
 
@@ -410,6 +410,24 @@ BFD_H_DEP = \
 	$(srcdir)/proto.str		\
 	$(srcdir_up)/version.h		\
 	$(MKDOC) $(src_MKDOC)
+
+am--refresh: Makefile $(srcdir_up)/Makefile
+	@pwd || echo "am--refresh"
+
+$(srcdir_up)/Makefile: $(srcdir_up)/Makefile.in $(top_builddir)/config.status
+	if test $(srcdir) != "."; then \
+	  if test -e ../Makefile -a ! -e $(srcdir_up)/Makefile; then \
+	    cp $(AM_V_v) ../Makefile $(srcdir_up)/Makefile; \
+	  elif test -e $(srcdir_up)/config.status; then \
+	    echo ' $(SHELL) $(srcdir_up)/config.status'; \
+	    $(SHELL) $(srcdir_up)/config.status; \
+	  fi; \
+	else \
+	  if test -e $(top_builddir)/config.status; then \
+	    echo ' $(SHELL) $(top_builddir)/config.status'; \
+	    $(SHELL) $(top_builddir)/config.status; \
+	  fi; \
+	fi
 
 bfd.h: $(BFD_H_DEP) @MAINT@ $(src_MKDOC)
 	echo "$(BFD_H_DEP)" | $(SED) -f $(srcdir)/header.sed \

@@ -1,3 +1,362 @@
+2015-04-02  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	gdb Makefile dependencies for objects: tui subdir
+
+	Change-Id: I88d008f50062ebef9de945fe2c37488b6b0ec39b
+
+2015-04-02  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	gdb Makefile object dependencies: mi subdir
+
+	also some tweaks to mmalloc and zlib
+
+	Change-Id: Idc51dfc76f37d099807e16c42dbd41fda803ad9b
+
+2015-04-02  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more Makefile dependencies, this time for macosx subdir
+
+	Change-Id: I648e20ec4fa92a110da8643fcd17a03de62f1c27
+
+2015-04-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	update Makefile dependencies for gdbtk
+
+	(in the one for gdb)
+
+	Change-Id: Ic8fe2fa100b090d227e27c04eab8a14cc48361f2
+
+2015-04-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	convert zlib to automake
+
+	Change-Id: I04067019c9f4bda6a78b4c82bccbc79b34a09d12
+
+2015-03-31  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	continue updating target dependencies in the gdb Makefile
+
+	Change-Id: Id309a52be156f6bff4002672fe50431919adc1c4
+
+2015-03-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	start updating file dependencies in the gdb Makefile
+
+	this is to try to make it easier to configure and test different target
+	architectures without having to clean between each time (WIP)
+
+	Change-Id: I4ce9b679eceaee9d3aad9fdc0a34e11d7f72910d
+
+2015-03-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	warnings and patches and gnulib and stuff (Mar. 25, 2015)
+
+	I am bad at writing commit messages
+
+	Change-Id: I87dd040b1a71dd670f42259cf55302ceb8c83a16
+
+2015-03-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	silence more bfd warnings, and provoke new gdb ones
+
+	the new gdb ones are from adding an ATTRIBUTE_DEPRECATED macro, and
+	sprinkling it over all (well, most) functions with "deprecated" in
+	their titles, or in a comment describing them
+
+	Change-Id: Ib2d68dd97287cb39fb4c5ee960e729bf571fab67
+
+2015-03-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	bfd now builds from Xcode!
+
+	(I also silenced some additional warnings while I was at it)
+
+	Change-Id: I6f18854b6be2136a93c7391b361448e05adc588c
+
+2015-03-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more silencing warnings and stuff
+
+	also update gnulib sources
+
+	Change-Id: I2e33a6ab80d1037da4f3cf1bec4446f969e6a36d
+
+2015-03-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try to propagate archflags better for tcl & expect
+
+	for the purposes of running `make check`
+
+	Change-Id: I9587bf5a0e01841369e466276081657a4761ee95
+
+2015-03-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	get stuff working better in utils
+
+	this also involves fixing the non-libtool build of the bfd static
+	library
+
+	Change-Id: I29f7f0178b0d7be7b7fc3939a5ce59986520458a
+
+2015-03-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	misc. (March 6, 2015)
+
+	Change-Id: Id3fbb98e7212cab8464f2f23f174cf47fea48ea5
+
+2015-03-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	misc. maintenance
+
+	Change-Id: I3f8907b1c5c5e26b26c041fd3b3ae58e70bc07fe
+
+2015-03-04  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more silencing of bfd warnings
+
+	Change-Id: If8c449f13f0c34086eb755ca3b581ff2dca97e9b
+
+2015-03-03  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more warning and static analysis stuff
+
+	Change-Id: I07092ee6f4cf7e74eab9e8697a890d1386d28dfb
+
+2015-02-28  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more fixing of warnings
+
+	Change-Id: I25629e5573bbe4c1745845778d698cb860d70e61
+
+2015-02-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more verbosity control
+
+	also turn "-Wc++-compat" back on, and fix some more warnings
+
+	Change-Id: I200f1eb26aaf696d7fef5b870d7df5057ad8985b
+
+2015-02-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	cherry-pick some stuff from gdb trunk
+
+	namely some of the c++ conversion stuff, and the adacore git hooks
+
+	also silence some warnings
+
+	Change-Id: I08b6da7e59745a38e8c46b035f7e19b13e860189
+
+2015-02-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	minor gettext revbump
+
+	Change-Id: Ia45be86ee9acfe230271e9f475e5073850870e8d
+
+2015-02-03  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	building from ./src works again (usually)
+
+	I should re-enable Travis when I get a chance...
+
+	Change-Id: I21f65d47f46d27c5c9e58858f647cf58aa8d169a
+
+2015-01-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	I think I might be making progress on the bfd warnings?
+
+	also update gnulib for 2015
+	and disable automake `make dist` support in some subdirs
+
+	Change-Id: I73ade776353fcdb1353b2b972814e38b312b0be2
+
+2015-01-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	still in the process of "fixing" (or at least papering over) warnings
+
+	Change-Id: Ib0d23bdbcaf79a2e3972688e2f2d25d133040a77
+
+2015-01-03  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	bfd is pretty messed up
+
+	I'm probably just messing it up more while trying to fix it...
+
+	Change-Id: I48fcf130248d5c0eb8740e080c01ad585acbfcca
+
+2014-12-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	should have been part of previous commit
+
+	regen some sources
+
+	Change-Id: I8480bbc13513a6f0acef84e089dbd4ce6e0d69b8
+
+2014-12-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	I am regretting having introduced more gcc bootstrap stuff to this tree...
+
+	but now I have to deal with it...
+
+	Change-Id: I75e314680411eaf62aa8d154556a9e547237ff9e
+
+2014-12-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	recursion in the build system is a pain
+
+	try to deal with it
+
+	Change-Id: I97f0a3b3d55f0b2c81b74e26f4a17af566e59dd3
+
+2014-12-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	take some stuff from the gcc version of this tree this time
+
+	specifically libbacktrace
+
+	also I'm almost back up to a point again where everything compiles when
+	running `make` from "src"... not quite though...
+
+	Change-Id: Ib692b473441e2f51c8ebeabf88d43d008e2d244e
+
+2014-12-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	files that were deleted as part of the previous commit
+
+	now deleted for real
+
+	Change-Id: I9aef19a63afd4342dc95b73a62fb746f6d800101
+
+2014-12-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	I'm fixing a hole where the rain gets in
+
+	or something like that
+
+	actually not really
+
+	and besides, that song's wrong, anyways... my mind does still wander...
+	which reminds me, what did I put in this commit again? Oh well,
+	probably too much stuff to list...
+
+	Change-Id: I1eb6576efda3d77579644e96f2697136904b515f
+
+2014-12-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	should have been part of the previous commit
+
+	Change-Id: I2aa8912f217819dd13d139ee075551d08420865d
+
+2014-12-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	it's been a while since I made a commit
+
+	fixed that annoying libtool bug at least! Now it fails to build for
+	other reasons though...
+
+	Change-Id: I2491f6b30bee1bc8e3c55a733d3484c5cb4be2d9
+
+2014-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	src/intl now passes distcheck
+
+	Change-Id: I6ce74280312da30c416ed29d62309656e22ed96f
+
+2014-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	should have been part of previous commit (Aug 7 2014)
+
+	Change-Id: Id010797932aa11e703bb940f027c1281cd367809
+
+2014-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	mostly changes to multi-ice and rem-multi_old
+
+	and also gdb in general and some intl things
+	and configury tweaks and formatting and warning silencing
+	and misc. formatting
+
+	Change-Id: Ib9749239632999b1c3bb923e5b30a678ed7083d4
+
+2014-07-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	fix dumb regression I caused on Travis
+
+	forgot to remove some calls to `tee` when switching from pipes back to
+	redirects
+
+	also some other bfd configure tweaks
+
+	Change-Id: I618cc4f09d97ad72bc8248204c72b3ee61883a53
+
+2014-07-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	lots of changes
+
+	mess around in bfd, try sandboxing its build
+	also pull from FSF upstream gdb
+
+	Change-Id: I8e57aac5a0bcc55c84cbf6dea7151086dc4e716f
+
+2014-02-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Leopard changes, add more old headers, add docs
+
+	mess around with gdbserver
+	and add some files from nana
+
+	Change-Id: Ic9dcd011b292f5c1f9c9a18cadea1d35cd059904
+
+2014-01-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	gitignore some things in libtool_gnu/libltdl
+
+	Change-Id: I22aad6df65750122065b9b7400b3907fe23de43c
+
+2014-01-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	revert part of previous commit
+
+	some of those were not real package names
+
+	Change-Id: I3f4aa340d3ba55f568c1f2c445da1e0fad489cb7
+
+2014-01-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	update travis dependencies
+
+	Change-Id: I2d368958ce75442e4c4172a7768678ce05f58677
+
+2014-01-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	libtool_gnu: enable maintainer mode
+
+	Change-Id: I36abf385842f91a24d2839102a605cad461dc315
+
+2014-01-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	minor git hook tweak
+
+	Change-Id: I9f5089de297fb3f6fdfb49718a0c8ea1d01b6036
+
+2014-01-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	vendor in a copy of GNU libtool to see if it will ease my libtool woes
+
+	also:
+	- make sure everything distcleans properly
+	- add files from newer upstream gdb sources
+
+	Change-Id: I3c4908d0d86b0e100b13421783aed2bec0c3c645
+
+2014-01-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	add flag for enabling pedantic warnings
+
+	also test warning flags to make sure that they work
+	(these changes are for bfd, opcodes, and binutils)
+
+	Change-Id: I39ff03b9188facffd654f9684146ab78381069ba
+
 2014-01-17  Eric Gallager  <egall@gwmail.gwu.edu>
 
 	touch up coff-i386.c which fails on Travis
