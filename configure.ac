@@ -42,21 +42,30 @@ fi
 AC_CANONICAL_TARGET
 AC_SYS_INTERPRETER
 
-# Automake checks, separated out:
-AC_MSG_CHECKING([things that automake would want if we were actually using automake here])
+# Automake is just for one subdir; switching any other subdirs to use
+# automake could potentially be disastrous:
+AC_MSG_CHECKING([automake things])
 AC_MSG_RESULT([ ])
+AM_INIT_AUTOMAKE([foreign no-dist dejagnu no-define no-dependencies std-options tar-pax])dnl
 AM_MAINTAINER_MODE
 AM_SANITY_CHECK
 AM_PROG_INSTALL_SH
 AM_PROG_INSTALL_STRIP
 AM_MAKE_INCLUDE
-_AM_PROG_TAR([pax])dnl
+AC_ARG_ENABLE([opts-test],
+[AS_HELP_STRING([--disable-opts-test],
+                [Do not try to run a test AutoOpts program
+                 (only relevant in src subdir)])dnl
+])dnl# (for the autoconf macro for checking for autogen)
 
 # Checks for programs.
 AC_MSG_CHECKING([programs])
 AC_MSG_RESULT([ ])
 AM_PROG_AR
-AC_PROG_AWK
+if test "x${AWK}" = "x" && test "x${ac_cv_prog_AWK}" = "x"; then
+  test -z "${AWK}" && test -z "${ac_cv_prog_AWK}"
+  AC_PROG_AWK
+fi
 if test "x${CC}" = "x"; then
   test -z "${CC}"
   AC_PROG_CC
@@ -69,7 +78,10 @@ AC_PROG_CXX
 AC_PROG_INSTALL
 AM_PROG_LEX
 AC_PROG_LN_S
-AC_PROG_MAKE_SET
+if test "x${ac_cv_prog_make_make_set}" = "x"; then
+  test -z "${ac_cv_prog_make_make_set}"
+  AC_PROG_MAKE_SET
+fi
 AC_PROG_MKDIR_P
 AC_PROG_OBJC
 AC_PROG_OBJCPP
@@ -250,6 +262,7 @@ AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.19.4])dnl
 
 # Output:
+AC_CONFIG_FILES([libcheckpoint/Makefile])
 AC_CONFIG_SUBDIRS([src])dnl
 AC_OUTPUT
 

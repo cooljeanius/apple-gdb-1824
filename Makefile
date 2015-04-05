@@ -966,3 +966,7 @@ update-ChangeLog:
 	    fi
 
 EXTRA_DIST += .last-cl-gen
+
+## so subdirs can use automake:
+am--refresh:
+	@:
