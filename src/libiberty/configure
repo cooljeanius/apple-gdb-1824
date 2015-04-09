@@ -683,6 +683,7 @@ AWK
 OUTPUT_OPTION
 NO_MINUS_C_MINUS_O
 ac_libiberty_warn_cflags
+WARN_CFLAGS
 MKDIR_P
 am__fastdepCCAS_FALSE
 am__fastdepCCAS_TRUE
@@ -5753,15 +5754,102 @@ fi
 $as_echo "$MKDIR_P" >&6; }
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking warning flags to use" >&5
-$as_echo_n "checking warning flags to use... " >&6; }
-if test "x${GCC}" = "xyes"; then
-  ac_libiberty_warn_cflags='-Wall -Wextra -pedantic -Wwrite-strings -Wc++-compat -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition -Wundef'
+
+      ac_libiberty_warn_cflags=""
+save_CFLAGS="${CFLAGS}"
+for real_option in -Wall -Wextra -Wwrite-strings -Wc++-compat \
+-Wstrict-prototypes -Wmissing-prototypes -Wmissing-parameter-type \
+-Wmissing-declarations -Wnested-externs -Wundef -Wshadow -Wformat=2 \
+-Wold-style-definition -Wold-style-declaration -Wfloat-conversion; do
+  # Do the check with the no- prefix removed since gcc silently accepts
+  # any -Wno-* option on purpose:
+  case ${real_option} in
+    -Wno-*) option=-W`expr x${real_option} : 'x-Wno-\(.*\)'` ;;
+    *) option="${real_option}" ;;
+  esac
+  as_acx_Woption=`$as_echo "acx_cv_prog_cc_warning_$option" | $as_tr_sh`
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ${CC} supports ${option}" >&5
+$as_echo_n "checking whether ${CC} supports ${option}... " >&6; }
+if eval \${$as_acx_Woption+:} false; then :
+  $as_echo_n "(cached) " >&6
 else
-  ac_libiberty_warn_cflags=''
+  CFLAGS="${option}"
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$as_acx_Woption=yes"
+else
+  eval "$as_acx_Woption=no"
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${ac_libiberty_warn_cflags}" >&5
-$as_echo "${ac_libiberty_warn_cflags}" >&6; }
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+fi
+eval ac_res=\$$as_acx_Woption
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+  if test `eval 'as_val=${'$as_acx_Woption'};$as_echo "$as_val"'` = yes; then :
+  ac_libiberty_warn_cflags="$ac_libiberty_warn_cflags${ac_libiberty_warn_cflags:+ }$real_option"
+fi
+  done
+CFLAGS="${save_CFLAGS}"
+
+    # Do the check with the no- prefix removed from the warning options
+# since gcc silently accepts any -Wno-* option on purpose:
+if test "x${GCC}" = "xyes"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ${CC} supports -pedantic " >&5
+$as_echo_n "checking whether ${CC} supports -pedantic ... " >&6; }
+if ${acx_cv_prog_cc_pedantic_+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  save_CFLAGS="${CFLAGS}"
+CFLAGS="-pedantic "
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  acx_cv_prog_cc_pedantic_=yes
+else
+  acx_cv_prog_cc_pedantic_=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+CFLAGS="${save_CFLAGS}"
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $acx_cv_prog_cc_pedantic_" >&5
+$as_echo "$acx_cv_prog_cc_pedantic_" >&6; }
+if test $acx_cv_prog_cc_pedantic_ = yes; then :
+  ac_libiberty_warn_cflags="$ac_libiberty_warn_cflags${ac_libiberty_warn_cflags:+ }-pedantic "
+fi
+
+fi
+    ##FIXME: old versions of the above macros omitted the second argument:
+  if test "x${ac_libiberty_warn_cflags}" = "x"; then
+    test -z "${ac_libiberty_warn_cflags}"
+    if test "x${WARN_CFLAGS}" != "x"; then
+      test -n "${WARN_CFLAGS}" && ac_libiberty_warn_cflags="${WARN_CFLAGS}"
+    elif test "x${WARN_PEDANTIC}" != "x"; then
+      test -n "${ac_libiberty_warn_cflags}" && ac_libiberty_warn_cflags="${WARN_PEDANTIC}"
+    elif test "x${LIBIBERTY_WARN_CFLAGS}" != "x"; then
+      test -n "${LIBIBERTY_WARN_CFLAGS}" && ac_libiberty_warn_cflags="${LIBIBERTY_WARN_CFLAGS}"
+    fi
+  fi
 
 if test "x$CC" != xcc; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CC and cc understand -c and -o together" >&5
@@ -17855,17 +17943,87 @@ else
 fi
 
 
-if test "x${PICFLAG}" = "x"; then
-  test -z "${PICFLAG}" && PICFLAG=""
-fi
-if test "x${NOPICFLAG}" = "x"; then
-  test -z "${NOPICFLAG}" && NOPICFLAG=""
-fi
+
+
+
+
 case "${host}" in
-  i[34567]86-*-darwin* | powerpc-*-darwin*)
-    NOPICFLAG=-mdynamic-no-pic ;;
-  *) ;;
+    # PIC is the default on some targets or must not be used.
+    *-*-darwin*)
+	# PIC is the default on this platform
+	# Common symbols not allowed in MH_DYLIB files
+	# Cancel any earlier -mdynamic-no-pic, as that makes
+	# the code not suitable for shared libraries.
+	PICFLAG='-fno-common -mno-dynamic-no-pic'
+	;;
+    alpha*-dec-osf5*)
+	# PIC is the default.
+	;;
+    hppa*64*-*-hpux*)
+	# PIC is the default for 64-bit PA HP-UX.
+	;;
+    i[34567]86-*-cygwin* | x86_64-*-cygwin*)
+	;;
+    i[34567]86-*-mingw* | x86_64-*-mingw*)
+	;;
+    i[34567]86-*-interix[3-9]*)
+	# Interix 3.x gcc -fpic/-fPIC options generate broken code.
+	# Instead, we relocate shared libraries at runtime.
+	;;
+    i[34567]86-*-nto-qnx*)
+	# QNX uses GNU C++, but define -shared option too, otherwise
+	# it will coredump.
+	PICFLAG='-fPIC -shared'
+	;;
+    i[34567]86-pc-msdosdjgpp*)
+	# DJGPP does not support shared libraries at all.
+	;;
+    ia64*-*-hpux*)
+	# On IA64 HP-UX, PIC is the default but the pic flag
+	# sets the default TLS model and affects inlining.
+	PICFLAG=-fPIC
+	;;
+    mips-sgi-irix6*)
+	# PIC is the default.
+	;;
+    rs6000-ibm-aix* | powerpc-ibm-aix*)
+	# All AIX code is PIC.
+	;;
+
+    # Some targets support both -fPIC and -fpic, but prefer the latter.
+    # FIXME: Why?
+    i[34567]86-*-* | x86_64-*-*)
+	PICFLAG=-fpic
+	;;
+    m68k-*-*)
+	PICFLAG=-fpic
+	;;
+    # FIXME: Override -fPIC default in libgcc only?
+    sh-*-linux* | sh[2346lbe]*-*-linux*)
+	PICFLAG=-fpic
+	;;
+    # FIXME: Simplify to sh*-*-netbsd*?
+    sh-*-netbsdelf* | shl*-*-netbsdelf* | sh5-*-netbsd* | sh5l*-*-netbsd* | \
+      sh64-*-netbsd* | sh64l*-*-netbsd*)
+	PICFLAG=-fpic
+	;;
+    # Default to -fPIC unless specified otherwise.
+    *)
+	PICFLAG=-fPIC
+	;;
 esac
+
+# If the user explicitly uses -fpic/-fPIC, keep that.
+case "${CFLAGS}" in
+    *-fpic*)
+	PICFLAG=-fpic
+	;;
+    *-fPIC*)
+	PICFLAG=-fPIC
+	;;
+esac
+
+
 
 # If they did NOT specify --enable-shared, do NOT generate shared libs.
 case "${enable_shared}" in
@@ -20092,7 +20250,7 @@ _ACEOF
 
 fi
 done
-  as_ac_Symbol=`$as_echo "ac_cv_have_decl_basename(char *)" | $as_tr_sh`
+    as_ac_Symbol=`$as_echo "ac_cv_have_decl_basename(char *)" | $as_tr_sh`
 ac_fn_c_check_decl "$LINENO" "basename(char *)" "$as_ac_Symbol" "$ac_includes_default"
 if eval test \"x\$"$as_ac_Symbol"\" = x"yes"; then :
   ac_have_decl=1
@@ -20221,6 +20379,23 @@ $as_echo "#define HAVE_SYS_NERR 1" >>confdefs.h
 
 $as_echo "#define HAVE_SYS_SIGLIST 1" >>confdefs.h
   ## that should be enough for now...
+else
+  ## APPLE LOCAL: mmap() always works right on Darwin. Take our word for it
+  case "${host}" in
+    *-apple-darwin* | *-apple-macos*)
+      ac_cv_func_mmap_fixed_mapped=yes
+
+$as_echo "#define HAVE_MMAP 1" >>confdefs.h
+      ## skip actually checking for it though...
+      ;;
+    *)
+      if test "x${gcc_no_link}" = "xyes"; then
+        if test "x${ac_cv_func_mmap_fixed_mapped+set}" != "xset"; then
+          ac_cv_func_mmap_fixed_mapped=no
+        fi
+      fi
+      ;;
+  esac
 fi
 
 # For each of these functions, if the host does not provide the
@@ -21408,6 +21583,56 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_SBRK $ac_have_decl
 _ACEOF
+  ac_fn_c_check_decl "$LINENO" "memmem" "ac_cv_have_decl_memmem" "$ac_includes_default"
+if test "x$ac_cv_have_decl_memmem" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_MEMMEM $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "mempcpy" "ac_cv_have_decl_mempcpy" "$ac_includes_default"
+if test "x$ac_cv_have_decl_mempcpy" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_MEMPCPY $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "stpncpy" "ac_cv_have_decl_stpncpy" "$ac_includes_default"
+if test "x$ac_cv_have_decl_stpncpy" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_STPNCPY $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "strndup" "ac_cv_have_decl_strndup" "$ac_includes_default"
+if test "x$ac_cv_have_decl_strndup" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_STRNDUP $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "strnlen" "ac_cv_have_decl_strnlen" "$ac_includes_default"
+if test "x$ac_cv_have_decl_strnlen" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_STRNLEN $ac_have_decl
+_ACEOF
   ac_fn_c_check_decl "$LINENO" "strverscmp" "ac_cv_have_decl_strverscmp" "$ac_includes_default"
 if test "x$ac_cv_have_decl_strverscmp" = xyes; then :
   ac_have_decl=1
@@ -21437,6 +21662,16 @@ fi
 
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_BZERO $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "mkstemps" "ac_cv_have_decl_mkstemps" "$ac_includes_default"
+if test "x$ac_cv_have_decl_mkstemps" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_MKSTEMPS $ac_have_decl
 _ACEOF
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether canonicalize_file_name must be declared" >&5
 $as_echo_n "checking whether canonicalize_file_name must be declared... " >&6; }
@@ -21492,7 +21727,6 @@ case "${host}" in
      *)				pexecute=pex-unix   ;;
 esac
 
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for working strncmp" >&5
 $as_echo_n "checking for working strncmp... " >&6; }
 if ${ac_cv_func_strncmp_works+:} false; then :
@@ -21509,6 +21743,10 @@ else
 #if defined(HAVE_STDLIB_H) && !defined(exit)
 # include <stdlib.h>
 #endif /* HAVE_STDLIB_H && !exit */
+
+#if defined(HAVE_STRING_H) && (!defined(strlen) || !defined(strcpy))
+# include <string.h>
+#endif /* HAVE_STRING_H && (!strlen || !strcpy) */
 
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
@@ -21555,6 +21793,7 @@ int main(void)
   if (p == (char *)-1) {
     p = (char *)mmap(0, MAP_LEN, (PROT_READ | PROT_WRITE),
 		     (MAP_ANON | MAP_PRIVATE), -1, 0);
+  }
   if (p == (char *)-1) {
     exit(2);
   } else {
@@ -21593,6 +21832,16 @@ if test "x${ac_cv_func_strncmp_works}" = "xno"; then
 esac
 
 fi
+ac_fn_c_check_decl "$LINENO" "strncmp" "ac_cv_have_decl_strncmp" "$ac_includes_default"
+if test "x$ac_cv_have_decl_strncmp" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_STRNCMP $ac_have_decl
+_ACEOF
 
 
 # Install a library built with a cross compiler in $(tooldir) rather

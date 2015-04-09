@@ -54,7 +54,7 @@ xvasprintf(const char *format,
 #endif /* _BSD_VA_LIST_ && __FreeBSD__ */
 {
   char *result;
-  int total_width = libiberty_vprintf_buffer_size(format, args);
+  size_t total_width = libiberty_vprintf_buffer_size(format, args);
   result = (char *)xmalloc(total_width);
   vsprintf(result, format, args);
   return result;

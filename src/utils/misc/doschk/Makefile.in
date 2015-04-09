@@ -132,10 +132,10 @@ Makefile: Makefile.in config.status
 doschk.o: doschk.c config.h
 
 doschk: doschk.o
-	$(CC) $(LDFLAGS) $< -o $@
+	$(CC) $(LDFLAGS) $(CFLAGS) $< -o $@
 
 doschk_check: doschk
-	ls -1 * | ./doschk
+	ls -1 -d * | ./doschk
 .PHONY: doschk_check
 
 ## using dependencies for the plist could go wrong, so call it as part

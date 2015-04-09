@@ -248,7 +248,7 @@ bfd_stat(bfd *abfd, struct stat *statbuf)
     {
       struct bfd_in_memory *b = (struct bfd_in_memory *)abfd->iostream;
       memset(statbuf, 0, sizeof(struct stat));
-      statbuf->st_size = b->size;
+      statbuf->st_size = (off_t)b->size;
       return 0;
     }
   else if (abfd->iovec)

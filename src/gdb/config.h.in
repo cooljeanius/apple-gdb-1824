@@ -182,6 +182,9 @@
 /* Define to 1 if you have the `canonicalize_file_name' function. */
 #undef HAVE_CANONICALIZE_FILE_NAME
 
+/* Define to 1 if the system has the type `CFStringRef'. */
+#undef HAVE_CFSTRINGREF
+
 /* Define to 1 if you have the `codeset' function. */
 #undef HAVE_CODESET
 
@@ -204,6 +207,12 @@
 
 /* Define to 1 if you have the <curses.h> header file. */
 #undef HAVE_CURSES_H
+
+/* Define if backslash-a works in C strings. */
+#undef HAVE_C_BACKSLASH_A
+
+/* Define to 1 if C supports variable-length arrays. */
+#undef HAVE_C_VARARRAYS
 
 /* Define to 1 if you have the `dcgettext' function. */
 #undef HAVE_DCGETTEXT
@@ -992,6 +1001,9 @@
 /* Define to 1 if you have the `strftime' function. */
 #undef HAVE_STRFTIME
 
+/* Define to 1 if cpp supports the ANSI # stringizing operator. */
+#undef HAVE_STRINGIZE
+
 /* Define to 1 if you have the <strings.h> header file. */
 #undef HAVE_STRINGS_H
 
@@ -1110,6 +1122,9 @@
 
 /* Define to 1 if you have the <sys/fault.h> header file. */
 #undef HAVE_SYS_FAULT_H
+
+/* Define to 1 if you have the <sys/fcntl.h> header file. */
+#undef HAVE_SYS_FCNTL_H
 
 /* Define to 1 if you have the <sys/file.h> header file. */
 #undef HAVE_SYS_FILE_H
@@ -1652,6 +1667,11 @@
    <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
    #define below would cause a syntax error. */
 #undef _UINT8_T
+
+/* Define to 1 if type `char' is unsigned and you are not using gcc.  */
+#ifndef __CHAR_UNSIGNED__
+# undef __CHAR_UNSIGNED__
+#endif
 
 /* Define like PROTOTYPES; this can be used by system headers. */
 #undef __PROTOTYPES

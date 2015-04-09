@@ -1,7 +1,7 @@
 dnl#                                               -*- Autoconf -*-
 dnl# Process this file with autoconf to produce a configure script
 
-AC_PREREQ([2.59])
+AC_PREREQ([2.64])
 AC_INIT([libiberty],[1.0],[jmolenda@apple.com])
 dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory
@@ -287,7 +287,29 @@ AC_SYS_LARGEFILE
 AC_PROG_CPP_WERROR
 AC_PROG_MKDIR_P
 
-dnl# FIXME: actually check whether these are supported:
+m4_ifdef([ACX_PROG_CC_WARNING_OPTS],[
+  dnl# since we actually check the flags in this case, we can try more of
+  dnl# them:
+  ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings -Wc++-compat \
+-Wstrict-prototypes -Wmissing-prototypes -Wmissing-parameter-type \
+-Wmissing-declarations -Wnested-externs -Wundef -Wshadow -Wformat=2 \
+-Wold-style-definition -Wold-style-declaration -Wfloat-conversion],
+                           [ac_libiberty_warn_cflags])dnl
+  m4_ifdef([ACX_PROG_CC_WARNING_ALMOST_PEDANTIC],[
+    ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([],[ac_libiberty_warn_cflags])dnl
+  ])dnl
+  ##FIXME: old versions of the above macros omitted the second argument:
+  if test "x${ac_libiberty_warn_cflags}" = "x"; then
+    test -z "${ac_libiberty_warn_cflags}"
+    if test "x${WARN_CFLAGS}" != "x"; then
+      test -n "${WARN_CFLAGS}" && ac_libiberty_warn_cflags="${WARN_CFLAGS}"
+    elif test "x${WARN_PEDANTIC}" != "x"; then
+      test -n "${ac_libiberty_warn_cflags}" && ac_libiberty_warn_cflags="${WARN_PEDANTIC}"
+    elif test "x${LIBIBERTY_WARN_CFLAGS}" != "x"; then
+      test -n "${LIBIBERTY_WARN_CFLAGS}" && ac_libiberty_warn_cflags="${LIBIBERTY_WARN_CFLAGS}"
+    fi
+  fi
+],[
 AC_MSG_CHECKING([warning flags to use])
 if test "x${GCC}" = "xyes"; then
   ac_libiberty_warn_cflags='-Wall -Wextra -pedantic -Wwrite-strings -Wc++-compat -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition -Wundef'
@@ -295,6 +317,7 @@ else
   ac_libiberty_warn_cflags=''
 fi
 AC_MSG_RESULT([${ac_libiberty_warn_cflags}])
+])dnl
 AC_SUBST([ac_libiberty_warn_cflags])dnl
 
 AC_PROG_CC_C_O
@@ -694,6 +717,7 @@ if test "x" = "Y0"; then
     strverscmp sysconf sysctl sysmp system \
     table times tmpnam unlink utime \
     vasprintf vfprintf vprintf vsnprintf vsprintf wait3 wait4 waitpid])dnl
+  dnl# actual checks for decls are done later than this:
   AC_CHECK_DECLS([basename(char *), strtol, strtoul, strtoll, strtoull])dnl
   AC_CHECK_DECLS([basename, ffs, asprintf, vasprintf, snprintf, vsnprintf])
   AC_CHECK_DECLS([sys_siglist])dnl
@@ -704,6 +728,23 @@ if test "x" = "Y0"; then
   AC_DEFINE([HAVE_SYS_SIGLIST],[1],
             [Define if you have the sys_siglist variable.])dnl
   ## that should be enough for now...
+else
+  ## APPLE LOCAL: mmap() always works right on Darwin. Take our word for it
+  case "${host}" in
+    *-apple-darwin* | *-apple-macos*)
+      ac_cv_func_mmap_fixed_mapped=yes
+      AC_DEFINE([HAVE_MMAP],[1],
+                [Define to 1 if you have the `mmap' function.])dnl
+      ## skip actually checking for it though...
+      ;;
+    *)
+      if test "x${gcc_no_link}" = "xyes"; then
+        if test "x${ac_cv_func_mmap_fixed_mapped+set}" != "xset"; then
+          ac_cv_func_mmap_fixed_mapped=no
+        fi
+      fi
+      ;;
+  esac
 fi
 
 # For each of these functions, if the host does not provide the
@@ -1048,7 +1089,8 @@ double x = _system_configuration.physmem;
   ])dnl
   AC_CHECK_DECLS([ffs, asprintf, vasprintf, snprintf, vsnprintf])dnl
   AC_CHECK_DECLS([calloc, getenv, getopt, malloc, realloc, sbrk])dnl
-  AC_CHECK_DECLS([strverscmp, btowc, bzero])dnl
+  AC_CHECK_DECLS([memmem, mempcpy, stpncpy, strndup, strnlen])dnl
+  AC_CHECK_DECLS([strverscmp, btowc, bzero, mkstemps])dnl
   libiberty_NEED_DECLARATION([canonicalize_file_name])
 fi
 

@@ -1,4 +1,4 @@
-/* 
+/*
  * tclUnixPipe.c --
  *
  *	This file implements the UNIX-specific exec pipeline functions,
@@ -119,7 +119,7 @@ TclpMakeFile(channel, direction)
  *
  * TclpOpenFile --
  *
- *	Open a file for use in a pipeline.  
+ *	Open a file for use in a pipeline.
  *
  * Results:
  *	Returns a new TclFile handle or NULL on failure.
@@ -236,7 +236,7 @@ TclpCreateTempFile(contents)
  *----------------------------------------------------------------------
  */
 
-Tcl_Obj* 
+Tcl_Obj*
 TclpTempFileName()
 {
     char fileName[L_tmpnam + 9];
@@ -272,7 +272,7 @@ TclpTempFileName()
  *      Creates a pipe - simply calls the pipe() function.
  *
  * Results:
- *      Returns 1 on success, 0 on failure. 
+ *      Returns 1 on success, 0 on failure.
  *
  * Side effects:
  *      Creates a pipe.
@@ -326,11 +326,11 @@ TclpCloseFile(file)
     /*
      * Refuse to close the fds for stdin, stdout and stderr.
      */
-    
+
     if ((fd == 0) || (fd == 1) || (fd == 2)) {
         return 0;
     }
-    
+
     Tcl_DeleteFileHandler(fd);
     return close(fd);
 }
@@ -340,28 +340,28 @@ TclpCloseFile(file)
  *
  * TclpCreateProcess --
  *
- *	Create a child process that has the specified files as its 
+ *	Create a child process that has the specified files as its
  *	standard input, output, and error.  The child process runs
  *	asynchronously and runs with the same environment variables
  *	as the creating process.
  *
- *	The path is searched to find the specified executable.  
+ *	The path is searched to find the specified executable.
  *
  * Results:
  *	The return value is TCL_ERROR and an error message is left in
- *	the interp's result if there was a problem creating the child 
+ *	the interp's result if there was a problem creating the child
  *	process.  Otherwise, the return value is TCL_OK and *pidPtr is
  *	filled with the process id of the child process.
- * 
+ *
  * Side effects:
  *	A process is created.
- *	
+ *
  *---------------------------------------------------------------------------
  */
 
     /* ARGSUSED */
 int
-TclpCreateProcess(interp, argc, argv, inputFile, outputFile, errorFile, 
+TclpCreateProcess(interp, argc, argv, inputFile, outputFile, errorFile,
 	pidPtr)
     Tcl_Interp *interp;		/* Interpreter in which to leave errors that
 				 * occurred when creating the child process.
@@ -397,7 +397,7 @@ TclpCreateProcess(interp, argc, argv, inputFile, outputFile, errorFile,
     Tcl_DString *dsArray;
     char **newArgv;
     int pid, i;
-    
+
     errPipeIn = NULL;
     errPipeOut = NULL;
     pid = -1;
@@ -417,8 +417,8 @@ TclpCreateProcess(interp, argc, argv, inputFile, outputFile, errorFile,
      * We need to allocate and convert this before the fork
      * so it is properly deallocated later
      */
-    dsArray = (Tcl_DString *) ckalloc(argc * sizeof(Tcl_DString));
-    newArgv = (char **) ckalloc((argc+1) * sizeof(char *));
+    dsArray = (Tcl_DString *)ckalloc((size_t)argc * sizeof(Tcl_DString));
+    newArgv = (char **)ckalloc((size_t)(argc + 1L) * sizeof(char *));
     newArgv[argc] = NULL;
     for (i = 0; i < argc; i++) {
 	newArgv[i] = Tcl_UtfToExternalDString(NULL, argv[i], -1, &dsArray[i]);
@@ -455,7 +455,7 @@ TclpCreateProcess(interp, argc, argv, inputFile, outputFile, errorFile,
 	write(fd, errSpace, (size_t) strlen(errSpace));
 	_exit(1);
     }
-    
+
     /*
      * Free the mem we used for the fork
      */
@@ -490,7 +490,7 @@ TclpCreateProcess(interp, argc, argv, inputFile, outputFile, errorFile,
 		(char *) NULL);
 	goto error;
     }
-    
+
     TclpCloseFile(errPipeIn);
     *pidPtr = (Tcl_Pid) pid;
     return TCL_OK;
@@ -506,7 +506,7 @@ TclpCreateProcess(interp, argc, argv, inputFile, outputFile, errorFile,
 
 	Tcl_WaitPid((Tcl_Pid) pid, &status, 0);
     }
-    
+
     if (errPipeIn) {
 	TclpCloseFile(errPipeIn);
     }
@@ -533,7 +533,7 @@ TclpCreateProcess(interp, argc, argv, inputFile, outputFile, errorFile,
  *
  *----------------------------------------------------------------------
  */
- 
+
 static void
 RestoreSignals()
 {
@@ -653,7 +653,7 @@ SetupStdFile(file, type)
              * some systems (e.g. Ultrix) do not clear the CLOEXEC flag on
              * the target FD.
              */
-            
+
             fcntl(targetFd, F_SETFD, 0);
 	} else {
 	    int result;
@@ -664,6 +664,10 @@ SetupStdFile(file, type)
 	     */
 
 	    result = fcntl(fd, F_SETFD, 0);
+
+        if (result == -1) {
+            ; /* FIXME: check errno to see what went wrong */
+        }
 	}
     } else {
 	close(targetFd);
@@ -720,7 +724,7 @@ TclpCreateCommandChannel(readFile, writeFile, errorFile, numPids, pidPtr)
     if (writeFile) {
         mode |= TCL_WRITABLE;
     }
-    
+
     /*
      * Use one of the fds associated with the channel as the
      * channel id.
@@ -827,7 +831,7 @@ PipeBlockModeProc(instanceData, mode)
     int curStatus;
     int fd;
 
-#ifndef	USE_FIONBIO    
+#ifndef	USE_FIONBIO
     if (psPtr->inFile) {
         fd = GetFd(psPtr->inFile);
         curStatus = fcntl(fd, F_GETFL);
@@ -927,13 +931,13 @@ PipeCloseProc(instanceData, interp)
     }
 
     if (pipePtr->isNonBlocking || TclInExit()) {
-    
+
 	/*
          * If the channel is non-blocking or Tcl is being cleaned up, just
          * detach the children PIDs, reap them (important if we are in a
          * dynamic load module), and discard the errorFile.
          */
-        
+
         Tcl_DetachPids(pipePtr->numPids, pipePtr->pidPtr);
         Tcl_ReapDetachedProcs();
 
@@ -941,8 +945,8 @@ PipeCloseProc(instanceData, interp)
 	    TclpCloseFile(pipePtr->errorFile);
         }
     } else {
-        
-	/*
+
+        /*
          * Wrap the error file into a channel and give it to the cleanup
          * routine.
          */
@@ -998,7 +1002,7 @@ PipeInputProc(instanceData, buf, toRead, errorCodePtr)
                                          * read from the input device? */
 
     *errorCodePtr = 0;
-    
+
     /*
      * Assume there is always enough input available. This will block
      * appropriately, and read will unblock as soon as a short read is
@@ -1127,7 +1131,7 @@ PipeWatchProc(instanceData, mask)
  *
  * Results:
  *	Returns TCL_OK with the fd in handlePtr, or TCL_ERROR if
- *	there is no handle for the specified direction. 
+ *	there is no handle for the specified direction.
  *
  * Side effects:
  *	None.

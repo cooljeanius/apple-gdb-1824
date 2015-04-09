@@ -2416,7 +2416,7 @@ macosx_get_task_for_pid_rights(void)
    posix_spawn launch the app (with the POSIX_SPAWN_START_SUSPENDED
    argument telling the target to stop on the first instruction.)
    Then we attach, and continue.
-   This version silently ignores the "start-with-shell" setting.  */
+   FIXME: This version silently ignores the "start-with-shell" setting.  */
 
 static void
 macosx_child_create_inferior(char *exec_file, char *allargs, char **env,

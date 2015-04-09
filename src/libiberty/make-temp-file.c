@@ -44,7 +44,9 @@ Boston, MA 02110-1301, USA.  */
 
 #include "libiberty.h"
 extern const char *choose_tmpdir(void);
+#if defined(HAVE_DECL_MKSTEMPS) && !HAVE_DECL_MKSTEMPS
 extern int mkstemps(char *, int);
+#endif /* !HAVE_DECL_MKSTEMPS */
 
 /* '/' works just fine on MS-DOS based systems.  */
 #ifndef DIR_SEPARATOR

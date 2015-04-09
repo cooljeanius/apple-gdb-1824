@@ -305,8 +305,8 @@ extern char *xstrndup(const char *, size_t) ATTRIBUTE_MALLOC;
 extern void *xmemdup(const void *, size_t, size_t) ATTRIBUTE_MALLOC;
 
 /* Physical memory routines.  Return values are in BYTES: */
-extern double physmem_total (void);
-extern double physmem_available (void);
+extern double physmem_total(void);
+extern double physmem_available(void);
 
 /* Compute the 32-bit CRC of a block of memory: */
 extern unsigned int xcrc32(const unsigned char *, int, unsigned int);
@@ -561,13 +561,13 @@ extern void pex_free(struct pex_obj *);
    ERR		As for pex_run.
 */
 
-extern const char *pex_one (int flags, const char *executable,
-			    char * const *argv, const char *pname,
-			    const char *outname, const char *errname,
-			    int *status, int *err);
+extern const char *pex_one(int flags, const char *executable,
+			   char * const *argv, const char *pname,
+			   const char *outname, const char *errname,
+			   int *status, int *err);
 
 /* pexecute and pwait are the old pexecute interface, still here for
-   backward compatibility.  Don't use these for new code.  Instead,
+   backward compatibility.  Do NOT use these for new code.  Instead,
    use pex_init/pex_run/pex_get_status/pex_free, or pex_one.  */
 
 /* Definitions used by the pexecute routine.  */
@@ -591,6 +591,12 @@ extern int pwait(int, int *, int);
 extern int asprintf(char **, const char *, ...) ATTRIBUTE_PRINTF_2;
 #endif /* !HAVE_DECL_ASPRINTF */
 
+#if !(defined(DEFS_H) && defined(__GDB_DEFS_H__))
+/* Like asprintf but allocates memory without fail. This works like
+ * xmalloc: */
+extern char *xasprintf(const char *, ...) ATTRIBUTE_MALLOC ATTRIBUTE_PRINTF_1;
+#endif /* !(DEFS_H && __GDB_DEFS_H__) */
+
 #if !defined(HAVE_DECL_VASPRINTF) || (defined(HAVE_DECL_VASPRINTF) && !HAVE_DECL_VASPRINTF)
 /* Like vsprintf but provides a pointer to malloc'd storage, which must be freed
  * by the caller: */
@@ -610,6 +616,26 @@ extern int snprintf(char *, size_t, const char *, ...) ATTRIBUTE_PRINTF_3;
 /* Like vsprintf but prints at most N characters: */
 extern int vsnprintf(char *, size_t, const char *, va_list) ATTRIBUTE_PRINTF(3,0);
 #endif /* !HAVE_DECL_VSNPRINTF */
+
+#if defined(HAVE_DECL_MEMMEM) && !HAVE_DECL_MEMMEM
+extern void *memmem(const void *, size_t, const void *, size_t);
+#endif /* !HAVE_DECL_MEMMEM */
+
+#if defined(HAVE_DECL_MEMPCPY) && !HAVE_DECL_MEMPCPY
+extern PTR mempcpy(PTR, const PTR, size_t);
+#endif /* !HAVE_DECL_MEMPCPY */
+
+#if defined(HAVE_DECL_STPNCPY) && !HAVE_DECL_STPNCPY
+extern char *stpncpy(char *, const char *, size_t);
+#endif /* !HAVE_DECL_STPNCPY */
+
+#if defined(HAVE_DECL_STRNCMP) && !HAVE_DECL_STRNCMP
+extern int strncmp(const char *, const char *, size_t);
+#endif /* !HAVE_DECL_STRNCMP */
+
+#if defined(HAVE_DECL_STRNDUP) && !HAVE_DECL_STRNDUP
+extern char *strndup(const char *, size_t);
+#endif /* !HAVE_DECL_STRNDUP */
 
 #if defined(HAVE_DECL_STRNLEN) && !HAVE_DECL_STRNLEN
 extern size_t strnlen(const char *, size_t);

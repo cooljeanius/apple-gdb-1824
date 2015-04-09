@@ -227,7 +227,7 @@ SC_MISSING_POSIX_HEADERS
 
 # More headers:
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h locale.h math.h \
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h floatingpoint.h locale.h math.h \
                   netdb.h netinet/in.h sgtty.h stdarg.h sys/file.h \
                   sys/socket.h sys/statfs.h termio.h termios.h utime.h])dnl
 

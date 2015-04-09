@@ -23,7 +23,7 @@ Floor, Boston, MA 02110-1301, USA.  */
 
 /* (might need to include <stdarg.h> or <stdio.h> before this prototype,
  * to make sure that the 'va_list' type is defined/declared) */
-extern int libiberty_vprintf_buffer_size(const char *, va_list);
+extern size_t libiberty_vprintf_buffer_size(const char *, va_list);
 
 #endif /* !VPRINTF_SUPPORT_H */
 

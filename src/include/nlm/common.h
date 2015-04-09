@@ -1,4 +1,4 @@
-/* NLM (NetWare Loadable Module) support for BFD.
+/* nlm/common.h: NLM (NetWare Loadable Module) support for BFD.
    Copyright 1993, 2001 Free Software Foundation, Inc.
 
    Written by Fred Fish @ Cygnus Support

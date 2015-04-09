@@ -136,7 +136,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
-am_chew_am_OBJECTS = $(srcdir)/chew.$(OBJEXT)
+am_chew_am_OBJECTS = $(srcdir)/chew_am-chew.$(OBJEXT)
 chew_am_OBJECTS = $(am_chew_am_OBJECTS)
 chew_am_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -144,8 +144,8 @@ am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
 chew_am_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(chew_am_LDFLAGS) $(LDFLAGS) -o $@
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(chew_am_CFLAGS) \
+	$(CFLAGS) $(chew_am_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -298,6 +298,7 @@ BFD_HOST_64_BIT = @BFD_HOST_64_BIT@
 BFD_HOST_64_BIT_DEFINED = @BFD_HOST_64_BIT_DEFINED@
 BFD_HOST_LONG_LONG = @BFD_HOST_LONG_LONG@
 BFD_HOST_U_64_BIT = @BFD_HOST_U_64_BIT@
+BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
 CAN_BUILD_IN_SANDBOX = @CAN_BUILD_IN_SANDBOX@
 CATALOGS = @CATALOGS@
 CATOBJEXT = @CATOBJEXT@
@@ -572,6 +573,7 @@ bfd_TEXINFOS = $(DOCFILES) bfdsumm.texi
 MKDOC = chew$(EXEEXT_FOR_BUILD)
 src_MKDOC = $(srcdir)/$(MKDOC)
 chew_am_SOURCES = $(srcdir)/chew.c
+chew_am_CFLAGS = $(AM_CFLAGS) $(CFLAGS_FOR_BUILD) $(H_CFLAGS)
 chew_am_LDFLAGS = -L$(srcdir_high)/intl -L../../intl $(LDFLAGS_FOR_BUILD)
 PATH_TO_MOVEIFCHANGE = $(srcdir_high)/move-if-change
 RUN_MOVEIFCHANGE = $(SHELL) $(PATH_TO_MOVEIFCHANGE)
@@ -679,7 +681,7 @@ clean-noinstPROGRAMS:
 $(srcdir)/$(am__dirstamp):
 	@$(MKDIR_P) $(srcdir)
 	@: > $(srcdir)/$(am__dirstamp)
-$(srcdir)/chew.$(OBJEXT): $(srcdir)/$(am__dirstamp)
+$(srcdir)/chew_am-chew.$(OBJEXT): $(srcdir)/$(am__dirstamp)
 
 chew_am$(EXEEXT): $(chew_am_OBJECTS) $(chew_am_DEPENDENCIES) $(EXTRA_chew_am_DEPENDENCIES) 
 	@rm -f chew_am$(EXEEXT)
@@ -700,6 +702,12 @@ distclean-compile:
 
 .c.lo:
 	$(AM_V_CC)$(LTCOMPILE) -c -o $@ $<
+
+$(srcdir)/chew_am-chew.o: $(srcdir)/chew.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(chew_am_CFLAGS) $(CFLAGS) -c -o $(srcdir)/chew_am-chew.o `test -f '$(srcdir)/chew.c' || echo '$(srcdir)/'`$(srcdir)/chew.c
+
+$(srcdir)/chew_am-chew.obj: $(srcdir)/chew.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(chew_am_CFLAGS) $(CFLAGS) -c -o $(srcdir)/chew_am-chew.obj `if test -f '$(srcdir)/chew.c'; then $(CYGPATH_W) '$(srcdir)/chew.c'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/chew.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

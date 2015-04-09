@@ -1,12 +1,12 @@
-/* DWARF 2 support.
+/* bfd/dwarf2.c: DWARF 2 support.
    Copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
    2004, 2005 Free Software Foundation, Inc.
 
    Adapted from gdb/dwarf2read.c by Gavin Koch of Cygnus Solutions
-   (gavin@cygnus.com).
+   <gavin@cygnus.com>.
 
    From the dwarf2read.c header:
-   Adapted by Gary Funck (gary@intrepid.com), Intrepid Technology,
+   Adapted by Gary Funck <gary@intrepid.com>, Intrepid Technology,
    Inc.  with support from Florida State University (under contract
    with the Ada Joint Program Office), and Silicon Graphics, Inc.
    Initial contribution by Brent Benson, Harris Computer Systems, Inc.,
@@ -27,7 +27,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -230,39 +230,39 @@ struct attr_abbrev
 /* Read dwarf information from a buffer.  */
 
 static unsigned int
-read_1_byte (bfd *abfd ATTRIBUTE_UNUSED, bfd_byte *buf)
+read_1_byte(bfd *abfd ATTRIBUTE_UNUSED, bfd_byte *buf)
 {
-  return bfd_get_8 (abfd, buf);
+  return bfd_get_8(abfd, buf);
 }
 
 static int
-read_1_signed_byte (bfd *abfd ATTRIBUTE_UNUSED, bfd_byte *buf)
+read_1_signed_byte(bfd *abfd ATTRIBUTE_UNUSED, bfd_byte *buf)
 {
-  return bfd_get_signed_8 (abfd, buf);
+  return bfd_get_signed_8(abfd, buf);
 }
 
 static unsigned int
-read_2_bytes (bfd *abfd, bfd_byte *buf)
+read_2_bytes(bfd *abfd, bfd_byte *buf)
 {
-  return bfd_get_16 (abfd, buf);
+  return (unsigned int)bfd_get_16(abfd, buf);
 }
 
 static unsigned int
-read_4_bytes (bfd *abfd, bfd_byte *buf)
+read_4_bytes(bfd *abfd, bfd_byte *buf)
 {
-  return bfd_get_32 (abfd, buf);
+  return (unsigned int)bfd_get_32(abfd, buf);
 }
 
 static bfd_uint64_t
-read_8_bytes (bfd *abfd, bfd_byte *buf)
+read_8_bytes(bfd *abfd, bfd_byte *buf)
 {
-  return bfd_get_64 (abfd, buf);
+  return bfd_get_64(abfd, buf);
 }
 
 static bfd_byte *
-read_n_bytes (bfd *abfd ATTRIBUTE_UNUSED,
-	      bfd_byte *buf,
-	      unsigned int size ATTRIBUTE_UNUSED)
+read_n_bytes(bfd *abfd ATTRIBUTE_UNUSED,
+	     bfd_byte *buf,
+	     unsigned int size ATTRIBUTE_UNUSED)
 {
   /* If the size of a host char is 8 bits, we can return a pointer
      to the buffer, otherwise we have to copy the data to a buffer
@@ -271,35 +271,35 @@ read_n_bytes (bfd *abfd ATTRIBUTE_UNUSED,
 }
 
 static char *
-read_string (bfd *abfd ATTRIBUTE_UNUSED,
-	     bfd_byte *buf,
-	     unsigned int *bytes_read_ptr)
+read_string(bfd *abfd ATTRIBUTE_UNUSED,
+	    bfd_byte *buf,
+	    unsigned int *bytes_read_ptr)
 {
-  /* Return a pointer to the embedded string.  */
-  char *str = (char *) buf;
+  /* Return a pointer to the embedded string: */
+  char *str = (char *)buf;
   if (*str == '\0')
     {
       *bytes_read_ptr = 1;
       return NULL;
     }
 
-  *bytes_read_ptr = strlen (str) + 1;
+  *bytes_read_ptr = (strlen(str) + 1UL);
   return str;
 }
 
 static char *
-read_indirect_string (struct comp_unit* unit,
-		      bfd_byte *buf,
-		      unsigned int *bytes_read_ptr)
+read_indirect_string(struct comp_unit* unit,
+		     bfd_byte *buf,
+		     unsigned int *bytes_read_ptr)
 {
   bfd_uint64_t offset;
   struct dwarf2_debug *stash = unit->stash;
   char *str;
 
   if (unit->offset_size == 4)
-    offset = read_4_bytes (unit->abfd, buf);
+    offset = read_4_bytes(unit->abfd, buf);
   else
-    offset = read_8_bytes (unit->abfd, buf);
+    offset = read_8_bytes(unit->abfd, buf);
   *bytes_read_ptr = unit->offset_size;
 
   if (! stash->dwarf_str_buffer)
@@ -318,7 +318,7 @@ read_indirect_string (struct comp_unit* unit,
 	}
 
       sz = (msec->rawsize ? msec->rawsize : msec->size);
-      stash->dwarf_str_size = sz;
+      stash->dwarf_str_size = (unsigned long)sz;
       stash->dwarf_str_buffer = (bfd_byte *)bfd_alloc(abfd, sz);
       if (! stash->dwarf_str_buffer)
 	return NULL;
@@ -423,12 +423,12 @@ read_abbrevs(bfd *abfd, bfd_uint64_t offset, struct dwarf2_debug *stash)
       msec = bfd_get_section_by_name(abfd, ".debug_abbrev");
       if (! msec)
 	{
-	  (*_bfd_error_handler)(_("Dwarf Error: Can't find .debug_abbrev section."));
+	  (*_bfd_error_handler)(_("Dwarf Error: Cannot find .debug_abbrev section."));
 	  bfd_set_error(bfd_error_bad_value);
 	  return 0;
 	}
 
-      stash->dwarf_abbrev_size = msec->size;
+      stash->dwarf_abbrev_size = (unsigned long)msec->size;
       stash->dwarf_abbrev_buffer
 	= bfd_simple_get_relocated_section_contents(abfd, msec, NULL,
                                                     stash->syms);
@@ -448,7 +448,8 @@ read_abbrevs(bfd *abfd, bfd_uint64_t offset, struct dwarf2_debug *stash)
   abbrevs = (struct abbrev_info **)bfd_zalloc(abfd, amt);
 
   abbrev_ptr = stash->dwarf_abbrev_buffer + offset;
-  abbrev_number = read_unsigned_leb128(abfd, abbrev_ptr, &bytes_read);
+  abbrev_number = (unsigned int)read_unsigned_leb128(abfd, abbrev_ptr,
+                                                     &bytes_read);
   abbrev_ptr += bytes_read;
 
   /* Loop until we reach an abbrev number of 0: */
@@ -467,9 +468,11 @@ read_abbrevs(bfd *abfd, bfd_uint64_t offset, struct dwarf2_debug *stash)
       abbrev_ptr += 1;
 
       /* Now read in declarations: */
-      abbrev_name = read_unsigned_leb128(abfd, abbrev_ptr, &bytes_read);
+      abbrev_name = (unsigned int)read_unsigned_leb128(abfd, abbrev_ptr,
+                                                       &bytes_read);
       abbrev_ptr += bytes_read;
-      abbrev_form = read_unsigned_leb128(abfd, abbrev_ptr, &bytes_read);
+      abbrev_form = (unsigned int)read_unsigned_leb128(abfd, abbrev_ptr,
+                                                       &bytes_read);
       abbrev_ptr += bytes_read;
 
       while (abbrev_name)
@@ -492,7 +495,7 @@ read_abbrevs(bfd *abfd, bfd_uint64_t offset, struct dwarf2_debug *stash)
 
 	            while (abbrev)
 	              {
-	                free (abbrev->attrs);
+	                free(abbrev->attrs);
 	                abbrev = abbrev->next;
 	              }
 	            }
@@ -501,17 +504,21 @@ read_abbrevs(bfd *abfd, bfd_uint64_t offset, struct dwarf2_debug *stash)
 	      cur_abbrev->attrs = tmp;
 	    }
 
-	  cur_abbrev->attrs[cur_abbrev->num_attrs].name
-	    = (enum dwarf_attribute) abbrev_name;
-	  cur_abbrev->attrs[cur_abbrev->num_attrs++].form
-	    = (enum dwarf_form) abbrev_form;
-	  abbrev_name = read_unsigned_leb128 (abfd, abbrev_ptr, &bytes_read);
+	  cur_abbrev->attrs[cur_abbrev->num_attrs].name =
+            (enum dwarf_attribute)abbrev_name;
+	  cur_abbrev->attrs[cur_abbrev->num_attrs++].form =
+            (enum dwarf_form)abbrev_form;
+	  abbrev_name = ((unsigned int)
+                         read_unsigned_leb128(abfd, abbrev_ptr,
+                                              &bytes_read));
 	  abbrev_ptr += bytes_read;
-	  abbrev_form = read_unsigned_leb128 (abfd, abbrev_ptr, &bytes_read);
+	  abbrev_form = ((unsigned int)
+                         read_unsigned_leb128(abfd, abbrev_ptr,
+                                              &bytes_read));
 	  abbrev_ptr += bytes_read;
 	}
 
-      hash_number = abbrev_number % ABBREV_HASH_SIZE;
+      hash_number = (abbrev_number % ABBREV_HASH_SIZE);
       cur_abbrev->next = abbrevs[hash_number];
       abbrevs[hash_number] = cur_abbrev;
 
@@ -522,12 +529,13 @@ read_abbrevs(bfd *abfd, bfd_uint64_t offset, struct dwarf2_debug *stash)
 	 already read (which means we are about to read the abbreviations
 	 for the next compile unit) or if the end of the abbreviation
 	 table is reached.  */
-      if ((unsigned int) (abbrev_ptr - stash->dwarf_abbrev_buffer)
+      if ((unsigned int)(abbrev_ptr - stash->dwarf_abbrev_buffer)
 	    >= stash->dwarf_abbrev_size)
 	break;
-      abbrev_number = read_unsigned_leb128 (abfd, abbrev_ptr, &bytes_read);
+      abbrev_number = (unsigned int)read_unsigned_leb128(abfd, abbrev_ptr,
+                                                         &bytes_read);
       abbrev_ptr += bytes_read;
-      if (lookup_abbrev (abbrev_number,abbrevs) != NULL)
+      if (lookup_abbrev(abbrev_number, abbrevs) != NULL)
 	break;
     }
 
@@ -595,7 +603,8 @@ read_attribute_value(struct attribute *attr, unsigned form,
     case DW_FORM_block:
       amt = sizeof(struct dwarf_block);
       blk = (struct dwarf_block *)bfd_alloc(abfd, amt);
-      blk->size = read_unsigned_leb128(abfd, info_ptr, &bytes_read);
+      blk->size = (unsigned int)read_unsigned_leb128(abfd, info_ptr,
+                                                     &bytes_read);
       info_ptr += bytes_read;
       blk->data = read_n_bytes(abfd, info_ptr, blk->size);
       info_ptr += blk->size;
@@ -647,7 +656,7 @@ read_attribute_value(struct attribute *attr, unsigned form,
       info_ptr += bytes_read;
       break;
     case DW_FORM_indirect:
-      form = read_unsigned_leb128(abfd, info_ptr, &bytes_read);
+      form = (unsigned)read_unsigned_leb128(abfd, info_ptr, &bytes_read);
       info_ptr += bytes_read;
       info_ptr = read_attribute_value(attr, form, unit, info_ptr);
       break;
@@ -941,7 +950,7 @@ decode_line_info(struct comp_unit *unit, struct dwarf2_debug *stash)
 	  return 0;
 	}
 
-      stash->dwarf_line_size = msec->size;
+      stash->dwarf_line_size = (unsigned long)msec->size;
       stash->dwarf_line_buffer
 	= bfd_simple_get_relocated_section_contents(abfd, msec, NULL,
 						    stash->syms);
@@ -1059,7 +1068,7 @@ decode_line_info(struct comp_unit *unit, struct dwarf2_debug *stash)
 	{
 	  struct fileinfo *tmp;
 
-	  amt = table->num_files + FILE_ALLOC_CHUNK;
+	  amt = (table->num_files + FILE_ALLOC_CHUNK);
 	  amt *= sizeof(struct fileinfo);
 
 	  tmp = (struct fileinfo *)bfd_realloc(table->files, amt);
@@ -1074,13 +1083,13 @@ decode_line_info(struct comp_unit *unit, struct dwarf2_debug *stash)
 
       table->files[table->num_files].name = cur_file;
       table->files[table->num_files].dir =
-	read_unsigned_leb128 (abfd, line_ptr, &bytes_read);
+	(unsigned int)read_unsigned_leb128(abfd, line_ptr, &bytes_read);
       line_ptr += bytes_read;
       table->files[table->num_files].time =
-	read_unsigned_leb128 (abfd, line_ptr, &bytes_read);
+	(unsigned int)read_unsigned_leb128(abfd, line_ptr, &bytes_read);
       line_ptr += bytes_read;
       table->files[table->num_files].size =
-	read_unsigned_leb128 (abfd, line_ptr, &bytes_read);
+	(unsigned int)read_unsigned_leb128(abfd, line_ptr, &bytes_read);
       line_ptr += bytes_read;
       table->num_files++;
     }
@@ -1173,13 +1182,16 @@ decode_line_info(struct comp_unit *unit, struct dwarf2_debug *stash)
 		    }
 		  table->files[table->num_files].name = cur_file;
 		  table->files[table->num_files].dir =
-		    read_unsigned_leb128(abfd, line_ptr, &bytes_read);
+		    (unsigned int)read_unsigned_leb128(abfd, line_ptr,
+                                                       &bytes_read);
 		  line_ptr += bytes_read;
 		  table->files[table->num_files].time =
-		    read_unsigned_leb128(abfd, line_ptr, &bytes_read);
+		    (unsigned int)read_unsigned_leb128(abfd, line_ptr,
+                                                       &bytes_read);
 		  line_ptr += bytes_read;
 		  table->files[table->num_files].size =
-		    read_unsigned_leb128(abfd, line_ptr, &bytes_read);
+		    (unsigned int)read_unsigned_leb128(abfd, line_ptr,
+                                                       &bytes_read);
 		  line_ptr += bytes_read;
 		  table->num_files++;
 		  break;
@@ -1193,7 +1205,7 @@ decode_line_info(struct comp_unit *unit, struct dwarf2_debug *stash)
 		}
 	      break;
 	    case DW_LNS_copy:
-	      add_line_info (table, address, filename, line, column, 0);
+	      add_line_info(table, address, filename, line, column, 0);
 	      basic_block = 0;
 	      if (address < low_pc)
 		low_pc = address;
@@ -1217,7 +1229,8 @@ decode_line_info(struct comp_unit *unit, struct dwarf2_debug *stash)
 
                 /* The file and directory tables are 0 based,
                  * the references are 1 based: */
-		file = read_unsigned_leb128(abfd, line_ptr, &bytes_read);
+		file = (unsigned int)read_unsigned_leb128(abfd, line_ptr,
+                                                          &bytes_read);
 		line_ptr += bytes_read;
 		if (filename)
 		  free(filename);
@@ -1225,7 +1238,8 @@ decode_line_info(struct comp_unit *unit, struct dwarf2_debug *stash)
 		break;
 	      }
 	    case DW_LNS_set_column:
-	      column = read_unsigned_leb128(abfd, line_ptr, &bytes_read);
+	      column = (unsigned int)read_unsigned_leb128(abfd, line_ptr,
+                                                          &bytes_read);
 	      line_ptr += bytes_read;
 	      break;
 	    case DW_LNS_negate_stmt:
@@ -1373,18 +1387,18 @@ read_debug_ranges(struct comp_unit *unit)
       bfd *abfd = unit->abfd;
       asection *msec;
 
-      msec = bfd_get_section_by_name (abfd, ".debug_ranges");
+      msec = bfd_get_section_by_name(abfd, ".debug_ranges");
       if (! msec)
 	{
-	  (*_bfd_error_handler) (_("Dwarf Error: Can't find .debug_ranges section."));
-	  bfd_set_error (bfd_error_bad_value);
+	  (*_bfd_error_handler)(_("Dwarf Error: Cannot find .debug_ranges section."));
+	  bfd_set_error(bfd_error_bad_value);
 	  return FALSE;
 	}
 
-      stash->dwarf_ranges_size = msec->size;
+      stash->dwarf_ranges_size = (unsigned long)msec->size;
       stash->dwarf_ranges_buffer
-	= bfd_simple_get_relocated_section_contents (abfd, msec, NULL,
-						     stash->syms);
+	= bfd_simple_get_relocated_section_contents(abfd, msec, NULL,
+						    stash->syms);
       if (! stash->dwarf_ranges_buffer)
 	return FALSE;
     }
@@ -1543,7 +1557,8 @@ find_abstract_instance_name(struct comp_unit *unit, bfd_uint64_t die_ref)
   char *name = 0;
 
   info_ptr = (unit->info_ptr_unit + die_ref);
-  abbrev_number = read_unsigned_leb128(abfd, info_ptr, &bytes_read);
+  abbrev_number = (unsigned int)read_unsigned_leb128(abfd, info_ptr,
+                                                     &bytes_read);
   info_ptr += bytes_read;
 
   if (abbrev_number)
@@ -1641,7 +1656,8 @@ scan_unit_for_symbols(struct comp_unit *unit)
       bfd_vma low_pc = 0UL;
       bfd_vma high_pc = 0UL;
 
-      abbrev_number = read_unsigned_leb128(abfd, info_ptr, &bytes_read);
+      abbrev_number = (unsigned int)read_unsigned_leb128(abfd, info_ptr,
+                                                         &bytes_read);
       info_ptr += bytes_read;
 
       if (! abbrev_number)
@@ -1878,7 +1894,8 @@ parse_comp_unit(bfd *abfd, struct dwarf2_debug *stash, bfd_vma unit_length,
   if (! abbrevs)
       return 0;
 
-  abbrev_number = read_unsigned_leb128(abfd, info_ptr, &bytes_read);
+  abbrev_number = (unsigned int)read_unsigned_leb128(abfd, info_ptr,
+                                                     &bytes_read);
   info_ptr += bytes_read;
   if (! abbrev_number)
     {
@@ -1918,7 +1935,7 @@ parse_comp_unit(bfd *abfd, struct dwarf2_debug *stash, bfd_vma unit_length,
 	{
 	case DW_AT_stmt_list:
 	  unit->stmtlist = 1;
-	  unit->line_offset = attr.u.val;
+	  unit->line_offset = (unsigned long)attr.u.val;
 	  break;
 
 	case DW_AT_name:

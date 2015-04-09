@@ -284,21 +284,21 @@ BUGS
 */
 
 static void
-init_signal_tables (void)
+init_signal_tables(void)
 {
   const struct signal_info *eip;
-  int nbytes;
+  size_t nbytes;
 
   /* If we haven't already scanned the signal_table once to find the maximum
      signal value, then go find it now. */
 
   if (num_signal_names == 0)
     {
-      for (eip = signal_table; eip -> name != NULL; eip++)
+      for (eip = signal_table; eip->name != NULL; eip++)
 	{
-	  if (eip -> value >= num_signal_names)
+	  if (eip->value >= num_signal_names)
 	    {
-	      num_signal_names = eip -> value + 1;
+	      num_signal_names = eip->value + 1;
 	    }
 	}
     }
@@ -308,13 +308,13 @@ init_signal_tables (void)
 
   if (signal_names == NULL)
     {
-      nbytes = num_signal_names * sizeof (char *);
-      if ((signal_names = (const char **) malloc (nbytes)) != NULL)
+      nbytes = num_signal_names * sizeof(char *);
+      if ((signal_names = (const char **)malloc(nbytes)) != NULL)
 	{
-	  memset (signal_names, 0, nbytes);
-	  for (eip = signal_table; eip -> name != NULL; eip++)
+	  memset(signal_names, 0, nbytes);
+	  for (eip = signal_table; eip->name != NULL; eip++)
 	    {
-	      signal_names[eip -> value] = eip -> name;
+	      signal_names[eip->value] = eip->name;
 	    }
 	}
     }
@@ -326,20 +326,18 @@ init_signal_tables (void)
 
   if (sys_siglist == NULL)
     {
-      nbytes = num_signal_names * sizeof (char *);
-      if ((sys_siglist = (const char **) malloc (nbytes)) != NULL)
+      nbytes = num_signal_names * sizeof(char *);
+      if ((sys_siglist = (const char **)malloc(nbytes)) != NULL)
 	{
-	  memset (sys_siglist, 0, nbytes);
+	  memset(sys_siglist, 0, nbytes);
 	  sys_nsig = num_signal_names;
-	  for (eip = signal_table; eip -> name != NULL; eip++)
+	  for (eip = signal_table; eip->name != NULL; eip++)
 	    {
-	      sys_siglist[eip -> value] = eip -> msg;
+	      sys_siglist[eip->value] = eip->msg;
 	    }
 	}
     }
-
-#endif
-
+#endif /* !HAVE_SYS_SIGLIST */
 }
 
 

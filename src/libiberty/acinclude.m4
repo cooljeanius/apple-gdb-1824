@@ -1,12 +1,17 @@
+dnl# libiberty/acinclude.m4                                -*- Autoconf -*-
+
 sinclude(../config/acx.m4)
 sinclude(../config/no-executables.m4)
+sinclude(../config/picflag.m4)
+sinclude(../config/warnings.m4)
+sinclude(m4/libiberty.m4)
 
 dnl# See whether strncmp reads past the end of its string parameters.
 dnl# On some versions of SunOS4 at least, strncmp reads a word at a time
 dnl# but erroneously reads past the end of strings.  This can cause
 dnl# a SEGV in some cases.
 AC_DEFUN([libiberty_AC_FUNC_STRNCMP],
-[
+[AC_REQUIRE([AC_HEADER_STDC])dnl
 AC_CACHE_CHECK([for working strncmp],[ac_cv_func_strncmp_works],
 [AC_RUN_IFELSE([AC_LANG_SOURCE([[
 /* Test by Jim Wilson and Kaveh Ghazi.
@@ -14,6 +19,10 @@ AC_CACHE_CHECK([for working strncmp],[ac_cv_func_strncmp_works],
 #if defined(HAVE_STDLIB_H) && !defined(exit)
 # include <stdlib.h>
 #endif /* HAVE_STDLIB_H && !exit */
+
+#if defined(HAVE_STRING_H) && (!defined(strlen) || !defined(strcpy))
+# include <string.h>
+#endif /* HAVE_STRING_H && (!strlen || !strcpy) */
 
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
@@ -60,6 +69,7 @@ int main(void)
   if (p == (char *)-1) {
     p = (char *)mmap(0, MAP_LEN, (PROT_READ | PROT_WRITE),
 		     (MAP_ANON | MAP_PRIVATE), -1, 0);
+  }
   if (p == (char *)-1) {
     exit(2);
   } else {
@@ -81,6 +91,7 @@ rm -f core core.* *.core])
 if test "x${ac_cv_func_strncmp_works}" = "xno"; then
   AC_LIBOBJ([strncmp])
 fi
+AC_CHECK_DECLS([strncmp])dnl
 ])dnl
 
 dnl# See if errno must be declared even when <errno.h> is included.

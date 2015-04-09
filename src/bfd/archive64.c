@@ -119,7 +119,7 @@ bfd_elf64_archive_slurp_armap(bfd *abfd)
     }
   *stringbase = '\0';
 
-  ardata->symdef_count = nsymz;
+  ardata->symdef_count = (symindex)nsymz;
   ardata->first_file_filepos = bfd_tell(abfd);
   /* Pad to an even boundary if you have to: */
   ardata->first_file_filepos += ((ardata->first_file_filepos) % 2);

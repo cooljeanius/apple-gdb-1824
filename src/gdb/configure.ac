@@ -69,6 +69,10 @@ AM_PROG_CC_STDC
 
 AC_CONFIG_AUX_DIR([..])
 AC_CANONICAL_TARGET
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"
   AC_SUBST([HOST_ARCHITECTURE])
@@ -836,6 +840,12 @@ else
   AC_SUBST([AWK])dnl
   ## gotta do something here...
 fi
+if test -d ./../fixincludes; then
+  ## not really sure which of the programs it has to actually check for:
+  AC_PATH_PROG([FIXINCL],[fixincl],[],[],[${PATH}:./../fixincludes])dnl
+  ## this one is just a shell script, so nvm:
+  test -x ./../fixincludes/fixinc.sh
+fi
 AC_PROG_INSTALL
 AM_PROG_INSTALL_STRIP
 AM_PROG_LEX
@@ -855,8 +865,25 @@ else
   AC_SUBST([RANLIB])dnl
   ## gotta do something here...
 fi
+AC_PATH_PROG([RUNTEST_PROG],[runtest],[],[],[${PATH}:./../dejagnu])dnl
 AC_BAKEFILE_METROWERKS_EXTO
 AX_COMPILER_VENDOR
+
+LINT_PATH_DIR=""
+if test -d /usr/5bin; then
+  LINT_PATH_DIR=/usr/5bin
+elif test -d ../utils/lint; then
+  LINT_PATH_DIR=../utils/lint
+else
+  LINT_PATH_DIR=.
+fi
+AC_PATH_PROGS([LINT],[lint splint lclint tdlint alint],[],[],
+              [${PATH}:${LINT_PATH_DIR}])dnl
+AC_SUBST([LINT_OPTS])dnl
+
+m4_ifdef([AM_BINUTILS_CLANG_STATIC_ANALYSIS],[
+AM_BINUTILS_CLANG_STATIC_ANALYSIS
+])dnl
 
 AC_PATH_PROG([XCODEBUILD],[xcodebuild])dnl
 
@@ -876,6 +903,9 @@ AC_SUBST([RESMERGER])dnl
 AC_PATH_PROG([LD_CLASSIC],[ld_classic])dnl
 AC_PATH_PROG([MERGE_PEF],[MergePef])dnl
 AC_PATH_PROG([CODESIGN],[codesign])dnl
+AC_PATH_PROG([CODESIGN_ALLOCATE],[codesign_allocate])dnl
+dnl#FIXME: also add a test to make sure that the codesign_allocate found
+dnl# matches the version of the cctools and linker used by the compiler
 
 # A few more compiler-y things
 AM_PROG_VALAC([],[],[])
@@ -1368,11 +1398,25 @@ unset ac_cv_header_nl_types_h
 unset ac_cv_header_sys_param_h
 unset ac_cv_header_sys_socket_h
 unset ac_cv_header_wchar_h
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h langinfo.h libintl.h limits.h \
-                  locale.h mach/mach.h malloc.h malloc/malloc.h \
-                  netdb.h netinet/in.h nl_types.h paths.h \
-                  sys/param.h sys/socket.h sys/sysctl.h sys/time.h \
-                  utmp.h wchar.h wctype.h])dnl
+AC_CHECK_HEADERS([arpa/inet.h langinfo.h libintl.h limits.h locale.h \
+                  mach/mach.h malloc.h malloc/malloc.h netdb.h \
+                  netinet/in.h nl_types.h paths.h sys/param.h \
+                  sys/socket.h sys/sysctl.h sys/time.h utmp.h \
+                  wchar.h wctype.h])dnl
+
+# The Makefile says this could be in /usr/include/sys if the OS violates
+# POSIX, so check both places:
+FCNTL_H_CFLAGS=""
+AC_CHECK_HEADERS([fcntl.h],[
+  : # (OK, no special flags needed)
+],[
+  AC_CHECK_HEADERS([sys/fcntl.h],[
+    FCNTL_H_CFLAGS="-I/usr/include/sys"
+  ],[
+    AC_MSG_WARN([fcntl.h is in neither of the places where we might expect it to be])
+  ])dnl
+])dnl
+AC_SUBST([FCNTL_H_CFLAGS])dnl
 
 # Other headers needed for things that I have ifdef-ed:
 unset ac_cv_header_dlfcn_h
@@ -1729,24 +1773,17 @@ dnl# The "x86_debug_state32_t" type is checked for in an APPLE_LOCAL
 dnl# section below.
 dnl# "long long" support is also checked farther below.
 
-dnl### CoreFoundation types that we use:
-dnl## FIXME: there are too many; just choose a few of them:
-dnl# * CFAllocatorRef
-dnl# * CFArrayRef
-dnl# * CFDataRef
-dnl# * CFDictionaryRef
-dnl# * CFIndex
-dnl# * CFMutableArrayRef
-dnl# * CFMutableDictionaryRef
-dnl# * CFPropertyListRef
-dnl# * CFStringRef
-dnl# * CFUUIDBytes
-dnl# * CFUUIDRef
-dnl# * CFURLRef
-dnl## And, remember, once writing the actual conftest for whichever of the
-dnl## above types we eventually choose, make sure:
-dnl## <CoreFoundation/CoreFoundation.h>
-dnl## is in the "includes" part...
+dnl### A common CoreFoundation type that we use:
+AC_CHECK_TYPES([CFStringRef],[],[],[
+#ifdef HAVE_CORE_FOUNDATION_CORE_FOUNDATION_H
+# include <CoreFoundation/CoreFoundation.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest for CFStringRef needs the main CF header"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_CORE_FOUNDATION_CORE_FOUNDATION_H */
+])dnl
+dnl## FIXME: there are many others that we might want to check as well...
 
 # ------------------------------------- #
 # Checks for compiler characteristics.  #
@@ -1756,15 +1793,22 @@ AC_MSG_CHECKING([compiler characteristics])
 AC_MSG_RESULT([ ])dnl
 
 AC_PROG_GCC_TRADITIONAL
+AC_C_BACKSLASH_A dnl# used in a few files
 AC_C_BIGENDIAN([
   AC_CHECK_DECLS([__BIG_ENDIAN])dnl
 ],[
   AC_CHECK_DECLS([__LITTLE_ENDIAN])dnl
-],[],[
+],[
+  AC_MSG_WARN([cannot check for additional endianness decls when the endianness is unknown;
+ presetting ac_cv_c_bigendian=no (or yes) will help])
+],[
   AC_CHECK_DECLS([__BIG_ENDIAN])dnl
   AC_CHECK_DECLS([__LITTLE_ENDIAN])dnl
 ])dnl
+AC_C_CHAR_UNSIGNED dnl# can help with conversion warnings eventually
 AC_C_PROTOTYPES
+AC_C_STRINGIZE
+AC_C_VARARRAYS
 AC_C_VOLATILE
 AC_DEFUN([AC_C_DUPES],[
   AC_REQUIRE([AC_C_CONST])dnl
@@ -1797,10 +1841,17 @@ if test -f Makefile.in; then
       test -z "${ac_cv_working_alloca_h}"
       test -n "${ac_cv_func_alloca_works}" && unset ac_cv_func_alloca_works
       AC_FUNC_ALLOCA
+      if test "x${ac_cv_func_alloca_works}" = "xno"; then
+        AC_SEARCH_LIBS([alloca],[iberty])
+      fi
     else
       test -n "${ac_cv_working_alloca_h}"
     fi
+  else
+    AC_MSG_NOTICE([skipping check for alloca])
   fi
+else
+  AC_MSG_WARN([cannot check Makefile.in to see if we need to check for alloca because Makefile.in seems to be missing])
 fi
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_ERROR_AT_LINE
@@ -2813,6 +2864,15 @@ fi
 # at least warn about it:
 if test "x${gdb_cv_c_long_long}" != "xyes"; then
   build_warnings="${build_warnings} -Wlong-long"
+fi
+# similarly with VLAs:
+if test "x${ac_cv_c_vararrays}" != "xyes"; then
+  build_warnings="${build_warnings} -Wvla"
+fi
+
+# clang-specific warnings:
+if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
+  build_warnings="${build_warnings} -Wused-but-marked-unused"
 fi
 
 dnl# (we now ensure that 'acl_cv_wl' is set elsewhere above)

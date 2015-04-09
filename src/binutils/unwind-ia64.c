@@ -654,7 +654,7 @@ unw_decode_r2(const unsigned char *dp, unsigned int code, void *arg)
 
   byte1 = *dp++;
 
-  mask = (unsigned char)((code & 0x7) << 1) | ((byte1 >> 7) & 1);
+  mask = (unsigned char)(((code & 0x7) << 1) | ((byte1 >> 7) & 1));
   grsave = (byte1 & 0x7f);
   rlen = unw_decode_uleb128(& dp);
   UNW_DEC_PROLOGUE_GR("R2", rlen, mask, grsave, arg);
@@ -696,7 +696,7 @@ unw_decode_p2_p5(const unsigned char *dp, unsigned int code,
     {
       unsigned char byte1 = *dp++, r, dst;
 
-      r = (unsigned char)((code & 0x7) << 1) | ((byte1 >> 7) & 1);
+      r = (unsigned char)(((code & 0x7) << 1) | ((byte1 >> 7) & 1));
       dst = (byte1 & 0x7f);
       switch (r)
 	{

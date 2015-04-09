@@ -7525,7 +7525,7 @@ if test $ac_cv_header_stdbool_h = yes; then
 $as_echo "#define HAVE_STDBOOL_H 1" >>confdefs.h
 
 fi
- for ac_header in arpa/inet.h fcntl.h locale.h math.h \
+ for ac_header in arpa/inet.h fcntl.h floatingpoint.h locale.h math.h \
                   netdb.h netinet/in.h sgtty.h stdarg.h sys/file.h \
                   sys/socket.h sys/statfs.h termio.h termios.h utime.h
 do :
@@ -8212,7 +8212,9 @@ else
 #elif defined(HAVE_TIME_H)
 # include <time.h>
 #else
-# warning This conftest expects <time.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest expects <time.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* TIME_WITH_SYS_TIME || HAVE_TIME_H */
 
 _ACEOF
@@ -10519,7 +10521,6 @@ $as_echo "$do64bitVIS" >&6; }
     # there are a few systems, like Next, where this does NOT work.
 
 
-
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking system version (for dynamic loading)" >&5
 $as_echo_n "checking system version (for dynamic loading)... " >&6; }
     if test -f /usr/lib/NextStep/software_version; then
@@ -10546,8 +10547,7 @@ $as_echo "$system" >&6; }
     fi
 
     # Step 2: check for existence of -ldl library.  This is needed because
-    # Linux can use either -ldl or -ldld for dynamic loading.
-
+    # Linux can use either -ldl or -ldld for dynamic loading:
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dlopen in -ldl" >&5
 $as_echo_n "checking for dlopen in -ldl... " >&6; }
 if ${ac_cv_lib_dl_dlopen+:} false; then :
@@ -10591,10 +10591,6 @@ else
 fi
 
 
-    # Require ranlib early so we can override it in special cases below.
-
-
-
     # Step 3: set configuration options based on system name and version.
 
     do64bit_ok=no
@@ -10605,9 +10601,13 @@ fi
     ECHO_VERSION='`echo ${VERSION}`'
     TCL_LIB_VERSIONS_OK=ok
     CFLAGS_DEBUG=-ggdb
-    CFLAGS_OPTIMIZE=-O
-    if test "$GCC" = "yes" ; then
+    CFLAGS_OPTIMIZE=-O1
+    if test "x${GCC}" = "xyes"; then
+	# FIXME: '-Wconversion' changed semantics in newer gcc versions.
+	# Also we should be checking these flags to see if they are
+	# actually supported or not:
 	CFLAGS_WARNING="-Wall -Wconversion -Wno-implicit-int"
+	CFLAGS_WARNING="${CFLAGS_WARNING} -Wno-deprecated-declarations"
     else
 	CFLAGS_WARNING=""
     fi
@@ -11770,32 +11770,6 @@ fi
         MAKE_STUB_LIB='${STLIB_LD} $@ ${STUB_LIB_OBJS} ; ${RANLIB} $@'
         INSTALL_STUB_LIB='$(INSTALL_LIBRARY) $(STUB_LIB_FILE) $(LIB_INSTALL_DIR)/$(STUB_LIB_FILE) ; (cd $(LIB_INSTALL_DIR) ; $(RANLIB) $(STUB_LIB_FILE))'
     fi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

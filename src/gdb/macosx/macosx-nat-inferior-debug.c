@@ -63,8 +63,11 @@ FILE *inferior_stderr = NULL;
    3 = thread management
    4 = pending_event_handler
    6 = most chatty level  */
-
+#if defined(DEBUG) || defined(_DEBUG) || !defined(NDEBUG)
+int inferior_debug_flag = 6;
+#else
 int inferior_debug_flag = 0;
+#endif /* (DEBUG || _DEBUG || !NDEBUG) */
 int timestamps_debug_flag = 0;
 
 extern void _initialize_macosx_inferior_debug(void);
@@ -76,7 +79,7 @@ inferior_debug(int level, const char *fmt, ...)
   if (inferior_debug_flag >= level)
     {
       va_start(ap, fmt);
-      fprintf(inferior_stderr, "[%d inferior]: ", getpid ());
+      fprintf(inferior_stderr, "[%d inferior]: ", getpid());
       vfprintf(inferior_stderr, fmt, ap);
       va_end(ap);
       fflush(inferior_stderr);

@@ -1,9 +1,9 @@
-/* 
+/*
  * tclLoadDyld.c --
  *
  *     This procedure provides a version of the TclLoadFile that
  *     works with Apple's dyld dynamic loading.  This file
- *     provided by Wilfredo Sanchez (wsanchez@apple.com).
+ *     provided by Wilfredo Sanchez <wsanchez@apple.com>.
  *     This works on Mac OS X.
  *
  * Copyright (c) 1995 Apple Computer, Inc.
@@ -38,7 +38,7 @@ typedef struct Tcl_DyldLoadHandle {
  *
  * Results:
  *     A standard Tcl completion code.  If an error occurs, an error
- *     message is left in the interpreter's result. 
+ *     message is left in the interpreter's result.
  *
  * Side effects:
  *     New code suddenly appears in memory.
@@ -52,9 +52,9 @@ TclpDlopen(interp, pathPtr, loadHandle, unloadProcPtr)
     Tcl_Obj *pathPtr;		/* Name of the file containing the desired
 				 * code (UTF-8). */
     Tcl_LoadHandle *loadHandle;	/* Filled with token for dynamically loaded
-				 * file which will be passed back to 
+				 * file which will be passed back to
 				 * (*unloadProcPtr)() to unload the file. */
-    Tcl_FSUnloadFileProc **unloadProcPtr;	
+    Tcl_FSUnloadFileProc **unloadProcPtr;
 				/* Filled with address of Tcl_FSUnloadFileProc
 				 * function which should be used for
 				 * this file. */
@@ -63,18 +63,18 @@ TclpDlopen(interp, pathPtr, loadHandle, unloadProcPtr)
     const struct mach_header *dyld_lib;
     CONST char *native;
 
-    /* 
+    /*
      * First try the full path the user gave us.  This is particularly
      * important if the cwd is inside a vfs, and we are trying to load
      * using a relative path.
      */
     native = Tcl_FSGetNativePath(pathPtr);
-    dyld_lib = NSAddImage(native, 
-			  NSADDIMAGE_OPTION_WITH_SEARCHING | 
+    dyld_lib = NSAddImage(native,
+			  NSADDIMAGE_OPTION_WITH_SEARCHING |
 			  NSADDIMAGE_OPTION_RETURN_ON_ERROR);
-    
+
     if (!dyld_lib) {
-	/* 
+	/*
 	 * Let the OS loader examine the binary search path for
 	 * whatever string the user gave us which hopefully refers
 	 * to a file on the binary path
@@ -82,25 +82,25 @@ TclpDlopen(interp, pathPtr, loadHandle, unloadProcPtr)
 	Tcl_DString ds;
 	char *fileName = Tcl_GetString(pathPtr);
 	native = Tcl_UtfToExternalDString(NULL, fileName, -1, &ds);
-	dyld_lib = NSAddImage(native, 
-			      NSADDIMAGE_OPTION_WITH_SEARCHING | 
+	dyld_lib = NSAddImage(native,
+			      NSADDIMAGE_OPTION_WITH_SEARCHING |
 			      NSADDIMAGE_OPTION_RETURN_ON_ERROR);
 	Tcl_DStringFree(&ds);
     }
-    
+
     if (!dyld_lib) {
         NSLinkEditErrors editError;
-        char *name, *msg;
+        const char *name, *msg;
         NSLinkEditError(&editError, &errno, &name, &msg);
-        Tcl_AppendResult(interp, msg, (char *) NULL);
+        Tcl_AppendResult(interp, msg, (char *)NULL);
         return TCL_ERROR;
     }
-    
-    dyldLoadHandle = (Tcl_DyldLoadHandle *) ckalloc(sizeof(Tcl_DyldLoadHandle));
+
+    dyldLoadHandle = (Tcl_DyldLoadHandle *)ckalloc(sizeof(Tcl_DyldLoadHandle));
     if (!dyldLoadHandle) return TCL_ERROR;
     dyldLoadHandle->dyld_lib = dyld_lib;
     dyldLoadHandle->firstModuleHandle = NULL;
-    *loadHandle = (Tcl_LoadHandle) dyldLoadHandle;
+    *loadHandle = (Tcl_LoadHandle)dyldLoadHandle;
     *unloadProcPtr = &TclpUnloadFile;
     return TCL_OK;
 }
@@ -121,7 +121,7 @@ TclpDlopen(interp, pathPtr, loadHandle, unloadProcPtr)
  *----------------------------------------------------------------------
  */
 Tcl_PackageInitProc*
-TclpFindSymbol(interp, loadHandle, symbol) 
+TclpFindSymbol(interp, loadHandle, symbol)
     Tcl_Interp *interp;
     Tcl_LoadHandle loadHandle;
     CONST char *symbol;
@@ -131,7 +131,7 @@ TclpFindSymbol(interp, loadHandle, symbol)
     Tcl_DString newName, ds;
     Tcl_PackageInitProc* proc = NULL;
     Tcl_DyldLoadHandle *dyldLoadHandle = (Tcl_DyldLoadHandle *) loadHandle;
-    /* 
+    /*
      * dyld adds an underscore to the beginning of symbol names.
      */
 
@@ -139,8 +139,8 @@ TclpFindSymbol(interp, loadHandle, symbol)
     Tcl_DStringInit(&newName);
     Tcl_DStringAppend(&newName, "_", 1);
     native = Tcl_DStringAppend(&newName, native, -1);
-    nsSymbol = NSLookupSymbolInImage(dyldLoadHandle->dyld_lib, native, 
-	NSLOOKUPSYMBOLINIMAGE_OPTION_BIND_NOW | 
+    nsSymbol = NSLookupSymbolInImage(dyldLoadHandle->dyld_lib, native,
+	NSLOOKUPSYMBOLINIMAGE_OPTION_BIND_NOW |
 	NSLOOKUPSYMBOLINIMAGE_OPTION_RETURN_ON_ERROR);
     if(nsSymbol) {
 	Tcl_DyldModuleHandle *dyldModuleHandle;
@@ -154,7 +154,7 @@ TclpFindSymbol(interp, loadHandle, symbol)
     }
     Tcl_DStringFree(&newName);
     Tcl_DStringFree(&ds);
-    
+
     return proc;
 }
 
@@ -180,8 +180,8 @@ TclpFindSymbol(interp, loadHandle, symbol)
 void
 TclpUnloadFile(loadHandle)
     Tcl_LoadHandle loadHandle;	/* loadHandle returned by a previous call
-				 * to TclpDlopen().  The loadHandle is 
-				 * a token that represents the loaded 
+				 * to TclpDlopen().  The loadHandle is
+				 * a token that represents the loaded
 				 * file. */
 {
     Tcl_DyldLoadHandle *dyldLoadHandle = (Tcl_DyldLoadHandle *) loadHandle;
@@ -194,7 +194,7 @@ TclpUnloadFile(loadHandle)
 	dyldModuleHandle = dyldModuleHandle->nextModuleHandle;
 	ckfree(ptr);
     }
-    ckfree(dyldLoadHandle);
+    ckfree((char *)dyldLoadHandle);
 }
 
 /*

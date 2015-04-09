@@ -4,7 +4,7 @@
 /* Check that config.h is #included before system headers
  * (this works only for glibc, but that should be enough).  */
 #if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
-#  error config.h must be #included before system headers
+#  error "config.h must be #included before system headers"
 #endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
 #define __CONFIG_H__ 1
 
@@ -195,6 +195,9 @@
 
 /* Define to 1 if you have the `strerror' function. */
 #undef HAVE_STRERROR
+
+/* Define to 1 if cpp supports the ANSI # stringizing operator. */
+#undef HAVE_STRINGIZE
 
 /* Define to 1 if you have the <strings.h> header file. */
 #undef HAVE_STRINGS_H

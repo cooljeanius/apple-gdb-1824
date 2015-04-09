@@ -53,12 +53,12 @@
 # define EXIT_FAILURE 1
 #endif /* !EXIT_FAILURE */
 
-static void fatal_error (int, const char *, int) ATTRIBUTE_NORETURN;
-void writeout_test (int, const char *);
-void run_replaces (char *);
-void hook_char_replace (char *, size_t, char, char);
-int run_tests (const char **);
-void erase_test (int);
+static void fatal_error(int, const char *, int) ATTRIBUTE_NORETURN;
+void writeout_test(int, const char *);
+void run_replaces(char *);
+void hook_char_replace(char *, size_t, char, char);
+int run_tests(const char **);
+void erase_test(int);
 
 /* Test input data, argv before, and argv after:
 
@@ -119,22 +119,22 @@ const char *test_data[] = {
    is 0 or an errno value to print.  */
 
 static void
-fatal_error (int line, const char *errmsg, int err)
+fatal_error(int line, const char *errmsg, int err)
 {
-  fprintf (stderr, "test-expandargv:%d: %s", line, errmsg);
+  fprintf(stderr, "test-expandargv:%d: %s", line, errmsg);
   if (errno != 0)
-    fprintf (stderr, ": %s", xstrerror (err));
-  fprintf (stderr, "\n");
-  exit (EXIT_FAILURE);
+    fprintf(stderr, ": %s", xstrerror(err));
+  fprintf(stderr, "\n");
+  exit(EXIT_FAILURE);
 }
 
 /* hook_char_replace:
      Replace 'replacethis' with 'withthis' */
 
 void
-hook_char_replace (char *string, size_t len, char replacethis, char withthis)
+hook_char_replace(char *string, size_t len, char replacethis, char withthis)
 {
-  size_t i = 0;
+  size_t i = 0UL;
   for (i = 0; i < len; i++)
     if (string[i] == replacethis)
       string[i] = withthis;
@@ -146,18 +146,18 @@ hook_char_replace (char *string, size_t len, char replacethis, char withthis)
      should be handled with care. */
 
 void
-run_replaces (char * string)
+run_replaces(char * string)
 {
   /* Store original string size */
-  size_t len = strlen (string);
-  hook_char_replace (string, len, '\b', '\0');
+  size_t len = strlen(string);
+  hook_char_replace(string, len, '\b', '\0');
 }
 
 /* write_test:
    Write test datafile */
 
 void
-writeout_test (int test, const char * test_data)
+writeout_test(int test, const char *test_data_buf)
 {
   char filename[256];
   FILE *fd;
@@ -165,36 +165,36 @@ writeout_test (int test, const char * test_data)
   char * parse;
 
   /* Unique filename per test */
-  sprintf (filename, FILENAME_PATTERN, test);
-  fd = fopen (filename, "w");
+  sprintf(filename, FILENAME_PATTERN, test);
+  fd = fopen(filename, "w");
   if (fd == NULL)
-    fatal_error (__LINE__, "Failed to create test file.", errno);
+    fatal_error(__LINE__, "Failed to create test file.", errno);
 
   /* Generate RW copy of data for replaces */
-  len = strlen (test_data);
+  len = strlen(test_data_buf);
   parse = (char *)malloc(sizeof(char) * (len + 1));
   if (parse == NULL)
-    fatal_error (__LINE__, "Failed to malloc parse.", errno);
+    fatal_error(__LINE__, "Failed to malloc parse.", errno);
 
-  memcpy (parse, test_data, sizeof (char) * len);
+  memcpy(parse, test_data_buf, sizeof(char) * len);
   /* Run all possible replaces */
-  run_replaces (parse);
+  run_replaces(parse);
 
-  fwrite (parse, len, sizeof (char), fd);
-  free (parse);
-  fclose (fd);
+  fwrite(parse, len, sizeof(char), fd);
+  free(parse);
+  fclose(fd);
 }
 
 /* erase_test:
      Erase the test file */
 
 void
-erase_test (int test)
+erase_test(int test)
 {
   char filename[256];
-  sprintf (filename, FILENAME_PATTERN, test);
-  if (unlink (filename) != 0)
-    fatal_error (__LINE__, "Failed to erase test file.", errno);
+  sprintf(filename, FILENAME_PATTERN, test);
+  if (unlink(filename) != 0)
+    fatal_error(__LINE__, "Failed to erase test file.", errno);
 }
 
 
@@ -204,7 +204,7 @@ erase_test (int test)
     Return number of fails */
 
 int
-run_tests (const char **test_data)
+run_tests(const char **test_data_buf)
 {
   int argc_after, argc_before;
   char ** argv_before, ** argv_after;
@@ -212,61 +212,62 @@ run_tests (const char **test_data)
 
   i = j = fails = 0;
   /* Loop over all the tests */
-  while (test_data[j])
+  while (test_data_buf[j])
     {
       /* Write test data */
-      writeout_test (i, test_data[j++]);
+      writeout_test(i, test_data_buf[j++]);
       /* Copy argv before */
-      argv_before = dupargv ((char **) &test_data[j]);
+      argv_before = dupargv((char **)&test_data_buf[j]);
 
       /* Count argc before/after */
       argc_before = 0;
       argc_after = 0;
-      while (test_data[j + argc_before])
+      while (test_data_buf[j + argc_before])
         argc_before++;
       j += argc_before + 1; /* Skip null */
-      while (test_data[j + argc_after])
+      while (test_data_buf[j + argc_after])
         argc_after++;
 
       /* Copy argv after */
-      argv_after = dupargv ((char **) &test_data[j]);
+      argv_after = dupargv((char **)&test_data_buf[j]);
 
       /* Run all possible replaces */
       for (k = 0; k < argc_before; k++)
-        run_replaces (argv_before[k]);
+        run_replaces(argv_before[k]);
       for (k = 0; k < argc_after; k++)
-        run_replaces (argv_after[k]);
+        run_replaces(argv_after[k]);
 
       /* Run test: Expand arguments */
-      expandargv (&argc_before, &argv_before);
+      expandargv(&argc_before, &argv_before);
 
       failed = 0;
       /* Compare size first */
       if (argc_before != argc_after)
         {
-          printf ("FAIL: test-expandargv-%d. Number of arguments don't match.\n", i);
+          printf("FAIL: test-expandargv-%d. Number of arguments don't match (%d vs. %d).\n",
+                 i, argc_before, argc_after);
 	  failed++;
         }
       /* Compare each of the argv's ... */
       else
         for (k = 0; k < argc_after; k++)
-          if (strncmp (argv_before[k], argv_after[k], strlen(argv_after[k])) != 0)
+          if (strncmp(argv_before[k], argv_after[k], strlen(argv_after[k])) != 0)
             {
-              printf ("FAIL: test-expandargv-%d. Arguments don't match.\n", i);
+              printf("FAIL: test-expandargv-%d. Arguments don't match.\n", i);
               failed++;
             }
 
       if (!failed)
-        printf ("PASS: test-expandargv-%d.\n", i);
+        printf("PASS: test-expandargv-%d.\n", i);
       else
         fails++;
 
-      freeargv (argv_before);
-      freeargv (argv_after);
+      freeargv(argv_before);
+      freeargv(argv_after);
       /* Advance to next test */
       j += argc_after + 1;
       /* Erase test file */
-      erase_test (i);
+      erase_test(i);
       i++;
     }
   return fails;
@@ -307,3 +308,4 @@ main(int argc, char **argv)
     exit(EXIT_FAILURE);
 }
 
+/* EOF */

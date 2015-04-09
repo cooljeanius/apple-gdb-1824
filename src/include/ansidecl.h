@@ -416,7 +416,7 @@ So instead we use the macro below and test it against specific values.  */
 # define ATTRIBUTE_PACKED __attribute__((packed))
 #endif /* ATTRIBUTE_PACKED */
 
-  /* Attribute `hot' and `cold' was valid as of gcc 4.3.  */
+/* Attribute `hot' and `cold' was valid as of gcc 4.3.  */
 #ifndef ATTRIBUTE_COLD
 # if (GCC_VERSION >= 4003)
 #  define ATTRIBUTE_COLD __attribute__((__cold__))
@@ -431,6 +431,15 @@ So instead we use the macro below and test it against specific values.  */
 #  define ATTRIBUTE_HOT
 # endif /* GNUC >= 4.3 */
 #endif /* ATTRIBUTE_HOT */
+
+/* Attribute 'no_sanitize_undefined' was valid as of gcc 4.9.  */
+#ifndef ATTRIBUTE_NO_SANITIZE_UNDEFINED
+# if (GCC_VERSION >= 4009)
+#  define ATTRIBUTE_NO_SANITIZE_UNDEFINED __attribute__((no_sanitize_undefined))
+# else
+#  define ATTRIBUTE_NO_SANITIZE_UNDEFINED
+# endif /* GNUC >= 4.9 */
+#endif /* ATTRIBUTE_NO_SANITIZE_UNDEFINED */
 
 /* We use __extension__ in some places to suppress -pedantic warnings about
  * GCC extensions. This feature did NOT work properly before gcc 2.8. */

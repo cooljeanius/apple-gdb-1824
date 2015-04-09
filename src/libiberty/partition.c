@@ -137,23 +137,23 @@ elem_compare (const void *elem1, const void *elem2)
    class are sorted.  */
 
 void
-partition_print (partition part, FILE *fp)
+partition_print(partition part, FILE *fp)
 {
   char *done;
-  int num_elements = part->num_elements;
+  size_t num_elements = (size_t)part->num_elements;
   struct partition_elem *elements = part->elements;
   int *class_elements;
-  int e;
+  size_t e;
 
-  /* Flag the elements we've already printed.  */
-  done = (char *) xmalloc (num_elements);
-  memset (done, 0, num_elements);
+  /* Flag the elements we have already printed: */
+  done = (char *)xmalloc(num_elements);
+  memset(done, 0, num_elements);
 
-  /* A buffer used to sort elements in a class.  */
-  class_elements = (int *) xmalloc (num_elements * sizeof (int));
+  /* A buffer used to sort elements in a class: */
+  class_elements = (int *)xmalloc(num_elements * sizeof(int));
 
-  fputc ('[', fp);
-  for (e = 0; e < num_elements; ++e)
+  fputc('[', fp);
+  for (e = 0UL; e < num_elements; ++e)
     /* If we haven't printed this element, print its entire class.  */
     if (! done[e])
       {
@@ -161,23 +161,24 @@ partition_print (partition part, FILE *fp)
 	int count = elements[elements[e].class_element].class_count;
 	int i;
 
-      /* Collect the elements in this class.  */
+        /* Collect the elements in this class: */
 	for (i = 0; i < count; ++i) {
 	  class_elements[i] = c;
 	  done[c] = 1;
-	  c = elements[c].next - elements;
+	  c = (elements[c].next - elements);
 	}
-	/* Sort them.  */
-	qsort ((void *) class_elements, count, sizeof (int), elem_compare);
-	/* Print them.  */
-	fputc ('(', fp);
+	/* Sort them: */
+	qsort((void *)class_elements, (size_t)count, sizeof(int),
+              elem_compare);
+	/* Print them: */
+	fputc('(', fp);
 	for (i = 0; i < count; ++i)
-	  fprintf (fp, i == 0 ? "%d" : " %d", class_elements[i]);
-	fputc (')', fp);
+	  fprintf(fp, ((i == 0) ? "%d" : " %d"), class_elements[i]);
+	fputc(')', fp);
       }
-  fputc (']', fp);
+  fputc(']', fp);
 
-  free (done);
+  free(done);
 }
 
 /* EOF */

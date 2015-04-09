@@ -759,7 +759,7 @@ out(bfd *abfd, int type, char *start, char *end)
   if (bfd_bwrite(front, (bfd_size_type)6UL, abfd) != 6)
     abort();
   end[0] = '\n';
-  wrlen = (bfd_size_type)(end - (bfd_size_type)start + 1UL);
+  wrlen = (bfd_size_type)((bfd_size_type)(end - start) + 1UL);
   if (bfd_bwrite(start, wrlen, abfd) != wrlen)
     abort();
 }

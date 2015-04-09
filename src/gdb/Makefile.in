@@ -30,6 +30,7 @@ host_alias = @host_alias@
 host_cpu = @host_cpu@
 target_alias = @target_alias@
 target_cpu = @target_cpu@
+BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
 HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
 TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 program_transform_name = @program_transform_name@
@@ -274,7 +275,7 @@ UNIX03_UGH_CFLAGS = @UNIX03_UGH_CFLAGS@
 # we need CoreFoundation for the plist parsing code.
 CARBON_LDFLAGS = -framework CoreFoundation @CARBON_LIBS@
 
-# APPLE LOCAL: Use DebugSymbols framework if available for dSYM finding
+# APPLE LOCAL: Use DebugSymbols framework if available for dSYM finding:
 DEBUG_SYMBOLS_LDFLAGS = @DEBUG_SYMBOLS_LIBS@
 
 # APPLE LOCAL: Enable MIG checking for macosx/macosx.defs.
@@ -286,6 +287,10 @@ MACH_EXC_SERVER_PREFACE = @MACH_EXC_SERVER_PREFACE@
 # APPLE LOCAL: Encode the Info.plist in the binary for the security
 # framework's benefit.
 ADD_INFO_PLIST = -sectcreate __TEXT __info_plist $(srcdir)/Info.plist
+
+# APPLE LOCAL: variables for utilities used for codesigning:
+CODESIGN = @CODESIGN@
+CODESIGN_ALLOCATE = @CODESIGN_ALLOCATE@
 
 # Did the user give us a --with-sysroot option?
 TARGET_SYSTEM_ROOT = @TARGET_SYSTEM_ROOT@
@@ -404,6 +409,7 @@ WIN32LIBS = @WIN32LIBS@
 LIB_INSTALL_DIR = $(libdir)
 # This variable is needed when doing dynamic linking.
 LIB_RUNTIME_DIR = $(libdir)
+TCL_DIR = ../tcl
 TCL = @TCL_CC_SEARCH_FLAGS@ @TCL_BUILD_LIB_SPEC@
 TCL_CFLAGS = @TCLHDIR@
 GDBTKLIBS = @GDBTKLIBS@
@@ -480,7 +486,7 @@ CONFIG_UNINSTALL = @CONFIG_UNINSTALL@
 # should be according to Posix).
 DEFS = @DEFS@ @EXTRA_DEFS@
 GDB_CFLAGS = -I. -I$(srcdir) -I$(srcdir)/config $(DEFS) \
-  -DLOCALEDIR="\"$(localedir)\""
+  -DLOCALEDIR="\"$(localedir)\"" @MAINT@ @FCNTL_H_CFLAGS@
 
 # M{H,T}_CFLAGS, if defined, have host- and target-dependent CFLAGS
 # from the config directory.
@@ -490,6 +496,8 @@ PROFILE_CFLAGS = @PROFILE_CFLAGS@
 
 # architecture flags:
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+C_BUILDARCHFLAGS = -arch $(BUILD_ARCHITECTURE)
+C_TARGARCHFLAGS = -arch $(TARGET_ARCHITECTURE)
 
 # CFLAGS is specifically reserved for setting from the command line
 # when running make.  I.E.  "make CFLAGS=-Wmissing-prototypes".
@@ -555,10 +563,11 @@ ADD_DEPS = $(XM_ADD_FILES) $(TM_ADD_FILES) $(NAT_ADD_FILES)
 DIST=gdb
 
 LINT=/usr/5bin/lint
+LINT_CONFIGURED=@LINT@
 LINTFLAGS= $(GDB_CFLAGS) $(OPCODES_CFLAGS) $(READLINE_CFLAGS) \
 	$(BFD_CFLAGS) $(INCLUDE_CFLAGS) \
 	$(INTL_CFLAGS) $(LIBXML2_CFLAGS) $(MIG_CHECKING) \
-	$(UNIX03_UGH_CFLAGS)
+	$(UNIX03_UGH_CFLAGS) @MAINT@ @LINT_OPTS@
 
 RUNTEST = `if [ -f $${rootsrc}/../dejagnu/runtest ]; then \
 		echo $${rootsrc}/../dejagnu/runtest; else echo runtest; \
@@ -639,7 +648,7 @@ CC_FOR_TARGET = ` \
       echo $${rootme}/../gcc/xgcc -B$${rootme}/../gcc/; \
     fi; \
   else \
-    if [ "x$(host_canonical)" = "x$(target_canonical)" ] ; then \
+    if [ "x$(host_canonical)" = "x$(target_canonical)" ]; then \
       echo "$(CC)"; \
     else \
       t='$(program_transform_name)'; echo gcc | $(SED) -e '' $${t}; \
@@ -648,14 +657,14 @@ CC_FOR_TARGET = ` \
 
 CXX = gcc
 CXX_FOR_TARGET = ` \
-  if [ -f $${rootme}/../gcc/xgcc ] ; then \
-    if [ -f $${rootme}/../$(target_subdir)newlib/Makefile ] ; then \
+  if [ -f $${rootme}/../gcc/xgcc ]; then \
+    if [ -f $${rootme}/../$(target_subdir)newlib/Makefile ]; then \
       echo $${rootme}/../gcc/xgcc -B$${rootme}/../gcc/ -idirafter $${rootme}/$(target_subdir)newlib/targ-include -idirafter $${rootsrc}/../$(target_subdir)newlib/libc/include -nostdinc -B$${rootme}/../$(target_subdir)newlib/; \
     else \
       echo $${rootme}/../gcc/xgcc -B$${rootme}/../gcc/; \
     fi; \
   else \
-    if [ "$(host_canonical)" = "$(target_canonical)" ] ; then \
+    if [ "x$(host_canonical)" = "x$(target_canonical)" ]; then \
       echo $(CXX); \
     else \
       t='$(program_transform_name)'; echo gcc | $(SED) -e '' $${t}; \

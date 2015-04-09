@@ -887,6 +887,7 @@ HAVE_INTTYPES_H
 HAVE_UNSIGNED_LONG_LONG_INT
 HAVE_LONG_LONG_INT
 EXTRA_DEFS
+FCNTL_H_CFLAGS
 zlibinc
 zlibdir
 UNIX03_UGH_CFLAGS
@@ -907,6 +908,7 @@ EXTRA_YFLAGS_SEP
 YFLAGS
 YACC
 VALAC
+CODESIGN_ALLOCATE
 CODESIGN
 MERGE_PEF
 LD_CLASSIC
@@ -916,6 +918,10 @@ REZDET
 DEREZ
 REZ
 XCODEBUILD
+CLANG_ANALYZER
+LINT_OPTS
+LINT
+RUNTEST_PROG
 OBJCXXCPP
 am__fastdepOBJCXX_FALSE
 am__fastdepOBJCXX_TRUE
@@ -945,6 +951,7 @@ EMACS
 LEXLIB
 LEX_OUTPUT_ROOT
 LEX
+FIXINCL
 OPENMP_CFLAGS
 RC
 ac_ct_FC
@@ -1065,6 +1072,7 @@ MAKE_IS_GNU
 MAKE
 TARGET_ARCHITECTURE
 HOST_ARCHITECTURE
+BUILD_ARCHITECTURE
 target_os
 target_vendor
 target_cpu
@@ -1219,6 +1227,7 @@ OBJCPP
 OBJCXX
 OBJCXXFLAGS
 OBJCXXCPP
+CLANG_ANALYZER
 YACC
 YFLAGS
 XMKMF
@@ -1974,6 +1983,8 @@ Some influential environment variables:
   OBJCXX      Objective C++ compiler command
   OBJCXXFLAGS Objective C++ compiler flags
   OBJCXXCPP   Objective C++ preprocessor
+  CLANG_ANALYZER
+              Path to the clang static analyzer
   YACC        The `Yet Another Compiler Compiler' implementation to use.
               Defaults to the first program found out of: `bison -y', `byacc',
               `yacc'.
@@ -5737,6 +5748,10 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+
+fi
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"
 
@@ -32417,6 +32432,50 @@ else
   test ! -z "${AWK}" && export AWK
     ## gotta do something here...
 fi
+if test -d ./../fixincludes; then
+  ## not really sure which of the programs it has to actually check for:
+  # Extract the first word of "fixincl", so it can be a program name with args.
+set dummy fixincl; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_FIXINCL+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $FIXINCL in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_FIXINCL="$FIXINCL" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_FIXINCL="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+FIXINCL=$ac_cv_path_FIXINCL
+if test -n "$FIXINCL"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $FIXINCL" >&5
+$as_echo "$FIXINCL" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+  ## this one is just a shell script, so nvm:
+  test -x ./../fixincludes/fixinc.sh
+fi
 
 # Installed binaries are usually stripped using 'strip' when the user
 # run "make install-strip".  However 'strip' might not be the right
@@ -34112,6 +34171,45 @@ else
   test ! -z "${RANLIB}" && export RANLIB
     ## gotta do something here...
 fi
+# Extract the first word of "runtest", so it can be a program name with args.
+set dummy runtest; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_RUNTEST_PROG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $RUNTEST_PROG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_RUNTEST_PROG="$RUNTEST_PROG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_RUNTEST_PROG="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+RUNTEST_PROG=$ac_cv_path_RUNTEST_PROG
+if test -n "$RUNTEST_PROG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $RUNTEST_PROG" >&5
+$as_echo "$RUNTEST_PROG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if the C compiler requires -ext o" >&5
 $as_echo_n "checking if the C compiler requires -ext o... " >&6; }
@@ -34222,6 +34320,100 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_c_compiler_vendor" >&5
 $as_echo "$ax_cv_c_compiler_vendor" >&6; }
+
+
+LINT_PATH_DIR=""
+if test -d /usr/5bin; then
+  LINT_PATH_DIR=/usr/5bin
+elif test -d ../utils/lint; then
+  LINT_PATH_DIR=../utils/lint
+else
+  LINT_PATH_DIR=.
+fi
+for ac_prog in lint splint lclint tdlint alint
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_LINT+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $LINT in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_LINT="$LINT" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_LINT="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+LINT=$ac_cv_path_LINT
+if test -n "$LINT"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $LINT" >&5
+$as_echo "$LINT" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$LINT" && break
+done
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for the clang static analyzer" >&5
+$as_echo_n "checking for the clang static analyzer... " >&6; }
+if ${ac_cv_path_CLANG_ANALYZER+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -z "$CLANG_ANALYZER"; then
+  ac_path_CLANG_ANALYZER_found=false
+  # Loop through the user's path and test for each of PROGNAME-LIST
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in ${PATH}
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_prog in clang clang++ clang-mp-3.5 clang-mp-3.4 clang-mp-3.3 clang-mp-3.2; do
+    for ac_exec_ext in '' $ac_executable_extensions; do
+      ac_path_CLANG_ANALYZER="$as_dir/$ac_prog$ac_exec_ext"
+      as_fn_executable_p "$ac_path_CLANG_ANALYZER" || continue
+${ac_path_CLANG_ANALYZER} --analyze /dev/null > /dev/null 2>&1 && \
+      ac_cv_path_CLANG_ANALYZER=${ac_path_CLANG_ANALYZER}
+      ac_path_CLANG_ANALYZER_found=:
+      $ac_path_CLANG_ANALYZER_found && break 3
+    done
+  done
+  done
+IFS=$as_save_IFS
+  if test -z "$ac_cv_path_CLANG_ANALYZER"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: we will not be able to do static analysis with clang" >&5
+$as_echo "$as_me: WARNING: we will not be able to do static analysis with clang" >&2;}
+  fi
+else
+  ac_cv_path_CLANG_ANALYZER=$CLANG_ANALYZER
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_CLANG_ANALYZER" >&5
+$as_echo "$ac_cv_path_CLANG_ANALYZER" >&6; }  ## (need this extra line here)
+CLANG_ANALYZER=${ac_cv_path_CLANG_ANALYZER}
 
 
 # Extract the first word of "xcodebuild", so it can be a program name with args.
@@ -34574,6 +34766,45 @@ CODESIGN=$ac_cv_path_CODESIGN
 if test -n "$CODESIGN"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CODESIGN" >&5
 $as_echo "$CODESIGN" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+# Extract the first word of "codesign_allocate", so it can be a program name with args.
+set dummy codesign_allocate; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_CODESIGN_ALLOCATE+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $CODESIGN_ALLOCATE in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_CODESIGN_ALLOCATE="$CODESIGN_ALLOCATE" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_CODESIGN_ALLOCATE="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+CODESIGN_ALLOCATE=$ac_cv_path_CODESIGN_ALLOCATE
+if test -n "$CODESIGN_ALLOCATE"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CODESIGN_ALLOCATE" >&5
+$as_echo "$CODESIGN_ALLOCATE" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
@@ -37902,11 +38133,11 @@ unset ac_cv_header_nl_types_h
 unset ac_cv_header_sys_param_h
 unset ac_cv_header_sys_socket_h
 unset ac_cv_header_wchar_h
-for ac_header in arpa/inet.h fcntl.h langinfo.h libintl.h limits.h \
-                  locale.h mach/mach.h malloc.h malloc/malloc.h \
-                  netdb.h netinet/in.h nl_types.h paths.h \
-                  sys/param.h sys/socket.h sys/sysctl.h sys/time.h \
-                  utmp.h wchar.h wctype.h
+for ac_header in arpa/inet.h langinfo.h libintl.h limits.h locale.h \
+                  mach/mach.h malloc.h malloc/malloc.h netdb.h \
+                  netinet/in.h nl_types.h paths.h sys/param.h \
+                  sys/socket.h sys/sysctl.h sys/time.h utmp.h \
+                  wchar.h wctype.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -37914,6 +38145,44 @@ if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
   cat >>confdefs.h <<_ACEOF
 #define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
 _ACEOF
+
+fi
+
+done
+
+# The Makefile says this could be in /usr/include/sys if the OS violates
+# POSIX, so check both places:
+FCNTL_H_CFLAGS=""
+for ac_header in fcntl.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "fcntl.h" "ac_cv_header_fcntl_h" "$ac_includes_default"
+if test "x$ac_cv_header_fcntl_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_FCNTL_H 1
+_ACEOF
+
+  : # (OK, no special flags needed)
+
+else
+
+  for ac_header in sys/fcntl.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "sys/fcntl.h" "ac_cv_header_sys_fcntl_h" "$ac_includes_default"
+if test "x$ac_cv_header_sys_fcntl_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_SYS_FCNTL_H 1
+_ACEOF
+
+    FCNTL_H_CFLAGS="-I/usr/include/sys"
+
+else
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: fcntl.h is in neither of the places where we might expect it to be" >&5
+$as_echo "$as_me: WARNING: fcntl.h is in neither of the places where we might expect it to be" >&2;}
+
+fi
+
+done
 
 fi
 
@@ -40438,6 +40707,24 @@ done
   ## (for macosx-nat-inferior-debug.c)
 fi
 
+ac_fn_c_check_type "$LINENO" "CFStringRef" "ac_cv_type_CFStringRef" "
+#ifdef HAVE_CORE_FOUNDATION_CORE_FOUNDATION_H
+# include <CoreFoundation/CoreFoundation.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"This conftest for CFStringRef needs the main CF header\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_CORE_FOUNDATION_CORE_FOUNDATION_H */
+
+"
+if test "x$ac_cv_type_CFStringRef" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_CFSTRINGREF 1
+_ACEOF
+
+
+fi
 
 # ------------------------------------- #
 # Checks for compiler characteristics.  #
@@ -40489,7 +40776,45 @@ $as_echo "$ac_cv_prog_gcc_traditional" >&6; }
   fi
 fi
 
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether backslash-a works in strings" >&5
+$as_echo_n "checking whether backslash-a works in strings... " >&6; }
+if ${ac_cv_c_backslash_a+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+#if '\a' == 'a'
+      syntax error;
+#endif
+      char buf['\a' == 'a' ? -1 : 1];
+      buf[0] = '\a';
+      return buf[0] != "\a"[0];
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_c_backslash_a=yes
+else
+  ac_cv_c_backslash_a=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_backslash_a" >&5
+$as_echo "$ac_cv_c_backslash_a" >&6; }
+  if test $ac_cv_c_backslash_a = yes; then
+
+$as_echo "#define HAVE_C_BACKSLASH_A 1" >>confdefs.h
+
+  fi
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
 $as_echo_n "checking whether byte ordering is bigendian... " >&6; }
 if ${ac_cv_c_bigendian+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -40749,10 +41074,46 @@ _ACEOF
 
      ;; #(
    *)
-     as_fn_error $? "unknown endianness
- presetting ac_cv_c_bigendian=no (or yes) will help" "$LINENO" 5 ;;
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: cannot check for additional endianness decls when the endianness is unknown;
+ presetting ac_cv_c_bigendian=no (or yes) will help" >&5
+$as_echo "$as_me: WARNING: cannot check for additional endianness decls when the endianness is unknown;
+ presetting ac_cv_c_bigendian=no (or yes) will help" >&2;}
+ ;;
  esac
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for function prototypes" >&5
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether char is unsigned" >&5
+$as_echo_n "checking whether char is unsigned... " >&6; }
+if ${ac_cv_c_char_unsigned+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+static int test_array [1 - 2 * !(((char) -1) < 0)];
+test_array [0] = 0;
+return test_array [0];
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_c_char_unsigned=no
+else
+  ac_cv_c_char_unsigned=yes
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_char_unsigned" >&5
+$as_echo "$ac_cv_c_char_unsigned" >&6; }
+if test $ac_cv_c_char_unsigned = yes && test "$GCC" != yes; then
+  $as_echo "#define __CHAR_UNSIGNED__ 1" >>confdefs.h
+
+fi
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for function prototypes" >&5
 $as_echo_n "checking for function prototypes... " >&6; }
 if test "$ac_cv_prog_cc_c89" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
@@ -40767,6 +41128,66 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for preprocessor stringizing operator" >&5
+$as_echo_n "checking for preprocessor stringizing operator... " >&6; }
+if ${ac_cv_c_stringize+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#define x(y) #y
+
+char *s = x(teststring);
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "#teststring" >/dev/null 2>&1; then :
+  ac_cv_c_stringize=no
+else
+  ac_cv_c_stringize=yes
+fi
+rm -f conftest*
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_stringize" >&5
+$as_echo "$ac_cv_c_stringize" >&6; }
+if test $ac_cv_c_stringize = yes; then
+
+$as_echo "#define HAVE_STRINGIZE 1" >>confdefs.h
+
+fi
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for variable-length arrays" >&5
+$as_echo_n "checking for variable-length arrays... " >&6; }
+if ${ac_cv_c_vararrays+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+static int x; char a[++x]; a[sizeof a - 1] = 0; return a[0];
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_c_vararrays=yes
+else
+  ac_cv_c_vararrays=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_vararrays" >&5
+$as_echo "$ac_cv_c_vararrays" >&6; }
+  if test $ac_cv_c_vararrays = yes; then
+
+$as_echo "#define HAVE_C_VARARRAYS 1" >>confdefs.h
+
+  fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for working volatile" >&5
 $as_echo_n "checking for working volatile... " >&6; }
@@ -41087,10 +41508,74 @@ _ACEOF
 
 fi
 
+      if test "x${ac_cv_func_alloca_works}" = "xno"; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing alloca" >&5
+$as_echo_n "checking for library containing alloca... " >&6; }
+if ${ac_cv_search_alloca+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char alloca ();
+int
+main ()
+{
+return alloca ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' iberty; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_alloca=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_alloca+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_alloca+:} false; then :
+
+else
+  ac_cv_search_alloca=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_alloca" >&5
+$as_echo "$ac_cv_search_alloca" >&6; }
+ac_res=$ac_cv_search_alloca
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+fi
+
+      fi
     else
       test -n "${ac_cv_working_alloca_h}"
     fi
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: skipping check for alloca" >&5
+$as_echo "$as_me: skipping check for alloca" >&6;}
   fi
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: cannot check Makefile.in to see if we need to check for alloca because Makefile.in seems to be missing" >&5
+$as_echo "$as_me: WARNING: cannot check Makefile.in to see if we need to check for alloca because Makefile.in seems to be missing" >&2;}
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether closedir returns void" >&5
 $as_echo_n "checking whether closedir returns void... " >&6; }
@@ -44900,6 +45385,15 @@ fi
 # at least warn about it:
 if test "x${gdb_cv_c_long_long}" != "xyes"; then
   build_warnings="${build_warnings} -Wlong-long"
+fi
+# similarly with VLAs:
+if test "x${ac_cv_c_vararrays}" != "xyes"; then
+  build_warnings="${build_warnings} -Wvla"
+fi
+
+# clang-specific warnings:
+if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
+  build_warnings="${build_warnings} -Wused-but-marked-unused"
 fi
 
 

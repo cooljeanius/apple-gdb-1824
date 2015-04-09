@@ -268,26 +268,24 @@ htab_mod_1 (hashval_t x, hashval_t y, hashval_t inv, int shift)
     }
 #endif
 
-  /* Otherwise just use the native division routines.  */
-  return x % y;
+  /* Otherwise just use the native division routines: */
+  return (x % y);
 }
 
-/* Compute the primary hash for HASH given HTAB's current size.  */
-
+/* Compute the primary hash for HASH given HTAB's current size: */
 static inline hashval_t
-htab_mod (hashval_t hash, htab_t htab)
+htab_mod(hashval_t hash, htab_t htab)
 {
   const struct prime_ent *p = &prime_tab[htab->size_prime_index];
-  return htab_mod_1 (hash, p->prime, p->inv, p->shift);
+  return htab_mod_1(hash, p->prime, p->inv, (int)p->shift);
 }
 
-/* Compute the secondary hash for HASH given HTAB's current size.  */
-
+/* Compute the secondary hash for HASH given HTAB's current size: */
 static inline hashval_t
-htab_mod_m2 (hashval_t hash, htab_t htab)
+htab_mod_m2(hashval_t hash, htab_t htab)
 {
   const struct prime_ent *p = &prime_tab[htab->size_prime_index];
-  return 1 + htab_mod_1 (hash, p->prime - 2, p->inv_m2, p->shift);
+  return (1 + htab_mod_1(hash, (p->prime - 2), p->inv_m2, (int)p->shift));
 }
 
 /* This function creates table with length slightly longer than given

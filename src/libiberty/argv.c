@@ -83,8 +83,8 @@ dupargv(char **argv)
   /* the strings */
   for (argc = 0; argv[argc] != NULL; argc++)
     {
-      int len = strlen(argv[argc]);
-      copy[argc] = (char *)malloc(len + 1);
+      size_t len = strlen(argv[argc]);
+      copy[argc] = (char *)malloc(len + 1UL);
       if (copy[argc] == NULL)
 	{
 	  freeargv(copy);
@@ -428,67 +428,67 @@ expandargv(int *argcp, char ***argvp)
       filename = (*argvp)[i];
       if (filename[0] != '@')
         continue;
-      /* If we have iterated too many times then stop.  */
-      if (-- iteration_limit == 0)
+      /* If we have iterated too many times, then stop: */
+      if (--iteration_limit == 0)
         {
-          fprintf (stderr, "%s: error: too many @-files encountered\n", (*argvp)[0]);
-          xexit (1);
+          fprintf(stderr, "%s: error: too many @-files encountered\n", (*argvp)[0]);
+          xexit(1);
         }
-      /* Read the contents of the file.  */
-      f = fopen (++filename, "r");
+      /* Read the contents of the file: */
+      f = fopen(++filename, "r");
       if (!f)
         continue;
-      if (fseek (f, 0L, SEEK_END) == -1)
+      if (fseek(f, 0L, SEEK_END) == -1)
         goto error;
-      pos = ftell (f);
+      pos = ftell(f);
       if (pos == -1)
         goto error;
-      if (fseek (f, 0L, SEEK_SET) == -1)
+      if (fseek(f, 0L, SEEK_SET) == -1)
         goto error;
-      buffer = (char *) xmalloc (pos * sizeof (char) + 1);
-      len = fread (buffer, sizeof (char), pos, f);
-      if (len != (size_t) pos
+      buffer = (char *)xmalloc(pos * sizeof(char) + 1UL);
+      len = fread(buffer, sizeof(char), (size_t)pos, f);
+      if ((len != (size_t)pos)
           /* On Windows, fread may return a value smaller than POS,
              due to CR/LF->CR translation when reading text files.
              That does not in-and-of itself indicate failure.  */
-          && ferror (f))
+          && ferror(f))
         goto error;
-      /* Add a NUL terminator.  */
+      /* Add a NUL terminator: */
       buffer[len] = '\0';
       /* If the file is empty or contains only whitespace, buildargv would
          return a single empty argument.  In this context we want no arguments,
          instead.  */
-      if (only_whitespace (buffer))
+      if (only_whitespace(buffer))
         {
-          file_argv = (char **) xmalloc (sizeof (char *));
+          file_argv = (char **)xmalloc(sizeof(char *));
           file_argv[0] = NULL;
         }
       else
-        /* Parse the string.  */
-        file_argv = buildargv (buffer);
+        /* Parse the string: */
+        file_argv = buildargv(buffer);
       /* If *ARGVP is not already dynamically allocated, copy it.  */
       if (!argv_dynamic)
-        *argvp = dupargv (*argvp);
-      /* Count the number of arguments.  */
+        *argvp = dupargv(*argvp);
+      /* Count the number of arguments: */
       file_argc = 0;
       while (file_argv[file_argc])
         ++file_argc;
       /* Now, insert FILE_ARGV into ARGV.  The "+1" below handles the
          NULL terminator at the end of ARGV.  */
       *argvp = ((char **)
-                xrealloc (*argvp,
-                          (*argcp + file_argc + 1) * sizeof (char *)));
-      memmove (*argvp + i + file_argc, *argvp + i + 1,
-               (*argcp - i) * sizeof (char *));
-      memcpy (*argvp + i, file_argv, file_argc * sizeof (char *));
+                xrealloc(*argvp,
+                         (*argcp + file_argc + 1) * sizeof(char *)));
+      memmove(*argvp + i + file_argc, *argvp + i + 1,
+              (*argcp - i) * sizeof(char *));
+      memcpy(*argvp + i, file_argv, file_argc * sizeof(char *));
       /* The original option has been replaced by all the new
          options.  */
-      *argcp += file_argc - 1;
+      *argcp += (file_argc - 1);
       /* Free up memory allocated to process the response file.  We do
          not use freeargv because the individual options in FILE_ARGV
          are now in the main ARGV.  */
-      free (file_argv);
-      free (buffer);
+      free(file_argv);
+      free(buffer);
       /* Rescan all of the arguments just read to support response
          files that include other response files.  */
       --i;

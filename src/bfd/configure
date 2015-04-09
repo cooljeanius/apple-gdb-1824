@@ -813,6 +813,7 @@ am__isrc
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
+BUILD_ARCHITECTURE
 HOST_ARCHITECTURE
 EGREP
 GREP
@@ -5174,7 +5175,11 @@ $as_echo "$ac_cv_safe_to_define___extensions__" >&6; }
 
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"
-    ## TODO: might also want to do likewise with the build arch...
+    ## might also need build; do that next:
+  if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+    export BUILD_ARCHITECTURE="${build_cpu}"
+        ## (just in case)
+  fi
 fi
 
 # Automake:
@@ -22543,6 +22548,34 @@ $as_echo "$ac_cv_c_restrict" >&6; }
 _ACEOF
  ;;
  esac
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for preprocessor stringizing operator" >&5
+$as_echo_n "checking for preprocessor stringizing operator... " >&6; }
+if ${ac_cv_c_stringize+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#define x(y) #y
+
+char *s = x(teststring);
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "#teststring" >/dev/null 2>&1; then :
+  ac_cv_c_stringize=no
+else
+  ac_cv_c_stringize=yes
+fi
+rm -f conftest*
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_stringize" >&5
+$as_echo "$ac_cv_c_stringize" >&6; }
+if test $ac_cv_c_stringize = yes; then
+
+$as_echo "#define HAVE_STRINGIZE 1" >>confdefs.h
+
+fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for working volatile" >&5
 $as_echo_n "checking for working volatile... " >&6; }

@@ -109,6 +109,18 @@
    */
 #undef HAVE_DECL_MALLOC
 
+/* Define to 1 if you have the declaration of `memmem', and to 0 if you don't.
+   */
+#undef HAVE_DECL_MEMMEM
+
+/* Define to 1 if you have the declaration of `mempcpy', and to 0 if you
+   don't. */
+#undef HAVE_DECL_MEMPCPY
+
+/* Define to 1 if you have the declaration of `mkstemps', and to 0 if you
+   don't. */
+#undef HAVE_DECL_MKSTEMPS
+
 /* Define to 1 if you have the declaration of `realloc', and to 0 if you
    don't. */
 #undef HAVE_DECL_REALLOC
@@ -120,6 +132,22 @@
 /* Define to 1 if you have the declaration of `snprintf', and to 0 if you
    don't. */
 #undef HAVE_DECL_SNPRINTF
+
+/* Define to 1 if you have the declaration of `stpncpy', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STPNCPY
+
+/* Define to 1 if you have the declaration of `strncmp', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRNCMP
+
+/* Define to 1 if you have the declaration of `strndup', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRNDUP
+
+/* Define to 1 if you have the declaration of `strnlen', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRNLEN
 
 /* Define to 1 if you have the declaration of `strtol', and to 0 if you don't.
    */

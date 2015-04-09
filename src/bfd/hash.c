@@ -325,22 +325,21 @@ bfd_hash_table_init_n(struct bfd_hash_table *table,
       bfd_set_error (bfd_error_no_memory);
       return FALSE;
     }
-  memset ((void *) table->table, 0, alloc);
+  memset((void *)table->table, 0, (size_t)alloc);
   table->size = size;
   table->newfunc = newfunc;
   return TRUE;
 }
 
-/* Create a new hash table with the default number of entries.  */
-
+/* Create a new hash table with the default number of entries: */
 bfd_boolean
-bfd_hash_table_init (struct bfd_hash_table *table,
-		     struct bfd_hash_entry *(*newfunc) (struct bfd_hash_entry *,
-							struct bfd_hash_table *,
-							const char *))
+bfd_hash_table_init(struct bfd_hash_table *table,
+		    struct bfd_hash_entry *(*newfunc)(struct bfd_hash_entry *,
+                                                      struct bfd_hash_table *,
+                                                      const char *))
 {
   return bfd_hash_table_init_n(table, newfunc,
-                               bfd_default_hash_table_size);
+                               (unsigned int)bfd_default_hash_table_size);
 }
 
 /* Free a hash table: */
@@ -396,13 +395,13 @@ bfd_hash_lookup(struct bfd_hash_table *table, const char *string,
       char *newstring;
 
       newstring = (char *)objalloc_alloc((struct objalloc *)table->memory,
-                                         (len + 1));
+                                         (len + 1U));
       if (!newstring)
 	{
 	  bfd_set_error(bfd_error_no_memory);
 	  return NULL;
 	}
-      memcpy(newstring, string, (len + 1));
+      memcpy(newstring, string, (size_t)(len + 1U));
       string = newstring;
     }
   hashp->string = string;
@@ -443,7 +442,7 @@ bfd_hash_allocate(struct bfd_hash_table *table, unsigned int size)
   void * ret;
 
   ret = objalloc_alloc((struct objalloc *)table->memory, size);
-  if ((ret == NULL) && (size != 0))
+  if ((ret == NULL) && (size != 0U))
     bfd_set_error(bfd_error_no_memory);
   return ret;
 }
@@ -455,8 +454,8 @@ bfd_hash_newfunc(struct bfd_hash_entry *entry,
                  const char *string ATTRIBUTE_UNUSED)
 {
   if (entry == NULL)
-    entry = (struct bfd_hash_entry *)bfd_hash_allocate(table,
-                                                       sizeof(* entry));
+    entry = ((struct bfd_hash_entry *)
+             bfd_hash_allocate(table, (unsigned int)sizeof(* entry)));
   return entry;
 }
 
@@ -494,7 +493,7 @@ bfd_hash_set_default_size(bfd_size_type hash_size)
     if (hash_size <= hash_size_primes[table_index])
       break;
 
-  bfd_default_hash_table_size = hash_size_primes[table_index];
+  bfd_default_hash_table_size = (size_t)hash_size_primes[table_index];
 }
 
 /* A few different object file formats (a.out, COFF, ELF) use a string
@@ -546,8 +545,8 @@ strtab_hash_newfunc(struct bfd_hash_entry *entry,
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
   if (ret == NULL)
-    ret = (struct strtab_hash_entry *)bfd_hash_allocate(table,
-                                                        sizeof(* ret));
+    ret = ((struct strtab_hash_entry *)
+           bfd_hash_allocate(table, (unsigned int)sizeof(* ret)));
   if (ret == NULL)
     return NULL;
 
@@ -632,12 +631,13 @@ _bfd_stringtab_add(struct bfd_strtab_hash *tab, const char *str,
     {
       entry = strtab_hash_lookup(tab, str, TRUE, copy);
       if (entry == NULL)
-	return (bfd_size_type)-1;
+	return (bfd_size_type)-1L;
     }
   else
     {
-      entry = (struct strtab_hash_entry *)bfd_hash_allocate(&tab->table,
-                                                            sizeof(* entry));
+      entry = ((struct strtab_hash_entry *)
+               bfd_hash_allocate(&tab->table,
+                                 (unsigned int)sizeof(* entry)));
       if (entry == NULL)
 	return (bfd_size_type)-1;
       if (! copy)
@@ -646,7 +646,8 @@ _bfd_stringtab_add(struct bfd_strtab_hash *tab, const char *str,
 	{
 	  char *n;
 
-	  n = (char *)bfd_hash_allocate(&tab->table, (strlen(str) + 1));
+	  n = (char *)bfd_hash_allocate(&tab->table,
+                                        (unsigned int)(strlen(str) + 1U));
 	  if (n == NULL)
 	    return (bfd_size_type)-1;
 	  entry->root.string = n;

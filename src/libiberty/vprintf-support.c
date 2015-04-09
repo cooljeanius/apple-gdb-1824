@@ -41,13 +41,13 @@ extern unsigned long strtoul();
 
 #include "vprintf-support.h"
 
-int
+size_t
 libiberty_vprintf_buffer_size(const char *format, va_list args)
 {
   const char *p = format;
   /* Add one to make sure that it is never zero, which might cause malloc
    * to return NULL: */
-  int total_width = (strlen(format) + 1);
+  size_t total_width = (strlen(format) + 1UL);
   va_list ap;
 
 #ifdef va_copy
@@ -65,7 +65,7 @@ libiberty_vprintf_buffer_size(const char *format, va_list args)
           if (*p == '*')
             {
               ++p;
-              total_width += abs(va_arg(ap, int));
+              total_width += (size_t)abs(va_arg(ap, int));
             }
           else
             total_width += strtoul(p, (char **)&p, 10);
@@ -75,7 +75,7 @@ libiberty_vprintf_buffer_size(const char *format, va_list args)
               if (*p == '*')
                 {
                   ++p;
-                  total_width += abs(va_arg(ap, int));
+                  total_width += (size_t)abs(va_arg(ap, int));
                 }
               else
                 total_width += strtoul(p, (char **)&p, 10);

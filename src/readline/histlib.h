@@ -19,23 +19,23 @@
    have a copy of the license, write to the Free Software Foundation,
    59 Temple Place, Suite 330, Boston, MA 02111 USA. */
 
-#if !defined (_HISTLIB_H_)
+#if !defined(_HISTLIB_H_)
 #define _HISTLIB_H_
 
-#if defined (HAVE_STRING_H)
+#if defined(HAVE_STRING_H)
 #  include <string.h>
 #else
 #  include <strings.h>
 #endif /* !HAVE_STRING_H */
 
-#if !defined (STREQ)
-#define STREQ(a, b)	(((a)[0] == (b)[0]) && (strcmp ((a), (b)) == 0))
+#if !defined(STREQ)
+#define STREQ(a, b)	(((a)[0] == (b)[0]) && (strcmp((a), (b)) == 0))
 #define STREQN(a, b, n) (((n) == 0) ? (1) \
-				    : ((a)[0] == (b)[0]) && (strncmp ((a), (b), (n)) == 0))
+				    : ((a)[0] == (b)[0]) && (strncmp((a), (b), (n)) == 0))
 #endif
 
 #ifndef savestring
-#define savestring(x) strcpy (xmalloc (1 + strlen (x)), (x))
+#define savestring(x) strcpy(xmalloc(1 + strlen(x)), (x))
 #endif
 
 #ifndef whitespace
@@ -51,14 +51,14 @@
 #endif
 
 #ifndef member
-#  ifndef strchr
-extern char *strchr ();
-#  endif
-#define member(c, s) ((c) ? ((char *)strchr ((s), (c)) != (char *)NULL) : 0)
+# if !defined(strchr) && (!defined(HAVE_DECL_STRCHR) || !HAVE_DECL_STRCHR)
+extern char *strchr();
+# endif /* !strchr && !HAVE_DECL_STRCHR */
+#define member(c, s) ((c) ? ((char *)strchr((s), (c)) != (char *)NULL) : 0)
 #endif
 
 #ifndef FREE
-#  define FREE(x)	if (x) free (x)
+#  define FREE(x)	if (x) free(x)
 #endif
 
 /* Possible history errors passed to hist_error. */

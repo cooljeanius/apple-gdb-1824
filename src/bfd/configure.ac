@@ -32,7 +32,12 @@ AC_USE_SYSTEM_EXTENSIONS
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"
   AC_SUBST([HOST_ARCHITECTURE])dnl
-  ## TODO: might also want to do likewise with the build arch...
+  ## might also need build; do that next:
+  if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+    export BUILD_ARCHITECTURE="${build_cpu}"
+    AC_SUBST([BUILD_ARCHITECTURE])dnl
+    ## (just in case)
+  fi
 fi
 
 # Automake:
@@ -604,6 +609,7 @@ AC_MSG_RESULT([ ])
 AC_C_BIGENDIAN
 AC_C_PROTOTYPES
 AC_C_RESTRICT
+AC_C_STRINGIZE
 AC_C_VOLATILE
 AC_MSG_CHECKING([other types that did not fit with the host ones above])
 AC_MSG_RESULT([ ])

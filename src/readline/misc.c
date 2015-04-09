@@ -58,6 +58,7 @@ static void _rl_history_set_point PARAMS((void));
 
 /* Forward declarations used in this file */
 void _rl_free_history_entry PARAMS((HIST_ENTRY *));
+void rl_replace_from_history PARAMS((HIST_ENTRY *, int));
 
 /* If non-zero, rl_get_previous_history and rl_get_next_history attempt
    to preserve the value of rl_point from line to line. */
@@ -75,11 +76,11 @@ int _rl_history_saved_point = -1;
 
 /* Handle C-u style numeric args, as well as M--, and M-digits. */
 static int
-rl_digit_loop ()
+rl_digit_loop(void)
 {
   int key, c, sawminus, sawdigits;
 
-  rl_save_prompt ();
+  rl_save_prompt();
 
   RL_SETSTATE(RL_STATE_NUMERICARG);
   sawminus = sawdigits = 0;
@@ -141,41 +142,40 @@ rl_digit_loop ()
 	}
       else
 	{
-	  /* Make M-- command equivalent to M--1 command. */
-	  if (sawminus && rl_numeric_arg == 1 && rl_explicit_arg == 0)
+	  /* Make M-- command equivalent to M--1 command: */
+	  if (sawminus && (rl_numeric_arg == 1) && (rl_explicit_arg == 0))
 	    rl_explicit_arg = 1;
-	  rl_restore_prompt ();
-	  rl_clear_message ();
+	  rl_restore_prompt();
+	  rl_clear_message();
 	  RL_UNSETSTATE(RL_STATE_NUMERICARG);
-	  return (_rl_dispatch (key, _rl_keymap));
+	  return (_rl_dispatch(key, _rl_keymap));
 	}
     }
 
   /*NOTREACHED*/
 }
 
-/* Add the current digit to the argument in progress. */
+/* Add the current digit to the argument in progress: */
 int
-rl_digit_argument (ignore, key)
-     int ignore, key;
+rl_digit_argument(int ignore, int key)
 {
-  rl_execute_next (key);
-  return (rl_digit_loop ());
+  rl_execute_next(key);
+  return (rl_digit_loop());
 }
 
-/* What to do when you abort reading an argument. */
+/* What to do when you abort reading an argument: */
 int
-rl_discard_argument ()
+rl_discard_argument(void)
 {
-  rl_ding ();
-  rl_clear_message ();
-  _rl_init_argument ();
+  rl_ding();
+  rl_clear_message();
+  _rl_init_argument();
   return 0;
 }
 
-/* Create a default argument. */
+/* Create a default argument: */
 int
-_rl_init_argument ()
+_rl_init_argument(void)
 {
   rl_numeric_arg = rl_arg_sign = 1;
   rl_explicit_arg = 0;
@@ -186,11 +186,10 @@ _rl_init_argument ()
    Read a key.  If the key has nothing to do with arguments, then
    dispatch on it.  If the key is the abort character then abort. */
 int
-rl_universal_argument (count, key)
-     int count, key;
+rl_universal_argument(int count, int key)
 {
   rl_numeric_arg *= 4;
-  return (rl_digit_loop ());
+  return (rl_digit_loop());
 }
 
 /* **************************************************************** */
@@ -209,87 +208,86 @@ HIST_ENTRY *_rl_saved_line_for_history = (HIST_ENTRY *)NULL;
 
 /* Set the history pointer back to the last entry in the history. */
 void
-_rl_start_using_history ()
+_rl_start_using_history(void)
 {
-  using_history ();
+  using_history();
   if (_rl_saved_line_for_history)
-    _rl_free_history_entry (_rl_saved_line_for_history);
+    _rl_free_history_entry(_rl_saved_line_for_history);
 
   _rl_saved_line_for_history = (HIST_ENTRY *)NULL;
 }
 
-/* Free the contents (and containing structure) of a HIST_ENTRY. */
+/* Free the contents (and containing structure) of a HIST_ENTRY: */
 void
-_rl_free_history_entry (entry)
-     HIST_ENTRY *entry;
+_rl_free_history_entry(HIST_ENTRY *entry)
 {
   if (entry == 0)
     return;
   if (entry->line)
-    free (entry->line);
-  free (entry);
+    free(entry->line);
+  free(entry);
 }
 
-/* Perhaps put back the current line if it has changed. */
+/* Perhaps put back the current line if it has changed: */
 int
-rl_maybe_replace_line ()
+rl_maybe_replace_line(void)
 {
   HIST_ENTRY *temp;
 
-  temp = current_history ();
+  temp = current_history();
   /* If the current line has changed, save the changes. */
   if (temp && ((UNDO_LIST *)(temp->data) != rl_undo_list))
     {
-      temp = replace_history_entry (where_history (), rl_line_buffer, (histdata_t)rl_undo_list);
-      free (temp->line);
-      free (temp);
+      temp = replace_history_entry(where_history(), rl_line_buffer, (histdata_t)rl_undo_list);
+      free(temp->line);
+      free(temp);
     }
   return 0;
 }
 
-/* Restore the _rl_saved_line_for_history if there is one. */
+/* Restore the _rl_saved_line_for_history if there is one: */
 int
-rl_maybe_unsave_line ()
+rl_maybe_unsave_line(void)
 {
   if (_rl_saved_line_for_history)
     {
-      rl_replace_line (_rl_saved_line_for_history->line, 0);
+      rl_replace_line(_rl_saved_line_for_history->line, 0);
       rl_undo_list = (UNDO_LIST *)_rl_saved_line_for_history->data;
-      _rl_free_history_entry (_rl_saved_line_for_history);
+      _rl_free_history_entry(_rl_saved_line_for_history);
       _rl_saved_line_for_history = (HIST_ENTRY *)NULL;
       rl_point = rl_end;	/* rl_replace_line sets rl_end */
     }
   else
-    rl_ding ();
+    rl_ding();
   return 0;
 }
 
 /* Save the current line in _rl_saved_line_for_history. */
 int
-rl_maybe_save_line ()
+rl_maybe_save_line(void)
 {
   if (_rl_saved_line_for_history == 0)
     {
-      _rl_saved_line_for_history = (HIST_ENTRY *)xmalloc (sizeof (HIST_ENTRY));
-      _rl_saved_line_for_history->line = savestring (rl_line_buffer);
+      _rl_saved_line_for_history = (HIST_ENTRY *)xmalloc(sizeof(HIST_ENTRY));
+      _rl_saved_line_for_history->line = savestring(rl_line_buffer);
       _rl_saved_line_for_history->data = (char *)rl_undo_list;
     }
   return 0;
 }
 
 int
-_rl_free_saved_history_line ()
+_rl_free_saved_history_line(void)
 {
   if (_rl_saved_line_for_history)
     {
-      _rl_free_history_entry (_rl_saved_line_for_history);
+      _rl_free_history_entry(_rl_saved_line_for_history);
       _rl_saved_line_for_history = (HIST_ENTRY *)NULL;
     }
   return 0;
 }
 
 static void
-_rl_history_set_point ()
+_rl_history_set_point(void)
 {
   rl_point = (_rl_history_preserve_point && _rl_history_saved_point != -1)
 		? _rl_history_saved_point
@@ -297,7 +295,7 @@ _rl_history_set_point ()
   if (rl_point > rl_end)
     rl_point = rl_end;
 
-#if defined (VI_MODE)
+#if defined(VI_MODE)
   if (rl_editing_mode == vi_mode)
     rl_point = 0;
 #endif /* VI_MODE */
@@ -307,23 +305,22 @@ _rl_history_set_point ()
 }
 
 void
-rl_replace_from_history (entry, flags)
-     HIST_ENTRY *entry;
-     int flags;			/* currently unused */
+rl_replace_from_history(HIST_ENTRY *entry, int flags)
 {
-  rl_replace_line (entry->line, 0);
+  /* 'flags' is currently unused */
+  rl_replace_line(entry->line, 0);
   rl_undo_list = (UNDO_LIST *)entry->data;
   rl_point = rl_end;
   rl_mark = 0;
 
-#if defined (VI_MODE)
+#if defined(VI_MODE)
   if (rl_editing_mode == vi_mode)
     {
       rl_point = 0;
       rl_mark = rl_end;
     }
 #endif
-}  
+}
 
 /* **************************************************************** */
 /*								    */
@@ -331,34 +328,31 @@ rl_replace_from_history (entry, flags)
 /*								    */
 /* **************************************************************** */
 
-/* Meta-< goes to the start of the history. */
+/* Meta-< goes to the start of the history: */
 int
-rl_beginning_of_history (count, key)
-     int count, key;
+rl_beginning_of_history(int count, int key)
 {
-  return (rl_get_previous_history (1 + where_history (), key));
+  return (rl_get_previous_history(1 + where_history(), key));
 }
 
 /* Meta-> goes to the end of the history.  (The current line). */
 int
-rl_end_of_history (count, key)
-     int count, key;
+rl_end_of_history(int count, int key)
 {
-  rl_maybe_replace_line ();
-  using_history ();
-  rl_maybe_unsave_line ();
+  rl_maybe_replace_line();
+  using_history();
+  rl_maybe_unsave_line();
   return 0;
 }
 
-/* Move down to the next history line. */
+/* Move down to the next history line: */
 int
-rl_get_next_history (count, key)
-     int count, key;
+rl_get_next_history(int count, int key)
 {
   HIST_ENTRY *temp;
 
   if (count < 0)
-    return (rl_get_previous_history (-count, key));
+    return (rl_get_previous_history(-count, key));
 
   if (count == 0)
     return 0;
@@ -391,13 +385,12 @@ rl_get_next_history (count, key)
 /* Get the previous item out of our interactive history, making it the current
    line.  If there is no previous history, just ding. */
 int
-rl_get_previous_history (count, key)
-     int count, key;
+rl_get_previous_history(int count, int key)
 {
   HIST_ENTRY *old_temp, *temp;
 
   if (count < 0)
-    return (rl_get_next_history (-count, key));
+    return (rl_get_next_history(-count, key));
 
   if (count == 0)
     return 0;
@@ -445,36 +438,33 @@ rl_get_previous_history (count, key)
 /* **************************************************************** */
 /* How to toggle back and forth between editing modes. */
 int
-rl_vi_editing_mode (count, key)
-     int count, key;
+rl_vi_editing_mode(int count, int key)
 {
-#if defined (VI_MODE)
-  _rl_set_insert_mode (RL_IM_INSERT, 1);	/* vi mode ignores insert mode */
+#if defined(VI_MODE)
+  _rl_set_insert_mode(RL_IM_INSERT, 1);	/* vi mode ignores insert mode */
   rl_editing_mode = vi_mode;
-  rl_vi_insertion_mode (1, key);
+  rl_vi_insertion_mode(1, key);
 #endif /* VI_MODE */
 
   return 0;
 }
 
 int
-rl_emacs_editing_mode (count, key)
-     int count, key;
+rl_emacs_editing_mode(int count, int key)
 {
   rl_editing_mode = emacs_mode;
-  _rl_set_insert_mode (RL_IM_INSERT, 1); /* emacs mode default is insert mode */
+  _rl_set_insert_mode(RL_IM_INSERT, 1); /* emacs mode default is insert mode */
   _rl_keymap = emacs_standard_keymap;
   return 0;
 }
 
 /* Function for the rest of the library to use to set insert/overwrite mode. */
 void
-_rl_set_insert_mode (im, force)
-     int im, force;
+_rl_set_insert_mode(int im, int force)
 {
 #ifdef CURSOR_MODE
-  _rl_set_cursor (im, force);
-#endif
+  _rl_set_cursor(im, force);
+#endif /* CURSOR_MODE */
 
   rl_insert_mode = im;
 }
@@ -482,15 +472,14 @@ _rl_set_insert_mode (im, force)
 /* Toggle overwrite mode.  A positive explicit argument selects overwrite
    mode.  A negative or zero explicit argument selects insert mode. */
 int
-rl_overwrite_mode (count, key)
-     int count, key;
+rl_overwrite_mode(int count, int key)
 {
   if (rl_explicit_arg == 0)
-    _rl_set_insert_mode (rl_insert_mode ^ 1, 0);
+    _rl_set_insert_mode(rl_insert_mode ^ 1, 0);
   else if (count > 0)
-    _rl_set_insert_mode (RL_IM_OVERWRITE, 0);
+    _rl_set_insert_mode(RL_IM_OVERWRITE, 0);
   else
-    _rl_set_insert_mode (RL_IM_INSERT, 0);
+    _rl_set_insert_mode(RL_IM_INSERT, 0);
 
   return 0;
 }

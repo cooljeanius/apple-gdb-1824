@@ -412,7 +412,7 @@ normalize(const char *file, bfd *abfd)
       char *s;
 
       /* Space leak: */
-      s = (char *)xmalloc(abfd->xvec->ar_max_namelen + 1);
+      s = (char *)xmalloc(abfd->xvec->ar_max_namelen + 1UL);
       memcpy(s, filename, abfd->xvec->ar_max_namelen);
       s[abfd->xvec->ar_max_namelen] = '\0';
       filename = s;
@@ -972,7 +972,7 @@ open_inarch(const char *archive_filename, const char *file)
 	      if (bfd_check_format(obj, bfd_object)) {
 		target = bfd_get_target(obj);
               }
-	      (void)bfd_close (obj);
+	      (void)bfd_close(obj);
 	    }
 	}
 

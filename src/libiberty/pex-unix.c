@@ -358,17 +358,17 @@ pex_unix_exec_child (struct pex_obj *obj, int flags, const char *executable,
   pid_t pid;
   /* We declare these to be volatile to avoid warnings from gcc about
      them being clobbered by vfork.  */
-  volatile int sleep_interval;
+  volatile unsigned int sleep_interval;
   volatile int retries;
 
-  sleep_interval = 1;
+  sleep_interval = 1U;
   pid = -1;
   for (retries = 0; retries < 4; ++retries)
     {
       pid = vfork ();
       if (pid >= 0)
 	break;
-      sleep (sleep_interval);
+      sleep(sleep_interval);
       sleep_interval *= 2;
     }
 

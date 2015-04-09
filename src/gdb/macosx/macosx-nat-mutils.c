@@ -86,13 +86,20 @@
 #define MINUS_INT_MIN (((unsigned int)(-(INT_MAX + INT_MIN))) + INT_MAX)
 
 static FILE *mutils_stderr = NULL;
+#if defined(DEBUG) || defined(_DEBUG) || !defined(NDEBUG)
+# if defined(__clang__) || 1
+extern int mutils_debugflag;
+# endif /* __clang__ */
+int mutils_debugflag = 1;
+#else
 static int mutils_debugflag = 0;
+#endif /* (DEBUG || _DEBUG || !NDEBUG) */
 
 extern macosx_inferior_status *macosx_status;
 
 extern void _initialize_macosx_mutils(void);
 
-static const char* g_macosx_protection_strs [8] =
+static const char* g_macosx_protection_strs[8] =
 { "---", "--r", "-w-", "-wr", "x--", "x-r", "xw-", "xwr" };
 
 void
@@ -102,7 +109,7 @@ mutils_debug(const char *fmt, ...)
   if (mutils_debugflag)
     {
       va_start(ap, fmt);
-      fprintf(mutils_stderr, "[%d mutils]: ", getpid ());
+      fprintf(mutils_stderr, "[%d mutils]: ", getpid());
       vfprintf(mutils_stderr, fmt, ap);
       va_end(ap);
       fflush(mutils_stderr);
@@ -898,18 +905,18 @@ macosx_port_valid(mach_port_t port)
 }
 
 int
-macosx_task_valid (task_t task)
+macosx_task_valid(task_t task)
 {
   kern_return_t ret;
   struct task_basic_info info;
   unsigned int info_count = TASK_BASIC_INFO_COUNT;
 
-  ret = task_info(task, TASK_BASIC_INFO, (task_info_t) & info, &info_count);
+  ret = task_info(task, TASK_BASIC_INFO, (task_info_t)&info, &info_count);
   return (ret == KERN_SUCCESS);
 }
 
 int
-macosx_thread_valid (task_t task, thread_t thread)
+macosx_thread_valid(task_t task, thread_t thread)
 {
   thread_array_t thread_list;
   unsigned int thread_count;
@@ -942,8 +949,8 @@ macosx_thread_valid (task_t task, thread_t thread)
 
   if (!found)
     {
-      mutils_debug ("thread 0x%lx no longer valid for task 0x%lx\n",
-                    (unsigned long) thread, (unsigned long) task);
+      mutils_debug("thread 0x%lx no longer valid for task 0x%lx\n",
+                   (unsigned long)thread, (unsigned long)task);
     }
   return found;
 }
@@ -987,21 +994,21 @@ macosx_msg_receive (mach_msg_header_t * msgin, size_t msg_size,
   kern_return_t kret;
   mach_msg_option_t options;
 
-  mutils_debug ("macosx_msg_receive: waiting for message\n");
+  mutils_debug("macosx_msg_receive: waiting for message\n");
 
   options = MACH_RCV_MSG;
   if (timeout > 0)
     {
       options |= MACH_RCV_TIMEOUT;
     }
-  kret = mach_msg (msgin, options, 0, msg_size, port,
-                   timeout, MACH_PORT_NULL);
+  kret = mach_msg(msgin, options, 0, msg_size, port,
+                  timeout, MACH_PORT_NULL);
 
   if (mutils_debugflag)
     {
       if (kret == KERN_SUCCESS)
         {
-          macosx_debug_message (msgin);
+          macosx_debug_message(msgin);
         }
       else
         {

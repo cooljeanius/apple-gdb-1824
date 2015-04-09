@@ -764,9 +764,9 @@ install-binutils-macosx:
 		strip -S -o $(DSTROOT)/$(LIBEXEC_BINUTILS_DIR)/$${instname} $(SYMROOT)/$(LIBEXEC_BINUTILS_DIR)/$${instname}; \
 	done
 
-# "procmod" was a new group (2005-09-27) which was not initially present on all
-# the systems, so we use a '-' prefix on that loop for now so that the errors
-# do NOT halt the build. 
+# "procmod" was a new group (2005-09-27) which was not initially present on
+# all the systems, so we use a '-' prefix on that loop for now so that the
+# errors do NOT halt the build. 
 install-chmod-macosx:
 	set -e; if [ `whoami` = 'root' ]; then \
 		for dstroot in $(SYMROOT) $(DSTROOT); do \

@@ -1,4 +1,4 @@
-/* BFD back-end for s-record objects.
+/* srec.c: BFD back-end for s-record objects.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -114,10 +114,10 @@ static const char digs[] = "0123456789ABCDEF";
 
 #define NIBBLE(x)    hex_value(x)
 #define HEX(buffer) ((NIBBLE ((buffer)[0])<<4) + NIBBLE ((buffer)[1]))
-#define TOHEX(d, x, ch) \
+#define TOHEX(d, x, ch, t) \
 	d[1] = digs[(x) & 0xf]; \
 	d[0] = digs[((x)>>4)&0xf]; \
-	ch += ((x) & 0xff);
+	ch += (t)((x) & 0xff);
 #define	ISHEX(x)    hex_p(x)
 
 /* The maximum number of address+data+crc bytes on a line is FF.  */
@@ -876,7 +876,7 @@ srec_write_record(bfd *abfd, unsigned int type, bfd_vma address,
                   const bfd_byte *data, const bfd_byte *end)
 {
   char buffer[2 * MAXCHUNK + 6];
-  unsigned int check_sum = 0;
+  unsigned int check_sum = 0U;
   const bfd_byte *src = data;
   char *dst = buffer;
   char *length;
@@ -892,18 +892,18 @@ srec_write_record(bfd *abfd, unsigned int type, bfd_vma address,
     {
     case 3:
     case 7:
-      TOHEX(dst, (address >> 24), check_sum);
+      TOHEX(dst, (address >> 24), check_sum, unsigned int);
       dst += 2;
     case 8:
     case 2:
-      TOHEX(dst, (address >> 16), check_sum);
+      TOHEX(dst, (address >> 16), check_sum, unsigned int);
       dst += 2;
     case 9:
     case 1:
     case 0:
-      TOHEX(dst, (address >> 8), check_sum);
+      TOHEX(dst, (address >> 8), check_sum, unsigned int);
       dst += 2;
-      TOHEX(dst, (address), check_sum);
+      TOHEX(dst, (address), check_sum, unsigned int);
       dst += 2;
       break;
     default:
@@ -911,15 +911,15 @@ srec_write_record(bfd *abfd, unsigned int type, bfd_vma address,
     }
   for (src = data; src < end; src++)
     {
-      TOHEX(dst, *src, check_sum);
+      TOHEX(dst, *src, check_sum, unsigned int);
       dst += 2;
     }
 
   /* Fill in the length: */
-  TOHEX(length, ((dst - length) / 2), check_sum);
+  TOHEX(length, ((dst - length) / 2), check_sum, unsigned int);
   check_sum &= 0xff;
   check_sum = (255 - check_sum);
-  TOHEX(dst, check_sum, check_sum);
+  TOHEX(dst, check_sum, check_sum, unsigned int);
   dst += 2;
 
   *dst++ = '\r';
@@ -958,24 +958,22 @@ srec_write_section(bfd *abfd, tdata_type *tdata,
      spin for a long time.  */
   if (Chunk == 0)
     Chunk = 1;
-  else if (Chunk > MAXCHUNK - tdata->type - 2)
-    Chunk = MAXCHUNK - tdata->type - 2;
+  else if (Chunk > (MAXCHUNK - tdata->type - 2))
+    Chunk = (MAXCHUNK - tdata->type - 2);
 
   while (octets_written < list->size)
     {
       bfd_vma address;
-      unsigned int octets_this_chunk = list->size - octets_written;
+      unsigned int octets_this_chunk;
+      octets_this_chunk = (unsigned int)(list->size - octets_written);
 
       if (octets_this_chunk > Chunk)
 	octets_this_chunk = Chunk;
 
-      address = list->where + octets_written / bfd_octets_per_byte (abfd);
+      address = (list->where + octets_written / bfd_octets_per_byte(abfd));
 
-      if (! srec_write_record (abfd,
-			       tdata->type,
-			       address,
-			       location,
-			       location + octets_this_chunk))
+      if (! srec_write_record(abfd, tdata->type, address, location,
+			      (location + octets_this_chunk)))
 	return FALSE;
 
       octets_written += octets_this_chunk;

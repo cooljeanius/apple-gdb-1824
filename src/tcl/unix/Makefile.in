@@ -1050,7 +1050,8 @@ tclUnixTime.o: $(UNIX_DIR)/tclUnixTime.c
 
 # END REDHAT LOCAL
 
-tclUnixInit.o: $(UNIX_DIR)/tclUnixInit.c $(GENERIC_DIR)/tclInitScript.h tclConfig.sh
+tclUnixInit.o: $(UNIX_DIR)/tclUnixInit.c $(GENERIC_DIR)/tclInt.h \
+  $(GENERIC_DIR)/tclPort.h $(GENERIC_DIR)/tclInitScript.h tclConfig.sh
 	$(CC) -c $(CC_SWITCHES) -DTCL_LIBRARY=\"\" \
 		-DTCL_PACKAGE_PATH="\"${TCL_PACKAGE_PATH}\"" \
 		$(UNIX_DIR)/tclUnixInit.c

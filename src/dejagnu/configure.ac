@@ -22,9 +22,9 @@ AM_DEP_TRACK
 AC_PROG_SED
 
 if test -e ./config.cache; then
-	sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
-	sed -i "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
-	sed -i "s|ac_cv_exeext|bad_exeext|g" ./config.cache
+  sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
+  sed -i "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
+  sed -i "s|ac_cv_exeext|bad_exeext|g" ./config.cache
 fi
 
 # Checks for programs.
@@ -74,10 +74,19 @@ AC_CHECK_LIB([c],[printf])dnl
 AC_CHECK_LIB([io],[main])dnl
 
 # Checks for header files.
+AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
+  AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
+AC_REQUIRE_HEADER_STDC dnl# just to make sure...
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_HEADER_SYS_WAIT
 AC_CHECK_DECLS([wait])dnl
 AC_CHECK_HEADERS([regex.h stdio.h])dnl
+  ## just in case:
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  AC_CHECK_HEADERS([unistd.h])
+fi
 AC_CHECK_HEADERS([dejagnu.h],[],[],[
 #ifdef HAVE_DECL_WAIT
 # undef HAVE_STDLIB_H

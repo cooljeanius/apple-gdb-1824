@@ -135,7 +135,7 @@ strverscmp (const char *s1, const char *s2)
 
   while ((diff = c1 - c2) == 0 && c1 != '\0')
     {
-      state = next_state[state];
+      state = (int)next_state[state];
       c1 = *p1++;
       c2 = *p2++;
       state |= (c1 == '0') + (ISDIGIT (c1) != 0);

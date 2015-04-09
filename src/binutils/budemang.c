@@ -60,7 +60,7 @@ demangle(bfd *abfd, const char *name)
   if (suf != NULL)
     {
       alloc = (char *)xmalloc((size_t)(suf - name + 1));
-      memcpy(alloc, name, (suf - name));
+      memcpy(alloc, name, (size_t)(suf - name));
       alloc[suf - name] = '\0';
       name = alloc;
     }

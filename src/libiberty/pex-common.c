@@ -26,18 +26,20 @@ Boston, MA 02110-1301, USA.  */
 #include <errno.h>
 #ifdef NEED_DECLARATION_ERRNO
 extern int errno;
-#endif
+#endif /* NEED_DECLARATION_ERRNO */
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 #ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+# include <string.h>
+#endif /* HAVE_STRING_H */
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
 
-extern int mkstemps (char *, int);
+#if !defined(_UNISTD_H_)
+extern int mkstemps(char *, int);
+#endif /* !_UNISTD_H_ */
 
 /* This file contains subroutines for the program execution routines
    (pex_init, pex_run, etc.).  This file is compiled on all

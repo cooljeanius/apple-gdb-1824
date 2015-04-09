@@ -53,7 +53,7 @@ AC_ARG_ENABLE([static],
               [opt_static_libs=${enableval}])dnl
 
 echo ""
-echo "Beginning configuration for readline-$LIBVERSION for ${host_cpu}-${host_vendor}-${host_os}"
+echo "Beginning configuration for readline-${LIBVERSION} for ${host_cpu}-${host_vendor}-${host_os}"
 echo ""
 
 AM_SANITY_CHECK
@@ -122,9 +122,9 @@ AC_SUBST([CC_FOR_BUILD])dnl
  
 dnl# END changes for CYGNUS cross-building for Cygwin
 
-# If we are using gcc and the user has NOT specified CFLAGS, add -O to
+# If we are using gcc and the user has NOT specified CFLAGS, add -O1 to
 # CFLAGS.
-test -n "${GCC}" && test -n "${auto_cflags}" && CFLAGS="${CFLAGS} -O"
+test -n "${GCC}" && test -n "${auto_cflags}" && CFLAGS="${CFLAGS} -O1"
 
 # Checks for programs.
 AC_MSG_CHECKING([programs])
@@ -282,11 +282,7 @@ AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])dnl
 AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])dnl
 AC_REPLACE_FUNCS([rpl_malloc])dnl
 AC_REPLACE_FUNCS([rpl_realloc])dnl
-AC_CHECK_DECL([exit])dnl
-AC_CHECK_DECL([free])dnl
-AC_CHECK_DECL([strcpy])dnl
-AC_CHECK_DECL([strlen])dnl
-AC_CHECK_DECL([strncpy])dnl
+AC_CHECK_DECLS([exit, free, strchr, strcpy, strlen, strncpy])dnl
 
 # Checks for header files.
 AC_MSG_CHECKING([headers])

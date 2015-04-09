@@ -291,12 +291,12 @@ _bfd_link_section_stabs (bfd *abfd,
 	  bfd_vma sum_chars;
 	  bfd_vma num_chars;
 	  bfd_vma buf_len = 0;
-	  char * symb;
-	  char * symb_rover;
+	  char *symb;
+	  char *symb_rover;
 	  int nest;
-	  bfd_byte * incl_sym;
-	  struct stab_link_includes_entry * incl_entry;
-	  struct stab_link_includes_totals * t;
+	  bfd_byte *incl_sym;
+	  struct stab_link_includes_entry *incl_entry;
+	  struct stab_link_includes_totals *t;
 	  struct stab_excl_list * ne;
 
 	  symb = symb_rover = NULL;
@@ -320,7 +320,7 @@ _bfd_link_section_stabs (bfd *abfd,
 		    break;
 		  --nest;
 		}
-	      else if (incl_type == (int) N_BINCL)
+	      else if (incl_type == (int)N_BINCL)
 		++nest;
 	      else if (nest == 0)
 		{
@@ -339,7 +339,7 @@ _bfd_link_section_stabs (bfd *abfd,
 			  symb_rover = (symb + num_chars);
 			}
 		      *symb_rover ++ = *str;
-		      sum_chars += (unsigned long)*str;
+		      sum_chars += (bfd_vma)*str;
 		      num_chars ++;
 		      if (*str == '(')
 			{
@@ -365,7 +365,7 @@ _bfd_link_section_stabs (bfd *abfd,
 	  for (t = incl_entry->totals; t != NULL; t = t->next)
 	    if ((t->sum_chars == sum_chars)
 		&& (t->num_chars == num_chars)
-		&& (memcmp(t->symb, symb, num_chars) == 0))
+		&& (memcmp(t->symb, symb, (size_t)num_chars) == 0))
 	      break;
 
 	  /* Record this symbol, so that we can set the value

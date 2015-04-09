@@ -50,16 +50,19 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
   AC_REQUIRE([AC_HEADER_STDC])dnl
 ])dnl
 AC_REQUIRE_HEADER_STDC
-AC_CHECK_HEADERS([ctype.h stdio.h time.h])dnl
+AC_CHECK_HEADERS([ctype.h math.h stdio.h time.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_PROTOTYPES
+AC_TYPE_SIZE_T
+AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
 
 dnl# Checks for library functions.
 dnl# The program does NOT actually handle failure.
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([fprintf memset strcmp strcpy strlen strtol xmalloc])dnl
+AC_CHECK_FUNCS([abs fprintf memset signbit strcmp strcpy strlen strtol \
+                xmalloc])dnl
 
 # Output.
 AC_CONFIG_FILES([Makefile])

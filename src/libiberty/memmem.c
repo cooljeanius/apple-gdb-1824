@@ -31,6 +31,8 @@ Returns @code{NULL} if not found.
 # include <config.h>
 #endif /* !_LIBC */
 
+#include "libiberty.h"
+
 #include <stddef.h>
 #include <string.h>
 

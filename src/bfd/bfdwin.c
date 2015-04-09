@@ -115,7 +115,7 @@ bfd_free_window(bfd_window *windowp)
 
   case 1:
 #if HAVE_MMAP
-    munmap(i->data, i->size);
+    munmap(i->data, (size_t)i->size);
     i->data = NULL;
 #else
     abort();
@@ -184,14 +184,14 @@ _bfd_get_file_window_mmap(bfd *abfd, ufile_ptr offset, bfd_size_type size,
       if (offset2 < 0)
 	abort();
       file_offset = ((file_ptr)offset - offset2);
-      real_size = (offset + size - (unsigned long)file_offset);
-      real_size = (real_size + pagesize - 1);
+      real_size = (size_t)(offset + size - (unsigned long)file_offset);
+      real_size = (real_size + pagesize - 1UL);
       real_size -= (real_size % pagesize);
 
       /* If we are re-using a memory region, make sure it is big enough: */
       if (i->data && (i->size < size))
 	{
-	  munmap(i->data, i->size);
+	  munmap(i->data, (size_t)i->size);
 	  i->data = 0;
 	}
       i->data = mmap(i->data, real_size,

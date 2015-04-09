@@ -754,7 +754,7 @@ bfd_putb64(bfd_uint64_t data, void *p)
 {
 #ifdef BFD_HOST_64_BIT
   bfd_byte *addr = (bfd_byte *)p;
-  addr[0] = ((data >> (7 * 8)) & 0xff);
+  addr[0] = (bfd_byte)((data >> (7 * 8)) & 0xff);
   addr[1] = ((data >> (6 * 8)) & 0xff);
   addr[2] = ((data >> (5 * 8)) & 0xff);
   addr[3] = ((data >> (4 * 8)) & 0xff);
@@ -777,7 +777,7 @@ bfd_putl64(bfd_uint64_t data, void *p)
 {
 #ifdef BFD_HOST_64_BIT
   bfd_byte *addr = (bfd_byte *)p;
-  addr[7] = ((data >> (7 * 8)) & 0xff);
+  addr[7] = (bfd_byte)((data >> (7 * 8)) & 0xff);
   addr[6] = ((data >> (6 * 8)) & 0xff);
   addr[5] = ((data >> (5 * 8)) & 0xff);
   addr[4] = ((data >> (4 * 8)) & 0xff);

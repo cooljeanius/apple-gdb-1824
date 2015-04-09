@@ -87,15 +87,14 @@ extern struct passwd *getpwuid PARAMS((uid_t));
 /* All of these functions are resolved from bash if we are linking readline
    as part of bash. */
 
-/* Does shell-like quoting using single quotes. */
+/* Does shell-like quoting using single quotes: */
 char *
-sh_single_quote (string)
-     char *string;
+sh_single_quote(char *string)
 {
   register int c;
   char *result, *r, *s;
 
-  result = (char *)xmalloc (3 + (4 * strlen (string)));
+  result = (char *)xmalloc(3UL + (4UL * strlen(string)));
   r = result;
   *r++ = '\'';
 
@@ -120,66 +119,63 @@ sh_single_quote (string)
 /* Set the environment variables LINES and COLUMNS to lines and cols,
    respectively. */
 void
-sh_set_lines_and_columns (lines, cols)
-     int lines, cols;
+sh_set_lines_and_columns(int lines, int cols)
 {
   char *b;
 
-#if defined (HAVE_PUTENV)
-  b = (char *)xmalloc (INT_STRLEN_BOUND (int) + sizeof ("LINES=") + 1);
+#if defined(HAVE_PUTENV)
+  b = (char *)xmalloc(INT_STRLEN_BOUND(int) + sizeof("LINES=") + 1UL);
   sprintf (b, "LINES=%d", lines);
   putenv (b);
-  b = (char *)xmalloc (INT_STRLEN_BOUND (int) + sizeof ("COLUMNS=") + 1);
-  sprintf (b, "COLUMNS=%d", cols);
-  putenv (b);
+  b = (char *)xmalloc(INT_STRLEN_BOUND(int) + sizeof("COLUMNS=") + 1UL);
+  sprintf(b, "COLUMNS=%d", cols);
+  putenv(b);
 #else /* !HAVE_PUTENV */
-#  if defined (HAVE_SETENV)
-  b = (char *)xmalloc (INT_STRLEN_BOUND (int) + 1);
+#  if defined(HAVE_SETENV)
+  b = (char *)xmalloc(INT_STRLEN_BOUND(int) + 1UL);
   sprintf (b, "%d", lines);
   setenv ("LINES", b, 1);
-  b = (char *)xmalloc (INT_STRLEN_BOUND (int) + 1);
-  sprintf (b, "%d", cols);
-  setenv ("COLUMNS", b, 1);
+  b = (char *)xmalloc(INT_STRLEN_BOUND(int) + 1UL);
+  sprintf(b, "%d", cols);
+  setenv("COLUMNS", b, 1);
 #  endif /* HAVE_SETENV */
 #endif /* !HAVE_PUTENV */
 }
 
 char *
-sh_get_env_value (varname)
-     const char *varname;
+sh_get_env_value(const char *varname)
 {
-  return ((char *)getenv (varname));
+  return ((char *)getenv(varname));
 }
 
 char *
-sh_get_home_dir ()
+sh_get_home_dir(void)
 {
   char *home_dir;
   struct passwd *entry;
 
   home_dir = (char *)NULL;
 #ifdef HAVE_GETPWUID
-  entry = getpwuid (getuid ());
+  entry = getpwuid(getuid());
   if (entry)
     home_dir = entry->pw_dir;
 #endif
   return (home_dir);
 }
 
-#if !defined (O_NDELAY)
-#  if defined (FNDELAY)
+#if !defined(O_NDELAY)
+#  if defined(FNDELAY)
 #    define O_NDELAY FNDELAY
-#  endif
-#endif
+#  endif /* FNDELAY */
+#endif /* !O_NDELAY */
 
 int
-sh_unset_nodelay_mode (fd)
-     int fd;
+sh_unset_nodelay_mode(int fd)
 {
 #ifdef HAVE_FNCTL
   int flags, bflags;
 
-  if ((flags = fcntl (fd, F_GETFL, 0)) < 0)
+  if ((flags = fcntl(fd, F_GETFL, 0)) < 0)
     return -1;
 
   bflags = 0;

@@ -237,7 +237,7 @@ host_libs="intl electric-fence mmalloc libiberty libdecnumber opcodes bfd readli
 # binutils, gas and ld appear in that order because it makes sense to run
 # "make check" in that particular order.
 # If --enable-gold is used, "gold" may replace "ld".
-host_tools="texinfo byacc flex bison binutils gas ld fixincludes gcc sid sim gdb make patch prms send-pr gprof etc expect dejagnu ash bash bzip2 m4 autoconf autogen automake libtool_gnu diff rcs fileutils shellutils time textutils wdiff find uudecode hello tar gzip indent recode release sed utils guile perl gawk findutils gettext zip fastjar gnattools cgen"
+host_tools="texinfo byacc flex bison binutils gas ld fixincludes gcc sid sim gdb make patch prms send-pr gprof etc expect dejagnu ash bash bzip2 m4 autoconf autogen automake libtool_gnu diff rcs fileutils shellutils time textutils wdiff find uudecode hello tar gzip indent recode release sed utils guile perl gawk findutils gettext zip fastjar gnattools gotools cgen"
 
 # libgcj represents the runtime libraries only used by gcj.
 libgcj="target-libffi \
@@ -261,6 +261,7 @@ target_libraries="target-libiberty \
 		target-libsanitizer \
 		target-libmudflap \
 		target-libvtv \
+		target-libmpx \
 		target-libssp \
 		target-libquadmath \
 		target-libgfortran \
@@ -405,6 +406,22 @@ case ${with_newlib} in
   no) skipdirs="${skipdirs} target-newlib" ;;
   yes) skipdirs=`echo " ${skipdirs} " | sed -e 's/ target-newlib / /'` ;;
 esac
+
+AC_ARG_ENABLE([as-accelerator-for],
+[AS_HELP_STRING([--enable-as-accelerator-for=ARG],
+		[build as offload target compiler.
+		 Specify offload host triple by ARG])])dnl
+
+AC_ARG_ENABLE([offload-targets],
+[AS_HELP_STRING([--enable-offload-targets=LIST],
+		[enable offloading to devices from comma-separated LIST of
+		 TARGET[=DIR]. Use optional path to find offload target
+		 compiler during the build])],
+[
+  if test x"${enable_offload_targets}" = x""; then
+    AC_MSG_ERROR([no offload targets specified])
+  fi
+],[enable_offload_targets=""])
 
 # Handle --enable-gold, --enable-ld.
 # --disable-gold [--enable-ld]
@@ -588,6 +605,42 @@ AC_ARG_ENABLE([libstdcxx],
   noconfigdirs="${noconfigdirs} libstdc++-v3"
 fi]
 
+# If this is an accelerator compiler and its target is intelmic, then we
+# enable target liboffloadmic by default.  If this is a compiler with
+# offloading for intelmic, then we enable host liboffloadmic by default. 
+# Otherwise liboffloadmic is disabled by default.
+AC_ARG_ENABLE([liboffloadmic],
+[AS_HELP_STRING([[--enable-liboffloadmic[=ARG]]],
+	        [build liboffloadmic @<:@ARG={no,host,target}@:>@])],
+[case "${enableval}" in
+  no | host | target)
+    enable_liboffloadmic=${enableval} ;;
+  *)
+    AC_MSG_ERROR([--enable-liboffloadmic=no/host/target]) ;;
+esac],
+[if test x"${enable_as_accelerator_for}" != x""; then
+  case "${target}" in
+    *-intelmic-* | *-intelmicemul-*)
+      enable_liboffloadmic=target
+      extra_liboffloadmic_configure_flags="--enable-liboffloadmic=target"
+      ;;
+    *)
+      enable_liboffloadmic=no
+      ;;
+  esac
+else
+  case "${enable_offload_targets}" in
+    *-intelmic-* | *-intelmicemul-*)
+      enable_liboffloadmic=host
+      extra_liboffloadmic_configure_flags="--enable-liboffloadmic=host"
+      ;;
+    *)
+      enable_liboffloadmic=no
+      ;;
+    esac
+fi])
+AC_SUBST([extra_liboffloadmic_configure_flags])dnl
+
 # Save it here so that, even in case of --enable-libgcj, if the Java
 # front-end is NOT enabled, we still get libgcj disabled.
 libgcj_saved=${libgcj}
@@ -743,6 +796,24 @@ if test -d ${srcdir}/libvtv; then
     fi
 fi
 
+# Enable libmpx on supported systems by request:
+if test -d ${srcdir}/libmpx; then
+    if test "x${enable_libmpx}" = "xyes"; then
+       AC_MSG_CHECKING([for libmpx support])
+       if (srcdir=${srcdir}/libmpx; \
+               . ${srcdir}/configure.tgt; \
+               test "x${LIBMPX_SUPPORTED}" != "xyes")
+       then
+           AC_MSG_RESULT([no])
+           noconfigdirs="${noconfigdirs} target-libmpx"
+       else
+           AC_MSG_RESULT([yes])
+       fi
+    else
+       noconfigdirs="${noconfigdirs} target-libmpx"
+    fi
+fi
+
 # Disable libquadmath for some systems.
 case "${target}" in
   avr-*-*)
@@ -768,6 +839,10 @@ case "${target}" in
     # libssp uses a misaligned load to trigger a fault, but the RL78
     # does NOT fault for those - instead, it gives a build-time error
     # for explicit misaligned loads.
+    noconfigdirs="${noconfigdirs} target-libssp"
+    ;;
+  visium-*-*)
+    # No hosted I/O support:
     noconfigdirs="${noconfigdirs} target-libssp"
     ;;
 esac
@@ -2237,6 +2312,14 @@ if test -d ${srcdir}/gcc; then
   fi
   AC_SUBST([extra_host_libiberty_configure_flags])dnl
 
+  # If we are building an offloading compiler, then add the LTO front end:
+  if test x"${enable_as_accelerator_for}" != x""; then
+    case ,${enable_languages}, in
+      *,lto,*) ;;
+      *) enable_languages="${enable_languages},lto" ;;
+    esac
+  fi
+
   missing_languages=`echo ",${enable_languages}," | sed -e s/,all,/,/ -e s/,c,/,/ `
   potential_languages=c
 
@@ -2587,28 +2670,36 @@ AC_SUBST([DEBUG_PREFIX_CFLAGS_FOR_TARGET])dnl
 # gcc) are built with optimization and debugging flags, so include those
 # options when setting CFLAGS_FOR_TARGET and CXXFLAGS_FOR_TARGET.
 if test "x${CFLAGS_FOR_TARGET}" = "x"; then
-  CFLAGS_FOR_TARGET="${CFLAGS}"
-  case " ${CFLAGS} " in
-    *" -O2 "* | *" -O1 "* | *" -Os "*) ;;
-    *) CFLAGS_FOR_TARGET="-O1 ${CFLAGS_FOR_TARGET}" ;;
-  esac
-  case " ${CFLAGS} " in
-    *" -g "* | *" -g3 "* | *" -ggdb "* | *" -ggdb3 "*) ;;
-    *) CFLAGS_FOR_TARGET="-ggdb ${CFLAGS_FOR_TARGET}" ;;
-  esac
+  if test "x${is_cross_compiler}" = "xyes"; then
+    CFLAGS_FOR_TARGET="-g -O2"
+  else
+    CFLAGS_FOR_TARGET="${CFLAGS}"
+    case " ${CFLAGS} " in
+      *" -O2 "* | *" -O1 "* | *" -Os "*) ;;
+      *) CFLAGS_FOR_TARGET="-O1 ${CFLAGS_FOR_TARGET}" ;;
+    esac
+    case " ${CFLAGS} " in
+      *" -g "* | *" -g3 "* | *" -ggdb "* | *" -ggdb3 "*) ;;
+      *) CFLAGS_FOR_TARGET="-ggdb ${CFLAGS_FOR_TARGET}" ;;
+    esac
+  fi
 fi
 AC_SUBST([CFLAGS_FOR_TARGET])dnl
 
 if test "x${CXXFLAGS_FOR_TARGET}" = "x"; then
-  CXXFLAGS_FOR_TARGET="${CXXFLAGS}"
-  case " ${CXXFLAGS} " in
-    *" -O2 "* | *" -O1 "* | *" -Os "*) ;;
-    *) CXXFLAGS_FOR_TARGET="-O1 ${CXXFLAGS_FOR_TARGET}" ;;
-  esac
-  case " ${CXXFLAGS} " in
-    *" -g "* | *" -g3 "* | *" -ggdb "* | *" -ggdb3 "*) ;;
-    *) CXXFLAGS_FOR_TARGET="-ggdb ${CXXFLAGS_FOR_TARGET}" ;;
-  esac
+  if test "x${is_cross_compiler}" = "xyes"; then
+    CXXFLAGS_FOR_TARGET="-g -O2"
+  else
+    CXXFLAGS_FOR_TARGET="${CXXFLAGS}"
+    case " ${CXXFLAGS} " in
+      *" -O2 "* | *" -O1 "* | *" -Os "*) ;;
+      *) CXXFLAGS_FOR_TARGET="-O1 ${CXXFLAGS_FOR_TARGET}" ;;
+    esac
+    case " ${CXXFLAGS} " in
+      *" -g "* | *" -g3 "* | *" -ggdb "* | *" -ggdb3 "*) ;;
+      *) CXXFLAGS_FOR_TARGET="-ggdb ${CXXFLAGS_FOR_TARGET}" ;;
+    esac
+  fi
 fi
 AC_SUBST([CXXFLAGS_FOR_TARGET])dnl
 
@@ -2940,14 +3031,26 @@ if echo " ${target_configdirs} " | grep " libgomp " > /dev/null 2>&1 ; then
   bootstrap_target_libs=${bootstrap_target_libs}target-libgomp,
 fi
 
-# If we are building libsanitizer, then bootstrap it.
+# If we are building libsanitizer and ${BUILD_CONFIG} contains
+# bootstrap-asan or bootstrap-ubsan, then bootstrap it.
 if echo " ${target_configdirs} " | grep " libsanitizer " > /dev/null 2>&1 ; then
-  bootstrap_target_libs=${bootstrap_target_libs}target-libsanitizer,
+  case "${BUILD_CONFIG}" in
+    *bootstrap-asan* | *bootstrap-ubsan* )
+      bootstrap_target_libs=${bootstrap_target_libs}target-libsanitizer,
+      bootstrap_fixincludes=yes
+      ;;
+  esac
 fi
 
-# If we are building libvtv, then bootstrap it.
-if echo " ${target_configdirs} " | grep " libvtv " > /dev/null 2>&1 ; then
+# If we are building libvtv and --enable-vtable-verify, then bootstrap it:
+if echo " ${target_configdirs} " | grep " libvtv " > /dev/null 2>&1 &&
+   test "x${enable_vtable_verify}" != "xno"; then
   bootstrap_target_libs=${bootstrap_target_libs}target-libvtv,
+fi
+
+# If we are building libmpx, then bootstrap it:
+if echo " ${target_configdirs} " | grep " libmpx " > /dev/null 2>&1; then
+  bootstrap_target_libs=${bootstrap_target_libs}target-libmpx,
 fi
 
 # Determine whether gdb needs tk/tcl or not.
@@ -3618,6 +3721,7 @@ NCN_STRICT_CHECK_TARGET_TOOLS([LD_FOR_TARGET],
                               [ld gld ld.bfd ld.gold gold ld64 ld_classic])
 NCN_STRICT_CHECK_TARGET_TOOLS([LIPO_FOR_TARGET],[lipo])
 NCN_STRICT_CHECK_TARGET_TOOLS([NM_FOR_TARGET],[nm gnm])
+NCN_STRICT_CHECK_TARGET_TOOLS([OBJCOPY_FOR_TARGET],[objcopy gobjcopy])
 NCN_STRICT_CHECK_TARGET_TOOLS([OBJDUMP_FOR_TARGET],[objdump gobjdump])
 NCN_STRICT_CHECK_TARGET_TOOLS([RANLIB_FOR_TARGET],[ranlib granlib],[:])
 NCN_STRICT_CHECK_TARGET_TOOLS([READELF_FOR_TARGET],[readelf greadelf])
@@ -3632,6 +3736,8 @@ GCC_TARGET_TOOL([ar],[AR_FOR_TARGET],[AR],[binutils/ar])dnl
 GCC_TARGET_TOOL([dlltool],[DLLTOOL_FOR_TARGET],[DLLTOOL],
                 [binutils/dlltool])dnl
 GCC_TARGET_TOOL([nm],[NM_FOR_TARGET],[NM],[binutils/nm-new])dnl
+GCC_TARGET_TOOL([objcopy],[OBJCOPY_FOR_TARGET],[OBJCOPY],
+                [binutils/objcopy])dnl
 GCC_TARGET_TOOL([objdump],[OBJDUMP_FOR_TARGET],[OBJDUMP],
                 [binutils/objdump])dnl
 GCC_TARGET_TOOL([ranlib],[RANLIB_FOR_TARGET],[RANLIB],[binutils/ranlib])dnl
@@ -3842,6 +3948,29 @@ AC_ARG_ENABLE([host-shared],
 		[build host code as shared libraries])],
 [host_shared=${enableval}],[host_shared=no])
 AC_SUBST([host_shared])dnl
+
+# PR jit/64780: Require the user to explicitly specify
+# --enable-host-shared if the jit is enabled, hinting that they might
+# want to do a separate configure/build of the jit, to avoid users from
+# slowing down the rest of the compiler by enabling the jit:
+if test "x${host_shared}" = "xno"; then
+  case "${enable_languages}" in
+    *jit*)
+      AC_MSG_ERROR([
+Enabling language "jit" requires --enable-host-shared.
+
+--enable-host-shared typically slows the rest of the compiler down by
+a few %, so you must explicitly enable it.
+
+If you want to build both the jit and the regular compiler, it is often
+best to do this via two separate configure/builds, in separate
+directories, to avoid imposing the performance cost of
+--enable-host-shared on the regular compiler.])
+      ;;
+    *)
+      ;;
+  esac
+fi
 
 # Specify what files to not compare during bootstrap:
 compare_exclusions="gcc/cc*-checksum\$(objext) | gcc/ada/*tools/*"

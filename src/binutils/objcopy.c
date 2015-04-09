@@ -42,7 +42,7 @@ struct symlist
   struct symlist *next;
 };
 
-/* A list to support redefine_sym.  */
+/* A list to support redefine_sym: */
 struct redefine_node
 {
   char *source;
@@ -62,17 +62,17 @@ section_rename;
 /* List of sections to be renamed.  */
 static section_rename *section_rename_list;
 
-#define RETURN_NONFATAL(s) {bfd_nonfatal (s); status = 1; return;}
+#define RETURN_NONFATAL(s) {bfd_nonfatal(s); status = 1; return;}
 
 static asymbol **isympp = NULL;	/* Input symbols.  */
 static asymbol **osympp = NULL;	/* Output symbols that survive stripping.  */
 
-/* If `copy_byte' >= 0, copy only that byte of every `interleave' bytes.  */
+/* If `copy_byte' >= 0, copy only that byte of every `interleave' bytes: */
 static int copy_byte = -1;
 static int interleave = 4;
 
 static bfd_boolean verbose;		/* Print file and target names.  */
-static bfd_boolean preserve_dates;	/* Preserve input file timestamp.  */
+static bfd_boolean preserve_dates;    /* Preserve input file timestamp.  */
 static int status = 0;		/* Exit status.  */
 
 enum strip_action
@@ -175,7 +175,7 @@ static struct section_add *add_sections;
 
 /* If non-NULL the argument to --add-gnu-debuglink.
    This should be the filename to store in the .gnu_debuglink section.  */
-static const char * gnu_debuglink_filename = NULL;
+static const char *gnu_debuglink_filename = NULL;
 
 /* Whether to convert debugging information.  */
 static bfd_boolean convert_debugging = FALSE;
@@ -385,18 +385,18 @@ extern bfd_boolean S3Forced;
 extern enum bfd_architecture  bfd_external_binary_architecture;
 extern unsigned long          bfd_external_machine;
 
-/* Forward declarations.  */
-static void setup_section (bfd *, asection *, void *);
-static void setup_bfd_headers (bfd *, bfd *);
-static void copy_section (bfd *, asection *, void *);
-static void get_sections (bfd *, asection *, void *);
-static int compare_section_lma (const void *, const void *);
-static void mark_symbols_used_in_relocations (bfd *, asection *, void *);
-static bfd_boolean write_debugging_info (bfd *, void *, long *, asymbol ***);
-static const char *lookup_sym_redefinition (const char *);
+/* Forward declarations: */
+static void setup_section(bfd *, asection *, void *);
+static void setup_bfd_headers(bfd *, bfd *);
+static void copy_section(bfd *, asection *, void *);
+static void get_sections(bfd *, asection *, void *);
+static int compare_section_lma(const void *, const void *);
+static void mark_symbols_used_in_relocations(bfd *, asection *, void *);
+static bfd_boolean write_debugging_info(bfd *, void *, long *, asymbol ***);
+static const char *lookup_sym_redefinition(const char *);
 
 static void
-copy_usage (FILE *stream, int exit_status)
+copy_usage(FILE *stream, int exit_status)
 {
   fprintf(stream, _("Usage: %s [option(s)] in-file [out-file]\n"), program_name);
   fprintf(stream, _(" Copies a binary file, possibly transforming it in the process\n"));
@@ -490,12 +490,12 @@ copy_usage (FILE *stream, int exit_status)
 }
 
 static void
-strip_usage (FILE *stream, int exit_status)
+strip_usage(FILE *stream, int exit_status)
 {
-  fprintf (stream, _("Usage: %s <option(s)> in-file(s)\n"), program_name);
-  fprintf (stream, _(" Removes symbols and sections from files\n"));
-  fprintf (stream, _(" The options are:\n"));
-  fprintf (stream, _("\
+  fprintf(stream, _("Usage: %s <option(s)> in-file(s)\n"), program_name);
+  fprintf(stream, _(" Removes symbols and sections from files\n"));
+  fprintf(stream, _(" The options are:\n"));
+  fprintf(stream, _("\
   -I --input-target=<bfdname>      Assume input file is in format <bfdname>\n\
   -O --output-target=<bfdname>     Create an output file in format <bfdname>\n\
   -F --target=<bfdname>            Set both input and output format to <bfdname>\n\
@@ -517,64 +517,62 @@ strip_usage (FILE *stream, int exit_status)
   -o <file>                        Place stripped output into <file>\n\
 "));
 
-  list_supported_targets (program_name, stream);
+  list_supported_targets(program_name, stream);
   if (exit_status == 0)
-    fprintf (stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
-  exit (exit_status);
+    fprintf(stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
+  exit(exit_status);
 }
 
 /* Parse section flags into a flagword, with a fatal error if the
-   string can't be parsed.  */
+   string cannot be parsed.  */
 
 static flagword
-parse_flags (const char *s)
+parse_flags(const char *s)
 {
   flagword ret;
   const char *snext;
-  int len;
+  size_t len;
 
   ret = SEC_NO_FLAGS;
 
-  do
-    {
-      snext = strchr (s, ',');
-      if (snext == NULL)
-	len = strlen (s);
-      else
-	{
-	  len = snext - s;
-	  ++snext;
-	}
+  do {
+    snext = strchr(s, ',');
+    if (snext == NULL)
+      len = strlen(s);
+    else
+      {
+        len = (size_t)(snext - s);
+        ++snext;
+      }
 
-      if (0) ;
+    if (0) ;
 #define PARSE_FLAG(fname,fval) \
-  else if (strncasecmp (fname, s, len) == 0) ret |= fval
-      PARSE_FLAG ("alloc", SEC_ALLOC);
-      PARSE_FLAG ("load", SEC_LOAD);
-      PARSE_FLAG ("noload", SEC_NEVER_LOAD);
-      PARSE_FLAG ("readonly", SEC_READONLY);
-      PARSE_FLAG ("debug", SEC_DEBUGGING);
-      PARSE_FLAG ("code", SEC_CODE);
-      PARSE_FLAG ("data", SEC_DATA);
-      PARSE_FLAG ("rom", SEC_ROM);
-      PARSE_FLAG ("share", SEC_COFF_SHARED);
-      PARSE_FLAG ("contents", SEC_HAS_CONTENTS);
+  else if (strncasecmp(fname, s, len) == 0) ret |= fval
+    PARSE_FLAG("alloc", SEC_ALLOC);
+    PARSE_FLAG("load", SEC_LOAD);
+    PARSE_FLAG("noload", SEC_NEVER_LOAD);
+    PARSE_FLAG("readonly", SEC_READONLY);
+    PARSE_FLAG("debug", SEC_DEBUGGING);
+    PARSE_FLAG("code", SEC_CODE);
+    PARSE_FLAG("data", SEC_DATA);
+    PARSE_FLAG("rom", SEC_ROM);
+    PARSE_FLAG("share", SEC_COFF_SHARED);
+    PARSE_FLAG("contents", SEC_HAS_CONTENTS);
 #undef PARSE_FLAG
-      else
-	{
-	  char *copy;
+    else
+      {
+        char *copy;
 
-	  copy = (char *)xmalloc(len + 1);
-	  strncpy (copy, s, len);
-	  copy[len] = '\0';
-	  non_fatal (_("unrecognized section flag `%s'"), copy);
-	  fatal (_("supported flags: %s"),
-		 "alloc, load, noload, readonly, debug, code, data, rom, share, contents");
-	}
+        copy = (char *)xmalloc(len + 1UL);
+        strncpy(copy, s, len);
+        copy[len] = '\0';
+        non_fatal(_("unrecognized section flag `%s'"), copy);
+        fatal(_("supported flags: %s"),
+              "alloc, load, noload, readonly, debug, code, data, rom, share, contents");
+      }
 
-      s = snext;
-    }
-  while (s != NULL);
+    s = snext;
+  } while (s != NULL);
 
   return ret;
 }
@@ -630,22 +628,23 @@ add_specific_symbol (const char *name, struct symlist **list)
 static void
 add_specific_symbols(const char *filename, struct symlist **list)
 {
-  off_t  size;
+  off_t size;
   FILE *f;
   char *line;
   char *buffer;
   unsigned int line_count;
 
   size = get_file_size(filename);
-  if (size == 0)
+  if (size == 0L)
     return;
 
-  buffer = (char *)xmalloc(size + 2);
+  buffer = (char *)xmalloc((size_t)size + 2UL);
   f = fopen(filename, FOPEN_RT);
   if (f == NULL)
-    fatal(_("cannot open '%s': %s"), filename, strerror(errno));
+    fatal(_("cannot open '%s': %s (error number '%d')"),
+          filename, strerror(errno), errno);
 
-  if ((fread(buffer, 1, size, f) == 0) || ferror(f))
+  if ((fread(buffer, 1UL, (size_t)size, f) == 0) || ferror(f))
     fatal(_("%s: fread failed"), filename);
 
   fclose(f);
@@ -654,14 +653,14 @@ add_specific_symbols(const char *filename, struct symlist **list)
 
   line_count = 1;
 
-  for (line = buffer; * line != '\0'; line ++)
+  for (line = buffer; *line != '\0'; line ++)
     {
       char *eol;
       char *name;
       char *name_end;
       int finished = FALSE;
 
-      for (eol = line;; eol ++)
+      for (eol = line;; eol++)
 	{
 	  switch (* eol)
 	    {
@@ -669,7 +668,7 @@ add_specific_symbols(const char *filename, struct symlist **list)
 	      * eol = '\0';
 	      /* Cope with \n\r.  */
 	      if (eol[1] == '\r')
-		++ eol;
+		++eol;
 	      finished = TRUE;
 	      break;
 
@@ -677,7 +676,7 @@ add_specific_symbols(const char *filename, struct symlist **list)
 	      * eol = '\0';
 	      /* Cope with \r\n.  */
 	      if (eol[1] == '\n')
-		++ eol;
+		++eol;
 	      finished = TRUE;
 	      break;
 
@@ -689,7 +688,7 @@ add_specific_symbols(const char *filename, struct symlist **list)
 	      /* Line comment, Terminate the line here, in case a
 		 name is present and then allow the rest of the
 		 loop to find the real end of the line.  */
-	      * eol = '\0';
+	      *eol = '\0';
 	      break;
 
 	    default:
@@ -703,35 +702,35 @@ add_specific_symbols(const char *filename, struct symlist **list)
       /* A name may now exist somewhere between 'line' and 'eol'.
 	 Strip off leading whitespace and trailing whitespace,
 	 then add it to the list.  */
-      for (name = line; IS_WHITESPACE (* name); name ++)
+      for (name = line; IS_WHITESPACE(* name); name++)
 	;
       for (name_end = name;
-	   (! IS_WHITESPACE (* name_end))
-	   && (! IS_LINE_TERMINATOR (* name_end));
-	   name_end ++)
+	   (! IS_WHITESPACE(* name_end))
+	   && (! IS_LINE_TERMINATOR(* name_end));
+	   name_end++)
 	;
 
-      if (! IS_LINE_TERMINATOR (* name_end))
+      if (! IS_LINE_TERMINATOR(* name_end))
 	{
 	  char * extra;
 
-	  for (extra = name_end + 1; IS_WHITESPACE (* extra); extra ++)
+	  for (extra = (name_end + 1); IS_WHITESPACE(* extra); extra++)
 	    ;
 
-	  if (! IS_LINE_TERMINATOR (* extra))
-	    non_fatal (_("%s:%d: Ignoring rubbish found on this line"),
-		       filename, line_count);
+	  if (! IS_LINE_TERMINATOR(* extra))
+	    non_fatal(_("%s:%d: Ignoring rubbish found on this line"),
+		      filename, line_count);
 	}
 
       * name_end = '\0';
 
       if (name_end > name)
-	add_specific_symbol (name, list);
+	add_specific_symbol(name, list);
 
-      /* Advance line pointer to end of line.  The 'eol ++' in the for
+      /* Advance line pointer to end of line.  The 'eol++' in the for
 	 loop above will then advance us to the start of the next line.  */
       line = eol;
-      line_count ++;
+      line_count++;
     }
 }
 
@@ -739,7 +738,7 @@ add_specific_symbols(const char *filename, struct symlist **list)
    strip_specific_list and keep_symbols.  */
 
 static bfd_boolean
-is_specified_symbol (const char *name, struct symlist *list)
+is_specified_symbol(const char *name, struct symlist *list)
 {
   struct symlist *tmp_list;
 
@@ -748,48 +747,47 @@ is_specified_symbol (const char *name, struct symlist *list)
       for (tmp_list = list; tmp_list; tmp_list = tmp_list->next)
 	if (*(tmp_list->name) != '!')
 	  {
-	    if (!fnmatch (tmp_list->name, name, 0))
+	    if (!fnmatch(tmp_list->name, name, 0))
 	      return TRUE;
 	  }
 	else
 	  {
-	    if (fnmatch (tmp_list->name + 1, name, 0))
+	    if (fnmatch((tmp_list->name + 1), name, 0))
 	      return TRUE;
 	  }
     }
   else
     {
       for (tmp_list = list; tmp_list; tmp_list = tmp_list->next)
-	if (strcmp (name, tmp_list->name) == 0)
+	if (strcmp(name, tmp_list->name) == 0)
 	  return TRUE;
     }
 
   return FALSE;
 }
 
-/* See if a section is being removed.  */
-
+/* See if a section is being removed: */
 static bfd_boolean
-is_strip_section (bfd *abfd ATTRIBUTE_UNUSED, asection *sec)
+is_strip_section(bfd *abfd ATTRIBUTE_UNUSED, asection *sec)
 {
   if (sections_removed || sections_copied)
     {
       struct section_list *p;
 
-      p = find_section_list (bfd_get_section_name (abfd, sec), FALSE);
+      p = find_section_list(bfd_get_section_name(abfd, sec), FALSE);
 
-      if (sections_removed && p != NULL && p->remove)
+      if (sections_removed && (p != NULL) && p->remove)
 	return TRUE;
-      if (sections_copied && (p == NULL || ! p->copy))
+      if (sections_copied && ((p == NULL) || ! p->copy))
 	return TRUE;
     }
 
-  if ((bfd_get_section_flags (abfd, sec) & SEC_DEBUGGING) != 0)
+  if ((bfd_get_section_flags(abfd, sec) & SEC_DEBUGGING) != 0)
     {
-      if (strip_symbols == STRIP_DEBUG
-	  || strip_symbols == STRIP_UNNEEDED
-	  || strip_symbols == STRIP_ALL
-	  || discard_locals == LOCALS_ALL
+      if ((strip_symbols == STRIP_DEBUG)
+	  || (strip_symbols == STRIP_UNNEEDED)
+	  || (strip_symbols == STRIP_ALL)
+	  || (discard_locals == LOCALS_ALL)
 	  || convert_debugging)
 	return TRUE;
 
@@ -801,160 +799,160 @@ is_strip_section (bfd *abfd ATTRIBUTE_UNUSED, asection *sec)
 }
 
 /* Choose which symbol entries to copy; put the result in OSYMS.
-   We don't copy in place, because that confuses the relocs.
+   We do NOT copy in place, because that confuses the relocs.
    Return the number of symbols to print.  */
 
 static unsigned int
-filter_symbols (bfd *abfd, bfd *obfd, asymbol **osyms,
-		asymbol **isyms, long symcount)
+filter_symbols(bfd *abfd, bfd *obfd, asymbol **osyms,
+               asymbol **isyms, long symcount)
 {
   asymbol **from = isyms, **to = osyms;
-  long src_count = 0, dst_count = 0;
-  int relocatable = (abfd->flags & (HAS_RELOC | EXEC_P | DYNAMIC))
-		    == HAS_RELOC;
+  long src_count = 0L, dst_count = 0L;
+  int relocatable = ((abfd->flags & (HAS_RELOC | EXEC_P | DYNAMIC))
+                     == HAS_RELOC);
 
   for (; src_count < symcount; src_count++)
     {
       asymbol *sym = from[src_count];
       flagword flags = sym->flags;
-      char *name = (char *) bfd_asymbol_name (sym);
+      char *name = (char *)bfd_asymbol_name(sym);
       int keep;
       bfd_boolean undefined;
       bfd_boolean rem_leading_char;
       bfd_boolean add_leading_char;
 
-      undefined = bfd_is_und_section (bfd_get_section (sym));
+      undefined = bfd_is_und_section(bfd_get_section(sym));
 
       if (redefine_sym_list)
 	{
 	  char *old_name, *new_name;
 
-	  old_name = (char *) bfd_asymbol_name (sym);
-	  new_name = (char *) lookup_sym_redefinition (old_name);
-	  bfd_asymbol_name (sym) = new_name;
+	  old_name = (char *)bfd_asymbol_name(sym);
+	  new_name = (char *)lookup_sym_redefinition(old_name);
+	  bfd_asymbol_name(sym) = new_name;
 	  name = new_name;
 	}
 
-      /* Check if we will remove the current leading character.  */
+      /* Check if we will remove the current leading character: */
       rem_leading_char =
-	(name[0] == bfd_get_symbol_leading_char (abfd))
-	&& (change_leading_char
-	    || (remove_leading_char
-		&& ((flags & (BSF_GLOBAL | BSF_WEAK)) != 0
-		    || undefined
-		    || bfd_is_com_section (bfd_get_section (sym)))));
+	((name[0] == bfd_get_symbol_leading_char(abfd))
+         && (change_leading_char
+             || (remove_leading_char
+                 && (((flags & (BSF_GLOBAL | BSF_WEAK)) != 0)
+                     || undefined
+                     || bfd_is_com_section(bfd_get_section(sym))))));
 
-      /* Check if we will add a new leading character.  */
+      /* Check if we will add a new leading character: */
       add_leading_char =
-	change_leading_char
-	&& (bfd_get_symbol_leading_char (obfd) != '\0')
-	&& (bfd_get_symbol_leading_char (abfd) == '\0'
-	    || (name[0] == bfd_get_symbol_leading_char (abfd)));
+	(change_leading_char
+         && (bfd_get_symbol_leading_char(obfd) != '\0')
+         && ((bfd_get_symbol_leading_char(abfd) == '\0')
+             || (name[0] == bfd_get_symbol_leading_char(abfd))));
 
-      /* Short circuit for change_leading_char if we can do it in-place.  */
+      /* Short circuit for change_leading_char if we can do it in-place: */
       if (rem_leading_char && add_leading_char && !prefix_symbols_string)
         {
-	  name[0] = bfd_get_symbol_leading_char (obfd);
-	  bfd_asymbol_name (sym) = name;
+	  name[0] = bfd_get_symbol_leading_char(obfd);
+	  bfd_asymbol_name(sym) = name;
 	  rem_leading_char = FALSE;
 	  add_leading_char = FALSE;
         }
 
-      /* Remove leading char.  */
+      /* Remove leading char: */
       if (rem_leading_char)
-	bfd_asymbol_name (sym) = ++name;
+	bfd_asymbol_name(sym) = ++name;
 
-      /* Add new leading char and/or prefix.  */
+      /* Add new leading char and/or prefix: */
       if (add_leading_char || prefix_symbols_string)
         {
           char *n, *ptr;
 
-          ptr = n = (char *)xmalloc(1 + strlen(prefix_symbols_string)
-                                    + strlen(name) + 1);
+          ptr = n = (char *)xmalloc(1UL + strlen(prefix_symbols_string)
+                                    + strlen(name) + 1UL);
           if (add_leading_char)
-	    *ptr++ = bfd_get_symbol_leading_char (obfd);
+	    *ptr++ = bfd_get_symbol_leading_char(obfd);
 
           if (prefix_symbols_string)
             {
-              strcpy (ptr, prefix_symbols_string);
-              ptr += strlen (prefix_symbols_string);
+              strcpy(ptr, prefix_symbols_string);
+              ptr += strlen(prefix_symbols_string);
            }
 
-          strcpy (ptr, name);
-          bfd_asymbol_name (sym) = n;
+          strcpy(ptr, name);
+          bfd_asymbol_name(sym) = n;
           name = n;
 	}
 
       if (strip_symbols == STRIP_ALL)
 	keep = 0;
-      else if ((flags & BSF_KEEP) != 0		/* Used in relocation.  */
-	       || ((flags & BSF_SECTION_SYM) != 0
-		   && ((*bfd_get_section (sym)->symbol_ptr_ptr)->flags
-		       & BSF_KEEP) != 0))
+      else if (((flags & BSF_KEEP) != 0)	/* Used in relocation.  */
+	       || (((flags & BSF_SECTION_SYM) != 0)
+		   && (((*bfd_get_section(sym)->symbol_ptr_ptr)->flags
+                        & BSF_KEEP) != 0)))
 	keep = 1;
       else if (relocatable			/* Relocatable file.  */
-	       && (flags & (BSF_GLOBAL | BSF_WEAK)) != 0)
+	       && ((flags & (BSF_GLOBAL | BSF_WEAK)) != 0))
 	keep = 1;
-      else if (bfd_decode_symclass (sym) == 'I')
+      else if (bfd_decode_symclass(sym) == 'I')
 	/* Global symbols in $idata sections need to be retained
 	   even if relocatable is FALSE.  External users of the
 	   library containing the $idata section may reference these
 	   symbols.  */
 	keep = 1;
-      else if ((flags & BSF_GLOBAL) != 0	/* Global symbol.  */
-	       || (flags & BSF_WEAK) != 0
+      else if (((flags & BSF_GLOBAL) != 0)	/* Global symbol.  */
+	       || ((flags & BSF_WEAK) != 0)
 	       || undefined
-	       || bfd_is_com_section (bfd_get_section (sym)))
-	keep = strip_symbols != STRIP_UNNEEDED;
+	       || bfd_is_com_section(bfd_get_section(sym)))
+	keep = (strip_symbols != STRIP_UNNEEDED);
       else if ((flags & BSF_DEBUGGING) != 0)	/* Debugging symbol.  */
-	keep = (strip_symbols != STRIP_DEBUG
-		&& strip_symbols != STRIP_UNNEEDED
+	keep = ((strip_symbols != STRIP_DEBUG)
+		&& (strip_symbols != STRIP_UNNEEDED)
 		&& ! convert_debugging);
-      else if (bfd_coff_get_comdat_section (abfd, bfd_get_section (sym)))
+      else if (bfd_coff_get_comdat_section(abfd, bfd_get_section(sym)))
 	/* COMDAT sections store special information in local
 	   symbols, so we cannot risk stripping any of them.  */
 	keep = 1;
-      else			/* Local symbol.  */
-	keep = (strip_symbols != STRIP_UNNEEDED
-		&& (discard_locals != LOCALS_ALL
-		    && (discard_locals != LOCALS_START_L
-			|| ! bfd_is_local_label (abfd, sym))));
+      else			/* Local symbol: */
+	keep = ((strip_symbols != STRIP_UNNEEDED)
+		&& ((discard_locals != LOCALS_ALL)
+		    && ((discard_locals != LOCALS_START_L)
+			|| ! bfd_is_local_label(abfd, sym))));
 
-      if (keep && is_specified_symbol (name, strip_specific_list))
+      if (keep && is_specified_symbol(name, strip_specific_list))
 	keep = 0;
       if (keep
 	  && !(flags & BSF_KEEP)
-	  && is_specified_symbol (name, strip_unneeded_list))
+	  && is_specified_symbol(name, strip_unneeded_list))
 	keep = 0;
-      if (!keep && is_specified_symbol (name, keep_specific_list))
+      if (!keep && is_specified_symbol(name, keep_specific_list))
 	keep = 1;
-      if (keep && is_strip_section (abfd, bfd_get_section (sym)))
+      if (keep && is_strip_section(abfd, bfd_get_section(sym)))
 	keep = 0;
 
       if (keep)
 	{
-	  if ((flags & BSF_GLOBAL) != 0
-	      && (weaken || is_specified_symbol (name, weaken_specific_list)))
+	  if (((flags & BSF_GLOBAL) != 0)
+	      && (weaken || is_specified_symbol(name, weaken_specific_list)))
 	    {
-	      sym->flags &= ~ BSF_GLOBAL;
+	      sym->flags &= ~BSF_GLOBAL;
 	      sym->flags |= BSF_WEAK;
 	    }
 
 	  if (!undefined
 	      && (flags & (BSF_GLOBAL | BSF_WEAK))
-	      && (is_specified_symbol (name, localize_specific_list)
-		  || (keepglobal_specific_list != NULL
-		      && ! is_specified_symbol (name, keepglobal_specific_list))))
+	      && (is_specified_symbol(name, localize_specific_list)
+		  || ((keepglobal_specific_list != NULL)
+		      && ! is_specified_symbol(name, keepglobal_specific_list))))
 	    {
-	      sym->flags &= ~ (BSF_GLOBAL | BSF_WEAK);
+	      sym->flags &= ~(BSF_GLOBAL | BSF_WEAK);
 	      sym->flags |= BSF_LOCAL;
 	    }
 
 	  if (!undefined
 	      && (flags & BSF_LOCAL)
-	      && is_specified_symbol (name, globalize_specific_list))
+	      && is_specified_symbol(name, globalize_specific_list))
 	    {
-	      sym->flags &= ~ BSF_LOCAL;
+	      sym->flags &= ~BSF_LOCAL;
 	      sym->flags |= BSF_GLOBAL;
 	    }
 
@@ -964,18 +962,17 @@ filter_symbols (bfd *abfd, bfd *obfd, asymbol **osyms,
 
   to[dst_count] = NULL;
 
-  return dst_count;
+  return (unsigned int)dst_count;
 }
 
-/* Find the redefined name of symbol SOURCE.  */
-
+/* Find the redefined name of symbol SOURCE: */
 static const char *
-lookup_sym_redefinition (const char *source)
+lookup_sym_redefinition(const char *source)
 {
   struct redefine_node *list;
 
   for (list = redefine_sym_list; list != NULL; list = list->next)
-    if (strcmp (source, list->source) == 0)
+    if (strcmp(source, list->source) == 0)
       return list->target;
 
   return source;
@@ -1014,7 +1011,7 @@ redefine_list_append (const char *cause, const char *source, const char *target)
    from the file, and add them to the symbol redefine list.  */
 
 static void
-add_redefine_syms_file (const char *filename)
+add_redefine_syms_file(const char *filename)
 {
   FILE *file;
   char *buf;
@@ -1025,27 +1022,27 @@ add_redefine_syms_file (const char *filename)
 
   file = fopen(filename, "r");
   if (file == NULL)
-    fatal(_("failed to open symbol redefinition file %s (error: %s)"),
-          filename, strerror(errno));
+    fatal(_("failed to open symbol redefinition file %s (error: %d, %s)"),
+          filename, errno, strerror(errno));
 
   bufsize = 100;
   buf = (char *)xmalloc(bufsize);
 
   lineno = 1;
   c = getc(file);
-  len = 0;
-  outsym_off = 0;
+  len = 0UL;
+  outsym_off = 0UL;
   while (c != EOF)
     {
-      /* Collect the input symbol name.  */
+      /* Collect the input symbol name: */
       while (! IS_WHITESPACE(c) && ! IS_LINE_TERMINATOR(c) && (c != EOF))
 	{
 	  if (c == '#')
 	    goto comment;
-	  buf[len++] = c;
+	  buf[len++] = (char)c;
 	  if (len >= bufsize)
 	    {
-	      bufsize *= 2;
+	      bufsize *= 2UL;
 	      buf = (char *)xrealloc(buf, bufsize);
 	    }
 	  c = getc(file);
@@ -1068,10 +1065,10 @@ add_redefine_syms_file (const char *filename)
 	{
 	  if (c == '#')
 	    goto comment;
-	  buf[len++] = c;
+	  buf[len++] = (char)c;
 	  if (len >= bufsize)
 	    {
-	      bufsize *= 2;
+	      bufsize *= 2UL;
 	      buf = (char *)xrealloc(buf, bufsize);
 	    }
 	  c = getc(file);
@@ -1095,8 +1092,8 @@ add_redefine_syms_file (const char *filename)
 	    redefine_list_append(filename, &buf[0], &buf[outsym_off]);
 
 	  lineno++;
-	  len = 0;
-	  outsym_off = 0;
+	  len = 0UL;
+	  outsym_off = 0UL;
 	  if (c == EOF)
 	    break;
 	  c = getc(file);
@@ -1105,7 +1102,7 @@ add_redefine_syms_file (const char *filename)
       else
 	fatal(_("%s:%d: garbage found at end of line"), filename, lineno);
  comment:
-      if (len != 0 && (outsym_off == 0 || outsym_off == len))
+      if ((len != 0UL) && ((outsym_off == 0UL) || (outsym_off == len)))
 	fatal(_("%s:%d: missing new symbol name"), filename, lineno);
       buf[len++] = '\0';
 
@@ -1139,15 +1136,15 @@ copy_unknown_object(bfd *ibfd, bfd *obfd)
       return FALSE;
     }
 
-  size = buf.st_size;
-  if (size < 0)
+  size = (long)buf.st_size;
+  if (size < 0L)
     {
       non_fatal(_("stat returns negative size for `%s'"),
                 bfd_get_archive_filename(ibfd));
       return FALSE;
     }
 
-  if (bfd_seek(ibfd, (file_ptr)0, SEEK_SET) != 0)
+  if (bfd_seek(ibfd, (file_ptr)0L, SEEK_SET) != 0)
     {
       bfd_nonfatal(bfd_get_archive_filename(ibfd));
       return FALSE;
@@ -1161,31 +1158,31 @@ copy_unknown_object(bfd *ibfd, bfd *obfd)
   ncopied = 0;
   while (ncopied < size)
     {
-      tocopy = size - ncopied;
+      tocopy = (size - ncopied);
       if (tocopy > BUFSIZE)
 	tocopy = BUFSIZE;
 
-      if (bfd_bread (cbuf, (bfd_size_type) tocopy, ibfd)
-	  != (bfd_size_type) tocopy)
+      if (bfd_bread(cbuf, (bfd_size_type)tocopy, ibfd)
+	  != (bfd_size_type)tocopy)
 	{
-	  bfd_nonfatal (bfd_get_archive_filename (ibfd));
-	  free (cbuf);
+	  bfd_nonfatal(bfd_get_archive_filename(ibfd));
+	  free(cbuf);
 	  return FALSE;
 	}
 
-      if (bfd_bwrite (cbuf, (bfd_size_type) tocopy, obfd)
-	  != (bfd_size_type) tocopy)
+      if (bfd_bwrite(cbuf, (bfd_size_type)tocopy, obfd)
+	  != (bfd_size_type)tocopy)
 	{
-	  bfd_nonfatal (bfd_get_filename (obfd));
-	  free (cbuf);
+	  bfd_nonfatal(bfd_get_filename(obfd));
+	  free(cbuf);
 	  return FALSE;
 	}
 
       ncopied += tocopy;
     }
 
-  chmod (bfd_get_filename (obfd), buf.st_mode);
-  free (cbuf);
+  chmod(bfd_get_filename(obfd), buf.st_mode);
+  free(cbuf);
   return TRUE;
 }
 
@@ -1200,7 +1197,7 @@ copy_object(bfd *ibfd, bfd *obfd)
   asection **osections = (asection **)NULL;
   asection *gnu_debuglink_section = (asection *)NULL;
   bfd_size_type *gaps = (bfd_size_type *)NULL;
-  bfd_size_type max_gap = (bfd_size_type)0;
+  bfd_size_type max_gap = (bfd_size_type)0UL;
   long symsize;
   void *dhandle;
   enum bfd_architecture iarch;
@@ -1213,54 +1210,54 @@ copy_object(bfd *ibfd, bfd *obfd)
 
   if (!bfd_set_format(obfd, bfd_get_format(ibfd)))
     {
-      bfd_nonfatal (bfd_get_filename (obfd));
+      bfd_nonfatal(bfd_get_filename(obfd));
       return FALSE;
     }
 
   if (verbose)
-    printf (_("copy from `%s' [%s] to `%s' [%s]\n"),
-	    bfd_get_archive_filename (ibfd), bfd_get_target (ibfd),
-	    bfd_get_filename (obfd), bfd_get_target (obfd));
+    printf(_("copy from `%s' [%s] to `%s' [%s]\n"),
+	   bfd_get_archive_filename(ibfd), bfd_get_target(ibfd),
+	   bfd_get_filename(obfd), bfd_get_target(obfd));
 
   if (set_start_set)
     start = set_start;
   else
-    start = bfd_get_start_address (ibfd);
+    start = bfd_get_start_address(ibfd);
   start += change_start;
 
   /* Neither the start address nor the flags
      need to be set for a core file.  */
-  if (bfd_get_format (obfd) != bfd_core)
+  if (bfd_get_format(obfd) != bfd_core)
     {
       flagword flags;
 
-      flags = bfd_get_file_flags (ibfd);
+      flags = bfd_get_file_flags(ibfd);
       flags |= bfd_flags_to_set;
       flags &= ~bfd_flags_to_clear;
-      flags &= bfd_applicable_file_flags (obfd);
+      flags &= bfd_applicable_file_flags(obfd);
 
-      if (!bfd_set_start_address (obfd, start)
-	  || !bfd_set_file_flags (obfd, flags))
+      if (!bfd_set_start_address(obfd, start)
+	  || !bfd_set_file_flags(obfd, flags))
 	{
-	  bfd_nonfatal (bfd_get_archive_filename (ibfd));
+	  bfd_nonfatal(bfd_get_archive_filename(ibfd));
 	  return FALSE;
 	}
     }
 
-  /* Copy architecture of input file to output file.  */
-  iarch = bfd_get_arch (ibfd);
-  imach = bfd_get_mach (ibfd);
-  if (!bfd_set_arch_mach (obfd, iarch, imach)
+  /* Copy architecture of input file to output file: */
+  iarch = bfd_get_arch(ibfd);
+  imach = bfd_get_mach(ibfd);
+  if (!bfd_set_arch_mach(obfd, iarch, imach)
       && (ibfd->target_defaulted
-	  || bfd_get_arch (ibfd) != bfd_get_arch (obfd)))
+	  || (bfd_get_arch(ibfd) != bfd_get_arch(obfd))))
     {
       if (bfd_get_arch (ibfd) == bfd_arch_unknown)
-	non_fatal (_("Unable to recognise the format of the input file `%s'"),
-		   bfd_get_archive_filename (ibfd));
+	non_fatal(_("Unable to recognise the format of the input file `%s'"),
+		  bfd_get_archive_filename(ibfd));
       else
-	non_fatal (_("Warning: Output file cannot represent architecture `%s'"),
-		   bfd_printable_arch_mach (bfd_get_arch (ibfd),
-					    bfd_get_mach (ibfd)));
+	non_fatal(_("Warning: Output file cannot represent architecture `%s'"),
+		  bfd_printable_arch_mach(bfd_get_arch(ibfd),
+                                          bfd_get_mach(ibfd)));
       return FALSE;
     }
 
@@ -1291,35 +1288,35 @@ copy_object(bfd *ibfd, bfd *obfd)
 	{
 	  flagword flags;
 
-	  pset = find_section_list (padd->name, FALSE);
+	  pset = find_section_list(padd->name, FALSE);
 	  if (pset != NULL)
 	    pset->used = TRUE;
 
-	  flags = SEC_HAS_CONTENTS | SEC_READONLY | SEC_DATA;
-	  if (pset != NULL && pset->set_flags)
-	    flags = pset->flags | SEC_HAS_CONTENTS;
+	  flags = (SEC_HAS_CONTENTS | SEC_READONLY | SEC_DATA);
+	  if ((pset != NULL) && pset->set_flags)
+	    flags = (pset->flags | SEC_HAS_CONTENTS);
 
-	  padd->section = bfd_make_section_with_flags (obfd, padd->name, flags);
+	  padd->section = bfd_make_section_with_flags(obfd, padd->name, flags);
 	  if (padd->section == NULL)
 	    {
-	      non_fatal (_("can't create section `%s': %s"),
-		       padd->name, bfd_errmsg (bfd_get_error ()));
+	      non_fatal(_("cannot create section `%s': %s"),
+                        padd->name, bfd_errmsg(bfd_get_error()));
 	      return FALSE;
 	    }
 
-	  if (! bfd_set_section_size (obfd, padd->section, padd->size))
+	  if (! bfd_set_section_size(obfd, padd->section, padd->size))
 	    {
-	      bfd_nonfatal (bfd_get_filename (obfd));
+	      bfd_nonfatal(bfd_get_filename(obfd));
 	      return FALSE;
 	    }
 
 	  if (pset != NULL)
 	    {
 	      if (pset->change_vma != CHANGE_IGNORE)
-		if (! bfd_set_section_vma (obfd, padd->section,
-					   pset->vma_val))
+		if (! bfd_set_section_vma(obfd, padd->section,
+					  pset->vma_val))
 		  {
-		    bfd_nonfatal (bfd_get_filename (obfd));
+		    bfd_nonfatal(bfd_get_filename(obfd));
 		    return FALSE;
 		  }
 
@@ -1329,9 +1326,9 @@ copy_object(bfd *ibfd, bfd *obfd)
 
 		  if (! bfd_set_section_alignment
 		      (obfd, padd->section,
-		       bfd_section_alignment (obfd, padd->section)))
+		       bfd_section_alignment(obfd, padd->section)))
 		    {
-		      bfd_nonfatal (bfd_get_filename (obfd));
+		      bfd_nonfatal(bfd_get_filename(obfd));
 		      return FALSE;
 		    }
 		}
@@ -1341,19 +1338,19 @@ copy_object(bfd *ibfd, bfd *obfd)
 
   if (gnu_debuglink_filename != NULL)
     {
-      gnu_debuglink_section = bfd_create_gnu_debuglink_section
-	(obfd, gnu_debuglink_filename);
+      gnu_debuglink_section =
+        bfd_create_gnu_debuglink_section(obfd, gnu_debuglink_filename);
 
       if (gnu_debuglink_section == NULL)
 	{
-	  bfd_nonfatal (gnu_debuglink_filename);
+	  bfd_nonfatal(gnu_debuglink_filename);
 	  return FALSE;
 	}
     }
 
-  if (bfd_count_sections (obfd) == 0)
+  if (bfd_count_sections(obfd) == 0)
     {
-      non_fatal (_("there are no sections to be copied!"));
+      non_fatal(_("there are no sections to be copied!"));
       return FALSE;
     }
 
@@ -1375,38 +1372,38 @@ copy_object(bfd *ibfd, bfd *obfd)
       qsort(osections, c, sizeof(asection *), compare_section_lma);
 
       gaps = (bfd_size_type *)xmalloc(c * sizeof(bfd_size_type));
-      memset(gaps, 0, c * sizeof(bfd_size_type));
+      memset(gaps, 0, (c * sizeof(bfd_size_type)));
 
       if (gap_fill_set)
 	{
-	  for (i = 0; i < c - 1; i++)
+	  for (i = 0; i < (c - 1); i++)
 	    {
 	      flagword flags;
 	      bfd_size_type size;
 	      bfd_vma gap_start, gap_stop;
 
-	      flags = bfd_get_section_flags (obfd, osections[i]);
-	      if ((flags & SEC_HAS_CONTENTS) == 0
-		  || (flags & SEC_LOAD) == 0)
+	      flags = bfd_get_section_flags(obfd, osections[i]);
+	      if (((flags & SEC_HAS_CONTENTS) == 0)
+		  || ((flags & SEC_LOAD) == 0))
 		continue;
 
-	      size = bfd_section_size (obfd, osections[i]);
-	      gap_start = bfd_section_lma (obfd, osections[i]) + size;
-	      gap_stop = bfd_section_lma (obfd, osections[i + 1]);
+	      size = bfd_section_size(obfd, osections[i]);
+	      gap_start = (bfd_section_lma(obfd, osections[i]) + size);
+	      gap_stop = bfd_section_lma(obfd, osections[i + 1]);
 	      if (gap_start < gap_stop)
 		{
-		  if (! bfd_set_section_size (obfd, osections[i],
-					      size + (gap_stop - gap_start)))
+		  if (! bfd_set_section_size(obfd, osections[i],
+					     (size + (gap_stop - gap_start))))
 		    {
-		      non_fatal (_("Can't fill gap after %s: %s"),
-				 bfd_get_section_name (obfd, osections[i]),
-				 bfd_errmsg (bfd_get_error ()));
+		      non_fatal(_("Cannot fill gap after %s: %s"),
+                                bfd_get_section_name(obfd, osections[i]),
+                                bfd_errmsg(bfd_get_error()));
 		      status = 1;
 		      break;
 		    }
-		  gaps[i] = gap_stop - gap_start;
-		  if (max_gap < gap_stop - gap_start)
-		    max_gap = gap_stop - gap_start;
+		  gaps[i] = (gap_stop - gap_start);
+		  if (max_gap < (gap_stop - gap_start))
+		    max_gap = (gap_stop - gap_start);
 		}
 	    }
 	}
@@ -1416,23 +1413,23 @@ copy_object(bfd *ibfd, bfd *obfd)
 	  bfd_vma lma;
 	  bfd_size_type size;
 
-	  lma = bfd_section_lma (obfd, osections[c - 1]);
-	  size = bfd_section_size (obfd, osections[c - 1]);
-	  if (lma + size < pad_to)
+	  lma = bfd_section_lma(obfd, osections[c - 1]);
+	  size = bfd_section_size(obfd, osections[c - 1]);
+	  if ((lma + size) < pad_to)
 	    {
-	      if (! bfd_set_section_size (obfd, osections[c - 1],
-					  pad_to - lma))
+	      if (! bfd_set_section_size(obfd, osections[c - 1],
+					 (pad_to - lma)))
 		{
-		  non_fatal (_("Can't add padding to %s: %s"),
-			     bfd_get_section_name (obfd, osections[c - 1]),
-			     bfd_errmsg (bfd_get_error ()));
+		  non_fatal(_("Cannot add padding to %s: %s"),
+			    bfd_get_section_name(obfd, osections[c - 1]),
+			    bfd_errmsg(bfd_get_error()));
 		  status = 1;
 		}
 	      else
 		{
-		  gaps[c - 1] = pad_to - (lma + size);
-		  if (max_gap < pad_to - (lma + size))
-		    max_gap = pad_to - (lma + size);
+		  gaps[c - 1] = (pad_to - (lma + size));
+		  if (max_gap < (pad_to - (lma + size)))
+		    max_gap = (pad_to - (lma + size));
 		}
 	    }
 	}
@@ -1448,7 +1445,7 @@ copy_object(bfd *ibfd, bfd *obfd)
       return FALSE;
     }
 
-  osympp = isympp = (asymbol **)xmalloc(symsize);
+  osympp = isympp = (asymbol **)xmalloc((size_t)symsize);
   symcount = bfd_canonicalize_symtab(ibfd, isympp);
   if (symcount < 0)
     {
@@ -1491,8 +1488,10 @@ copy_object(bfd *ibfd, bfd *obfd)
 	bfd_map_over_sections(ibfd,
                               mark_symbols_used_in_relocations,
                               isympp);
-      osympp = (asymbol **)xmalloc((symcount + 1) * sizeof(asymbol *));
-      symcount = filter_symbols(ibfd, obfd, osympp, isympp, symcount);
+      osympp = ((asymbol **)
+                xmalloc((size_t)(symcount + 1L) * sizeof(asymbol *)));
+      symcount = (long)filter_symbols(ibfd, obfd, osympp, isympp,
+                                      symcount);
     }
 
   if (convert_debugging && (dhandle != NULL))
@@ -1504,10 +1503,10 @@ copy_object(bfd *ibfd, bfd *obfd)
 	}
     }
 
-  bfd_set_symtab(obfd, osympp, symcount);
+  bfd_set_symtab(obfd, osympp, (unsigned int)symcount);
 
-  /* This has to happen after the symbol table has been set.  */
-  bfd_map_over_sections (ibfd, copy_section, obfd);
+  /* This has to happen after the symbol table has been set: */
+  bfd_map_over_sections(ibfd, copy_section, obfd);
 
   if (add_sections != NULL)
     {
@@ -1515,10 +1514,10 @@ copy_object(bfd *ibfd, bfd *obfd)
 
       for (padd = add_sections; padd != NULL; padd = padd->next)
 	{
-	  if (! bfd_set_section_contents (obfd, padd->section, padd->contents,
-					  0, padd->size))
+	  if (! bfd_set_section_contents(obfd, padd->section, padd->contents,
+					 0, padd->size))
 	    {
-	      bfd_nonfatal (bfd_get_filename (obfd));
+	      bfd_nonfatal(bfd_get_filename(obfd));
 	      return FALSE;
 	    }
 	}
@@ -1540,12 +1539,12 @@ copy_object(bfd *ibfd, bfd *obfd)
       int c, i;
 
       /* Fill in the gaps: */
-      if (max_gap > 8192)
-	max_gap = 8192;
-      buf = (bfd_byte *)xmalloc(max_gap);
-      memset(buf, gap_fill, max_gap);
+      if (max_gap > 8192UL)
+	max_gap = 8192UL;
+      buf = (bfd_byte *)xmalloc((size_t)max_gap);
+      memset(buf, gap_fill, (size_t)max_gap);
 
-      c = bfd_count_sections (obfd);
+      c = (int)bfd_count_sections(obfd);
       for (i = 0; i < c; i++)
 	{
 	  if (gaps[i] != 0)
@@ -1554,26 +1553,27 @@ copy_object(bfd *ibfd, bfd *obfd)
 	      file_ptr off;
 
 	      left = gaps[i];
-	      off = bfd_section_size (obfd, osections[i]) - left;
+	      off = (file_ptr)(bfd_section_size(obfd, osections[i])
+                               - left);
 
-	      while (left > 0)
+	      while (left > 0UL)
 		{
 		  bfd_size_type now;
 
-		  if (left > 8192)
-		    now = 8192;
+		  if (left > 8192UL)
+		    now = 8192UL;
 		  else
 		    now = left;
 
-		  if (! bfd_set_section_contents (obfd, osections[i], buf,
-						  off, now))
+		  if (! bfd_set_section_contents(obfd, osections[i], buf,
+						 off, now))
 		    {
-		      bfd_nonfatal (bfd_get_filename (obfd));
+		      bfd_nonfatal(bfd_get_filename(obfd));
 		      return FALSE;
 		    }
 
 		  left -= now;
-		  off += now;
+		  off += (file_ptr)now;
 		}
 	    }
 	}
@@ -1630,8 +1630,8 @@ copy_archive(bfd *ibfd, bfd *obfd, const char *output_target)
 
   /* Make a temp directory to hold the contents: */
   if (MKDIR(dir, 0700) != 0)
-    fatal(_("cannot mkdir %s for archive copying (error: %s)"),
-          dir, strerror(errno));
+    fatal(_("cannot mkdir %s for archive copying (error: %d, %s)"),
+          dir, errno, strerror(errno));
 
   obfd->has_armap = ibfd->has_armap;
 
@@ -1660,8 +1660,8 @@ copy_archive(bfd *ibfd, bfd *obfd, const char *output_target)
 	{
 	  output_name = make_tempname(output_name);
 	  if (MKDIR(output_name, 0700) != 0)
-	    fatal(_("cannot mkdir %s for archive copying (error: %s)"),
-                  output_name, strerror(errno));
+	    fatal(_("cannot mkdir %s for archive copying (error: %d, %s)"),
+                  output_name, errno, strerror(errno));
 
 	  l =(struct name_list *)xmalloc(sizeof(struct name_list));
 	  l->name = output_name;
@@ -1963,10 +1963,10 @@ setup_section(bfd *ibfd, sec_ptr isection, void *obfdarg)
   const char * name;
   char *prefix = NULL;
 
-  if (is_strip_section (ibfd, isection))
+  if (is_strip_section(ibfd, isection))
     return;
 
-  p = find_section_list (bfd_section_name (ibfd, isection), FALSE);
+  p = find_section_list(bfd_section_name(ibfd, isection), FALSE);
   if (p != NULL)
     p->used = TRUE;
 
@@ -1984,18 +1984,18 @@ setup_section(bfd *ibfd, sec_ptr isection, void *obfdarg)
     {
       char *n;
 
-      n = (char *)xmalloc(strlen(prefix) + strlen(name) + 1);
-      strcpy (n, prefix);
-      strcat (n, name);
+      n = (char *)xmalloc(strlen(prefix) + strlen(name) + 1UL);
+      strcpy(n, prefix);
+      strcat(n, name);
       name = n;
     }
 
   if (p != NULL && p->set_flags)
-    flags = p->flags | (flags & (SEC_HAS_CONTENTS | SEC_RELOC));
+    flags = (p->flags | (flags & (SEC_HAS_CONTENTS | SEC_RELOC)));
   else if (strip_symbols == STRIP_NONDEBUG && (flags & SEC_ALLOC) != 0)
     flags &= ~(SEC_HAS_CONTENTS | SEC_LOAD);
 
-  osection = bfd_make_section_anyway_with_flags (obfd, name, flags);
+  osection = bfd_make_section_anyway_with_flags(obfd, name, flags);
 
   if (osection == NULL)
     {
@@ -2003,44 +2003,45 @@ setup_section(bfd *ibfd, sec_ptr isection, void *obfdarg)
       goto loser;
     }
 
-  if (strip_symbols == STRIP_NONDEBUG
-      && obfd->xvec->flavour == bfd_target_elf_flavour
-      && (flags & SEC_ALLOC) != 0
-      && (p == NULL || !p->set_flags))
-    elf_section_type (osection) = SHT_NOBITS;
+  if ((strip_symbols == STRIP_NONDEBUG)
+      && (obfd->xvec->flavour == bfd_target_elf_flavour)
+      && ((flags & SEC_ALLOC) != 0)
+      && ((p == NULL) || !p->set_flags))
+    elf_section_type(osection) = SHT_NOBITS;
 
-  size = bfd_section_size (ibfd, isection);
+  size = bfd_section_size(ibfd, isection);
   if (copy_byte >= 0)
-    size = (size + interleave - 1) / interleave;
-  if (! bfd_set_section_size (obfd, osection, size))
+    size = ((size + (bfd_size_type)interleave - 1UL)
+            / (bfd_size_type)interleave);
+  if (! bfd_set_section_size(obfd, osection, size))
     {
       err = _("size");
       goto loser;
     }
 
-  vma = bfd_section_vma (ibfd, isection);
-  if (p != NULL && p->change_vma == CHANGE_MODIFY)
+  vma = bfd_section_vma(ibfd, isection);
+  if ((p != NULL) && (p->change_vma == CHANGE_MODIFY))
     vma += p->vma_val;
-  else if (p != NULL && p->change_vma == CHANGE_SET)
+  else if ((p != NULL) && (p->change_vma == CHANGE_SET))
     vma = p->vma_val;
   else
     vma += change_section_address;
 
-  if (! bfd_set_section_vma (obfd, osection, vma))
+  if (! bfd_set_section_vma(obfd, osection, vma))
     {
       err = _("vma");
       goto loser;
     }
 
   lma = isection->lma;
-  if ((p != NULL) && p->change_lma != CHANGE_IGNORE)
+  if ((p != NULL) && (p->change_lma != CHANGE_IGNORE))
     {
       if (p->change_lma == CHANGE_MODIFY)
 	lma += p->lma_val;
       else if (p->change_lma == CHANGE_SET)
 	lma = p->lma_val;
       else
-	abort ();
+	abort();
     }
   else
     lma += change_section_address;
@@ -2049,15 +2050,14 @@ setup_section(bfd *ibfd, sec_ptr isection, void *obfdarg)
 
   /* FIXME: This is probably not enough.  If we change the LMA we
      may have to recompute the header for the file as well.  */
-  if (!bfd_set_section_alignment (obfd,
-				  osection,
-				  bfd_section_alignment (ibfd, isection)))
+  if (!bfd_set_section_alignment(obfd, osection,
+				 bfd_section_alignment(ibfd, isection)))
     {
       err = _("alignment");
       goto loser;
     }
 
-  /* Copy merge entity size.  */
+  /* Copy merge entity size: */
   osection->entsize = isection->entsize;
 
   /* This used to be mangle_section; we do here to avoid using
@@ -2068,25 +2068,25 @@ setup_section(bfd *ibfd, sec_ptr isection, void *obfdarg)
 
   /* Allow the BFD backend to copy any private data it understands
      from the input section to the output section.  */
-  if (bfd_get_flavour (ibfd) == bfd_target_elf_flavour
-      && strip_symbols == STRIP_NONDEBUG)
+  if ((bfd_get_flavour(ibfd) == bfd_target_elf_flavour)
+      && (strip_symbols == STRIP_NONDEBUG))
     /* Do not copy the private data when creating an ELF format
        debug info file.  We do not want the program headers.  */
     ;
-  else if (!bfd_copy_private_section_data (ibfd, isection, obfd, osection))
+  else if (!bfd_copy_private_section_data(ibfd, isection, obfd, osection))
     {
       err = _("private data");
       goto loser;
     }
 
-  /* All went well.  */
+  /* All went well: */
   return;
 
 loser:
-  non_fatal (_("%s: section `%s': error in %s: %s"),
-	     bfd_get_filename (ibfd),
-	     bfd_section_name (ibfd, isection),
-	     err, bfd_errmsg (bfd_get_error ()));
+  non_fatal(_("%s: section `%s': error in %s: %s"),
+	    bfd_get_filename(ibfd),
+	    bfd_section_name(ibfd, isection),
+	    err, bfd_errmsg(bfd_get_error()));
   status = 1;
 }
 
@@ -2120,35 +2120,35 @@ copy_section(bfd *ibfd, sec_ptr isection, void *obfdarg)
   osection = isection->output_section;
   size = bfd_get_section_size(isection);
 
-  if ((size == 0) || (osection == 0))
+  if ((size == 0UL) || (osection == 0))
     return;
 
   p = find_section_list(bfd_get_section_name(ibfd, isection), FALSE);
 
   /* Core files do not need to be relocated: */
   if (bfd_get_format(obfd) == bfd_core)
-    relsize = 0;
+    relsize = 0L;
   else
     {
       relsize = bfd_get_reloc_upper_bound(ibfd, isection);
 
-      if (relsize < 0)
+      if (relsize < 0L)
 	{
 	  /* Do not complain if the target does not support relocations: */
-	  if ((relsize == -1) && (bfd_get_error() == bfd_error_invalid_operation))
-	    relsize = 0;
+	  if ((relsize == -1L) && (bfd_get_error() == bfd_error_invalid_operation))
+	    relsize = 0L;
 	  else
 	    RETURN_NONFATAL(bfd_get_filename(ibfd));
 	}
     }
 
-  if (relsize == 0)
+  if (relsize == 0L)
     bfd_set_reloc(obfd, osection, NULL, 0);
   else
     {
-      relpp = (arelent **)xmalloc(relsize);
+      relpp = (arelent **)xmalloc((size_t)relsize);
       relcount = bfd_canonicalize_reloc(ibfd, isection, relpp, isympp);
-      if (relcount < 0)
+      if (relcount < 0L)
 	RETURN_NONFATAL(bfd_get_filename(ibfd));
 
       if (strip_symbols == STRIP_ALL)
@@ -2156,31 +2156,32 @@ copy_section(bfd *ibfd, sec_ptr isection, void *obfdarg)
 	  /* Remove relocations which are not in
 	     keep_strip_specific_list.  */
 	  arelent **temp_relpp;
-	  long temp_relcount = 0;
+	  long temp_relcount = 0L;
 	  long i;
 
-	  temp_relpp = (arelent **)xmalloc(relsize);
-	  for (i = 0; i < relcount; i++)
-	    if (is_specified_symbol (bfd_asymbol_name (*relpp[i]->sym_ptr_ptr),
-				     keep_specific_list))
-	      temp_relpp [temp_relcount++] = relpp [i];
+	  temp_relpp = (arelent **)xmalloc((size_t)relsize);
+	  for (i = 0L; i < relcount; i++)
+	    if (is_specified_symbol(bfd_asymbol_name(*relpp[i]->sym_ptr_ptr),
+				    keep_specific_list))
+	      temp_relpp[temp_relcount++] = relpp[i];
 	  relcount = temp_relcount;
-	  free (relpp);
+	  free(relpp);
 	  relpp = temp_relpp;
 	}
 
-      bfd_set_reloc (obfd, osection, relcount == 0 ? NULL : relpp, relcount);
-      if (relcount == 0)
-	free (relpp);
+      bfd_set_reloc(obfd, osection, ((relcount == 0L) ? NULL : relpp),
+                    (unsigned int)relcount);
+      if (relcount == 0L)
+	free(relpp);
     }
 
-  if (bfd_get_section_flags (ibfd, isection) & SEC_HAS_CONTENTS
-      && bfd_get_section_flags (obfd, osection) & SEC_HAS_CONTENTS)
+  if ((bfd_get_section_flags(ibfd, isection) & SEC_HAS_CONTENTS)
+      && (bfd_get_section_flags(obfd, osection) & SEC_HAS_CONTENTS))
     {
-      void *memhunk = xmalloc (size);
+      void *memhunk = xmalloc((size_t)size);
 
-      if (!bfd_get_section_contents (ibfd, isection, memhunk, 0, size))
-	RETURN_NONFATAL (bfd_get_filename (ibfd));
+      if (!bfd_get_section_contents(ibfd, isection, memhunk, 0, size))
+	RETURN_NONFATAL(bfd_get_filename(ibfd));
 
       if (copy_byte >= 0)
 	{
@@ -2192,29 +2193,30 @@ copy_section(bfd *ibfd, sec_ptr isection, void *obfdarg)
 	  for (; from < end; from += interleave)
 	    *to++ = *from;
 
-	  size = ((size + interleave - 1 - copy_byte) / interleave);
-	  osection->lma /= interleave;
+	  size = ((size + (bfd_size_type)interleave - 1UL - (bfd_size_type)copy_byte)
+                  / (bfd_size_type)interleave);
+	  osection->lma /= (bfd_vma)interleave;
 	}
 
-      if (!bfd_set_section_contents (obfd, osection, memhunk, 0, size))
-	RETURN_NONFATAL (bfd_get_filename (obfd));
+      if (!bfd_set_section_contents(obfd, osection, memhunk, 0, size))
+	RETURN_NONFATAL(bfd_get_filename(obfd));
 
-      free (memhunk);
+      free(memhunk);
     }
   else if (p != NULL && p->set_flags && (p->flags & SEC_HAS_CONTENTS) != 0)
     {
-      void *memhunk = xmalloc (size);
+      void *memhunk = xmalloc((size_t)size);
 
-      /* We don't permit the user to turn off the SEC_HAS_CONTENTS
+      /* We do NOT permit the user to turn off the SEC_HAS_CONTENTS
 	 flag--they can just remove the section entirely and add it
 	 back again.  However, we do permit them to turn on the
 	 SEC_HAS_CONTENTS flag, and take it to mean that the section
 	 contents should be zeroed out.  */
 
-      memset (memhunk, 0, size);
-      if (! bfd_set_section_contents (obfd, osection, memhunk, 0, size))
-	RETURN_NONFATAL (bfd_get_filename (obfd));
-      free (memhunk);
+      memset(memhunk, 0, (size_t)size);
+      if (! bfd_set_section_contents(obfd, osection, memhunk, 0, size))
+	RETURN_NONFATAL(bfd_get_filename(obfd));
+      free(memhunk);
     }
 }
 
@@ -2262,10 +2264,10 @@ compare_section_lma (const void *arg1, const void *arg2)
   else if ((*sec1)->lma < (*sec2)->lma)
     return -1;
 
-  /* Sort sections with the same LMA by size.  */
-  if (bfd_get_section_size (*sec1) > bfd_get_section_size (*sec2))
+  /* Sort sections with the same LMA by size: */
+  if (bfd_get_section_size(*sec1) > bfd_get_section_size(*sec2))
     return 1;
-  else if (bfd_get_section_size (*sec1) < bfd_get_section_size (*sec2))
+  else if (bfd_get_section_size(*sec1) < bfd_get_section_size(*sec2))
     return -1;
 
   return 0;
@@ -2288,21 +2290,21 @@ mark_symbols_used_in_relocations(bfd *ibfd, sec_ptr isection,
   if (isection->output_section == NULL)
     return;
 
-  relsize = bfd_get_reloc_upper_bound (ibfd, isection);
-  if (relsize < 0)
+  relsize = bfd_get_reloc_upper_bound(ibfd, isection);
+  if (relsize < 0L)
     {
       /* Do not complain if the target does not support relocations: */
-      if ((relsize == -1) && (bfd_get_error() == bfd_error_invalid_operation))
+      if ((relsize == -1L) && (bfd_get_error() == bfd_error_invalid_operation))
 	return;
       bfd_fatal(bfd_get_filename(ibfd));
     }
 
-  if (relsize == 0)
+  if (relsize == 0L)
     return;
 
-  relpp = (arelent **)xmalloc(relsize);
+  relpp = (arelent **)xmalloc((size_t)relsize);
   relcount = bfd_canonicalize_reloc(ibfd, isection, relpp, symbols);
-  if (relcount < 0)
+  if (relcount < 0L)
     bfd_fatal(bfd_get_filename(ibfd));
 
   /* Examine each symbol used in a relocation.  If it's not one of the
@@ -2316,15 +2318,14 @@ mark_symbols_used_in_relocations(bfd *ibfd, sec_ptr isection,
     }
 
   if (relpp != NULL)
-    free (relpp);
+    free(relpp);
 }
 
-/* Write out debugging information.  */
-
+/* Write out debugging information: */
 static bfd_boolean
-write_debugging_info (bfd *obfd, void *dhandle,
-		      long *symcountp ATTRIBUTE_UNUSED,
-		      asymbol ***symppp ATTRIBUTE_UNUSED)
+write_debugging_info(bfd *obfd, void *dhandle,
+		     long *symcountp ATTRIBUTE_UNUSED,
+		     asymbol ***symppp ATTRIBUTE_UNUSED)
 {
   if (bfd_get_flavour (obfd) == bfd_target_ieee_flavour)
     return write_ieee_debugging_info (obfd, dhandle);
@@ -2678,38 +2679,38 @@ copy_main (int argc, char *argv[])
 	    const char *s;
 	    off_t size;
 	    struct section_add *pa;
-	    int len;
+	    size_t len;
 	    char *name;
 	    FILE *f;
 
-	    s = strchr (optarg, '=');
+	    s = strchr(optarg, '=');
 
 	    if (s == NULL)
 	      fatal(_("bad format for %s"), "--add-section");
 
 	    size = get_file_size(s + 1);
-	    if (size < 1)
+	    if (size < 1L)
 	      break;
 
 	    pa = (struct section_add *)xmalloc(sizeof(struct section_add));
 
-	    len = (s - optarg);
-	    name = (char *)xmalloc(len + 1);
+	    len = (size_t)(s - optarg);
+	    name = (char *)xmalloc(len + 1UL);
 	    strncpy(name, optarg, len);
 	    name[len] = '\0';
 	    pa->name = name;
 
 	    pa->filename = (s + 1);
-	    pa->size = size;
-	    pa->contents = (bfd_byte *)xmalloc(size);
+	    pa->size = (size_t)size;
+	    pa->contents = (bfd_byte *)xmalloc((size_t)size);
 
 	    f = fopen(pa->filename, FOPEN_RB);
 
 	    if (f == NULL)
-	      fatal(_("cannot open: %s: %s"),
-                    pa->filename, strerror(errno));
+	      fatal(_("cannot open: %s: %s (error number '%d')"),
+                    pa->filename, strerror(errno), errno);
 
-	    if ((fread(pa->contents, 1, pa->size, f) == 0)
+	    if ((fread(pa->contents, 1UL, pa->size, f) == 0)
 		|| ferror(f))
 	      fatal(_("%s: fread failed"), pa->filename);
 
@@ -2729,7 +2730,7 @@ copy_main (int argc, char *argv[])
 	case OPTION_CHANGE_SECTION_VMA:
 	  {
 	    const char *s;
-	    int len;
+	    size_t len;
 	    char *name;
 	    char *option = NULL;
 	    bfd_vma val;
@@ -2760,14 +2761,14 @@ copy_main (int argc, char *argv[])
 		  }
 	      }
 
-	    len = (s - optarg);
-	    name = (char *)xmalloc(len + 1);
+	    len = (size_t)(s - optarg);
+	    name = (char *)xmalloc(len + 1UL);
 	    strncpy(name, optarg, len);
 	    name[len] = '\0';
 
-	    p = find_section_list (name, TRUE);
+	    p = find_section_list(name, TRUE);
 
-	    val = parse_vma (s + 1, option);
+	    val = parse_vma(s + 1UL, option);
 
 	    switch (*s)
 	      {
@@ -2797,7 +2798,7 @@ copy_main (int argc, char *argv[])
 	  break;
 
 	case OPTION_CHANGE_ADDRESSES:
-	  change_section_address = parse_vma (optarg, "--change-addresses");
+	  change_section_address = parse_vma(optarg, "--change-addresses");
 	  change_start = change_section_address;
 	  break;
 
@@ -2847,9 +2848,8 @@ copy_main (int argc, char *argv[])
 
 	case OPTION_REDEFINE_SYM:
 	  {
-	    /* Push this redefinition onto redefine_symbol_list.  */
-
-	    int len;
+	    /* Push this redefinition onto redefine_symbol_list: */
+	    size_t len;
 	    const char *s;
 	    const char *nextarg;
 	    char *source, *target;
@@ -2858,14 +2858,14 @@ copy_main (int argc, char *argv[])
 	    if (s == NULL)
 	      fatal(_("bad format for %s"), "--redefine-sym");
 
-	    len = (s - optarg);
-	    source = (char *)xmalloc(len + 1);
+	    len = (size_t)(s - optarg);
+	    source = (char *)xmalloc(len + 1UL);
 	    strncpy(source, optarg, len);
 	    source[len] = '\0';
 
 	    nextarg = (s + 1);
 	    len = strlen(nextarg);
-	    target = (char *)xmalloc(len + 1);
+	    target = (char *)xmalloc(len + 1UL);
 	    strcpy(target, nextarg);
 
 	    redefine_list_append("--redefine-sym", source, target);
@@ -2882,15 +2882,15 @@ copy_main (int argc, char *argv[])
 	case OPTION_SET_SECTION_FLAGS:
 	  {
 	    const char *s;
-	    int len;
+	    size_t len;
 	    char *name;
 
 	    s = strchr(optarg, '=');
 	    if (s == NULL)
 	      fatal(_("bad format for %s"), "--set-section-flags");
 
-	    len = (s - optarg);
-	    name = (char *)xmalloc(len + 1);
+	    len = (size_t)(s - optarg);
+	    name = (char *)xmalloc(len + 1UL);
 	    strncpy(name, optarg, len);
 	    name[len] = '\0';
 
@@ -2913,11 +2913,11 @@ copy_main (int argc, char *argv[])
 	    if (eq == NULL)
 	      fatal(_("bad format for %s"), "--rename-section");
 
-	    len = eq - optarg;
+	    len = (unsigned int)(eq - optarg);
 	    if (len == 0)
 	      fatal(_("bad format for %s"), "--rename-section");
 
-	    old_name = (char *)xmalloc(len + 1);
+	    old_name = (char *)xmalloc(len + 1U);
 	    strncpy(old_name, optarg, len);
 	    old_name[len] = 0;
 
@@ -2926,32 +2926,32 @@ copy_main (int argc, char *argv[])
 	    if (fl)
 	      {
 		flags = parse_flags(fl + 1);
-		len = (fl - eq);
+		len = (unsigned int)(fl - eq);
 	      }
 	    else
 	      {
-		flags = -1;
+		flags = (flagword)-1;
 		len = strlen(eq);
 	      }
 
 	    if (len == 0)
 	      fatal(_("bad format for %s"), "--rename-section");
 
-	    new_name = (char *)xmalloc(len + 1);
+	    new_name = (char *)xmalloc(len + 1U);
 	    strncpy(new_name, eq, len);
 	    new_name[len] = 0;
 
-	    add_section_rename (old_name, new_name, flags);
+	    add_section_rename(old_name, new_name, flags);
 	  }
 	  break;
 
 	case OPTION_SET_START:
-	  set_start = parse_vma (optarg, "--set-start");
+	  set_start = parse_vma(optarg, "--set-start");
 	  set_start_set = TRUE;
 	  break;
 
 	case OPTION_SREC_LEN:
-	  Chunk = parse_vma (optarg, "--srec-len");
+	  Chunk = (unsigned int)parse_vma(optarg, "--srec-len");
 	  break;
 
 	case OPTION_SREC_FORCES3:
@@ -2959,37 +2959,37 @@ copy_main (int argc, char *argv[])
 	  break;
 
 	case OPTION_STRIP_SYMBOLS:
-	  add_specific_symbols (optarg, &strip_specific_list);
+	  add_specific_symbols(optarg, &strip_specific_list);
 	  break;
 
 	case OPTION_STRIP_UNNEEDED_SYMBOLS:
-	  add_specific_symbols (optarg, &strip_unneeded_list);
+	  add_specific_symbols(optarg, &strip_unneeded_list);
 	  break;
 
 	case OPTION_KEEP_SYMBOLS:
-	  add_specific_symbols (optarg, &keep_specific_list);
+	  add_specific_symbols(optarg, &keep_specific_list);
 	  break;
 
 	case OPTION_LOCALIZE_SYMBOLS:
-	  add_specific_symbols (optarg, &localize_specific_list);
+	  add_specific_symbols(optarg, &localize_specific_list);
 	  break;
 
 	case OPTION_GLOBALIZE_SYMBOLS:
-	  add_specific_symbols (optarg, &globalize_specific_list);
+	  add_specific_symbols(optarg, &globalize_specific_list);
 	  break;
 
 	case OPTION_KEEPGLOBAL_SYMBOLS:
-	  add_specific_symbols (optarg, &keepglobal_specific_list);
+	  add_specific_symbols(optarg, &keepglobal_specific_list);
 	  break;
 
 	case OPTION_WEAKEN_SYMBOLS:
-	  add_specific_symbols (optarg, &weaken_specific_list);
+	  add_specific_symbols(optarg, &weaken_specific_list);
 	  break;
 
 	case OPTION_ALT_MACH_CODE:
-	  use_alt_mach_code = atoi (optarg);
+	  use_alt_mach_code = atoi(optarg);
 	  if (use_alt_mach_code <= 0)
-	    fatal (_("alternate machine code index must be positive"));
+	    fatal(_("alternate machine code index must be positive"));
 	  break;
 
 	case OPTION_PREFIX_SYMBOLS:
@@ -3025,39 +3025,39 @@ copy_main (int argc, char *argv[])
 	  break;
 
 	case 0:
-	  /* We've been given a long option.  */
+	  /* We have been given a long option: */
 	  break;
 
 	case 'H':
 	case 'h':
-	  copy_usage (stdout, 0);
+	  copy_usage(stdout, 0);
 
 	default:
-	  copy_usage (stderr, 1);
+	  copy_usage(stderr, 1);
 	}
     }
 
   if (formats_info)
     {
-      display_info ();
+      display_info();
       return 0;
     }
 
   if (show_version)
-    print_version ("objcopy");
+    print_version("objcopy");
 
   if (copy_byte >= interleave)
-    fatal (_("byte number must be less than interleave"));
+    fatal(_("byte number must be less than interleave"));
 
-  if (optind == argc || optind + 2 < argc)
-    copy_usage (stderr, 1);
+  if ((optind == argc) || ((optind + 2) < argc))
+    copy_usage(stderr, 1);
 
   input_filename = argv[optind];
-  if (optind + 1 < argc)
+  if ((optind + 1) < argc)
     output_filename = argv[optind + 1];
 
-  /* Default is to strip no symbols.  */
-  if (strip_symbols == STRIP_UNDEF && discard_locals == LOCALS_UNDEF)
+  /* Default is to strip no symbols: */
+  if ((strip_symbols == STRIP_UNDEF) && (discard_locals == LOCALS_UNDEF))
     strip_symbols = STRIP_NONE;
 
   if (output_target == NULL)
@@ -3065,56 +3065,56 @@ copy_main (int argc, char *argv[])
 
   if (binary_architecture != NULL)
     {
-      if (input_target && strcmp (input_target, "binary") == 0)
+      if (input_target && (strcmp(input_target, "binary") == 0))
 	{
-	  const bfd_arch_info_type * temp_arch_info;
+	  const bfd_arch_info_type *temp_arch_info;
 
-	  temp_arch_info = bfd_scan_arch (binary_architecture);
+	  temp_arch_info = bfd_scan_arch(binary_architecture);
 
 	  if (temp_arch_info != NULL)
 	    {
 	      bfd_external_binary_architecture = temp_arch_info->arch;
-	      bfd_external_machine             = temp_arch_info->mach;
+	      bfd_external_machine = temp_arch_info->mach;
 	    }
 	  else
-	    fatal (_("architecture %s unknown"), binary_architecture);
+	    fatal(_("architecture %s unknown"), binary_architecture);
 	}
       else
 	{
-	  non_fatal (_("Warning: input target 'binary' required for binary architecture parameter."));
-	  non_fatal (_(" Argument %s ignored"), binary_architecture);
+	  non_fatal(_("Warning: input target 'binary' required for binary architecture parameter."));
+	  non_fatal(_(" Argument %s ignored"), binary_architecture);
 	}
     }
 
   if (preserve_dates)
-    if (stat (input_filename, & statbuf) < 0)
-      fatal (_("warning: could not locate '%s'.  System error message: %s"),
-	     input_filename, strerror (errno));
+    if (stat(input_filename, & statbuf) < 0)
+      fatal(_("warning: could not locate '%s'.  System error message: %s"),
+	    input_filename, strerror(errno));
 
   /* If there is no destination file, or the source and destination files
      are the same, then create a temp and rename the result into the input.  */
-  if (output_filename == NULL || strcmp (input_filename, output_filename) == 0)
+  if ((output_filename == NULL) || (strcmp(input_filename, output_filename) == 0))
     {
-      char *tmpname = make_tempname (input_filename);
+      char *tmpname = make_tempname(input_filename);
 
-      copy_file (input_filename, tmpname, input_target, output_target);
+      copy_file(input_filename, tmpname, input_target, output_target);
       if (status == 0)
 	{
 	  if (preserve_dates)
-	    set_times (tmpname, &statbuf);
-	  smart_rename (tmpname, input_filename, preserve_dates);
+	    set_times(tmpname, &statbuf);
+	  smart_rename(tmpname, input_filename, preserve_dates);
 	}
       else
-	unlink (tmpname);
+	unlink(tmpname);
     }
   else
     {
-      copy_file (input_filename, output_filename, input_target, output_target);
+      copy_file(input_filename, output_filename, input_target, output_target);
 
-      if (status == 0 && preserve_dates)
-	set_times (output_filename, &statbuf);
+      if ((status == 0) && preserve_dates)
+	set_times(output_filename, &statbuf);
       else if (status != 0)
-	unlink_if_ordinary (output_filename);
+	unlink_if_ordinary(output_filename);
     }
 
   if (change_warn)
@@ -3127,28 +3127,28 @@ copy_main (int argc, char *argv[])
 		{
 		  char buff [20];
 
-		  sprintf_vma (buff, p->vma_val);
+		  sprintf_vma(buff, p->vma_val);
 
 		  /* xgettext:c-format */
-		  non_fatal (_("%s %s%c0x%s never used"),
-			     "--change-section-vma",
-			     p->name,
-			     p->change_vma == CHANGE_SET ? '=' : '+',
-			     buff);
+		  non_fatal(_("%s %s%c0x%s never used"),
+			    "--change-section-vma",
+			    p->name,
+			    ((p->change_vma == CHANGE_SET) ? '=' : '+'),
+			    buff);
 		}
 
 	      if (p->change_lma != CHANGE_IGNORE)
 		{
 		  char buff [20];
 
-		  sprintf_vma (buff, p->lma_val);
+		  sprintf_vma(buff, p->lma_val);
 
 		  /* xgettext:c-format */
-		  non_fatal (_("%s %s%c0x%s never used"),
-			     "--change-section-lma",
-			     p->name,
-			     p->change_lma == CHANGE_SET ? '=' : '+',
-			     buff);
+		  non_fatal(_("%s %s%c0x%s never used"),
+			    "--change-section-lma",
+			    p->name,
+			    ((p->change_lma == CHANGE_SET) ? '=' : '+'),
+			    buff);
 		}
 	    }
 	}
@@ -3158,48 +3158,50 @@ copy_main (int argc, char *argv[])
 }
 
 int
-main (int argc, char *argv[])
+main(int argc, char *argv[])
 {
-#if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES)
-  setlocale (LC_MESSAGES, "");
-#endif
-#if defined (HAVE_SETLOCALE)
-  setlocale (LC_CTYPE, "");
-#endif
-  bindtextdomain (PACKAGE, LOCALEDIR);
-  textdomain (PACKAGE);
+#if defined(HAVE_SETLOCALE) && defined(HAVE_LC_MESSAGES)
+  setlocale(LC_MESSAGES, "");
+#endif /* HAVE_SETLOCALE && HAVE_LC_MESSAGES */
+#if defined(HAVE_SETLOCALE)
+  setlocale(LC_CTYPE, "");
+#endif /* HAVE_SETLOCALE */
+  bindtextdomain(PACKAGE, LOCALEDIR);
+  textdomain(PACKAGE);
 
   program_name = argv[0];
-  xmalloc_set_program_name (program_name);
+  xmalloc_set_program_name(program_name);
 
-  START_PROGRESS (program_name, 0);
+  START_PROGRESS(program_name, 0);
 
   strip_symbols = STRIP_UNDEF;
   discard_locals = LOCALS_UNDEF;
 
-  bfd_init ();
-  set_default_bfd_target ();
+  bfd_init();
+  set_default_bfd_target();
 
   if (is_strip < 0)
     {
-      int i = strlen (program_name);
-#ifdef HAVE_DOS_BASED_FILE_SYSTEM
-      /* Drop the .exe suffix, if any.  */
-      if (i > 4 && FILENAME_CMP (program_name + i - 4, ".exe") == 0)
+      size_t i = strlen(program_name);
+#if defined(HAVE_DOS_BASED_FILE_SYSTEM) || defined(HAVE_EXEEXT)
+      /* Drop the .exe suffix, if any: */
+      if ((i > 4U) && (FILENAME_CMP((program_name + i - 4U), ".exe") == 0))
 	{
-	  i -= 4;
+	  i -= 4UL;
 	  program_name[i] = '\0';
 	}
-#endif
-      is_strip = (i >= 5 && FILENAME_CMP (program_name + i - 5, "strip") == 0);
+#endif /* HAVE_DOS_BASED_FILE_SYSTEM || HAVE_EXEEXT */
+      is_strip = ((i >= 5UL) && FILENAME_CMP((program_name + i - 5UL), "strip") == 0);
     }
 
   if (is_strip)
-    strip_main (argc, argv);
+    strip_main(argc, argv);
   else
-    copy_main (argc, argv);
+    copy_main(argc, argv);
 
-  END_PROGRESS (program_name);
+  END_PROGRESS(program_name);
 
   return status;
 }
+
+/* EOF */

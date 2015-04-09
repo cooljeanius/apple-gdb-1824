@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-05 13:29-0500\n"
+"POT-Creation-Date: 2015-04-09 13:50-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,7 +49,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: addr2line.c:92 ar.c:370 coffdump.c:523 elfedit.c:651 nlmconv.c:1114
+#: addr2line.c:92 ar.c:370 coffdump.c:523 elfedit.c:644 nlmconv.c:1114
 #: objcopy.c:487 objcopy.c:522 readelf.c:2862 size.c:101 srconv.c:1737
 #: strings.c:768 sysdump.c:649 windmc.c:233 windres.c:671
 #, c-format
@@ -61,7 +61,7 @@ msgstr ""
 msgid "%s: can not get addresses from archive"
 msgstr ""
 
-#: addr2line.c:324 nm.c:1519 objdump.c:2859
+#: addr2line.c:324 nm.c:1518 objdump.c:2859
 #, c-format
 msgid "unknown demangling style `%s'"
 msgstr ""
@@ -2518,253 +2518,259 @@ msgstr ""
 msgid "Unrecognized debug option '%s'\n"
 msgstr ""
 
-#: elfcomm.c:42 readelf.c:354
+#: elfcomm.c:43 readelf.c:354
 #, c-format
 msgid "%s: Error: "
 msgstr ""
 
-#: elfcomm.c:56 readelf.c:365
+#: elfcomm.c:58 readelf.c:365
 #, c-format
 msgid "%s: Warning: "
 msgstr ""
 
-#: elfcomm.c:88 elfcomm.c:123 elfcomm.c:224 elfcomm.c:330 readelf.c:483
-#: readelf.c:531 readelf.c:734 readelf.c:766
+#: elfcomm.c:90 elfcomm.c:125 elfcomm.c:226 elfcomm.c:333 elfcomm.c:363
+#: readelf.c:483 readelf.c:531 readelf.c:734 readelf.c:766
 #, c-format
 msgid "Unhandled data length: %d\n"
 msgstr ""
 
-#: elfcomm.c:405 elfcomm.c:419 elfcomm.c:833 readelf.c:3386 readelf.c:3686
+#: elfcomm.c:409 elfcomm.c:423 elfcomm.c:838 readelf.c:3386 readelf.c:3686
 #: readelf.c:3729 readelf.c:3791 readelf.c:3858 readelf.c:4425 readelf.c:4450
 #: readelf.c:5740 readelf.c:5788 readelf.c:5990 readelf.c:6976 readelf.c:6990
 #: readelf.c:12139 readelf.c:12567 readelf.c:12635
 msgid "Out of memory\n"
 msgstr ""
 
-#: elfcomm.c:456 readelf.c:12542
+#: elfcomm.c:460 readelf.c:12542
 #, c-format
 msgid "%s: failed to skip archive symbol table\n"
 msgstr ""
 
-#: elfcomm.c:475
+#: elfcomm.c:479
 #, c-format
 msgid "%s: the archive index is empty\n"
 msgstr ""
 
-#: elfcomm.c:483 elfcomm.c:510
+#: elfcomm.c:487 elfcomm.c:516
 #, c-format
 msgid "%s: failed to read archive index\n"
 msgstr ""
 
-#: elfcomm.c:492
+#: elfcomm.c:497
 #, c-format
 msgid ""
 "%s: the archive index is supposed to have %ld entries of %d bytes, but the "
 "size is only %ld\n"
 msgstr ""
 
-#: elfcomm.c:502
+#: elfcomm.c:507
 msgid "Out of memory whilst trying to read archive symbol index\n"
 msgstr ""
 
-#: elfcomm.c:522
+#: elfcomm.c:529
 msgid "Out of memory whilst trying to convert the archive symbol index\n"
 msgstr ""
 
-#: elfcomm.c:535
+#: elfcomm.c:542
 #, c-format
 msgid "%s: the archive has an index but no symbols\n"
 msgstr ""
 
-#: elfcomm.c:543
+#: elfcomm.c:550
 msgid "Out of memory whilst trying to read archive index symbol table\n"
 msgstr ""
 
-#: elfcomm.c:551
+#: elfcomm.c:558
 #, c-format
 msgid "%s: failed to read archive index symbol table\n"
 msgstr ""
 
-#: elfcomm.c:561
+#: elfcomm.c:568
 #, c-format
 msgid "%s: failed to read archive header following archive index\n"
 msgstr ""
 
-#: elfcomm.c:594
+#: elfcomm.c:600
 #, c-format
 msgid "%s: failed to seek to first archive header\n"
 msgstr ""
 
-#: elfcomm.c:603 elfcomm.c:791 elfedit.c:339 readelf.c:12531 readelf.c:12553
+#: elfcomm.c:609 elfcomm.c:796 elfedit.c:334 readelf.c:12531 readelf.c:12553
 #: readelf.c:12589 readelf.c:12669
 #, c-format
 msgid "%s: failed to read archive header\n"
 msgstr ""
 
-#: elfcomm.c:620
+#: elfcomm.c:626
 #, c-format
 msgid "%s has no archive index\n"
 msgstr ""
 
-#: elfcomm.c:631
+#: elfcomm.c:637
 msgid "Out of memory reading long symbol names in archive\n"
 msgstr ""
 
-#: elfcomm.c:639
+#: elfcomm.c:645
 #, c-format
 msgid "%s: failed to read long symbol name string table\n"
 msgstr ""
 
-#: elfcomm.c:713
+#: elfcomm.c:717
 msgid "Archive member uses long names, but no longname table found\n"
 msgstr ""
 
-#: elfcomm.c:785
+#: elfcomm.c:790
 #, c-format
 msgid "%s: failed to seek to next file name\n"
 msgstr ""
 
-#: elfcomm.c:796 elfedit.c:346
+#: elfcomm.c:801 elfedit.c:341
 #, c-format
 msgid "%s: did not find a valid archive header\n"
 msgstr ""
 
-#: elfcomm.c:815
+#: elfcomm.c:820
 msgid "<corrupt>"
 msgstr ""
 
-#: elfedit.c:71
+#: elfedit.c:70
 #, c-format
 msgid "%s: Not an ELF file - wrong magic bytes at the start\n"
 msgstr ""
 
-#: elfedit.c:79
+#: elfedit.c:77
 #, c-format
 msgid "%s: Unsupported EI_VERSION: %d is not %d\n"
 msgstr ""
 
-#: elfedit.c:96
+#: elfedit.c:93
 #, c-format
 msgid "%s: Unmatched EI_CLASS: %d is not %d\n"
 msgstr ""
 
-#: elfedit.c:107
+#: elfedit.c:103
 #, c-format
 msgid "%s: Unmatched e_machine: %d is not %d\n"
 msgstr ""
 
-#: elfedit.c:118
+#: elfedit.c:113
 #, c-format
 msgid "%s: Unmatched e_type: %d is not %d\n"
 msgstr ""
 
-#: elfedit.c:129
+#: elfedit.c:123
 #, c-format
 msgid "%s: Unmatched EI_OSABI: %d is not %d\n"
 msgstr ""
 
-#: elfedit.c:162
+#. We should never get here:
+#: elfedit.c:133
+#, c-format
+msgid "%s: Unhandled elf class: %d\n"
+msgstr ""
+
+#: elfedit.c:157
 #, c-format
 msgid "%s: Failed to update ELF header: %s\n"
 msgstr ""
 
-#: elfedit.c:195
+#: elfedit.c:190
 #, c-format
 msgid "Unsupported EI_CLASS: %d\n"
 msgstr ""
 
-#: elfedit.c:228
+#: elfedit.c:223
 msgid ""
 "This executable has been built without support for a\n"
 "64 bit data type and so it cannot process 64 bit ELF files.\n"
 msgstr ""
 
-#: elfedit.c:269
+#: elfedit.c:264
 #, c-format
 msgid "%s: Failed to read ELF header\n"
 msgstr ""
 
-#: elfedit.c:276
+#: elfedit.c:271
 #, c-format
 msgid "%s: Failed to seek to ELF header\n"
 msgstr ""
 
-#: elfedit.c:330 readelf.c:12656
+#: elfedit.c:325 readelf.c:12656
 #, c-format
 msgid "%s: failed to seek to next archive header\n"
 msgstr ""
 
-#: elfedit.c:361 elfedit.c:370 readelf.c:12627
+#: elfedit.c:356 elfedit.c:365 readelf.c:12627
 #, c-format
 msgid "%s: bad archive file name\n"
 msgstr ""
 
-#: elfedit.c:390 elfedit.c:482
+#: elfedit.c:385 elfedit.c:478
 #, c-format
 msgid "Input file '%s' is not readable\n"
 msgstr ""
 
-#: elfedit.c:414
+#: elfedit.c:410
 #, c-format
 msgid "%s: failed to seek to archive member\n"
 msgstr ""
 
-#: elfedit.c:453 readelf.c:12691
+#: elfedit.c:449 readelf.c:12691
 #, c-format
 msgid "'%s': No such file\n"
 msgstr ""
 
-#: elfedit.c:455 readelf.c:12693
+#: elfedit.c:451 readelf.c:12693
 #, c-format
 msgid "Could not locate '%s'.  System error message: %s\n"
 msgstr ""
 
-#: elfedit.c:462 readelf.c:12700
+#: elfedit.c:458 readelf.c:12700
 #, c-format
 msgid "'%s' is not an ordinary file\n"
 msgstr ""
 
-#: elfedit.c:488
+#: elfedit.c:484
 #, c-format
 msgid "%s: Failed to read file's magic number\n"
 msgstr ""
 
-#: elfedit.c:546
+#: elfedit.c:542
 #, c-format
 msgid "Unknown OSABI: %s\n"
 msgstr ""
 
-#: elfedit.c:567
+#: elfedit.c:562
 #, c-format
 msgid "Unknown machine type: %s\n"
 msgstr ""
 
-#: elfedit.c:586
+#: elfedit.c:580
 #, c-format
 msgid "Unknown machine type: %d\n"
 msgstr ""
 
-#: elfedit.c:605
+#: elfedit.c:598
 #, c-format
 msgid "Unknown type: %s\n"
 msgstr ""
 
-#: elfedit.c:635
+#: elfedit.c:628
 #, c-format
 msgid "Usage: %s <option(s)> elffile(s)\n"
 msgstr ""
 
-#: elfedit.c:637
+#: elfedit.c:630
 #, c-format
 msgid " Update the ELF header of ELF files\n"
 msgstr ""
 
-#: elfedit.c:638 objcopy.c:403 objcopy.c:497 strings.c:744
+#: elfedit.c:631 objcopy.c:403 objcopy.c:497 strings.c:744
 #, c-format
 msgid " The options are:\n"
 msgstr ""
 
-#: elfedit.c:639
+#: elfedit.c:632
 #, c-format
 msgid ""
 "  --input-mach <machine>      Set input machine type to <machine>\n"
@@ -3018,17 +3024,17 @@ msgstr ""
 msgid "IEEE string length overflow: %u\n"
 msgstr ""
 
-#: ieee.c:5204
+#: ieee.c:5205
 #, c-format
 msgid "IEEE unsupported integer type size %u\n"
 msgstr ""
 
-#: ieee.c:5238
+#: ieee.c:5239
 #, c-format
 msgid "IEEE unsupported float type size %u\n"
 msgstr ""
 
-#: ieee.c:5272
+#: ieee.c:5273
 #, c-format
 msgid "IEEE unsupported complex type size %u\n"
 msgstr ""
@@ -3366,19 +3372,19 @@ msgid ""
 "\n"
 msgstr ""
 
-#: nm.c:1580
+#: nm.c:1579
 msgid "Only -X 32_64 is supported"
 msgstr ""
 
-#: nm.c:1600
+#: nm.c:1599
 msgid "Using the --size-sort and --undefined-only options together"
 msgstr ""
 
-#: nm.c:1601
+#: nm.c:1600
 msgid "will produce no output, since undefined symbols have no size."
 msgstr ""
 
-#: nm.c:1629
+#: nm.c:1628
 #, c-format
 msgid "data size %ld"
 msgstr ""

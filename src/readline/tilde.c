@@ -129,9 +129,7 @@ static char *glue_prefix_and_suffix PARAMS((char *, const char *, int));
    the tilde which starts the expansion. Place the length of the text
    which identified this tilde starter in LEN, excluding the tilde itself. */
 static int
-tilde_find_prefix (string, len)
-     const char *string;
-     int *len;
+tilde_find_prefix(const char *string, int *len)
 {
   register int i, j, string_len;
   register char **prefixes;
@@ -164,14 +162,13 @@ tilde_find_prefix (string, len)
 /* Find the end of a tilde expansion in STRING, and return the index of
    the character which ends the tilde definition.  */
 static int
-tilde_find_suffix (string)
-     const char *string;
+tilde_find_suffix(const char *string)
 {
   register int i, j, string_len;
   register char **suffixes;
 
   suffixes = tilde_additional_suffixes;
-  string_len = strlen (string);
+  string_len = strlen(string);
 
   for (i = 0; i < string_len; i++)
     {
@@ -193,19 +190,18 @@ tilde_find_suffix (string)
 
 /* Return a new string which is the result of tilde expanding STRING. */
 char *
-tilde_expand (string)
-     const char *string;
+tilde_expand(const char *string)
 {
   char *result;
   int result_size, result_index;
 
   result_index = result_size = 0;
-	/* Turned the following assignment into an equality comparison; if that was
-	 * wrong, use double parentheses instead. */
-  if (result == strchr (string, '~'))
-    result = (char *)xmalloc (result_size = (strlen (string) + 16));
+  /* looks like this was supposed to be an assignment after all; doing it
+   * as an equality comparison causes result to be used uninitialized: */
+  if ((result = strchr(string, '~')))
+    result = (char *)xmalloc(result_size = (strlen(string) + 16));
   else
-    result = (char *)xmalloc (result_size = (strlen (string) + 1));
+    result = (char *)xmalloc(result_size = (strlen(string) + 1));
 
   /* Scan through STRING expanding tildes as we come to them. */
   while (1)
@@ -269,18 +265,16 @@ tilde_expand (string)
    non-null, the index of the end of the prefix into FNAME is returned in
    the location it points to. */
 static char *
-isolate_tilde_prefix (fname, lenp)
-     const char *fname;
-     int *lenp;
+isolate_tilde_prefix(const char *fname, int *lenp)
 {
   char *ret;
   int i;
 
-  ret = (char *)xmalloc (strlen (fname));
+  ret = (char *)xmalloc(strlen(fname));
 #if defined (__MSDOS__)
-  for (i = 1; fname[i] && fname[i] != '/' && fname[i] != '\\'; i++)
+  for (i = 1; fname[i] && (fname[i] != '/') && (fname[i] != '\\'); i++)
 #else
-  for (i = 1; fname[i] && fname[i] != '/'; i++)
+  for (i = 1; fname[i] && (fname[i] != '/'); i++)
 #endif /* __MSDOS__ */
     ret[i - 1] = fname[i];
   ret[i - 1] = '\0';
@@ -292,20 +286,17 @@ isolate_tilde_prefix (fname, lenp)
 /* Return a string that is PREFIX concatenated with SUFFIX starting at
    SUFFIND. */
 static char *
-glue_prefix_and_suffix (prefix, suffix, suffind)
-     char *prefix;
-     const char *suffix;
-     int suffind;
+glue_prefix_and_suffix(char *prefix, const char *suffix, int suffind)
 {
   char *ret;
   int plen, slen;
 
-  plen = (prefix && *prefix) ? strlen (prefix) : 0;
-  slen = strlen (suffix + suffind);
-  ret = (char *)xmalloc (plen + slen + 1);
+  plen = ((prefix && *prefix) ? strlen(prefix) : 0);
+  slen = strlen(suffix + suffind);
+  ret = (char *)xmalloc(plen + slen + 1);
   if (plen)
-    strcpy (ret, prefix);
-  strcpy (ret + plen, suffix + suffind);
+    strcpy(ret, prefix);
+  strcpy((ret + plen), (suffix + suffind));
   return ret;
 }
 
@@ -313,8 +304,7 @@ glue_prefix_and_suffix (prefix, suffix, suffind)
    tilde. If there is no expansion, call tilde_expansion_failure_hook.
    This always returns a newly-allocated string, never static storage. */
 char *
-tilde_expand_word (filename)
-     const char *filename;
+tilde_expand_word(const char *filename)
 {
   char *dirname, *expansion, *username;
   int user_len;
@@ -324,7 +314,7 @@ tilde_expand_word (filename)
     return ((char *)NULL);
 
   if (*filename != '~')
-    return (savestring (filename));
+    return (savestring(filename));
 
   /* A leading `~/' or a bare `~' is *always* translated to the value of
      $HOME or the home directory of the current user, regardless of any

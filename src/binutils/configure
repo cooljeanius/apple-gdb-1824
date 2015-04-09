@@ -796,6 +796,7 @@ CFLAGS
 CC
 TARGET_ARCHITECTURE
 HOST_ARCHITECTURE
+BUILD_ARCHITECTURE
 target_os
 target_vendor
 target_cpu
@@ -3115,6 +3116,10 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+
+fi
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"
 
@@ -18898,13 +18903,13 @@ fi
 # Gettext:
 if test -d ../intl; then
   if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../intl"
+    export LDFLAGS="-L. -L../intl"
   else
     export LDFLAGS="${LDFLAGS} -L../intl"
   fi
 elif test -d ../libintl; then
   if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../libintl"
+    export LDFLAGS="-L. -L../libintl"
   else
     export LDFLAGS="${LDFLAGS} -L../libintl"
   fi
@@ -22662,7 +22667,7 @@ $as_echo "#define HAVE_STDBOOL_H 1" >>confdefs.h
 fi
  if test -d ../intl; then
   if test -z "${CPPFLAGS}"; then
-    export CPPFLAGS="-I../intl"
+    export CPPFLAGS="-I. -I../intl"
   else
     export CPPFLAGS="${CPPFLAGS} -I../intl"
   fi
@@ -22672,7 +22677,7 @@ fi
   fi
 elif test -d ../libintl; then
   if test -z "${CPPFLAGS}"; then
-    export CPPFLAGS="-I../libintl"
+    export CPPFLAGS="-I. -I../libintl"
   else
     export CPPFLAGS="${CPPFLAGS} -I../libintl"
   fi

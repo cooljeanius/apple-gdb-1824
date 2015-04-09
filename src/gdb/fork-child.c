@@ -93,9 +93,9 @@ escape_bang_in_quoted_argument (const char *shell_file)
    made static to ensure that they survive the vfork call.  */
 
 void
-fork_inferior (char *exec_file_arg, char *allargs, char **env,
-	       void (*traceme_fun) (void), void (*init_trace_fun) (int),
-	       void (*pre_trace_fun) (void), char *shell_file_arg)
+fork_inferior(char *exec_file_arg, char *allargs, char **env,
+	      void (*traceme_fun)(void), void (*init_trace_fun)(int),
+	      void (*pre_trace_fun)(void), char *shell_file_arg)
 {
   int pid;
   char *shell_command;
@@ -111,23 +111,22 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
   char **save_our_env;
   int shell = 0;
   static char **argv;
-  const char *inferior_io_terminal = get_inferior_io_terminal ();
+  const char *inferior_io_terminal = get_inferior_io_terminal();
 
   /* If no exec file handed to us, get it from the exec-file command
      -- with a good, common error message if none is specified.  */
   exec_file = exec_file_arg;
   if (exec_file == 0)
-    exec_file = get_exec_file (1);
+    exec_file = get_exec_file(1);
 
-  /* If 0, we'll just do a fork/exec, no shell, so don't
-   * bother figuring out what shell.
-   */
+  /* If 0, we will just do a fork/exec, no shell, so do NOT bother
+   * figuring out what shell: */
   shell_file = shell_file_arg;
   if (start_with_shell_flag)
     {
-      /* Figure out what shell to start up the user program under.  */
+      /* Figure out what shell to start up the user program under: */
       if (shell_file == NULL)
-	shell_file = getenv ("SHELL");
+	shell_file = getenv("SHELL");
       if (shell_file == NULL)
 	shell_file = default_shell_file;
       shell = 1;
@@ -159,30 +158,32 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
       unsigned int i;
       char **argt = NULL;
 
-      argt = buildargv (allargs);
+      argt = buildargv(allargs);
       if (argt == NULL)
 	{
-	  error ("unable to build argument vector for inferior process (out of memory)");
+	  error("unable to build argument vector for inferior process (out of memory)");
 	}
       if ((allargs == NULL) || (allargs[0] == '\0'))
 	argt[0] = NULL;
       for (i = 0; argt[i] != NULL; i++);
-      argv = (char **) xmalloc ((i + 1 + 1) * (sizeof *argt));
+      argv = (char **)xmalloc((i + 1 + 1) * (sizeof(*argt)));
       argv[0] = exec_file;
       if (exec_argv0[0] != '\0')
 	argv[0] = exec_argv0;
-      memcpy (&argv[1], argt, (i + 1) * sizeof (*argt));
-      /* freeargv (argt); */
+      memcpy(&argv[1], argt, (i + 1) * sizeof(*argt));
+#if 0
+      freeargv(argt);
+#endif /* 0 */
     }
   else
     {
-      /* We're going to call a shell */
+      /* We are going to call a shell */
 
       /* Now add exec_file, quoting as necessary.  */
 
       char *p;
       int need_to_quote;
-      const int escape_bang = escape_bang_in_quoted_argument (shell_file);
+      const int escape_bang = escape_bang_in_quoted_argument(shell_file);
 
       /* APPLE LOCAL: Since the app we are exec'ing might be Universal, we need
 	 a way to specify the architecture we want to launch.  We use the
@@ -191,7 +192,7 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
       {
 	char *arch_string = NULL;
 	const char *osabi_name = gdbarch_osabi_name(gdbarch_osabi(current_gdbarch));
-# if defined (TARGET_POWERPC)
+# if defined(TARGET_POWERPC)
 	if (strcmp(osabi_name, "Darwin") == 0)
 	  arch_string = "ppc";
 	else if (strcmp(osabi_name, "Darwin64") == 0)
@@ -260,37 +261,37 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
     end_scan:
       if (need_to_quote)
 	{
-	  strcat (shell_command, "'");
+	  strcat(shell_command, "'");
 	  for (p = exec_file; *p != '\0'; ++p)
 	    {
 	      if (*p == '\'')
-		strcat (shell_command, "'\\''");
-	      else if (*p == '!' && escape_bang)
-		strcat (shell_command, "\\!");
+		strcat(shell_command, "'\\''");
+	      else if ((*p == '!') && escape_bang)
+		strcat(shell_command, "\\!");
 	      else
-		strncat (shell_command, p, 1);
+		strncat(shell_command, p, 1);
 	    }
-	  strcat (shell_command, "'");
+	  strcat(shell_command, "'");
 	}
       else
-	strcat (shell_command, exec_file);
+	strcat(shell_command, exec_file);
 
-      strcat (shell_command, " ");
-      strcat (shell_command, allargs);
+      strcat(shell_command, " ");
+      strcat(shell_command, allargs);
 
-      /* APPLE LOCAL: There's no reason to use execlp for the shell
-	 case, and execve for the non-shell case.  Lets just build up
-	 an appropriate argv array and use it for both.  */
+      /* APPLE LOCAL: There is no reason to use execlp for the shell case,
+       * and execve for the non-shell case.  Let us just build up an
+       * appropriate argv array and use it for both: */
 
-      argv = (char **) xmalloc (4 * sizeof (char *));
+      argv = (char **)xmalloc(4 * sizeof(char *));
       argv[0] = shell_file;
       argv[1] = "-c";
       argv[2] = shell_command;
       argv[3] = NULL;
     }
 
-  /* On some systems an exec will fail if the executable is open.  */
-  close_exec_file ();
+  /* On some systems an exec will fail if the executable is open: */
+  close_exec_file();
 
   /* Retain a copy of our environment variables, since the child will
      replace the value of environ and if we're vforked, we have to
@@ -299,19 +300,19 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
 
   /* Tell the terminal handling subsystem what tty we plan to run on;
      it will just record the information for later.  */
-  new_tty_prefork (inferior_io_terminal);
+  new_tty_prefork(inferior_io_terminal);
 
   /* It is generally good practice to flush any possible pending stdio
      output prior to doing a fork, to avoid the possibility of both
      the parent and child flushing the same data after the fork. */
-  gdb_flush (gdb_stdout);
-  gdb_flush (gdb_stderr);
+  gdb_flush(gdb_stdout);
+  gdb_flush(gdb_stderr);
 
   /* If there's any initialization of the target layers that must
      happen to prepare to handle the child we're about fork, do it
      now...  */
   if (pre_trace_fun != NULL)
-    (*pre_trace_fun) ();
+    (*pre_trace_fun)();
 
   /* Create the child process.  Since the child process is going to
      exec(3) shortlty afterwards, try to reduce the overhead by
@@ -345,15 +346,15 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
       if (debug_fork)
 	sleep(debug_fork);
 
-      /* Run inferior in a separate process group.  */
-      debug_setpgrp = gdb_setpgid ();
+      /* Run inferior in a separate process group: */
+      debug_setpgrp = gdb_setpgid();
       if (debug_setpgrp == -1)
-	perror ("setpgrp failed in child");
+	perror("setpgrp failed in child");
 
       /* Ask the tty subsystem to switch to the one we specified
          earlier (or to share the current terminal, if none was
          specified).  */
-      new_tty ();
+      new_tty();
 
       /* Changing the signal handlers for the inferior after
          a vfork can also change them for the superior, so we don't mess
@@ -362,7 +363,7 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
          for the inferior.  */
 
       /* "Trace me, Dr. Memory!" */
-      (*traceme_fun) ();
+      (*traceme_fun)();
 
       /* The call above set this process (the "child") as debuggable
         by the original gdb process (the "parent").  Since processes
@@ -383,7 +384,7 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
       /* APPLE LOCAL: gdb is setgid to give it extra special debuggizer
          powers; we need to drop those privileges before executing the
          inferior process.  */
-      setgid (getgid ());
+      setgid(getgid());
 
       /* If we decided above to start up with a shell, we exec the
         shell, "-c" says to interpret the next arg as a shell command
@@ -393,9 +394,9 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
         events which will confuse debugger start-up code.  */
 
       /* APPLE LOCAL: I took out the code that was calling execlp,
-	 since there's no reason not to just use execvp.  That makes
+	 since there is no reason not to just use execvp.  That makes
 	 the code simpler since the shell ALSO might be universal, so
-	 we need to go through posix_spawn or we're going to have to
+	 we need to go through posix_spawn or we are going to have to
 	 deal with switching the architecture mid-startup.  */
 	{
 	  /* Otherwise, we directly exec the target program with
@@ -492,17 +493,17 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
 	    if (count == 1)
 	      {
 		retval = posix_spawnattr_setbinpref_np(&attr, 1, &cpu, &copied);
-		if (retval != 0 || copied != 1)
+		if ((retval != 0) || (copied != 1))
 		  {
-		    warning ("Couldn't set the binary preferences, error: %d", retval);
+		    warning("Failed to set the binary preferences, error: %d", retval);
 		  }
 	      }
 
-	    retval = posix_spawnattr_setpgroup (&attr, debug_setpgrp);
+	    retval = posix_spawnattr_setpgroup(&attr, debug_setpgrp);
 
 	    if (retval != 0)
 	      {
-		warning ("Couldn't set the process group, error: %d", retval);
+		warning("Failed to set the process group, error: %d", retval);
 	      }
 
 	    ps_flags = POSIX_SPAWN_SETEXEC;
@@ -617,21 +618,20 @@ startup_inferior(int ntraps)
       wait_for_inferior ();
       if (stop_signal != TARGET_SIGNAL_TRAP)
 	{
-        /* APPLE LOCAL: If we are getting a bad access or bad
-           instruction here, don't just send it back to the app,
-           since then we'll just loop forever here.  This can
-           happen when you have "start-with-shell" non-zero, and
-           the shell crashes.  */
+        /* APPLE LOCAL: If we are getting a bad access or bad instruction
+         * here, do NOT just send it back to the app, since then we will
+         * just loop forever here.  This can happen when you have
+         * "start-with-shell" non-zero, and the shell crashes: */
 #ifdef NM_NEXTSTEP
         if ((stop_signal == TARGET_EXC_BAD_ACCESS)
             || (stop_signal == TARGET_EXC_BAD_INSTRUCTION))
           {
             warning("The target crashed on startup, maybe the shell is crashing.\n"
                     "\"Try set start-with-shell 0\" to workaround.");
-	    /* For now we don't seem to be able to unwind successfully
-		from this error, so I am just aborting.  Throwing
-		an error or just breaking both lead to gdb just
-		hanging, which isn't helpful...  */
+            /* For now we do NOT seem to be able to unwind successfully
+             * from this error, so I am just aborting.  Throwing an error
+             * or just breaking both lead to gdb just hanging, which is
+             * unhelpful...  */
             abort();
           }
 #endif /* NM_NEXTSTEP */
@@ -687,27 +687,27 @@ _initialize_fork_child(void)
   exec_pathname = savestring("", 1);
   exec_argv0 = savestring("", 1);
 
-  add_setshow_string_cmd ("exec-pathname", no_class,
-			  &exec_pathname, _("\
+  add_setshow_string_cmd("exec-pathname", no_class,
+			 &exec_pathname, _("\
 Set the pathname to be used to start the target executable."), _("\
 Show the pathname to be used to start the target executable."), NULL,
-			  NULL, NULL,
-			  &setlist, &showlist);
+			 NULL, NULL,
+			 &setlist, &showlist);
 
-  add_setshow_string_cmd ("exec-argv0", no_class,
-			  &exec_argv0, _("\
+  add_setshow_string_cmd("exec-argv0", no_class,
+			 &exec_argv0, _("\
 Set the value of argv[0] to be passed to the target executable.\n\
 This will be used only if 'start-with-shell' is set to 'off'."), _("\
 x"), NULL,
-			  NULL, NULL,
-			  &setlist, &showlist);
+			 NULL, NULL,
+			 &setlist, &showlist);
 
-  add_setshow_boolean_cmd ("start-with-shell", class_obscure,
-			   &start_with_shell_flag, _("\
+  add_setshow_boolean_cmd("start-with-shell", class_obscure,
+			  &start_with_shell_flag, _("\
 Set if GDB should use shell to invoke inferior (performs argument expansion in shell)."), _("\
 Show if GDB should use shell to invoke inferior (performs argument expansion in shell)."), NULL,
-			   NULL, NULL,
-			   &setlist, &showlist);
+			  NULL, NULL,
+			  &setlist, &showlist);
 }
 /* APPLE LOCAL end start with shell */
 

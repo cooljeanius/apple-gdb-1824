@@ -40,10 +40,11 @@ AC_CHECK_PROGS([AUTOHEADER],[autoheader],[${MISSING} autoheader])dnl
 # See ../config/warnings.m4 for details.
 
 dnl# '-W' is redundant with '-Wextra'
-ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings \
-			  -Wstrict-prototypes -Wmissing-prototypes \
-			  -Wold-style-definition -Wc++-compat \
-			  -Wmissing-format-attribute -Wcast-qual])
+ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wno-unused-value -Wwrite-strings \
+-Wstrict-prototypes -Wmissing-prototypes -Wmissing-parameter-type \
+-Wmissing-declarations -Wnested-externs -Wundef -Wshadow -Wformat=2 \
+-Wold-style-definition -Wold-style-declaration -Wc++-compat \
+-Wmissing-format-attribute -Wcast-qual])
 ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-Wno-long-long])dnl
 
 # Only enable with --enable-werror-always until existing warnings are

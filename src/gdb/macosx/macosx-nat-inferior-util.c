@@ -217,7 +217,7 @@ macosx_inferior_suspend_mach(macosx_inferior_status *s)
 
   CHECK(s != NULL);
   /* FIXME: this next assertion has failed on me when I was debugging
-   * CodeBlocks.app once: */
+   * CodeBlocks.app once; and again when debugging gdb itself: */
   CHECK(macosx_task_valid(s->task));
 
   if (s->suspend_count == 0)

@@ -67,7 +67,7 @@ enum conversion_fun
 typedef unsigned long long integer_type;
 #else
 typedef unsigned long integer_type;
-#endif
+#endif /* HAVE_LONG_LONG */
 
 struct test_data_t
 {
@@ -92,7 +92,7 @@ const struct test_data_t test_data[] = {
   { STRTOL,  "0x80000000",  0, 0x7fffffffL,   ERANGE },
   { STRTOL,  "-0x80000001", 0, -0x80000000L,  ERANGE },
   { STRTOUL, "0x100000000", 0, 0xffffffffUL,  ERANGE },
-#endif
+#endif /* SIZEOF_LONG == 4 */
 #ifdef HAVE_LONG_LONG
   { STRTOLL,  "0x123",               0, 0x123LL,               0      },
   { STRTOLL,  "123",                 0, 123LL,                 0      },
@@ -103,12 +103,12 @@ const struct test_data_t test_data[] = {
   { STRTOULL, "123",                 0, 123ULL,                0      },
   { STRTOULL, "0123",                0, 0123ULL,               0      },
   { STRTOULL, "0xFFFFFFFFFFFFFFFF",  0, 0xffffffffffffffffULL, 0      },
-#if SIZEOF_LONG_LONG == 8
+# if SIZEOF_LONG_LONG == 8
   { STRTOLL,  "0x8000000000000000",  0, 0x7fffffffffffffffLL,  ERANGE },
   { STRTOLL,  "-0x8000000000000001", 0, -0x8000000000000000LL, ERANGE },
   { STRTOULL, "0x10000000000000000", 0, 0xffffffffffffffffULL, ERANGE },
-#endif
-#endif
+# endif /* SIZEOF_LONG_LONG == 8 */
+#endif /* HAVE_LONG_LONG */
 };
 
 /* run_tests:
@@ -116,8 +116,8 @@ const struct test_data_t test_data[] = {
     Compare results
     Return number of fails */
 
-int
-run_tests (const struct test_data_t *test_data, size_t ntests)
+static int
+run_tests(const struct test_data_t *test_data_buf, size_t ntests)
 {
   int fails = 0, failed;
   size_t i;
@@ -129,21 +129,21 @@ run_tests (const struct test_data_t *test_data, size_t ntests)
 
       errno = 0;
 
-      switch (test_data[i].fun)
+      switch (test_data_buf[i].fun)
 	{
 	case STRTOL:
-	  res = (unsigned long) strtol (test_data[i].nptr,
-					0, test_data[i].base);
+	  res = (unsigned long)strtol(test_data_buf[i].nptr,
+                                      0, test_data_buf[i].base);
 	  break;
 	case STRTOUL:
-	  res = strtoul (test_data[i].nptr, 0, test_data[i].base);
+	  res = strtoul(test_data_buf[i].nptr, 0, test_data_buf[i].base);
 	  break;
 #ifdef HAVE_LONG_LONG
 	case STRTOLL:
-	  res = strtoll (test_data[i].nptr, 0, test_data[i].base);
+	  res = strtoll(test_data_buf[i].nptr, 0, test_data_buf[i].base);
 	  break;
 	case STRTOULL:
-	  res = strtoull (test_data[i].nptr, 0, test_data[i].base);
+	  res = strtoull(test_data_buf[i].nptr, 0, test_data_buf[i].base);
 	  break;
 #endif /* HAVE_LONG_LONG */
 	}
@@ -153,21 +153,21 @@ run_tests (const struct test_data_t *test_data, size_t ntests)
       failed = 0;
 
       /* Compare result */
-      if (res != test_data[i].res)
+      if (res != test_data_buf[i].res)
         {
-          printf ("FAIL: test-strtol-%zd. Results don't match.\n", i);
+          printf("FAIL: test-strtol-%zd. Results don't match.\n", i);
 	  failed++;
         }
 
       /* Compare errno */
-      if (saved_errno != test_data[i].errnum)
+      if (saved_errno != test_data_buf[i].errnum)
         {
-          printf ("FAIL: test-strtol-%zd. Errnos don't match.\n", i);
+          printf("FAIL: test-strtol-%zd. Errnos don't match.\n", i);
 	  failed++;
         }
 
       if (!failed)
-        printf ("PASS: test-strtol-%zd.\n", i);
+        printf("PASS: test-strtol-%zd.\n", i);
       else
         fails++;
     }

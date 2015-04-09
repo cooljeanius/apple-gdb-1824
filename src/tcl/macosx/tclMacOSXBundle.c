@@ -102,6 +102,9 @@ Tcl_MacOSXOpenBundleResources(
 	if (hasResourceFile) {
 	    short refNum;
 	    refNum = CFBundleOpenBundleResourceMap(bundleRef);
+        if (refNum > 0) {
+            ; /* ??? */
+        }
 	}
 
 	libURL = CFBundleCopyResourceURL(bundleRef,
@@ -114,7 +117,7 @@ Tcl_MacOSXOpenBundleResources(
 	     */
 
 	    if (CFURLGetFileSystemRepresentation(libURL, true,
-		    libraryPath, maxPathLen)) {
+		    (UInt8 *)libraryPath, maxPathLen)) {
 	    }
 	    CFRelease(libURL);
 	} else {

@@ -236,6 +236,7 @@ HOST_EXPORTS = \
 	GCC_FOR_TARGET="$(GCC_FOR_TARGET)"; export GCC_FOR_TARGET; \
 	LD_FOR_TARGET="$(LD_FOR_TARGET)"; export LD_FOR_TARGET; \
 	NM_FOR_TARGET="$(NM_FOR_TARGET)"; export NM_FOR_TARGET; \
+	OBJCOPY_FOR_TARGET="$(OBJCOPY_FOR_TARGET)"; export OBJCOPY_FOR_TARGET; \
 	OBJDUMP_FOR_TARGET="$(OBJDUMP_FOR_TARGET)"; export OBJDUMP_FOR_TARGET; \
 	RANLIB_FOR_TARGET="$(RANLIB_FOR_TARGET)"; export RANLIB_FOR_TARGET; \
 	READELF_FOR_TARGET="$(READELF_FOR_TARGET)"; export READELF_FOR_TARGET; \
@@ -294,6 +295,7 @@ BASE_TARGET_EXPORTS = \
 	LDFLAGS="$(LDFLAGS_FOR_TARGET)"; export LDFLAGS; \
 	LIPO="$(LIPO_FOR_TARGET)"; export LIPO; \
 	NM="$(NM_FOR_TARGET)"; export NM; \
+	OBJCOPY="$(OBJCOPY_FOR_TARGET)"; export OBJCOPY; \
 	OBJDUMP="$(OBJDUMP_FOR_TARGET)"; export OBJDUMP; \
 	RANLIB="$(RANLIB_FOR_TARGET)"; export RANLIB; \
 	READELF="$(READELF_FOR_TARGET)"; export READELF; \
@@ -660,6 +662,7 @@ USUAL_NM_FOR_TARGET = ` \
     fi; \
   fi`
 
+OBJCOPY_FOR_TARGET=@OBJCOPY_FOR_TARGET@
 OBJDUMP_FOR_TARGET=@OBJDUMP_FOR_TARGET@
 
 RANLIB_FOR_TARGET=@RANLIB_FOR_TARGET@
@@ -721,7 +724,7 @@ PICFLAG_FOR_TARGET =
 
 # This is the list of directories that may be needed in RPATH_ENVVAR
 # so that prorgams built for the target machine work.
-TARGET_LIB_PATH = $(TARGET_LIB_PATH_libstdc++-v3)$(TARGET_LIB_PATH_libmudflap)$(TARGET_LIB_PATH_libsanitizer)$(TARGET_LIB_PATH_libvtv)$(TARGET_LIB_PATH_libcilkrts)$(TARGET_LIB_PATH_liboffloadmic)$(TARGET_LIB_PATH_libssp)$(TARGET_LIB_PATH_libgomp)$(TARGET_LIB_PATH_libitm)$(TARGET_LIB_PATH_libatomic)$(HOST_LIB_PATH_gcc)
+TARGET_LIB_PATH = $(TARGET_LIB_PATH_libstdc++-v3)$(TARGET_LIB_PATH_libmudflap)$(TARGET_LIB_PATH_libsanitizer)$(TARGET_LIB_PATH_libmpx)$(TARGET_LIB_PATH_libvtv)$(TARGET_LIB_PATH_libcilkrts)$(TARGET_LIB_PATH_liboffloadmic)$(TARGET_LIB_PATH_libssp)$(TARGET_LIB_PATH_libgomp)$(TARGET_LIB_PATH_libitm)$(TARGET_LIB_PATH_libatomic)$(HOST_LIB_PATH_gcc)
 
 @if target-libstdc++-v3
 TARGET_LIB_PATH_libstdc++-v3 = $$r/$(TARGET_SUBDIR)/libstdc++-v3/.libs:
@@ -734,6 +737,10 @@ TARGET_LIB_PATH_libmudflap = $$r/$(TARGET_SUBDIR)/libmudflap/.libs:
 @if target-libsanitizer
 TARGET_LIB_PATH_libsanitizer = $$r/$(TARGET_SUBDIR)/libsanitizer/.libs:
 @endif target-libsanitizer
+
+@if target-libmpx
+TARGET_LIB_PATH_libmpx = $$r/$(TARGET_SUBDIR)/libmpx/.libs:
+@endif target-libmpx
 
 @if target-libvtv
 TARGET_LIB_PATH_libvtv = $$r/$(TARGET_SUBDIR)/libvtv/.libs:
@@ -893,6 +900,7 @@ BASE_FLAGS_TO_PASS = \
 	"LIBCFLAGS_FOR_TARGET=$(LIBCFLAGS_FOR_TARGET)" \
 	"LIBCXXFLAGS_FOR_TARGET=$(LIBCXXFLAGS_FOR_TARGET)" \
 	"NM_FOR_TARGET=$(NM_FOR_TARGET)" \
+	"OBJCOPY_FOR_TARGET=$(OBJCOPY_FOR_TARGET)" \
 	"OBJDUMP_FOR_TARGET=$(OBJDUMP_FOR_TARGET)" \
 	"RANLIB_FOR_TARGET=$(RANLIB_FOR_TARGET)" \
 	"READELF_FOR_TARGET=$(READELF_FOR_TARGET)" \
@@ -963,6 +971,7 @@ EXTRA_TARGET_FLAGS = \
 	'LIBCFLAGS=$$(LIBCFLAGS_FOR_TARGET)' \
 	'LIBCXXFLAGS=$$(LIBCXXFLAGS_FOR_TARGET)' \
 	'NM=$$(NM_FOR_TARGET)' \
+	'OBJCOPY=$$(OBJCOPY_FOR_TARGET)' \
 	'OBJDUMP=$$(OBJDUMP_FOR_TARGET)' \
 	'RANLIB=$$(RANLIB_FOR_TARGET)' \
 	'READELF=$$(READELF_FOR_TARGET)' \
@@ -1076,12 +1085,14 @@ configure-host:  \
     maybe-configure-utils \
     maybe-configure-gnattools \
     maybe-configure-lto-plugin \
-    maybe-configure-libcc1
+    maybe-configure-libcc1 \
+    maybe-configure-gotools
 .PHONY: configure-target
 configure-target:  \
     maybe-configure-target-libstdc++-v3 \
     maybe-configure-target-libmudflap \
     maybe-configure-target-libsanitizer \
+    maybe-configure-target-libmpx \
     maybe-configure-target-libvtv \
     maybe-configure-target-libcilkrts \
     maybe-configure-target-liboffloadmic \
@@ -1207,12 +1218,14 @@ all-host:  \
     maybe-all-utils \
     maybe-all-gnattools \
     maybe-all-lto-plugin \
-    maybe-all-libcc1
+    maybe-all-libcc1 \
+    maybe-all-gotools
 .PHONY: all-target
 all-target:  \
     maybe-all-target-libstdc++-v3 \
     maybe-all-target-libmudflap \
     maybe-all-target-libsanitizer \
+    maybe-all-target-libmpx \
     maybe-all-target-libvtv \
     maybe-all-target-libcilkrts \
     maybe-all-target-liboffloadmic \
@@ -1332,13 +1345,15 @@ info-host:  \
     maybe-info-utils \
     maybe-info-gnattools \
     maybe-info-lto-plugin \
-    maybe-info-libcc1
+    maybe-info-libcc1 \
+    maybe-info-gotools
 
 .PHONY: info-target
 info-target:  \
     maybe-info-target-libstdc++-v3 \
     maybe-info-target-libmudflap \
     maybe-info-target-libsanitizer \
+    maybe-info-target-libmpx \
     maybe-info-target-libvtv \
     maybe-info-target-libcilkrts \
     maybe-info-target-liboffloadmic \
@@ -1453,13 +1468,15 @@ dvi-host:  \
     maybe-dvi-utils \
     maybe-dvi-gnattools \
     maybe-dvi-lto-plugin \
-    maybe-dvi-libcc1
+    maybe-dvi-libcc1 \
+    maybe-dvi-gotools
 
 .PHONY: dvi-target
 dvi-target:  \
     maybe-dvi-target-libstdc++-v3 \
     maybe-dvi-target-libmudflap \
     maybe-dvi-target-libsanitizer \
+    maybe-dvi-target-libmpx \
     maybe-dvi-target-libvtv \
     maybe-dvi-target-libcilkrts \
     maybe-dvi-target-liboffloadmic \
@@ -1574,13 +1591,15 @@ pdf-host:  \
     maybe-pdf-utils \
     maybe-pdf-gnattools \
     maybe-pdf-lto-plugin \
-    maybe-pdf-libcc1
+    maybe-pdf-libcc1 \
+    maybe-pdf-gotools
 
 .PHONY: pdf-target
 pdf-target:  \
     maybe-pdf-target-libstdc++-v3 \
     maybe-pdf-target-libmudflap \
     maybe-pdf-target-libsanitizer \
+    maybe-pdf-target-libmpx \
     maybe-pdf-target-libvtv \
     maybe-pdf-target-libcilkrts \
     maybe-pdf-target-liboffloadmic \
@@ -1695,13 +1714,15 @@ html-host:  \
     maybe-html-utils \
     maybe-html-gnattools \
     maybe-html-lto-plugin \
-    maybe-html-libcc1
+    maybe-html-libcc1 \
+    maybe-html-gotools
 
 .PHONY: html-target
 html-target:  \
     maybe-html-target-libstdc++-v3 \
     maybe-html-target-libmudflap \
     maybe-html-target-libsanitizer \
+    maybe-html-target-libmpx \
     maybe-html-target-libvtv \
     maybe-html-target-libcilkrts \
     maybe-html-target-liboffloadmic \
@@ -1816,13 +1837,15 @@ TAGS-host:  \
     maybe-TAGS-utils \
     maybe-TAGS-gnattools \
     maybe-TAGS-lto-plugin \
-    maybe-TAGS-libcc1
+    maybe-TAGS-libcc1 \
+    maybe-TAGS-gotools
 
 .PHONY: TAGS-target
 TAGS-target:  \
     maybe-TAGS-target-libstdc++-v3 \
     maybe-TAGS-target-libmudflap \
     maybe-TAGS-target-libsanitizer \
+    maybe-TAGS-target-libmpx \
     maybe-TAGS-target-libvtv \
     maybe-TAGS-target-libcilkrts \
     maybe-TAGS-target-liboffloadmic \
@@ -1937,13 +1960,15 @@ install-info-host:  \
     maybe-install-info-utils \
     maybe-install-info-gnattools \
     maybe-install-info-lto-plugin \
-    maybe-install-info-libcc1
+    maybe-install-info-libcc1 \
+    maybe-install-info-gotools
 
 .PHONY: install-info-target
 install-info-target:  \
     maybe-install-info-target-libstdc++-v3 \
     maybe-install-info-target-libmudflap \
     maybe-install-info-target-libsanitizer \
+    maybe-install-info-target-libmpx \
     maybe-install-info-target-libvtv \
     maybe-install-info-target-libcilkrts \
     maybe-install-info-target-liboffloadmic \
@@ -2058,13 +2083,15 @@ install-pdf-host:  \
     maybe-install-pdf-utils \
     maybe-install-pdf-gnattools \
     maybe-install-pdf-lto-plugin \
-    maybe-install-pdf-libcc1
+    maybe-install-pdf-libcc1 \
+    maybe-install-pdf-gotools
 
 .PHONY: install-pdf-target
 install-pdf-target:  \
     maybe-install-pdf-target-libstdc++-v3 \
     maybe-install-pdf-target-libmudflap \
     maybe-install-pdf-target-libsanitizer \
+    maybe-install-pdf-target-libmpx \
     maybe-install-pdf-target-libvtv \
     maybe-install-pdf-target-libcilkrts \
     maybe-install-pdf-target-liboffloadmic \
@@ -2179,13 +2206,15 @@ install-html-host:  \
     maybe-install-html-utils \
     maybe-install-html-gnattools \
     maybe-install-html-lto-plugin \
-    maybe-install-html-libcc1
+    maybe-install-html-libcc1 \
+    maybe-install-html-gotools
 
 .PHONY: install-html-target
 install-html-target:  \
     maybe-install-html-target-libstdc++-v3 \
     maybe-install-html-target-libmudflap \
     maybe-install-html-target-libsanitizer \
+    maybe-install-html-target-libmpx \
     maybe-install-html-target-libvtv \
     maybe-install-html-target-libcilkrts \
     maybe-install-html-target-liboffloadmic \
@@ -2300,13 +2329,15 @@ installcheck-host:  \
     maybe-installcheck-utils \
     maybe-installcheck-gnattools \
     maybe-installcheck-lto-plugin \
-    maybe-installcheck-libcc1
+    maybe-installcheck-libcc1 \
+    maybe-installcheck-gotools
 
 .PHONY: installcheck-target
 installcheck-target:  \
     maybe-installcheck-target-libstdc++-v3 \
     maybe-installcheck-target-libmudflap \
     maybe-installcheck-target-libsanitizer \
+    maybe-installcheck-target-libmpx \
     maybe-installcheck-target-libvtv \
     maybe-installcheck-target-libcilkrts \
     maybe-installcheck-target-liboffloadmic \
@@ -2421,13 +2452,15 @@ mostlyclean-host:  \
     maybe-mostlyclean-utils \
     maybe-mostlyclean-gnattools \
     maybe-mostlyclean-lto-plugin \
-    maybe-mostlyclean-libcc1
+    maybe-mostlyclean-libcc1 \
+    maybe-mostlyclean-gotools
 
 .PHONY: mostlyclean-target
 mostlyclean-target:  \
     maybe-mostlyclean-target-libstdc++-v3 \
     maybe-mostlyclean-target-libmudflap \
     maybe-mostlyclean-target-libsanitizer \
+    maybe-mostlyclean-target-libmpx \
     maybe-mostlyclean-target-libvtv \
     maybe-mostlyclean-target-libcilkrts \
     maybe-mostlyclean-target-liboffloadmic \
@@ -2542,13 +2575,15 @@ clean-host:  \
     maybe-clean-utils \
     maybe-clean-gnattools \
     maybe-clean-lto-plugin \
-    maybe-clean-libcc1
+    maybe-clean-libcc1 \
+    maybe-clean-gotools
 
 .PHONY: clean-target
 clean-target:  \
     maybe-clean-target-libstdc++-v3 \
     maybe-clean-target-libmudflap \
     maybe-clean-target-libsanitizer \
+    maybe-clean-target-libmpx \
     maybe-clean-target-libvtv \
     maybe-clean-target-libcilkrts \
     maybe-clean-target-liboffloadmic \
@@ -2663,13 +2698,15 @@ distclean-host:  \
     maybe-distclean-utils \
     maybe-distclean-gnattools \
     maybe-distclean-lto-plugin \
-    maybe-distclean-libcc1
+    maybe-distclean-libcc1 \
+    maybe-distclean-gotools
 
 .PHONY: distclean-target
 distclean-target:  \
     maybe-distclean-target-libstdc++-v3 \
     maybe-distclean-target-libmudflap \
     maybe-distclean-target-libsanitizer \
+    maybe-distclean-target-libmpx \
     maybe-distclean-target-libvtv \
     maybe-distclean-target-libcilkrts \
     maybe-distclean-target-liboffloadmic \
@@ -2784,13 +2821,15 @@ maintainer-clean-host:  \
     maybe-maintainer-clean-utils \
     maybe-maintainer-clean-gnattools \
     maybe-maintainer-clean-lto-plugin \
-    maybe-maintainer-clean-libcc1
+    maybe-maintainer-clean-libcc1 \
+    maybe-maintainer-clean-gotools
 
 .PHONY: maintainer-clean-target
 maintainer-clean-target:  \
     maybe-maintainer-clean-target-libstdc++-v3 \
     maybe-maintainer-clean-target-libmudflap \
     maybe-maintainer-clean-target-libsanitizer \
+    maybe-maintainer-clean-target-libmpx \
     maybe-maintainer-clean-target-libvtv \
     maybe-maintainer-clean-target-libcilkrts \
     maybe-maintainer-clean-target-liboffloadmic \
@@ -2980,9 +3019,11 @@ do-check: unstage  \
     maybe-check-gnattools \
     maybe-check-lto-plugin \
     maybe-check-libcc1 \
+    maybe-check-gotools \
     maybe-check-target-libstdc++-v3 \
     maybe-check-target-libmudflap \
     maybe-check-target-libsanitizer \
+    maybe-check-target-libmpx \
     maybe-check-target-libvtv \
     maybe-check-target-libcilkrts \
     maybe-check-target-liboffloadmic \
@@ -3131,7 +3172,8 @@ install-host-nogcc:  \
     maybe-install-utils \
     maybe-install-gnattools \
     maybe-install-lto-plugin \
-    maybe-install-libcc1
+    maybe-install-libcc1 \
+    maybe-install-gotools
 
 .PHONY: install-host
 install-host:  \
@@ -3216,13 +3258,15 @@ install-host:  \
     maybe-install-utils \
     maybe-install-gnattools \
     maybe-install-lto-plugin \
-    maybe-install-libcc1
+    maybe-install-libcc1 \
+    maybe-install-gotools
 
 .PHONY: install-target
 install-target:  \
     maybe-install-target-libstdc++-v3 \
     maybe-install-target-libmudflap \
     maybe-install-target-libsanitizer \
+    maybe-install-target-libmpx \
     maybe-install-target-libvtv \
     maybe-install-target-libcilkrts \
     maybe-install-target-liboffloadmic \
@@ -41194,7 +41238,7 @@ configure-utils:
 	srcdiroption="--srcdir=$${topdir}/utils"; \
 	libsrcdir="$$s/utils"; \
 	$(SHELL) $${libsrcdir}/configure \
-	  $(HOST_CONFIGARGS) $${srcdiroption}  \
+	  $(HOST_CONFIGARGS) $${srcdiroption} --disable-opts-test \
 	  || exit 1
 @endif utils
 
@@ -43096,6 +43140,406 @@ maintainer-clean-libcc1:
 
 
 
+.PHONY: configure-gotools maybe-configure-gotools
+maybe-configure-gotools:
+@if gotools
+maybe-configure-gotools: configure-gotools
+configure-gotools: 
+	$(AM_V_at)test ! -f $(HOST_SUBDIR)/gotools/Makefile || exit 0; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR)/gotools ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	echo Configuring in $(HOST_SUBDIR)/gotools; \
+	cd "$(HOST_SUBDIR)/gotools" || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/gotools/ | \
+		$(SED) -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/gotools"; \
+	libsrcdir="$$s/gotools"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption}  \
+	  || exit 1
+@endif gotools
+
+
+
+
+
+.PHONY: all-gotools maybe-all-gotools
+maybe-all-gotools:
+@if gotools
+TARGET-gotools=all
+maybe-all-gotools: all-gotools
+all-gotools: configure-gotools
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/gotools && \
+	  $(MAKE) $(FLAGS_TO_PASS)  $(TARGET-gotools))
+@endif gotools
+
+
+
+
+.PHONY: check-gotools maybe-check-gotools
+maybe-check-gotools:
+@if gotools
+maybe-check-gotools: check-gotools
+
+check-gotools:
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/gotools && \
+	  $(MAKE) $(FLAGS_TO_PASS)  check)
+
+@endif gotools
+
+.PHONY: install-gotools maybe-install-gotools
+maybe-install-gotools:
+@if gotools
+maybe-install-gotools: install-gotools
+
+install-gotools: installdirs
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/gotools && \
+	  $(MAKE) $(FLAGS_TO_PASS)  install)
+
+@endif gotools
+
+# Other targets (info, dvi, etc.)
+
+.PHONY: maybe-info-gotools info-gotools
+maybe-info-gotools:
+@if gotools
+maybe-info-gotools: info-gotools
+
+info-gotools: \
+    configure-gotools 
+	$(AM_V_at)[ -f ./gotools/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing info in gotools" ; \
+	(cd $(HOST_SUBDIR)/gotools && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          info) \
+	  || exit 1
+
+@endif gotools
+
+.PHONY: maybe-dvi-gotools dvi-gotools
+maybe-dvi-gotools:
+@if gotools
+maybe-dvi-gotools: dvi-gotools
+
+dvi-gotools: \
+    configure-gotools 
+	$(AM_V_at)[ -f ./gotools/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing dvi in gotools" ; \
+	(cd $(HOST_SUBDIR)/gotools && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          dvi) \
+	  || exit 1
+
+@endif gotools
+
+.PHONY: maybe-pdf-gotools pdf-gotools
+maybe-pdf-gotools:
+@if gotools
+maybe-pdf-gotools: pdf-gotools
+
+pdf-gotools: \
+    configure-gotools 
+	$(AM_V_at)[ -f ./gotools/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing pdf in gotools" ; \
+	(cd $(HOST_SUBDIR)/gotools && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          pdf) \
+	  || exit 1
+
+@endif gotools
+
+.PHONY: maybe-html-gotools html-gotools
+maybe-html-gotools:
+@if gotools
+maybe-html-gotools: html-gotools
+
+html-gotools: \
+    configure-gotools 
+	$(AM_V_at)[ -f ./gotools/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing html in gotools" ; \
+	(cd $(HOST_SUBDIR)/gotools && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          html) \
+	  || exit 1
+
+@endif gotools
+
+.PHONY: maybe-TAGS-gotools TAGS-gotools
+maybe-TAGS-gotools:
+@if gotools
+maybe-TAGS-gotools: TAGS-gotools
+
+TAGS-gotools: \
+    configure-gotools 
+	$(AM_V_at)[ -f ./gotools/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing TAGS in gotools" ; \
+	(cd $(HOST_SUBDIR)/gotools && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          TAGS) \
+	  || exit 1
+
+@endif gotools
+
+.PHONY: maybe-install-info-gotools install-info-gotools
+maybe-install-info-gotools:
+@if gotools
+maybe-install-info-gotools: install-info-gotools
+
+install-info-gotools: \
+    configure-gotools \
+    info-gotools 
+	$(AM_V_at)[ -f ./gotools/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing install-info in gotools" ; \
+	(cd $(HOST_SUBDIR)/gotools && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          install-info) \
+	  || exit 1
+
+@endif gotools
+
+.PHONY: maybe-install-pdf-gotools install-pdf-gotools
+maybe-install-pdf-gotools:
+@if gotools
+maybe-install-pdf-gotools: install-pdf-gotools
+
+install-pdf-gotools: \
+    configure-gotools \
+    pdf-gotools 
+	$(AM_V_at)[ -f ./gotools/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing install-pdf in gotools" ; \
+	(cd $(HOST_SUBDIR)/gotools && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          install-pdf) \
+	  || exit 1
+
+@endif gotools
+
+.PHONY: maybe-install-html-gotools install-html-gotools
+maybe-install-html-gotools:
+@if gotools
+maybe-install-html-gotools: install-html-gotools
+
+install-html-gotools: \
+    configure-gotools \
+    html-gotools 
+	$(AM_V_at)[ -f ./gotools/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing install-html in gotools" ; \
+	(cd $(HOST_SUBDIR)/gotools && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          install-html) \
+	  || exit 1
+
+@endif gotools
+
+.PHONY: maybe-installcheck-gotools installcheck-gotools
+maybe-installcheck-gotools:
+@if gotools
+maybe-installcheck-gotools: installcheck-gotools
+
+installcheck-gotools: \
+    configure-gotools 
+	$(AM_V_at)[ -f ./gotools/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing installcheck in gotools" ; \
+	(cd $(HOST_SUBDIR)/gotools && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          installcheck) \
+	  || exit 1
+
+@endif gotools
+
+.PHONY: maybe-mostlyclean-gotools mostlyclean-gotools
+maybe-mostlyclean-gotools:
+@if gotools
+maybe-mostlyclean-gotools: mostlyclean-gotools
+
+mostlyclean-gotools: 
+	$(AM_V_at)[ -f ./gotools/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing mostlyclean in gotools" ; \
+	(cd $(HOST_SUBDIR)/gotools && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          mostlyclean) \
+	  || exit 1
+
+@endif gotools
+
+.PHONY: maybe-clean-gotools clean-gotools
+maybe-clean-gotools:
+@if gotools
+maybe-clean-gotools: clean-gotools
+
+clean-gotools: 
+	$(AM_V_at)[ -f ./gotools/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing clean in gotools" ; \
+	(cd $(HOST_SUBDIR)/gotools && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          clean) \
+	  || exit 1
+
+@endif gotools
+
+.PHONY: maybe-distclean-gotools distclean-gotools
+maybe-distclean-gotools:
+@if gotools
+maybe-distclean-gotools: distclean-gotools
+
+distclean-gotools: 
+	$(AM_V_at)[ -f ./gotools/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing distclean in gotools" ; \
+	(cd $(HOST_SUBDIR)/gotools && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          distclean) \
+	  || exit 1
+
+@endif gotools
+
+.PHONY: maybe-maintainer-clean-gotools maintainer-clean-gotools
+maybe-maintainer-clean-gotools:
+@if gotools
+maybe-maintainer-clean-gotools: maintainer-clean-gotools
+
+maintainer-clean-gotools: 
+	$(AM_V_at)[ -f ./gotools/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing maintainer-clean in gotools" ; \
+	(cd $(HOST_SUBDIR)/gotools && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          maintainer-clean) \
+	  || exit 1
+
+@endif gotools
+
+
+
 # ---------------------------------------
 # Modules which run on the target machine
 # ---------------------------------------
@@ -44988,6 +45432,745 @@ maintainer-clean-target-libsanitizer:
 	  || exit 1
 
 @endif target-libsanitizer
+
+
+
+# There is only one multilib.out. Cleverer subdirs should NOT need it copied.
+@if target-libmpx
+$(TARGET_SUBDIR)/libmpx/multilib.out: multilib.out
+	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/libmpx ; \
+	rm -f $(TARGET_SUBDIR)/libmpx/Makefile || echo "fine"; \
+	cp multilib.out $(TARGET_SUBDIR)/libmpx/multilib.out
+@endif target-libmpx
+
+
+
+.PHONY: configure-target-libmpx maybe-configure-target-libmpx
+maybe-configure-target-libmpx:
+@if target-libmpx
+maybe-configure-target-libmpx: configure-target-libmpx
+configure-target-libmpx: $(TARGET_SUBDIR)/libmpx/multilib.out
+	$(AM_V_at)test -f stage_last && exit 0; \
+	test ! -f $(TARGET_SUBDIR)/libmpx/Makefile || exit 0; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/libmpx ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo Configuring in $(TARGET_SUBDIR)/libmpx; \
+	cd "$(TARGET_SUBDIR)/libmpx" || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libmpx/ | \
+		$(SED) -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libmpx"; \
+	libsrcdir="$$s/libmpx"; \
+	rm -f no-such-file || echo "ok"; \
+	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
+	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
+	  || exit 1
+@endif target-libmpx
+
+
+
+.PHONY: configure-stage1-target-libmpx maybe-configure-stage1-target-libmpx
+maybe-configure-stage1-target-libmpx:
+@if libmpx-bootstrap
+maybe-configure-stage1-target-libmpx: configure-stage1-target-libmpx
+configure-stage1-target-libmpx: $(TARGET_SUBDIR)/libmpx/multilib.out
+	$(AM_V_at)$(MAKE) stage1-start
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] && exit 0 || echo "nvm"; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo Configuring stage 1 in $(TARGET_SUBDIR)/libmpx ; \
+	cd $(TARGET_SUBDIR)/libmpx || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libmpx/ | \
+		$(SED) -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libmpx"; \
+	libsrcdir="$$s/libmpx"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(TARGET_CONFIGARGS) $${srcdiroption} \
+	  --disable-intermodule 	  --disable-coverage --enable-languages="$(STAGE1_LANGUAGES)" 
+@endif libmpx-bootstrap
+
+.PHONY: configure-stage2-target-libmpx maybe-configure-stage2-target-libmpx
+maybe-configure-stage2-target-libmpx:
+@if libmpx-bootstrap
+maybe-configure-stage2-target-libmpx: configure-stage2-target-libmpx
+configure-stage2-target-libmpx: $(TARGET_SUBDIR)/libmpx/multilib.out
+	$(AM_V_at)$(MAKE) stage2-start
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] && exit 0 || echo "nvm"; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	echo Configuring stage 2 in $(TARGET_SUBDIR)/libmpx ; \
+	cd $(TARGET_SUBDIR)/libmpx || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libmpx/ | \
+		$(SED) -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libmpx"; \
+	libsrcdir="$$s/libmpx"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(TARGET_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libmpx-bootstrap
+
+.PHONY: configure-stage3-target-libmpx maybe-configure-stage3-target-libmpx
+maybe-configure-stage3-target-libmpx:
+@if libmpx-bootstrap
+maybe-configure-stage3-target-libmpx: configure-stage3-target-libmpx
+configure-stage3-target-libmpx: $(TARGET_SUBDIR)/libmpx/multilib.out
+	$(AM_V_at)$(MAKE) stage3-start
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] && exit 0 || echo "nvm"; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	echo Configuring stage 3 in $(TARGET_SUBDIR)/libmpx ; \
+	cd $(TARGET_SUBDIR)/libmpx || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libmpx/ | \
+		$(SED) -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libmpx"; \
+	libsrcdir="$$s/libmpx"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(TARGET_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libmpx-bootstrap
+
+.PHONY: configure-stage4-target-libmpx maybe-configure-stage4-target-libmpx
+maybe-configure-stage4-target-libmpx:
+@if libmpx-bootstrap
+maybe-configure-stage4-target-libmpx: configure-stage4-target-libmpx
+configure-stage4-target-libmpx: $(TARGET_SUBDIR)/libmpx/multilib.out
+	$(AM_V_at)$(MAKE) stage4-start
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] && exit 0 || echo "nvm"; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	echo Configuring stage 4 in $(TARGET_SUBDIR)/libmpx ; \
+	cd $(TARGET_SUBDIR)/libmpx || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libmpx/ | \
+		$(SED) -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libmpx"; \
+	libsrcdir="$$s/libmpx"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(TARGET_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libmpx-bootstrap
+
+.PHONY: configure-stageprofile-target-libmpx maybe-configure-stageprofile-target-libmpx
+maybe-configure-stageprofile-target-libmpx:
+@if libmpx-bootstrap
+maybe-configure-stageprofile-target-libmpx: configure-stageprofile-target-libmpx
+configure-stageprofile-target-libmpx: $(TARGET_SUBDIR)/libmpx/multilib.out
+	$(AM_V_at)$(MAKE) stageprofile-start
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] && exit 0 || echo "nvm"; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	echo Configuring stage profile in $(TARGET_SUBDIR)/libmpx ; \
+	cd $(TARGET_SUBDIR)/libmpx || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libmpx/ | \
+		$(SED) -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libmpx"; \
+	libsrcdir="$$s/libmpx"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(TARGET_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libmpx-bootstrap
+
+.PHONY: configure-stagefeedback-target-libmpx maybe-configure-stagefeedback-target-libmpx
+maybe-configure-stagefeedback-target-libmpx:
+@if libmpx-bootstrap
+maybe-configure-stagefeedback-target-libmpx: configure-stagefeedback-target-libmpx
+configure-stagefeedback-target-libmpx: $(TARGET_SUBDIR)/libmpx/multilib.out
+	$(AM_V_at)$(MAKE) stagefeedback-start
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] && exit 0 || echo "nvm"; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	echo Configuring stage feedback in $(TARGET_SUBDIR)/libmpx ; \
+	cd $(TARGET_SUBDIR)/libmpx || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libmpx/ | \
+		$(SED) -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libmpx"; \
+	libsrcdir="$$s/libmpx"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(TARGET_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libmpx-bootstrap
+
+
+
+
+
+.PHONY: all-target-libmpx maybe-all-target-libmpx
+maybe-all-target-libmpx:
+@if target-libmpx
+TARGET-target-libmpx=all
+maybe-all-target-libmpx: all-target-libmpx
+all-target-libmpx: configure-target-libmpx
+	$(AM_V_at)test -f stage_last && exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	(cd $(TARGET_SUBDIR)/libmpx && \
+	  $(MAKE) $(TARGET_FLAGS_TO_PASS)  $(TARGET-target-libmpx))
+@endif target-libmpx
+
+
+
+.PHONY: all-stage1-target-libmpx maybe-all-stage1-target-libmpx
+.PHONY: clean-stage1-target-libmpx maybe-clean-stage1-target-libmpx
+maybe-all-stage1-target-libmpx:
+maybe-clean-stage1-target-libmpx:
+@if libmpx-bootstrap
+maybe-all-stage1-target-libmpx: all-stage1-target-libmpx
+all-stage1: all-stage1-target-libmpx
+all-stage1-target-libmpx: configure-stage1-target-libmpx
+	$(AM_V_at)$(MAKE) stage1-start
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	cd $(TARGET_SUBDIR)/libmpx && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  CFLAGS="$(STAGE1_CFLAGS)" 
+
+maybe-clean-stage1-target-libmpx: clean-stage1-target-libmpx
+clean-stage1: clean-stage1-target-libmpx
+clean-stage1-target-libmpx:
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || [ -f $(TARGET_SUBDIR)/stage1-libmpx/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || $(MAKE) stage1-start ; \
+	cd $(TARGET_SUBDIR)/libmpx && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  \
+		CFLAGS="$(STAGE1_CFLAGS)"  clean
+@endif libmpx-bootstrap
+
+
+.PHONY: all-stage2-target-libmpx maybe-all-stage2-target-libmpx
+.PHONY: clean-stage2-target-libmpx maybe-clean-stage2-target-libmpx
+maybe-all-stage2-target-libmpx:
+maybe-clean-stage2-target-libmpx:
+@if libmpx-bootstrap
+maybe-all-stage2-target-libmpx: all-stage2-target-libmpx
+all-stage2: all-stage2-target-libmpx
+all-stage2-target-libmpx: configure-stage2-target-libmpx
+	$(AM_V_at)$(MAKE) stage2-start
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	cd $(TARGET_SUBDIR)/libmpx && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)   
+
+maybe-clean-stage2-target-libmpx: clean-stage2-target-libmpx
+clean-stage2: clean-stage2-target-libmpx
+clean-stage2-target-libmpx:
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || [ -f $(TARGET_SUBDIR)/stage2-libmpx/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || $(MAKE) stage2-start ; \
+	cd $(TARGET_SUBDIR)/libmpx && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  \
+		  \
+		  clean
+@endif libmpx-bootstrap
+
+
+.PHONY: all-stage3-target-libmpx maybe-all-stage3-target-libmpx
+.PHONY: clean-stage3-target-libmpx maybe-clean-stage3-target-libmpx
+maybe-all-stage3-target-libmpx:
+maybe-clean-stage3-target-libmpx:
+@if libmpx-bootstrap
+maybe-all-stage3-target-libmpx: all-stage3-target-libmpx
+all-stage3: all-stage3-target-libmpx
+all-stage3-target-libmpx: configure-stage3-target-libmpx
+	$(AM_V_at)$(MAKE) stage3-start
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	cd $(TARGET_SUBDIR)/libmpx && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)   
+
+maybe-clean-stage3-target-libmpx: clean-stage3-target-libmpx
+clean-stage3: clean-stage3-target-libmpx
+clean-stage3-target-libmpx:
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || [ -f $(TARGET_SUBDIR)/stage3-libmpx/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || $(MAKE) stage3-start ; \
+	cd $(TARGET_SUBDIR)/libmpx && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  \
+		  \
+		  clean
+@endif libmpx-bootstrap
+
+
+.PHONY: all-stage4-target-libmpx maybe-all-stage4-target-libmpx
+.PHONY: clean-stage4-target-libmpx maybe-clean-stage4-target-libmpx
+maybe-all-stage4-target-libmpx:
+maybe-clean-stage4-target-libmpx:
+@if libmpx-bootstrap
+maybe-all-stage4-target-libmpx: all-stage4-target-libmpx
+all-stage4: all-stage4-target-libmpx
+all-stage4-target-libmpx: configure-stage4-target-libmpx
+	$(AM_V_at)$(MAKE) stage4-start
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	cd $(TARGET_SUBDIR)/libmpx && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)   
+
+maybe-clean-stage4-target-libmpx: clean-stage4-target-libmpx
+clean-stage4: clean-stage4-target-libmpx
+clean-stage4-target-libmpx:
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || [ -f $(TARGET_SUBDIR)/stage4-libmpx/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || $(MAKE) stage4-start ; \
+	cd $(TARGET_SUBDIR)/libmpx && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  \
+		  \
+		  clean
+@endif libmpx-bootstrap
+
+
+.PHONY: all-stageprofile-target-libmpx maybe-all-stageprofile-target-libmpx
+.PHONY: clean-stageprofile-target-libmpx maybe-clean-stageprofile-target-libmpx
+maybe-all-stageprofile-target-libmpx:
+maybe-clean-stageprofile-target-libmpx:
+@if libmpx-bootstrap
+maybe-all-stageprofile-target-libmpx: all-stageprofile-target-libmpx
+all-stageprofile: all-stageprofile-target-libmpx
+all-stageprofile-target-libmpx: configure-stageprofile-target-libmpx
+	$(AM_V_at)$(MAKE) stageprofile-start
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	cd $(TARGET_SUBDIR)/libmpx && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  CFLAGS="$(BOOT_CFLAGS) -fprofile-generate" 
+
+maybe-clean-stageprofile-target-libmpx: clean-stageprofile-target-libmpx
+clean-stageprofile: clean-stageprofile-target-libmpx
+clean-stageprofile-target-libmpx:
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || [ -f $(TARGET_SUBDIR)/stageprofile-libmpx/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || $(MAKE) stageprofile-start ; \
+	cd $(TARGET_SUBDIR)/libmpx && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  \
+		  \
+		CFLAGS="$(BOOT_CFLAGS) -fprofile-generate"  clean
+@endif libmpx-bootstrap
+
+
+.PHONY: all-stagefeedback-target-libmpx maybe-all-stagefeedback-target-libmpx
+.PHONY: clean-stagefeedback-target-libmpx maybe-clean-stagefeedback-target-libmpx
+maybe-all-stagefeedback-target-libmpx:
+maybe-clean-stagefeedback-target-libmpx:
+@if libmpx-bootstrap
+maybe-all-stagefeedback-target-libmpx: all-stagefeedback-target-libmpx
+all-stagefeedback: all-stagefeedback-target-libmpx
+all-stagefeedback-target-libmpx: configure-stagefeedback-target-libmpx
+	$(AM_V_at)$(MAKE) stagefeedback-start
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	cd $(TARGET_SUBDIR)/libmpx && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  CFLAGS="$(BOOT_CFLAGS) -fprofile-use" 
+
+maybe-clean-stagefeedback-target-libmpx: clean-stagefeedback-target-libmpx
+clean-stagefeedback: clean-stagefeedback-target-libmpx
+clean-stagefeedback-target-libmpx:
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || [ -f $(TARGET_SUBDIR)/stagefeedback-libmpx/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || $(MAKE) stagefeedback-start ; \
+	cd $(TARGET_SUBDIR)/libmpx && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  \
+		  \
+		CFLAGS="$(BOOT_CFLAGS) -fprofile-use"  clean
+@endif libmpx-bootstrap
+
+
+
+
+
+
+.PHONY: check-target-libmpx maybe-check-target-libmpx
+maybe-check-target-libmpx:
+@if target-libmpx
+maybe-check-target-libmpx: check-target-libmpx
+
+check-target-libmpx:
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	(cd $(TARGET_SUBDIR)/libmpx && \
+	  $(MAKE) $(TARGET_FLAGS_TO_PASS)   check)
+
+@endif target-libmpx
+
+.PHONY: install-target-libmpx maybe-install-target-libmpx
+maybe-install-target-libmpx:
+@if target-libmpx
+maybe-install-target-libmpx: install-target-libmpx
+
+install-target-libmpx: installdirs
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	(cd $(TARGET_SUBDIR)/libmpx && \
+	  $(MAKE) $(TARGET_FLAGS_TO_PASS)  install)
+
+@endif target-libmpx
+
+# Other targets (info, dvi, etc.)
+
+.PHONY: maybe-info-target-libmpx info-target-libmpx
+maybe-info-target-libmpx:
+@if target-libmpx
+maybe-info-target-libmpx: info-target-libmpx
+
+info-target-libmpx: \
+    configure-target-libmpx 
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing info in $(TARGET_SUBDIR)/libmpx" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libmpx && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           info) \
+	  || exit 1
+
+@endif target-libmpx
+
+.PHONY: maybe-dvi-target-libmpx dvi-target-libmpx
+maybe-dvi-target-libmpx:
+@if target-libmpx
+maybe-dvi-target-libmpx: dvi-target-libmpx
+
+dvi-target-libmpx: \
+    configure-target-libmpx 
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing dvi in $(TARGET_SUBDIR)/libmpx" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libmpx && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           dvi) \
+	  || exit 1
+
+@endif target-libmpx
+
+.PHONY: maybe-pdf-target-libmpx pdf-target-libmpx
+maybe-pdf-target-libmpx:
+@if target-libmpx
+maybe-pdf-target-libmpx: pdf-target-libmpx
+
+pdf-target-libmpx: \
+    configure-target-libmpx 
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing pdf in $(TARGET_SUBDIR)/libmpx" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libmpx && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           pdf) \
+	  || exit 1
+
+@endif target-libmpx
+
+.PHONY: maybe-html-target-libmpx html-target-libmpx
+maybe-html-target-libmpx:
+@if target-libmpx
+maybe-html-target-libmpx: html-target-libmpx
+
+html-target-libmpx: \
+    configure-target-libmpx 
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing html in $(TARGET_SUBDIR)/libmpx" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libmpx && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           html) \
+	  || exit 1
+
+@endif target-libmpx
+
+.PHONY: maybe-TAGS-target-libmpx TAGS-target-libmpx
+maybe-TAGS-target-libmpx:
+@if target-libmpx
+maybe-TAGS-target-libmpx: TAGS-target-libmpx
+
+TAGS-target-libmpx: \
+    configure-target-libmpx 
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing TAGS in $(TARGET_SUBDIR)/libmpx" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libmpx && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           TAGS) \
+	  || exit 1
+
+@endif target-libmpx
+
+.PHONY: maybe-install-info-target-libmpx install-info-target-libmpx
+maybe-install-info-target-libmpx:
+@if target-libmpx
+maybe-install-info-target-libmpx: install-info-target-libmpx
+
+install-info-target-libmpx: \
+    configure-target-libmpx \
+    info-target-libmpx 
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing install-info in $(TARGET_SUBDIR)/libmpx" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libmpx && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           install-info) \
+	  || exit 1
+
+@endif target-libmpx
+
+.PHONY: maybe-install-pdf-target-libmpx install-pdf-target-libmpx
+maybe-install-pdf-target-libmpx:
+@if target-libmpx
+maybe-install-pdf-target-libmpx: install-pdf-target-libmpx
+
+install-pdf-target-libmpx: \
+    configure-target-libmpx \
+    pdf-target-libmpx 
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing install-pdf in $(TARGET_SUBDIR)/libmpx" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libmpx && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           install-pdf) \
+	  || exit 1
+
+@endif target-libmpx
+
+.PHONY: maybe-install-html-target-libmpx install-html-target-libmpx
+maybe-install-html-target-libmpx:
+@if target-libmpx
+maybe-install-html-target-libmpx: install-html-target-libmpx
+
+install-html-target-libmpx: \
+    configure-target-libmpx \
+    html-target-libmpx 
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing install-html in $(TARGET_SUBDIR)/libmpx" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libmpx && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           install-html) \
+	  || exit 1
+
+@endif target-libmpx
+
+.PHONY: maybe-installcheck-target-libmpx installcheck-target-libmpx
+maybe-installcheck-target-libmpx:
+@if target-libmpx
+maybe-installcheck-target-libmpx: installcheck-target-libmpx
+
+installcheck-target-libmpx: \
+    configure-target-libmpx 
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing installcheck in $(TARGET_SUBDIR)/libmpx" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libmpx && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           installcheck) \
+	  || exit 1
+
+@endif target-libmpx
+
+.PHONY: maybe-mostlyclean-target-libmpx mostlyclean-target-libmpx
+maybe-mostlyclean-target-libmpx:
+@if target-libmpx
+maybe-mostlyclean-target-libmpx: mostlyclean-target-libmpx
+
+mostlyclean-target-libmpx: 
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing mostlyclean in $(TARGET_SUBDIR)/libmpx" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libmpx && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           mostlyclean) \
+	  || exit 1
+
+@endif target-libmpx
+
+.PHONY: maybe-clean-target-libmpx clean-target-libmpx
+maybe-clean-target-libmpx:
+@if target-libmpx
+maybe-clean-target-libmpx: clean-target-libmpx
+
+clean-target-libmpx: 
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing clean in $(TARGET_SUBDIR)/libmpx" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libmpx && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           clean) \
+	  || exit 1
+
+@endif target-libmpx
+
+.PHONY: maybe-distclean-target-libmpx distclean-target-libmpx
+maybe-distclean-target-libmpx:
+@if target-libmpx
+maybe-distclean-target-libmpx: distclean-target-libmpx
+
+distclean-target-libmpx: 
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing distclean in $(TARGET_SUBDIR)/libmpx" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libmpx && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           distclean) \
+	  || exit 1
+
+@endif target-libmpx
+
+.PHONY: maybe-maintainer-clean-target-libmpx maintainer-clean-target-libmpx
+maybe-maintainer-clean-target-libmpx:
+@if target-libmpx
+maybe-maintainer-clean-target-libmpx: maintainer-clean-target-libmpx
+
+maintainer-clean-target-libmpx: 
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/libmpx/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing maintainer-clean in $(TARGET_SUBDIR)/libmpx" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libmpx && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           maintainer-clean) \
+	  || exit 1
+
+@endif target-libmpx
 
 
 
@@ -57346,6 +58529,12 @@ stage1-start::
 	set stage1-libsanitizer libsanitizer ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif target-libsanitizer
+@if target-libmpx
+	$(AM_V_at)cd $(TARGET_SUBDIR); [ -d stage1-libmpx ] || \
+	  mkdir stage1-libmpx; \
+	set stage1-libmpx libmpx ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif target-libmpx
 @if target-libvtv
 	$(AM_V_at)cd $(TARGET_SUBDIR); [ -d stage1-libvtv ] || \
 	  mkdir stage1-libvtv; \
@@ -57459,6 +58648,10 @@ stage1-end::
 	$(AM_V_at)cd $(HOST_SUBDIR); set libsanitizer stage1-libsanitizer ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libsanitizer
+@if target-libmpx
+	$(AM_V_at)cd $(HOST_SUBDIR); set libmpx stage1-libmpx ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libmpx
 @if target-libvtv
 	$(AM_V_at)cd $(HOST_SUBDIR); set libvtv stage1-libvtv ; \
 	@UNDO_LINK_TO_DIR@ 
@@ -57695,6 +58888,14 @@ stage2-start::
 	set stage1-libsanitizer prev-libsanitizer ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif target-libsanitizer
+@if target-libmpx
+	$(AM_V_at)cd $(TARGET_SUBDIR); [ -d stage2-libmpx ] || \
+	  mkdir stage2-libmpx; \
+	set stage2-libmpx libmpx ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage1-libmpx prev-libmpx ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif target-libmpx
 @if target-libvtv
 	$(AM_V_at)cd $(TARGET_SUBDIR); [ -d stage2-libvtv ] || \
 	  mkdir stage2-libvtv; \
@@ -57860,6 +59061,12 @@ stage2-end::
 	set prev-libsanitizer stage1-libsanitizer ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libsanitizer
+@if target-libmpx
+	$(AM_V_at)cd $(HOST_SUBDIR); set libmpx stage2-libmpx ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libmpx stage1-libmpx ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libmpx
 @if target-libvtv
 	$(AM_V_at)cd $(HOST_SUBDIR); set libvtv stage2-libvtv ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -58105,6 +59312,14 @@ stage3-start::
 	set stage2-libsanitizer prev-libsanitizer ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif target-libsanitizer
+@if target-libmpx
+	$(AM_V_at)cd $(TARGET_SUBDIR); [ -d stage3-libmpx ] || \
+	  mkdir stage3-libmpx; \
+	set stage3-libmpx libmpx ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage2-libmpx prev-libmpx ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif target-libmpx
 @if target-libvtv
 	$(AM_V_at)cd $(TARGET_SUBDIR); [ -d stage3-libvtv ] || \
 	  mkdir stage3-libvtv; \
@@ -58270,6 +59485,12 @@ stage3-end::
 	set prev-libsanitizer stage2-libsanitizer ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libsanitizer
+@if target-libmpx
+	$(AM_V_at)cd $(HOST_SUBDIR); set libmpx stage3-libmpx ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libmpx stage2-libmpx ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libmpx
 @if target-libvtv
 	$(AM_V_at)cd $(HOST_SUBDIR); set libvtv stage3-libvtv ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -58546,6 +59767,14 @@ stage4-start::
 	set stage3-libsanitizer prev-libsanitizer ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif target-libsanitizer
+@if target-libmpx
+	$(AM_V_at)cd $(TARGET_SUBDIR); [ -d stage4-libmpx ] || \
+	  mkdir stage4-libmpx; \
+	set stage4-libmpx libmpx ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage3-libmpx prev-libmpx ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif target-libmpx
 @if target-libvtv
 	$(AM_V_at)cd $(TARGET_SUBDIR); [ -d stage4-libvtv ] || \
 	  mkdir stage4-libvtv; \
@@ -58711,6 +59940,12 @@ stage4-end::
 	set prev-libsanitizer stage3-libsanitizer ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libsanitizer
+@if target-libmpx
+	$(AM_V_at)cd $(HOST_SUBDIR); set libmpx stage4-libmpx ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libmpx stage3-libmpx ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libmpx
 @if target-libvtv
 	$(AM_V_at)cd $(HOST_SUBDIR); set libvtv stage4-libvtv ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -58984,6 +60219,14 @@ stageprofile-start::
 	set stage1-libsanitizer prev-libsanitizer ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif target-libsanitizer
+@if target-libmpx
+	$(AM_V_at)cd $(TARGET_SUBDIR); [ -d stageprofile-libmpx ] || \
+	  mkdir stageprofile-libmpx; \
+	set stageprofile-libmpx libmpx ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage1-libmpx prev-libmpx ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif target-libmpx
 @if target-libvtv
 	$(AM_V_at)cd $(TARGET_SUBDIR); [ -d stageprofile-libvtv ] || \
 	  mkdir stageprofile-libvtv; \
@@ -59149,6 +60392,12 @@ stageprofile-end::
 	set prev-libsanitizer stage1-libsanitizer ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libsanitizer
+@if target-libmpx
+	$(AM_V_at)cd $(HOST_SUBDIR); set libmpx stageprofile-libmpx ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libmpx stage1-libmpx ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libmpx
 @if target-libvtv
 	$(AM_V_at)cd $(HOST_SUBDIR); set libvtv stageprofile-libvtv ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -59391,6 +60640,14 @@ stagefeedback-start::
 	set stageprofile-libsanitizer prev-libsanitizer ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif target-libsanitizer
+@if target-libmpx
+	$(AM_V_at)cd $(TARGET_SUBDIR); [ -d stagefeedback-libmpx ] || \
+	  mkdir stagefeedback-libmpx; \
+	set stagefeedback-libmpx libmpx ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stageprofile-libmpx prev-libmpx ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif target-libmpx
 @if target-libvtv
 	$(AM_V_at)cd $(TARGET_SUBDIR); [ -d stagefeedback-libvtv ] || \
 	  mkdir stagefeedback-libvtv; \
@@ -59556,6 +60813,12 @@ stagefeedback-end::
 	set prev-libsanitizer stageprofile-libsanitizer ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libsanitizer
+@if target-libmpx
+	$(AM_V_at)cd $(HOST_SUBDIR); set libmpx stagefeedback-libmpx ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libmpx stageprofile-libmpx ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libmpx
 @if target-libvtv
 	$(AM_V_at)cd $(HOST_SUBDIR); set libvtv stagefeedback-libvtv ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -59657,6 +60920,16 @@ configure-stageprofile-target-libsanitizer: maybe-all-stageprofile-gcc
 configure-stagefeedback-target-libsanitizer: maybe-all-stagefeedback-gcc
 @endif gcc-bootstrap
 configure-target-libsanitizer: maybe-all-gcc
+
+@if gcc-bootstrap
+configure-stage1-target-libmpx: maybe-all-stage1-gcc
+configure-stage2-target-libmpx: maybe-all-stage2-gcc
+configure-stage3-target-libmpx: maybe-all-stage3-gcc
+configure-stage4-target-libmpx: maybe-all-stage4-gcc
+configure-stageprofile-target-libmpx: maybe-all-stageprofile-gcc
+configure-stagefeedback-target-libmpx: maybe-all-stagefeedback-gcc
+@endif gcc-bootstrap
+configure-target-libmpx: maybe-all-gcc
 
 @if gcc-bootstrap
 configure-stage1-target-libvtv: maybe-all-stage1-gcc
@@ -60147,6 +61420,7 @@ all-stageprofile-lto-plugin: maybe-all-stageprofile-libiberty-linker-plugin
 all-stagefeedback-lto-plugin: maybe-all-stagefeedback-libiberty-linker-plugin
 configure-libcc1: maybe-configure-gcc
 all-libcc1: maybe-all-gcc
+all-gotools: maybe-all-target-libgo
 all-utils: maybe-all-libiberty
 configure-mpfr: maybe-all-gmp
 
@@ -60728,7 +62002,7 @@ all-stage3-target-libstdc++-v3: maybe-configure-stage3-target-libgomp
 all-stage4-target-libstdc++-v3: maybe-configure-stage4-target-libgomp
 all-stageprofile-target-libstdc++-v3: maybe-configure-stageprofile-target-libgomp
 all-stagefeedback-target-libstdc++-v3: maybe-configure-stagefeedback-target-libgomp
-all-target-liboffloadmic: maybe-configure-target-libgomp
+all-target-liboffloadmic: maybe-all-target-libgomp
 install-target-libgo: maybe-install-target-libatomic
 install-target-libgfortran: maybe-install-target-libquadmath
 install-target-libgfortran: maybe-install-target-libgcc

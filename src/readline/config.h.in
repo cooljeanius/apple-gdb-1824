@@ -98,6 +98,30 @@
 /* Define to 1 if you have the `ctime' function. */
 #undef HAVE_CTIME
 
+/* Define to 1 if you have the declaration of `exit', and to 0 if you don't.
+   */
+#undef HAVE_DECL_EXIT
+
+/* Define to 1 if you have the declaration of `free', and to 0 if you don't.
+   */
+#undef HAVE_DECL_FREE
+
+/* Define to 1 if you have the declaration of `strchr', and to 0 if you don't.
+   */
+#undef HAVE_DECL_STRCHR
+
+/* Define to 1 if you have the declaration of `strcpy', and to 0 if you don't.
+   */
+#undef HAVE_DECL_STRCPY
+
+/* Define to 1 if you have the declaration of `strlen', and to 0 if you don't.
+   */
+#undef HAVE_DECL_STRLEN
+
+/* Define to 1 if you have the declaration of `strncpy', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRNCPY
+
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
 #undef HAVE_DIRENT_H

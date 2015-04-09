@@ -59,3 +59,7 @@ jv-exp.c
 m2-exp.c
 objc-exp.c
 p-exp.c
+
+# artifacts of codesigning:
+_CodeSignature/*
+CodeResources

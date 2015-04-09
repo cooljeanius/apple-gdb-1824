@@ -16,12 +16,16 @@ AH_VERBATIM([00_CONFIG_H_CHECK],[
 /* Check that config.h is #included before system headers
  * (this works only for glibc, but that should be enough).  */
 #if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
-#  error config.h must be #included before system headers
+#  error "config.h must be #included before system headers"
 #endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
 #define __CONFIG_H__ 1])dnl
 
-# host/target stuff:
+# build/host/target stuff:
 AC_CANONICAL_TARGET
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"
   AC_SUBST([HOST_ARCHITECTURE])
@@ -359,6 +363,7 @@ if test "x${ac_cv_c_const}" = "x"; then
   AC_C_CONST
 fi
 AC_C_PROTOTYPES
+AC_C_STRINGIZE
 AC_MSG_CHECKING([types])
 AC_MSG_RESULT([ ])
 AC_TYPE_INT8_T
@@ -427,7 +432,7 @@ AC_CACHE_CHECK([linker --as-needed support],[bfd_cv_ld_as_needed],
 dnl# check for libm:
 LT_LIB_M
 
-# Libs for generator progs
+# Libs for generator progs:
 if test "x${cross_compiling}" = "xno"; then
   BUILD_LIBS=../libiberty/libiberty.a
   BUILD_LIB_DEPS=${BUILD_LIBS}
@@ -448,7 +453,7 @@ WIN32LDFLAGS=""
 WIN32LIBADD=""
 case "${host}" in
 *-*-cygwin*)
-  if test "${enable_shared}" = "yes"; then
+  if test "x${enable_shared}" = "xyes"; then
     WIN32LDFLAGS="-no-undefined"
     WIN32LIBADD="-L`pwd`/../bfd -lbfd -L`pwd`/../libiberty -liberty -L`pwd`/../intl -lintl -lcygwin"
   fi

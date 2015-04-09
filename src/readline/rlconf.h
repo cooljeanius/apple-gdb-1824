@@ -21,7 +21,7 @@
    have a copy of the license, write to the Free Software Foundation,
    59 Temple Place, Suite 330, Boston, MA 02111 USA. */
 
-#if !defined (_RLCONF_H_)
+#if !defined(_RLCONF_H_)
 #define _RLCONF_H_
 
 /* Define this if you want the vi-mode editing available. */

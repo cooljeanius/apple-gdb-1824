@@ -3284,73 +3284,74 @@ unset_command(char *args, int from_tty)
 }
 
 void
-_initialize_infcmd (void)
+_initialize_infcmd(void)
 {
   struct cmd_list_element *c = NULL;
 
   /* add the filename of the terminal connected to inferior I/O */
-  add_setshow_filename_cmd ("inferior-tty", class_run,
-			    &inferior_io_terminal, _("\
+  add_setshow_filename_cmd("inferior-tty", class_run,
+			   &inferior_io_terminal, _("\
 Set terminal for future runs of program being debugged."), _("\
 Show terminal for future runs of program being debugged."), _("\
 Usage: set inferior-tty /dev/pts/1"), NULL, NULL, &setlist, &showlist);
-  add_com_alias ("tty", "set inferior-tty", class_alias, 0);
+  add_com_alias("tty", "set inferior-tty", class_alias, 0);
 
-  /* c->completer_word_break_characters = gdb_completer_filename_word_break_characters; */ /* FIXME */
+#if 0
+  c->completer_word_break_characters = gdb_completer_filename_word_break_characters; /* FIXME */
+#endif /* 0 */
 
-  add_setshow_optional_filename_cmd ("args", class_run,
-				     &inferior_args, _("\
+  add_setshow_optional_filename_cmd("args", class_run,
+				    &inferior_args, _("\
 Set argument list to give program being debugged when it is started."), _("\
 Show argument list to give program being debugged when it is started."), _("\
 Follow this command with any number of args, to be passed to the program."),
-				     notice_args_set,
-				     notice_args_read,
-				     &setlist, &showlist);
+				    notice_args_set, notice_args_read,
+				    &setlist, &showlist);
 
-  c = add_cmd ("environment", no_class, environment_info, _("\
+  c = add_cmd("environment", no_class, environment_info, _("\
 The environment to give the program, or one variable's value.\n\
 With an argument VAR, prints the value of environment variable VAR to\n\
 give the program being debugged.  With no arguments, prints the entire\n\
 environment to be given to the program."), &showlist);
-  set_cmd_completer (c, noop_completer);
+  set_cmd_completer(c, noop_completer);
 
-  add_prefix_cmd ("unset", no_class, unset_command,
-		  _("Complement to certain \"set\" commands."),
-		  &unsetlist, "unset ", 0, &cmdlist);
+  add_prefix_cmd("unset", no_class, unset_command,
+		 _("Complement to certain \"set\" commands."),
+		 &unsetlist, "unset ", 0, &cmdlist);
 
-  c = add_cmd ("environment", class_run, unset_environment_command, _("\
+  c = add_cmd("environment", class_run, unset_environment_command, _("\
 Cancel environment variable VAR for the program.\n\
 This does not affect the program until the next \"run\" command."),
-	       &unsetlist);
-  set_cmd_completer (c, noop_completer);
+              &unsetlist);
+  set_cmd_completer(c, noop_completer);
 
-  c = add_cmd ("environment", class_run, set_environment_command, _("\
+  c = add_cmd("environment", class_run, set_environment_command, _("\
 Set environment variable value to give the program.\n\
 Arguments are VAR VALUE where VAR is variable name and VALUE is value.\n\
 VALUES of environment variables are uninterpreted strings.\n\
 This does not affect the program until the next \"run\" command."),
-	       &setlist);
-  set_cmd_completer (c, noop_completer);
+              &setlist);
+  set_cmd_completer(c, noop_completer);
 
-  c = add_com ("path", class_files, path_command, _("\
+  c = add_com("path", class_files, path_command, _("\
 Add directory DIR(s) to beginning of search path for object files.\n\
 $cwd in the path means the current working directory.\n\
 This path is equivalent to the $PATH shell variable.  It is a list of\n\
 directories, separated by colons.  These directories are searched to find\n\
 fully linked executable files and separately compiled object files as needed."));
-  set_cmd_completer (c, filename_completer);
+  set_cmd_completer(c, filename_completer);
 
-  c = add_cmd ("paths", no_class, path_info, _("\
+  c = add_cmd("paths", no_class, path_info, _("\
 Current search path for finding object files.\n\
 $cwd in the path means the current working directory.\n\
 This path is equivalent to the $PATH shell variable.  It is a list of\n\
 directories, separated by colons.  These directories are searched to find\n\
 fully linked executable files and separately compiled object files as needed."),
-	       &showlist);
-  set_cmd_completer (c, noop_completer);
+              &showlist);
+  set_cmd_completer(c, noop_completer);
 
   /* APPLE LOCAL process completer */
-  c = add_com ("attach", class_run, attach_command, _("\
+  c = add_com("attach", class_run, attach_command, _("\
 Attach to a process or file outside of GDB.\n\
 This command attaches to another target, of the same type as your last\n\
 \"target\" command (\"info files\" will show your target stack).\n\
@@ -3369,94 +3370,94 @@ You may also use the '-waitfor' argument followed by a process name -- gdb\n\
 will poll and loop waiting for the process by that name to launch."));
 
   /* APPLE LOCAL process completer */
-  set_cmd_completer (c, PROCESS_COMPLETER);
-#ifdef PROCESS_COMPLETER_WORD_BREAK_CHARACTERS
-  /* c->completer_word_break_characters = PROCESS_COMPLETER_WORD_BREAK_CHARACTERS; */ /* FIXME */
-#endif
+  set_cmd_completer(c, PROCESS_COMPLETER);
+#if defined(PROCESS_COMPLETER_WORD_BREAK_CHARACTERS) && 0
+  c->completer_word_break_characters = PROCESS_COMPLETER_WORD_BREAK_CHARACTERS; /* FIXME */
+#endif /* PROCESS_COMPLETER_WORD_BREAK_CHARACTERS && 0 */
 
-  add_com ("detach", class_run, detach_command, _("\
+  add_com("detach", class_run, detach_command, _("\
 Detach a process or file previously attached.\n\
 If a process, it is no longer traced, and it continues its execution.  If\n\
 you were debugging a file, the file is closed and gdb no longer accesses it."));
 
-  add_com ("disconnect", class_run, disconnect_command, _("\
+  add_com("disconnect", class_run, disconnect_command, _("\
 Disconnect from a target.\n\
 The target will wait for another debugger to connect.  Not available for\n\
 all targets."));
 
-  add_com ("signal", class_run, signal_command, _("\
+  add_com("signal", class_run, signal_command, _("\
 Continue program giving it signal specified by the argument.\n\
 An argument of \"0\" means continue program without giving it a signal."));
 
-  add_com ("stepi", class_run, stepi_command, _("\
+  add_com("stepi", class_run, stepi_command, _("\
 Step one instruction exactly.\n\
 Argument N means do this N times (or till program stops for another reason)."));
-  add_com_alias ("si", "stepi", class_alias, 0);
+  add_com_alias("si", "stepi", class_alias, 0);
 
-  add_com ("nexti", class_run, nexti_command, _("\
+  add_com("nexti", class_run, nexti_command, _("\
 Step one instruction, but proceed through subroutine calls.\n\
 Argument N means do this N times (or till program stops for another reason)."));
-  add_com_alias ("ni", "nexti", class_alias, 0);
+  add_com_alias("ni", "nexti", class_alias, 0);
 
-  add_com ("finish", class_run, finish_command, _("\
+  add_com("finish", class_run, finish_command, _("\
 Execute until selected stack frame returns.\n\
 Upon return, the value returned is printed and put in the value history."));
 
-  add_com ("next", class_run, next_command, _("\
+  add_com("next", class_run, next_command, _("\
 Step program, proceeding through subroutine calls.\n\
 Like the \"step\" command as long as subroutine calls do not happen;\n\
 when they do, the call is treated as one instruction.\n\
 Argument N means do this N times (or till program stops for another reason)."));
-  add_com_alias ("n", "next", class_run, 1);
+  add_com_alias("n", "next", class_run, 1);
   if (xdb_commands)
-    add_com_alias ("S", "next", class_run, 1);
+    add_com_alias("S", "next", class_run, 1);
 
-  add_com ("step", class_run, step_command, _("\
+  add_com("step", class_run, step_command, _("\
 Step program until it reaches a different source line.\n\
 Argument N means do this N times (or till program stops for another reason)."));
-  add_com_alias ("s", "step", class_run, 1);
+  add_com_alias("s", "step", class_run, 1);
 
-  c = add_com ("until", class_run, until_command, _("\
+  c = add_com("until", class_run, until_command, _("\
 Execute until the program reaches a source line greater than the current\n\
 or a specified location (same args as break command) within the current frame."));
-  set_cmd_completer (c, location_completer);
-  add_com_alias ("u", "until", class_run, 1);
+  set_cmd_completer(c, location_completer);
+  add_com_alias("u", "until", class_run, 1);
 
-  c = add_com ("advance", class_run, advance_command, _("\
+  c = add_com("advance", class_run, advance_command, _("\
 Continue the program up to the given location (same form as args for break command).\n\
 Execution will also stop upon exit from the current stack frame."));
-  set_cmd_completer (c, location_completer);
+  set_cmd_completer(c, location_completer);
 
-  c = add_com ("jump", class_run, jump_command, _("\
+  c = add_com("jump", class_run, jump_command, _("\
 Continue program being debugged at specified line or address.\n\
 Give as argument either LINENUM or *ADDR, where ADDR is an expression\n\
 for an address to start at."));
-  set_cmd_completer (c, location_completer);
+  set_cmd_completer(c, location_completer);
 
   if (xdb_commands)
     {
-      c = add_com ("go", class_run, go_command, _("\
+      c = add_com("go", class_run, go_command, _("\
 Usage: go <location>\n\
 Continue program being debugged, stopping at specified line or \n\
 address.\n\
 Give as argument either LINENUM or *ADDR, where ADDR is an \n\
 expression for an address to start at.\n\
 This command is a combination of tbreak and jump."));
-      set_cmd_completer (c, location_completer);
+      set_cmd_completer(c, location_completer);
     }
 
   if (xdb_commands)
-    add_com_alias ("g", "go", class_run, 1);
+    add_com_alias("g", "go", class_run, 1);
 
-  add_com ("continue", class_run, continue_command, _("\
+  add_com("continue", class_run, continue_command, _("\
 Continue program being debugged, after signal or breakpoint.\n\
 If proceeding from breakpoint, a number N may be used as an argument,\n\
 which means to set the ignore count of that breakpoint to N - 1 (so that\n\
 the breakpoint won't break until the Nth time it is reached)."));
-  add_com_alias ("c", "cont", class_run, 1);
-  add_com_alias ("fg", "cont", class_run, 1);
+  add_com_alias("c", "cont", class_run, 1);
+  add_com_alias("fg", "cont", class_run, 1);
 
-  c = add_com ("run", class_run, run_command, _("\
+  c = add_com("run", class_run, run_command, _("\
 Start debugged program.  You may specify arguments to give it.\n\
 If 'start-with-shell' is set to 1, args may include \"*\", or \"[...]\";\n\
 they will be expanded using \"sh\".  Input and output redirection with\n\
@@ -3464,54 +3465,58 @@ they will be expanded using \"sh\".  Input and output redirection with\n\
 With no arguments, uses arguments last specified (with \"run\" or \"set args\").\n\
 To cancel previous arguments and run with no arguments,\n\
 use \"set args\" without arguments."));
-  set_cmd_completer (c, filename_completer);
-  /* c->completer_word_break_characters = gdb_completer_filename_word_break_characters; */ /* FIXME */
-  add_com_alias ("r", "run", class_run, 1);
+  set_cmd_completer(c, filename_completer);
+#if 0
+  c->completer_word_break_characters = gdb_completer_filename_word_break_characters; /* FIXME */
+#endif /* 0 */
+  add_com_alias("r", "run", class_run, 1);
   if (xdb_commands)
-    add_com ("R", class_run, run_no_args_command,
-	     _("Start debugged program with no arguments."));
+    add_com("R", class_run, run_no_args_command,
+	    _("Start debugged program with no arguments."));
 
-  c = add_com ("start", class_run, start_command, _("\
+  c = add_com("start", class_run, start_command, _("\
 Run the debugged program until the beginning of the main procedure.\n\
 You may specify arguments to give to your program, just as with the\n\
 \"run\" command."));
-  set_cmd_completer (c, filename_completer);
+  set_cmd_completer(c, filename_completer);
 
-  add_com ("interrupt", class_run, interrupt_target_command,
-	   _("Interrupt the execution of the debugged program."));
+  add_com("interrupt", class_run, interrupt_target_command,
+	  _("Interrupt the execution of the debugged program."));
 
-  add_info ("registers", nofp_registers_info, _("\
+  add_info("registers", nofp_registers_info, _("\
 List of integer registers and their contents, for selected stack frame.\n\
 Register name as argument means describe only that register."));
-  add_info_alias ("r", "registers", 1);
+  add_info_alias("r", "registers", 1);
 
   if (xdb_commands)
-    add_com ("lr", class_info, nofp_registers_info, _("\
+    add_com("lr", class_info, nofp_registers_info, _("\
 List of integer registers and their contents, for selected stack frame.\n\
 Register name as argument means describe only that register."));
-  add_info ("all-registers", all_registers_info, _("\
+  add_info("all-registers", all_registers_info, _("\
 List of all registers and their contents, for selected stack frame.\n\
 Register name as argument means describe only that register."));
 
-  add_info ("program", program_info,
-	    _("Execution status of the program."));
+  add_info("program", program_info,
+	   _("Execution status of the program."));
 
   /* APPLE LOCAL begin info pid */
   /* "info pid" & MI's "-pid-info" are Apple local cmds for
      use by Xcode.  */
-  add_info ("pid", pid_info,
-	    "Process ID of the program.");
+  add_info("pid", pid_info,
+	   "Process ID of the program.");
   /* APPLE LOCAL end info pid */
 
-  add_info ("float", float_info,
-	    _("Print the status of the floating point unit\n"));
+  add_info("float", float_info,
+	   _("Print the status of the floating point unit\n"));
 
-  add_info ("vector", vector_info,
-	    _("Print the status of the vector unit\n"));
+  add_info("vector", vector_info,
+	   _("Print the status of the vector unit\n"));
 
-  inferior_environ = make_environ ();
-  init_environ (inferior_environ);
+  inferior_environ = make_environ();
+  init_environ(inferior_environ);
 
   /* APPLE LOCAL */
-  smuggle_dyld_settings (inferior_environ);
+  smuggle_dyld_settings(inferior_environ);
 }
+
+/* EOF */

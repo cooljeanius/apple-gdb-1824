@@ -1030,7 +1030,7 @@ bfd_scan_vma(const char *string, const char **end, int base)
     }
 
   cutoff = ((~(bfd_vma)0) / (bfd_vma)base);
-  cutlim = ((~(bfd_vma)0) % (bfd_vma)base);
+  cutlim = (unsigned int)((~(bfd_vma)0) % (bfd_vma)base);
   value = 0UL;
   overflow = 0;
   while (1)

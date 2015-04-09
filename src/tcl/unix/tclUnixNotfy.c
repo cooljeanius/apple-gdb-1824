@@ -1,5 +1,6 @@
 /*
- * tclUnixNotify.c --
+ * tclUnixNotfy.c --
+ * FIXME: (this file is missing an 'i' in its name)
  *
  *	This file contains the implementation of the select-based
  *	Unix-specific notifier, which is the lowest-level part of the
@@ -16,12 +17,12 @@
 
 #include "tclInt.h"
 #include "tclPort.h"
-#include <signal.h> 
+#include <signal.h>
 
 extern TclStubs tclStubs;
 
 /*
- * This structure is used to keep track of the notifier info for a 
+ * This structure is used to keep track of the notifier info for a
  * a registered file.
  */
 
@@ -56,7 +57,7 @@ typedef struct FileHandlerEvent {
 /*
  * The following static structure contains the state information for the
  * select based implementation of the Tcl notifier.  One of these structures
- * is created for each thread that is using the notifier.  
+ * is created for each thread that is using the notifier.
  */
 
 typedef struct ThreadSpecificData {
@@ -76,11 +77,11 @@ typedef struct ThreadSpecificData {
 				 * Tcl_WatchFile has been called). */
 #ifdef TCL_THREADS
     int onList;			/* True if it is in this list */
-    unsigned int pollState;	/* pollState is used to implement a polling 
+    unsigned int pollState;	/* pollState is used to implement a polling
 				 * handshake between each thread and the
 				 * notifier thread. Bits defined below. */
     struct ThreadSpecificData *nextPtr, *prevPtr;
-                                /* All threads that are currently waiting on 
+                                /* All threads that are currently waiting on
                                  * an event have their ThreadSpecificData
                                  * structure on a doubly-linked listed formed
                                  * from these pointers.  You must hold the
@@ -108,7 +109,7 @@ static Tcl_ThreadDataKey dataKey;
 static int notifierCount = 0;
 
 /*
- * The following variable points to the head of a doubly-linked list of 
+ * The following variable points to the head of a doubly-linked list of
  * of ThreadSpecificData structures for all threads that are currently
  * waiting on an event.
  *
@@ -135,7 +136,7 @@ static ThreadSpecificData *waitingListPtr = NULL;
 static int triggerPipe = -1;
 
 /*
- * The notifierMutex locks access to all of the global notifier state. 
+ * The notifierMutex locks access to all of the global notifier state.
  */
 
 TCL_DECLARE_MUTEX(notifierMutex)
@@ -438,13 +439,13 @@ Tcl_CreateFileHandler(fd, mask, proc, clientData)
      * Update the check masks for this file.
      */
 
-    index = fd/(NBBY*sizeof(fd_mask));
-    bit = 1 << (fd%(NBBY*sizeof(fd_mask)));
+    index = (int)((size_t)fd / (NBBY * sizeof(fd_mask)));
+    bit = (1 << ((size_t)fd % (NBBY * sizeof(fd_mask))));
     if (mask & TCL_READABLE) {
 	tsdPtr->checkMasks[index] |= bit;
     } else {
 	tsdPtr->checkMasks[index] &= ~bit;
-    } 
+    }
     if (mask & TCL_WRITABLE) {
 	(tsdPtr->checkMasks+MASK_SIZE)[index] |= bit;
     } else {
@@ -509,8 +510,8 @@ Tcl_DeleteFileHandler(fd)
      * Update the check masks for this file.
      */
 
-    index = fd/(NBBY*sizeof(fd_mask));
-    bit = 1 << (fd%(NBBY*sizeof(fd_mask)));
+    index = (int)((size_t)fd / (NBBY * sizeof(fd_mask)));
+    bit = (1 << ((size_t)fd % (NBBY * sizeof(fd_mask))));
 
     if (filePtr->mask & TCL_READABLE) {
 	tsdPtr->checkMasks[index] &= ~bit;
@@ -528,16 +529,17 @@ Tcl_DeleteFileHandler(fd)
 
     if (fd+1 == tsdPtr->numFdBits) {
 	for (tsdPtr->numFdBits = 0; index >= 0; index--) {
-	    flags = tsdPtr->checkMasks[index]
-		| (tsdPtr->checkMasks+MASK_SIZE)[index]
-		| (tsdPtr->checkMasks+2*(MASK_SIZE))[index];
+	    flags = (unsigned long)(tsdPtr->checkMasks[index]
+		| (tsdPtr->checkMasks + MASK_SIZE)[index]
+		| (tsdPtr->checkMasks + 2UL * (MASK_SIZE))[index]);
 	    if (flags) {
 		for (i = (NBBY*sizeof(fd_mask)); i > 0; i--) {
-		    if (flags & (((unsigned long)1) << (i-1))) {
+		    if (flags & (((unsigned long)1UL) << (i - 1))) {
 			break;
 		    }
 		}
-		tsdPtr->numFdBits = index * (NBBY*sizeof(fd_mask)) + i;
+		tsdPtr->numFdBits = (int)((size_t)index * (NBBY * sizeof(fd_mask))
+                                  + (size_t)i);
 		break;
 	    }
 	}
@@ -732,7 +734,7 @@ Tcl_WaitForEvent(timePtr)
         tsdPtr->prevPtr = 0;
         waitingListPtr = tsdPtr;
 	tsdPtr->onList = 1;
-	
+
 	write(triggerPipe, "", 1);
     }
 
@@ -764,7 +766,7 @@ Tcl_WaitForEvent(timePtr)
 	write(triggerPipe, "", 1);
     }
 
-    
+
 #else
     memcpy((VOID *) tsdPtr->readyMasks, (VOID *) tsdPtr->checkMasks,
 	    3*MASK_SIZE*sizeof(fd_mask));
@@ -789,8 +791,8 @@ Tcl_WaitForEvent(timePtr)
 
     for (filePtr = tsdPtr->firstFileHandlerPtr; (filePtr != NULL);
 	 filePtr = filePtr->nextPtr) {
-	index = filePtr->fd / (NBBY*sizeof(fd_mask));
-	bit = 1 << (filePtr->fd % (NBBY*sizeof(fd_mask)));
+	index = (int)((size_t)filePtr->fd / (NBBY * sizeof(fd_mask)));
+	bit = (1 << ((size_t)filePtr->fd % (NBBY * sizeof(fd_mask))));
 	mask = 0;
 
 	if (tsdPtr->readyMasks[index] & bit) {
@@ -924,7 +926,7 @@ NotifierThreadProc(clientData)
 	/*
 	 * Add in the check masks from all of the waiting notifiers.
 	 */
-	
+
 	Tcl_MutexLock(&notifierMutex);
 	timePtr = NULL;
         for (tsdPtr = waitingListPtr; tsdPtr; tsdPtr = tsdPtr->nextPtr) {
@@ -980,7 +982,7 @@ NotifierThreadProc(clientData)
 		     * continuously spining on select until the other
 		     * threads runs and services the file event.
 		     */
-	    
+
 		    if (tsdPtr->prevPtr) {
 			tsdPtr->prevPtr->nextPtr = tsdPtr->nextPtr;
 		    } else {
@@ -997,7 +999,7 @@ NotifierThreadProc(clientData)
             }
         }
 	Tcl_MutexUnlock(&notifierMutex);
-	
+
 	/*
 	 * Consume the next byte from the notifier pipe if the pipe was
 	 * readable.  Note that there may be multiple bytes pending, but

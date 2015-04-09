@@ -450,8 +450,8 @@ _bfd_generic_read_ar_hdr_mag(bfd *abfd, const char *mag)
     {
       /* BSD-4.4 extended name: */
       namelen = (bfd_size_type)atoi(&hdr.ar_name[3]);
-      allocsize += (namelen + 1);
-      parsed_size -= namelen;
+      allocsize += (namelen + 1UL);
+      parsed_size -= (size_t)namelen;
 
       allocptr = (char *)bfd_zalloc(abfd, allocsize);
       if (allocptr == NULL)
@@ -471,7 +471,7 @@ _bfd_generic_read_ar_hdr_mag(bfd *abfd, const char *mag)
     {
       /* We judge the end of the name by looking for '/' or ' '.
 	 Note:  The SYSV format (terminated by '/') allows embedded
-	 spaces, so only look for ' ' if we don't find '/'.  */
+	 spaces, so only look for ' ' if we fail to find '/'.  */
 
       char *e;
       e = (char *)memchr(hdr.ar_name, '\0', (size_t)ar_maxnamelen(abfd));
@@ -517,7 +517,7 @@ _bfd_generic_read_ar_hdr_mag(bfd *abfd, const char *mag)
       ared->filename = (allocptr + (sizeof(struct areltdata) +
                                     sizeof(struct ar_hdr)));
       if (namelen)
-	memcpy(ared->filename, hdr.ar_name, namelen);
+	memcpy(ared->filename, hdr.ar_name, (size_t)namelen);
       ared->filename[namelen] = '\0';
     }
 
@@ -805,10 +805,11 @@ do_slurp_bsd_armap(bfd *abfd)
       return FALSE;
     }
 
-  ardata->symdef_count = (H_GET_32(abfd, raw_armap) / BSD_SYMDEF_SIZE);
+  ardata->symdef_count = (symindex)(H_GET_32(abfd, raw_armap)
+                                    / BSD_SYMDEF_SIZE);
 
-  if ((ardata->symdef_count * BSD_SYMDEF_SIZE) >
-      (parsed_size - BSD_SYMDEF_COUNT_SIZE))
+  if ((ardata->symdef_count * BSD_SYMDEF_SIZE)
+      > (parsed_size - BSD_SYMDEF_COUNT_SIZE))
     {
       /* Probably we are using the wrong byte ordering: */
       bfd_set_error(bfd_error_wrong_format);
@@ -936,7 +937,7 @@ do_slurp_coff_armap(bfd *abfd)
     }
   *stringbase = 0;
 
-  ardata->symdef_count = nsymz;
+  ardata->symdef_count = (symindex)nsymz;
   ardata->first_file_filepos = bfd_tell(abfd);
   /* Pad to an even boundary if you have to: */
   ardata->first_file_filepos += ((ardata->first_file_filepos) % 2);
@@ -1066,17 +1067,17 @@ bfd_slurp_bsd_armap_f2(bfd *abfd)
 
   if (bfd_bread (raw_armap, amt, abfd) != amt)
     {
-      if (bfd_get_error () != bfd_error_system_call)
-	bfd_set_error (bfd_error_malformed_archive);
+      if (bfd_get_error() != bfd_error_system_call)
+	bfd_set_error(bfd_error_malformed_archive);
     byebyebye:
-      bfd_release (abfd, raw_armap);
+      bfd_release(abfd, raw_armap);
       goto byebye;
     }
 
-  ardata->symdef_count = H_GET_16 (abfd, raw_armap);
+  ardata->symdef_count = (symindex)H_GET_16(abfd, raw_armap);
 
-  if (ardata->symdef_count * BSD_SYMDEF_SIZE
-      > mapdata->parsed_size - HPUX_SYMDEF_COUNT_SIZE)
+  if ((ardata->symdef_count * BSD_SYMDEF_SIZE)
+      > (mapdata->parsed_size - HPUX_SYMDEF_COUNT_SIZE))
     {
       /* Probably we are using the wrong byte ordering: */
       bfd_set_error(bfd_error_wrong_format);
@@ -1449,7 +1450,7 @@ bfd_ar_hdr_from_filesystem(bfd *abfd, const char *filename, bfd *member)
       status.st_uid = getuid();
       status.st_gid = getgid();
       status.st_mode = 0644;
-      status.st_size = bim->size;
+      status.st_size = (off_t)bim->size;
     }
   else if (stat(filename, &status) != 0)
     {

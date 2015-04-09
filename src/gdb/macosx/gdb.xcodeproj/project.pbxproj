@@ -243,7 +243,7 @@
 		61D2213F192D617D00FA979E /* freebsd.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF580E82C408008125DE /* freebsd.h */; };
 		61D22141192D617D00FA979E /* genlink.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF5A0E82C408008125DE /* genlink.h */; };
 		61D22142192D617D00FA979E /* go32stub.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF5B0E82C408008125DE /* go32stub.h */; };
-		61D22143192D617D00FA979E /* hash.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF5C0E82C408008125DE /* hash.c */; };
+		61D22143192D617D00FA979E /* hash.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF5C0E82C408008125DE /* hash.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D22144192D617D00FA979E /* host-aout.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF5D0E82C408008125DE /* host-aout.c */; };
 		61D22145192D61C300FA979E /* hp300bsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF780E82C408008125DE /* hp300bsd.c */; };
 		61D22146192D61C300FA979E /* hp300hpux.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF790E82C408008125DE /* hp300hpux.c */; };
@@ -257,7 +257,7 @@
 		61D2214F192D61C300FA979E /* i386mach3.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF820E82C408008125DE /* i386mach3.c */; };
 		61D22151192D61C300FA979E /* i386netbsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF840E82C408008125DE /* i386netbsd.c */; };
 		61D22153192D61C300FA979E /* ieee.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF860E82C408008125DE /* ieee.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing"; }; };
-		61D22154192D61C300FA979E /* ihex.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF870E82C408008125DE /* ihex.c */; };
+		61D22154192D61C300FA979E /* ihex.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF870E82C408008125DE /* ihex.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D22155192D61C300FA979E /* init.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF880E82C408008125DE /* init.c */; };
 		61D22156192D61C300FA979E /* irix-core.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF890E82C408008125DE /* irix-core.c */; };
 		61D22157192D61C300FA979E /* libaout.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF8A0E82C408008125DE /* libaout.h */; };
@@ -281,7 +281,7 @@
 		61D22169192D61C300FA979E /* m68knetbsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF9C0E82C408008125DE /* m68knetbsd.c */; };
 		61D2216A192D61C300FA979E /* m88kmach3.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF9D0E82C408008125DE /* m88kmach3.c */; };
 		61D2216B192D61C300FA979E /* m88kopenbsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF9E0E82C408008125DE /* m88kopenbsd.c */; };
-		61D2216D192D61C300FA979E /* mach-o.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFA00E82C408008125DE /* mach-o.c */; settings = {COMPILER_FLAGS = "-Wshorten-64-to-32 -Wswitch-enum"; }; };
+		61D2216D192D61C300FA979E /* mach-o.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFA00E82C408008125DE /* mach-o.c */; settings = {COMPILER_FLAGS = "-Wshorten-64-to-32 -Wswitch-enum -Wconversion"; }; };
 		61D2216E192D61C300FA979E /* mach-o.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CFA10E82C408008125DE /* mach-o.h */; };
 		61D2216F192D61C300FA979E /* merge.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFA60E82C408008125DE /* merge.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D22170192D61C300FA979E /* mipsbsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFA70E82C408008125DE /* mipsbsd.c */; settings = {COMPILER_FLAGS = "-Wno-nested-externs"; }; };
@@ -301,7 +301,7 @@
 		61D2217F192D61C300FA979E /* ns32k.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CFB60E82C408008125DE /* ns32k.h */; };
 		61D22180192D61C300FA979E /* ns32knetbsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFB70E82C408008125DE /* ns32knetbsd.c */; settings = {COMPILER_FLAGS = "-Wno-unused-macros"; }; };
 		61D22181192D61C300FA979E /* oasys.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFB80E82C408008125DE /* oasys.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing"; }; };
-		61D22182192D61C300FA979E /* opncls.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFB90E82C408008125DE /* opncls.c */; settings = {COMPILER_FLAGS = "-Wno-shadow"; }; };
+		61D22182192D61C300FA979E /* opncls.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFB90E82C408008125DE /* opncls.c */; settings = {COMPILER_FLAGS = "-Wno-shadow -Wconversion"; }; };
 		61D22184192D61C300FA979E /* pc532-mach.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFBB0E82C408008125DE /* pc532-mach.c */; };
 		61D22185192D61C300FA979E /* pdp11.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFBC0E82C408008125DE /* pdp11.c */; };
 		61D22186192D61C300FA979E /* pe-arm.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFBD0E82C408008125DE /* pe-arm.c */; };
@@ -338,7 +338,7 @@
 		61D221A6192D61C300FA979E /* stab-syms.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFEF0E82C408008125DE /* stab-syms.c */; };
 		61D221A7192D61C300FA979E /* stabs.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFF00E82C408008125DE /* stabs.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D221A8192D61C300FA979E /* sunos.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFF20E82C408008125DE /* sunos.c */; };
-		61D221A9192D61C300FA979E /* syms.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFF30E82C408008125DE /* syms.c */; };
+		61D221A9192D61C300FA979E /* syms.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFF30E82C408008125DE /* syms.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D221AA192D61C300FA979E /* sysdep.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CFF40E82C408008125DE /* sysdep.h */; };
 		61D221AB192D61C300FA979E /* targets.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFF50E82C408008125DE /* targets.c */; };
 		61D221AC192D61C300FA979E /* tekhex.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CFF70E82C408008125DE /* tekhex.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
@@ -357,7 +357,7 @@
 		61D221B9192D61C300FA979E /* vms.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609D0050E82C408008125DE /* vms.h */; };
 		61D221BA192D61C300FA979E /* xcoff-target.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609D0070E82C408008125DE /* xcoff-target.h */; };
 		61D221BB192D61C300FA979E /* xcofflink.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609D0080E82C408008125DE /* xcofflink.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
-		61D221BC192D61C300FA979E /* xsym.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609D0090E82C408008125DE /* xsym.c */; };
+		61D221BC192D61C300FA979E /* xsym.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609D0090E82C408008125DE /* xsym.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D221BD192D61C300FA979E /* xsym.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609D00A0E82C408008125DE /* xsym.h */; };
 		61D221BE192D61C300FA979E /* xtensa-isa.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609D00B0E82C408008125DE /* xtensa-isa.c */; };
 		61D221BF192D61C300FA979E /* xtensa-modules.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609D00C0E82C408008125DE /* xtensa-modules.c */; };
@@ -5155,6 +5155,8 @@
 		A5CA73F51ACC384300716574 /* watch.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = watch.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/watch.gif"; sourceTree = "<absolute>"; };
 		A5CA73F61ACC384300716574 /* watch_movie.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = watch_movie.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/watch_movie.gif"; sourceTree = "<absolute>"; };
 		A5CA74481ACC384400716574 /* rhabout.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rhabout.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/plugins/rhabout/rhabout.c"; sourceTree = "<absolute>"; };
+		A5D6C3361AD460A500E04E36 /* gomp-constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "gomp-constants.h"; path = "/Users/ericgallager/apple-gdb-1824/src/include/gomp-constants.h"; sourceTree = "<absolute>"; };
+		A5D6C3D51AD59D2A00E04E36 /* rlcompat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rlcompat.h; path = "/Users/ericgallager/apple-gdb-1824/src/readline/rlcompat.h"; sourceTree = "<absolute>"; };
 		A5FE698F1A9E935D005583F9 /* macosx-nat-info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "macosx-nat-info.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/macosx/macosx-nat-info.h"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
@@ -7855,6 +7857,7 @@
 				2609DD7A0E82C410008125DE /* gdbm.h */,
 				2609DD7B0E82C410008125DE /* getopt.h */,
 				A5924B161ABB349900050903 /* gnulib_regex.h */,
+				A5D6C3361AD460A500E04E36 /* gomp-constants.h */,
 				2609DD7C0E82C410008125DE /* hashtab.h */,
 				2609DD7D0E82C410008125DE /* hp-symtab.h */,
 				2609DD7E0E82C410008125DE /* ieee.h */,
@@ -8560,6 +8563,7 @@
 				2609DFA50E82C412008125DE /* posixstat.h */,
 				2609DFA60E82C412008125DE /* readline.c */,
 				2609DFA70E82C412008125DE /* readline.h */,
+				A5D6C3D51AD59D2A00E04E36 /* rlcompat.h */,
 				2609DFA90E82C412008125DE /* rlconf.h */,
 				2609DFAA0E82C412008125DE /* rldefs.h */,
 				2609DFAB0E82C412008125DE /* rlmbutil.h */,

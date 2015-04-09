@@ -253,7 +253,7 @@ fill_ent(ENT *ent, char *path)
 	    {
               /* If trailing dot, it will be ignored by MSDOG, so do NOT
                * actually complain: */
-              if (*(cp + 1) != NULL)
+              if ((*(cp + 1)) != 0)
                 {
                   invalid_msg();
                   printf("%s - too many dots\n", path);

@@ -298,20 +298,25 @@ rl_get_screen_size (rows, cols)
 }
 
 void
-rl_resize_terminal ()
+rl_resize_terminal()
 {
   if (readline_echoing_p)
     {
-      _rl_get_screen_size (fileno (rl_instream), 1);
-      if (CUSTOM_REDISPLAY_FUNC ())
-	rl_forced_update_display ();
+      _rl_get_screen_size(fileno(rl_instream), 1);
+      if (CUSTOM_REDISPLAY_FUNC())
+	rl_forced_update_display();
       else
-	_rl_redisplay_after_sigwinch ();
+	_rl_redisplay_after_sigwinch();
     }
 }
 
 struct _tc_string {
-     const char *tc_var;
+#ifdef NCURSES_CONST
+     NCURSES_CONST
+#else
+     const
+#endif /* NCURSES_CONST */
+     char *tc_var;
      char **tc_value;
 };
 
@@ -358,7 +363,7 @@ static struct _tc_string tc_strings[] =
 static void
 get_term_capabilities(char **bp)
 {
-#if !defined (__DJGPP__) /* XXX - does DJGPP not have a termcap library? */
+#if !defined(__DJGPP__) /* XXX - does DJGPP not have a termcap library? */
   register int i;
 
   for (i = 0; i < NUM_TC_STRINGS; i++)

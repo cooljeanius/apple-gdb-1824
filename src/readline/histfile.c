@@ -94,11 +94,10 @@ extern int errno;
 #include "xmalloc.h"
 
 /* Return the string that should be used in the place of this
-   filename.  This only matters when you don't specify the
-   filename to read_history (), or write_history (). */
+   filename.  This only matters when you fail to specify the
+   filename to read_history(), or write_history(). */
 static char *
-history_filename (filename)
-     const char *filename;
+history_filename(const char *filename)
 {
   char *return_val;
   const char *home;
@@ -108,7 +107,7 @@ history_filename (filename)
 
   if (return_val)
     return (return_val);
-  
+
   home = sh_get_env_value ("HOME");
 
   if (home == 0)
@@ -135,10 +134,9 @@ history_filename (filename)
    If FILENAME is NULL, then read from ~/.history.  Returns 0 if
    successful, or errno if not. */
 int
-read_history (filename)
-     const char *filename;
+read_history(const char *filename)
 {
-  return (read_history_range (filename, 0, -1));
+  return (read_history_range(filename, 0, -1));
 }
 
 /* Read a range of lines from FILENAME, adding them to the history list.
@@ -147,9 +145,7 @@ read_history (filename)
    until the end of the file.  If FILENAME is NULL, then read from
    ~/.history.  Returns 0 if successful, or errno if not. */
 int
-read_history_range (filename, from, to)
-     const char *filename;
-     int from, to;
+read_history_range(const char *filename, int from, int to)
 {
   register char *line_start, *line_end;
   char *input, *buffer, *bufend;
@@ -161,8 +157,8 @@ read_history_range (filename, from, to)
   errno = 0;
 
   buffer = (char *)NULL;
-  input = history_filename (filename);
-  file = open (input, O_RDONLY|O_BINARY, 0666);
+  input = history_filename(filename);
+  file = open(input, (O_RDONLY | O_BINARY), 0666);
 
   if ((file < 0) || (fstat (file, &finfo) == -1))
     goto error_and_exit;
@@ -265,9 +261,7 @@ read_history_range (filename, from, to)
    If FNAME is NULL, then use ~/.history.  Returns 0 on success, errno
    on failure. */
 int
-history_truncate_file (fname, lines)
-     const char *fname;
-     int lines;
+history_truncate_file(const char *fname, int lines)
 {
   char *buffer, *filename, *bp;
   int file, chars_read, rv;
@@ -275,8 +269,8 @@ history_truncate_file (fname, lines)
   size_t file_size;
 
   buffer = (char *)NULL;
-  filename = history_filename (fname);
-  file = open (filename, O_RDONLY|O_BINARY, 0666);
+  filename = history_filename(fname);
+  file = open(filename, (O_RDONLY | O_BINARY), 0666);
   rv = 0;
 
   /* Don't try to truncate non-regular files. */
@@ -377,9 +371,7 @@ history_truncate_file (fname, lines)
    from the history list to FILENAME.  OVERWRITE is non-zero if you
    wish to replace FILENAME with the entries. */
 static int
-history_do_write (filename, nelements, overwrite)
-     const char *filename;
-     int nelements, overwrite;
+history_do_write(const char *filename, int nelements, int overwrite)
 {
   register int i;
   char *output;
@@ -390,11 +382,11 @@ history_do_write (filename, nelements, overwrite)
   mode = overwrite ? O_RDWR|O_CREAT|O_TRUNC|O_BINARY : O_RDWR|O_APPEND|O_BINARY;
 #else
   mode = overwrite ? O_WRONLY|O_CREAT|O_TRUNC|O_BINARY : O_WRONLY|O_APPEND|O_BINARY;
-#endif
-  output = history_filename (filename);
+#endif /* HAVE_MMAP */
+  output = history_filename(filename);
   rv = 0;
 
-  if ((file = open (output, mode, 0600)) == -1)
+  if ((file = open(output, mode, 0600)) == -1)
     {
       FREE (output);
       return (errno);
@@ -433,7 +425,7 @@ mmap_error:
 	close (file);
 	return rv;
       }
-#else    
+#else
     buffer = (char *)malloc (buffer_size);
     if (buffer == 0)
       {
@@ -452,18 +444,18 @@ mmap_error:
       }
 
 #ifdef HAVE_MMAP
-    if (msync (buffer, buffer_size, 0) != 0 || munmap (buffer, buffer_size) != 0)
+    if ((msync(buffer, buffer_size, 0) != 0) || (munmap(buffer, buffer_size) != 0))
       rv = errno;
 #else
-    if (write (file, buffer, buffer_size) < 0)
+    if (write(file, buffer, buffer_size) < 0)
       rv = errno;
-    free (buffer);
-#endif
+    free(buffer);
+#endif /* HAVE_MMAP */
   }
 
-  close (file);
+  close(file);
 
-  FREE (output);
+  FREE(output);
 
   return (rv);
 }
@@ -471,19 +463,16 @@ mmap_error:
 /* Append NELEMENT entries to FILENAME.  The entries appended are from
    the end of the list minus NELEMENTs up to the end of the list. */
 int
-append_history (nelements, filename)
-     int nelements;
-     const char *filename;
+append_history(int nelements, const char *filename)
 {
-  return (history_do_write (filename, nelements, HISTORY_APPEND));
+  return (history_do_write(filename, nelements, HISTORY_APPEND));
 }
 
 /* Overwrite FILENAME with the current history.  If FILENAME is NULL,
    then write the history list to ~/.history.  Values returned
    are as in read_history ().*/
 int
-write_history (filename)
-     const char *filename;
+write_history(const char *filename)
 {
-  return (history_do_write (filename, history_length, HISTORY_OVERWRITE));
+  return (history_do_write(filename, history_length, HISTORY_OVERWRITE));
 }

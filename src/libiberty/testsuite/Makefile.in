@@ -47,7 +47,8 @@ MULTISRCTOP =
 
 INCDIR=$(srcdir)/../$(MULTISRCTOP)../include
 
-COMPILE.c = $(CC) -c @DEFS@ $(LIBCFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) $(HDEFINES) @ac_libiberty_warn_cflags@
+LIBIBERTY_WARN_CFLAGS = @ac_libiberty_warn_cflags@
+COMPILE.c = $(CC) -c @DEFS@ $(LIBCFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) $(HDEFINES) $(LIBIBERTY_WARN_CFLAGS)
 
 all: ../libiberty.a
 
@@ -83,7 +84,9 @@ check-strtol: test-strtol
 fuzz-demangler: demangler-fuzzer
 	./demangler-fuzzer
 
-TEST_COMPILE = $(CC) @DEFS@ $(LIBCFLAGS) $(CPPFLAGS) -I.. -I$(INCDIR) $(HDEFINES) @ac_libiberty_warn_cflags@
+MMALLOC_CFLAGS = @MMALLOC_CFLAGS@
+TEST_COMPILE = $(CC) @DEFS@ $(LIBCFLAGS) $(CPPFLAGS) -I.. -I$(INCDIR) $(HDEFINES) $(LIBIBERTY_WARN_CFLAGS)
+MMALLOC = @MMALLOC@
 COND_MMALLOC = @MMALLOC_OK@ ../$(MMALLOC)
 test-demangle: $(srcdir)/test-demangle.c ../libiberty.a $(COND_MMALLOC) 
 	$(TEST_COMPILE) -o test-demangle \

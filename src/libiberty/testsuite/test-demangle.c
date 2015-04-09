@@ -20,21 +20,21 @@
 */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include "ansidecl.h"
 #include <stdio.h>
 #include "libiberty.h"
 #include "demangle.h"
 #ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-#if HAVE_STDLIB_H
+# include <string.h>
+#endif /* HAVE_STRING_H */
+#if defined(HAVE_STDLIB_H) && HAVE_STDLIB_H
 # include <stdlib.h>
-#endif
+#endif /* HAVE_STDLIB_H */
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
 
 struct line
 {
@@ -65,7 +65,7 @@ get_line(struct line *buf)
   /* Skip comment lines.  */
   while ((c = getchar()) == '#')
     {
-      while ((c = getchar()) != EOF && c != '\n');
+      while (((c = getchar()) != EOF) && (c != '\n'));
       lineno++;
     }
 
@@ -94,22 +94,22 @@ get_line(struct line *buf)
  If no mmap, or it fails, or it looks too hard, just return S.  */
 
 #ifdef HAVE_SYS_MMAN_H
-#include <sys/mman.h>
-#endif
-#if defined(MAP_ANON) && ! defined (MAP_ANONYMOUS)
-#define MAP_ANONYMOUS MAP_ANON
-#endif
+# include <sys/mman.h>
+#endif /* HAVE_SYS_MMAN_H */
+#if defined(MAP_ANON) && ! defined(MAP_ANONYMOUS)
+# define MAP_ANONYMOUS MAP_ANON
+#endif /* MAP_ANON && !MAP_ANONYMOUS */
 
 static const char *
-protect_end (const char * s)
+protect_end(const char *s)
 {
-#if defined(HAVE_MMAP) && defined (MAP_ANONYMOUS)
+#if defined(HAVE_MMAP) && defined(MAP_ANONYMOUS)
   size_t pagesize = getpagesize();
-  static char * buf;
-  size_t s_len = strlen (s);
-  char * result;
+  static char *buf;
+  size_t s_len = strlen(s);
+  char *result;
 
-  /* Don't try if S is too long.  */
+  /* Do NOT try if S is too long: */
   if (s_len >= pagesize)
     return s;
 
@@ -117,31 +117,31 @@ protect_end (const char * s)
      page.  */
   if (buf == NULL)
     {
-      buf = mmap (NULL, pagesize * 2, PROT_READ | PROT_WRITE,
-                  MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+      buf = (char *)mmap(NULL, (pagesize * 2), (PROT_READ | PROT_WRITE),
+                         (MAP_PRIVATE | MAP_ANONYMOUS), -1, (off_t)0L);
       if (! buf)
         return s;
-      munmap (buf + pagesize, pagesize);
+      munmap((buf + pagesize), pagesize);
     }
 
-  result = buf + (pagesize - s_len - 1);
-  memcpy (result, s, s_len + 1);
+  result = (buf + (pagesize - s_len - 1));
+  memcpy(result, s, (s_len + 1));
   return result;
 #else
   return s;
-#endif
+#endif /* HAVE_MMAP && MAP_ANONYMOUS */
 }
 
 static void
-fail(int lineno, const char *opts, const char *in, const char *out,
+fail(int fail_lineno, const char *opts, const char *in, const char *out,
      const char *exp)
 {
-  printf ("\
+  printf("\
 FAIL at line %d, options %s:\n\
 in:  %s\n\
 out: %s\n\
 exp: %s\n",
-	  lineno, opts, in, out != NULL ? out : "(null)", exp);
+	  fail_lineno, opts, in, out != NULL ? out : "(null)", exp);
 }
 
 /* The tester operates on a data file consisting of groups of lines:
@@ -181,7 +181,7 @@ main(int argc, char **argv)
 
   if (argc > 1)
     {
-      fprintf (stderr, "usage: %s < test-set\n", argv[0]);
+      fprintf(stderr, "usage: %s < test-set\n", argv[0]);
       return 2;
     }
 
@@ -193,14 +193,14 @@ main(int argc, char **argv)
     {
       const char *inp;
 
-      get_line (&format);
-      if (feof (stdin))
+      get_line(&format);
+      if (feof(stdin))
 	break;
 
-      get_line (&input);
-      get_line (&expect);
+      get_line(&input);
+      get_line(&expect);
 
-      inp = protect_end (input.data);
+      inp = protect_end(input.data);
 
       tests++;
 
@@ -213,11 +213,11 @@ main(int argc, char **argv)
 	style = auto_demangling;
       else if (format.data[0] != '-')
 	{
-	  style = cplus_demangle_name_to_style (format.data);
+	  style = cplus_demangle_name_to_style(format.data);
 	  if (style == unknown_demangling)
 	    {
-	      printf ("FAIL at line %d: unknown demangling style %s\n",
-		      lineno, format.data);
+	      printf("FAIL at line %d: unknown demangling style %s\n",
+		     lineno, format.data);
 	      failures++;
 	      continue;
 	    }
@@ -233,47 +233,47 @@ main(int argc, char **argv)
 	      char c;
 
 	      opt = p;
-	      p += strcspn (p, " \t=");
+	      p += strcspn(p, " \t=");
 	      c = *p;
 	      *p = '\0';
-	      if (strcmp (opt, "--format") == 0 && c == '=')
+	      if (strcmp(opt, "--format") == 0 && c == '=')
 		{
 		  char *fstyle;
 
 		  *p = c;
 		  ++p;
 		  fstyle = p;
-		  p += strcspn (p, " \t");
+		  p += strcspn(p, " \t");
 		  c = *p;
 		  *p = '\0';
-		  style = cplus_demangle_name_to_style (fstyle);
+		  style = cplus_demangle_name_to_style(fstyle);
 		  if (style == unknown_demangling)
 		    {
-		      printf ("FAIL at line %d: unknown demangling style %s\n",
-			      lineno, fstyle);
+		      printf("FAIL at line %d: unknown demangling style %s\n",
+			     lineno, fstyle);
 		      failures++;
 		      continue;
 		    }
 		}
-	      else if (strcmp (opt, "--no-params") == 0)
+	      else if (strcmp(opt, "--no-params") == 0)
 		no_params = 1;
-	      else if (strcmp (opt, "--is-v3-ctor") == 0)
+	      else if (strcmp(opt, "--is-v3-ctor") == 0)
 		is_v3_ctor = 1;
-	      else if (strcmp (opt, "--is-v3-dtor") == 0)
+	      else if (strcmp(opt, "--is-v3-dtor") == 0)
 		is_v3_dtor = 1;
-              else if (strcmp (opt, "--ret-postfix") == 0)
+              else if (strcmp(opt, "--ret-postfix") == 0)
 		ret_postfix = 1;
-	      else if (strcmp (opt, "--ret-drop") == 0)
+	      else if (strcmp(opt, "--ret-drop") == 0)
 		ret_drop = 1;
 	      else
 		{
-		  printf ("FAIL at line %d: unrecognized option %s\n",
-			  lineno, opt);
+		  printf("FAIL at line %d: unrecognized option %s\n",
+			 lineno, opt);
 		  failures++;
 		  continue;
 		}
 	      *p = c;
-	      p += strspn (p, " \t");
+	      p += strspn(p, " \t");
 	    }
 	}
 
@@ -285,61 +285,64 @@ main(int argc, char **argv)
 	    {
 	      enum gnu_v3_ctor_kinds kc;
 
-	      kc = is_gnu_v3_mangled_ctor (inp);
-	      sprintf (buf, "%d", (int) kc);
+	      kc = is_gnu_v3_mangled_ctor(inp);
+	      sprintf(buf, "%d", (int)kc);
 	    }
 	  else
 	    {
 	      enum gnu_v3_dtor_kinds kd;
 
-	      kd = is_gnu_v3_mangled_dtor (inp);
-	      sprintf (buf, "%d", (int) kd);
+	      kd = is_gnu_v3_mangled_dtor(inp);
+	      sprintf(buf, "%d", (int)kd);
 	    }
 
-	  if (strcmp (buf, expect.data) != 0)
+	  if (strcmp(buf, expect.data) != 0)
 	    {
-	      fail (lineno, format.data, input.data, buf, expect.data);
+	      fail((int)lineno, format.data, input.data, buf, expect.data);
 	      failures++;
 	    }
 
 	  continue;
 	}
 
-      cplus_demangle_set_style (style);
+      cplus_demangle_set_style(style);
 
-      result = cplus_demangle (inp, (DMGL_PARAMS | DMGL_ANSI | DMGL_TYPES
-				     | (ret_postfix ? DMGL_RET_POSTFIX : 0)
-				     | (ret_drop ? DMGL_RET_DROP : 0)));
+      result = cplus_demangle(inp, (DMGL_PARAMS | DMGL_ANSI | DMGL_TYPES
+                                    | (ret_postfix ? DMGL_RET_POSTFIX : 0)
+                                    | (ret_drop ? DMGL_RET_DROP : 0)));
 
       if (result
-	  ? strcmp (result, expect.data)
-	  : strcmp (input.data, expect.data))
+	  ? strcmp(result, expect.data)
+	  : strcmp(input.data, expect.data))
 	{
-	  fail (lineno, format.data, input.data, result, expect.data);
+	  fail((int)lineno, format.data, input.data, result, expect.data);
 	  failures++;
 	}
-      free (result);
+      free(result);
 
       if (no_params)
 	{
-	  get_line (&expect);
-	  result = cplus_demangle (inp, DMGL_ANSI|DMGL_TYPES);
+	  get_line(&expect);
+	  result = cplus_demangle(inp, DMGL_ANSI|DMGL_TYPES);
 
 	  if (result
-	      ? strcmp (result, expect.data)
-	      : strcmp (input.data, expect.data))
+	      ? strcmp(result, expect.data)
+	      : strcmp(input.data, expect.data))
 	    {
-	      fail (lineno, format.data, input.data, result, expect.data);
+	      fail((int)lineno, format.data, input.data, result,
+                   expect.data);
 	      failures++;
 	    }
-	  free (result);
+	  free(result);
 	}
     }
 
-  free (format.data);
-  free (input.data);
-  free (expect.data);
+  free(format.data);
+  free(input.data);
+  free(expect.data);
 
-  printf ("%s: %d tests, %d failures\n", argv[0], tests, failures);
-  return failures ? 1 : 0;
+  printf("%s: %d tests, %d failures\n", argv[0], tests, failures);
+  return (failures ? 1 : 0);
 }
+
+/* EOF */

@@ -29,7 +29,11 @@ Copies @var{length} bytes from memory region @var{in} to region
 
 */
 
-#include <ansidecl.h>
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
+#include "libiberty.h"
 #include <stddef.h>
 
 extern PTR memcpy(PTR, const PTR, size_t);

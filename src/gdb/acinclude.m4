@@ -1047,8 +1047,9 @@ dnl# Note that guild can handle cross-compilation.
 dnl# It could happen that guild cannot handle the host, but guile would
 dnl# still work.  For the time being we are conservative, and if guild
 dnl# fails on us, we then punt.
-AC_DEFUN([GDB_TRY_GUILD], [
-  AC_REQUIRE([GDB_GUILD_TARGET_FLAG])
+AC_DEFUN([GDB_TRY_GUILD],[
+  AC_REQUIRE([GDB_GUILD_TARGET_FLAG])dnl
+  ## actual check now:
   AC_CACHE_CHECK([whether guild supports this host],
     [ac_cv_guild_ok],
     [echo "${ac_cv_guild_program_name} compile ${GUILD_TARGET_FLAG} -o conftest.go $1" >&AS_MESSAGE_LOG_FD
@@ -1059,3 +1060,18 @@ AC_DEFUN([GDB_TRY_GUILD], [
      fi])dnl
 ])dnl
 
+dnl# taken from ../bfd/warning.m4:
+AC_DEFUN([AM_BINUTILS_CLANG_STATIC_ANALYSIS],[
+AC_ARG_VAR([CLANG_ANALYZER],[Path to the clang static analyzer])dnl
+AC_CACHE_CHECK([for the clang static analyzer],[ac_cv_path_CLANG_ANALYZER],
+  [AC_PATH_PROGS_FEATURE_CHECK([CLANG_ANALYZER],
+    [clang clang++ clang-mp-3.5 clang-mp-3.4 clang-mp-3.3 clang-mp-3.2],
+    [[${ac_path_CLANG_ANALYZER} --analyze /dev/null > /dev/null 2>&1 && \
+      ac_cv_path_CLANG_ANALYZER=${ac_path_CLANG_ANALYZER}
+      ac_path_CLANG_ANALYZER_found=:]],
+    [AC_MSG_WARN([we will not be able to do static analysis with clang])],
+    [${PATH}])dnl# end program check
+  ])dnl# end cache check
+  ## (need this extra line here)
+AC_SUBST([CLANG_ANALYZER],[${ac_cv_path_CLANG_ANALYZER}])dnl
+])dnl

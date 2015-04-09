@@ -2,6 +2,14 @@
  * testglue.c
  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning testglue.c would like to include "config.h"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_CONFIG_H */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +24,15 @@
 #  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_UNISTD_H */
 #endif /* !NO_UNISTD_H */
+#ifndef _UNISTD_H_
+# ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "testglue.c expects <unistd.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_UNISTD_H */
+#endif /* !_UNISTD_H_ */
 
 /* A simple glue file for embedded targets so we can get the real exit
  * status from the program. This assumes we are using GNU ld and can use

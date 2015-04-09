@@ -16,6 +16,8 @@ past the first @var{maxlen} characters in the string.  If there is no
 
 #include "config.h"
 
+#include "libiberty.h"
+
 #include <stddef.h>
 
 size_t

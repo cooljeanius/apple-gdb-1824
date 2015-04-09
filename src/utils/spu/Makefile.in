@@ -33,6 +33,7 @@ srcdir = @srcdir@
 CC = @CC@
 CLANG_ANALYZER = @CLANG_ANALYZER@
 CFLAGS = @CFLAGS@
+DEFS = @DEFS@
 
 man1dir = $(mandir)/man1
 man2dir = $(mandir)/man2
@@ -64,10 +65,12 @@ INCLUDE_DIR = ${srcdir}/../../include
 INCLUDE_CFLAGS = -I. -I${srcdir} -I${srcdir}/config -I$(INCLUDE_DIR)
 
 # Warnings:
-WARN_CFLAGS = -Wall -Wextra -Wundef -Wno-unused-parameter -pedantic
+WARN_CFLAGS = -Wall -Wextra -Wstrict-prototypes -Wmissing-prototypes \
+-Wconversion -Wold-style-definition -Wshadow -Wundef -Wwrite-strings \
+-Wformat=2 -Wc++-compat -Wno-unused-parameter -std=gnu89 -pedantic
 
 # ALL_CFLAGS is the aggregate of all other *CFLAGS macros:
-ALL_CFLAGS = @DEFS@ $(INCLUDE_CFLAGS) $(CFLAGS) $(WARN_CFLAGS)
+ALL_CFLAGS = $(DEFS) $(INCLUDE_CFLAGS) $(CFLAGS) $(WARN_CFLAGS)
 
 # Simplify the analyzer command by aggregating variables into one:
 RUN_CLANG_ANALYZER = $(CLANG_ANALYZER) $(CPPFLAGS) $(ALL_CFLAGS) \

@@ -31,7 +31,11 @@ strlen(@var{src}).
 
 */
 
-#include <ansidecl.h>
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
+#include "libiberty.h"
 #include <stddef.h>
 
 extern size_t strlen(const char *);

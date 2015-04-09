@@ -1065,28 +1065,27 @@ coff_write_native_symbol(bfd *abfd, coff_symbol_type *symbol,
 			   debug_string_size_p);
 }
 
-/* Write out the COFF symbols.  */
-
+/* Write out the COFF symbols: */
 bfd_boolean
-coff_write_symbols (bfd *abfd)
+coff_write_symbols(bfd *abfd)
 {
   bfd_size_type string_size;
   asection *debug_string_section;
   bfd_size_type debug_string_size;
   unsigned int i;
-  unsigned int limit = bfd_get_symcount (abfd);
-  bfd_vma written = 0;
+  unsigned int limit = bfd_get_symcount(abfd);
+  bfd_vma written = 0UL;
   asymbol **p;
 
-  string_size = 0;
+  string_size = 0UL;
   debug_string_section = NULL;
-  debug_string_size = 0;
+  debug_string_size = 0UL;
 
   /* If this target supports long section names, they must be put into
      the string table.  This is supported by PE.  This code must
      handle section names just as they are handled in
      coff_write_object_contents.  */
-  if (bfd_coff_long_section_names (abfd))
+  if (bfd_coff_long_section_names(abfd))
     {
       asection *o;
 
@@ -1094,46 +1093,46 @@ coff_write_symbols (bfd *abfd)
 	{
 	  size_t len;
 
-	  len = strlen (o->name);
+	  len = strlen(o->name);
 	  if (len > SCNNMLEN)
-	    string_size += len + 1;
+	    string_size += (len + 1);
 	}
     }
 
-  /* Seek to the right place.  */
-  if (bfd_seek (abfd, obj_sym_filepos (abfd), SEEK_SET) != 0)
+  /* Seek to the right place: */
+  if (bfd_seek(abfd, obj_sym_filepos(abfd), SEEK_SET) != 0)
     return FALSE;
 
-  /* Output all the symbols we have.  */
+  /* Output all the symbols we have: */
   written = 0;
   for (p = abfd->outsymbols, i = 0; i < limit; i++, p++)
     {
       asymbol *symbol = *p;
-      coff_symbol_type *c_symbol = coff_symbol_from (abfd, symbol);
+      coff_symbol_type *c_symbol = coff_symbol_from(abfd, symbol);
 
-      if (c_symbol == (coff_symbol_type *) NULL
-	  || c_symbol->native == (combined_entry_type *) NULL)
+      if ((c_symbol == (coff_symbol_type *)NULL)
+	  || (c_symbol->native == (combined_entry_type *)NULL))
 	{
-	  if (!coff_write_alien_symbol (abfd, symbol, &written, &string_size,
-					&debug_string_section,
-					&debug_string_size))
+	  if (!coff_write_alien_symbol(abfd, symbol, &written, &string_size,
+                                       &debug_string_section,
+                                       &debug_string_size))
 	    return FALSE;
 	}
       else
 	{
-	  if (!coff_write_native_symbol (abfd, c_symbol, &written,
-					 &string_size, &debug_string_section,
-					 &debug_string_size))
+	  if (!coff_write_native_symbol(abfd, c_symbol, &written,
+                                        &string_size, &debug_string_section,
+                                        &debug_string_size))
 	    return FALSE;
 	}
     }
 
-  obj_raw_syment_count (abfd) = written;
+  obj_raw_syment_count(abfd) = (unsigned long)written;
 
-  /* Now write out strings.  */
+  /* Now write out strings: */
   if (string_size != 0)
     {
-      unsigned int size = string_size + STRING_SIZE_SIZE;
+      bfd_size_type size = (string_size + STRING_SIZE_SIZE);
       bfd_byte buffer[STRING_SIZE_SIZE];
 
 #if STRING_SIZE_SIZE == 4
@@ -1922,7 +1921,7 @@ coff_print_symbol(bfd *abfd, void *filep, asymbol *symbol,
 		    }
 		    /* Otherwise fall through.  */
 		case C_EXT:
-		  if (ISFCN (combined->u.syment.n_type))
+		  if (ISFCN(combined->u.syment.n_type))
 		    {
 		      long next, llnos;
 
@@ -1931,11 +1930,11 @@ coff_print_symbol(bfd *abfd, void *filep, asymbol *symbol,
 			       - root);
 		      else
 			next = auxp->u.auxent.x_sym.x_fcnary.x_fcn.x_endndx.l;
-		      llnos = auxp->u.auxent.x_sym.x_fcnary.x_fcn.x_lnnoptr;
-		      fprintf (file,
-			       "AUX tagndx %ld ttlsiz 0x%lx lnnos %ld next %ld",
-			       tagndx, auxp->u.auxent.x_sym.x_misc.x_fsize,
-			       llnos, next);
+		      llnos = (long)auxp->u.auxent.x_sym.x_fcnary.x_fcn.x_lnnoptr;
+		      fprintf(file,
+			      "AUX tagndx %ld ttlsiz 0x%lx lnnos %ld next %ld",
+			      tagndx, auxp->u.auxent.x_sym.x_misc.x_fsize,
+			      llnos, next);
 		      break;
 		    }
 		  /* Otherwise fall through.  */

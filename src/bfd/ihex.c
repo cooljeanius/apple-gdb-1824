@@ -282,18 +282,18 @@ ihex_scan (bfd *abfd)
 	  unsigned int chars;
 	  unsigned int chksum;
 
-	  /* This is a data record.  */
-	  pos = bfd_tell (abfd) - 1;
+	  /* This is a data record: */
+	  pos = (bfd_tell(abfd) - 1L);
 
-	  /* Read the header bytes.  */
-	  if (bfd_bread (hdr, (bfd_size_type) 8, abfd) != 8)
+	  /* Read the header bytes: */
+	  if (bfd_bread(hdr, (bfd_size_type)8UL, abfd) != 8)
 	    goto error_return;
 
 	  for (i = 0; i < 8; i++)
 	    {
-	      if (! ISHEX (hdr[i]))
+	      if (! ISHEX(hdr[i]))
 		{
-		  ihex_bad_byte (abfd, lineno, hdr[i], error);
+		  ihex_bad_byte(abfd, lineno, hdr[i], error);
 		  goto error_return;
 		}
 	    }
@@ -317,18 +317,18 @@ ihex_scan (bfd *abfd)
 
 	  for (i = 0; i < chars; i++)
 	    {
-	      if (! ISHEX (buf[i]))
+	      if (! ISHEX(buf[i]))
 		{
-		  ihex_bad_byte (abfd, lineno, hdr[i], error);
+		  ihex_bad_byte(abfd, lineno, hdr[i], error);
 		  goto error_return;
 		}
 	    }
 
-	  /* Check the checksum.  */
-	  chksum = len + addr + (addr >> 8) + type;
+	  /* Check the checksum: */
+	  chksum = (unsigned int)(len + addr + (addr >> 8) + type);
 	  for (i = 0; i < len; i++)
-	    chksum += HEX2 (buf + 2 * i);
-	  if (((- chksum) & 0xff) != (unsigned int) HEX2 (buf + 2 * i))
+	    chksum += HEX2(buf + 2 * i);
+	  if (((- chksum) & 0xff) != (unsigned int)HEX2(buf + 2 * i))
 	    {
 	      (*_bfd_error_handler)
 		(_("%B:%u: bad checksum in Intel Hex file (expected %u, found %u)"),
@@ -754,10 +754,9 @@ ihex_write_record(bfd *abfd, size_t count, unsigned int addr,
   return TRUE;
 }
 
-/* Write out an Intel Hex file.  */
-
+/* Write out an Intel Hex file: */
 static bfd_boolean
-ihex_write_object_contents (bfd *abfd)
+ihex_write_object_contents(bfd *abfd)
 {
   bfd_vma segbase;
   bfd_vma extbase;
@@ -780,7 +779,7 @@ ihex_write_object_contents (bfd *abfd)
 	  size_t now;
 	  unsigned int rec_addr;
 
-	  now = count;
+	  now = (size_t)count;
 	  if (count > CHUNK)
 	    now = CHUNK;
 
@@ -788,16 +787,16 @@ ihex_write_object_contents (bfd *abfd)
 	    {
 	      bfd_byte addr[2];
 
-	      /* We need a new base address.  */
+	      /* We need a new base address: */
 	      if (where <= 0xfffff)
 		{
-		  /* The addresses should be sorted.  */
-		  BFD_ASSERT (extbase == 0);
+		  /* The addresses should be sorted: */
+		  BFD_ASSERT(extbase == 0);
 
 		  segbase = where & 0xf0000;
 		  addr[0] = (bfd_byte)(segbase >> 12) & 0xff;
 		  addr[1] = (bfd_byte)(segbase >> 4) & 0xff;
-		  if (! ihex_write_record (abfd, 2, 0, 2, addr))
+		  if (! ihex_write_record(abfd, (size_t)2UL, 0U, 2U, addr))
 		    return FALSE;
 		}
 	      else
@@ -812,37 +811,38 @@ ihex_write_object_contents (bfd *abfd)
 		    {
 		      addr[0] = 0;
 		      addr[1] = 0;
-		      if (! ihex_write_record (abfd, 2, 0, 2, addr))
+		      if (! ihex_write_record(abfd, (size_t)2UL, 0U, 2U,
+                                              addr))
 			return FALSE;
 		      segbase = 0;
 		    }
 
-		  extbase = where & 0xffff0000;
-		  if (where > extbase + 0xffff)
+		  extbase = (where & 0xffff0000);
+		  if (where > (extbase + 0xffff))
 		    {
 		      char buf[20];
 
-		      sprintf_vma (buf, where);
+		      sprintf_vma(buf, where);
 		      (*_bfd_error_handler)
 			(_("%s: address 0x%s out of range for Intel Hex file"),
-			 bfd_get_filename (abfd), buf);
-		      bfd_set_error (bfd_error_bad_value);
+			 bfd_get_filename(abfd), buf);
+		      bfd_set_error(bfd_error_bad_value);
 		      return FALSE;
 		    }
 		  addr[0] = (bfd_byte)(extbase >> 24) & 0xff;
 		  addr[1] = (bfd_byte)(extbase >> 16) & 0xff;
-		  if (! ihex_write_record (abfd, 2, 0, 4, addr))
+		  if (! ihex_write_record(abfd, (size_t)2UL, 0U, 4U, addr))
 		    return FALSE;
 		}
 	    }
 
-	  rec_addr = where - (extbase + segbase);
+	  rec_addr = (unsigned int)(where - (extbase + segbase));
 
-          /* Output records shouldn't cross 64K boundaries.  */
-          if (rec_addr + now > 0xffff)
-            now = 0x10000 - rec_addr;
+          /* Output records should NOT cross 64K boundaries: */
+          if ((rec_addr + now) > 0xffff)
+            now = (0x10000 - rec_addr);
 
-	  if (! ihex_write_record (abfd, now, rec_addr, 0, p))
+	  if (! ihex_write_record(abfd, now, rec_addr, 0U, p))
 	    return FALSE;
 
 	  where += now;
@@ -864,7 +864,7 @@ ihex_write_object_contents (bfd *abfd)
 	  startbuf[1] = 0;
 	  startbuf[2] = (bfd_byte)(start >> 8) & 0xff;
 	  startbuf[3] = (bfd_byte)start & 0xff;
-	  if (! ihex_write_record (abfd, 4, 0, 3, startbuf))
+	  if (! ihex_write_record(abfd, (size_t)4UL, 0U, 3U, startbuf))
 	    return FALSE;
 	}
       else
@@ -873,12 +873,12 @@ ihex_write_object_contents (bfd *abfd)
 	  startbuf[1] = (bfd_byte)(start >> 16) & 0xff;
 	  startbuf[2] = (bfd_byte)(start >> 8) & 0xff;
 	  startbuf[3] = (bfd_byte)start & 0xff;
-	  if (! ihex_write_record (abfd, 4, 0, 5, startbuf))
+	  if (! ihex_write_record(abfd, (size_t)4UL, 0U, 5U, startbuf))
 	    return FALSE;
 	}
     }
 
-  if (! ihex_write_record (abfd, 0, 0, 1, NULL))
+  if (! ihex_write_record(abfd, (size_t)0UL, 0U, 1U, NULL))
     return FALSE;
 
   return TRUE;

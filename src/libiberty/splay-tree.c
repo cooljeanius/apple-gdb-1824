@@ -1,6 +1,6 @@
 /* splay-tree.c: A splay-tree datatype.
    Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
-   Contributed by Mark Mitchell (mark@markmitchell.com).
+   Contributed by Mark Mitchell <mark@markmitchell.com>.
 
 This file is part of GNU CC.
 
@@ -25,12 +25,12 @@ Boston, MA 02110-1301, USA.  */
      Algorithms.  Harper-Collins, Inc.  1991.  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 
 #include <stdio.h>
 
@@ -256,15 +256,15 @@ splay_tree_foreach_helper (splay_tree sp, splay_tree_node node,
 
 /* An allocator and deallocator based on xmalloc.  */
 static void *
-splay_tree_xmalloc_allocate (int size, void *data ATTRIBUTE_UNUSED)
+splay_tree_xmalloc_allocate(int size, void *data ATTRIBUTE_UNUSED)
 {
-  return (void *) xmalloc (size);
+  return (void *)xmalloc((size_t)size);
 }
 
 static void
-splay_tree_xmalloc_deallocate (void *object, void *data ATTRIBUTE_UNUSED)
+splay_tree_xmalloc_deallocate(void *object, void *data ATTRIBUTE_UNUSED)
 {
-  free (object);
+  free(object);
 }
 
 
@@ -530,27 +530,25 @@ splay_tree_foreach (splay_tree sp, splay_tree_foreach_fn fn, void *data)
   return splay_tree_foreach_helper (sp, sp->root, fn, data);
 }
 
-/* Splay-tree comparison function, treating the keys as ints.  */
-
+/* Splay-tree comparison function, treating the keys as ints: */
 int
-splay_tree_compare_ints (splay_tree_key k1, splay_tree_key k2)
+splay_tree_compare_ints(splay_tree_key k1, splay_tree_key k2)
 {
-  if ((int) k1 < (int) k2)
+  if ((int)k1 < (int)k2)
     return -1;
-  else if ((int) k1 > (int) k2)
+  else if ((int)k1 > (int)k2)
     return 1;
   else
     return 0;
 }
 
-/* Splay-tree comparison function, treating the keys as pointers.  */
-
+/* Splay-tree comparison function, treating the keys as pointers: */
 int
-splay_tree_compare_pointers (splay_tree_key k1, splay_tree_key k2)
+splay_tree_compare_pointers(splay_tree_key k1, splay_tree_key k2)
 {
-  if ((char*) k1 < (char*) k2)
+  if ((char *)k1 < (char *)k2)
     return -1;
-  else if ((char*) k1 > (char*) k2)
+  else if ((char *)k1 > (char *)k2)
     return 1;
   else
     return 0;

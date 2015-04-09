@@ -43,7 +43,7 @@
 #include "safe-ctype.h"
 #include "filenames.h"
 
-char * program_name = "elfedit";
+char *program_name = "elfedit";
 static long archive_file_offset;
 static unsigned long archive_file_size;
 static Elf_Internal_Ehdr elf_header;
@@ -58,31 +58,29 @@ static int output_elf_osabi = -1;
 static int input_elf_class = -1;
 
 static int
-update_elf_header (const char *file_name, FILE *file)
+update_elf_header(const char *file_name, FILE *file)
 {
   int class_of_elf, machine, type, status, osabi;
 
-  if (elf_header.e_ident[EI_MAG0] != ELFMAG0
-      || elf_header.e_ident[EI_MAG1] != ELFMAG1
-      || elf_header.e_ident[EI_MAG2] != ELFMAG2
-      || elf_header.e_ident[EI_MAG3] != ELFMAG3)
+  if ((elf_header.e_ident[EI_MAG0] != ELFMAG0)
+      || (elf_header.e_ident[EI_MAG1] != ELFMAG1)
+      || (elf_header.e_ident[EI_MAG2] != ELFMAG2)
+      || (elf_header.e_ident[EI_MAG3] != ELFMAG3))
     {
-      error
-	(_("%s: Not an ELF file - wrong magic bytes at the start\n"),
-	 file_name);
+      error(_("%s: Not an ELF file - wrong magic bytes at the start\n"),
+            file_name);
       return 0;
     }
 
   if (elf_header.e_ident[EI_VERSION] != EV_CURRENT)
     {
-      error
-	(_("%s: Unsupported EI_VERSION: %d is not %d\n"),
-	 file_name, elf_header.e_ident[EI_VERSION],
-	 EV_CURRENT);
+      error(_("%s: Unsupported EI_VERSION: %d is not %d\n"),
+            file_name, elf_header.e_ident[EI_VERSION],
+            EV_CURRENT);
       return 0;
     }
 
-  /* Return if e_machine is the same as output_elf_machine.  */
+  /* Return if e_machine is the same as output_elf_machine: */
   if (output_elf_machine == elf_header.e_machine) {
     return 1;
   }
@@ -92,9 +90,8 @@ update_elf_header (const char *file_name, FILE *file)
   /* Skip if class does NOT match. */
   if (input_elf_class != -1 && class_of_elf != input_elf_class)
     {
-      error
-	(_("%s: Unmatched EI_CLASS: %d is not %d\n"),
-	 file_name, class_of_elf, input_elf_class);
+      error(_("%s: Unmatched EI_CLASS: %d is not %d\n"),
+            file_name, class_of_elf, input_elf_class);
       return 0;
     }
 
@@ -103,9 +100,8 @@ update_elf_header (const char *file_name, FILE *file)
   /* Skip if e_machine does NOT match. */
   if (input_elf_machine != -1 && machine != input_elf_machine)
     {
-      error
-	(_("%s: Unmatched e_machine: %d is not %d\n"),
-	 file_name, machine, input_elf_machine);
+      error(_("%s: Unmatched e_machine: %d is not %d\n"),
+            file_name, machine, input_elf_machine);
       return 0;
     }
 
@@ -114,9 +110,8 @@ update_elf_header (const char *file_name, FILE *file)
   /* Skip if e_type does NOT match. */
   if (input_elf_type != -1 && type != input_elf_type)
     {
-      error
-	(_("%s: Unmatched e_type: %d is not %d\n"),
-	 file_name, type, input_elf_type);
+      error(_("%s: Unmatched e_type: %d is not %d\n"),
+            file_name, type, input_elf_type);
       return 0;
     }
 
@@ -125,58 +120,58 @@ update_elf_header (const char *file_name, FILE *file)
   /* Skip if OSABI does NOT match. */
   if (input_elf_osabi != -1 && osabi != input_elf_osabi)
     {
-      error
-	(_("%s: Unmatched EI_OSABI: %d is not %d\n"),
-	 file_name, osabi, input_elf_osabi);
+      error(_("%s: Unmatched EI_OSABI: %d is not %d\n"),
+            file_name, osabi, input_elf_osabi);
       return 0;
     }
 
-  /* Update e_machine, e_type and EI_OSABI.  */
+  /* Update e_machine, e_type and EI_OSABI: */
   switch (class_of_elf)
     {
     default:
-      /* We should never get here.  */
-      abort ();
+      /* We should never get here: */
+      error(_("%s: Unhandled elf class: %d\n"), file_name, class_of_elf);
+      abort();
       break;
     case ELFCLASS32:
       if (output_elf_machine != -1)
-	BYTE_PUT (ehdr32.e_machine, output_elf_machine);
+	BYTE_PUT(ehdr32.e_machine, (elf_vma)output_elf_machine);
       if (output_elf_type != -1)
-	BYTE_PUT (ehdr32.e_type, output_elf_type);
+	BYTE_PUT(ehdr32.e_type, (elf_vma)output_elf_type);
       if (output_elf_osabi != -1)
-	ehdr32.e_ident[EI_OSABI] = output_elf_osabi;
-      status = fwrite (&ehdr32, sizeof (ehdr32), 1, file) == 1;
+	ehdr32.e_ident[EI_OSABI] = (unsigned char)output_elf_osabi;
+      status = (fwrite(&ehdr32, sizeof(ehdr32), 1, file) == 1);
       break;
     case ELFCLASS64:
       if (output_elf_machine != -1)
-	BYTE_PUT (ehdr64.e_machine, output_elf_machine);
+	BYTE_PUT(ehdr64.e_machine, (elf_vma)output_elf_machine);
       if (output_elf_type != -1)
-	BYTE_PUT (ehdr64.e_type, output_elf_type);
+	BYTE_PUT(ehdr64.e_type, (elf_vma)output_elf_type);
       if (output_elf_osabi != -1)
-	ehdr64.e_ident[EI_OSABI] = output_elf_osabi;
-      status = fwrite (&ehdr64, sizeof (ehdr64), 1, file) == 1;
+	ehdr64.e_ident[EI_OSABI] = (unsigned char)output_elf_osabi;
+      status = (fwrite(&ehdr64, sizeof(ehdr64), 1, file) == 1);
       break;
     }
 
   if (status != 1)
-    error (_("%s: Failed to update ELF header: %s\n"),
-	       file_name, strerror (errno));
+    error(_("%s: Failed to update ELF header: %s\n"),
+          file_name, strerror(errno));
 
   return status;
 }
 
 static int
-get_file_header (FILE * file)
+get_file_header(FILE *file)
 {
-  /* Read in the identity array.  */
-  if (fread (elf_header.e_ident, EI_NIDENT, 1, file) != 1)
+  /* Read in the identity array: */
+  if (fread(elf_header.e_ident, EI_NIDENT, 1, file) != 1)
     return 0;
 
   /* Determine how to read the rest of the header.  */
   switch (elf_header.e_ident[EI_DATA])
     {
-    default: /* fall through */
-    case ELFDATANONE: /* fall through */
+    default: /* fall through to: */
+    case ELFDATANONE: /* fall through to: */
     case ELFDATA2LSB:
       byte_get = byte_get_little_endian;
       byte_put = byte_put_little_endian;
@@ -192,63 +187,63 @@ get_file_header (FILE * file)
   switch (elf_header.e_ident[EI_CLASS])
     {
     default:
-      error (_("Unsupported EI_CLASS: %d\n"),
-		 elf_header.e_ident[EI_CLASS]);
+      error(_("Unsupported EI_CLASS: %d\n"),
+            elf_header.e_ident[EI_CLASS]);
       return 0;
 
     case ELFCLASS32:
-      if (fread (ehdr32.e_type, sizeof (ehdr32) - EI_NIDENT,
-		 1, file) != 1)
+      if (fread(ehdr32.e_type, (sizeof(ehdr32) - EI_NIDENT),
+                1, file) != 1)
 	return 0;
 
-      elf_header.e_type      = BYTE_GET (ehdr32.e_type);
-      elf_header.e_machine   = BYTE_GET (ehdr32.e_machine);
-      elf_header.e_version   = BYTE_GET (ehdr32.e_version);
-      elf_header.e_entry     = BYTE_GET (ehdr32.e_entry);
-      elf_header.e_phoff     = BYTE_GET (ehdr32.e_phoff);
-      elf_header.e_shoff     = BYTE_GET (ehdr32.e_shoff);
-      elf_header.e_flags     = BYTE_GET (ehdr32.e_flags);
-      elf_header.e_ehsize    = BYTE_GET (ehdr32.e_ehsize);
-      elf_header.e_phentsize = BYTE_GET (ehdr32.e_phentsize);
-      elf_header.e_phnum     = BYTE_GET (ehdr32.e_phnum);
-      elf_header.e_shentsize = BYTE_GET (ehdr32.e_shentsize);
-      elf_header.e_shnum     = BYTE_GET (ehdr32.e_shnum);
-      elf_header.e_shstrndx  = BYTE_GET (ehdr32.e_shstrndx);
+      elf_header.e_type = (unsigned short)BYTE_GET(ehdr32.e_type);
+      elf_header.e_machine = (unsigned short)BYTE_GET(ehdr32.e_machine);
+      elf_header.e_version = (unsigned long)BYTE_GET(ehdr32.e_version);
+      elf_header.e_entry = BYTE_GET(ehdr32.e_entry);
+      elf_header.e_phoff = BYTE_GET(ehdr32.e_phoff);
+      elf_header.e_shoff = BYTE_GET(ehdr32.e_shoff);
+      elf_header.e_flags = (unsigned long)BYTE_GET(ehdr32.e_flags);
+      elf_header.e_ehsize = (unsigned int)BYTE_GET(ehdr32.e_ehsize);
+      elf_header.e_phentsize = (unsigned int)BYTE_GET(ehdr32.e_phentsize);
+      elf_header.e_phnum = (unsigned int)BYTE_GET(ehdr32.e_phnum);
+      elf_header.e_shentsize = (unsigned int)BYTE_GET(ehdr32.e_shentsize);
+      elf_header.e_shnum = (unsigned int)BYTE_GET(ehdr32.e_shnum);
+      elf_header.e_shstrndx = (unsigned int)BYTE_GET(ehdr32.e_shstrndx);
 
-      memcpy (&ehdr32, &elf_header, EI_NIDENT);
+      memcpy(&ehdr32, &elf_header, EI_NIDENT);
       break;
 
     case ELFCLASS64:
-      /* If we have been compiled with sizeof (bfd_vma) == 4, then
+      /* If we have been compiled with sizeof(bfd_vma) == 4UL, then
 	 we will not be able to cope with the 64bit data found in
 	 64 ELF files.  Detect this now and abort before we start
 	 overwriting things.  */
-      if (sizeof (bfd_vma) < 8)
+      if (sizeof(bfd_vma) < 8UL)
 	{
-	  error (_("This executable has been built without support for a\n\
+	  error(_("This executable has been built without support for a\n\
 64 bit data type and so it cannot process 64 bit ELF files.\n"));
 	  return 0;
 	}
 
-      if (fread (ehdr64.e_type, sizeof (ehdr64) - EI_NIDENT,
-		 1, file) != 1)
+      if (fread(ehdr64.e_type, (sizeof(ehdr64) - EI_NIDENT),
+                1, file) != 1)
 	return 0;
 
-      elf_header.e_type      = BYTE_GET (ehdr64.e_type);
-      elf_header.e_machine   = BYTE_GET (ehdr64.e_machine);
-      elf_header.e_version   = BYTE_GET (ehdr64.e_version);
-      elf_header.e_entry     = BYTE_GET (ehdr64.e_entry);
-      elf_header.e_phoff     = BYTE_GET (ehdr64.e_phoff);
-      elf_header.e_shoff     = BYTE_GET (ehdr64.e_shoff);
-      elf_header.e_flags     = BYTE_GET (ehdr64.e_flags);
-      elf_header.e_ehsize    = BYTE_GET (ehdr64.e_ehsize);
-      elf_header.e_phentsize = BYTE_GET (ehdr64.e_phentsize);
-      elf_header.e_phnum     = BYTE_GET (ehdr64.e_phnum);
-      elf_header.e_shentsize = BYTE_GET (ehdr64.e_shentsize);
-      elf_header.e_shnum     = BYTE_GET (ehdr64.e_shnum);
-      elf_header.e_shstrndx  = BYTE_GET (ehdr64.e_shstrndx);
+      elf_header.e_type = (unsigned short)BYTE_GET(ehdr64.e_type);
+      elf_header.e_machine = (unsigned short)BYTE_GET(ehdr64.e_machine);
+      elf_header.e_version = (unsigned long)BYTE_GET(ehdr64.e_version);
+      elf_header.e_entry = BYTE_GET(ehdr64.e_entry);
+      elf_header.e_phoff = BYTE_GET(ehdr64.e_phoff);
+      elf_header.e_shoff = BYTE_GET(ehdr64.e_shoff);
+      elf_header.e_flags = (unsigned long)BYTE_GET(ehdr64.e_flags);
+      elf_header.e_ehsize = (unsigned int)BYTE_GET(ehdr64.e_ehsize);
+      elf_header.e_phentsize = (unsigned int)BYTE_GET(ehdr64.e_phentsize);
+      elf_header.e_phnum = (unsigned int)BYTE_GET(ehdr64.e_phnum);
+      elf_header.e_shentsize = (unsigned int)BYTE_GET(ehdr64.e_shentsize);
+      elf_header.e_shnum = (unsigned int)BYTE_GET(ehdr64.e_shnum);
+      elf_header.e_shstrndx = (unsigned int)BYTE_GET(ehdr64.e_shstrndx);
 
-      memcpy (&ehdr64, &elf_header, EI_NIDENT);
+      memcpy(&ehdr64, &elf_header, EI_NIDENT);
       break;
     }
   return 1;
@@ -259,24 +254,24 @@ get_file_header (FILE * file)
    positioned at the start of the ELF object.  */
 
 static int
-process_object (const char *file_name, FILE *file)
+process_object(const char *file_name, FILE *file)
 {
-  /* Rememeber where we are.  */
-  long offset = ftell (file);
+  /* Rememeber where we are: */
+  long offset = ftell(file);
 
-  if (! get_file_header (file))
+  if (! get_file_header(file))
     {
-      error (_("%s: Failed to read ELF header\n"), file_name);
+      error(_("%s: Failed to read ELF header\n"), file_name);
       return 1;
     }
 
-  /* Go to the position of the ELF header.  */
-  if (fseek (file, offset, SEEK_SET) != 0)
+  /* Go to the position of the ELF header: */
+  if (fseek(file, offset, SEEK_SET) != 0)
     {
-      error (_("%s: Failed to seek to ELF header\n"), file_name);
+      error(_("%s: Failed to seek to ELF header\n"), file_name);
     }
 
-  if (! update_elf_header (file_name, file))
+  if (! update_elf_header(file_name, file))
     return 1;
 
   return 0;
@@ -286,15 +281,15 @@ process_object (const char *file_name, FILE *file)
    On entry the file is positioned just after the ARMAG string.  */
 
 static int
-process_archive (const char * file_name, FILE * file,
-		 bfd_boolean is_thin_archive)
+process_archive(const char * file_name, FILE * file,
+                bfd_boolean is_thin_archive)
 {
   struct archive_info arch;
   struct archive_info nested_arch;
   size_t got;
   int ret;
 
-  /* The ARCH structure is used to hold information about this archive.  */
+  /* The ARCH structure is used to hold information about this archive: */
   arch.file_name = NULL;
   arch.file = NULL;
   arch.index_array = NULL;
@@ -310,7 +305,7 @@ process_archive (const char * file_name, FILE * file,
   nested_arch.sym_table = NULL;
   nested_arch.longnames = NULL;
 
-  if (setup_archive (&arch, file_name, file, is_thin_archive, FALSE) != 0)
+  if (setup_archive(&arch, file_name, file, is_thin_archive, FALSE) != 0)
     {
       ret = 1;
       goto out;
@@ -320,146 +315,147 @@ process_archive (const char * file_name, FILE * file,
 
   while (1)
     {
-      char * name;
+      char *name;
       size_t namelen;
-      char * qualified_name;
+      char *qualified_name;
 
-      /* Read the next archive header.  */
-      if (fseek (file, arch.next_arhdr_offset, SEEK_SET) != 0)
+      /* Read the next archive header: */
+      if (fseek(file, (long)arch.next_arhdr_offset, SEEK_SET) != 0)
         {
-          error (_("%s: failed to seek to next archive header\n"),
-		     file_name);
+          error(_("%s: failed to seek to next archive header\n"),
+                file_name);
           return 1;
         }
-      got = fread (&arch.arhdr, 1, sizeof arch.arhdr, file);
-      if (got != sizeof arch.arhdr)
+      got = fread(&arch.arhdr, 1, sizeof(arch.arhdr), file);
+      if (got != sizeof(arch.arhdr))
         {
           if (got == 0)
 	    break;
-          error (_("%s: failed to read archive header\n"),
-		     file_name);
+          error(_("%s: failed to read archive header\n"),
+                file_name);
           ret = 1;
           break;
         }
-      if (memcmp (arch.arhdr.ar_fmag, ARFMAG, 2) != 0)
+      if (memcmp(arch.arhdr.ar_fmag, ARFMAG, 2) != 0)
         {
-          error (_("%s: did not find a valid archive header\n"),
-		     arch.file_name);
+          error(_("%s: did not find a valid archive header\n"),
+                arch.file_name);
           ret = 1;
           break;
         }
 
-      arch.next_arhdr_offset += sizeof arch.arhdr;
+      arch.next_arhdr_offset += sizeof(arch.arhdr);
 
-      archive_file_size = strtoul (arch.arhdr.ar_size, NULL, 10);
+      archive_file_size = strtoul(arch.arhdr.ar_size, NULL, 10);
       if (archive_file_size & 01)
         ++archive_file_size;
 
-      name = get_archive_member_name (&arch, &nested_arch);
+      name = get_archive_member_name(&arch, &nested_arch);
       if (name == NULL)
 	{
-	  error (_("%s: bad archive file name\n"), file_name);
+	  error(_("%s: bad archive file name\n"), file_name);
 	  ret = 1;
 	  break;
 	}
-      namelen = strlen (name);
+      namelen = strlen(name);
 
-      qualified_name = make_qualified_name (&arch, &nested_arch, name);
+      qualified_name = make_qualified_name(&arch, &nested_arch, name);
       if (qualified_name == NULL)
 	{
-	  error (_("%s: bad archive file name\n"), file_name);
+	  error(_("%s: bad archive file name\n"), file_name);
 	  ret = 1;
 	  break;
 	}
 
-      if (is_thin_archive && arch.nested_member_origin == 0)
+      if (is_thin_archive && (arch.nested_member_origin == 0))
         {
-          /* This is a proxy for an external member of a thin archive.  */
+          /* This is a proxy for an external member of a thin archive: */
           FILE *member_file;
-          char *member_file_name = adjust_relative_path (file_name,
-							 name, namelen);
+          char *member_file_name = adjust_relative_path(file_name, name,
+                                                        (int)namelen);
           if (member_file_name == NULL)
             {
               ret = 1;
               break;
             }
 
-          member_file = fopen (member_file_name, "r+b");
+          member_file = fopen(member_file_name, "r+b");
           if (member_file == NULL)
             {
-              error (_("Input file '%s' is not readable\n"),
-			 member_file_name);
-              free (member_file_name);
+              error(_("Input file '%s' is not readable\n"),
+                    member_file_name);
+              free(member_file_name);
               ret = 1;
               break;
             }
 
-          archive_file_offset = arch.nested_member_origin;
+          archive_file_offset = (long)arch.nested_member_origin;
 
-          ret |= process_object (qualified_name, member_file);
+          ret |= process_object(qualified_name, member_file);
 
-          fclose (member_file);
-          free (member_file_name);
+          fclose(member_file);
+          free(member_file_name);
         }
       else if (is_thin_archive)
         {
           /* This is a proxy for a member of a nested archive.  */
-          archive_file_offset = arch.nested_member_origin + sizeof arch.arhdr;
+          archive_file_offset = (long)(arch.nested_member_origin
+                                       + sizeof(arch.arhdr));
 
           /* The nested archive file will have been opened and setup by
              get_archive_member_name.  */
-          if (fseek (nested_arch.file, archive_file_offset,
-		     SEEK_SET) != 0)
+          if (fseek(nested_arch.file, archive_file_offset,
+		    SEEK_SET) != 0)
             {
-              error (_("%s: failed to seek to archive member\n"),
-			 nested_arch.file_name);
+              error(_("%s: failed to seek to archive member\n"),
+                    nested_arch.file_name);
               ret = 1;
               break;
             }
 
-          ret |= process_object (qualified_name, nested_arch.file);
+          ret |= process_object(qualified_name, nested_arch.file);
         }
       else
         {
-          archive_file_offset = arch.next_arhdr_offset;
+          archive_file_offset = (long)arch.next_arhdr_offset;
           arch.next_arhdr_offset += archive_file_size;
 
-          ret |= process_object (qualified_name, file);
+          ret |= process_object(qualified_name, file);
         }
 
-      free (qualified_name);
+      free(qualified_name);
     }
 
  out:
   if (nested_arch.file != NULL)
-    fclose (nested_arch.file);
-  release_archive (&nested_arch);
-  release_archive (&arch);
+    fclose(nested_arch.file);
+  release_archive(&nested_arch);
+  release_archive(&arch);
 
   return ret;
 }
 
 static int
-check_file (const char *file_name, struct stat *statbuf_p)
+check_file(const char *file_name, struct stat *statbuf_p)
 {
   struct stat statbuf;
 
   if (statbuf_p == NULL)
     statbuf_p = &statbuf;
 
-  if (stat (file_name, statbuf_p) < 0)
+  if (stat(file_name, statbuf_p) < 0)
     {
       if (errno == ENOENT)
-	error (_("'%s': No such file\n"), file_name);
+	error(_("'%s': No such file\n"), file_name);
       else
-	error (_("Could not locate '%s'.  System error message: %s\n"),
-		   file_name, strerror (errno));
+	error(_("Could not locate '%s'.  System error message: %s\n"),
+              file_name, strerror(errno));
       return 1;
     }
 
-  if (! S_ISREG (statbuf_p->st_mode))
+  if (! S_ISREG(statbuf_p->st_mode))
     {
-      error (_("'%s' is not an ordinary file\n"), file_name);
+      error(_("'%s' is not an ordinary file\n"), file_name);
       return 1;
     }
 
@@ -467,42 +463,43 @@ check_file (const char *file_name, struct stat *statbuf_p)
 }
 
 static int
-process_file (const char *file_name)
+process_file(const char *file_name)
 {
-  FILE * file;
+  FILE *file;
   char armag[SARMAG];
   int ret;
 
-  if (check_file (file_name, NULL))
+  if (check_file(file_name, NULL))
     return 1;
 
-  file = fopen (file_name, "r+b");
+  file = fopen(file_name, "r+b");
   if (file == NULL)
     {
-      error (_("Input file '%s' is not readable\n"), file_name);
+      error(_("Input file '%s' is not readable\n"), file_name);
       return 1;
     }
 
-  if (fread (armag, SARMAG, 1, file) != 1)
+  if (fread(armag, SARMAG, 1, file) != 1)
     {
-      error (_("%s: Failed to read file's magic number\n"),
-		 file_name);
-      fclose (file);
+      error(_("%s: Failed to read file's magic number\n"),
+            file_name);
+      fclose(file);
       return 1;
     }
 
-  if (memcmp (armag, ARMAG, SARMAG) == 0)
-    ret = process_archive (file_name, file, FALSE);
-  else if (memcmp (armag, ARMAGT, SARMAG) == 0)
-    ret = process_archive (file_name, file, TRUE);
+  if (memcmp(armag, ARMAG, SARMAG) == 0)
+    ret = process_archive(file_name, file, FALSE);
+  else if (memcmp(armag, ARMAGT, SARMAG) == 0)
+    ret = process_archive(file_name, file, TRUE);
   else
     {
-      rewind (file);
-      archive_file_size = archive_file_offset = 0;
-      ret = process_object (file_name, file);
+      rewind(file);
+      archive_file_offset = 0L;
+      archive_file_size = (unsigned long)archive_file_offset;
+      ret = process_object(file_name, file);
     }
 
-  fclose (file);
+  fclose(file);
 
   return ret;
 }
@@ -532,47 +529,44 @@ osabis[] =
   { ELFOSABI_FENIXOS, "FenixOS" }
 };
 
-/* Return ELFOSABI_XXX for an OSABI string, OSABI.  */
-
+/* Return ELFOSABI_XXX for an OSABI string, OSABI: */
 static int
-elf_osabi (const char *osabi)
+elf_osabi(const char *osabi)
 {
   unsigned int i;
 
-  for (i = 0; i < ARRAY_SIZE (osabis); i++)
-    if (strcasecmp (osabi, osabis[i].name) == 0)
+  for (i = 0; i < ARRAY_SIZE(osabis); i++)
+    if (strcasecmp(osabi, osabis[i].name) == 0)
       return osabis[i].osabi;
 
-  error (_("Unknown OSABI: %s\n"), osabi);
+  error(_("Unknown OSABI: %s\n"), osabi);
 
   return -1;
 }
 
-/* Return EM_XXX for a machine string, MACH.  */
-
+/* Return EM_XXX for a machine string, MACH: */
 static int
-elf_machine (const char *mach)
+elf_machine(const char *mach)
 {
-  if (strcasecmp (mach, "l1om") == 0)
+  if (strcasecmp(mach, "l1om") == 0)
     return EM_L1OM;
-  if (strcasecmp (mach, "k1om") == 0)
+  if (strcasecmp(mach, "k1om") == 0)
     return EM_K1OM;
-  if (strcasecmp (mach, "x86_64") == 0)
+  if (strcasecmp(mach, "x86_64") == 0)
     return EM_X86_64;
-  if (strcasecmp (mach, "x86-64") == 0)
+  if (strcasecmp(mach, "x86-64") == 0)
     return EM_X86_64;
-  if (strcasecmp (mach, "none") == 0)
+  if (strcasecmp(mach, "none") == 0)
     return EM_NONE;
 
-  error (_("Unknown machine type: %s\n"), mach);
+  error(_("Unknown machine type: %s\n"), mach);
 
   return -1;
 }
 
-/* Return ELF class for a machine type, MACH.  */
-
+/* Return ELF class for a machine type, MACH: */
 static int
-elf_class (int mach)
+elf_class(int mach)
 {
   switch (mach)
     {
@@ -583,26 +577,25 @@ elf_class (int mach)
     case EM_NONE:
       return ELFCLASSNONE;
     default:
-      error (_("Unknown machine type: %d\n"), mach);
+      error(_("Unknown machine type: %d\n"), mach);
       return -1;
     }
 }
 
-/* Return ET_XXX for a type string, TYPE.  */
-
+/* Return ET_XXX for a type string, TYPE: */
 static int
-elf_type (const char *type)
+elf_type(const char *type)
 {
-  if (strcasecmp (type, "rel") == 0)
+  if (strcasecmp(type, "rel") == 0)
     return ET_REL;
-  if (strcasecmp (type, "exec") == 0)
+  if (strcasecmp(type, "exec") == 0)
     return ET_EXEC;
-  if (strcasecmp (type, "dyn") == 0)
+  if (strcasecmp(type, "dyn") == 0)
     return ET_DYN;
-  if (strcasecmp (type, "none") == 0)
+  if (strcasecmp(type, "none") == 0)
     return ET_NONE;
 
-  error (_("Unknown type: %s\n"), type);
+  error(_("Unknown type: %s\n"), type);
 
   return -1;
 }

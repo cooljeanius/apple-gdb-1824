@@ -1003,9 +1003,9 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 	return FALSE;
 
       if (! bfd_get_section_contents(abfd, info->stabsec, info->stabs,
-                                     0, stabsize)
+                                     (file_ptr)0L, stabsize)
 	  || ! bfd_get_section_contents(abfd, info->strsec, info->strs,
-                                        0, strsize))
+                                        (file_ptr)0L, strsize))
 	return FALSE;
 
       /* If this is a relocatable object file, we have to relocate
@@ -1041,26 +1041,28 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 	      if (r->howto->dst_mask == 0)
 		continue;
 
-	      if (r->howto->rightshift != 0
-		  || r->howto->size != 2
-		  || r->howto->bitsize != 32
-		  || r->howto->pc_relative
-		  || r->howto->bitpos != 0
-		  || r->howto->dst_mask != 0xffffffff)
+	      if ((r->howto->rightshift != 0)
+		  || (r->howto->size != 2)
+		  || (r->howto->bitsize != 32)
+		  || (r->howto->pc_relative)
+		  || (r->howto->bitpos != 0)
+		  || (r->howto->dst_mask != 0xffffffff))
 		{
 		  (*_bfd_error_handler)
 		    (_("Unsupported .stab relocation"));
-		  bfd_set_error (bfd_error_invalid_operation);
+		  bfd_set_error(bfd_error_invalid_operation);
 		  if (reloc_vector != NULL)
-		    free (reloc_vector);
+		    free(reloc_vector);
 		  return FALSE;
 		}
 
-	      val = bfd_get_32 (abfd, info->stabs + r->address);
-	      val &= r->howto->src_mask;
+	      val = (unsigned long)bfd_get_32(abfd,
+                                              (info->stabs + r->address));
+	      val &= (unsigned long)r->howto->src_mask;
 	      sym = *r->sym_ptr_ptr;
-	      val += sym->value + sym->section->vma + r->addend;
-	      bfd_put_32 (abfd, (bfd_vma) val, info->stabs + r->address);
+	      val += (unsigned long)(sym->value + sym->section->vma
+                                     + r->addend);
+	      bfd_put_32(abfd, (bfd_vma)val, (info->stabs + r->address));
 	    }
 	}
 
@@ -1257,7 +1259,7 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
       file_name = info->cached_file_name;
     }
   else
-#endif
+#endif /* ENABLE_CACHING */
     {
       long low, high;
       long mid = -1;
@@ -1322,14 +1324,14 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 	     is relative to the start of the function.  Otherwise, the
 	     value is an absolute address.  */
 	  val = ((indexentry->function_name ? indexentry->val : 0)
-		 + bfd_get_32 (abfd, stab + VALOFF));
+		 + bfd_get_32(abfd, stab + VALOFF));
 	  /* If this line starts before our desired offset, or if it is
 	     the first line we have been able to find, use it.  The
 	     !saw_line check works around a bug in GCC 2.95.3, which emits
 	     the first N_SLINE late.  */
 	  if (!saw_line || (val <= offset))
 	    {
-	      *pline = bfd_get_16 (abfd, stab + DESCOFF);
+	      *pline = (unsigned int)bfd_get_16(abfd, stab + DESCOFF);
 
 #ifdef ENABLE_CACHING
 	      info->cached_stab = stab;

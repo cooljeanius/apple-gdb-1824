@@ -833,7 +833,7 @@ bfd_close (bfd *abfd)
     {
       struct stat buf;
 
-      if (stat (abfd->filename, &buf) == 0)
+      if (stat(abfd->filename, &buf) == 0)
 	{
 	  unsigned int mask = umask((mode_t)0U);
 
@@ -1313,7 +1313,7 @@ get_debug_link_info (bfd *abfd, unsigned long *crc32_out)
   crc_offset = (int)(strlen(name) + 1UL);
   crc_offset = ((crc_offset + 3) & ~3);
 
-  crc32 = bfd_get_32(abfd, (contents + crc_offset));
+  crc32 = (unsigned long)bfd_get_32(abfd, (contents + crc_offset));
 
   *crc32_out = crc32;
   return name;
@@ -1632,7 +1632,7 @@ bfd_fill_in_gnu_debuglink_section(bfd *abfd, struct bfd_section *sect,
   debuglink_size &= (bfd_size_type)~3UL;
   debuglink_size += 4;
 
-  contents = (char *)malloc(debuglink_size);
+  contents = (char *)malloc((size_t)debuglink_size);
   if (contents == NULL)
     {
       /* XXX Should we delete the section from the bfd?  */

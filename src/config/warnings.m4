@@ -1,3 +1,5 @@
+# warnings.m4 serial 1                                     -*- Autoconf -*-
+
 # Autoconf include file defining macros related to compile-time warnings.
 
 # Copyright 2004, 2005 Free Software Foundation, Inc.
@@ -19,49 +21,68 @@
 #Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #02110-1301, USA.
 
-# ACX_PROG_CC_WARNING_OPTS([-Wfoo -Wbar -Wbaz])
-#   Sets @WARN_CFLAGS@ to the subset of the given options which the
-#   compiler accepts.
+# ACX_PROG_CC_WARNING_OPTS([-Wfoo -Wbar -Wbaz],[VARIABLE = WARN_CFLAGS])
+#   Sets @VARIABLE@ (@WARN_CFLAGS@, by default) to the subset of the given
+#   options which the compiler accepts.
 AC_DEFUN([ACX_PROG_CC_WARNING_OPTS],
 [AC_REQUIRE([AC_PROG_CC])dnl
 AC_SUBST([WARN_CFLAGS])dnl
-WARN_CFLAGS=
-save_CFLAGS="$CFLAGS"
-for option in $1; do
-  AS_VAR_PUSHDEF([acx_Woption], [acx_cv_prog_cc_warning_$option])
-  AC_CACHE_CHECK([whether $CC supports $option], acx_Woption,
-    [CFLAGS="$option"
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],[])],
+m4_pushdef([acx_Var],[m4_default([$2],[WARN_CFLAGS])])dnl
+AC_SUBST(acx_Var)dnl
+m4_expand_once([acx_Var=""
+],m4_quote(acx_Var=""))dnl
+save_CFLAGS="${CFLAGS}"
+for real_option in $1; do
+  # Do the check with the no- prefix removed since gcc silently accepts
+  # any -Wno-* option on purpose:
+  case ${real_option} in
+    -Wno-*) option=-W`expr x${real_option} : 'x-Wno-\(.*\)'` ;;
+    *) option="${real_option}" ;;
+  esac
+  AS_VAR_PUSHDEF([acx_Woption],[acx_cv_prog_cc_warning_$option])
+  AC_CACHE_CHECK([whether ${CC} supports ${option}],[acx_Woption],
+    [CFLAGS="${option}"
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
       [AS_VAR_SET(acx_Woption, yes)],
       [AS_VAR_SET(acx_Woption, no)])
   ])
   AS_IF([test AS_VAR_GET(acx_Woption) = yes],
-        [WARN_CFLAGS="$WARN_CFLAGS${WARN_CFLAGS:+ }$option"])
+        [acx_Var="$acx_Var${acx_Var:+ }$real_option"])
   AS_VAR_POPDEF([acx_Woption])dnl
 done
-CFLAGS="$save_CFLAGS"
+CFLAGS="${save_CFLAGS}"
+m4_popdef([acx_Var])dnl
 ])# ACX_PROG_CC_WARNING_OPTS
 
-# ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-Wno-long-long ...])
-#   Sets WARN_PEDANTIC to "-pedantic" + the argument, if the compiler is GCC
-#   and accepts all of those options simultaneously, otherwise to nothing.
+# ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-Wno-long-long ...],
+#                                     [VARIABLE = WARN_PEDANTIC])
+#   Append to VARIABLE (WARN_PEDANTIC by default) to "-pedantic" + the
+#   argument, if the compiler is GCC and accepts all of those options
+#   simultaneously, otherwise to nothing.
 AC_DEFUN([ACX_PROG_CC_WARNING_ALMOST_PEDANTIC],
 [AC_REQUIRE([AC_PROG_CC])dnl
-AC_SUBST([WARN_PEDANTIC])dnl
-AS_VAR_PUSHDEF([acx_Pedantic], [acx_cv_prog_cc_pedantic_$1])dnl
-WARN_PEDANTIC=
-AS_IF([test "$GCC" = yes],
-[AC_CACHE_CHECK([whether $CC supports -pedantic $1], acx_Pedantic,
-[save_CFLAGS="$CFLAGS"
-CFLAGS="-pedantic $1"
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],[])],
+m4_pushdef([acx_Var],[m4_default([$2],[WARN_PEDANTIC])])dnl
+AC_SUBST(acx_Var)dnl
+m4_expand_once([acx_Var=""
+],m4_quote(acx_Var=""))dnl
+# Do the check with the no- prefix removed from the warning options
+# since gcc silently accepts any -Wno-* option on purpose:
+m4_pushdef([acx_Woptions],[m4_bpatsubst([$1],[-Wno-],[-W])])dnl
+AS_VAR_PUSHDEF([acx_Pedantic],[acx_cv_prog_cc_pedantic_]acx_Woptions)dnl
+AS_IF([test "x${GCC}" = "xyes"],
+[AC_CACHE_CHECK([whether ${CC} supports -pedantic ]acx_Woptions, acx_Pedantic,
+[save_CFLAGS="${CFLAGS}"
+CFLAGS="-pedantic acx_Woptions"
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
    [AS_VAR_SET(acx_Pedantic, yes)],
    [AS_VAR_SET(acx_Pedantic, no)])
-CFLAGS="$save_CFLAGS"])
+CFLAGS="${save_CFLAGS}"])
 AS_IF([test AS_VAR_GET(acx_Pedantic) = yes],
-      [WARN_PEDANTIC="-pedantic $1"])
+      [acx_Var="$acx_Var${acx_Var:+ }-pedantic $1"])
 ])
 AS_VAR_POPDEF([acx_Pedantic])dnl
+m4_popdef([acx_Woptions])dnl
+m4_popdef([acx_Var])dnl
 ])# ACX_PROG_CC_WARNING_ALMOST_PEDANTIC
 
 # ACX_PROG_CC_WARNINGS_ARE_ERRORS([x.y.z])
@@ -74,12 +95,12 @@ AS_VAR_POPDEF([acx_Pedantic])dnl
 AC_DEFUN([ACX_PROG_CC_WARNINGS_ARE_ERRORS],
 [AC_REQUIRE([AC_PROG_CC])dnl
 AC_SUBST([WERROR])dnl
-WERROR=
-AC_ARG_ENABLE(werror-always, 
-    AS_HELP_STRING([--enable-werror-always],
-		   [enable -Werror despite compiler version]),
-[], [enable_werror_always=no])
-AS_IF([test $enable_werror_always = yes],
+WERROR=""
+AC_ARG_ENABLE([werror-always], 
+    [AS_HELP_STRING([--enable-werror-always],
+		    [enable -Werror despite compiler version])],
+[],[enable_werror_always=no])
+AS_IF([test "x${enable_werror_always}" = "xyes"],
       [WERROR=-Werror],
  m4_if($1, [manual],,
  [AS_VAR_PUSHDEF([acx_GCCvers], [acx_cv_prog_cc_gcc_$1_or_newer])dnl

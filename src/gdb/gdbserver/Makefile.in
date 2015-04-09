@@ -401,8 +401,9 @@ all-lib: $(GNULIB_BUILDDIR)/Makefile
 # does have a rule for it, that rule does NOT actually make it (because we
 # are not treating gnulib as a subdir like FSF gdb does), and so the
 # dependency can be satisfied without it actually existing to be available
-# for linking against
-gdbreplay$(EXEEXT): $(GDBREPLAY_OBS) $(LIBGNU)
+# for linking against.  However, we no longer always build LIBGNU, so
+# comment the dependency out until I get that sorted out:
+gdbreplay$(EXEEXT): $(GDBREPLAY_OBS) # $(LIBGNU)
 	$(AM_V_at)rm -f $(AM_V_v) gdbreplay$(EXEEXT)
 	$(AM_V_CCLD)${CC_LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) \
 	  -o gdbreplay$(EXEEXT) $(GDBREPLAY_OBS) $(XM_CLIBS)

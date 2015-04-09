@@ -39,13 +39,16 @@
 
 #include <errno.h>
 
-/* Change the size of an allocated block of memory P to N bytes,
- * with error checking. If N is zero, change it to 1. If P is NULL,
- * use malloc.
- */
+#ifndef rpl_realloc
+/* prototype */
+void *rpl_realloc(void *p, size_t n);
+#endif /* !rpl_realloc */
 
+/* Change the size of an allocated block of memory P to N bytes,
+ * with error checking.  If N is zero, then change it to 1.  If P is NULL,
+ * then use malloc: */
 void *
-rpl_realloc (void *p, size_t n)
+rpl_realloc(void *p, size_t n)
 {
   void *result;
 
@@ -55,7 +58,7 @@ rpl_realloc (void *p, size_t n)
       n = 1;
 
       /* In theory realloc might fail, so do NOT rely on it to free.  */
-      free (p);
+      free(p);
       p = NULL;
     }
 #endif /* NEED_REALLOC_GNU */
@@ -66,10 +69,10 @@ rpl_realloc (void *p, size_t n)
       if (n == 0)
         n = 1;
 #endif /* GNULIB_REALLOC_GNU && !NEED_REALLOC_GNU && !SYSTEM_MALLOC_GLIBC_COMPATIBLE */
-      result = malloc (n);
+      result = malloc(n);
     }
   else
-    result = realloc (p, n);
+    result = realloc(p, n);
 
 #if !HAVE_REALLOC_POSIX
   if (result == NULL)
@@ -78,3 +81,5 @@ rpl_realloc (void *p, size_t n)
 
   return result;
 }
+
+/* EOF */

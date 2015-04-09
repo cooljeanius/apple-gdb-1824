@@ -123,7 +123,7 @@ AC_DEFUN([SC_PATH_TKCONFIG],[
     # the alternative search directory is invoked by --with-tk
     #
 
-    if test x"${no_tk}" = x ; then
+    if test x"${no_tk}" = x""; then
 	# we reset no_tk in case something fails here
 	no_tk=true
 	AC_ARG_WITH([tk],[AS_HELP_STRING([--with-tk],[directory containing tk configuration (tkConfig.sh)])],[with_tkconfig=${withval}])
@@ -131,7 +131,7 @@ AC_DEFUN([SC_PATH_TKCONFIG],[
 	AC_CACHE_VAL([ac_cv_c_tkconfig],[
 
 	    # First check to see if --with-tkconfig was specified.
-	    if test x"${with_tkconfig}" != x ; then
+	    if test x"${with_tkconfig}" != x""; then
 		if test -f "${with_tkconfig}/tkConfig.sh" ; then
 		    ac_cv_c_tkconfig=`(cd ${with_tkconfig}; pwd)`
 		else
@@ -708,6 +708,8 @@ AC_DEFUN([SC_CONFIG_MANPAGES],[
 #			Flags used when running the compiler in debug mode
 #	CFLAGS_OPTIMIZE -
 #			Flags used when running the compiler in optimize mode
+#	CFLAGS_WARNING -
+#			Flags used to make the compiler print warnings
 #	EXTRA_CFLAGS
 #
 #--------------------------------------------------------------------
@@ -744,7 +746,7 @@ AC_DEFUN([SC_CONFIG_CFLAGS],[
     # for the system. This can usually be done via the "uname" command, but
     # there are a few systems, like Next, where this does NOT work.
 
-    AC_REQUIRE([AC_PROG_AWK])
+    AC_REQUIRE([AC_PROG_AWK])dnl
 
     AC_MSG_CHECKING([system version (for dynamic loading)])
     if test -f /usr/lib/NextStep/software_version; then
@@ -769,13 +771,11 @@ AC_DEFUN([SC_CONFIG_CFLAGS],[
     fi
 
     # Step 2: check for existence of -ldl library.  This is needed because
-    # Linux can use either -ldl or -ldld for dynamic loading.
+    # Linux can use either -ldl or -ldld for dynamic loading:
+    AC_CHECK_LIB([dl],[dlopen],[have_dl=yes],[have_dl=no])dnl
 
-    AC_CHECK_LIB([dl],[dlopen],[have_dl=yes],[have_dl=no])
-
-    # Require ranlib early so we can override it in special cases below.
-
-    AC_REQUIRE([AC_PROG_RANLIB])
+    dnl# Require ranlib early so we can override it in special cases below:
+    AC_REQUIRE([AC_PROG_RANLIB])dnl
 
     # Step 3: set configuration options based on system name and version.
 
@@ -787,9 +787,13 @@ AC_DEFUN([SC_CONFIG_CFLAGS],[
     ECHO_VERSION='`echo ${VERSION}`'
     TCL_LIB_VERSIONS_OK=ok
     CFLAGS_DEBUG=-ggdb
-    CFLAGS_OPTIMIZE=-O
-    if test "$GCC" = "yes" ; then
+    CFLAGS_OPTIMIZE=-O1
+    if test "x${GCC}" = "xyes"; then
+	# FIXME: '-Wconversion' changed semantics in newer gcc versions.
+	# Also we should be checking these flags to see if they are
+	# actually supported or not:
 	CFLAGS_WARNING="-Wall -Wconversion -Wno-implicit-int"
+	CFLAGS_WARNING="${CFLAGS_WARNING} -Wno-deprecated-declarations"
     else
 	CFLAGS_WARNING=""
     fi
@@ -1701,37 +1705,37 @@ dnl# is fixed.
         INSTALL_STUB_LIB='$(INSTALL_LIBRARY) $(STUB_LIB_FILE) $(LIB_INSTALL_DIR)/$(STUB_LIB_FILE) ; (cd $(LIB_INSTALL_DIR) ; $(RANLIB) $(STUB_LIB_FILE))'
     fi
 
-    AC_SUBST([DL_LIBS])
+    AC_SUBST([DL_LIBS])dnl
 
-    AC_SUBST([DL_OBJS])
-    AC_SUBST([PLAT_OBJS])
-    AC_SUBST([CFLAGS])
-    AC_SUBST([CFLAGS_DEBUG])
-    AC_SUBST([CFLAGS_OPTIMIZE])
-    AC_SUBST([CFLAGS_WARNING])
-    AC_SUBST([EXTRA_CFLAGS])
+    AC_SUBST([DL_OBJS])dnl
+    AC_SUBST([PLAT_OBJS])dnl
+    AC_SUBST([CFLAGS])dnl
+    AC_SUBST([CFLAGS_DEBUG])dnl
+    AC_SUBST([CFLAGS_OPTIMIZE])dnl
+    AC_SUBST([CFLAGS_WARNING])dnl
+    AC_SUBST([EXTRA_CFLAGS])dnl
 
-    AC_SUBST([LDFLAGS])
-    AC_SUBST([LDFLAGS_DEBUG])
-    AC_SUBST([LDFLAGS_OPTIMIZE])
-    AC_SUBST([CC_SEARCH_FLAGS])
-    AC_SUBST([LD_SEARCH_FLAGS])
+    AC_SUBST([LDFLAGS])dnl
+    AC_SUBST([LDFLAGS_DEBUG])dnl
+    AC_SUBST([LDFLAGS_OPTIMIZE])dnl
+    AC_SUBST([CC_SEARCH_FLAGS])dnl
+    AC_SUBST([LD_SEARCH_FLAGS])dnl
 
-    AC_SUBST([STLIB_LD])
-    AC_SUBST([SHLIB_LD])
-    AC_SUBST([TCL_SHLIB_LD_EXTRAS])
-    AC_SUBST([TK_SHLIB_LD_EXTRAS])
-    AC_SUBST([SHLIB_LD_FLAGS])
-    AC_SUBST([SHLIB_LD_LIBS])
-    AC_SUBST([SHLIB_CFLAGS])
-    AC_SUBST([SHLIB_SUFFIX])
+    AC_SUBST([STLIB_LD])dnl
+    AC_SUBST([SHLIB_LD])dnl
+    AC_SUBST([TCL_SHLIB_LD_EXTRAS])dnl
+    AC_SUBST([TK_SHLIB_LD_EXTRAS])dnl
+    AC_SUBST([SHLIB_LD_FLAGS])dnl
+    AC_SUBST([SHLIB_LD_LIBS])dnl
+    AC_SUBST([SHLIB_CFLAGS])dnl
+    AC_SUBST([SHLIB_SUFFIX])dnl
 
-    AC_SUBST([MAKE_LIB])
-    AC_SUBST([MAKE_STUB_LIB])
-    AC_SUBST([INSTALL_LIB])
-    AC_SUBST([INSTALL_STUB_LIB])
-    AC_SUBST([RANLIB])
-])
+    AC_SUBST([MAKE_LIB])dnl
+    AC_SUBST([MAKE_STUB_LIB])dnl
+    AC_SUBST([INSTALL_LIB])dnl
+    AC_SUBST([INSTALL_STUB_LIB])dnl
+    AC_SUBST([RANLIB])dnl
+])dnl
 
 #--------------------------------------------------------------------
 # SC_SERIAL_PORT
@@ -2137,7 +2141,9 @@ AC_DEFUN([SC_TIME_HANDLER],[
 #elif defined(HAVE_TIME_H)
 # include <time.h>
 #else
-# warning This conftest expects <time.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest expects <time.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* TIME_WITH_SYS_TIME || HAVE_TIME_H */
 ]],[[struct tm tm; tm.tm_tzadj;]])],
 	    [tcl_cv_member_tm_tzadj=yes],[tcl_cv_member_tm_tzadj=no])])

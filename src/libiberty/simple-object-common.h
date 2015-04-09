@@ -305,20 +305,18 @@ simple_object_set_little_32 (unsigned char *buf, unsigned int val)
   buf[0] = val & 0xff;
 }
 
-/* Store a big-endian 32-bit value coming in as a ulong_type.  */
-
+/* Store a big-endian 32-bit value coming in as a ulong_type: */
 static inline void
-simple_object_set_big_32_ulong (unsigned char *buf, ulong_type val)
+simple_object_set_big_32_ulong(unsigned char *buf, ulong_type val)
 {
-  simple_object_set_big_32 (buf, val);
+  simple_object_set_big_32(buf, (unsigned int)val);
 }
 
-/* Store a little-endian 32-bit value coming in as a ulong_type.  */
-
+/* Store a little-endian 32-bit value coming in as a ulong_type: */
 static inline void
-simple_object_set_little_32_ulong (unsigned char *buf, ulong_type val)
+simple_object_set_little_32_ulong(unsigned char *buf, ulong_type val)
 {
-  simple_object_set_little_32 (buf, val);
+  simple_object_set_little_32(buf, (unsigned int)val);
 }
 
 #ifdef UNSIGNED_64BIT_TYPE

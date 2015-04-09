@@ -15,6 +15,10 @@ AC_REQUIRE_AUX_FILE([mkinstalldirs])dnl
 
 # target stuff:
 AC_CANONICAL_TARGET
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"
   AC_SUBST([HOST_ARCHITECTURE])
@@ -185,13 +189,13 @@ AC_SUBST([REZ])dnl
 # Gettext:
 if test -d ../intl; then
   if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../intl"
+    export LDFLAGS="-L. -L../intl"
   else
     export LDFLAGS="${LDFLAGS} -L../intl"
   fi
 elif test -d ../libintl; then
   if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../libintl"
+    export LDFLAGS="-L. -L../libintl"
   else
     export LDFLAGS="${LDFLAGS} -L../libintl"
   fi
@@ -333,7 +337,7 @@ AC_CHECK_LIB([gnu],[gl_dummy_symbol],[],[
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 if test -d ../intl; then
   if test -z "${CPPFLAGS}"; then
-    export CPPFLAGS="-I../intl"
+    export CPPFLAGS="-I. -I../intl"
   else
     export CPPFLAGS="${CPPFLAGS} -I../intl"
   fi
@@ -344,7 +348,7 @@ if test -d ../intl; then
   fi
 elif test -d ../libintl; then
   if test -z "${CPPFLAGS}"; then
-    export CPPFLAGS="-I../libintl"
+    export CPPFLAGS="-I. -I../libintl"
   else
     export CPPFLAGS="${CPPFLAGS} -I../libintl"
   fi

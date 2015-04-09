@@ -143,7 +143,8 @@ installcheck: installcheck-subdir
 
 INCDIR=$(srcdir)/$(MULTISRCTOP)../include
 
-COMPILE.c = $(CC) -c @DEFS@ $(LIBCFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) $(HDEFINES) @ac_libiberty_warn_cflags@
+LIBIBERTY_WARN_CFLAGS = @ac_libiberty_warn_cflags@
+COMPILE.c = $(CC) -c @DEFS@ $(LIBCFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) $(HDEFINES) $(LIBIBERTY_WARN_CFLAGS)
 
 # Just to make sure we do NOT use a built-in rule with VPATH:
 .c.$(objext):
@@ -190,8 +191,8 @@ CFILES = alloca.c argv.c asprintf.c atexit.c				\
 	vasprintf.c vfork.c vfprintf.c vprintf.c vprintf-support.c 	\
 	 vsnprintf.c vsprintf.c 					\
 	waitpid.c							\
-	xatexit.c xexit.c xmalloc.c xmemdup.c xstrdup.c xstrerror.c	\
-	 xstrndup.c xvasprintf.c
+	xasprintf.c xatexit.c xexit.c xmalloc.c xmemdup.c xstrdup.c 	\
+	 xstrerror.c xstrndup.c xvasprintf.c
 
 # These are always included in the library. The first 4 (5 now) are listed
 # 1st and by compile time to optimize parallel builds. The rest are listed
@@ -224,9 +225,9 @@ REQUIRED_OFILES = 							\
 	 ./strerror.$(objext) ./strsignal.$(objext)			\
 	./timeval-utils.$(objext) ./ternary.$(objext)			\
 	./unlink-if-ordinary.$(objext)					\
-	./xatexit.$(objext) ./xexit.$(objext) ./xmalloc.$(objext) 	\
-	 ./xmemdup.$(objext) ./xstrdup.$(objext) ./xstrerror.$(objext) 	\
-	 ./xstrndup.$(objext) ./xvasprintf.$(objext)
+	./xasprintf.$(objext) ./xatexit.$(objext) ./xexit.$(objext) 	\
+	 ./xmalloc.$(objext) ./xmemdup.$(objext) ./xstrdup.$(objext) 	\
+	 ./xstrerror.$(objext) ./xstrndup.$(objext) ./xvasprintf.$(objext)
 
 # These are all the objects that configure may add to the library via
 # ${funcs} or EXTRA_OFILES. This list exists here only for "make
@@ -1091,7 +1092,7 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	else echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/memcpy.c $(OUTPUT_OPTION)
 
-./memmem.$(objext): $(srcdir)/memmem.c $(INCDIR)/ansidecl.h
+./memmem.$(objext): $(srcdir)/memmem.c config.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/memmem.c -o pic/$@; \
 	else echo "only doing non-PIC build for $@"; fi
@@ -1103,7 +1104,7 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	else echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/memmove.c $(OUTPUT_OPTION)
 
-./mempcpy.$(objext): $(srcdir)/mempcpy.c $(INCDIR)/ansidecl.h
+./mempcpy.$(objext): $(srcdir)/mempcpy.c config.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/mempcpy.c -o pic/$@; \
 	else echo "only doing non-PIC build for $@"; fi
@@ -1345,7 +1346,7 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	else echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/stpcpy.c $(OUTPUT_OPTION)
 
-./stpncpy.$(objext): $(srcdir)/stpncpy.c $(INCDIR)/ansidecl.h
+./stpncpy.$(objext): $(srcdir)/stpncpy.c config.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/stpncpy.c -o pic/$@; \
 	else echo "only doing non-PIC build for $@"; fi
@@ -1382,19 +1383,19 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	else echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strncasecmp.c $(OUTPUT_OPTION)
 
-./strncmp.$(objext): $(srcdir)/strncmp.c $(INCDIR)/ansidecl.h
+./strncmp.$(objext): $(srcdir)/strncmp.c config.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strncmp.c -o pic/$@; \
 	else echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strncmp.c $(OUTPUT_OPTION)
 
-./strnlen.$(objext): $(srcdir)/strnlen.c $(INCDIR)/ansidecl.h
+./strnlen.$(objext): $(srcdir)/strnlen.c config.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strnlen.c -o pic/$@; \
 	else echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strnlen.c $(OUTPUT_OPTION)
 
-./strndup.$(objext): $(srcdir)/strndup.c $(INCDIR)/ansidecl.h
+./strndup.$(objext): $(srcdir)/strndup.c config.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strndup.c -o pic/$@; \
 	else echo "only doing non-PIC build for $@"; fi
@@ -1536,6 +1537,13 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/waitpid.c -o pic/$@; \
 	else echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/waitpid.c $(OUTPUT_OPTION)
+
+./xasprintf.$(objext): $(srcdir)/xasprintf.c config.h $(INCDIR)/ansidecl.h \
+	$(INCDIR)/libiberty.h
+	if [ x"$(PICFLAG)" != x"" ]; then \
+	  $(COMPILE.c) $(PICFLAG) $(srcdir)/xasprintf.c -o pic/$@; \
+	else echo "only doing non-PIC build for $@"; fi
+	$(COMPILE.c) $(srcdir)/xasprintf.c $(OUTPUT_OPTION)
 
 ./xatexit.$(objext): $(srcdir)/xatexit.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
