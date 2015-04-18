@@ -4,6 +4,8 @@
 
 #include "efence.h"
 
+#include "ansidecl.h" /* for ATTRIBUTE_NORETURN */
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -62,14 +64,14 @@ vprint(const char * pattern, va_list args)
 	static const char bad_pattern[] =
 	 "\nBad pattern specifier %%%c in EF_Print().\n";
 	const char *s = pattern;
-	char c;
+	char c_char;
 
-	while ((c = *s++) != '\0') {
-		if (c == '%') {
-			c = *s++;
-			switch (c) {
+	while ((c_char = *s++) != '\0') {
+		if (c_char == '%') {
+			c_char = *s++;
+			switch (c_char) {
 			case '%':
-				(void)write(2, &c, 1);
+				(void)write(2, &c_char, 1);
 				break;
 			case 'a':
 				/* Print an address passed as a void pointer.
@@ -94,8 +96,8 @@ vprint(const char * pattern, va_list args)
 					int	n = va_arg(args, int);
 
 					if (n < 0) {
-						char c = '-';
-						write(2, &c, 1);
+						char ch = '-';
+						write(2, &ch, 1);
 						n = -n;
 					}
 					printNumber((ef_number)n, 10);
@@ -106,24 +108,24 @@ vprint(const char * pattern, va_list args)
 				break;
 			case 'c':
 				{
-					char c = (char)va_arg(args, int);
+					char ch = (char)va_arg(args, int);
 
-					(void)write(2, &c, 1);
+					(void)write(2, &ch, 1);
 				}
 				break;
 			default:
 				{
-					EF_Print(bad_pattern, c);
+					EF_Print(bad_pattern, c_char);
 				}
 
 			}
 		} else {
-			(void)write(2, &c, 1);
+			(void)write(2, &c_char, 1);
         }
 	}
 }
 
-void
+void ATTRIBUTE_NORETURN
 EF_Abort(const char * pattern, ...)
 {
 	va_list	args;
@@ -144,7 +146,7 @@ EF_Abort(const char * pattern, ...)
 	_exit(-1);
 }
 
-void
+void ATTRIBUTE_NORETURN
 EF_Exit(const char * pattern, ...)
 {
 	va_list	args;

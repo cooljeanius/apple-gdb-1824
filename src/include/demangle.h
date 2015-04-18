@@ -1,4 +1,4 @@
-/* Defs for interface to demanglers.
+/* demangle.h: Defs for interface to demanglers.
    Copyright 1992, 1993, 1994, 1995, 1996, 1997, 1998, 2000, 2001, 2002,
    2003, 2004, 2005, 2007 Free Software Foundation, Inc.
 
@@ -27,7 +27,7 @@
    02110-1301, USA.  */
 
 
-#if !defined (DEMANGLE_H)
+#if !defined(DEMANGLE_H)
 #define DEMANGLE_H
 
 #include "libiberty.h"

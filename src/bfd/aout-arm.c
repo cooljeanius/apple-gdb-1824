@@ -1,7 +1,7 @@
 /* aout-arm.c: BFD back-end for raw ARM a.out binaries.
  * Copyright 1994, 1995, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
  * Free Software Foundation, Inc.
- * Contributed by Richard Earnshaw (rwe@pegasus.esprit.ec.org)
+ * Contributed by Richard Earnshaw <rwe@pegasus.esprit.ec.org>
  *
  * This file is part of BFD, the Binary File Descriptor library.
  *

@@ -1884,27 +1884,26 @@ sh_elf_reloc (bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
   bfd_vma sym_value;
   enum elf_sh_reloc_type r_type;
   bfd_vma addr = reloc_entry->address;
-  bfd_byte *hit_data = addr + (bfd_byte *) data;
+  bfd_byte *hit_data = (addr + (bfd_byte *)data);
 
-  r_type = (enum elf_sh_reloc_type) reloc_entry->howto->type;
+  r_type = (enum elf_sh_reloc_type)reloc_entry->howto->type;
 
   if (output_bfd != NULL)
     {
-      /* Partial linking--do nothing.  */
+      /* Partial linking--do nothing: */
       reloc_entry->address += input_section->output_offset;
       return bfd_reloc_ok;
     }
 
   /* Almost all relocs have to do with relaxing.  If any work must be
      done for them, it has been done in sh_relax_section.  */
-  if (r_type == R_SH_IND12W && (symbol_in->flags & BSF_LOCAL) != 0)
+  if ((r_type == R_SH_IND12W) && ((symbol_in->flags & BSF_LOCAL) != 0))
     return bfd_reloc_ok;
 
-  if (symbol_in != NULL
-      && bfd_is_und_section (symbol_in->section))
+  if ((symbol_in != NULL) && bfd_is_und_section(symbol_in->section))
     return bfd_reloc_undefined;
 
-  if (bfd_is_com_section (symbol_in->section))
+  if (bfd_is_com_section(symbol_in->section))
     sym_value = 0;
   else
     sym_value = (symbol_in->value +
@@ -1914,27 +1913,26 @@ sh_elf_reloc (bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
   switch (r_type)
     {
     case R_SH_DIR32:
-      insn = bfd_get_32 (abfd, hit_data);
-      insn += sym_value + reloc_entry->addend;
-      bfd_put_32 (abfd, (bfd_vma) insn, hit_data);
+      insn = (unsigned long)bfd_get_32(abfd, hit_data);
+      insn += (unsigned long)(sym_value + reloc_entry->addend);
+      bfd_put_32(abfd, (bfd_vma)insn, hit_data);
       break;
     case R_SH_IND12W:
-      insn = bfd_get_16 (abfd, hit_data);
+      insn = (unsigned long)bfd_get_16(abfd, hit_data);
       sym_value += reloc_entry->addend;
       sym_value -= (input_section->output_section->vma
 		    + input_section->output_offset
-		    + addr
-		    + 4);
-      sym_value += (insn & 0xfff) << 1;
+		    + addr + 4UL);
+      sym_value += ((insn & 0xfff) << 1);
       if (insn & 0x800)
 	sym_value -= 0x1000;
-      insn = (insn & 0xf000) | (sym_value & 0xfff);
-      bfd_put_16 (abfd, (bfd_vma) insn, hit_data);
-      if (sym_value < (bfd_vma) -0x1000 || sym_value >= 0x1000)
+      insn = (unsigned long)((insn & 0xf000) | (sym_value & 0xfff));
+      bfd_put_16(abfd, (bfd_vma)insn, hit_data);
+      if ((sym_value < (bfd_vma)-0x1000) || (sym_value >= 0x1000))
 	return bfd_reloc_overflow;
       break;
     default:
-      abort ();
+      abort();
       break;
     }
 
@@ -2263,11 +2261,12 @@ sh_elf_relax_section (bfd *abfd, asection *sec,
 	  unsigned long indx;
 	  struct elf_link_hash_entry *h;
 
-	  indx = ELF32_R_SYM (irelfn->r_info) - symtab_hdr->sh_info;
-	  h = elf_sym_hashes (abfd)[indx];
-	  BFD_ASSERT (h != NULL);
-	  if (h->root.type != bfd_link_hash_defined
-	      && h->root.type != bfd_link_hash_defweak)
+	  indx = (unsigned long)(ELF32_R_SYM(irelfn->r_info)
+                                 - symtab_hdr->sh_info);
+	  h = elf_sym_hashes(abfd)[indx];
+	  BFD_ASSERT(h != NULL);
+	  if ((h->root.type != bfd_link_hash_defined)
+	      && (h->root.type != bfd_link_hash_defweak))
 	    {
 	      /* This appears to be a reference to an undefined
 		 symbol.  Just ignore it--it will be caught by the
@@ -4510,7 +4509,7 @@ sh_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
       bfd_vma off;
       int tls_type;
 
-      r_symndx = ELF32_R_SYM(rel->r_info);
+      r_symndx = (unsigned long)ELF32_R_SYM(rel->r_info);
 
       r_type = (int)ELF32_R_TYPE(rel->r_info);
 
@@ -5898,7 +5897,7 @@ sh_elf_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info,
       int seen_stt_datalabel = 0;
 #endif /* INCLUDE_SHMEDIA */
 
-      r_symndx = ELF32_R_SYM(rel->r_info);
+      r_symndx = (unsigned long)ELF32_R_SYM(rel->r_info);
       if (r_symndx >= symtab_hdr->sh_info)
 	{
 	  struct elf_sh_link_hash_entry *eh;
@@ -6205,7 +6204,7 @@ sh_elf_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
       int seen_stt_datalabel = 0;
 #endif /* INCLUDE_SHMEDIA */
 
-      r_symndx = ELF32_R_SYM(rel->r_info);
+      r_symndx = (unsigned long)ELF32_R_SYM(rel->r_info);
       r_type = (unsigned int)ELF32_R_TYPE(rel->r_info);
 
       if (r_symndx < symtab_hdr->sh_info)
@@ -6757,15 +6756,15 @@ sh_elf_object_p (bfd *abfd)
    dynamic sections here.  */
 
 static bfd_boolean
-sh_elf_finish_dynamic_symbol (bfd *output_bfd, struct bfd_link_info *info,
-			      struct elf_link_hash_entry *h,
-			      Elf_Internal_Sym *sym)
+sh_elf_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
+			     struct elf_link_hash_entry *h,
+			     Elf_Internal_Sym *sym)
 {
   struct elf_sh_link_hash_table *htab;
 
-  htab = sh_elf_hash_table (info);
+  htab = sh_elf_hash_table(info);
 
-  if (h->plt.offset != (bfd_vma) -1)
+  if (h->plt.offset != (bfd_vma)-1L)
     {
       asection *splt;
       asection *sgot;
@@ -6779,123 +6778,122 @@ sh_elf_finish_dynamic_symbol (bfd *output_bfd, struct bfd_link_info *info,
       /* This symbol has an entry in the procedure linkage table.  Set
 	 it up.  */
 
-      BFD_ASSERT (h->dynindx != -1);
+      BFD_ASSERT(h->dynindx != -1);
 
       splt = htab->splt;
       sgot = htab->sgotplt;
       srel = htab->srelplt;
-      BFD_ASSERT (splt != NULL && sgot != NULL && srel != NULL);
+      BFD_ASSERT((splt != NULL) && (sgot != NULL) && (srel != NULL));
 
       /* Get the index in the procedure linkage table which
 	 corresponds to this symbol.  This is the index of this symbol
 	 in all the symbols for which we are making plt entries.  The
 	 first entry in the procedure linkage table is reserved.  */
-      plt_index = h->plt.offset / elf_sh_sizeof_plt (info) - 1;
+      plt_index = (h->plt.offset / elf_sh_sizeof_plt(info) - 1UL);
 
       /* Get the offset into the .got table of the entry that
 	 corresponds to this function.  Each .got entry is 4 bytes.
 	 The first three are reserved.  */
-      got_offset = (plt_index + 3) * 4;
+      got_offset = ((plt_index + 3UL) * 4UL);
 
 #ifdef GOT_BIAS
       if (info->shared)
 	got_offset -= GOT_BIAS;
-#endif
+#endif /* GOT_BIAS */
 
-      /* Fill in the entry in the procedure linkage table.  */
+      /* Fill in the entry in the procedure linkage table: */
       if (! info->shared)
 	{
 	  if (elf_sh_plt_entry == NULL)
 	    {
-	      elf_sh_plt_entry = (bfd_big_endian (output_bfd) ?
-				  elf_sh_plt_entry_be : elf_sh_plt_entry_le);
+	      elf_sh_plt_entry = (bfd_big_endian(output_bfd)
+                                  ? elf_sh_plt_entry_be
+                                  : elf_sh_plt_entry_le);
 	    }
-	  memcpy (splt->contents + h->plt.offset, elf_sh_plt_entry,
-		  elf_sh_sizeof_plt (info));
+	  memcpy((splt->contents + h->plt.offset), elf_sh_plt_entry,
+		 elf_sh_sizeof_plt(info));
 #ifdef INCLUDE_SHMEDIA
-	  movi_shori_putval (output_bfd,
-			     (sgot->output_section->vma
-			      + sgot->output_offset
-			      + got_offset),
-			     (splt->contents + h->plt.offset
-			      + elf_sh_plt_symbol_offset (info)));
+	  movi_shori_putval(output_bfd,
+			    (unsigned long)(sgot->output_section->vma
+                                            + sgot->output_offset
+                                            + got_offset),
+			    (splt->contents + h->plt.offset
+			     + elf_sh_plt_symbol_offset(info)));
 
-	  /* Set bottom bit because its for a branch to SHmedia */
-	  movi_shori_putval (output_bfd,
-			     (splt->output_section->vma + splt->output_offset)
-			     | 1,
-			     (splt->contents + h->plt.offset
-			      + elf_sh_plt_plt0_offset (info)));
+	  /* Set bottom bit because its for a branch to SHmedia: */
+	  movi_shori_putval(output_bfd,
+			    (unsigned long)((splt->output_section->vma
+                                             + splt->output_offset)
+                                            | 1UL),
+			    (splt->contents + h->plt.offset
+			     + elf_sh_plt_plt0_offset(info)));
 #else
-	  bfd_put_32 (output_bfd,
-		      (sgot->output_section->vma
-		       + sgot->output_offset
-		       + got_offset),
-		      (splt->contents + h->plt.offset
-		       + elf_sh_plt_symbol_offset (info)));
+	  bfd_put_32(output_bfd,
+		     (sgot->output_section->vma + sgot->output_offset
+		      + got_offset),
+		     (splt->contents + h->plt.offset
+		      + elf_sh_plt_symbol_offset(info)));
 
-	  bfd_put_32 (output_bfd,
-		      (splt->output_section->vma + splt->output_offset),
-		      (splt->contents + h->plt.offset
-		       + elf_sh_plt_plt0_offset (info)));
+	  bfd_put_32(output_bfd,
+		     (splt->output_section->vma + splt->output_offset),
+		     (splt->contents + h->plt.offset
+		      + elf_sh_plt_plt0_offset(info)));
 #endif
 	}
       else
 	{
 	  if (elf_sh_pic_plt_entry == NULL)
 	    {
-	      elf_sh_pic_plt_entry = (bfd_big_endian (output_bfd) ?
-				      elf_sh_pic_plt_entry_be :
-				      elf_sh_pic_plt_entry_le);
+	      elf_sh_pic_plt_entry = (bfd_big_endian(output_bfd)
+                                      ? elf_sh_pic_plt_entry_be
+                                      : elf_sh_pic_plt_entry_le);
 	    }
-	  memcpy (splt->contents + h->plt.offset, elf_sh_pic_plt_entry,
-		  elf_sh_sizeof_plt (info));
+	  memcpy((splt->contents + h->plt.offset), elf_sh_pic_plt_entry,
+		 elf_sh_sizeof_plt(info));
 #ifdef INCLUDE_SHMEDIA
-	  movi_shori_putval (output_bfd, got_offset,
-			     (splt->contents + h->plt.offset
-			      + elf_sh_plt_symbol_offset (info)));
+	  movi_shori_putval(output_bfd, (unsigned long)got_offset,
+			    (splt->contents + h->plt.offset
+			     + elf_sh_plt_symbol_offset(info)));
 #else
-	  bfd_put_32 (output_bfd, got_offset,
-		      (splt->contents + h->plt.offset
-		       + elf_sh_plt_symbol_offset (info)));
-#endif
+	  bfd_put_32(output_bfd, got_offset,
+		     (splt->contents + h->plt.offset
+		      + elf_sh_plt_symbol_offset(info)));
+#endif /* INCLUDE_SHMEDIA */
 	}
 
 #ifdef GOT_BIAS
       if (info->shared)
 	got_offset += GOT_BIAS;
-#endif
+#endif /* GOT_BIAS */
 
 #ifdef INCLUDE_SHMEDIA
-      movi_shori_putval (output_bfd,
-			 plt_index * sizeof (Elf32_External_Rela),
-			 (splt->contents + h->plt.offset
-			  + elf_sh_plt_reloc_offset (info)));
+      movi_shori_putval(output_bfd,
+                        (unsigned long)(plt_index
+                                        * sizeof(Elf32_External_Rela)),
+                        (splt->contents + h->plt.offset
+                         + elf_sh_plt_reloc_offset(info)));
 #else
-      bfd_put_32 (output_bfd, plt_index * sizeof (Elf32_External_Rela),
-		  (splt->contents + h->plt.offset
-		   + elf_sh_plt_reloc_offset (info)));
-#endif
+      bfd_put_32(output_bfd, (plt_index * sizeof(Elf32_External_Rela)),
+		 (splt->contents + h->plt.offset
+		  + elf_sh_plt_reloc_offset(info)));
+#endif /* INCLUDE_SHMEDIA */
 
-      /* Fill in the entry in the global offset table.  */
-      bfd_put_32 (output_bfd,
-		  (splt->output_section->vma
-		   + splt->output_offset
-		   + h->plt.offset
-		   + elf_sh_plt_temp_offset (info)),
-		  sgot->contents + got_offset);
+      /* Fill in the entry in the global offset table: */
+      bfd_put_32(output_bfd,
+		 (splt->output_section->vma + splt->output_offset
+		  + h->plt.offset + elf_sh_plt_temp_offset(info)),
+		 (sgot->contents + got_offset));
 
-      /* Fill in the entry in the .rela.plt section.  */
-      rel.r_offset = (sgot->output_section->vma
-		      + sgot->output_offset
+      /* Fill in the entry in the .rela.plt section: */
+      rel.r_offset = (sgot->output_section->vma + sgot->output_offset
 		      + got_offset);
-      rel.r_info = ELF32_R_INFO (h->dynindx, R_SH_JMP_SLOT);
+      rel.r_info = ELF32_R_INFO(h->dynindx, R_SH_JMP_SLOT);
       rel.r_addend = 0;
 #ifdef GOT_BIAS
       rel.r_addend = GOT_BIAS;
-#endif
-      loc = srel->contents + plt_index * sizeof (Elf32_External_Rela);
-      bfd_elf32_swap_reloca_out (output_bfd, &rel, loc);
+#endif /* GOT_BIAS */
+      loc = (srel->contents + plt_index * sizeof(Elf32_External_Rela));
+      bfd_elf32_swap_reloca_out(output_bfd, &rel, loc);
 
       if (!h->def_regular)
 	{
@@ -6905,25 +6903,22 @@ sh_elf_finish_dynamic_symbol (bfd *output_bfd, struct bfd_link_info *info,
 	}
     }
 
-  if (h->got.offset != (bfd_vma) -1
-      && sh_elf_hash_entry (h)->tls_type != GOT_TLS_GD
-      && sh_elf_hash_entry (h)->tls_type != GOT_TLS_IE)
+  if ((h->got.offset != (bfd_vma)-1L)
+      && (sh_elf_hash_entry(h)->tls_type != GOT_TLS_GD)
+      && (sh_elf_hash_entry(h)->tls_type != GOT_TLS_IE))
     {
       asection *sgot;
       asection *srel;
       Elf_Internal_Rela rel;
       bfd_byte *loc;
 
-      /* This symbol has an entry in the global offset table.  Set it
-	 up.  */
-
+      /* This symbol has an entry in the global offset table; set it up: */
       sgot = htab->sgot;
       srel = htab->srelgot;
-      BFD_ASSERT (sgot != NULL && srel != NULL);
+      BFD_ASSERT((sgot != NULL) && (srel != NULL));
 
-      rel.r_offset = (sgot->output_section->vma
-		      + sgot->output_offset
-		      + (h->got.offset &~ (bfd_vma) 1));
+      rel.r_offset = (sgot->output_section->vma + sgot->output_offset
+		      + (h->got.offset &~ (bfd_vma)1UL));
 
       /* If this is a static link, or it is a -Bsymbolic link and the
 	 symbol is defined locally or was forced to be local because
@@ -6931,23 +6926,24 @@ sh_elf_finish_dynamic_symbol (bfd *output_bfd, struct bfd_link_info *info,
 	 The entry in the global offset table will already have been
 	 initialized in the relocate_section function.  */
       if (info->shared
-	  && SYMBOL_REFERENCES_LOCAL (info, h))
+	  && SYMBOL_REFERENCES_LOCAL(info, h))
 	{
-	  rel.r_info = ELF32_R_INFO (0, R_SH_RELATIVE);
+	  rel.r_info = ELF32_R_INFO(0, R_SH_RELATIVE);
 	  rel.r_addend = (h->root.u.def.value
 			  + h->root.u.def.section->output_section->vma
 			  + h->root.u.def.section->output_offset);
 	}
       else
 	{
-	  bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + h->got.offset);
-	  rel.r_info = ELF32_R_INFO (h->dynindx, R_SH_GLOB_DAT);
+	  bfd_put_32(output_bfd, (bfd_vma)0UL,
+                     (sgot->contents + h->got.offset));
+	  rel.r_info = ELF32_R_INFO(h->dynindx, R_SH_GLOB_DAT);
 	  rel.r_addend = 0;
 	}
 
       loc = srel->contents;
-      loc += srel->reloc_count++ * sizeof (Elf32_External_Rela);
-      bfd_elf32_swap_reloca_out (output_bfd, &rel, loc);
+      loc += (srel->reloc_count++ * sizeof(Elf32_External_Rela));
+      bfd_elf32_swap_reloca_out(output_bfd, &rel, loc);
     }
 
 #ifdef INCLUDE_SHMEDIA
@@ -7034,37 +7030,36 @@ sh_elf_finish_dynamic_symbol (bfd *output_bfd, struct bfd_link_info *info,
   return TRUE;
 }
 
-/* Finish up the dynamic sections.  */
-
+/* Finish up the dynamic sections: */
 static bfd_boolean
-sh_elf_finish_dynamic_sections (bfd *output_bfd, struct bfd_link_info *info)
+sh_elf_finish_dynamic_sections(bfd *output_bfd, struct bfd_link_info *info)
 {
   struct elf_sh_link_hash_table *htab;
   asection *sgot;
   asection *sdyn;
 
-  htab = sh_elf_hash_table (info);
+  htab = sh_elf_hash_table(info);
   sgot = htab->sgotplt;
-  sdyn = bfd_get_section_by_name (htab->root.dynobj, ".dynamic");
+  sdyn = bfd_get_section_by_name(htab->root.dynobj, ".dynamic");
 
   if (htab->root.dynamic_sections_created)
     {
       asection *splt;
       Elf32_External_Dyn *dyncon, *dynconend;
 
-      BFD_ASSERT (sgot != NULL && sdyn != NULL);
+      BFD_ASSERT((sgot != NULL) && (sdyn != NULL));
 
-      dyncon = (Elf32_External_Dyn *) sdyn->contents;
-      dynconend = (Elf32_External_Dyn *) (sdyn->contents + sdyn->size);
+      dyncon = (Elf32_External_Dyn *)sdyn->contents;
+      dynconend = (Elf32_External_Dyn *)(sdyn->contents + sdyn->size);
       for (; dyncon < dynconend; dyncon++)
 	{
 	  Elf_Internal_Dyn dyn;
 	  asection *s;
 #ifdef INCLUDE_SHMEDIA
 	  const char *name;
-#endif
+#endif /* INCLUDE_SHMEDIA */
 
-	  bfd_elf32_swap_dyn_in (htab->root.dynobj, dyncon, &dyn);
+	  bfd_elf32_swap_dyn_in(htab->root.dynobj, dyncon, &dyn);
 
 	  switch (dyn.d_tag)
 	    {
@@ -7083,16 +7078,16 @@ sh_elf_finish_dynamic_sections (bfd *output_bfd, struct bfd_link_info *info)
 		{
 		  struct elf_link_hash_entry *h;
 
-		  h = elf_link_hash_lookup (&htab->root, name,
-					    FALSE, FALSE, TRUE);
-		  if (h != NULL && (h->other & STO_SH5_ISA32))
+		  h = elf_link_hash_lookup(&htab->root, name,
+					   FALSE, FALSE, TRUE);
+		  if ((h != NULL) && (h->other & STO_SH5_ISA32))
 		    {
 		      dyn.d_un.d_val |= 1;
-		      bfd_elf32_swap_dyn_out (output_bfd, &dyn, dyncon);
+		      bfd_elf32_swap_dyn_out(output_bfd, &dyn, dyncon);
 		    }
 		}
 	      break;
-#endif
+#endif /* INCLUDE_SHMEDIA */
 
 	    case DT_PLTGOT:
 	      s = htab->sgot->output_section;
@@ -7101,16 +7096,16 @@ sh_elf_finish_dynamic_sections (bfd *output_bfd, struct bfd_link_info *info)
 	    case DT_JMPREL:
 	      s = htab->srelplt->output_section;
 	    get_vma:
-	      BFD_ASSERT (s != NULL);
+	      BFD_ASSERT(s != NULL);
 	      dyn.d_un.d_ptr = s->vma;
-	      bfd_elf32_swap_dyn_out (output_bfd, &dyn, dyncon);
+	      bfd_elf32_swap_dyn_out(output_bfd, &dyn, dyncon);
 	      break;
 
 	    case DT_PLTRELSZ:
 	      s = htab->srelplt->output_section;
-	      BFD_ASSERT (s != NULL);
+	      BFD_ASSERT(s != NULL);
 	      dyn.d_un.d_val = s->size;
-	      bfd_elf32_swap_dyn_out (output_bfd, &dyn, dyncon);
+	      bfd_elf32_swap_dyn_out(output_bfd, &dyn, dyncon);
 	      break;
 
 	    case DT_RELASZ:
@@ -7128,70 +7123,72 @@ sh_elf_finish_dynamic_sections (bfd *output_bfd, struct bfd_link_info *info)
 		  s = htab->srelplt->output_section;
 		  dyn.d_un.d_val -= s->size;
 		}
-	      bfd_elf32_swap_dyn_out (output_bfd, &dyn, dyncon);
+	      bfd_elf32_swap_dyn_out(output_bfd, &dyn, dyncon);
 	      break;
 	    }
 	}
 
-      /* Fill in the first entry in the procedure linkage table.  */
+      /* Fill in the first entry in the procedure linkage table: */
       splt = htab->splt;
-      if (splt && splt->size > 0)
+      if (splt && (splt->size > 0))
 	{
 	  if (info->shared)
 	    {
 	      if (elf_sh_pic_plt_entry == NULL)
 		{
-		  elf_sh_pic_plt_entry = (bfd_big_endian (output_bfd) ?
-					  elf_sh_pic_plt_entry_be :
-					  elf_sh_pic_plt_entry_le);
+		  elf_sh_pic_plt_entry = (bfd_big_endian(output_bfd)
+                                          ? elf_sh_pic_plt_entry_be
+                                          : elf_sh_pic_plt_entry_le);
 		}
-	      memcpy (splt->contents, elf_sh_pic_plt_entry,
-		      elf_sh_sizeof_plt (info));
+	      memcpy(splt->contents, elf_sh_pic_plt_entry,
+		     elf_sh_sizeof_plt(info));
 	    }
 	  else
 	    {
 	      if (elf_sh_plt0_entry == NULL)
 		{
-		  elf_sh_plt0_entry = (bfd_big_endian (output_bfd) ?
-				       elf_sh_plt0_entry_be :
-				       elf_sh_plt0_entry_le);
+		  elf_sh_plt0_entry = (bfd_big_endian(output_bfd)
+                                       ? elf_sh_plt0_entry_be
+                                       : elf_sh_plt0_entry_le);
 		}
-	      memcpy (splt->contents, elf_sh_plt0_entry, PLT_ENTRY_SIZE);
+	      memcpy(splt->contents, elf_sh_plt0_entry, PLT_ENTRY_SIZE);
 #ifdef INCLUDE_SHMEDIA
-	      movi_shori_putval (output_bfd,
-				 sgot->output_section->vma
-				 + sgot->output_offset,
-				 splt->contents
-				 + elf_sh_plt0_gotplt_offset (info));
+	      movi_shori_putval(output_bfd,
+                                (unsigned long)(sgot->output_section->vma
+                                                + sgot->output_offset),
+                                (splt->contents
+				 + elf_sh_plt0_gotplt_offset(info)));
 #else
-	      bfd_put_32 (output_bfd,
-			  sgot->output_section->vma + sgot->output_offset + 4,
-			  splt->contents + elf_sh_plt0_gotid_offset (info));
-	      bfd_put_32 (output_bfd,
-			  sgot->output_section->vma + sgot->output_offset + 8,
-			  splt->contents + elf_sh_plt0_linker_offset (info));
-#endif
+	      bfd_put_32(output_bfd,
+			 (sgot->output_section->vma
+                          + sgot->output_offset + 4),
+			 splt->contents + elf_sh_plt0_gotid_offset(info));
+	      bfd_put_32(output_bfd,
+			 (sgot->output_section->vma
+                          + sgot->output_offset + 8),
+			 splt->contents + elf_sh_plt0_linker_offset(info));
+#endif /* INCLUDE_SHMEDIA */
 	    }
 
 	  /* UnixWare sets the entsize of .plt to 4, although that doesn't
 	     really seem like the right value.  */
-	  elf_section_data (splt->output_section)->this_hdr.sh_entsize = 4;
+	  elf_section_data(splt->output_section)->this_hdr.sh_entsize = 4;
 	}
     }
 
   /* Fill in the first three entries in the global offset table.  */
-  if (sgot && sgot->size > 0)
+  if (sgot && (sgot->size > 0))
     {
       if (sdyn == NULL)
-	bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents);
+	bfd_put_32(output_bfd, (bfd_vma)0UL, sgot->contents);
       else
-	bfd_put_32 (output_bfd,
-		    sdyn->output_section->vma + sdyn->output_offset,
-		    sgot->contents);
-      bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + 4);
-      bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + 8);
+	bfd_put_32(output_bfd,
+		   sdyn->output_section->vma + sdyn->output_offset,
+		   sgot->contents);
+      bfd_put_32(output_bfd, (bfd_vma)0UL, (sgot->contents + 4));
+      bfd_put_32(output_bfd, (bfd_vma)0UL, (sgot->contents + 8));
 
-      elf_section_data (sgot->output_section)->this_hdr.sh_entsize = 4;
+      elf_section_data(sgot->output_section)->this_hdr.sh_entsize = 4;
     }
 
   return TRUE;

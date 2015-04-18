@@ -940,6 +940,7 @@ extern const bfd_target pj_elf32_vec;
 extern const bfd_target pj_elf32_le_vec;
 extern const bfd_target plugin_vec;
 extern const bfd_target pmac_xcoff_vec;
+extern const bfd_target pmac_xcoff64_vec;
 extern const bfd_target powerpc_boot_vec;
 extern const bfd_target powerpc_elf32_vec;
 extern const bfd_target powerpc_elf32_le_vec;

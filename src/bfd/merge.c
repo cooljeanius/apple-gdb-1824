@@ -239,14 +239,15 @@ sec_merge_init(unsigned int entsize, bfd_boolean strings)
 {
   struct sec_merge_hash *table;
 
-  table = (struct sec_merge_hash *)bfd_malloc(sizeof(struct sec_merge_hash));
+  table = ((struct sec_merge_hash *)
+           bfd_malloc((bfd_size_type)sizeof(struct sec_merge_hash)));
   if (table == NULL)
     return NULL;
 
-  if (! bfd_hash_table_init_n (&table->table, sec_merge_hash_newfunc,
-			       16699))
+  if (! bfd_hash_table_init_n(&table->table, sec_merge_hash_newfunc,
+			      16699U))
     {
-      free (table);
+      free(table);
       return NULL;
     }
 
@@ -393,8 +394,10 @@ _bfd_add_merge_section (bfd *abfd, void **psinfo, asection *sec,
 
   if (sinfo == NULL)
     {
-      /* Initialize the information we need to keep track of.  */
-      sinfo = (struct sec_merge_info *)bfd_alloc(abfd, sizeof(struct sec_merge_info));
+      /* Initialize the information we need to keep track of: */
+      sinfo = ((struct sec_merge_info *)
+               bfd_alloc(abfd,
+                         (bfd_size_type)sizeof(struct sec_merge_info)));
       if (sinfo == NULL)
 	goto error_return;
       sinfo->next = (struct sec_merge_info *)*psinfo;

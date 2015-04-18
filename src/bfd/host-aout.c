@@ -78,13 +78,13 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA
 #include "aout/aout64.h"
 
 #ifdef HOST_MACHINE_ARCH
-#ifdef HOST_MACHINE_MACHINE
-#define SET_ARCH_MACH(abfd, execp) \
-  bfd_default_set_arch_mach(abfd, HOST_MACHINE_ARCH, HOST_MACHINE_MACHINE)
+# ifdef HOST_MACHINE_MACHINE
+# define SET_ARCH_MACH(abfd, execp) \
+   bfd_default_set_arch_mach(abfd, HOST_MACHINE_ARCH, HOST_MACHINE_MACHINE)
 #else
-#define SET_ARCH_MACH(abfd, execp) \
-  bfd_default_set_arch_mach(abfd, HOST_MACHINE_ARCH, 0)
-#endif /* HOST_MACHINE_MACHINE */
+# define SET_ARCH_MACH(abfd, execp) \
+   bfd_default_set_arch_mach(abfd, HOST_MACHINE_ARCH, 0)
+# endif /* HOST_MACHINE_MACHINE */
 #endif /* HOST_MACHINE_ARCH */
 
 /* Do not "beautify" the CONCAT* macro args.  Traditional C will not remove

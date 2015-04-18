@@ -2845,6 +2845,25 @@ fi
 
 ac_config_commands="$ac_config_commands multilib-default-1"
 
+elif test "x${multi_basedir}" = "x"; then
+  test -z "${multi_basedir}"
+  if test "x${srcdir}" != "x"; then
+    test -n "${srcdir}"
+    if test "x${srcdir}" = "x."; then
+      if test -n "${with_target_subdir}" && test "${with_target_subdir}" != "."; then
+        multi_basedir="${srcdir}/${with_multisrctop}../.."
+      else
+        multi_basedir="${srcdir}/${with_multisrctop}.."
+      fi
+    else
+      multi_basedir="${srcdir}/.."
+    fi
+  else
+    test -z "${srcdir}"
+    multi_basedir="./.."
+  fi
+else
+  test -n "${multi_basedir}"
 fi
 
 # Make sure we can run config.sub.
@@ -17651,20 +17670,26 @@ $as_echo "#define const /**/" >>confdefs.h
 fi
 
 
-WARN_CFLAGS=
-save_CFLAGS="$CFLAGS"
-for option in -Wall -Wextra -Wwrite-strings -Wnested-externs \
+WARN_FLAGS=""
+save_CFLAGS="${CFLAGS}"
+for real_option in -Wall -Wextra -Wwrite-strings -Wnested-externs \
 			  -Wstrict-prototypes -Wmissing-prototypes \
 			  -Wold-style-definition -Wc++-compat -Wswitch \
 			  -Wmissing-format-attribute -Wcast-qual; do
+  # Do the check with the no- prefix removed since gcc silently accepts
+  # any -Wno-* option on purpose:
+  case ${real_option} in
+    -Wno-*) option=-W`expr x${real_option} : 'x-Wno-\(.*\)'` ;;
+    *) option="${real_option}" ;;
+  esac
   as_acx_Woption=`$as_echo "acx_cv_prog_cc_warning_$option" | $as_tr_sh`
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CC supports $option" >&5
-$as_echo_n "checking whether $CC supports $option... " >&6; }
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ${CC} supports ${option}" >&5
+$as_echo_n "checking whether ${CC} supports ${option}... " >&6; }
 if eval \${$as_acx_Woption+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  CFLAGS="$option"
+  CFLAGS="${option}"
     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -17688,10 +17713,10 @@ eval ac_res=\$$as_acx_Woption
 	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
 $as_echo "$ac_res" >&6; }
   if test `eval 'as_val=${'$as_acx_Woption'};$as_echo "$as_val"'` = yes; then :
-  WARN_CFLAGS="$WARN_CFLAGS${WARN_CFLAGS:+ }$option"
+  WARN_FLAGS="$WARN_FLAGS${WARN_FLAGS:+ }$real_option"
 fi
   done
-CFLAGS="$save_CFLAGS"
+CFLAGS="${save_CFLAGS}"
 
 # deal with potential name mismatch:
 if test "x${WARN_FLAGS}" = "x" && test "x${WARN_CFLAGS}" != "x"; then

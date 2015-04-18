@@ -830,7 +830,7 @@ add_line_info(struct line_info_table *table, bfd_vma address,
 	table->lcl_head = li2;
       }
 
-  /* Set member data of 'info'.  */
+  /* Set member data of 'info': */
   info->address = address;
   info->line = line;
   info->column = column;
@@ -838,7 +838,9 @@ add_line_info(struct line_info_table *table, bfd_vma address,
 
   if (filename && filename[0])
     {
-      info->filename = (char *)bfd_alloc(table->abfd, (strlen(filename) + 1));
+      info->filename =
+        ((char *)bfd_alloc(table->abfd,
+                           (bfd_size_type)(strlen(filename) + 1UL)));
       if (info->filename)
 	strcpy(info->filename, filename);
     }
@@ -917,7 +919,8 @@ arange_add(bfd *abfd, struct arange *first_arange, bfd_vma low_pc, bfd_vma high_
 
   /* Need to allocate a new arange and insert it into the arange list.
      Order is NOT significant, so just insert after the first arange: */
-  arange = (struct arange *)bfd_zalloc(abfd, sizeof(*arange));
+  arange = (struct arange *)bfd_zalloc(abfd,
+                                       (bfd_size_type)sizeof(*arange));
   arange->low = low_pc;
   arange->high = high_pc;
   arange->next = first_arange->next;
@@ -1272,7 +1275,11 @@ decode_line_info(struct comp_unit *unit, struct dwarf2_debug *stash)
 	}
 
       if (filename)
-	free (filename);
+	free(filename);
+
+      if (basic_block == 0) {
+        ; /* silence the clang static analyzer */
+      }
     }
 
   return table;

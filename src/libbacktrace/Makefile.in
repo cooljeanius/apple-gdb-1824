@@ -159,10 +159,9 @@ am__v_lt_1 =
 @NATIVE_TRUE@am__EXEEXT_1 = btest$(EXEEXT) stest$(EXEEXT)
 @NATIVE_TRUE@am_btest_OBJECTS = btest-btest.$(OBJEXT)
 btest_OBJECTS = $(am_btest_OBJECTS)
-@NATIVE_TRUE@btest_DEPENDENCIES = libbacktrace.la
 btest_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(btest_CFLAGS) $(CFLAGS) \
-	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+	$(btest_LDFLAGS) $(LDFLAGS) -o $@
 @NATIVE_TRUE@am_stest_OBJECTS = stest.$(OBJEXT)
 stest_OBJECTS = $(am_stest_OBJECTS)
 @NATIVE_TRUE@stest_DEPENDENCIES = libbacktrace.la
@@ -569,7 +568,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/../include -I$(top_srcdir)/../libgcc \
 	-I../libgcc
 
 AM_CFLAGS = $(EXTRA_FLAGS) $(WARN_FLAGS) $(PIC_FLAG)
-AUTOMAKE_OPTIONS = 1.11.1 foreign no-dist no-define no-dependencies -Wall
+AUTOMAKE_OPTIONS = 1.11.6 foreign no-dist no-define no-dependencies -Wall
 noinst_LTLIBRARIES = libbacktrace.la
 BUILT_SOURCES = config.h backtrace-supported.h
 libbacktrace_la_SOURCES = \
@@ -643,7 +642,9 @@ MULTICLEAN = true
 TESTS = $(check_PROGRAMS)
 @NATIVE_TRUE@btest_SOURCES = btest.c
 @NATIVE_TRUE@btest_CFLAGS = $(AM_CFLAGS) -ggdb -O1 -Wno-unused-function
+@NATIVE_TRUE@btest_DEPENDENCIES = backtrace.h backtrace-supported.h
 @NATIVE_TRUE@btest_LDADD = libbacktrace.la
+@NATIVE_TRUE@btest_LDFLAGS = $(AM_LDFLAGS) $(CFLAGS)
 @NATIVE_TRUE@stest_SOURCES = stest.c
 @NATIVE_TRUE@stest_LDADD = libbacktrace.la
 

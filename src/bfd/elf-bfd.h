@@ -104,6 +104,20 @@ union gotplt_union
   struct plt_entry *plist;
 };
 
+/* un-nested from the struct after it, and named, for '-Wc++-compat': */
+struct elf_link_vtable
+{
+  /* Virtual table entry use information.  This array is nominally of size
+   * size/sizeof(target_void_pointer), though we have to be able to assume
+   * and track a size while the symbol is still undefined.  It is indexed
+   * via offset/sizeof(target_void_pointer): */
+  size_t size;
+  bfd_boolean *used;
+
+  /* Virtual table derivation info: */
+  struct elf_link_hash_entry *parent;
+};
+
 /* ELF linker hash table entries: */
 struct elf_link_hash_entry
 {
@@ -216,18 +230,7 @@ struct elf_link_hash_entry
     struct bfd_elf_version_tree *vertree;
   } verinfo;
 
-  struct
-  {
-    /* Virtual table entry use information.  This array is nominally of size
-       size/sizeof(target_void_pointer), though we have to be able to assume
-       and track a size while the symbol is still undefined.  It is indexed
-       via offset/sizeof(target_void_pointer).  */
-    size_t size;
-    bfd_boolean *used;
-
-    /* Virtual table derivation info.  */
-    struct elf_link_hash_entry *parent;
-  } *vtable;
+  struct elf_link_vtable *vtable;
 };
 
 /* Will references to this symbol always reference the symbol

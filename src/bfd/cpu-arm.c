@@ -1,7 +1,7 @@
-/* BFD support for the ARM processor
+/* cpu-arm.c: BFD support for the ARM processor
    Copyright 1994, 1997, 1999, 2000, 2002, 2003, 2004, 2005, 2007
    Free Software Foundation, Inc.
-   Contributed by Richard Earnshaw (rwe@pegasus.esprit.ec.org)
+   Contributed by Richard Earnshaw <rwe@pegasus.esprit.ec.org>
 
    This file is part of BFD, the Binary File Descriptor library.
 
@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "sysdep.h"
 #include "bfd.h"
@@ -242,9 +242,11 @@ arm_check_note (bfd *abfd,
 
   /* We have to extract the values this way to allow for a host whose
    * endian-ness is different from the target: */
-  namesz = bfd_get_32(abfd, buffer);
-  descsz = bfd_get_32(abfd, buffer + offsetof(arm_Note, descsz));
-  type = bfd_get_32(abfd, buffer + offsetof(arm_Note, type));
+  namesz = (unsigned long)bfd_get_32(abfd, buffer);
+  descsz = (unsigned long)bfd_get_32(abfd, (buffer
+                                            + offsetof(arm_Note, descsz)));
+  type = (unsigned long)bfd_get_32(abfd, (buffer
+                                          + offsetof(arm_Note, type)));
   descr = (char *)buffer + offsetof(arm_Note, name);
 
   /* Check for buffer overflow: */

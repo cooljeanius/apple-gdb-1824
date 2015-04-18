@@ -31,6 +31,8 @@
  */
 #include "efence.h"
 
+#include "ansidecl.h" /* for ATTRIBUTE_NORETURN */
+
 #include <stdlib.h>
 
 #include <memory.h>
@@ -144,7 +146,7 @@ static size_t bytesPerPage = 0;
 
 /* internalError is called for those "should NOT happen" errors in the
  * allocator.  */
-static void
+static void ATTRIBUTE_NORETURN
 internalError(void)
 {
 	EF_Abort("Internal error in allocator.");
@@ -310,7 +312,7 @@ efence_memalign(size_t alignment, size_t userSize)
 {
 	register Slot *slot;
 	register size_t count;
-	Slot *fullSlot = 0;
+	Slot *fullSlot = (Slot *)0;
 	Slot *emptySlots[2];
 	size_t internalSize;
 	size_t slack;
@@ -392,7 +394,7 @@ efence_memalign(size_t alignment, size_t userSize)
 		internalError();
 	}
 
-	if ( !fullSlot ) {
+	if (!fullSlot) {
 		/* I get here if I have NOT been able to find a free buffer
 		 * with all of the memory I need.  I will have to create more
 		 * memory.  I will mark it all as free, and then split it into
@@ -517,7 +519,7 @@ slotForUserAddress(void * address)
 
 /* Find the slot structure for an internal address: */
 static Slot *
-slotForInternalAddress(void * address)
+slotForInternalAddress(void *address)
 {
 	register Slot *slot = allocationList;
 	register size_t	count = slotCount;
@@ -535,7 +537,7 @@ slotForInternalAddress(void * address)
  * before that buffer in the address space.  This is used by free() to
  * coalesce two free buffers into one.  */
 static Slot *
-slotForInternalAddressPreviousTo(void * address)
+slotForInternalAddressPreviousTo(void *address)
 {
 	register Slot *	slot = allocationList;
 	register size_t	count = slotCount;
@@ -551,7 +553,7 @@ slotForInternalAddressPreviousTo(void * address)
 }
 
 extern C_LINKAGE void
-efence_free(void * address)
+efence_free(void *address)
 {
 	Slot *slot;
 	Slot *previousSlot = 0;
@@ -645,7 +647,7 @@ efence_free(void * address)
 }
 
 extern C_LINKAGE void *
-efence_realloc(void * oldBuffer, size_t newSize)
+efence_realloc(void *oldBuffer, size_t newSize)
 {
 	void *newBuffer = efence_malloc(newSize);
 

@@ -1370,20 +1370,20 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
       size_t dirlen;
 
       dirlen = strlen (directory_name);
-      if (info->filename == NULL
-	  || strncmp (info->filename, directory_name, dirlen) != 0
-	  || strcmp (info->filename + dirlen, file_name) != 0)
+      if ((info->filename == NULL)
+	  || (strncmp(info->filename, directory_name, dirlen) != 0)
+	  || (strcmp((info->filename + dirlen), file_name) != 0))
 	{
 	  size_t len;
 
 	  if (info->filename != NULL)
 	    free(info->filename);
-	  len = (strlen(file_name) + 1);
-	  info->filename = (char *)bfd_malloc(dirlen + len);
+	  len = (strlen(file_name) + 1UL);
+	  info->filename = (char *)bfd_malloc((bfd_size_type)(dirlen + len));
 	  if (info->filename == NULL)
 	    return FALSE;
 	  memcpy(info->filename, directory_name, dirlen);
-	  memcpy(info->filename + dirlen, file_name, len);
+	  memcpy((info->filename + dirlen), file_name, len);
 	}
 
       *pfilename = info->filename;

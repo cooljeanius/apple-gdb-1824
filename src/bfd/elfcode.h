@@ -185,7 +185,7 @@ elf_swap_symbol_in(bfd *abfd, const void *psrc, const void *pshn,
   shndx = (const Elf_External_Sym_Shndx *)pshn;
   signed_vma = get_elf_backend_data(abfd)->sign_extend_vma;
 
-  dst->st_name = H_GET_32(abfd, src->st_name);
+  dst->st_name = (unsigned long)H_GET_32(abfd, src->st_name);
   if (signed_vma)
     dst->st_value = H_GET_SIGNED_WORD(abfd, src->st_value);
   else
@@ -237,14 +237,14 @@ elf_swap_ehdr_in(bfd *abfd, const Elf_External_Ehdr *src,
   memcpy(dst->e_ident, src->e_ident, EI_NIDENT);
   dst->e_type = H_GET_16(abfd, src->e_type);
   dst->e_machine = H_GET_16(abfd, src->e_machine);
-  dst->e_version = H_GET_32(abfd, src->e_version);
+  dst->e_version = (unsigned long)H_GET_32(abfd, src->e_version);
   if (signed_vma)
     dst->e_entry = H_GET_SIGNED_WORD(abfd, src->e_entry);
   else
     dst->e_entry = H_GET_WORD(abfd, src->e_entry);
   dst->e_phoff = H_GET_WORD(abfd, src->e_phoff);
   dst->e_shoff = H_GET_WORD(abfd, src->e_shoff);
-  dst->e_flags = H_GET_32(abfd, src->e_flags);
+  dst->e_flags = (unsigned long)H_GET_32(abfd, src->e_flags);
   dst->e_ehsize = (unsigned int)H_GET_16(abfd, src->e_ehsize);
   dst->e_phentsize = (unsigned int)H_GET_16(abfd, src->e_phentsize);
   dst->e_phnum = (unsigned int)H_GET_16(abfd, src->e_phnum);
@@ -307,8 +307,8 @@ elf_swap_shdr_in(bfd *abfd, const Elf_External_Shdr *src,
     dst->sh_addr = H_GET_WORD(abfd, src->sh_addr);
   dst->sh_offset = H_GET_WORD(abfd, src->sh_offset);
   dst->sh_size = H_GET_WORD(abfd, src->sh_size);
-  dst->sh_link = H_GET_32(abfd, src->sh_link);
-  dst->sh_info = H_GET_32(abfd, src->sh_info);
+  dst->sh_link = (unsigned long)H_GET_32(abfd, src->sh_link);
+  dst->sh_info = (unsigned long)H_GET_32(abfd, src->sh_info);
   dst->sh_addralign = (unsigned int)H_GET_WORD(abfd, src->sh_addralign);
   dst->sh_entsize = H_GET_WORD(abfd, src->sh_entsize);
   dst->bfd_section = NULL;
@@ -340,34 +340,33 @@ elf_swap_shdr_out (bfd *abfd,
    ELF program header table entry in internal format.  */
 
 void
-elf_swap_phdr_in (bfd *abfd,
-		  const Elf_External_Phdr *src,
-		  Elf_Internal_Phdr *dst)
+elf_swap_phdr_in(bfd *abfd, const Elf_External_Phdr *src,
+		 Elf_Internal_Phdr *dst)
 {
-  int signed_vma = get_elf_backend_data (abfd)->sign_extend_vma;
+  int signed_vma = get_elf_backend_data(abfd)->sign_extend_vma;
 
-  dst->p_type = H_GET_32 (abfd, src->p_type);
-  dst->p_flags = H_GET_32 (abfd, src->p_flags);
-  dst->p_offset = H_GET_WORD (abfd, src->p_offset);
+  dst->p_type = (unsigned long)H_GET_32(abfd, src->p_type);
+  dst->p_flags = (unsigned long)H_GET_32(abfd, src->p_flags);
+  dst->p_offset = H_GET_WORD(abfd, src->p_offset);
   if (signed_vma)
     {
-      dst->p_vaddr = H_GET_SIGNED_WORD (abfd, src->p_vaddr);
-      dst->p_paddr = H_GET_SIGNED_WORD (abfd, src->p_paddr);
+      dst->p_vaddr = H_GET_SIGNED_WORD(abfd, src->p_vaddr);
+      dst->p_paddr = H_GET_SIGNED_WORD(abfd, src->p_paddr);
     }
   else
     {
-      dst->p_vaddr = H_GET_WORD (abfd, src->p_vaddr);
-      dst->p_paddr = H_GET_WORD (abfd, src->p_paddr);
+      dst->p_vaddr = H_GET_WORD(abfd, src->p_vaddr);
+      dst->p_paddr = H_GET_WORD(abfd, src->p_paddr);
     }
-  dst->p_filesz = H_GET_WORD (abfd, src->p_filesz);
-  dst->p_memsz = H_GET_WORD (abfd, src->p_memsz);
-  dst->p_align = H_GET_WORD (abfd, src->p_align);
+  dst->p_filesz = H_GET_WORD(abfd, src->p_filesz);
+  dst->p_memsz = H_GET_WORD(abfd, src->p_memsz);
+  dst->p_align = H_GET_WORD(abfd, src->p_align);
 }
 
+/* */
 void
-elf_swap_phdr_out (bfd *abfd,
-		   const Elf_Internal_Phdr *src,
-		   Elf_External_Phdr *dst)
+elf_swap_phdr_out(bfd *abfd, const Elf_Internal_Phdr *src,
+		  Elf_External_Phdr *dst)
 {
   /* note that all elements of dst are *arrays of unsigned char* already...  */
   H_PUT_32 (abfd, src->p_type, dst->p_type);
@@ -1065,28 +1064,28 @@ elf_slurp_symbol_table(bfd *abfd, asymbol **symptrs, bfd_boolean dynamic)
 
   if (! dynamic)
     {
-      hdr = &elf_tdata (abfd)->symtab_hdr;
+      hdr = &elf_tdata(abfd)->symtab_hdr;
       verhdr = NULL;
     }
   else
     {
-      hdr = &elf_tdata (abfd)->dynsymtab_hdr;
-      if (elf_dynversym (abfd) == 0)
+      hdr = &elf_tdata(abfd)->dynsymtab_hdr;
+      if (elf_dynversym(abfd) == 0)
 	verhdr = NULL;
       else
-	verhdr = &elf_tdata (abfd)->dynversym_hdr;
-      if ((elf_tdata (abfd)->dynverdef_section != 0
-	   && elf_tdata (abfd)->verdef == NULL)
-	  || (elf_tdata (abfd)->dynverref_section != 0
-	      && elf_tdata (abfd)->verref == NULL))
+	verhdr = &elf_tdata(abfd)->dynversym_hdr;
+      if (((elf_tdata(abfd)->dynverdef_section != 0)
+	   && (elf_tdata(abfd)->verdef == NULL))
+	  || ((elf_tdata(abfd)->dynverref_section != 0)
+	      && (elf_tdata(abfd)->verref == NULL)))
 	{
-	  if (!_bfd_elf_slurp_version_tables (abfd, FALSE))
+	  if (!_bfd_elf_slurp_version_tables(abfd, FALSE))
 	    return -1;
 	}
     }
 
   ebd = get_elf_backend_data(abfd);
-  symcount = (hdr->sh_size / sizeof(Elf_External_Sym));
+  symcount = (unsigned long)(hdr->sh_size / sizeof(Elf_External_Sym));
   if (symcount == 0)
     sym = symbase = NULL;
   else

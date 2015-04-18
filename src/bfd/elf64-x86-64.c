@@ -662,7 +662,7 @@ elf64_x86_64_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
       unsigned long r_symndx;
       struct elf_link_hash_entry *h;
 
-      r_symndx = ELF64_R_SYM(rel->r_info);
+      r_symndx = (unsigned long)ELF64_R_SYM(rel->r_info);
       r_type = (unsigned int)ELF64_R_TYPE(rel->r_info);
 
       if (r_symndx >= NUM_SHDR_ENTRIES(symtab_hdr))
@@ -1046,31 +1046,30 @@ elf64_x86_64_gc_mark_hook (asection *sec,
   return NULL;
 }
 
-/* Update the got entry reference counts for the section being removed.	 */
-
+/* Update the got entry reference counts for the section being removed: */
 static bfd_boolean
-elf64_x86_64_gc_sweep_hook (bfd *abfd, struct bfd_link_info *info,
-			    asection *sec, const Elf_Internal_Rela *relocs)
+elf64_x86_64_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info,
+			   asection *sec, const Elf_Internal_Rela *relocs)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
   bfd_signed_vma *local_got_refcounts;
   const Elf_Internal_Rela *rel, *relend;
 
-  elf_section_data (sec)->local_dynrel = NULL;
+  elf_section_data(sec)->local_dynrel = NULL;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (abfd);
-  local_got_refcounts = elf_local_got_refcounts (abfd);
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(abfd);
+  local_got_refcounts = elf_local_got_refcounts(abfd);
 
-  relend = relocs + sec->reloc_count;
+  relend = (relocs + sec->reloc_count);
   for (rel = relocs; rel < relend; rel++)
     {
       unsigned long r_symndx;
       unsigned int r_type;
       struct elf_link_hash_entry *h = NULL;
 
-      r_symndx = ELF64_R_SYM (rel->r_info);
+      r_symndx = (unsigned long)ELF64_R_SYM(rel->r_info);
       if (r_symndx >= symtab_hdr->sh_info)
 	{
 	  struct elf64_x86_64_link_hash_entry *eh;
@@ -1853,18 +1852,18 @@ elf64_x86_64_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	  return FALSE;
 	}
 
-      howto = x86_64_elf_howto_table + r_type;
-      r_symndx = ELF64_R_SYM (rel->r_info);
+      howto = (x86_64_elf_howto_table + r_type);
+      r_symndx = (unsigned long)ELF64_R_SYM(rel->r_info);
       h = NULL;
       sym = NULL;
       sec = NULL;
       unresolved_reloc = FALSE;
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
+	  sym = (local_syms + r_symndx);
 	  sec = local_sections[r_symndx];
 
-	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 	}
       else
 	{

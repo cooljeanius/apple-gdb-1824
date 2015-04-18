@@ -381,6 +381,14 @@ struct xcoff_link_hash_entry
 #define XCOFF_SPECIAL_SECTION_END        4
 #define XCOFF_SPECIAL_SECTION_END2       5
 
+/* un-nested from the struct after it for '-Wc++-compat': */
+struct xcoff_link_size_list
+{
+  struct xcoff_link_size_list *next;
+  struct xcoff_link_hash_entry *h;
+  bfd_size_type size;
+};
+
 struct xcoff_link_hash_table
 {
   struct bfd_link_hash_table root;
@@ -390,20 +398,20 @@ struct xcoff_link_hash_table
      section will be before we assign section positions.  */
   struct bfd_strtab_hash *debug_strtab;
 
-  /* The .debug section we will use for the final output.  */
+  /* The .debug section we will use for the final output: */
   asection *debug_section;
 
-  /* The .loader section we will use for the final output.  */
+  /* The .loader section we will use for the final output: */
   asection *loader_section;
 
   /* A count of non TOC relative relocs which will need to be
      allocated in the .loader section.  */
   size_t ldrel_count;
 
-  /* The .loader section header.  */
+  /* The .loader section header: */
   struct internal_ldhdr ldhdr;
 
-  /* The .gl section we use to hold global linkage code.  */
+  /* The .gl section we use to hold global linkage code: */
   asection *linkage_section;
 
   /* The .tc section we use to hold toc entries we build for global
@@ -414,26 +422,20 @@ struct xcoff_link_hash_table
      create for exported symbols.  */
   asection *descriptor_section;
 
-  /* The list of import files.  */
+  /* The list of import files: */
   struct xcoff_import_file *imports;
 
-  /* Required alignment of sections within the output file.  */
+  /* Required alignment of sections within the output file: */
   unsigned long file_align;
 
-  /* Whether the .text section must be read-only.  */
+  /* Whether the .text section must be read-only: */
   bfd_boolean textro;
 
-  /* Whether garbage collection was done.  */
+  /* Whether garbage collection was done: */
   bfd_boolean gc;
 
-  /* A linked list of symbols for which we have size information.  */
-  struct xcoff_link_size_list
-  {
-    struct xcoff_link_size_list *next;
-    struct xcoff_link_hash_entry *h;
-    bfd_size_type size;
-  }
-  *size_list;
+  /* A linked list of symbols for which we have size information: */
+  struct xcoff_link_size_list *size_list;
 
   /* Magic sections: _text, _etext, _data, _edata, _end, end. */
   asection *special_sections[XCOFF_NUMBER_OF_SPECIAL_SECTIONS];

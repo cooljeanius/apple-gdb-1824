@@ -662,7 +662,7 @@ const bfd_arch_info_type *
 bfd_arch_get_compatible(const bfd *abfd, const bfd *bbfd,
                         bfd_boolean accept_unknowns)
 {
-  const bfd *ubfd = NULL;
+  const bfd *ubfd = (bfd *)NULL;
 
   /* Look for an unknown architecture: */
   if (((ubfd = abfd) && (ubfd->arch_info->arch == bfd_arch_unknown))
@@ -678,6 +678,9 @@ bfd_arch_get_compatible(const bfd *abfd, const bfd *bbfd,
 	return ubfd->arch_info;
       return NULL;
     }
+
+  BFD_ASSERT((abfd != NULL) && (bbfd != NULL));
+  BFD_ASSERT((abfd->arch_info != NULL) && (bbfd->arch_info != NULL));
 
   /* Otherwise architecture-specific code has to decide: */
   return abfd->arch_info->compatible(abfd->arch_info, bbfd->arch_info);

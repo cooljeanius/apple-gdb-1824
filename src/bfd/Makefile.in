@@ -564,6 +564,15 @@ BFD32_LIBS = \
 	srec.lo binary.lo tekhex.lo ihex.lo stabs.lo stab-syms.lo \
 	merge.lo dwarf2.lo simple.lo @MAINT@ # compress.lo verilog.lo
 
+BFD32_PLISTS = \
+	archive.plist archures.plist bfd.plist bfdio.plist bfdwin.plist \
+	cache.plist coffgen.plist corefile.plist \
+	format.plist init.plist libbfd.plist opncls.plist reloc.plist \
+	section.plist syms.plist targets.plist hash.plist linker.plist \
+	srec.plist binary.plist tekhex.plist ihex.plist stabs.plist \
+	stab-syms.plist merge.plist dwarf2.plist simple.plist
+
+FUTURE_BFD32_LIBS_EXTRA_PLISTS = compress.plist verilog.plist
 BFD64_LIBS = archive64.lo
 BFD64_PLISTS = archive64.plist
 BFD32_LIBS_CFILES = \
@@ -1268,6 +1277,17 @@ OPTIONAL_BACKENDS = \
 	rs6000-core.lo \
 	sco5-core.lo \
 	trad-core.lo
+
+OPTIONAL_BACKENDS_PLISTS = \
+	aix386-core.plist \
+	cisco-core.plist \
+	hpux-core.plist \
+	irix-core.plist \
+	lynx-core.plist \
+	osf-core.plist \
+	rs6000-core.plist \
+	sco5-core.plist \
+	trad-core.plist
 
 
 # Source files corresponding to the previous optional libtool objects:
@@ -7739,7 +7759,7 @@ stamp-staticlib: stamp-ofiles @MAINT@ bfd.h
 
 # likewise with making PLISTFILES when running `make check`:
 check-local: stamp-plistfiles @MAINT@ plistfiles
-	$(MAKE) $(PLISTFILES)
+	$(MAKE) $(BFD32_PLISTS) $(BFD64_PLISTS) $(PLISTFILES)
 .PHONY: check-local
 
 # stamp-staticlib just makes the OFILES that libbfd.a depends upon, need

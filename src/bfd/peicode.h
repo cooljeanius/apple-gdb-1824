@@ -123,51 +123,51 @@ pe_ILF_vars;
 
 #ifndef NO_COFF_RELOCS
 static void
-coff_swap_reloc_in (bfd * abfd, void * src, void * dst)
+coff_swap_reloc_in(bfd * abfd, void * src, void * dst)
 {
-  RELOC *reloc_src = (RELOC *) src;
-  struct internal_reloc *reloc_dst = (struct internal_reloc *) dst;
+  RELOC *reloc_src = (RELOC *)src;
+  struct internal_reloc *reloc_dst = (struct internal_reloc *)dst;
 
-  reloc_dst->r_vaddr  = H_GET_32 (abfd, reloc_src->r_vaddr);
-  reloc_dst->r_symndx = H_GET_S32 (abfd, reloc_src->r_symndx);
-  reloc_dst->r_type   = H_GET_16 (abfd, reloc_src->r_type);
-#ifdef SWAP_IN_RELOC_OFFSET
-  reloc_dst->r_offset = SWAP_IN_RELOC_OFFSET (abfd, reloc_src->r_offset);
-#endif
+  reloc_dst->r_vaddr = H_GET_32(abfd, reloc_src->r_vaddr);
+  reloc_dst->r_symndx = (long)H_GET_S32(abfd, reloc_src->r_symndx);
+  reloc_dst->r_type = H_GET_16(abfd, reloc_src->r_type);
+# ifdef SWAP_IN_RELOC_OFFSET
+  reloc_dst->r_offset = SWAP_IN_RELOC_OFFSET(abfd, reloc_src->r_offset);
+# endif /* SWAP_IN_RELOC_OFFSET */
 }
 
 static unsigned int
-coff_swap_reloc_out (bfd * abfd, void * src, void * dst)
+coff_swap_reloc_out(bfd *abfd, void *src, void *dst)
 {
-  struct internal_reloc *reloc_src = (struct internal_reloc *) src;
-  struct external_reloc *reloc_dst = (struct external_reloc *) dst;
+  struct internal_reloc *reloc_src = (struct internal_reloc *)src;
+  struct external_reloc *reloc_dst = (struct external_reloc *)dst;
 
-  H_PUT_32 (abfd, reloc_src->r_vaddr, reloc_dst->r_vaddr);
-  H_PUT_32 (abfd, reloc_src->r_symndx, reloc_dst->r_symndx);
-  H_PUT_16 (abfd, reloc_src->r_type, reloc_dst->r_type);
+  H_PUT_32(abfd, reloc_src->r_vaddr, reloc_dst->r_vaddr);
+  H_PUT_32(abfd, reloc_src->r_symndx, reloc_dst->r_symndx);
+  H_PUT_16(abfd, reloc_src->r_type, reloc_dst->r_type);
 
-#ifdef SWAP_OUT_RELOC_OFFSET
-  SWAP_OUT_RELOC_OFFSET (abfd, reloc_src->r_offset, reloc_dst->r_offset);
-#endif
-#ifdef SWAP_OUT_RELOC_EXTRA
-  SWAP_OUT_RELOC_EXTRA (abfd, reloc_src, reloc_dst);
-#endif
+# ifdef SWAP_OUT_RELOC_OFFSET
+  SWAP_OUT_RELOC_OFFSET(abfd, reloc_src->r_offset, reloc_dst->r_offset);
+# endif /* SWAP_OUT_RELOC_OFFSET */
+# ifdef SWAP_OUT_RELOC_EXTRA
+  SWAP_OUT_RELOC_EXTRA(abfd, reloc_src, reloc_dst);
+# endif /* SWAP_OUT_RELOC_EXTRA */
   return RELSZ;
 }
 #endif /* not NO_COFF_RELOCS */
 
 static void
-coff_swap_filehdr_in (bfd * abfd, void * src, void * dst)
+coff_swap_filehdr_in(bfd *abfd, void *src, void *dst)
 {
-  FILHDR *filehdr_src = (FILHDR *) src;
-  struct internal_filehdr *filehdr_dst = (struct internal_filehdr *) dst;
+  FILHDR *filehdr_src = (FILHDR *)src;
+  struct internal_filehdr *filehdr_dst = (struct internal_filehdr *)dst;
 
-  filehdr_dst->f_magic  = H_GET_16 (abfd, filehdr_src->f_magic);
-  filehdr_dst->f_nscns  = H_GET_16 (abfd, filehdr_src->f_nscns);
-  filehdr_dst->f_timdat = H_GET_32 (abfd, filehdr_src->f_timdat);
-  filehdr_dst->f_nsyms  = H_GET_32 (abfd, filehdr_src->f_nsyms);
-  filehdr_dst->f_flags  = H_GET_16 (abfd, filehdr_src->f_flags);
-  filehdr_dst->f_symptr = H_GET_32 (abfd, filehdr_src->f_symptr);
+  filehdr_dst->f_magic = H_GET_16(abfd, filehdr_src->f_magic);
+  filehdr_dst->f_nscns = H_GET_16(abfd, filehdr_src->f_nscns);
+  filehdr_dst->f_timdat = (long)H_GET_32(abfd, filehdr_src->f_timdat);
+  filehdr_dst->f_nsyms = (long)H_GET_32(abfd, filehdr_src->f_nsyms);
+  filehdr_dst->f_flags = H_GET_16(abfd, filehdr_src->f_flags);
+  filehdr_dst->f_symptr = H_GET_32(abfd, filehdr_src->f_symptr);
 
   /* Other people's tools sometimes generate headers with an nsyms but
      a zero symptr.  */
@@ -184,39 +184,40 @@ coff_swap_filehdr_in (bfd * abfd, void * src, void * dst)
 # define coff_swap_filehdr_out _bfd_XXi_only_swap_filehdr_out
 #else
 # define coff_swap_filehdr_out _bfd_pe_only_swap_filehdr_out
-#endif
+#endif /* COFF_IMAGE_WITH_PE */
 
 static void
-coff_swap_scnhdr_in (bfd * abfd, void * ext, void * in)
+coff_swap_scnhdr_in(bfd *abfd, void *ext, void *in)
 {
-  SCNHDR *scnhdr_ext = (SCNHDR *) ext;
-  struct internal_scnhdr *scnhdr_int = (struct internal_scnhdr *) in;
+  SCNHDR *scnhdr_ext = (SCNHDR *)ext;
+  struct internal_scnhdr *scnhdr_int = (struct internal_scnhdr *)in;
 
-  memcpy (scnhdr_int->s_name, scnhdr_ext->s_name, sizeof (scnhdr_int->s_name));
+  memcpy(scnhdr_int->s_name, scnhdr_ext->s_name, sizeof(scnhdr_int->s_name));
 
-  scnhdr_int->s_vaddr   = GET_SCNHDR_VADDR (abfd, scnhdr_ext->s_vaddr);
-  scnhdr_int->s_paddr   = GET_SCNHDR_PADDR (abfd, scnhdr_ext->s_paddr);
-  scnhdr_int->s_size    = GET_SCNHDR_SIZE (abfd, scnhdr_ext->s_size);
-  scnhdr_int->s_scnptr  = GET_SCNHDR_SCNPTR (abfd, scnhdr_ext->s_scnptr);
-  scnhdr_int->s_relptr  = GET_SCNHDR_RELPTR (abfd, scnhdr_ext->s_relptr);
-  scnhdr_int->s_lnnoptr = GET_SCNHDR_LNNOPTR (abfd, scnhdr_ext->s_lnnoptr);
-  scnhdr_int->s_flags   = H_GET_32 (abfd, scnhdr_ext->s_flags);
+  scnhdr_int->s_vaddr = GET_SCNHDR_VADDR(abfd, scnhdr_ext->s_vaddr);
+  scnhdr_int->s_paddr = GET_SCNHDR_PADDR(abfd, scnhdr_ext->s_paddr);
+  scnhdr_int->s_size = GET_SCNHDR_SIZE(abfd, scnhdr_ext->s_size);
+  scnhdr_int->s_scnptr = GET_SCNHDR_SCNPTR(abfd, scnhdr_ext->s_scnptr);
+  scnhdr_int->s_relptr = GET_SCNHDR_RELPTR(abfd, scnhdr_ext->s_relptr);
+  scnhdr_int->s_lnnoptr = GET_SCNHDR_LNNOPTR(abfd, scnhdr_ext->s_lnnoptr);
+  scnhdr_int->s_flags = (long)H_GET_32(abfd, scnhdr_ext->s_flags);
 
   /* MS handles overflow of line numbers by carrying into the reloc
-     field (it appears).  Since it's supposed to be zero for PE
-     *IMAGE* format, that's safe.  This is still a bit iffy.  */
+     field (it appears).  Since it is supposed to be zero for PE
+     *IMAGE* format, that is safe.  This is still a bit iffy.  */
 #ifdef COFF_IMAGE_WITH_PE
-  scnhdr_int->s_nlnno = (H_GET_16 (abfd, scnhdr_ext->s_nlnno)
-			 + (H_GET_16 (abfd, scnhdr_ext->s_nreloc) << 16));
+  scnhdr_int->s_nlnno =
+    (unsigned long)(H_GET_16(abfd, scnhdr_ext->s_nlnno)
+                    + (H_GET_16(abfd, scnhdr_ext->s_nreloc) << 16));
   scnhdr_int->s_nreloc = 0;
 #else
-  scnhdr_int->s_nreloc = H_GET_16 (abfd, scnhdr_ext->s_nreloc);
-  scnhdr_int->s_nlnno = H_GET_16 (abfd, scnhdr_ext->s_nlnno);
-#endif
+  scnhdr_int->s_nreloc = H_GET_16(abfd, scnhdr_ext->s_nreloc);
+  scnhdr_int->s_nlnno = H_GET_16(abfd, scnhdr_ext->s_nlnno);
+#endif /* COFF_IMAGE_WITH_PE */
 
   if (scnhdr_int->s_vaddr != 0)
     {
-      scnhdr_int->s_vaddr += pe_data (abfd)->pe_opthdr.ImageBase;
+      scnhdr_int->s_vaddr += pe_data(abfd)->pe_opthdr.ImageBase;
       scnhdr_int->s_vaddr &= 0xffffffff;
     }
 

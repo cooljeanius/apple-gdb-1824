@@ -75,7 +75,7 @@ elf64_sparc_slurp_one_reloc_table(bfd *abfd, asection *asect,
 
   relents = (asect->relocation + canon_reloc_count(asect));
 
-  entsize = rel_hdr->sh_entsize;
+  entsize = (size_t)rel_hdr->sh_entsize;
   BFD_ASSERT(entsize == sizeof(Elf64_External_Rela));
 
   count = (rel_hdr->sh_size / entsize);

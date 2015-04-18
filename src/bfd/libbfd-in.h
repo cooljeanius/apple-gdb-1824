@@ -32,6 +32,8 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include <stdio.h>
 
+#include "ansidecl.h"
+
 #include "hashtab.h"
 
 /* Align an address upward to a boundary, expressed as a number of bytes.
@@ -625,7 +627,11 @@ extern bfd_boolean _bfd_generic_verify_endian_match
 #define	bfd_write_p(abfd) \
   (((abfd)->direction == write_direction) || ((abfd)->direction == both_direction))
 
-void bfd_assert(const char *, int);
+void
+#ifdef __clang_analyzer__
+ATTRIBUTE_NORETURN
+#endif /* __clang_analyzer__ */
+bfd_assert(const char *, int);
 
 #define BFD_ASSERT(x) \
   do { if (!(x)) bfd_assert(__FILE__,__LINE__); } while (0)

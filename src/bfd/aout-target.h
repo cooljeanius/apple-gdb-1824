@@ -153,35 +153,35 @@ static const bfd_target *MY(object_p)(bfd *abfd)
   const bfd_target *target;
   bfd_size_type amt = EXEC_BYTES_SIZE;
 
-  if (bfd_bread ((void *) &exec_bytes, amt, abfd) != amt)
+  if (bfd_bread((void *)&exec_bytes, amt, abfd) != amt)
     {
-      if (bfd_get_error () != bfd_error_system_call)
-	bfd_set_error (bfd_error_wrong_format);
+      if (bfd_get_error() != bfd_error_system_call)
+	bfd_set_error(bfd_error_wrong_format);
       return 0;
     }
 
 #ifdef SWAP_MAGIC
-  exec.a_info = SWAP_MAGIC (exec_bytes.e_info);
+  exec.a_info = SWAP_MAGIC(exec_bytes.e_info);
 #else
-  exec.a_info = GET_MAGIC (abfd, exec_bytes.e_info);
-#endif
+  exec.a_info = (long)GET_MAGIC(abfd, exec_bytes.e_info);
+#endif /* SWAP_MAGIC */
 
-  if (N_BADMAG (exec))
+  if (N_BADMAG(exec))
     return 0;
 
 #ifdef MACHTYPE_OK
-  if (!(MACHTYPE_OK (N_MACHTYPE (exec))))
+  if (!(MACHTYPE_OK(N_MACHTYPE(exec))))
     return 0;
-#endif
+#endif /* MACHTYPE_OK */
 
   NAME(aout, swap_exec_header_in)(abfd, &exec_bytes, &exec);
 
 #ifdef SWAP_MAGIC
-  /* Swap_exec_header_in read in a_info with the wrong byte order.  */
+  /* Swap_exec_header_in read in a_info with the wrong byte order: */
   exec.a_info = SWAP_MAGIC(exec_bytes.e_info);
-#endif
+#endif /* SWAP_MAGIC */
 
-  target = NAME(aout, some_aout_object_p) (abfd, &exec, MY (callback));
+  target = NAME(aout, some_aout_object_p)(abfd, &exec, MY(callback));
 
 #ifdef ENTRY_CAN_BE_ZERO
   /* The NEWSOS3 entry-point is/was 0, which (amongst other lossage)
@@ -190,14 +190,14 @@ static const bfd_target *MY(object_p)(bfd *abfd)
      There must be no relocations, the bfd can be neither an
      archive nor an archive element, and the file must be executable.  */
 
-  if (exec.a_trsize + exec.a_drsize == 0
-      && bfd_get_format(abfd) == bfd_object && abfd->my_archive == NULL)
+  if (((exec.a_trsize + exec.a_drsize) == 0)
+      && (bfd_get_format(abfd) == bfd_object) && abfd->my_archive == NULL)
     {
       struct stat buf;
-#ifndef S_IXUSR
-# define S_IXUSR 0100	/* Execute by owner.  */
-#endif /* !S_IXUSR */
-      if (stat(abfd->filename, &buf) == 0 && (buf.st_mode & S_IXUSR))
+# ifndef S_IXUSR
+#  define S_IXUSR 0100	/* Execute by owner.  */
+# endif /* !S_IXUSR */
+      if ((stat(abfd->filename, &buf) == 0) && (buf.st_mode & S_IXUSR))
 	abfd->flags |= EXEC_P;
     }
 #endif /* ENTRY_CAN_BE_ZERO */
@@ -226,14 +226,14 @@ static bfd_boolean MY(mkobject)(bfd *abfd)
    after the section contents have been set.  */
 
 static bfd_boolean
-MY_bfd_copy_private_section_data (bfd *ibfd,
-				  asection *isec ATTRIBUTE_UNUSED,
-				  bfd *obfd,
-				  asection *osec ATTRIBUTE_UNUSED)
+MY_bfd_copy_private_section_data(bfd *ibfd,
+				 asection *isec ATTRIBUTE_UNUSED,
+				 bfd *obfd,
+				 asection *osec ATTRIBUTE_UNUSED)
 {
-  if (bfd_get_flavour (ibfd) == bfd_target_aout_flavour
-      && bfd_get_flavour (obfd) == bfd_target_aout_flavour)
-    obj_aout_subformat (obfd) = obj_aout_subformat (ibfd);
+  if ((bfd_get_flavour(ibfd) == bfd_target_aout_flavour)
+      && (bfd_get_flavour(obfd) == bfd_target_aout_flavour))
+    obj_aout_subformat(obfd) = obj_aout_subformat(ibfd);
   return TRUE;
 }
 

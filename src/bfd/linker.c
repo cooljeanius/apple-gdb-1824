@@ -2518,7 +2518,7 @@ _bfd_generic_reloc_link_order(bfd *abfd, struct bfd_link_info *info,
   if (sec->orelocation == NULL)
     abort();
 
-  r = (arelent *)bfd_alloc(abfd, sizeof(arelent));
+  r = (arelent *)bfd_alloc(abfd, (bfd_size_type)sizeof(arelent));
   if (r == NULL)
     return FALSE;
 

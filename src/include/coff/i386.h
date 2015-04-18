@@ -17,6 +17,9 @@
  * Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA
  */
 
+#ifndef COFF_I386_H
+#define COFF_I386_H 1
+
 #define L_LNNO_SIZE 2
 #define INCLUDE_COMDAT_FIELDS_IN_AUXENT
 #include "coff/external.h"
@@ -295,5 +298,7 @@ struct { char xxcdxx[(CORHDRSIZ + 1 - sizeof(struct corehdr))]; };
 # define COR_TYPE_MSC     '?' /* other, mapped in segment      */
 
 #endif /* _AIX && _I386 */
+
+#endif /* !COFF_I386_H */
 
 /* EOF */

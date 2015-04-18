@@ -236,17 +236,16 @@ mn10200_elf_final_link_relocate(howto, input_bfd, output_bfd,
      int is_local ATTRIBUTE_UNUSED;
 {
   unsigned long r_type = howto->type;
-  bfd_byte *hit_data = contents + offset;
+  bfd_byte *hit_data = (contents + offset);
 
   switch (r_type)
     {
-
     case R_MN10200_NONE:
       return bfd_reloc_ok;
 
     case R_MN10200_32:
       value += addend;
-      bfd_put_32 (input_bfd, value, hit_data);
+      bfd_put_32(input_bfd, value, hit_data);
       return bfd_reloc_ok;
 
     case R_MN10200_16:
@@ -321,7 +320,7 @@ mn10200_elf_final_link_relocate(howto, input_bfd, output_bfd,
     }
 }
 
-/* Relocate an MN10200 ELF section.  */
+/* Relocate an MN10200 ELF section: */
 static bfd_boolean
 mn10200_elf_relocate_section(output_bfd, info, input_bfd, input_section,
 			     contents, relocs, local_syms, local_sections)
@@ -1292,19 +1291,19 @@ mn10200_elf_get_relocated_section_contents(output_bfd, link_info, link_order,
   /* We only need to handle the case of relaxing, or of having a
      particular set of section contents, specially.  */
   if (relocatable
-      || elf_section_data (input_section)->this_hdr.contents == NULL)
-    return bfd_generic_get_relocated_section_contents (output_bfd, link_info,
-						       link_order, data,
-						       relocatable,
-						       symbols);
+      || (elf_section_data(input_section)->this_hdr.contents == NULL))
+    return
+      bfd_generic_get_relocated_section_contents(output_bfd, link_info,
+                                                 link_order, data,
+                                                 relocatable, symbols);
 
-  symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
 
-  memcpy (data, elf_section_data (input_section)->this_hdr.contents,
-	  (size_t) input_section->size);
+  memcpy(data, elf_section_data(input_section)->this_hdr.contents,
+	 (size_t)input_section->size);
 
-  if ((input_section->flags & SEC_RELOC) != 0
-      && input_section->reloc_count > 0)
+  if (((input_section->flags & SEC_RELOC) != 0)
+      && (input_section->reloc_count > 0))
     {
       Elf_Internal_Sym *isym;
       Elf_Internal_Sym *isymend;

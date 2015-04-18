@@ -1,4 +1,4 @@
-/* SuperH SH64-specific support for 32-bit ELF
+/* elf32-sh64.c: SuperH SH64-specific support for 32-bit ELF
    Copyright 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -16,7 +16,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #define SH64_ELF
 
@@ -639,43 +639,42 @@ sh64_find_section_for_address (bfd *abfd ATTRIBUTE_UNUSED,
    executables (final linking and objcopy).  */
 
 static void
-sh64_elf_final_write_processing (bfd *abfd,
-				 bfd_boolean linker ATTRIBUTE_UNUSED)
+sh64_elf_final_write_processing(bfd *abfd,
+                                bfd_boolean linker ATTRIBUTE_UNUSED)
 {
   bfd_vma ld_generated_cranges_size;
   asection *cranges
-    = bfd_get_section_by_name (abfd, SH64_CRANGES_SECTION_NAME);
+    = bfd_get_section_by_name(abfd, SH64_CRANGES_SECTION_NAME);
 
   /* If no new .cranges were added, the generic ELF linker parts will
      write it all out.  If not, we need to write them out when doing
      partial linking.  For a final link, we will sort them and write them
      all out further below.  */
-  if (linker
-      && cranges != NULL
-      && elf_elfheader (abfd)->e_type != ET_EXEC
+  if (linker && (cranges != NULL)
+      && (elf_elfheader(abfd)->e_type != ET_EXEC)
       && (ld_generated_cranges_size
-	  = sh64_elf_section_data (cranges)->sh64_info->cranges_growth) != 0)
+	  = sh64_elf_section_data(cranges)->sh64_info->cranges_growth) != 0)
     {
       bfd_vma incoming_cranges_size
-	= cranges->size - ld_generated_cranges_size;
+	= (cranges->size - ld_generated_cranges_size);
 
-      if (! bfd_set_section_contents (abfd, cranges,
-				      cranges->contents
-				      + incoming_cranges_size,
-				      cranges->output_offset
-				      + incoming_cranges_size,
-				      ld_generated_cranges_size))
+      if (! bfd_set_section_contents(abfd, cranges,
+				     (cranges->contents
+                                      + incoming_cranges_size),
+				     (cranges->output_offset
+                                      + incoming_cranges_size),
+				     ld_generated_cranges_size))
 	{
-	  bfd_set_error (bfd_error_file_truncated);
+	  bfd_set_error(bfd_error_file_truncated);
 	  (*_bfd_error_handler)
 	    (_("%s: could not write out added .cranges entries"),
-	     bfd_get_filename (abfd));
+	     bfd_get_filename(abfd));
 	}
     }
 
   /* Only set entry address bit 0 and sort .cranges when linking to an
      executable; never with objcopy or strip.  */
-  if (linker && elf_elfheader (abfd)->e_type == ET_EXEC)
+  if (linker && (elf_elfheader(abfd)->e_type == ET_EXEC))
     {
       struct sh64_find_section_vma_data fsec_data;
       sh64_elf_crange dummy;
@@ -686,50 +685,50 @@ sh64_elf_final_write_processing (bfd *abfd,
 	 supplied numerically, but we currently lack the infrastructure to
 	 recognize that: The entry symbol, and info whether it is numeric
 	 or a symbol name is kept private in the linker.  */
-      fsec_data.addr = elf_elfheader (abfd)->e_entry;
+      fsec_data.addr = elf_elfheader(abfd)->e_entry;
       fsec_data.section = NULL;
 
-      bfd_map_over_sections (abfd, sh64_find_section_for_address,
-			     &fsec_data);
+      bfd_map_over_sections(abfd, sh64_find_section_for_address,
+			    &fsec_data);
       if (fsec_data.section
-	  && (sh64_get_contents_type (fsec_data.section,
-				      elf_elfheader (abfd)->e_entry,
-				      &dummy) == CRT_SH5_ISA32))
-	elf_elfheader (abfd)->e_entry |= 1;
+	  && (sh64_get_contents_type(fsec_data.section,
+				     elf_elfheader(abfd)->e_entry,
+				     &dummy) == CRT_SH5_ISA32))
+	elf_elfheader(abfd)->e_entry |= 1;
 
-      /* If we have a .cranges section, sort the entries.  */
+      /* If we have a .cranges section, sort the entries: */
       if (cranges != NULL)
 	{
 	  bfd_size_type cranges_size = cranges->size;
 
 	  /* We know we always have these in memory at this time.  */
-	  BFD_ASSERT (cranges->contents != NULL);
+	  BFD_ASSERT(cranges->contents != NULL);
 
 	  /* The .cranges may already have been sorted in the process of
 	     finding out the ISA-type of the entry address.  If not, we do
 	     it here.  */
-	  if (elf_section_data (cranges)->this_hdr.sh_type
+	  if (elf_section_data(cranges)->this_hdr.sh_type
 	      != SHT_SH5_CR_SORTED)
 	    {
-	      qsort (cranges->contents, cranges_size / SH64_CRANGE_SIZE,
-		     SH64_CRANGE_SIZE,
-		     bfd_big_endian (cranges->owner)
-		     ? _bfd_sh64_crange_qsort_cmpb
-		     : _bfd_sh64_crange_qsort_cmpl);
-	      elf_section_data (cranges)->this_hdr.sh_type
+	      qsort(cranges->contents,
+                    (size_t)(cranges_size / SH64_CRANGE_SIZE),
+		    (size_t)SH64_CRANGE_SIZE,
+		    (bfd_big_endian(cranges->owner)
+                     ? _bfd_sh64_crange_qsort_cmpb
+                     : _bfd_sh64_crange_qsort_cmpl));
+	      elf_section_data(cranges)->this_hdr.sh_type
 		= SHT_SH5_CR_SORTED;
 	    }
 
-	  /* We need to write it out in whole as sorted.  */
-	  if (! bfd_set_section_contents (abfd, cranges,
-					  cranges->contents,
-					  cranges->output_offset,
-					  cranges_size))
+	  /* We need to write it out in whole as sorted: */
+	  if (! bfd_set_section_contents(abfd, cranges, cranges->contents,
+					 cranges->output_offset,
+					 cranges_size))
 	    {
-	      bfd_set_error (bfd_error_file_truncated);
+	      bfd_set_error(bfd_error_file_truncated);
 	      (*_bfd_error_handler)
 		(_("%s: could not write out sorted .cranges entries"),
-		 bfd_get_filename (abfd));
+		 bfd_get_filename(abfd));
 	    }
 	}
     }
@@ -805,3 +804,4 @@ static const struct bfd_elf_special_section sh64_elf_special_sections[] =
 
 #include "elf32-target.h"
 
+/* End of elf32-sh64.c */

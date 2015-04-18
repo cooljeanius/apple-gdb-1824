@@ -1353,7 +1353,7 @@ elf_hppa_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	}
 
       /* This is a final link: */
-      r_symndx = ELF_R_SYM(rel->r_info);
+      r_symndx = (unsigned long)ELF_R_SYM(rel->r_info);
       h = NULL;
       sym = NULL;
       sym_sec = NULL;

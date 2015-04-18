@@ -65,21 +65,20 @@ coff_m68k_aux_link_add_one_symbol(struct bfd_link_info *info, bfd *abfd,
 {
   struct bfd_link_hash_entry *h;
 
-  if (((flags & (BSF_WARNING | BSF_CONSTRUCTOR | BSF_WEAK)) == 0) &&
-      !bfd_is_und_section(section) &&
-      !bfd_is_com_section(section))
+  if (((flags & (BSF_WARNING | BSF_CONSTRUCTOR | BSF_WEAK)) == 0)
+      && !bfd_is_und_section(section) && !bfd_is_com_section(section))
     {
       /* The new symbol is a definition or an indirect definition */
 
       /* This bit copied from linker.c */
-      if (hashp != NULL && *hashp != NULL)
+      if ((hashp != NULL) && (*hashp != NULL))
 	{
 	  h = *hashp;
-	  BFD_ASSERT (strcmp (h->root.string, name) == 0);
+	  BFD_ASSERT(strcmp(h->root.string, name) == 0);
 	}
       else
 	{
-	  h = bfd_link_hash_lookup (info->hash, name, TRUE, copy, FALSE);
+	  h = bfd_link_hash_lookup(info->hash, name, TRUE, copy, FALSE);
 	  if (h == NULL)
 	    {
 	      if (hashp != NULL)
@@ -88,20 +87,20 @@ coff_m68k_aux_link_add_one_symbol(struct bfd_link_info *info, bfd *abfd,
 	    }
 	}
 
-      if (info->notice_hash != (struct bfd_hash_table *) NULL
-	  && (bfd_hash_lookup (info->notice_hash, name, FALSE, FALSE)
-	      != (struct bfd_hash_entry *) NULL))
+      if ((info->notice_hash != (struct bfd_hash_table *)NULL)
+	  && (bfd_hash_lookup(info->notice_hash, name, FALSE, FALSE)
+	      != (struct bfd_hash_entry *)NULL))
 	{
-	  if (! (*info->callbacks->notice) (info, name, abfd, section, value))
+	  if (! (*info->callbacks->notice)(info, name, abfd, section, value))
 	    return FALSE;
 	}
 
-      if (hashp != (struct bfd_link_hash_entry **) NULL)
+      if (hashp != (struct bfd_link_hash_entry **)NULL)
 	*hashp = h;
       /* end duplication from linker.c */
 
-      if (h->type == bfd_link_hash_defined
-	  || h->type == bfd_link_hash_indirect)
+      if ((h->type == bfd_link_hash_defined)
+          || (h->type == bfd_link_hash_indirect))
 	{
 	  asection *msec;
 

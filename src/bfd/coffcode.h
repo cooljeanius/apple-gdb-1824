@@ -2424,7 +2424,7 @@ static int compare_arelent_ptr(const void * x, const void * y)
 }
 #endif /* TARG_AUX */
 
-static bfd_boolean coff_write_relocs(bfd * abfd, int first_undef)
+static bfd_boolean coff_write_relocs(bfd *abfd, int first_undef)
 {
   asection *s;
 
@@ -2448,26 +2448,27 @@ static bfd_boolean coff_write_relocs(bfd * abfd, int first_undef)
 	    return FALSE;
 	}
 	memcpy(p, s->orelocation, (size_t)amt);
-	qsort(p, s->reloc_count, sizeof(arelent *), compare_arelent_ptr);
+	qsort(p, (size_t)s->reloc_count, sizeof(arelent *),
+              compare_arelent_ptr);
       }
 #endif /* TARG_AUX */
 
-		if (bfd_seek (abfd, s->rel_filepos, SEEK_SET) != 0) {
-			return FALSE;
-		}
+      if (bfd_seek(abfd, s->rel_filepos, SEEK_SET) != 0) {
+        return FALSE;
+      }
 
 #ifdef COFF_WITH_PE
-      if (obj_pe (abfd) && s->reloc_count >= 0xffff)
+      if (obj_pe(abfd) && (s->reloc_count >= 0xffff))
 	{
-	  /* Encode real count here as first reloc.  */
+	  /* Encode real count here as first reloc: */
 	  struct internal_reloc n;
 
-	  memset (& n, 0, sizeof (n));
+	  memset(&n, 0, sizeof(n));
 	  /* Add one to count *this* reloc (grr).  */
-	  n.r_vaddr = s->reloc_count + 1;
-	  coff_swap_reloc_out (abfd, &n, &dst);
-	  if (bfd_bwrite (& dst, (bfd_size_type) bfd_coff_relsz (abfd),
-			  abfd) != bfd_coff_relsz (abfd))
+	  n.r_vaddr = (s->reloc_count + 1);
+	  coff_swap_reloc_out(abfd, &n, &dst);
+	  if (bfd_bwrite(&dst, (bfd_size_type)bfd_coff_relsz(abfd),
+			 abfd) != bfd_coff_relsz(abfd))
 	    return FALSE;
 	}
 #endif /* COFF_WITH_PE */
@@ -2477,7 +2478,7 @@ static bfd_boolean coff_write_relocs(bfd * abfd, int first_undef)
 	  struct internal_reloc n;
 	  arelent *q = p[i];
 
-	  memset (& n, 0, sizeof (n));
+	  memset(&n, 0, sizeof(n));
 
 	  /* Now we have renumbered the symbols we know where the
 	     undefined symbols live in the table.  Check the reloc
@@ -2499,43 +2500,43 @@ static bfd_boolean coff_write_relocs(bfd * abfd, int first_undef)
 		{
 		  const char *intable = outsyms[j]->name;
 
-		  if (strcmp (intable, sname) == 0)
+		  if (strcmp(intable, sname) == 0)
 		    {
-		      /* Got a hit, so repoint the reloc.  */
-		      q->sym_ptr_ptr = outsyms + j;
+		      /* Got a hit, so repoint the reloc: */
+		      q->sym_ptr_ptr = (outsyms + j);
 		      break;
 		    }
 		}
 	    }
 
-	  n.r_vaddr = q->address + s->vma;
+	  n.r_vaddr = (q->address + s->vma);
 
 #ifdef R_IHCONST
 	  /* The 29k const/consth reloc pair is a real kludge. The consth
 	     part does NOT have a symbol; it has an offset. So rebuilt
 	     that here.  */
-		if (q->howto->type == R_IHCONST) {
-			n.r_symndx = q->addend;
-		} else
+          if (q->howto->type == R_IHCONST) {
+            n.r_symndx = q->addend;
+          } else
 #endif /* R_IHCONST */
 	    if (q->sym_ptr_ptr)
 	      {
 #ifdef SECTION_RELATIVE_ABSOLUTE_SYMBOL_P
-                if (SECTION_RELATIVE_ABSOLUTE_SYMBOL_P (q, s))
+                if (SECTION_RELATIVE_ABSOLUTE_SYMBOL_P(q, s))
 #else
-		if ((*q->sym_ptr_ptr)->section == bfd_abs_section_ptr
-		    && ((*q->sym_ptr_ptr)->flags & BSF_SECTION_SYM) != 0)
+		if (((*q->sym_ptr_ptr)->section == bfd_abs_section_ptr)
+		    && (((*q->sym_ptr_ptr)->flags & BSF_SECTION_SYM) != 0))
 #endif /* SECTION_RELATIVE_ABSOLUTE_SYMBOL_P */
-		  /* This is a relocation relative to the absolute symbol.  */
-		  n.r_symndx = -1;
+		  /* This is a relocation relative to the absolute symbol: */
+		  n.r_symndx = -1L;
 		else
 		  {
-		    n.r_symndx = get_index ((*(q->sym_ptr_ptr)));
+		    n.r_symndx = (long)get_index((*(q->sym_ptr_ptr)));
 		    /* Take notice if the symbol reloc points to a symbol
 		       we do NOT have in our symbol table. What should we
 		       do for this??  */
-		    if (n.r_symndx > obj_conv_table_size (abfd))
-		      abort ();
+		    if (n.r_symndx > obj_conv_table_size(abfd))
+		      abort();
 		  }
 	      }
 
@@ -2545,21 +2546,21 @@ static bfd_boolean coff_write_relocs(bfd * abfd, int first_undef)
 
 #ifdef SELECT_RELOC
 	  /* Work out reloc type from what is required.  */
-	  SELECT_RELOC (n, q->howto);
+	  SELECT_RELOC(n, q->howto);
 #else
 	  n.r_type = q->howto->type;
 #endif /* SELECT_RELOC */
-	  coff_swap_reloc_out (abfd, &n, &dst);
+	  coff_swap_reloc_out(abfd, &n, &dst);
 
-	  if (bfd_bwrite (& dst, (bfd_size_type) bfd_coff_relsz (abfd),
-			 abfd) != bfd_coff_relsz (abfd))
+	  if (bfd_bwrite(&dst, (bfd_size_type)bfd_coff_relsz(abfd),
+			 abfd) != bfd_coff_relsz(abfd))
 	    return FALSE;
 	}
 
 #ifdef TARG_AUX
-		if (p != NULL) {
-			free (p);
-		}
+      if (p != NULL) {
+        free(p);
+      }
 #endif /* TARG_AUX */
     }
 
@@ -2569,7 +2570,7 @@ static bfd_boolean coff_write_relocs(bfd * abfd, int first_undef)
 /* Set flags and magic number of a coff file from architecture and machine
  * type.  Result is TRUE if we can represent the arch&type, FALSE if not: */
 static bfd_boolean
-coff_set_flags(bfd * abfd, unsigned int *magicp,
+coff_set_flags(bfd *abfd, unsigned int *magicp,
                unsigned short *flagsp ATTRIBUTE_UNUSED)
 {
   switch (bfd_get_arch(abfd))
@@ -3174,28 +3175,28 @@ coff_compute_section_file_positions(bfd *abfd)
 	  else
 # else
 	    {
-	      sofar = BFD_ALIGN (sofar, 1 << current->alignment_power);
+	      sofar = BFD_ALIGN(sofar, (1 << current->alignment_power));
 	    }
 # endif /* RS6000COFF_C */
 	  if (previous != NULL)
-	    previous->size += sofar - old_sofar;
+	    previous->size += (sofar - old_sofar);
 	}
 
 #endif /* ALIGN_SECTIONS_IN_FILE */
 
       /* In demand paged files the low order bits of the file offset
-	   * must match the low order bits of the virtual address.  */
+       * must match the low order bits of the virtual address.  */
 #ifdef COFF_PAGE_SIZE
-      if ((abfd->flags & D_PAGED) != 0
-		  && (current->flags & SEC_ALLOC) != 0) {
-		  sofar += (current->vma - (bfd_vma) sofar) % page_size;
-	  }
+      if (((abfd->flags & D_PAGED) != 0)
+          && ((current->flags & SEC_ALLOC) != 0)) {
+        sofar += ((current->vma - (bfd_vma)sofar) % page_size);
+      }
 #endif /* COFF_PAGE_SIZE */
       current->filepos = sofar;
 
 #ifdef COFF_IMAGE_WITH_PE
-      /* Set the padded size.  */
-      current->size = (current->size + page_size -1) & -page_size;
+      /* Set the padded size: */
+      current->size = ((current->size + page_size -1) & -page_size);
 #endif /* COFF_IMAGE_WITH_PE */
 
       sofar += current->size;
@@ -3207,17 +3208,17 @@ coff_compute_section_file_positions(bfd *abfd)
 	  bfd_size_type old_size;
 
 	  old_size = current->size;
-	  current->size = BFD_ALIGN (current->size,
-				     1 << current->alignment_power);
-	  align_adjust = current->size != old_size;
-	  sofar += current->size - old_size;
+	  current->size = BFD_ALIGN(current->size,
+				    (1 << current->alignment_power));
+	  align_adjust = (current->size != old_size);
+	  sofar += (current->size - old_size);
 	}
       else
 	{
 	  old_sofar = sofar;
-	  sofar = BFD_ALIGN (sofar, 1 << current->alignment_power);
-	  align_adjust = sofar != old_sofar;
-	  current->size += sofar - old_sofar;
+	  sofar = BFD_ALIGN(sofar, (1 << current->alignment_power));
+	  align_adjust = (sofar != old_sofar);
+	  current->size += (sofar - old_sofar);
 	}
 #endif /* ALIGN_SECTIONS_IN_FILE */
 
@@ -3225,18 +3226,18 @@ coff_compute_section_file_positions(bfd *abfd)
       /* For PE we need to make sure we pad out to the aligned
          size, in case the caller only writes out data to the
          unaligned size.  */
-		if (pei_section_data (abfd, current)->virt_size < current->size) {
-			align_adjust = TRUE;
-		}
+      if (pei_section_data(abfd, current)->virt_size < current->size) {
+        align_adjust = TRUE;
+      }
 #endif /* COFF_IMAGE_WITH_PE */
 
 #ifdef _LIB
-      /* Force .lib sections to start at zero. The vma is then
-	   * incremented in coff_set_section_contents. This is right for
-	   * SVR3.2.  */
-		if (strcmp (current->name, _LIB) == 0) {
-			bfd_set_section_vma (abfd, current, 0);
-		}
+      /* Force .lib sections to start at zero.  The vma is then
+       * incremented in coff_set_section_contents.  This is right for
+       * SVR3.2.  */
+      if (strcmp(current->name, _LIB) == 0) {
+        bfd_set_section_vma(abfd, current, 0);
+      }
 #endif /* _LIB */
 
       previous = current;
@@ -3252,18 +3253,18 @@ coff_compute_section_file_positions(bfd *abfd)
       bfd_byte b;
 
       b = 0;
-      if (bfd_seek (abfd, sofar - 1, SEEK_SET) != 0
-		  || bfd_bwrite (&b, (bfd_size_type) 1, abfd) != 1) {
-		  return FALSE;
-	  }
+      if ((bfd_seek(abfd, (sofar - 1L), SEEK_SET) != 0)
+          || bfd_bwrite (&b, (bfd_size_type)1UL, abfd) != 1) {
+        return FALSE;
+      }
     }
 
   /* Make sure the relocations are aligned.  We do NOT need to make
      sure that this byte exists, because it will only matter if there
      really are relocs.  */
-  sofar = BFD_ALIGN(sofar, 1 << COFF_DEFAULT_SECTION_ALIGNMENT_POWER);
+  sofar = BFD_ALIGN(sofar, (1 << COFF_DEFAULT_SECTION_ALIGNMENT_POWER));
 
-  obj_relocbase(abfd) = sofar;
+  obj_relocbase(abfd) = (long int)sofar;
   abfd->output_has_begun = TRUE;
 
   return TRUE;
@@ -5090,7 +5091,7 @@ coff_canonicalize_reloc(bfd * abfd, sec_ptr section, arelent **relptr,
       }
   }
   *relptr = 0;
-  return section->reloc_count;
+  return (long)section->reloc_count;
 }
 
 #ifndef coff_reloc16_estimate

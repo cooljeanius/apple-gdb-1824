@@ -64,9 +64,9 @@ DESCRIPTION
    operations.  */
 
 bfd_boolean
-bfd_false (bfd *ignore ATTRIBUTE_UNUSED)
+bfd_false(bfd *ignore ATTRIBUTE_UNUSED)
 {
-  bfd_set_error (bfd_error_invalid_operation);
+  bfd_set_error(bfd_error_invalid_operation);
   return FALSE;
 }
 
@@ -74,7 +74,7 @@ bfd_false (bfd *ignore ATTRIBUTE_UNUSED)
    which do not actually do anything.  */
 
 bfd_boolean
-bfd_true (bfd *ignore ATTRIBUTE_UNUSED)
+bfd_true(bfd *ignore ATTRIBUTE_UNUSED)
 {
   return TRUE;
 }
@@ -83,43 +83,44 @@ bfd_true (bfd *ignore ATTRIBUTE_UNUSED)
    operations which return a pointer value.  */
 
 void *
-bfd_nullvoidptr (bfd *ignore ATTRIBUTE_UNUSED)
+bfd_nullvoidptr(bfd *ignore ATTRIBUTE_UNUSED)
 {
-  bfd_set_error (bfd_error_invalid_operation);
+  bfd_set_error(bfd_error_invalid_operation);
   return NULL;
 }
 
 int
-bfd_0 (bfd *ignore ATTRIBUTE_UNUSED)
+bfd_0(bfd *ignore ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
 unsigned int
-bfd_0u (bfd *ignore ATTRIBUTE_UNUSED)
+bfd_0u(bfd *ignore ATTRIBUTE_UNUSED)
 {
-   return 0;
+   return 0U;
 }
 
 long
-bfd_0l (bfd *ignore ATTRIBUTE_UNUSED)
+bfd_0l(bfd *ignore ATTRIBUTE_UNUSED)
 {
-  return 0;
+  return 0L;
 }
 
 /* A routine which is used in target vectors for unsupported
    operations which return -1 on error.  */
 
 long
-_bfd_n1 (bfd *ignore_abfd ATTRIBUTE_UNUSED)
+_bfd_n1(bfd *ignore_abfd ATTRIBUTE_UNUSED)
 {
-  bfd_set_error (bfd_error_invalid_operation);
+  bfd_set_error(bfd_error_invalid_operation);
   return -1;
 }
 
 void
-bfd_void (bfd *ignore ATTRIBUTE_UNUSED)
+bfd_void(bfd *ignore ATTRIBUTE_UNUSED)
 {
+  return;
 }
 
 bfd_boolean
@@ -127,7 +128,7 @@ _bfd_nocore_core_file_matches_executable_p
   (bfd *ignore_core_bfd ATTRIBUTE_UNUSED,
    bfd *ignore_exec_bfd ATTRIBUTE_UNUSED)
 {
-  bfd_set_error (bfd_error_invalid_operation);
+  bfd_set_error(bfd_error_invalid_operation);
   return FALSE;
 }
 
@@ -135,9 +136,9 @@ _bfd_nocore_core_file_matches_executable_p
    without core file support.  */
 
 char *
-_bfd_nocore_core_file_failing_command (bfd *ignore_abfd ATTRIBUTE_UNUSED)
+_bfd_nocore_core_file_failing_command(bfd *ignore_abfd ATTRIBUTE_UNUSED)
 {
-  bfd_set_error (bfd_error_invalid_operation);
+  bfd_set_error(bfd_error_invalid_operation);
   return NULL;
 }
 
@@ -145,16 +146,16 @@ _bfd_nocore_core_file_failing_command (bfd *ignore_abfd ATTRIBUTE_UNUSED)
    without core file support.  */
 
 int
-_bfd_nocore_core_file_failing_signal (bfd *ignore_abfd ATTRIBUTE_UNUSED)
+_bfd_nocore_core_file_failing_signal(bfd *ignore_abfd ATTRIBUTE_UNUSED)
 {
-  bfd_set_error (bfd_error_invalid_operation);
+  bfd_set_error(bfd_error_invalid_operation);
   return 0;
 }
 
 const bfd_target *
-_bfd_dummy_target (bfd *ignore_abfd ATTRIBUTE_UNUSED)
+_bfd_dummy_target(bfd *ignore_abfd ATTRIBUTE_UNUSED)
 {
-  bfd_set_error (bfd_error_wrong_format);
+  bfd_set_error(bfd_error_wrong_format);
   return 0;
 }
 
@@ -252,7 +253,7 @@ bfd_realloc2(void *ptr, bfd_size_type nmemb, bfd_size_type size)
     }
 
   if (ptr == NULL)
-    ret = malloc((size_t) size);
+    ret = malloc((size_t)size);
   else
     ret = realloc(ptr, (size_t)size);
 
@@ -337,22 +338,22 @@ DESCRIPTION
 
 */
 bfd_boolean
-bfd_write_bigendian_4byte_int (bfd *abfd, unsigned int i)
+bfd_write_bigendian_4byte_int(bfd *abfd, unsigned int i)
 {
   bfd_byte buffer[4];
-  bfd_putb32 ((bfd_vma) i, buffer);
-  return bfd_bwrite (buffer, (bfd_size_type) 4, abfd) == 4;
+  bfd_putb32((bfd_vma)i, buffer);
+  return (bfd_bwrite(buffer, (bfd_size_type)4UL, abfd) == 4);
 }
 
 
 /** The do-it-yourself (byte) sex-change kit */
 
 /* The middle letter e.g. get<b>short indicates Big or Little endian
-   target machine.  It doesn't matter what the byte order of the host
+   target machine.  It does NOT matter what the byte order of the host
    machine is; these routines work for either.  */
 
 /* FIXME: Should these take a count argument?
-   Answer (gnu@cygnus.com):  No, but perhaps they should be inline
+   Answer <gnu@cygnus.com>:  No, but perhaps they should be inline
                              functions in swap.h #ifdef __GNUC__.
                              Gprof them later and find out.  */
 
@@ -512,6 +513,12 @@ DESCRIPTION
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic push
  #  pragma GCC diagnostic ignored "-Wsign-conversion"
+# else
+#  if ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2))) && \
+      (defined(__APPLE__) && defined(__APPLE_CC__) && (__APPLE_CC__ > 1))
+ #   pragma GCC diagnostic ignored "-Wshorten-64-to-32"
+ #   pragma GCC diagnostic ignored "-Wconversion"
+#  endif /* Apple gcc 4.2+ */
 # endif /* gcc 4.6+ */
 #endif /* any gcc */
 
@@ -796,16 +803,16 @@ bfd_putl64(bfd_uint64_t data, void *p)
 }
 
 void
-bfd_put_bits (bfd_uint64_t data, void *p, int bits, bfd_boolean big_p)
+bfd_put_bits(bfd_uint64_t data, void *p, int bits, bfd_boolean big_p)
 {
   bfd_byte *addr = (bfd_byte *)p;
   int i;
   int bytes;
 
-  if (bits % 8 != 0)
-    abort ();
+  if ((bits % 8) != 0)
+    abort();
 
-  bytes = bits / 8;
+  bytes = (bits / 8);
   for (i = 0; i < bytes; i++)
     {
       int i_index = (big_p ? (bytes - i - 1) : i);
@@ -832,7 +839,7 @@ bfd_get_bits(const void *p, int bits, bfd_boolean big_p)
     {
       int subindex = (big_p ? i : (bytes - i - 1));
 
-      data = (data << 8) | addr[subindex];
+      data = ((data << 8) | addr[subindex]);
     }
 
   return data;
@@ -899,7 +906,8 @@ _bfd_generic_get_section_contents_in_window_with_mode(bfd *abfd,
       /* @@ FIXME : If the internal window has a refcount of 1 and was
        * allocated with malloc instead of mmap, just reuse it.  */
       bfd_free_window(w);
-      w->i = (struct _bfd_window_internal *)bfd_zmalloc(sizeof(bfd_window_internal));
+      w->i = ((struct _bfd_window_internal *)
+              bfd_zmalloc((bfd_size_type)sizeof(bfd_window_internal)));
       if (w->i == NULL)
 	return FALSE;
       w->i->data = bfd_malloc(count);
@@ -957,9 +965,9 @@ DESCRIPTION
 */
 
 unsigned int
-bfd_log2 (bfd_vma x)
+bfd_log2(bfd_vma x)
 {
-  unsigned int result = 0;
+  unsigned int result = 0U;
 
   while ((x = (x >> 1)) != 0)
     ++result;
@@ -967,33 +975,34 @@ bfd_log2 (bfd_vma x)
 }
 
 bfd_boolean
-bfd_generic_is_local_label_name (bfd *abfd, const char *name)
+bfd_generic_is_local_label_name(bfd *abfd, const char *name)
 {
-  char locals_prefix = (bfd_get_symbol_leading_char (abfd) == '_') ? 'L' : '.';
+  char locals_prefix = ((bfd_get_symbol_leading_char(abfd) == '_')
+                        ? 'L' : '.');
 
-  return name[0] == locals_prefix;
+  return (name[0] == locals_prefix);
 }
 
 /*  Can be used from / for bfd_merge_private_bfd_data to check that
     endianness matches between input and output file. Returns
     TRUE for a match, otherwise returns FALSE and emits an error.  */
 bfd_boolean
-_bfd_generic_verify_endian_match (bfd *ibfd, bfd *obfd)
+_bfd_generic_verify_endian_match(bfd *ibfd, bfd *obfd)
 {
-  if (ibfd->xvec->byteorder != obfd->xvec->byteorder
-      && ibfd->xvec->byteorder != BFD_ENDIAN_UNKNOWN
-      && obfd->xvec->byteorder != BFD_ENDIAN_UNKNOWN)
+  if ((ibfd->xvec->byteorder != obfd->xvec->byteorder)
+      && (ibfd->xvec->byteorder != BFD_ENDIAN_UNKNOWN)
+      && (obfd->xvec->byteorder != BFD_ENDIAN_UNKNOWN))
     {
       const char *msg;
 
-      if (bfd_big_endian (ibfd))
+      if (bfd_big_endian(ibfd))
 	msg = _("%B: compiled for a big endian system and target is little endian");
       else
 	msg = _("%B: compiled for a little endian system and target is big endian");
 
-      (*_bfd_error_handler) (msg, ibfd);
+      (*_bfd_error_handler)(msg, ibfd);
 
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return FALSE;
     }
 

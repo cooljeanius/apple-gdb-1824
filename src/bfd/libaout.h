@@ -92,7 +92,9 @@
 #   define NAME(x,y) CONCAT3 (x,_16_,y)
 #  endif /* !NAME */
 #  define JNAME(x) CONCAT2 (x,_16)
-#  define BYTES_IN_WORD 2
+#  ifndef BYTES_IN_WORD
+#   define BYTES_IN_WORD 2
+#  endif /* !BYTES_IN_WORD */
 # else /* assuming that (ARCH_SIZE==32) is true here: */
 #  define GET_WORD  H_GET_32
 #  define GET_SWORD H_GET_S32
@@ -103,7 +105,9 @@
 #   define NAME(x,y) CONCAT3 (x,_32_,y)
 #  endif /* !NAME */
 #  define JNAME(x) CONCAT2 (x,_32)
-#  define BYTES_IN_WORD 4
+#  ifndef BYTES_IN_WORD
+#   define BYTES_IN_WORD 4
+#  endif /* !BYTES_IN_WORD */
 # endif /* (ARCH_SIZE==16) || (ARCH_SIZE==32) */
 #endif /* ARCH_SIZE && (ARCH_SIZE==64) */
 

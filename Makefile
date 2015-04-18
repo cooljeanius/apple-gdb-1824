@@ -205,7 +205,7 @@ CONFIG_ENABLE_GDBMI=--enable-gdbmi
 CONFIG_ENABLE_BUILD_WARNINGS=--enable-build-warnings --disable-werror
 CONFIG_ENABLE_TUI=--disable-tui
 CONFIG_ALL_BFD_TARGETS=--enable-targets#=all
-CONFIG_ALL_BFD_APPLE_TARGETS=--enable-targets=m68k-apple-aux,powerpc-apple-rhapsody,arm-apple-darwin,i386-apple-darwin,x86_64-apple-darwin,powerpc-apple-macos
+CONFIG_ALL_BFD_APPLE_TARGETS=--enable-targets=m68k-apple-aux,powerpc-apple-rhapsody,arm-apple-darwin,i386-apple-darwin,x86_64-apple-darwin,powerpc-apple-macos,powerpc64-apple-darwin
 CONFIG_64_BIT_BFD=--enable-64-bit-bfd
 CONFIG_WITH_MMAP=--with-mmap
 CONFIG_ENABLE_SHARED=--disable-shared

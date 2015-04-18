@@ -363,7 +363,9 @@ bfd_hash_lookup(struct bfd_hash_table *table, const char *string,
   unsigned int uindex;
 
   hash = 0UL;
-  len = 0U;
+#ifndef __clang_analyzer__
+  len = 0U; /* 'len' gets a better value a few lines later */
+#endif /* !__clang_analyzer__ */
   s = (const unsigned char *)string;
   while ((c = *s++) != '\0')
     {

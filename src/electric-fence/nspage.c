@@ -22,8 +22,10 @@
 #define MACH_CHECK_ERROR(ret) \
   mach_check_error(ret, __FILE__, __LINE__, __MACH_CHECK_FUNCTION);
 
-#define MACH_CHECK_NOERROR(ret) \
-  mach_check_noerror(ret, __FILE__, __LINE__, __MACH_CHECK_FUNCTION);
+#ifndef MACH_CHECK_NOERROR
+# define MACH_CHECK_NOERROR(ret) \
+   mach_check_noerror(ret, __FILE__, __LINE__, __MACH_CHECK_FUNCTION);
+#endif /* !MACH_CHECK_NOERROR */
 
 static void mach_check_error(kern_return_t ret, const char *file,
                              unsigned int line, const char *func)
@@ -101,5 +103,9 @@ size_t Page_Size(void)
   return stats->pagesize;
 #endif /* ! __MACH30__ */
 }
+
+#ifdef MACH_CHECK_NOERROR
+# undef MACH_CHECK_NOERROR
+#endif /* MACH_CHECK_NOERROR */
 
 /* EOF */

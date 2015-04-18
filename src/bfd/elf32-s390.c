@@ -921,10 +921,8 @@ elf_s390_copy_indirect_symbol (bed, dir, ind)
 }
 
 static int
-elf_s390_tls_transition (info, r_type, is_local)
-     struct bfd_link_info *info;
-     int r_type;
-     int is_local;
+elf_s390_tls_transition(struct bfd_link_info *info, int r_type,
+                        int is_local)
 {
   if (info->shared)
     return r_type;
@@ -942,6 +940,8 @@ elf_s390_tls_transition (info, r_type, is_local)
       return R_390_TLS_GOTIE32;
     case R_390_TLS_LDM32:
       return R_390_TLS_LE32;
+    default:
+      break;
     }
 
   return r_type;

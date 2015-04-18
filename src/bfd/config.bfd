@@ -1418,13 +1418,28 @@ case "${targ}" in
     ;;
   powerpc-*-darwin* | powerpc-*-macos10* | powerpc-*-rhapsody*)
     targ_defvec=mach_o_be_vec
-    targ_selvecs="mach_o_be_vec mach_o_le_vec mach_o_fat_vec pef_vec pef_xlib_vec sym_vec"
+    targ_selvecs="mach_o_be_vec mach_o_le_vec mach_o_fat_vec pef_vec pef_xlib_vec sym_vec powerpc_boot_vec"
     targ_archs="${targ_archs} bfd_powerpc_arch bfd_rs6000_arch bfd_i386_arch"
     targ_underscore=yes
     ;;
+#ifdef BFD64
+  powerpc64-*-darwin* | powerpc64-*-macos10* | powerpc64-*-rhapsody*)
+    targ_defvec=mach_o_be_vec
+    targ_selvecs="mach_o_be_vec mach_o_le_vec mach_o_fat_vec pef_vec pef_xlib_vec sym_vec powerpc_boot_vec"
+    targ_archs="${targ_archs} bfd_powerpc_arch bfd_rs6000_arch bfd_i386_arch"
+    targ_underscore=yes
+    want64=true
+    ;;
+#endif /* BFD64 */
   powerpc-*-macos*)
     targ_defvec=pmac_xcoff_vec
     ;;
+#ifdef BFD64
+  powerpc64-*-macos*)
+    targ_defvec=pmac_xcoff64_vec
+    want64=true
+    ;;
+#endif /* BFD64 */
   powerpc-*-lynxos*)
     targ_defvec=bfd_elf32_powerpc_vec
     targ_selvecs="rs6000coff_vec"

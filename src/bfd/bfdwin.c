@@ -350,7 +350,8 @@ bfd_get_file_window(bfd *abfd, ufile_ptr offset, bfd_size_type size,
 
   if (i == NULL)
     {
-      windowp->i = i = (bfd_window_internal *)bfd_zmalloc(sizeof(bfd_window_internal));
+      windowp->i = i = ((bfd_window_internal *)
+                        bfd_zmalloc((bfd_size_type)sizeof(bfd_window_internal)));
       if (i == 0)
 	return FALSE;
       i->data = 0;

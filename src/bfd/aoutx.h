@@ -375,27 +375,27 @@ DESCRIPTION
 
 #ifndef NAME_swap_exec_header_in
 void
-NAME (aout, swap_exec_header_in) (bfd *abfd,
-				  struct external_exec *bytes,
-				  struct internal_exec *execp)
+NAME(aout, swap_exec_header_in)(bfd *abfd,
+                                struct external_exec *bytes,
+                                struct internal_exec *execp)
 {
   /* The internal_exec structure has some fields that are unused in this
      configuration (IE for i960), so ensure that all such uninitialized
      fields are zero'd out.  There are places where two of these structs
      are memcmp'd, and thus the contents do matter.  */
-  memset ((void *) execp, 0, sizeof (struct internal_exec));
+  memset((void *)execp, 0, sizeof(struct internal_exec));
   /* Now fill in fields in the execp, from the bytes in the raw data.  */
-  execp->a_info   = H_GET_32 (abfd, bytes->e_info);
-  execp->a_text   = GET_WORD (abfd, bytes->e_text);
-  execp->a_data   = GET_WORD (abfd, bytes->e_data);
-  execp->a_bss    = GET_WORD (abfd, bytes->e_bss);
-  execp->a_syms   = GET_WORD (abfd, bytes->e_syms);
-  execp->a_entry  = GET_WORD (abfd, bytes->e_entry);
-  execp->a_trsize = GET_WORD (abfd, bytes->e_trsize);
-  execp->a_drsize = GET_WORD (abfd, bytes->e_drsize);
+  execp->a_info = (long)H_GET_32(abfd, bytes->e_info);
+  execp->a_text = GET_WORD(abfd, bytes->e_text);
+  execp->a_data = GET_WORD(abfd, bytes->e_data);
+  execp->a_bss = GET_WORD(abfd, bytes->e_bss);
+  execp->a_syms = GET_WORD(abfd, bytes->e_syms);
+  execp->a_entry = GET_WORD(abfd, bytes->e_entry);
+  execp->a_trsize = GET_WORD(abfd, bytes->e_trsize);
+  execp->a_drsize = GET_WORD(abfd, bytes->e_drsize);
 }
-#define NAME_swap_exec_header_in NAME (aout, swap_exec_header_in)
-#endif
+# define NAME_swap_exec_header_in NAME(aout, swap_exec_header_in)
+#endif /* !NAME_swap_exec_header_in */
 
 /*
 FUNCTION
@@ -2423,34 +2423,34 @@ NAME (aout, canonicalize_reloc) (bfd *abfd,
 }
 
 long
-NAME (aout, get_reloc_upper_bound) (bfd *abfd, sec_ptr asect)
+NAME(aout, get_reloc_upper_bound)(bfd *abfd, sec_ptr asect)
 {
-  if (bfd_get_format (abfd) != bfd_object)
+  if (bfd_get_format(abfd) != bfd_object)
     {
-      bfd_set_error (bfd_error_invalid_operation);
+      bfd_set_error(bfd_error_invalid_operation);
       return -1;
     }
 
   if (asect->flags & SEC_CONSTRUCTOR)
-    return sizeof (arelent *) * (asect->reloc_count + 1);
+    return sizeof(arelent *) * (asect->reloc_count + 1);
 
   if (asect == obj_datasec (abfd))
-    return sizeof (arelent *)
-      * ((exec_hdr (abfd)->a_drsize / obj_reloc_entry_size (abfd))
-	 + 1);
+    return (long)(sizeof(arelent *)
+      * ((exec_hdr(abfd)->a_drsize / obj_reloc_entry_size(abfd))
+	 + 1UL));
 
   if (asect == obj_textsec (abfd))
-    return sizeof (arelent *)
-      * ((exec_hdr (abfd)->a_trsize / obj_reloc_entry_size (abfd))
-	 + 1);
+    return (long)(sizeof(arelent *)
+      * ((exec_hdr(abfd)->a_trsize / obj_reloc_entry_size(abfd))
+	 + 1UL));
 
-  if (asect == obj_bsssec (abfd))
-    return sizeof (arelent *);
+  if (asect == obj_bsssec(abfd))
+    return sizeof(arelent *);
 
-  if (asect == obj_bsssec (abfd))
+  if (asect == obj_bsssec(abfd))
     return 0;
 
-  bfd_set_error (bfd_error_invalid_operation);
+  bfd_set_error(bfd_error_invalid_operation);
   return -1;
 }
 
@@ -2544,32 +2544,30 @@ void NAME(aout, print_symbol)(bfd *abfd, void *afile, asymbol *symbol,
    BFD asymbol structures.  */
 
 long
-NAME (aout, read_minisymbols) (bfd *abfd,
-			       bfd_boolean dynamic,
-			       void * *minisymsp,
-			       unsigned int *sizep)
+NAME(aout, read_minisymbols)(bfd *abfd, bfd_boolean dynamic,
+                             void **minisymsp, unsigned int *sizep)
 {
   if (dynamic)
     /* We could handle the dynamic symbols here as well, but it's
        easier to hand them off.  */
-    return _bfd_generic_read_minisymbols (abfd, dynamic, minisymsp, sizep);
+    return _bfd_generic_read_minisymbols(abfd, dynamic, minisymsp, sizep);
 
-  if (! aout_get_external_symbols (abfd))
+  if (! aout_get_external_symbols(abfd))
     return -1;
 
-  if (obj_aout_external_sym_count (abfd) < MINISYM_THRESHOLD)
-    return _bfd_generic_read_minisymbols (abfd, dynamic, minisymsp, sizep);
+  if (obj_aout_external_sym_count(abfd) < MINISYM_THRESHOLD)
+    return _bfd_generic_read_minisymbols(abfd, dynamic, minisymsp, sizep);
 
-  *minisymsp = (void *) obj_aout_external_syms (abfd);
+  *minisymsp = (void *)obj_aout_external_syms(abfd);
 
   /* By passing the external symbols back from this routine, we are
      giving up control over the memory block.  Clear
      obj_aout_external_syms, so that we do not try to free it
      ourselves.  */
-  obj_aout_external_syms (abfd) = NULL;
+  obj_aout_external_syms(abfd) = NULL;
 
   *sizep = EXTERNAL_NLIST_SIZE;
-  return obj_aout_external_sym_count (abfd);
+  return (long)obj_aout_external_sym_count(abfd);
 }
 
 /* Convert a minisymbol to a BFD asymbol.  A minisymbol is just an
@@ -2577,16 +2575,14 @@ NAME (aout, read_minisymbols) (bfd *abfd,
    by bfd_make_empty_symbol, which we fill in here.  */
 
 asymbol *
-NAME (aout, minisymbol_to_symbol) (bfd *abfd,
-				   bfd_boolean dynamic,
-				   const void * minisym,
-				   asymbol *sym)
+NAME(aout, minisymbol_to_symbol)(bfd *abfd, bfd_boolean dynamic,
+                                 const void *minisym, asymbol *sym)
 {
   if (dynamic
-      || obj_aout_external_sym_count (abfd) < MINISYM_THRESHOLD)
-    return _bfd_generic_minisymbol_to_symbol (abfd, dynamic, minisym, sym);
+      || (obj_aout_external_sym_count(abfd) < MINISYM_THRESHOLD))
+    return _bfd_generic_minisymbol_to_symbol(abfd, dynamic, minisym, sym);
 
-  memset (sym, 0, sizeof (aout_symbol_type));
+  memset(sym, 0, sizeof(aout_symbol_type));
 
   /* We call translate_symbol_table to translate a single symbol.  */
   if (! (NAME (aout, translate_symbol_table)

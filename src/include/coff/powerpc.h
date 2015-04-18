@@ -1,23 +1,27 @@
-/* Basic coff information for the PowerPC
+/* coff/powerpc.h: Basic coff information for the PowerPC.
    Based on coff/rs6000.h, coff/i386.h and others.
-   
+
    Copyright 2001 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2 of the License, or
    (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
- 
-   Initial release: Kim Knuttila (krk@cygnus.com)  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA
+
+   Initial release: Kim Knuttila <krk@cygnus.com>  */
+
+#ifndef COFF_POWERPC_H
+#define COFF_POWERPC_H
+
 #define L_LNNO_SIZE 2
 #define INCLUDE_COMDAT_FIELDS_IN_AUXENT
 #include "coff/external.h"
@@ -42,7 +46,7 @@
 /* from winnt.h */
 #define IMAGE_NT_OPTIONAL_HDR_MAGIC        0x10b
 
-#define PPCBADMAG(x) ((x).f_magic != PPCMAGIC) 
+#define PPCBADMAG(x) ((x).f_magic != PPCMAGIC)
 
 /********************** RELOCATION DIRECTIVES **********************/
 
@@ -56,3 +60,6 @@ struct external_reloc
 #define RELOC struct external_reloc
 #define RELSZ 10
 
+#endif /* !COFF_POWERPC_H */
+
+/* EOF */

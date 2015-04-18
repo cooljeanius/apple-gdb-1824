@@ -182,7 +182,7 @@ bfd_elf64_archive_write_armap(bfd *arch, unsigned int elength,
   memcpy(hdr.ar_fmag, ARFMAG, (size_t)2UL);
 
   /* Write the ar header for this item and the number of symbols: */
-  if (bfd_bwrite(&hdr, sizeof(struct ar_hdr), arch)
+  if (bfd_bwrite(&hdr, (bfd_size_type)sizeof(struct ar_hdr), arch)
       != sizeof(struct ar_hdr))
     return FALSE;
 
@@ -222,7 +222,7 @@ bfd_elf64_archive_write_armap(bfd *arch, unsigned int elength,
     {
       size_t len = (strlen(*map[count].name) + 1UL);
 
-      if (bfd_bwrite(*map[count].name, len, arch) != len) {
+      if (bfd_bwrite(*map[count].name, (bfd_size_type)len, arch) != len) {
 	return FALSE;
       }
     }

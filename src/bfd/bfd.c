@@ -441,7 +441,7 @@ _bfd_default_error_handler(const char *fmt, ...)
 
   /* Reserve enough space for the existing format string: */
   avail -= (strlen(fmt) + 1UL);
-  if (avail > 1000)
+  if (avail > 1000UL)
     abort();
 
   p = fmt;
@@ -764,6 +764,9 @@ bfd_set_file_flags(bfd *abfd, flagword flags)
 }
 
 void
+#ifdef __clang_analyzer__
+ATTRIBUTE_NORETURN
+#endif /* __clang_analyzer__ */
 bfd_assert(const char *file, int line)
 {
   (*_bfd_error_handler)(_("BFD %s assertion fail %s:%d"),
@@ -777,7 +780,7 @@ bfd_assert(const char *file, int line)
 # define EXIT_FAILURE 1
 #endif /* !EXIT_FAILURE */
 
-void
+void ATTRIBUTE_NORETURN
 _bfd_abort(const char *file, int line, const char *fn)
 {
   if (fn != NULL)
@@ -1005,7 +1008,7 @@ bfd_scan_vma(const char *string, const char **end, int base)
 
 #if defined(HAVE_STRTOULL) && !defined(__STRICT_ANSI__)
   if (sizeof(bfd_vma) <= sizeof(unsigned long long))
-    return strtoull(string, (char **)end, base);
+    return (bfd_vma)strtoull(string, (char **)end, base);
 #endif /* HAVE_STRTOULL && !__STRICT_ANSI__ */
 
   if (base == 0)

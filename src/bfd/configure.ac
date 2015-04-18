@@ -441,23 +441,30 @@ AC_CHECK_SIZEOF([long])dnl
 AC_CHECK_ALIGNOF([long])dnl
   ## use that to see if we are 64-bit:
 if test "x${ac_cv_sizeof_long}" = "x8"; then
+  AC_MSG_NOTICE([our host is natively 64-bit])
   host64=true
   BFD_HOST_64BIT_LONG=1
   test -n "${HOST_64BIT_TYPE}" || HOST_64BIT_TYPE="long"
   test -n "${HOST_U_64BIT_TYPE}" || HOST_U_64BIT_TYPE="unsigned long"
 elif test "x${ac_cv_sizeof_long_long}" = "x8"; then
+  AC_MSG_NOTICE([using long long for 64-bit])
   BFD_HOST_64BIT_LONG_LONG=1
   test -n "${HOST_64BIT_TYPE}" || HOST_64BIT_TYPE="long long"
   test -n "${HOST_U_64BIT_TYPE}" || HOST_U_64BIT_TYPE="unsigned long long"
   if test "x${ac_cv_sizeof_void_p}" = "x8"; then
     BFD_HOSTPTR_T="unsigned long long"
   fi
+else
+  AC_MSG_WARN([no type of size 8 found])
 fi
 
 if test -n "${HOST_64BIT_TYPE}" -a -n "${HOST_U_64BIT_TYPE}"; then
   BFD_HOST_64_BIT_DEFINED=1
   BFD_HOST_64_BIT="${HOST_64BIT_TYPE}"
   BFD_HOST_U_64_BIT="${HOST_U_64BIT_TYPE}"
+  AC_MSG_NOTICE([our host 64-bit types will be '${BFD_HOST_64_BIT}' and '${BFD_HOST_U_64_BIT}'])
+else
+  AC_MSG_WARN([no host 64-bit type found])
 fi
 
 AC_SUBST([BFD_HOST_64BIT_LONG])dnl
@@ -588,12 +595,12 @@ unset ac_cv_header_stdlib_h
 unset ac_cv_header_sys_param_h
 AC_CHECK_HEADERS([ctype.h errno.h fcntl.h gettext.h iconv.h libgen.h \
                   libgettext.h libintl.h limits.h mach/mach.h \
-                  mach-o/loader.h malloca.h malloc/malloc.h realloc.h \
-                  stdarg.h stddef.h stdio.h sys/acl.h sys/core.h \
-                  sys/errno.h sys/file.h sys/paccess.h sys/param.h \
-                  sys/region.h sys/resource.h sys/socket.h sys/time.h \
-                  sys/user.h sys/utsname.h time.h wchar.h wctype.h \
-                  windef.h windows.h])dnl
+                  mach-o/loader.h malloca.h malloc/malloc.h math.h \
+                  realloc.h stdarg.h stddef.h stdio.h sys/acl.h \
+                  sys/core.h sys/errno.h sys/file.h sys/paccess.h \
+                  sys/param.h sys/region.h sys/resource.h sys/socket.h \
+                  sys/time.h sys/user.h sys/utsname.h time.h \
+                  wchar.h wctype.h windef.h windows.h])dnl
 GCC_HEADER_STDINT([bfd_stdint.h],[stdint.h])dnl
 AC_HEADER_TIME
 AC_HEADER_DIRENT
@@ -613,7 +620,9 @@ AC_C_STRINGIZE
 AC_C_VOLATILE
 AC_MSG_CHECKING([other types that did not fit with the host ones above])
 AC_MSG_RESULT([ ])
+AC_TYPE_MODE_T
 AC_TYPE_PID_T
+AC_TYPE_UID_T
 AC_CHECK_TYPES([ptrdiff_t])dnl
 AC_DEFUN([AC_TYPE_VARIOUS_INT_TYPES],[
   AC_REQUIRE([AC_TYPE_INT32_T])dnl
@@ -649,12 +658,12 @@ AC_CHECK_MEMBERS([struct user.u_comm],[],[
 AC_MSG_CHECKING([functions])
 AC_MSG_RESULT([ ])
 AM_WITH_DMALLOC
-AC_CHECK_FUNCS([btowc calloc close exit fcntl fdopen feof ferror fileno \
-                fopen fprintf fread getgid getrlimit getuid islower \
-                isspace isupper mbsrtowcs memchr memmove mempcpy memset \
-                open pread qsort rpl_malloc rpl_realloc setitimer strcmp \
-                strdup strncasecmp strrchr strspn strstr strtol strtoul \
-                strtoull sysconf system uname wmempcpy])dnl
+AC_CHECK_FUNCS([btowc calloc close exit fabs fabsf fabsl fcntl fdopen \
+                feof ferror fileno fopen fprintf fread getgid getrlimit \
+                getuid islower isspace isupper mbsrtowcs memchr memmove \
+                mempcpy memset open pread qsort rpl_malloc rpl_realloc \
+                setitimer strcmp strdup strncasecmp strrchr strspn strstr \
+                strtol strtoul strtoull sysconf system uname wmempcpy])dnl
 AC_CHECK_FUNCS_ONCE([lt_dlinit])dnl
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_FNMATCH
@@ -1676,6 +1685,7 @@ do
     pj_elf32_le_vec) tb="${tb} elf32-pj.lo elf32.lo ${elf}" ;;
     plugin_vec) tb="${tb} plugin.lo" ;;
     pmac_xcoff_vec) tb="${tb} coff-pmac.lo coff-rs6000.lo xcofflink.lo" ;;
+    pmac_xcoff64_vec) tb="${tb} coff-pmac.lo coff64-rs6000.lo xcofflink.lo" ;;
     powerpc_boot_vec) tb="${tb} ppcboot.lo" ;;
     powerpc_elf32_vec) tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
     powerpc_elf32_le_vec) tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
@@ -1690,6 +1700,7 @@ do
     powerpc_pei_vec) tb="${tb} pei-ppc.lo peigen.lo cofflink.lo" ;;
     powerpc_pei_le_vec) tb="${tb} pei-ppc.lo peigen.lo cofflink.lo" ;;
     powerpc_xcoff_vec) tb="${tb} coff-rs6000.lo xcofflink.lo" ;;
+    powerpc_xcoff64_vec) tb="${tb} coff64-rs6000.lo xcofflink.lo" ;;
     ppcboot_vec) tb="${tb} ppcboot.lo" ;;
     riscix_vec) tb="${tb} aout32.lo riscix.lo" ;;
     rl78_elf32_vec) tb="${tb} elf32-rl78.lo elf32.lo ${elf}" ;;
@@ -2140,6 +2151,7 @@ fi
 ],[])dnl
 
 AC_CONFIG_COMMANDS([broken_libtool_hack_fix3],[[
+if test -x ./config.status; then
   if test -z "${our_libtool_script}"; then
     if test -x ./libtool; then
       our_libtool_script="./libtool"
@@ -2166,7 +2178,7 @@ AC_CONFIG_COMMANDS([broken_libtool_hack_fix3],[[
       echo "error: my_libtooldir should be defined if ${our_libtool_script} already defines objdir" >&2
       exit 1
     fi
-  else
+  elif test -e ${our_libtool_script}; then
     echo "" >> ${our_libtool_script}
     if test -n "${lt_cv_objdir}"; then
       echo "using lt_cv_objdir ('${lt_cv_objdir}') to define objdir in ${our_libtool_script}"
@@ -2186,7 +2198,10 @@ AC_CONFIG_COMMANDS([broken_libtool_hack_fix3],[[
     else
       echo "warning: need to define objdir in ${our_libtool_script}, but cannot figure out how to do so"
     fi
+  else
+    echo "I hate libtool..."
   fi
+fi
 ]],[])dnl
 
 dnl# Required by html, pdf, install-pdf, and install-html:

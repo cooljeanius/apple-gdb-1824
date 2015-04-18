@@ -1,4 +1,4 @@
-/* A.out "format 1" file handling code for BFD.
+/* aoutf1.h: A.out "format 1" file handling code for BFD.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 2000,
    2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -511,7 +511,7 @@ swapcore_solaris_bcp(bfd *abfd, char *ext, struct internal_sunos_core *intcore)
     (long)(((struct external_solaris_bcp_core *)0L)->fp_stuff);
   /* FP stuff takes up whole rest of struct, except c_ucode: */
   intcore->fp_stuff_size = (int)(intcore->c_len - sizeof(extcore->c_ucode)
-    - (file_ptr)(((struct external_solaris_bcp_core *) 0)->fp_stuff));
+    - (file_ptr)(((struct external_solaris_bcp_core *)0L)->fp_stuff));
   /* Ucode is the last thing in the struct -- just before the end */
   intcore->c_ucode = (int)H_GET_32(abfd,
                                    (intcore->c_len
@@ -574,43 +574,43 @@ sunos4_core_file_p(bfd *abfd)
       char external_core[1];
     } *mergem;
 
-  if (bfd_bread ((void *) longbuf, (bfd_size_type) sizeof (longbuf), abfd)
-      != sizeof (longbuf))
+  if (bfd_bread((void *)longbuf, (bfd_size_type)sizeof(longbuf), abfd)
+      != sizeof(longbuf))
     return NULL;
-  core_mag = H_GET_32 (abfd, longbuf);
+  core_mag = (unsigned long)H_GET_32(abfd, longbuf);
 
   if (core_mag != CORE_MAGIC)
     return NULL;
 
   /* SunOS core headers can vary in length; second word is size; */
-  if (bfd_bread ((void *) longbuf, (bfd_size_type) sizeof (longbuf), abfd)
-      != sizeof (longbuf))
+  if (bfd_bread((void *)longbuf, (bfd_size_type)sizeof(longbuf), abfd)
+      != sizeof(longbuf))
     return NULL;
   core_size = H_GET_32 (abfd, longbuf);
   /* Sanity check.  */
   if (core_size > 20000)
     return NULL;
 
-  if (bfd_seek(abfd, (file_ptr)0, SEEK_SET) != 0)
+  if (bfd_seek(abfd, (file_ptr)0L, SEEK_SET) != 0)
     return NULL;
 
-  amt = core_size + sizeof(struct mergem);
+  amt = (core_size + sizeof(struct mergem));
   mergem = (struct mergem *)bfd_zalloc(abfd, amt);
   if (mergem == NULL)
     return NULL;
 
   extcore = mergem->external_core;
 
-  if ((bfd_bread ((void *) extcore, core_size, abfd)) != core_size)
+  if ((bfd_bread((void *)extcore, core_size, abfd)) != core_size)
     {
     loser:
-      bfd_release (abfd, (char *) mergem);
+      bfd_release(abfd, (char *)mergem);
       abfd->tdata.any = NULL;
-      bfd_section_list_clear (abfd);
+      bfd_section_list_clear(abfd);
       return NULL;
     }
 
-  /* Validate that it's a core file we know how to handle, due to sun
+  /* Validate that it is a core file we know how to handle, due to sun
      botching the positioning of registers and other fields in a machine
      dependent way.  */
   core = &mergem->internal_sunos_core;
@@ -789,7 +789,9 @@ static const struct aout_backend_data sunos4_aout_backend =
 #define MY_backend_data			& sunos4_aout_backend
 
 #ifndef TARGET_IS_LITTLE_ENDIAN_P
-#define TARGET_IS_BIG_ENDIAN_P
-#endif
+# define TARGET_IS_BIG_ENDIAN_P
+#endif /* !TARGET_IS_LITTLE_ENDIAN_P */
 
 #include "aout-target.h"
+
+/* End of aoutf1.h */

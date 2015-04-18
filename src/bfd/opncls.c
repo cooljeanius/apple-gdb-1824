@@ -100,17 +100,17 @@ _bfd_new_bfd(void)
 {
   bfd *nbfd;
 
-  nbfd = (bfd *)bfd_zmalloc(sizeof(bfd));
+  nbfd = (bfd *)bfd_zmalloc((bfd_size_type)sizeof(bfd));
   if (nbfd == NULL)
     return NULL;
 
   nbfd->id = _bfd_id_counter++;
 
-  nbfd->memory = objalloc_create ();
+  nbfd->memory = objalloc_create();
   if (nbfd->memory == NULL)
     {
-      bfd_set_error (bfd_error_no_memory);
-      free (nbfd);
+      bfd_set_error(bfd_error_no_memory);
+      free(nbfd);
       return NULL;
     }
 
@@ -119,10 +119,10 @@ _bfd_new_bfd(void)
   nbfd->direction = no_direction;
   nbfd->iostream = NULL;
   nbfd->where = 0;
-  if (!bfd_hash_table_init_n (& nbfd->section_htab, bfd_section_hash_newfunc,
-			      251))
+  if (!bfd_hash_table_init_n(&nbfd->section_htab, bfd_section_hash_newfunc,
+			     251U))
     {
-      free (nbfd);
+      free(nbfd);
       return NULL;
     }
   nbfd->sections = NULL;
@@ -292,8 +292,8 @@ bfd_boolean bfd_mmap_file(bfd *abfd, void *addr)
 
   abfd->mtime = bfd_get_mtime(abfd);
 
-  mem = (struct bfd_in_memory *)bfd_alloc(abfd,
-                                          sizeof(struct bfd_in_memory));
+  mem = ((struct bfd_in_memory *)
+         bfd_alloc(abfd, (bfd_size_type)sizeof(struct bfd_in_memory)));
   if (mem == NULL) {
     return FALSE;
   }
@@ -331,8 +331,8 @@ bfd_boolean bfd_mmap_file(bfd *abfd, void *addr)
     addr = NULL;
   }
 
-  mem->buffer = (bfd_byte *)mmap(addr, mem->size, (int)prot, (int)flags,
-                                 fd, (off_t)0L);
+  mem->buffer = (bfd_byte *)mmap(addr, (size_t)mem->size, (int)prot,
+                                 (int)flags, fd, (off_t)0L);
   if ((caddr_t)mem->buffer == (caddr_t)-1) {
     bfd_set_error(bfd_error_system_call);
     return FALSE;
@@ -391,8 +391,7 @@ bfd_memopenr(const char *filename, const char *target, unsigned char *addr,
   if (nbfd == NULL)
     return NULL;
 
-  mem = (struct bfd_in_memory *)bfd_alloc(nbfd,
-                                          sizeof(struct bfd_in_memory));
+  mem = (struct bfd_in_memory *)bfd_alloc(nbfd, (bfd_size_type)sizeof(struct bfd_in_memory));
   if (mem == NULL)
     return NULL;
 
@@ -712,7 +711,8 @@ bfd_openr_iovec(const char *filename, const char *target,
       return NULL;
     }
 
-  vec = (struct opncls *)bfd_zalloc(nbfd, sizeof(struct opncls));
+  vec = (struct opncls *)bfd_zalloc(nbfd,
+                                    (bfd_size_type)sizeof(struct opncls));
   vec->stream = stream;
   vec->pread = pread;
   vec->close = close;
@@ -961,7 +961,8 @@ bfd_make_writable(bfd *abfd)
       return FALSE;
     }
 
-  bim = (struct bfd_in_memory *)bfd_malloc(sizeof(struct bfd_in_memory));
+  bim = ((struct bfd_in_memory *)
+         bfd_malloc((bfd_size_type)sizeof(struct bfd_in_memory)));
   abfd->iostream = bim;
   /* bfd_bwrite will grow these as needed: */
   bim->size = 0;
@@ -1620,7 +1621,8 @@ bfd_fill_in_gnu_debuglink_section(bfd *abfd, struct bfd_section *sect,
 
   crc32 = 0UL;
   while ((count = fread(buffer, (size_t)1UL, sizeof(buffer), handle)) > 0)
-    crc32 = bfd_calc_gnu_debuglink_crc32(crc32, buffer, count);
+    crc32 = bfd_calc_gnu_debuglink_crc32(crc32, buffer,
+                                         (bfd_size_type)count);
   fclose(handle);
 
   /* Strip off any path components in filename, now that we no longer need
@@ -1643,7 +1645,7 @@ bfd_fill_in_gnu_debuglink_section(bfd *abfd, struct bfd_section *sect,
   strcpy(contents, filename);
   crc_offset = (debuglink_size - 4);
 
-  bfd_put_32(abfd, crc32, (contents + crc_offset));
+  bfd_put_32(abfd, (bfd_vma)crc32, (contents + crc_offset));
 
   if (!bfd_set_section_contents(abfd, sect, contents, (file_ptr)0L,
                                 debuglink_size))

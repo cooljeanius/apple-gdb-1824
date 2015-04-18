@@ -201,7 +201,7 @@ srec_mkobject(bfd *abfd)
 
   srec_init();
 
-  tdata = (tdata_type *)bfd_alloc(abfd, sizeof(tdata_type));
+  tdata = (tdata_type *)bfd_alloc(abfd, (bfd_size_type)sizeof(tdata_type));
   if (tdata == NULL)
     return FALSE;
 
@@ -270,7 +270,7 @@ srec_new_symbol(bfd *abfd, const char *name, bfd_vma val)
 {
   struct srec_symbol *n;
 
-  n = (struct srec_symbol *)bfd_alloc(abfd, sizeof(* n));
+  n = (struct srec_symbol *)bfd_alloc(abfd, (bfd_size_type)sizeof(* n));
   if (n == NULL)
     return FALSE;
 
@@ -498,19 +498,19 @@ srec_scan (bfd *abfd)
 		break;
 
 	      case '3':
-		address = HEX (data);
+		address = HEX(data);
 		data += 2;
 		--bytes;
-		/* Fall through.  */
+		/* Fall through to: */
 	      case '2':
-		address = (address << 8) | HEX (data);
+		address = ((address << 8) | HEX(data));
 		data += 2;
 		--bytes;
 		/* Fall through.  */
 	      case '1':
-		address = (address << 8) | HEX (data);
+		address = ((address << 8) | HEX(data));
 		data += 2;
-		address = (address << 8) | HEX (data);
+		address = ((address << 8) | HEX(data));
 		data += 2;
 		bytes -= 2;
 
@@ -543,13 +543,13 @@ srec_scan (bfd *abfd)
 		break;
 
 	      case '7':
-		address = HEX (data);
+		address = HEX(data);
 		data += 2;
-		/* Fall through.  */
+		/* Fall through to: */
 	      case '8':
-		address = (address << 8) | HEX(data);
+		address = ((address << 8) | HEX(data));
 		data += 2;
-		/* Fall through.  */
+		/* Fall through to: */
 	      case '9':
 		address = ((address << 8) | HEX(data));
 		data += 2;
@@ -812,7 +812,8 @@ srec_set_section_contents(bfd *abfd, sec_ptr section, const void *location,
   tdata_type *tdata = abfd->tdata.srec_data;
   srec_data_list_type *entry;
 
-  entry = (srec_data_list_type *)bfd_alloc(abfd, sizeof(* entry));
+  entry = (srec_data_list_type *)bfd_alloc(abfd,
+                                           (bfd_size_type)sizeof(* entry));
   if (entry == NULL)
     return FALSE;
 
@@ -1112,7 +1113,7 @@ srec_canonicalize_symtab(bfd *abfd, asymbol **alocation)
       asymbol *c;
       struct srec_symbol *s;
 
-      csymbols = (asymbol *)bfd_alloc(abfd, symcount * sizeof(asymbol));
+      csymbols = (asymbol *)bfd_alloc(abfd, (symcount * sizeof(asymbol)));
       if ((csymbols == NULL) && (symcount != 0))
 	return 0;
       abfd->tdata.srec_data->csymbols = csymbols;

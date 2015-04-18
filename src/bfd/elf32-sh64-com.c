@@ -127,8 +127,8 @@ sh64_address_in_cranges(asection *cranges, bfd_vma addr,
       if (elf_section_data(cranges)->this_hdr.sh_type
 	  != SHT_SH5_CR_SORTED)
 	/* Nope.  Let us sort it: */
-	qsort(cranges_contents, (cranges_size / SH64_CRANGE_SIZE),
-              SH64_CRANGE_SIZE,
+	qsort(cranges_contents, (size_t)(cranges_size / SH64_CRANGE_SIZE),
+              (size_t)SH64_CRANGE_SIZE,
               (bfd_big_endian(cranges->owner)
 	       ? _bfd_sh64_crange_qsort_cmpb
                : _bfd_sh64_crange_qsort_cmpl));
@@ -146,8 +146,8 @@ sh64_address_in_cranges(asection *cranges, bfd_vma addr,
   /* Try and find a matching range: */
   found_rangep
     = (bfd_byte *)bsearch(&addr, cranges_contents,
-                          (cranges_size / SH64_CRANGE_SIZE),
-                          SH64_CRANGE_SIZE,
+                          (size_t)(cranges_size / SH64_CRANGE_SIZE),
+                          (size_t)SH64_CRANGE_SIZE,
                           (bfd_big_endian(cranges->owner)
                            ? _bfd_sh64_crange_bsearch_cmpb
                            : _bfd_sh64_crange_bsearch_cmpl));

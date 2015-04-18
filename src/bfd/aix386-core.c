@@ -21,7 +21,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA.
  */
 
 #include "bfd.h"
@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 
 #include <signal.h>
 
-#if defined (_AIX) && defined (_I386)
+#if defined(_AIX) && defined(_I386)
 # define NOCHECKS /* This is for coredump.h.  */
 # define _h_USER /* Avoid including user.h from coredump.h.  */
 # include <uinfo.h>
@@ -51,7 +51,21 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 # if defined(HAVE_SYS_I386_COREDUMP_H)
 #  include <sys/i386/coredump.h>
 # endif /* HAVE_SYS_I386_COREDUMP_H */
+# if defined(_PPC) || defined(__ppc__) || defined(__ppc64__)
+#  if !defined(RELOC) && !defined(COFF_POWERPC_H)
+#   include "coff/powerpc.h"
+#  endif /* !RELOC && !COFF_POWERPC_H */
+#  if !defined(RELOC) && !defined(COFF_RS6000_H)
+#   include "coff/rs6000.h"
+#  endif /* !RELOC && !COFF_RS6000_H */
+# endif /* _PPC || __ppc__ || __ppc64__ */
 #endif /* _AIX && _I386 */
+
+/* The same condition as used for a good portion of "coff/i386.h": */
+#if (defined(_AIX) && defined(_I386)) || defined(__i386) || \
+    defined(__i386__) || defined(__x86_64) || defined(__x86_64__)
+# define ACTUALLY_CAN_USE_AIX_I386_STUFF 1
+#endif /* (_AIX && _I386) || __i386[__] || __x86_64[__] */
 
 #ifdef HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
@@ -125,7 +139,7 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 # define COR_MAGIC "core"
 #endif /* !COR_MAGIC */
 
-/* Need this cast because ptr is really void *.  */
+/* Need this cast (which cast?) because 'ptr' is really 'void *': */
 #define core_hdr(bfd) \
     (((bfd->tdata.trad_core_data))->hdr)
 #define core_section(bfd,n) \
@@ -184,7 +198,9 @@ aix386_core_file_p(bfd *abfd)
   struct corehdr *core;
   struct mergem {
     struct trad_core_struct coredata;
+#ifdef ACTUALLY_CAN_USE_AIX_I386_STUFF
     struct corehdr internal_core;
+#endif /* ACTUALLY_CAN_USE_AIX_I386_STUFF */
   } *mergem;
 
   amt = sizeof(longbuf);
@@ -199,7 +215,7 @@ aix386_core_file_p(bfd *abfd)
       return 0;
   }
 
-  if (bfd_seek(abfd, (file_ptr)0, 0) != 0) {
+  if (bfd_seek(abfd, (file_ptr)0L, 0) != 0) {
       return 0;
   }
 
@@ -209,7 +225,11 @@ aix386_core_file_p(bfd *abfd)
       return 0;
   }
 
+#ifdef ACTUALLY_CAN_USE_AIX_I386_STUFF
   core = &mergem->internal_core;
+#else
+  core = (struct corehdr *)NULL;
+#endif /* ACTUALLY_CAN_USE_AIX_I386_STUFF */
 
   if ((bfd_bread((PTR)core, core_size, abfd)) != core_size) {
       if (bfd_get_error() != bfd_error_system_call) {
@@ -232,12 +252,20 @@ aix386_core_file_p(bfd *abfd)
   }
 
   core_regsec(abfd)->flags = SEC_HAS_CONTENTS;
+#ifdef ACTUALLY_CAN_USE_AIX_I386_STUFF
   core_regsec(abfd)->size = sizeof(core->cd_regs);
-  core_regsec(abfd)->vma = (bfd_vma)-1;
+#else
+  core_regsec(abfd)->size = (bfd_size_type)0UL;
+#endif /* ACTUALLY_CAN_USE_AIX_I386_STUFF */
+  core_regsec(abfd)->vma = (bfd_vma)-1L;
 
   /* We shall access the regs afresh in the core file, like any section: */
-  core_regsec (abfd)->filepos =
+  core_regsec(abfd)->filepos =
+#ifdef ACTUALLY_CAN_USE_AIX_I386_STUFF
     (file_ptr)offsetof(struct corehdr, cd_regs[0]);
+#else
+    (file_ptr)0L;
+#endif /* ACTUALLY_CAN_USE_AIX_I386_STUFF */
 
   core_reg2sec(abfd) = bfd_make_section_anyway(abfd, ".reg2");
   if (core_reg2sec(abfd) == NULL) {
@@ -246,19 +274,34 @@ aix386_core_file_p(bfd *abfd)
   }
 
   core_reg2sec(abfd)->flags = SEC_HAS_CONTENTS;
+#ifdef ACTUALLY_CAN_USE_AIX_I386_STUFF
   core_reg2sec(abfd)->size = sizeof(core->cd_fpregs);
-  core_reg2sec(abfd)->vma = (bfd_vma)-1;
+#else
+  core_reg2sec(abfd)->size = (bfd_size_type)0UL;
+#endif /* ACTUALLY_CAN_USE_AIX_I386_STUFF */
+  core_reg2sec(abfd)->vma = (bfd_vma)-1L;
   core_reg2sec(abfd)->filepos =
+#ifdef ACTUALLY_CAN_USE_AIX_I386_STUFF
     (file_ptr)offsetof(struct corehdr, cd_fpregs);
+#else
+    (file_ptr)0L;
+#endif /* ACTUALLY_CAN_USE_AIX_I386_STUFF */
 
-  for ((i = 0), (n = 0); (i < MAX_CORE_SEGS) && (core->cd_segs[i].cs_type); i++) {
+  for ((i = 0), (n = 0); (i < MAX_CORE_SEGS)
+#ifdef ACTUALLY_CAN_USE_AIX_I386_STUFF
+       && (core->cd_segs[i].cs_type)
+#endif /* ACTUALLY_CAN_USE_AIX_I386_STUFF */
+       ; i++) {
       const char *sname;
       flagword flags;
 
+#ifdef ACTUALLY_CAN_USE_AIX_I386_STUFF
       if (core->cd_segs[i].cs_offset == 0) {
 	  continue;
       }
+#endif /* ACTUALLY_CAN_USE_AIX_I386_STUFF */
 
+#ifdef ACTUALLY_CAN_USE_AIX_I386_STUFF
       switch (core->cd_segs[i].cs_type) {
 	case COR_TYPE_DATA:
 	  sname = ".data";
@@ -285,15 +328,43 @@ aix386_core_file_p(bfd *abfd)
 	  flags = (SEC_ALLOC + SEC_HAS_CONTENTS);
 	  break;
       }
+#else
+      /* same as default case in the switch: */
+      sname = ".unknown";
+      flags = (SEC_ALLOC + SEC_HAS_CONTENTS);
+# ifdef COR_TYPE_DATA
+#  undef COR_TYPE_DATA
+# endif /* COR_TYPE_DATA */
+# ifdef COR_TYPE_STACK
+#  undef COR_TYPE_STACK
+# endif /* COR_TYPE_STACK */
+# ifdef COR_TYPE_LIBDATA
+#  undef COR_TYPE_LIBDATA
+# endif /* COR_TYPE_LIBDATA */
+# ifdef COR_TYPE_WRITE
+#  undef COR_TYPE_WRITE
+# endif /* COR_TYPE_WRITE */
+# ifdef COR_TYPE_MSC
+#  undef COR_TYPE_MSC
+# endif /* COR_TYPE_MSC */
+#endif /* ACTUALLY_CAN_USE_AIX_I386_STUFF */
       core_section(abfd, n) = bfd_make_section_anyway(abfd, sname);
       if (core_section(abfd, n) == NULL) {
 	  goto loser;
       }
 
       core_section(abfd, n)->flags = flags;
+#if defined(core_section) && defined(ACTUALLY_CAN_USE_AIX_I386_STUFF)
       core_section(abfd, n)->size = core->cd_segs[i].cs_len;
       core_section(abfd, n)->vma = core->cd_segs[i].cs_address;
       core_section(abfd, n)->filepos = core->cd_segs[i].cs_offset;
+#else
+# ifdef core_section
+      core_section(abfd, n)->size = (bfd_size_type)0UL;
+      core_section(abfd, n)->vma = (bfd_vma)0UL;
+      core_section(abfd, n)->filepos = (file_ptr)0L;
+# endif /* core_section */
+#endif /* core_section && ACTUALLY_CAN_USE_AIX_I386_STUFF */
       core_section(abfd, n)->alignment_power = 2;
       n++;
   }
@@ -304,13 +375,27 @@ aix386_core_file_p(bfd *abfd)
 static char *
 aix386_core_file_failing_command(bfd *abfd)
 {
+#if defined(core_hdr) && defined(ACTUALLY_CAN_USE_AIX_I386_STUFF)
   return core_hdr(abfd)->cd_comm;
+#else
+# if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+#  pragma unused (abfd)
+# endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
+  return (char *)NULL;
+#endif /* core_hdr && ACTUALLY_CAN_USE_AIX_I386_STUFF */
 }
 
 static int
 aix386_core_file_failing_signal(bfd *abfd)
 {
+#if defined(core_hdr) && defined(ACTUALLY_CAN_USE_AIX_I386_STUFF)
   return core_hdr(abfd)->cd_cursig;
+#else
+# if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+#  pragma unused (abfd)
+# endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
+  return 0;
+#endif /* core_hdr && ACTUALLY_CAN_USE_AIX_I386_STUFF */
 }
 
 static bfd_boolean
@@ -329,12 +414,12 @@ swap_abort(void)
   abort();
 }
 
-#define	NO_GET ((bfd_vma (*) (const void *)) swap_abort)
-#define	NO_PUT ((void (*) (bfd_vma, void *)) swap_abort)
-#define	NO_GETS ((bfd_signed_vma (*) (const void *)) swap_abort)
-#define	NO_GET64 ((bfd_uint64_t (*) (const void *)) swap_abort)
-#define	NO_PUT64 ((void (*) (bfd_uint64_t, void *)) swap_abort)
-#define	NO_GETS64 ((bfd_int64_t (*) (const void *)) swap_abort)
+#define	NO_GET ((bfd_vma (*)(const void *))swap_abort)
+#define	NO_PUT ((void (*)(bfd_vma, void *))swap_abort)
+#define	NO_GETS ((bfd_signed_vma (*)(const void *))swap_abort)
+#define	NO_GET64 ((bfd_uint64_t (*)(const void *))swap_abort)
+#define	NO_PUT64 ((void (*)(bfd_uint64_t, void *))swap_abort)
+#define	NO_GETS64 ((bfd_int64_t (*)(const void *))swap_abort)
 
 const bfd_target aix386_core_vec = {
   (char *)"aix386-core",

@@ -282,44 +282,46 @@ m68kcoff_common_addend_special_fn(bfd *abfd, arelent *reloc_entry,
       diff = reloc_entry->addend;
     }
 
-#define DOIT(x) \
-  x = ((x & ~howto->dst_mask) | (((x & howto->src_mask) + diff) & howto->dst_mask))
+#define DOIT(x, t) \
+  x = (t)((x & ~howto->dst_mask) | (((x & howto->src_mask) + diff) & howto->dst_mask))
 
   if (diff != 0)
     {
       reloc_howto_type *howto = reloc_entry->howto;
-      unsigned char *addr = (unsigned char *) data + reloc_entry->address;
+      unsigned char *addr = (unsigned char *)data + reloc_entry->address;
 
       switch (howto->size)
 	{
 	case 0:
 	  {
-	    char x = bfd_get_8 (abfd, addr);
-	    DOIT (x);
-	    bfd_put_8 (abfd, x, addr);
+	    char x = bfd_get_8(abfd, addr);
+	    DOIT(x, char);
+	    bfd_put_8(abfd, x, addr);
 	  }
 	  break;
 
 	case 1:
 	  {
-	    short x = bfd_get_16 (abfd, addr);
-	    DOIT (x);
-	    bfd_put_16 (abfd, (bfd_vma) x, addr);
+	    short x = bfd_get_16(abfd, addr);
+	    DOIT(x, short);
+	    bfd_put_16(abfd, (bfd_vma)x, addr);
 	  }
 	  break;
 
 	case 2:
 	  {
-	    long x = bfd_get_32 (abfd, addr);
-	    DOIT (x);
-	    bfd_put_32 (abfd, (bfd_vma) x, addr);
+	    long x = (long)bfd_get_32(abfd, addr);
+	    DOIT(x, long);
+	    bfd_put_32(abfd, (bfd_vma)x, addr);
 	  }
 	  break;
 
 	default:
-	  abort ();
+	  abort();
 	}
     }
+
+#undef DOIT
 
   /* Now let bfd_perform_relocation finish everything up.  */
   return bfd_reloc_continue;
@@ -491,11 +493,12 @@ bfd_m68k_coff_create_embedded_relocs(bfd *abfd, struct bfd_link_info *info,
 	    targetsec = NULL;
 	}
 
-      bfd_put_32 (abfd,
-		  (irel->r_vaddr - datasec->vma + datasec->output_offset), p);
-      memset (p + 4, 0, 8);
+      bfd_put_32(abfd,
+		 (irel->r_vaddr - datasec->vma + datasec->output_offset), p);
+      memset((p + 4), 0, (size_t)8UL);
       if (targetsec != NULL)
-	strncpy ((char *) p + 4, targetsec->output_section->name, 8);
+	strncpy(((char *)p + 4), targetsec->output_section->name,
+                (size_t)8UL);
     }
 
   return TRUE;

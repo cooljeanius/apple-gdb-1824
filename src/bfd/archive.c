@@ -350,7 +350,8 @@ _bfd_add_bfd_to_archive_cache(bfd *arch_bfd, file_ptr filepos,
     }
 
   /* Insert new_elt into the hash table by filepos: */
-  cache = (struct ar_cache *)bfd_zalloc(arch_bfd, sizeof(struct ar_cache));
+  cache = ((struct ar_cache *)
+           bfd_zalloc(arch_bfd, (bfd_size_type)sizeof(struct ar_cache)));
   cache->ptr = filepos;
   cache->arbfd = new_elt;
   *htab_find_slot(hash_table, (const void *)cache, INSERT) = cache;
@@ -407,7 +408,8 @@ _bfd_generic_read_ar_hdr_mag(bfd *abfd, const char *mag)
   bfd_size_type allocsize = (sizeof(struct areltdata) + sizeof(struct ar_hdr));
   char *allocptr = NULL;
 
-  if (bfd_bread(hdrp, sizeof(struct ar_hdr), abfd) != sizeof(struct ar_hdr))
+  if (bfd_bread(hdrp, (bfd_size_type)sizeof(struct ar_hdr), abfd)
+      != sizeof(struct ar_hdr))
     {
       if (bfd_get_error() != bfd_error_system_call)
 	bfd_set_error(bfd_error_no_more_archived_files);
@@ -1772,7 +1774,7 @@ _bfd_write_archive_contents(bfd *arch)
       _bfd_ar_spacepad(hdr.ar_size, sizeof(hdr.ar_size), "%-10ld",
                        (long)((elength + 1) & ~(bfd_size_type)1));
       memcpy(hdr.ar_fmag, ARFMAG, (size_t)2UL);
-      if ((bfd_bwrite(&hdr, sizeof(struct ar_hdr), arch)
+      if ((bfd_bwrite(&hdr, (bfd_size_type)sizeof(struct ar_hdr), arch)
 	   != sizeof(struct ar_hdr))
 	  || (bfd_bwrite(etable, elength, arch) != elength))
 	return FALSE;
@@ -1786,11 +1788,11 @@ _bfd_write_archive_contents(bfd *arch)
   for (current = arch->archive_head; current; current = current->next)
     {
       char buffer[DEFAULT_BUFFERSIZE];
-      unsigned int remaining = arelt_size (current);
-      struct ar_hdr *hdr = arch_hdr (current);
+      unsigned int remaining = arelt_size(current);
+      struct ar_hdr *hdr = arch_hdr(current);
 
-      /* Write ar header.  */
-      if (bfd_bwrite(hdr, sizeof(*hdr), arch)
+      /* Write ar header: */
+      if (bfd_bwrite(hdr, (bfd_size_type)sizeof(*hdr), arch)
 	  != sizeof(*hdr))
 	return FALSE;
       if (bfd_seek(current, (file_ptr)0L, SEEK_SET) != 0)
@@ -2019,11 +2021,11 @@ bsd_write_armap(bfd *arch, unsigned int elength,  struct orl *map,
   _bfd_ar_spacepad(hdr.ar_size, sizeof(hdr.ar_size), "%-10ld",
                    (long)mapsize);
   memcpy(hdr.ar_fmag, ARFMAG, (size_t)2UL);
-  if (bfd_bwrite(&hdr, sizeof(struct ar_hdr), arch)
+  if (bfd_bwrite(&hdr, (bfd_size_type)sizeof(struct ar_hdr), arch)
       != sizeof(struct ar_hdr))
     return FALSE;
   H_PUT_32(arch, (bfd_vma)ranlibsize, temp);
-  if (bfd_bwrite(temp, sizeof(temp), arch) != sizeof(temp))
+  if (bfd_bwrite(temp, (bfd_size_type)sizeof(temp), arch) != sizeof(temp))
     return FALSE;
 
   for (count = 0; count < orl_count; count++)
@@ -2049,13 +2051,13 @@ bsd_write_armap(bfd *arch, unsigned int elength,  struct orl *map,
 
   /* Now write the strings themselves: */
   H_PUT_32(arch, (bfd_vma)stringsize, temp);
-  if (bfd_bwrite(temp, sizeof(temp), arch) != sizeof(temp))
+  if (bfd_bwrite(temp, (bfd_size_type)sizeof(temp), arch) != sizeof(temp))
     return FALSE;
   for (count = 0; count < orl_count; count++)
     {
-      size_t len = (strlen(*map[count].name) + 1);
+      size_t len = (strlen(*map[count].name) + 1UL);
 
-      if (bfd_bwrite(*map[count].name, len, arch) != len)
+      if (bfd_bwrite(*map[count].name, (bfd_size_type)len, arch) != len)
 	return FALSE;
     }
 
@@ -2063,7 +2065,7 @@ bsd_write_armap(bfd *arch, unsigned int elength,  struct orl *map,
      bug-compatible for sun's ar we use a null.  */
   if (padit)
     {
-      if (bfd_bwrite ("", (bfd_size_type)1UL, arch) != 1)
+      if (bfd_bwrite("", (bfd_size_type)1UL, arch) != 1)
 	return FALSE;
     }
 
@@ -2077,47 +2079,48 @@ bsd_write_armap(bfd *arch, unsigned int elength,  struct orl *map,
    Return FALSE if we updated the timestamp.  */
 
 bfd_boolean
-_bfd_archive_bsd_update_armap_timestamp (bfd *arch)
+_bfd_archive_bsd_update_armap_timestamp(bfd *arch)
 {
   struct stat archstat;
   struct ar_hdr hdr;
 
   /* Flush writes, get last-write timestamp from file, and compare it
      to the timestamp IN the file.  */
-  bfd_flush (arch);
-  if (bfd_stat (arch, &archstat) == -1)
+  bfd_flush(arch);
+  if (bfd_stat(arch, &archstat) == -1)
     {
-      bfd_perror (_("Reading archive file mod timestamp"));
+      bfd_perror(_("Reading archive file mod timestamp"));
 
-      /* Can't read mod time for some reason.  */
+      /* Cannot read mod time for some reason: */
       return TRUE;
     }
-  if (archstat.st_mtime <= bfd_ardata (arch)->armap_timestamp)
-    /* OK by the linker's rules.  */
+  if (archstat.st_mtime <= bfd_ardata(arch)->armap_timestamp)
+    /* OK by the linker's rules: */
     return TRUE;
 
-  /* Update the timestamp.  */
-  bfd_ardata (arch)->armap_timestamp = archstat.st_mtime + ARMAP_TIME_OFFSET;
+  /* Update the timestamp: */
+  bfd_ardata(arch)->armap_timestamp = (archstat.st_mtime + ARMAP_TIME_OFFSET);
 
-  /* Prepare an ASCII version suitable for writing.  */
-  memset (hdr.ar_date, ' ', sizeof (hdr.ar_date));
-  _bfd_ar_spacepad (hdr.ar_date, sizeof (hdr.ar_date), "%ld",
-                    bfd_ardata (arch)->armap_timestamp);
+  /* Prepare an ASCII version suitable for writing: */
+  memset(hdr.ar_date, ' ', sizeof(hdr.ar_date));
+  _bfd_ar_spacepad(hdr.ar_date, sizeof(hdr.ar_date), "%ld",
+                   bfd_ardata(arch)->armap_timestamp);
 
-  /* Write it into the file.  */
-  bfd_ardata (arch)->armap_datepos = (SARMAG
-				      + offsetof (struct ar_hdr, ar_date[0]));
-  if (bfd_seek (arch, bfd_ardata (arch)->armap_datepos, SEEK_SET) != 0
-      || (bfd_bwrite (hdr.ar_date, sizeof (hdr.ar_date), arch)
-	  != sizeof (hdr.ar_date)))
+  /* Write it into the file: */
+  bfd_ardata(arch)->armap_datepos = (SARMAG
+                                     + offsetof(struct ar_hdr,
+                                                ar_date[0]));
+  if ((bfd_seek(arch, bfd_ardata(arch)->armap_datepos, SEEK_SET) != 0)
+      || (bfd_bwrite(hdr.ar_date, (bfd_size_type)sizeof(hdr.ar_date), arch)
+	  != sizeof(hdr.ar_date)))
     {
-      bfd_perror (_("Writing updated armap timestamp"));
+      bfd_perror(_("Writing updated armap timestamp"));
 
-      /* Some error while writing.  */
+      /* Some error while writing: */
       return TRUE;
     }
 
-  /* We updated the timestamp successfully.  */
+  /* We updated the timestamp successfully: */
   return FALSE;
 }
 
@@ -2152,6 +2155,10 @@ coff_write_armap(bfd *arch, unsigned int elength, struct orl *map,
   if (padit)
     mapsize++;
 
+  if (current == NULL) {
+    ; /* silence the clang static analyzer */
+  }
+
   /* Work out where the first object file will go in the archive: */
   archive_member_file_ptr = (unsigned int)(mapsize + elength +
                                            sizeof(struct ar_hdr) + SARMAG);
@@ -2169,7 +2176,7 @@ coff_write_armap(bfd *arch, unsigned int elength, struct orl *map,
   memcpy (hdr.ar_fmag, ARFMAG, (size_t)2UL);
 
   /* Write the ar header for this item and the number of symbols: */
-  if (bfd_bwrite(&hdr, sizeof(struct ar_hdr), arch)
+  if (bfd_bwrite(&hdr, (bfd_size_type)sizeof(struct ar_hdr), arch)
       != sizeof(struct ar_hdr))
     return FALSE;
 
@@ -2208,7 +2215,7 @@ coff_write_armap(bfd *arch, unsigned int elength, struct orl *map,
     {
       size_t len = (strlen(*map[count].name) + 1UL);
 
-      if (bfd_bwrite(*map[count].name, len, arch) != len) {
+      if (bfd_bwrite(*map[count].name, (bfd_size_type)len, arch) != len) {
 	return FALSE;
       }
     }

@@ -37,7 +37,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/../include -I$(top_srcdir)/../libgcc \
 
 AM_CFLAGS = $(EXTRA_FLAGS) $(WARN_FLAGS) $(PIC_FLAG)
 
-AUTOMAKE_OPTIONS = 1.11.1 foreign no-dist no-define no-dependencies -Wall
+AUTOMAKE_OPTIONS = 1.11.6 foreign no-dist no-define no-dependencies -Wall
 
 noinst_LTLIBRARIES = libbacktrace.la
 
@@ -133,7 +133,9 @@ if NATIVE
 
 btest_SOURCES = btest.c
 btest_CFLAGS = $(AM_CFLAGS) -ggdb -O1 -Wno-unused-function
+btest_DEPENDENCIES = backtrace.h backtrace-supported.h
 btest_LDADD = libbacktrace.la
+btest_LDFLAGS = $(AM_LDFLAGS) $(CFLAGS)
 
 check_PROGRAMS += btest
 

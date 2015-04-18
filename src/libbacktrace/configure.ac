@@ -44,6 +44,25 @@ AC_CONFIG_HEADER([config.h])dnl
 
 if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
   AM_ENABLE_MULTILIB([],[..])
+elif test "x${multi_basedir}" = "x"; then
+  test -z "${multi_basedir}"
+  if test "x${srcdir}" != "x"; then
+    test -n "${srcdir}"
+    if test "x${srcdir}" = "x."; then
+      if test -n "${with_target_subdir}" && test "${with_target_subdir}" != "."; then
+        multi_basedir="${srcdir}/${with_multisrctop}../.."
+      else
+        multi_basedir="${srcdir}/${with_multisrctop}.."
+      fi
+    else
+      multi_basedir="${srcdir}/.."
+    fi
+  else
+    test -z "${srcdir}"
+    multi_basedir="./.."
+  fi
+else
+  test -n "${multi_basedir}"
 fi
 
 AC_CANONICAL_TARGET

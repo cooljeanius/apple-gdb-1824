@@ -1,4 +1,4 @@
-/* BFD back-end for Intel Hex objects.
+/* ihex.c: BFD back-end for Intel Hex objects.
    Copyright 1995, 1996, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
    Written by Ian Lance Taylor of Cygnus Support <ian@cygnus.com>.
@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* This is what Intel Hex files look like:
 
@@ -124,16 +124,14 @@ The MRI compiler uses this, which is a repeat of type 5:
 #include "libiberty.h"
 #include "safe-ctype.h"
 
-/* The number of bytes we put on one line during output.  */
-
+/* The number of bytes we put on one line during output: */
 #define CHUNK 16
 
-/* Macros for converting between hex and binary.  */
-
-#define NIBBLE(x)    (hex_value (x))
-#define HEX2(buffer) ((NIBBLE ((buffer)[0]) << 4) + NIBBLE ((buffer)[1]))
-#define HEX4(buffer) ((HEX2 (buffer) << 8) + HEX2 ((buffer) + 2))
-#define ISHEX(x)     (hex_p (x))
+/* Macros for converting between hex and binary: */
+#define NIBBLE(x)    (hex_value(x))
+#define HEX2(buffer) ((NIBBLE((buffer)[0]) << 4) + NIBBLE((buffer)[1]))
+#define HEX4(buffer) ((HEX2(buffer) << 8) + HEX2((buffer) + 2))
+#define ISHEX(x)     (hex_p(x))
 
 /* When we write out an ihex value, the values can not be output as
    they are seen.  Instead, we hold them in memory in this structure.  */
@@ -169,11 +167,11 @@ ihex_init(void)
 
 /* Create an ihex object: */
 static bfd_boolean
-ihex_mkobject (bfd *abfd)
+ihex_mkobject(bfd *abfd)
 {
   struct ihex_data_struct *tdata;
 
-  tdata = (struct ihex_data_struct *)bfd_alloc(abfd, sizeof(* tdata));
+  tdata = (struct ihex_data_struct *)bfd_alloc(abfd, (bfd_size_type)sizeof(* tdata));
   if (tdata == NULL) {
     return FALSE;
   }
@@ -563,7 +561,7 @@ ihex_read_section(bfd *abfd, asection *section, bfd_byte *contents)
        * the exact format: */
       BFD_ASSERT(c == ':');
 
-      if (bfd_bread(hdr, (bfd_size_type)8, abfd) != 8) {
+      if (bfd_bread(hdr, (bfd_size_type)8UL, abfd) != 8) {
 	goto error_return;
       }
 
@@ -576,7 +574,7 @@ ihex_read_section(bfd *abfd, asection *section, bfd_byte *contents)
       }
 
       /* We should only see type 0 records here: */
-      if (type != 0)
+      if (type != 0U)
 	{
 	  (*_bfd_error_handler)
 	    (_("%B: internal error in ihex_read_section"), abfd);
@@ -584,21 +582,21 @@ ihex_read_section(bfd *abfd, asection *section, bfd_byte *contents)
 	  goto error_return;
 	}
 
-      if ((len * 2) > bufsize)
+      if ((len * 2U) > bufsize)
 	{
 	  buf = (bfd_byte *)bfd_realloc(buf, (bfd_size_type)len * 2);
 	  if (buf == NULL) {
 	    goto error_return;
           }
-	  bufsize = (len * 2);
+	  bufsize = (len * 2U);
 	}
 
-      if (bfd_bread(buf, ((bfd_size_type)len * 2), abfd) != (len * 2)) {
+      if (bfd_bread(buf, ((bfd_size_type)len * 2U), abfd) != (len * 2U)) {
 	goto error_return;
       }
 
       for (i = 0; i < len; i++) {
-	*p++ = (bfd_byte)HEX2(buf + 2 * i);
+	*p++ = (bfd_byte)HEX2(buf + (2 * i));
       }
       if ((bfd_size_type)(p - contents) >= section->size)
 	{
@@ -674,7 +672,7 @@ ihex_set_section_contents(bfd *abfd, asection *section,
       || ((section->flags & SEC_LOAD) == 0))
     return TRUE;
 
-  n = (struct ihex_data_list *)bfd_alloc(abfd, sizeof(* n));
+  n = (struct ihex_data_list *)bfd_alloc(abfd, (bfd_size_type)sizeof(* n));
   if (n == NULL)
     return FALSE;
 

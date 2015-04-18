@@ -249,8 +249,8 @@ HOST_EXPORTS = \
 	GMPINC="$(HOST_GMPINC)"; export GMPINC; \
 	ISLLIBS="$(HOST_ISLLIBS)"; export ISLLIBS; \
 	ISLINC="$(HOST_ISLINC)"; export ISLINC; \
-	LIBELFLIBS="$(HOST_LIBELFLIBS)" ; export LIBELFLIBS; \
-	LIBELFINC="$(HOST_LIBELFINC)" ; export LIBELFINC; \
+	LIBELFLIBS="$(HOST_LIBELFLIBS)"; export LIBELFLIBS; \
+	LIBELFINC="$(HOST_LIBELFINC)"; export LIBELFINC; \
 	$(RPATH_ENVVAR)=`echo "$(HOST_LIB_PATH)$$$(RPATH_ENVVAR)" | $(SED) 's,::*,:,g;s,^:*,,;s,:*$$,,'`; export $(RPATH_ENVVAR);
 
 POSTSTAGE1_CXX_EXPORT = \
@@ -262,10 +262,10 @@ POSTSTAGE1_HOST_EXPORTS = \
 	$(RPATH_ENVVAR)=`echo "$(TARGET_LIB_PATH)$$$(RPATH_ENVVAR)" | $(SED) 's,::*,:,g;s,^:*,,;s,:*$$,,'`; export $(RPATH_ENVVAR); \
 	$(HOST_EXPORTS) \
 	CC="$(STAGE_CC_WRAPPER) $$r/$(HOST_SUBDIR)/prev-gcc/xgcc$(exeext) \
-	  -B$$r/$(HOST_SUBDIR)/prev-gcc/ -B$(build_tooldir)/bin/"; export CC; \
+	  -B$${r}/$(HOST_SUBDIR)/prev-gcc/ -B$(build_tooldir)/bin/"; export CC; \
 	CC_FOR_BUILD="$(STAGE_CC_WRAPPER) \
-	  $$r/$(HOST_SUBDIR)/prev-gcc/xgcc$(exeext) \
-	  -B$$r/$(HOST_SUBDIR)/prev-gcc/ \
+	  $${r}/$(HOST_SUBDIR)/prev-gcc/xgcc$(exeext) \
+	  -B$${r}/$(HOST_SUBDIR)/prev-gcc/ \
 	  -B$(build_tooldir)/bin/"; export CC_FOR_BUILD; \
 	$(POSTSTAGE1_CXX_EXPORT) \
 	LDFLAGS="$(POSTSTAGE1_LDFLAGS) $(BOOT_LDFLAGS)"; export LDFLAGS; \
@@ -382,46 +382,46 @@ BOOT_ADAFLAGS= -gnatpg
 AWK = @AWK@
 
 CONFIGURED_BISON = @CONFIGURED_BISON@
-BISON = `if [ -f $$r/$(BUILD_SUBDIR)/bison/tests/bison ] ; then \
-	    echo $$r/$(BUILD_SUBDIR)/bison/tests/bison ; \
+BISON = `if [ -f $${r}/$(BUILD_SUBDIR)/bison/tests/bison ]; then \
+	    echo $${r}/$(BUILD_SUBDIR)/bison/tests/bison; \
 	 else \
-	    echo ${CONFIGURED_BISON} ; \
+	    echo ${CONFIGURED_BISON}; \
 	 fi`
 
 CONFIGURED_YACC = @CONFIGURED_YACC@
-YACC = `if [ -f $$r/$(BUILD_SUBDIR)/bison/tests/bison ] ; then \
-	    echo $$r/$(BUILD_SUBDIR)/bison/tests/bison -y ; \
-	elif [ -f $$r/$(BUILD_SUBDIR)/byacc/byacc ] ; then \
-	    echo $$r/$(BUILD_SUBDIR)/byacc/byacc ; \
+YACC = `if [ -f $${r}/$(BUILD_SUBDIR)/bison/tests/bison ]; then \
+	    echo "$${r}/$(BUILD_SUBDIR)/bison/tests/bison -y"; \
+	elif [ -f $${r}/$(BUILD_SUBDIR)/byacc/byacc ]; then \
+	    echo $${r}/$(BUILD_SUBDIR)/byacc/byacc; \
 	else \
-	    echo ${CONFIGURED_YACC} ; \
+	    echo ${CONFIGURED_YACC}; \
 	fi`
 
 CONFIGURED_FLEX = @CONFIGURED_FLEX@
-FLEX = `if [ -f $$r/$(BUILD_SUBDIR)/flex/flex ] ; \
-	then echo $$r/$(BUILD_SUBDIR)/flex/flex ; \
-	else echo ${CONFIGURED_FLEX} ; fi`
+FLEX = `if [ -f $${r}/$(BUILD_SUBDIR)/flex/flex ]; \
+	then echo $${r}/$(BUILD_SUBDIR)/flex/flex; \
+	else echo ${CONFIGURED_FLEX}; fi`
 
 CONFIGURED_LEX = @CONFIGURED_LEX@
-LEX = `if [ -f $$r/$(BUILD_SUBDIR)/flex/flex ] ; \
-	then echo $$r/$(BUILD_SUBDIR)/flex/flex ; \
-	else echo ${CONFIGURED_LEX} ; fi`
+LEX = `if [ -f $${r}/$(BUILD_SUBDIR)/flex/flex ]; \
+	then echo $${r}/$(BUILD_SUBDIR)/flex/flex; \
+	else echo ${CONFIGURED_LEX}; fi`
 
 CONFIGURED_M4 = @CONFIGURED_M4@
-M4 = `if [ -f $$r/$(BUILD_SUBDIR)/m4/m4 ] ; \
-	then echo $$r/$(BUILD_SUBDIR)/m4/m4 ; \
-	else echo ${CONFIGURED_M4} ; fi`
+M4 = `if [ -f $${r}/$(BUILD_SUBDIR)/m4/m4 ]; \
+	then echo $${r}/$(BUILD_SUBDIR)/m4/m4; \
+	else echo ${CONFIGURED_M4}; fi`
 
 # For an installed makeinfo, we require it to be from texinfo 4.2 or
 # higher, else we use the "missing" dummy.  We also pass the subdirectory
 # makeinfo even if only the Makefile is there, because Texinfo builds its
 # manual when made, and it requires its own version.
 CONFIGURED_MAKEINFO = @CONFIGURED_MAKEINFO@
-MAKEINFO = `if [ -f $$r/$(BUILD_SUBDIR)/texinfo/makeinfo/Makefile ] ; \
-	then echo $$r/$(BUILD_SUBDIR)/texinfo/makeinfo/makeinfo ; \
+MAKEINFO = `if [ -f $${r}/$(BUILD_SUBDIR)/texinfo/makeinfo/Makefile ]; \
+	then echo $${r}/$(BUILD_SUBDIR)/texinfo/makeinfo/makeinfo; \
 	else if (${CONFIGURED_MAKEINFO} --version \
 	  | egrep 'texinfo[^0-9]*([1-3][0-9]|4\.[2-9]|[5-9])') >/dev/null 2>&1; \
-        then echo ${CONFIGURED_MAKEINFO}; else echo $$s/missing makeinfo; fi; fi`
+        then echo ${CONFIGURED_MAKEINFO}; else echo "$${s}/missing makeinfo"; fi; fi`
 
 # This just becomes part of the MAKEINFO definition passed down to
 # sub-makes.  It lets flags be given on the command line while still
@@ -430,13 +430,13 @@ MAKEINFO = `if [ -f $$r/$(BUILD_SUBDIR)/texinfo/makeinfo/Makefile ] ; \
 MAKEINFOFLAGS = --split-size=5000000
 
 # FIXME: expect may become a build tool?
-EXPECT = `if [ -f $$r/$(HOST_SUBDIR)/expect/expect ] ; \
-	then echo $$r/$(HOST_SUBDIR)/expect/expect ; \
-	else echo expect ; fi`
+EXPECT = `if [ -f $${r}/$(HOST_SUBDIR)/expect/expect ]; \
+	then echo $${r}/$(HOST_SUBDIR)/expect/expect; \
+	else echo expect; fi`
 
-RUNTEST = `if [ -f $$s/dejagnu/runtest ] ; \
-	then echo $$s/dejagnu/runtest ; \
-	else echo runtest ; fi`
+RUNTEST = `if [ -f $${s}/dejagnu/runtest ]; \
+	then echo $${s}/dejagnu/runtest; \
+	else echo runtest; fi`
 
 # ---------------------------------------------
 # Programs producing files for the HOST machine
@@ -502,13 +502,13 @@ FLAGS_FOR_TARGET = @FLAGS_FOR_TARGET@
 AR_FOR_TARGET=@AR_FOR_TARGET@
 CONFIGURED_AR_FOR_TARGET=@CONFIGURED_AR_FOR_TARGET@
 USUAL_AR_FOR_TARGET = ` \
-  if [ -f $$r/$(HOST_SUBDIR)/binutils/ar ] ; then \
-    echo $$r/$(HOST_SUBDIR)/binutils/ar ; \
+  if [ -f $${r}/$(HOST_SUBDIR)/binutils/ar ]; then \
+    echo $${r}/$(HOST_SUBDIR)/binutils/ar; \
   else \
-    if [ '$(host)' = '$(target)' ] ; then \
+    if [ 'x$(host)' = 'x$(target)' ]; then \
       echo $(AR); \
     else \
-      echo $(CONFIGURED_AR_FOR_TARGET) ; \
+      echo $(CONFIGURED_AR_FOR_TARGET); \
     fi; \
   fi`
 
@@ -517,15 +517,15 @@ BAD_AS_TO_USE_FOR_OUR_TARGET=@GAS_FOR_TARGET@
 AS_FOR_TARGET=@AS_FOR_TARGET@
 CONFIGURED_AS_FOR_TARGET=@CONFIGURED_AS_FOR_TARGET@
 USUAL_AS_FOR_TARGET = ` \
-  if [ -f $$r/$(HOST_SUBDIR)/gas/as-new ] ; then \
-    echo $$r/$(HOST_SUBDIR)/gas/as-new ; \
-  elif [ -f $$r/$(HOST_SUBDIR)/gcc/as ]; then \
-    echo $$r/$(HOST_SUBDIR)/gcc/as ; \
+  if [ -f $${r}/$(HOST_SUBDIR)/gas/as-new ]; then \
+    echo $${r}/$(HOST_SUBDIR)/gas/as-new; \
+  elif [ -f $${r}/$(HOST_SUBDIR)/gcc/as ]; then \
+    echo $${r}/$(HOST_SUBDIR)/gcc/as; \
   else \
-    if [ '$(host)' = '$(target)' ] ; then \
+    if [ 'x$(host)' = 'x$(target)' ]; then \
       echo $(AS); \
     else \
-      echo $(CONFIGURED_AS_FOR_TARGET) ; \
+      echo $(CONFIGURED_AS_FOR_TARGET); \
     fi; \
   fi`
 
@@ -562,27 +562,27 @@ LIBCFLAGS_FOR_TARGET = $(CFLAGS_FOR_TARGET) $(C_TARG_ARCHFLAGS)
 CXX_FOR_TARGET=$(STAGE_CC_WRAPPER) @CXX_FOR_TARGET@ $(FLAGS_FOR_TARGET)
 CONFIGURED_CXX_FOR_TARGET=@CONFIGURED_CXX_FOR_TARGET@
 USUAL_CXX_FOR_TARGET = ` \
-  if [ -f $$r/$(HOST_SUBDIR)/gcc/g++ ] ; then \
-    (echo $$r/$(HOST_SUBDIR)/gcc/g++ -B$$r/$(HOST_SUBDIR)/gcc -nostdinc++; \
-    test ! -f $$r/$(TARGET_SUBDIR)/libstdc++-v3/scripts/testsuite_flags || $(SHELL) $$r/$(TARGET_SUBDIR)/libstdc++-v3/scripts/testsuite_flags --build-includes; \
-    echo -L$$r/$(TARGET_SUBDIR)/libstdc++-v3/src -L$$r/$(TARGET_SUBDIR)/libstdc++-v3/src/.libs) | tr '\015\012' '  '; \
+  if [ -f $${r}/$(HOST_SUBDIR)/gcc/g++ ]; then \
+    (echo "$${r}/$(HOST_SUBDIR)/gcc/g++ -B$${r}/$(HOST_SUBDIR)/gcc -nostdinc++"; \
+    test ! -f $${r}/$(TARGET_SUBDIR)/libstdc++-v3/scripts/testsuite_flags || $(SHELL) $${r}/$(TARGET_SUBDIR)/libstdc++-v3/scripts/testsuite_flags --build-includes; \
+    echo -L$${r}/$(TARGET_SUBDIR)/libstdc++-v3/src -L$${r}/$(TARGET_SUBDIR)/libstdc++-v3/src/.libs) | tr '\015\012' '  '; \
   else \
-    if [ '$(host)' = '$(target)' ] ; then \
+    if [ 'x$(host)' = 'x$(target)' ]; then \
       echo $(CXX); \
     else \
-      echo $(CONFIGURED_CXX_FOR_TARGET) ; \
+      echo $(CONFIGURED_CXX_FOR_TARGET); \
     fi; \
   fi`
 
 RAW_CXX_FOR_TARGET=$(STAGE_CC_WRAPPER) @RAW_CXX_FOR_TARGET@ $(FLAGS_FOR_TARGET)
 USUAL_RAW_CXX_FOR_TARGET = ` \
-  if [ -f $$r/$(HOST_SUBDIR)/gcc/xgcc ] ; then \
-    echo $$r/$(HOST_SUBDIR)/gcc/xgcc -shared-libgcc -B$$r/$(HOST_SUBDIR)/gcc -nostdinc++ -L$$r/$(TARGET_SUBDIR)/libstdc++-v3/src -L$$r/$(TARGET_SUBDIR)/libstdc++-v3/src/.libs; \
+  if [ -f $${r}/$(HOST_SUBDIR)/gcc/xgcc ]; then \
+    echo "$${r}/$(HOST_SUBDIR)/gcc/xgcc -shared-libgcc -B$${r}/$(HOST_SUBDIR)/gcc -nostdinc++ -L$${r}/$(TARGET_SUBDIR)/libstdc++-v3/src -L$${r}/$(TARGET_SUBDIR)/libstdc++-v3/src/.libs"; \
   else \
-    if [ '$(host)' = '$(target)' ] ; then \
+    if [ 'x$(host)' = 'x$(target)' ]; then \
       echo $(CXX); \
     else \
-      echo $(CONFIGURED_CXX_FOR_TARGET) ; \
+      echo $(CONFIGURED_CXX_FOR_TARGET); \
     fi; \
   fi`
 
@@ -592,26 +592,26 @@ LIBCXXFLAGS_FOR_TARGET = $(CXXFLAGS_FOR_TARGET) $(CXX_TARG_ARCHFLAGS) -fno-impli
 GCJ_FOR_TARGET=$(STAGE_CC_WRAPPER) @GCJ_FOR_TARGET@ $(FLAGS_FOR_TARGET)
 CONFIGURED_GCJ_FOR_TARGET=@CONFIGURED_GCJ_FOR_TARGET@
 USUAL_GCJ_FOR_TARGET = ` \
-  if [ -f $$r/$(HOST_SUBDIR)/gcc/gcj ] ; then \
-    echo $$r/$(HOST_SUBDIR)/gcc/gcj -B$$r/$(HOST_SUBDIR)/gcc ; \
+  if [ -f $${r}/$(HOST_SUBDIR)/gcc/gcj ]; then \
+    echo "$${r}/$(HOST_SUBDIR)/gcc/gcj -B$${r}/$(HOST_SUBDIR)/gcc"; \
   else \
-    if [ '$(host)' = '$(target)' ] ; then \
+    if [ 'x$(host)' = 'x$(target)' ]; then \
       echo $(GCJ); \
     else \
-      echo $(CONFIGURED_GCJ_FOR_TARGET) ; \
+      echo $(CONFIGURED_GCJ_FOR_TARGET); \
     fi; \
   fi`
 
 GFORTRAN_FOR_TARGET=$(STAGE_CC_WRAPPER) @GFORTRAN_FOR_TARGET@ $(FLAGS_FOR_TARGET)
 CONFIGURED_GFORTRAN_FOR_TARGET=@CONFIGURED_GFORTRAN_FOR_TARGET@
 USUAL_GFORTRAN_FOR_TARGET = ` \
-  if [ -f $$r/$(HOST_SUBDIR)/gcc/gfortran ] ; then \
-    echo $$r/$(HOST_SUBDIR)/gcc/gfortran -B$$r/$(HOST_SUBDIR)/gcc ; \
+  if [ -f $${r}/$(HOST_SUBDIR)/gcc/gfortran ]; then \
+    echo $${r}/$(HOST_SUBDIR)/gcc/gfortran -B$${r}/$(HOST_SUBDIR)/gcc; \
   else \
-    if [ '$(host)' = '$(target)' ] ; then \
+    if [ 'x$(host)' = 'x$(target)' ]; then \
       echo $(GFORTRAN); \
     else \
-      echo $(CONFIGURED_GFORTRAN_FOR_TARGET) ; \
+      echo $(CONFIGURED_GFORTRAN_FOR_TARGET); \
     fi; \
   fi`
 
@@ -620,28 +620,28 @@ GOC_FOR_TARGET=$(STAGE_CC_WRAPPER) @GOC_FOR_TARGET@
 DLLTOOL_FOR_TARGET=@DLLTOOL_FOR_TARGET@
 CONFIGURED_DLLTOOL_FOR_TARGET=@CONFIGURED_DLLTOOL_FOR_TARGET@
 USUAL_DLLTOOL_FOR_TARGET = ` \
-  if [ -f $$r/$(HOST_SUBDIR)/binutils/dlltool ] ; then \
-    echo $$r/$(HOST_SUBDIR)/binutils/dlltool ; \
+  if [ -f $${r}/$(HOST_SUBDIR)/binutils/dlltool ]; then \
+    echo $${r}/$(HOST_SUBDIR)/binutils/dlltool; \
   else \
-    if [ '$(host)' = '$(target)' ] ; then \
+    if [ 'x$(host)' = 'x$(target)' ]; then \
       echo $(DLLTOOL); \
     else \
-      echo $(CONFIGURED_DLLTOOL_FOR_TARGET) ; \
+      echo $(CONFIGURED_DLLTOOL_FOR_TARGET); \
     fi; \
   fi`
 
 LD_FOR_TARGET=@LD_FOR_TARGET@
 CONFIGURED_LD_FOR_TARGET=@CONFIGURED_LD_FOR_TARGET@
 USUAL_LD_FOR_TARGET = ` \
-  if [ -f $$r/$(HOST_SUBDIR)/ld/ld-new ]; then \
-    echo $$r/$(HOST_SUBDIR)/ld/ld-new ; \
-  elif [ -f $$r/$(HOST_SUBDIR)/gcc/collect-ld ]; then \
-    echo $$r/$(HOST_SUBDIR)/gcc/collect-ld ; \
+  if [ -f $${r}/$(HOST_SUBDIR)/ld/ld-new ]; then \
+    echo $${r}/$(HOST_SUBDIR)/ld/ld-new; \
+  elif [ -f $${r}/$(HOST_SUBDIR)/gcc/collect-ld ]; then \
+    echo $${r}/$(HOST_SUBDIR)/gcc/collect-ld; \
   else \
     if [ 'x$(host)' = 'x$(target)' ]; then \
       echo $(LD); \
     else \
-      echo $(CONFIGURED_LD_FOR_TARGET) ; \
+      echo $(CONFIGURED_LD_FOR_TARGET); \
     fi; \
   fi`
 
@@ -653,10 +653,10 @@ LIPO_FOR_TARGET=@LIPO_FOR_TARGET@
 NM_FOR_TARGET=@NM_FOR_TARGET@
 CONFIGURED_NM_FOR_TARGET=@CONFIGURED_NM_FOR_TARGET@
 USUAL_NM_FOR_TARGET = ` \
-  if [ -f $$r/$(HOST_SUBDIR)/binutils/nm-new ]; then \
-    echo $$r/$(HOST_SUBDIR)/binutils/nm-new ; \
-  elif [ -f $$r/$(HOST_SUBDIR)/gcc/nm ]; then \
-    echo $$r/$(HOST_SUBDIR)/gcc/nm ; \
+  if [ -f $${r}/$(HOST_SUBDIR)/binutils/nm-new ]; then \
+    echo $${r}/$(HOST_SUBDIR)/binutils/nm-new; \
+  elif [ -f $${r}/$(HOST_SUBDIR)/gcc/nm ]; then \
+    echo $${r}/$(HOST_SUBDIR)/gcc/nm; \
   else \
     if [ 'x$(host)' = 'x$(target)' ]; then \
       echo $(NM); \
@@ -671,8 +671,8 @@ OBJDUMP_FOR_TARGET=@OBJDUMP_FOR_TARGET@
 RANLIB_FOR_TARGET=@RANLIB_FOR_TARGET@
 CONFIGURED_RANLIB_FOR_TARGET=@CONFIGURED_RANLIB_FOR_TARGET@
 USUAL_RANLIB_FOR_TARGET = ` \
-  if [ -f $$r/$(HOST_SUBDIR)/binutils/ranlib ]; then \
-    echo $$r/$(HOST_SUBDIR)/binutils/ranlib ; \
+  if [ -f $${r}/$(HOST_SUBDIR)/binutils/ranlib ]; then \
+    echo $${r}/$(HOST_SUBDIR)/binutils/ranlib; \
   else \
     if [ 'x$(host)' = 'x$(target)' ]; then \
       if [ x'$(RANLIB)' != x'' ]; then \
@@ -690,8 +690,8 @@ READELF_FOR_TARGET=@READELF_FOR_TARGET@
 WINDRES_FOR_TARGET=@WINDRES_FOR_TARGET@
 CONFIGURED_WINDRES_FOR_TARGET=@CONFIGURED_WINDRES_FOR_TARGET@
 USUAL_WINDRES_FOR_TARGET = ` \
-  if [ -f $$r/$(HOST_SUBDIR)/binutils/windres ]; then \
-    echo $$r/$(HOST_SUBDIR)/binutils/windres ; \
+  if [ -f $${r}/$(HOST_SUBDIR)/binutils/windres ]; then \
+    echo $${r}/$(HOST_SUBDIR)/binutils/windres; \
   else \
     if [ 'x$(host)' = 'x$(target)' ]; then \
       echo $(WINDRES); \
@@ -751,8 +751,8 @@ HOST_LIB_PATH_gcc = $$r/$(HOST_SUBDIR)/gcc:$$r/$(HOST_SUBDIR)/prev-gcc:
 [+ FOR host_modules +][+ IF lib_path +]
 @if [+module+]
 HOST_LIB_PATH_[+module+] = \
-  $$r/$(HOST_SUBDIR)/[+module+]/[+lib_path+]:[+ IF bootstrap
-  +]$$r/$(HOST_SUBDIR)/prev-[+module+]/[+lib_path+]:[+ ENDIF bootstrap +]
+  $${r}/$(HOST_SUBDIR)/[+module+]/[+lib_path+]:[+ IF bootstrap
+  +]$${r}/$(HOST_SUBDIR)/prev-[+module+]/[+lib_path+]:[+ ENDIF bootstrap +]
 @endif [+module+]
 [+ ENDIF lib_path +][+ ENDFOR host_modules +]
 
@@ -921,8 +921,8 @@ do-info: maybe-all-texinfo
 
 install-info: do-install-info dir.info
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	if [ -f dir.info ] ; then \
-	  $(INSTALL_DATA) dir.info $(DESTDIR)$(infodir)/dir.info ; \
+	if [ -f dir.info ]; then \
+	  $(INSTALL_DATA) dir.info $(DESTDIR)$(infodir)/dir.info; \
 	else echo "dir.info is missing, so skipping installing it"; fi
 
 install-pdf: do-install-pdf
@@ -1049,13 +1049,13 @@ uninstall:
 
 .PHONY: install.all
 install.all: install-no-fixedincludes
-	@if [ -f ./gcc/Makefile ] ; then \
-		r=`${PWD_COMMAND}` ; export r ; \
+	@if [ -f ./gcc/Makefile ]; then \
+		r=`${PWD_COMMAND}`; export r; \
 		$(HOST_EXPORTS) \
 		(cd ./gcc && \
-		$(MAKE) $(FLAGS_TO_PASS) install-headers) ; \
+		$(MAKE) $(FLAGS_TO_PASS) install-headers); \
 	else \
-		true ; \
+		echo "no gcc subdir present for install.all"; \
 	fi
 
 # install-no-fixedincludes is used because Cygnus can not distribute
@@ -1074,9 +1074,9 @@ installdirs: mkinstalldirs
 	$(SHELL) $(srcdir)/mkinstalldirs $(MAKEDIRS)
 
 dir.info: do-install-info
-	if [ -f $(srcdir)/texinfo/gen-info-dir ] ; then \
-	  $(srcdir)/texinfo/gen-info-dir $(DESTDIR)$(infodir) $(srcdir)/texinfo/dir.info-template > dir.info.new ; \
-	  mv -f dir.info.new dir.info ; \
+	if [ -f $(srcdir)/texinfo/gen-info-dir ]; then \
+	  $(srcdir)/texinfo/gen-info-dir $(DESTDIR)$(infodir) $(srcdir)/texinfo/dir.info-template > dir.info.new; \
+	  mv -f dir.info.new dir.info; \
 	else echo "missing script to generate texinfo info dir"; \
 	fi
 
@@ -1107,7 +1107,7 @@ maybe-configure-[+prefix+][+module+]: configure-[+prefix+][+module+]
 configure-[+prefix+][+module+]: [+deps+]
 	$(AM_V_at)[+ IF bootstrap +]test -f stage_last && exit 0; \
 	[+ ENDIF bootstrap +]test ! -f [+subdir+]/[+module+]/Makefile || exit 0; \
-	$(SHELL) $(srcdir)/mkinstalldirs [+subdir+]/[+module+] ; \
+	$(SHELL) $(srcdir)/mkinstalldirs [+subdir+]/[+module+]; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	[+exports+] \
@@ -1139,7 +1139,7 @@ configure-stage[+id+]-[+prefix+][+module+]: [+deps+]
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	[+exports+][+ IF prev +] \
 	[+poststage1_exports+][+ ENDIF prev +] \
-	echo Configuring stage [+id+] in [+subdir+]/[+module+] ; \
+	echo Configuring stage [+id+] in [+subdir+]/[+module+]; \
 	cd [+subdir+]/[+module+] || exit 1; \
 	case $(srcdir) in \
 	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
@@ -1196,8 +1196,8 @@ maybe-clean-stage[+id+]-[+prefix+][+module+]: clean-stage[+id+]-[+prefix+][+modu
 clean-stage[+id+]: clean-stage[+id+]-[+prefix+][+module+]
 clean-stage[+id+]-[+prefix+][+module+]:
 	$(AM_V_at)[ -f [+subdir+]/[+module+]/Makefile ] || [ -f [+subdir+]/stage[+id+]-[+module+]/Makefile ] \
-	  || exit 0 ; \
-	[ -f [+subdir+]/[+module+]/Makefile ] || $(MAKE) stage[+id+]-start ; \
+	  || exit 0; \
+	[ -f [+subdir+]/[+module+]/Makefile ] || $(MAKE) stage[+id+]-start; \
 	cd [+subdir+]/[+module+] && \
 	$(MAKE) [+args+] [+ IF prev +] \
 		[+poststage1_args+] [+ ENDIF prev +] \
@@ -1242,7 +1242,7 @@ check-[+module+]:
 [+ ELIF no_check_cross +]
 # This module is only tested in a native toolchain.
 check-[+module+]:
-	$(AM_V_at)if [ '$(host)' = '$(target)' ] ; then \
+	$(AM_V_at)if [ 'x$(host)' = 'x$(target)' ]; then \
 	  r=`${PWD_COMMAND}`; export r; \
 	  s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	  $(HOST_EXPORTS) \
@@ -1296,7 +1296,7 @@ maybe-[+make_target+]-[+module+]: [+make_target+]-[+module+]
 	for flag in $(EXTRA_HOST_FLAGS) [+extra_make_flags+]; do \
 	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	echo "Doing [+make_target+] in [+module+]" ; \
+	echo "Doing [+make_target+] in [+module+]"; \
 	(cd $(HOST_SUBDIR)/[+module+] && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
@@ -1317,7 +1317,7 @@ maybe-[+make_target+]-[+module+]: [+make_target+]-[+module+]
 # There is only one multilib.out. Cleverer subdirs should NOT need it copied.
 @if target-[+module+]
 $(TARGET_SUBDIR)/[+module+]/multilib.out: multilib.out
-	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/[+module+] ; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/[+module+]; \
 	rm -f $(TARGET_SUBDIR)/[+module+]/Makefile || echo "fine"; \
 	cp multilib.out $(TARGET_SUBDIR)/[+module+]/multilib.out
 @endif target-[+module+]
@@ -1402,7 +1402,7 @@ maybe-[+make_target+]-target-[+module+]: [+make_target+]-target-[+module+]
   FOR depend +]\
     [+depend+]-target-[+module+] [+
   ENDFOR depend +]
-	$(AM_V_at)[ -f $(TARGET_SUBDIR)/[+module+]/Makefile ] || exit 0 ; \
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/[+module+]/Makefile ] || exit 0; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \[+
 IF raw_cxx +]
@@ -1410,7 +1410,7 @@ IF raw_cxx +]
 ELSE normal_cxx +]
 	$(NORMAL_TARGET_EXPORTS) \[+
 ENDIF raw_cxx +]
-	echo "Doing [+make_target+] in $(TARGET_SUBDIR)/[+module+]" ; \
+	echo "Doing [+make_target+] in $(TARGET_SUBDIR)/[+module+]"; \
 	for flag in $(EXTRA_TARGET_FLAGS); do \
 	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
@@ -1461,10 +1461,10 @@ $(GCC_STRAP_TARGETS): all-prebootstrap configure-gcc
 	    compare=compare ;; \
 	esac; \
 	$(HOST_EXPORTS) \
-	echo "$$msg"; \
-	cd gcc && $(MAKE) $(GCC_FLAGS_TO_PASS) $$compare
+	echo "$${msg}"; \
+	cd gcc && $(MAKE) $(GCC_FLAGS_TO_PASS) $${compare}
 	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}` ; export s; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	echo "Building runtime libraries"; \
 	$(MAKE) $(RECURSE_FLAGS_TO_PASS) all
 
@@ -1481,7 +1481,7 @@ profiledbootstrap: all-prebootstrap configure-gcc
 	echo "Building feedback based compiler"; \
 	cd gcc && $(MAKE) $(GCC_FLAGS_TO_PASS) stagefeedback_build
 	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}` ; export s; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	echo "Building runtime libraries"; \
 	$(MAKE) $(RECURSE_FLAGS_TO_PASS) all
 
@@ -1493,7 +1493,7 @@ cross: all-build all-gas all-ld
 	echo "Building the C and C++ compiler"; \
 	cd gcc && $(MAKE) $(GCC_FLAGS_TO_PASS) LANGUAGES="c c++"
 	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}` ; export s; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	echo "Building runtime libraries"; \
 	$(MAKE) $(RECURSE_FLAGS_TO_PASS) LANGUAGES="c c++" all
 @endif gcc-no-bootstrap
@@ -1501,7 +1501,7 @@ cross: all-build all-gas all-ld
 @if gcc
 .PHONY: check-gcc-c++
 check-gcc-c++:
-	$(AM_V_at)if [ -f ./gcc/Makefile ] ; then \
+	$(AM_V_at)if [ -f ./gcc/Makefile ]; then \
 	  r=`${PWD_COMMAND}`; export r; \
 	  s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	  $(HOST_EXPORTS) \
@@ -1526,7 +1526,7 @@ gcc-no-fixedincludes:
 	  touch gcc/stmp-fixinc gcc/include/fixed; \
 	  rm -f gcc/stmp-headers gcc/stmp-int-hdrs; \
 	  r=`${PWD_COMMAND}`; export r; \
-	  s=`cd $(srcdir); ${PWD_COMMAND}` ; export s; \
+	  s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	  $(HOST_EXPORTS) \
 	  (cd ./gcc && \
 	   $(MAKE) $(GCC_FLAGS_TO_PASS) install); \
@@ -1597,7 +1597,7 @@ objext = .o
 # Flags to pass to stage2 and later makes.
 POSTSTAGE1_FLAGS_TO_PASS = \
 	CC="$${CC}" CC_FOR_BUILD="$${CC_FOR_BUILD}" \
-	STAGE_PREFIX=$$r/prev-gcc/ \
+	STAGE_PREFIX=$${r}/prev-gcc/ \
 	CFLAGS="$(BOOT_CFLAGS)" \
 	ADAC="\$$(CC)"
 
@@ -1615,41 +1615,41 @@ POSTSTAGE1_FLAGS_TO_PASS = \
 
 stage[+id+]-start::
 	$(AM_V_at)[ -f stage_current ] && $(MAKE) `cat stage_current`-end || echo "nope"; \
-	echo stage[+id+] > stage_current ; \
+	echo stage[+id+] > stage_current; \
 	echo stage[+id+] > stage_last; \
 	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR) $(TARGET_SUBDIR)[+
    FOR host_modules +][+ IF bootstrap +]
 @if [+ module +]
 	$(AM_V_at)cd $(HOST_SUBDIR); [ -d stage[+id+]-[+module+] ] || \
 	  mkdir stage[+id+]-[+module+]; \
-	set stage[+id+]-[+module+] [+module+] ; \
-	@CREATE_LINK_TO_DIR@ [+ IF prev +] ; \
-	set stage[+prev+]-[+module+] prev-[+module+] ; \
+	set stage[+id+]-[+module+] [+module+]; \
+	@CREATE_LINK_TO_DIR@ [+ IF prev +]; \
+	set stage[+prev+]-[+module+] prev-[+module+]; \
 	@CREATE_LINK_TO_DIR@ [+ ENDIF prev +]
 @endif [+ module +][+ ENDIF bootstrap +][+ ENDFOR host_modules +][+
    FOR target_modules +][+ IF bootstrap +]
 @if target-[+ module +]
 	$(AM_V_at)cd $(TARGET_SUBDIR); [ -d stage[+id+]-[+module+] ] || \
 	  mkdir stage[+id+]-[+module+]; \
-	set stage[+id+]-[+module+] [+module+] ; \
-	@CREATE_LINK_TO_DIR@ [+ IF prev +] ; \
-	set stage[+prev+]-[+module+] prev-[+module+] ; \
+	set stage[+id+]-[+module+] [+module+]; \
+	@CREATE_LINK_TO_DIR@ [+ IF prev +]; \
+	set stage[+prev+]-[+module+] prev-[+module+]; \
 	@CREATE_LINK_TO_DIR@ [+ ENDIF prev +]
 @endif target-[+ module +][+ ENDIF bootstrap +][+ ENDFOR target_modules +]
 
 stage[+id+]-end::
 	$(AM_V_at)rm -f stage_current[+ FOR host_modules +][+ IF bootstrap +]
 @if [+ module +]
-	$(AM_V_at)cd $(HOST_SUBDIR); set [+module+] stage[+id+]-[+module+] ; \
-	@UNDO_LINK_TO_DIR@ [+ IF prev +] ; \
-	set prev-[+module+] stage[+prev+]-[+module+] ; \
+	$(AM_V_at)cd $(HOST_SUBDIR); set [+module+] stage[+id+]-[+module+]; \
+	@UNDO_LINK_TO_DIR@ [+ IF prev +]; \
+	set prev-[+module+] stage[+prev+]-[+module+]; \
 	@UNDO_LINK_TO_DIR@ [+ ENDIF prev +]
 @endif [+ module +][+ ENDIF bootstrap +][+ ENDFOR host_modules +][+
    FOR target_modules +][+ IF bootstrap +]
 @if target-[+ module +]
-	$(AM_V_at)cd $(HOST_SUBDIR); set [+module+] stage[+id+]-[+module+] ; \
-	@UNDO_LINK_TO_DIR@ [+ IF prev +] ; \
-	set prev-[+module+] stage[+prev+]-[+module+] ; \
+	$(AM_V_at)cd $(HOST_SUBDIR); set [+module+] stage[+id+]-[+module+]; \
+	@UNDO_LINK_TO_DIR@ [+ IF prev +]; \
+	set prev-[+module+] stage[+prev+]-[+module+]; \
 	@UNDO_LINK_TO_DIR@ [+ ENDIF prev +]
 @endif [+ module +][+ ENDIF bootstrap +][+ ENDFOR target_modules +]
 
@@ -1658,10 +1658,10 @@ stage[+id+]-end::
 # be reconfigured as well.
 .PHONY: stage[+id+]-bubble
 stage[+id+]-bubble:: [+ IF prev +]stage[+prev+]-bubble[+ ENDIF +][+IF lean +]
-	@bootstrap_lean@-rm -rf stage[+lean+]-* ; $(STAMP) stage[+lean+]-lean[+ ENDIF lean +]
+	@bootstrap_lean@-rm -rf stage[+lean+]-*; $(STAMP) stage[+lean+]-lean[+ ENDIF lean +]
 	$(AM_V_at)if test -f stage[+id+]-lean [+
-	  IF prev +]|| test -f stage[+prev+]-lean [+ ENDIF prev +] ; then \
-	  echo Skipping rebuild of stage[+id+] ; \
+	  IF prev +]|| test -f stage[+prev+]-lean [+ ENDIF prev +]; then \
+	  echo Skipping rebuild of stage[+id+]; \
 	else \
 	  $(MAKE) $(RECURSE_FLAGS_TO_PASS) NOTPARALLEL= all-stage[+id+]; \
 	fi
@@ -1675,30 +1675,30 @@ do-clean: clean-stage[+id+]
 [+ IF compare-target +]
 [+compare-target+]:
 	$(AM_V_at)if test -f stage[+prev+]-lean; then \
-	  echo Cannot compare object files as stage [+prev+] was deleted. ; \
-	  exit 0 ; \
+	  echo "Cannot compare object files as stage [+prev+] was deleted."; \
+	  exit 0; \
 	fi; \
 	[ -f stage_current ] && $(MAKE) `cat stage_current`-end || echo "whatever"; \
 	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	rm -f .bad_compare ; \
+	rm -f .bad_compare; \
 	cd stage[+id+]-gcc; \
-	files=`find . -name "*$(objext)" -print` ; \
-	cd .. ; \
-	for file in $${files} ; do \
-	  f1=$$r/stage[+prev+]-gcc/$$file; f2=$$r/stage[+id+]-gcc/$$file; \
+	files=`find . -name "*$(objext)" -print`; \
+	cd ..; \
+	for file in $${files}; do \
+	  f1=$${r}/stage[+prev+]-gcc/$${file}; f2=$${r}/stage[+id+]-gcc/$${file}; \
 	  @do_compare@ > /dev/null 2>&1; \
-	  test $$? -eq 1 && echo $$file differs >> .bad_compare || true; \
-	done ; \
+	  test $$? -eq 1 && echo "$${file} differs" >> .bad_compare || true; \
+	done; \
 	if [ -f .bad_compare ]; then \
 	  echo "Bootstrap comparison failure!"; \
 	  cat .bad_compare; \
 	  exit 1; \
 	else \
-	  true; \
-	fi ; \
+	  echo "Bootstrap comparison succeeded!"; \
+	fi; \
 	$(STAMP) [+compare-target+][+ IF prev +]
-	@bootstrap_lean@-rm -rf stage[+prev+]-* ; $(STAMP) stage[+prev+]-lean[+ ENDIF prev +]
+	@bootstrap_lean@-rm -rf stage[+prev+]-*; $(STAMP) stage[+prev+]-lean[+ ENDIF prev +]
 [+ ENDIF compare-target +]
 
 [+ IF bootstrap-target +]
@@ -1729,10 +1729,10 @@ stagefeedback-start::
 	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	for i in prev-*; do \
-	  j=`echo $${i} | $(SED) s/^prev-//` ; \
+	  j=`echo $${i} | $(SED) s/^prev-//`; \
 	  cd $${r}/$${i} && \
-	  { find . -type d | sort | $(SED) 's,.*,$(SHELL) '"$$s"'/mkinstalldirs "../'$$j'/&",' | $(SHELL) ; } && \
-	  { find . -name '*.*da' | $(SED) 's,.*,$(LN) -f "&" "../'$$j'/&",' | $(SHELL) ; } ; \
+	  { find . -type d | sort | $(SED) 's,.*,$(SHELL) '"$${s}"'/mkinstalldirs "../'$${j}'/&",' | $(SHELL); } && \
+	  { find . -name '*.*da' | $(SED) 's,.*,$(LN) -f "&" "../'$${j}'/&",' | $(SHELL); }; \
 	done
 
 @if gcc-bootstrap
