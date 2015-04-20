@@ -1027,6 +1027,17 @@ ofiles: stamp-ofiles
 plistfiles: stamp-plistfiles
 	@echo "this target, '$@', just makes its dependency, '$<'"
 
+@ifGNUmake@ifneq ($(srcdir),.)
+@ifGNUmake@$(srcdir)/lofiles: stamp-lofiles
+@ifGNUmake@	if test -e lofiles && test ! -e $(srcdir)/lofiles; then \
+@ifGNUmake@	  cp $(AM_V_v) lofiles $(srcdir)/lofiles; \
+@ifGNUmake@	fi
+@ifGNUmake@$(srcdir)/ofiles: stamp-ofiles
+@ifGNUmake@	if test -e ofiles && test ! -e $(srcdir)/ofiles; then \
+@ifGNUmake@	  cp $(AM_V_v) ofiles $(srcdir)/ofiles; \
+@ifGNUmake@	fi
+@ifGNUmake@endif
+
 # Since BFD64_LIBS is optional, and we cannot have substitution in
 # libbfd_la_SOURCES, we put BFD64_LIBS in OFILES instead.
 # However, list all sources in EXTRA_libbfd_la_SOURCES so the
@@ -1348,12 +1359,21 @@ gen-aout: $(srcdir)/gen-aout.c @MAINT@ Makefile
 	$(AM_V_CCLD)$(CC) -o gen-aout $(AM_CFLAGS) $(CFLAGS) $(LFLAGS) \
 	  $(srcdir)/gen-aout.c
 
-$(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h $(srcdir)/libbfd.h \
+$(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h bfd-in3.h $(srcdir)/libbfd.h \
   $(srcdir)/libcoff.h @MAINT@ $(srcdir)/Makefile
 	if test -e $(srcdir)/Makefile; then \
 	  (cd $(srcdir) && $(MAKE) headers $(FLAGS_TO_PASS)); \
 	elif test -e ./Makefile; then \
 	  (cd . && $(MAKE) headers $(FLAGS_TO_PASS)); \
+	fi
+	-if test ! -e $(BFD_H); then \
+	  if test -e $(srcdir)/Makefile; then \
+	    (cd $(srcdir) && $(MAKE) stmp-bfd-h $(FLAGS_TO_PASS)); \
+	  elif test -e ./Makefile; then \
+	    (cd . && $(MAKE) stmp-bfd-h $(FLAGS_TO_PASS)); \
+	  fi; \
+	else \
+	  stat $(BFD_H); \
 	fi
 
 stmp-bfd-h: bfd-in3.h @MAINT@ headers @MAINT@ $(PATH_TO_MOVEIFCHANGE)

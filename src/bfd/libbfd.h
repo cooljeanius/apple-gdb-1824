@@ -771,7 +771,7 @@ struct _bfd_window_internal {
   void *data;
   bfd_size_type size;
   int refcount : 30;           /* should be enough...  */
-  unsigned mapped : 2;         /* 2 = window into mapped bfd, 1 = mmap, 0 = malloc */
+  unsigned mapped : 2; /* 2 = window into mapped bfd, 1 = mmap, 0 = malloc */
 };
 /* Extracted from cache.c.  */
 #define BFD_CACHE_MAX_OPEN 10
@@ -789,15 +789,15 @@ extern bfd *bfd_last_cache;
     for (abfd = ((bfd_last_cache != NULL) ? bfd_last_cache->lru_prev : NULL); \
          abfd != NULL; \
          abfd = ((abfd == bfd_last_cache) ? NULL : abfd->lru_prev))
-bfd_boolean bfd_cache_init (bfd *abfd);
+bfd_boolean bfd_cache_init(bfd *abfd);
 
-bfd_boolean bfd_cache_close (bfd *abfd);
+bfd_boolean bfd_cache_close(bfd *abfd);
 
-FILE* bfd_open_file (bfd *abfd);
+FILE* bfd_open_file(bfd *abfd);
 
-FILE *bfd_cache_lookup_worker (bfd *abfd);
+FILE *bfd_cache_lookup_worker(bfd *abfd);
 
-void bfd_cache_flush (void);
+void bfd_cache_flush(void);
 
 /* Extracted from reloc.c.  */
 #ifdef _BFD_MAKE_TABLE_bfd_reloc_code_real

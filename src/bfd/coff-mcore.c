@@ -232,7 +232,7 @@ mcore_emit_base_file_entry(struct bfd_link_info *info, bfd *output_bfd,
      addr -= pe_data(output_bfd)->pe_opthdr.ImageBase;
   }
 
-  fwrite(&addr, 1, sizeof(addr), (FILE *)info->base_file);
+  fwrite(&addr, (size_t)1UL, sizeof(addr), (FILE *)info->base_file);
 }
 
 static bfd_reloc_status_type
@@ -421,7 +421,7 @@ coff_mcore_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		{
 		  static char buf[SYMNMLEN + 1];
 
-		  strncpy(buf, sym->_n._n_name, SYMNMLEN);
+		  strncpy(buf, sym->_n._n_name, (size_t)SYMNMLEN);
 		  buf[SYMNMLEN] = '\0';
 		  my_name = buf;
 		}

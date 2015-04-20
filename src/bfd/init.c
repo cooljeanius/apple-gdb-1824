@@ -36,7 +36,7 @@ FUNCTION
 	bfd_init
 
 SYNOPSIS
-	void bfd_init (void);
+	void bfd_init(void);
 
 DESCRIPTION
 	This routine must be called before any other BFD function to

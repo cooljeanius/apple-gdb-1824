@@ -326,7 +326,7 @@ coff_i960_start_final_link(bfd *abfd, struct bfd_link_info *info)
     {
       struct internal_syment isym;
 
-      strncpy(isym._n._n_name, o->name, SYMNMLEN);
+      strncpy(isym._n._n_name, o->name, (size_t)SYMNMLEN);
       isym.n_value = 0;
       isym.n_scnum = o->target_index;
       isym.n_type = T_NULL;

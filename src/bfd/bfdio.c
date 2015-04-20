@@ -386,7 +386,7 @@ FUNCTION
 	bfd_get_mtime
 
 SYNOPSIS
-	long bfd_get_mtime (bfd *abfd);
+	long bfd_get_mtime(bfd *abfd);
 
 DESCRIPTION
 	Return the file modification time (as read from the file system, or
@@ -417,7 +417,7 @@ FUNCTION
 	bfd_get_size
 
 SYNOPSIS
-	long bfd_get_size (bfd *abfd);
+	long bfd_get_size(bfd *abfd);
 
 DESCRIPTION
 	Return the file size (as read from file system) for the file

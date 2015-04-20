@@ -740,16 +740,15 @@ DESCRIPTION
 */
 
 bfd_boolean
-bfd_default_set_arch_mach (bfd *abfd,
-			   enum bfd_architecture arch,
-			   unsigned long mach)
+bfd_default_set_arch_mach(bfd *abfd, enum bfd_architecture arch,
+			  unsigned long mach)
 {
-  abfd->arch_info = bfd_lookup_arch (arch, mach);
+  abfd->arch_info = bfd_lookup_arch(arch, mach);
   if (abfd->arch_info != NULL)
     return TRUE;
 
   abfd->arch_info = &bfd_default_arch_struct;
-  bfd_set_error (bfd_error_bad_value);
+  bfd_set_error(bfd_error_bad_value);
   return FALSE;
 }
 

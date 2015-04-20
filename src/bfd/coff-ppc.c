@@ -158,7 +158,8 @@ ppc_coff_link_hash_newfunc(struct bfd_hash_entry *entry,
   if (ret == (struct ppc_coff_link_hash_entry *)NULL)
     ret = (struct ppc_coff_link_hash_entry *)
       bfd_hash_allocate(table,
-                        sizeof(struct ppc_coff_link_hash_entry));
+                        ((unsigned int)
+                         sizeof(struct ppc_coff_link_hash_entry)));
 
   if (ret == (struct ppc_coff_link_hash_entry *)NULL)
     return NULL;
@@ -1232,26 +1233,28 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		bfd_vma addr = (toc_section->output_section->vma
 				+ toc_section->output_offset + our_toc_offset);
 
-		if (coff_data (output_bfd)->pe)
+		if (coff_data(output_bfd)->pe)
 		  addr -= pe_data(output_bfd)->pe_opthdr.ImageBase;
 
-		fwrite (&addr, 1,4, (FILE *) info->base_file);
+		fwrite(&addr, (size_t)1UL, (size_t)4UL,
+                       (FILE *)info->base_file);
 	      }
 
-	    /* FIXME: this test is conservative.  */
+	    /* FIXME: this test is conservative: */
 	    if ((r_flags & IMAGE_REL_PPC_TOCDEFN) != IMAGE_REL_PPC_TOCDEFN
-		&& (bfd_vma) our_toc_offset > toc_section->size)
+		&& ((bfd_vma)our_toc_offset > toc_section->size))
 	      {
 		(*_bfd_error_handler)
 		  (_("%B: Relocation exceeds allocated TOC (%lx)"),
-		   input_bfd, (unsigned long) toc_section->size);
-		bfd_set_error (bfd_error_bad_value);
+		   input_bfd, (unsigned long)toc_section->size);
+		bfd_set_error(bfd_error_bad_value);
 		return FALSE;
 	      }
 
-	    /* Now we know the relocation for this toc reference.  */
-	    relocation =  our_toc_offset + TOC_LOAD_ADJUSTMENT;
-	    rstat = _bfd_relocate_contents (howto, input_bfd, relocation, loc);
+	    /* Now we know the relocation for this toc reference: */
+	    relocation = (our_toc_offset + TOC_LOAD_ADJUSTMENT);
+	    rstat = _bfd_relocate_contents(howto, input_bfd, relocation,
+                                           loc);
 	  }
 	  break;
 	case IMAGE_REL_PPC_IFGLUE:
@@ -1315,8 +1318,9 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	    my_name = h->root.root.root.string;
 
 	    (*_bfd_error_handler)
-	      (_("%B: Out of order IMGLUE reloc for %s"), input_bfd, my_name);
-	    bfd_set_error (bfd_error_bad_value);
+	      (_("%B: Out of order IMGLUE reloc for %s"),
+               input_bfd, my_name);
+	    bfd_set_error(bfd_error_bad_value);
 	    return FALSE;
 	  }
 
@@ -1326,9 +1330,10 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
 	    DUMP_RELOC2 (howto->name, rel);
 
-	    if (strncmp(".idata$2",input_section->name,8) == 0 && first_thunk_address == 0)
+	    if ((strncmp(".idata$2", input_section->name, (size_t)8L) == 0)
+                && (first_thunk_address == 0))
 	      {
-		/* Set magic values.  */
+		/* Set magic values: */
 		int idata5offset;
 		struct coff_link_hash_entry *myh;
 
@@ -1450,15 +1455,15 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      /* Relocation to a symbol in a section which
 		 isn't absolute - we output the address here
 		 to a file.  */
-	      bfd_vma addr = rel->r_vaddr
-		- input_section->vma
-		+ input_section->output_offset
-		  + input_section->output_section->vma;
+	      bfd_vma addr = (rel->r_vaddr - input_section->vma
+                              + input_section->output_offset
+                              + input_section->output_section->vma);
 
-	      if (coff_data (output_bfd)->pe)
-		addr -= pe_data (output_bfd)->pe_opthdr.ImageBase;
+	      if (coff_data(output_bfd)->pe)
+		addr -= pe_data(output_bfd)->pe_opthdr.ImageBase;
 
-	      fwrite (&addr, 1,4, (FILE *) info->base_file);
+	      fwrite(&addr, (size_t)1UL, (size_t)4UL,
+                     (FILE *)info->base_file);
 	    }
 	}
 
@@ -1479,20 +1484,21 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      name = NULL;
 	    else if (sym == NULL)
 	      name = "*unknown*";
-	    else if (sym->_n._n_n._n_zeroes == 0
-		     && sym->_n._n_n._n_offset != 0)
-	      name = obj_coff_strings (input_bfd) + sym->_n._n_n._n_offset;
+	    else if ((sym->_n._n_n._n_zeroes == 0)
+		     && (sym->_n._n_n._n_offset != 0))
+	      name = (obj_coff_strings(input_bfd)
+                      + sym->_n._n_n._n_offset);
 	    else
 	      {
-		strncpy (buf, sym->_n._n_name, SYMNMLEN);
+		strncpy(buf, sym->_n._n_name, (size_t)SYMNMLEN);
 		buf[SYMNMLEN] = '\0';
 		name = buf;
 	      }
 
-	    if (! ((*info->callbacks->reloc_overflow)
-		   (info, (h ? &h->root.root : NULL), name, howto->name,
-		    (bfd_vma) 0, input_bfd,
-		    input_section, rel->r_vaddr - input_section->vma)))
+	    if (!((*info->callbacks->reloc_overflow)
+		  (info, (h ? &h->root.root : NULL), name, howto->name,
+		   (bfd_vma)0UL, input_bfd,
+		   input_section, (rel->r_vaddr - input_section->vma))))
 	      return FALSE;
 	  }
 	}

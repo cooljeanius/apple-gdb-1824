@@ -67,42 +67,42 @@ static const bfd_target *MY(callback)(bfd *abfd)
   /* For some targets, if the entry point is not in the same page
      as the start of the text, then adjust the VMA so that it is.
      FIXME: Do this with a macro like SET_ARCH_MACH instead?  */
-  if (aout_backend_info (abfd)->entry_is_text_address
-      && execp->a_entry > obj_textsec (abfd)->vma)
+  if (aout_backend_info(abfd)->entry_is_text_address
+      && (execp->a_entry > obj_textsec(abfd)->vma))
     {
       bfd_vma adjust;
 
-      adjust = execp->a_entry - obj_textsec (abfd)->vma;
-      /* Adjust only by whole pages.  */
-      adjust &= ~(TARGET_PAGE_SIZE - 1);
-      obj_textsec (abfd)->vma += adjust;
-      obj_datasec (abfd)->vma += adjust;
-      obj_bsssec (abfd)->vma += adjust;
+      adjust = (execp->a_entry - obj_textsec(abfd)->vma);
+      /* Adjust only by whole pages: */
+      adjust &= (bfd_vma)~(TARGET_PAGE_SIZE - 1UL);
+      obj_textsec(abfd)->vma += adjust;
+      obj_datasec(abfd)->vma += adjust;
+      obj_bsssec(abfd)->vma += adjust;
     }
 
-  /* Set the load addresses to be the same as the virtual addresses.  */
-  obj_textsec (abfd)->lma = obj_textsec (abfd)->vma;
-  obj_datasec (abfd)->lma = obj_datasec (abfd)->vma;
-  obj_bsssec (abfd)->lma = obj_bsssec (abfd)->vma;
+  /* Set the load addresses to be the same as the virtual addresses: */
+  obj_textsec(abfd)->lma = obj_textsec(abfd)->vma;
+  obj_datasec(abfd)->lma = obj_datasec(abfd)->vma;
+  obj_bsssec(abfd)->lma = obj_bsssec(abfd)->vma;
 
-  /* The file offsets of the sections.  */
-  obj_textsec (abfd)->filepos = N_TXTOFF (*execp);
-  obj_datasec (abfd)->filepos = N_DATOFF (*execp);
+  /* The file offsets of the sections: */
+  obj_textsec(abfd)->filepos = N_TXTOFF(*execp);
+  obj_datasec(abfd)->filepos = (file_ptr)N_DATOFF(*execp);
 
-  /* The file offsets of the relocation info.  */
-  obj_textsec (abfd)->rel_filepos = N_TRELOFF (*execp);
-  obj_datasec (abfd)->rel_filepos = N_DRELOFF (*execp);
+  /* The file offsets of the relocation info: */
+  obj_textsec(abfd)->rel_filepos = (file_ptr)N_TRELOFF(*execp);
+  obj_datasec(abfd)->rel_filepos = (file_ptr)N_DRELOFF(*execp);
 
-  /* The file offsets of the string table and symbol table.  */
-  obj_sym_filepos (abfd) = N_SYMOFF (*execp);
-  obj_str_filepos (abfd) = N_STROFF (*execp);
+  /* The file offsets of the string table and symbol table: */
+  obj_sym_filepos(abfd) = (file_ptr)N_SYMOFF(*execp);
+  obj_str_filepos(abfd) = (file_ptr)N_STROFF(*execp);
 
   /* Determine the architecture and machine type of the object file: */
 #ifdef SET_ARCH_MACH
   SET_ARCH_MACH(abfd, *execp);
 #else
 # ifdef DEFAULT_ARCH
-  bfd_default_set_arch_mach(abfd, DEFAULT_ARCH, 0);
+  bfd_default_set_arch_mach(abfd, DEFAULT_ARCH, 0UL);
 # else
   bfd_default_set_arch_mach(abfd, bfd_arch_i386, 0);
 # endif /* DEFAULT_ARCH */
@@ -123,18 +123,18 @@ static const bfd_target *MY(callback)(bfd *abfd)
      not yet been set.  However, for backward compatibility, we don't
      set the alignment power any higher than as required by the size
      of the section.  */
-  arch_align_power = bfd_get_arch_info (abfd)->section_align_power;
-  arch_align = 1 << arch_align_power;
-  if ((BFD_ALIGN (obj_textsec (abfd)->size, arch_align)
-       == obj_textsec (abfd)->size)
-      && (BFD_ALIGN (obj_datasec (abfd)->size, arch_align)
-	  == obj_datasec (abfd)->size)
-      && (BFD_ALIGN (obj_bsssec (abfd)->size, arch_align)
-	  == obj_bsssec (abfd)->size))
+  arch_align_power = bfd_get_arch_info(abfd)->section_align_power;
+  arch_align = (unsigned long)(1UL << arch_align_power);
+  if ((BFD_ALIGN(obj_textsec(abfd)->size, arch_align)
+       == obj_textsec(abfd)->size)
+      && (BFD_ALIGN(obj_datasec(abfd)->size, arch_align)
+	  == obj_datasec(abfd)->size)
+      && (BFD_ALIGN(obj_bsssec(abfd)->size, arch_align)
+	  == obj_bsssec(abfd)->size))
     {
-      obj_textsec (abfd)->alignment_power = arch_align_power;
-      obj_datasec (abfd)->alignment_power = arch_align_power;
-      obj_bsssec (abfd)->alignment_power = arch_align_power;
+      obj_textsec(abfd)->alignment_power = arch_align_power;
+      obj_datasec(abfd)->alignment_power = arch_align_power;
+      obj_bsssec(abfd)->alignment_power = arch_align_power;
     }
 
   /* Do NOT set sizes now -- cannot be sure until we know arch & mach.
@@ -335,36 +335,29 @@ static const struct aout_backend_data MY (backend_data) =
 #endif
 
 #ifndef MY_final_link_callback
-
-/* Callback for the final_link routine to set the section offsets.  */
-
+/* Callback for the final_link routine to set the section offsets: */
 static void
-MY_final_link_callback (bfd *abfd,
-			file_ptr *ptreloff,
-			file_ptr *pdreloff,
-			file_ptr *psymoff)
+MY_final_link_callback(bfd *abfd, file_ptr *ptreloff, file_ptr *pdreloff,
+                       file_ptr *psymoff)
 {
-  struct internal_exec *execp = exec_hdr (abfd);
+  struct internal_exec *execp = exec_hdr(abfd);
 
-  *ptreloff = N_TRELOFF (*execp);
-  *pdreloff = N_DRELOFF (*execp);
-  *psymoff = N_SYMOFF (*execp);
+  *ptreloff = (file_ptr)N_TRELOFF(*execp);
+  *pdreloff = (file_ptr)N_DRELOFF(*execp);
+  *psymoff = (file_ptr)N_SYMOFF(*execp);
 }
-
-#endif
+#endif /* !MY_final_link_callback */
 
 #ifndef MY_bfd_final_link
-
 /* Final link routine.  We need to use a call back to get the correct
    offsets in the output file.  */
 
 static bfd_boolean
-MY_bfd_final_link (bfd *abfd, struct bfd_link_info *info)
+MY_bfd_final_link(bfd *abfd, struct bfd_link_info *info)
 {
-  return NAME (aout, final_link) (abfd, info, MY_final_link_callback);
+  return NAME(aout, final_link)(abfd, info, MY_final_link_callback);
 }
-
-#endif
+#endif /* !MY_bfd_final_link */
 
 /* We assume BFD generic archive files.  */
 #ifndef	MY_openr_next_archived_file

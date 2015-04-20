@@ -122,12 +122,14 @@ static inline char *gettext (const char *__msgid)
   return libintl_gettext (__msgid);
 }
 #else
-#ifdef _INTL_REDIRECT_MACROS
-# define gettext libintl_gettext
-#endif
+# ifdef _INTL_REDIRECT_MACROS
+#  ifndef gettext
+#   define gettext libintl_gettext
+#  endif /* !gettext */
+# endif /* _INTL_REDIRECT_MACROS */
 extern char *gettext _INTL_PARAMS ((const char *__msgid))
        _INTL_ASM (libintl_gettext);
-#endif
+#endif /* _INTL_REDIRECT_INLINE */
 
 /* Look up MSGID in the DOMAINNAME message catalog for the current
    LC_MESSAGES locale.  */
@@ -138,13 +140,15 @@ static inline char *dgettext (const char *__domainname, const char *__msgid)
   return libintl_dgettext (__domainname, __msgid);
 }
 #else
-#ifdef _INTL_REDIRECT_MACROS
-# define dgettext libintl_dgettext
-#endif
+# ifdef _INTL_REDIRECT_MACROS
+#  ifndef dgettext
+#   define dgettext libintl_dgettext
+#  endif /* !dgettext */
+# endif /* _INTL_REDIRECT_MACROS */
 extern char *dgettext _INTL_PARAMS ((const char *__domainname,
 				     const char *__msgid))
        _INTL_ASM (libintl_dgettext);
-#endif
+#endif /* _INTL_REDIRECT_INLINE */
 
 /* Look up MSGID in the DOMAINNAME message catalog for the current CATEGORY
    locale.  */

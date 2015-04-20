@@ -468,9 +468,10 @@ if test "x${ac_cv_sizeof_off_t}" != "x${ac_cv_sizeof_unsigned_long_long}"; then
     if test "x${ac_cv_type_off_t}" = "xyes"; then
       _AC_CHECK_TYPE_OLD([off64_t],[off_t])dnl
       ## hope that is okay...
-    elif test "x${ac_cv_type_unsigned_long_long}" = "x"; then
+    elif test "x${ac_cv_type_unsigned_long_long}" = "xyes"; then
       _AC_CHECK_TYPE_OLD([off64_t],[unsigned long long])dnl
-      ## not sure what else could work...
+    else
+      _AC_CHECK_TYPE_OLD([off64_t],[unsigned long])dnl
     fi
   ])dnl
   ## maybe use it as a replacement, idk...

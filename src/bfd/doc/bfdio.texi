@@ -33,7 +33,7 @@ struct bfd_iovec
 @subsubsection @code{bfd_get_mtime}
 @strong{Synopsis}
 @example
-long bfd_get_mtime (bfd *abfd);
+long bfd_get_mtime(bfd *abfd);
 @end example
 @strong{Description}@*
 Return the file modification time (as read from the file system, or
@@ -43,7 +43,7 @@ from the archive header for archive members).
 @subsubsection @code{bfd_get_size}
 @strong{Synopsis}
 @example
-long bfd_get_size (bfd *abfd);
+long bfd_get_size(bfd *abfd);
 @end example
 @strong{Description}@*
 Return the file size (as read from file system) for the file

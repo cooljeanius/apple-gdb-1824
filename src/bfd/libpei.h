@@ -272,8 +272,8 @@
 
 /* Macro: Returns true if the bfd is a PE executable as opposed to a PE object file.  */
 #define bfd_pe_executable_p(abfd) \
-  (strncmp ((abfd)->xvec->name, "pei-", 4) == 0		\
-   || strncmp ((abfd)->xvec->name, "efi-app-", 8) == 0)
+  ((strncmp((abfd)->xvec->name, "pei-", (size_t)4UL) == 0)		\
+   || (strncmp((abfd)->xvec->name, "efi-app-", (size_t)8UL) == 0))
 
 /* These functions are architecture dependent, and are in peicode.h:
    coff_swap_reloc_in

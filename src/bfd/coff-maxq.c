@@ -391,7 +391,7 @@ static const reloc_map maxq_reloc_map[] =
 };
 
 static reloc_howto_type *
-maxq_reloc_type_lookup(bfd * abfd ATTRIBUTE_UNUSED,
+maxq_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
                        bfd_reloc_code_real_type code)
 {
   unsigned int i;

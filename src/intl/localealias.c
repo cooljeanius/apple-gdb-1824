@@ -57,7 +57,9 @@
 
 #ifdef __GNUC__
 # define alloca __builtin_alloca
-# define HAVE_ALLOCA 1
+# ifndef HAVE_ALLOCA
+#  define HAVE_ALLOCA 1
+# endif /* !HAVE_ALLOCA */
 #else
 # if defined HAVE_ALLOCA_H || defined _LIBC
 #  include <alloca.h>
@@ -157,11 +159,11 @@ struct block_list
     while (list != NULL) {						  \
       struct block_list *old = list;					  \
       list = list->next;						  \
-      free (old);							  \
+      free(old);							  \
     }									  \
   } while (0)
 # undef alloca
-# define alloca(size) (malloc (size))
+# define alloca(size) (malloc(size))
 #endif	/* have alloca */
 
 
@@ -249,7 +251,7 @@ const char *_nl_expand_alias(const char *name)
 
 static size_t
 internal_function
-read_alias_file (const char *fname, int fname_len)
+read_alias_file(const char *fname, int fname_len)
 {
 #ifndef HAVE_ALLOCA
   struct block_list *block_list = NULL;
@@ -269,10 +271,10 @@ read_alias_file (const char *fname, int fname_len)
   memcpy(&full_fname[fname_len], aliasfile, sizeof(aliasfile));
 #endif /* HAVE_MEMPCPY && HAVE_DECL_MEMPCPY */
 
-  fp = fopen (full_fname, "r");
+  fp = fopen(full_fname, "r");
   if (fp == NULL)
     {
-      FREE_BLOCKS (block_list);
+      FREE_BLOCKS(block_list);
       return 0;
     }
 
@@ -308,22 +310,22 @@ read_alias_file (const char *fname, int fname_len)
       }
 
       cp = buf;
-      /* Ignore leading white space.  */
+      /* Ignore leading white space: */
       while (isspace(cp[0]))
 	++cp;
 
-      /* A leading '#' signals a comment line.  */
-      if (cp[0] != '\0' && cp[0] != '#')
+      /* A leading '#' signals a comment line: */
+      if ((cp[0] != '\0') && (cp[0] != '#'))
 	{
 	  alias = cp++;
-	  while (cp[0] != '\0' && !isspace (cp[0]))
+	  while ((cp[0] != '\0') && !isspace(cp[0]))
 	    ++cp;
-	  /* Terminate alias name.  */
+	  /* Terminate alias name: */
 	  if (cp[0] != '\0')
 	    *cp++ = '\0';
 
-	  /* Now look for the beginning of the value.  */
-	  while (isspace (cp[0]))
+	  /* Now look for the beginning of the value: */
+	  while (isspace(cp[0]))
 	    ++cp;
 
 	  if (cp[0] != '\0')
@@ -332,7 +334,7 @@ read_alias_file (const char *fname, int fname_len)
 	      size_t value_len;
 
 	      value = cp++;
-	      while (cp[0] != '\0' && !isspace (cp[0]))
+	      while ((cp[0] != '\0') && !isspace(cp[0]))
 		++cp;
 	      /* Terminate value.  */
 	      if (cp[0] == '\n')
@@ -346,20 +348,24 @@ read_alias_file (const char *fname, int fname_len)
 	      else if (cp[0] != '\0')
 		*cp++ = '\0';
 
+              if (cp == NULL) {
+                ; /* do nothing; just silence clang */
+              }
+
 	      if (nmap >= maxmap) {
 		extend_alias_table();
               }
 
-	      alias_len = (strlen((const char *)alias) + 1);
-	      value_len = (strlen((const char *)value) + 1);
+	      alias_len = (strlen((const char *)alias) + 1UL);
+	      value_len = (strlen((const char *)value) + 1UL);
 
-	      if (string_space_act + alias_len + value_len > string_space_max)
+	      if ((string_space_act + alias_len + value_len) > string_space_max)
 		{
 		  /* Increase size of memory pool.  */
 		  size_t new_size = (string_space_max
-				     + (alias_len + value_len > 1024
-					? alias_len + value_len : 1024));
-		  char *new_pool = (char *) realloc (string_space, new_size);
+				     + (((alias_len + value_len) > 1024)
+					? (alias_len + value_len) : 1024));
+		  char *new_pool = (char *)realloc(string_space, new_size);
 		  if (new_pool == NULL)
 		    {
 		      FREE_BLOCKS (block_list);
@@ -460,5 +466,9 @@ alias_compare(const struct alias_map *map1, const struct alias_map *map2)
   return (c1 - c2);
 #endif /* _LIBC || HAVE_STRCASECMP */
 }
+
+#ifdef HAVE_ALLOCA
+# undef HAVE_ALLOCA
+#endif /* HAVE_ALLOCA */
 
 /* EOF */

@@ -114,6 +114,9 @@ plural_eval(struct expression *pexp, unsigned long int n)
 	unsigned long int boolarg = plural_eval(pexp->val.args[0], n);
 	return plural_eval(pexp->val.args[boolarg ? 1 : 2], n);
       }
+    default:
+      /* NOTREACHED */
+      break;
     }
   /* NOTREACHED */
   return 0;

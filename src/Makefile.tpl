@@ -1231,6 +1231,7 @@ clean-stage[+id+]-[+prefix+][+module+]:
        exports="$(HOST_EXPORTS)"
        poststage1_exports="$(POSTSTAGE1_HOST_EXPORTS)"
        args="$(FLAGS_TO_PASS)"
+       stage1_args="$(STAGE1_FLAGS_TO_PASS)"
        poststage1_args="$(POSTSTAGE1_FLAGS_TO_PASS)" +]
 
 .PHONY: check-[+module+] maybe-check-[+module+]
@@ -1245,9 +1246,11 @@ check-[+module+]:
 	$(AM_V_at)if [ 'x$(host)' = 'x$(target)' ]; then \
 	  r=`${PWD_COMMAND}`; export r; \
 	  s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	  $(HOST_EXPORTS) \
+	  $(HOST_EXPORTS) [+ IF bootstrap +]$(EXTRA_HOST_EXPORTS)[+
+	  ENDIF bootstrap +] \
 	  (cd $(HOST_SUBDIR)/[+module+] && \
-	    $(MAKE) $(FLAGS_TO_PASS) [+extra_make_flags+] check); \
+	    $(MAKE) $(FLAGS_TO_PASS) [+extra_make_flags+][+
+	    IF bootstrap +] $(EXTRA_BOOTSTRAP_FLAGS)[+ ENDIF bootstrap +] check); \
 	fi
 [+ ELSE check +]
 check-[+module+]:
@@ -1594,12 +1597,31 @@ STAGE1_LANGUAGES=@stage1_languages@
 # We only want to compare .o files, so set this!
 objext = .o
 
-# Flags to pass to stage2 and later makes.
+# Flags to pass to stage1 or when not bootstrapping:
+STAGE1_FLAGS_TO_PASS = \
+	LDFLAGS="$${LDFLAGS}" \
+	HOST_LIBS="$${HOST_LIBS}"
+
+# Flags to pass to stage2 and later makes:
 POSTSTAGE1_FLAGS_TO_PASS = \
 	CC="$${CC}" CC_FOR_BUILD="$${CC_FOR_BUILD}" \
+	CXX="$${CXX}" CXX_FOR_BUILD="$${CXX_FOR_BUILD}" \
 	STAGE_PREFIX=$${r}/prev-gcc/ \
+	GNATBIND="$${GNATBIND}" \
 	CFLAGS="$(BOOT_CFLAGS)" \
-	ADAC="\$$(CC)"
+	LDFLAGS="$${LDFLAGS}" \
+	HOST_LIBS="$${HOST_LIBS}" \
+	$(LTO_FLAGS_TO_PASS) \
+	ADAC="\$$(CC)" \
+	"`echo 'ADAFLAGS=$(BOOT_ADAFLAGS)' | sed -e s'/[^=][^=]*=$$/XFOO=/'`"
+
+@if gcc-bootstrap
+EXTRA_HOST_EXPORTS = if [ "x$(current_stage)" != "xstage1" ]; then \
+		       $(POSTSTAGE1_HOST_EXPORTS) \
+		     fi;
+
+EXTRA_BOOTSTRAP_FLAGS = CC="$${CC}" CXX="$${CXX}" LDFLAGS="$${LDFLAGS}"
+@endif gcc-bootstrap
 
 # For stage 1:
 # * We force-disable intermodule optimizations, even if

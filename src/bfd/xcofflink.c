@@ -1112,26 +1112,27 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 	    {
 	      xcoff_section_data(abfd, csect)->last_symndx =
 		((unsigned long)
-                 ((esym
-                   - (bfd_byte *)obj_coff_external_syms(abfd))
+                 ((bfd_size_type)(esym
+                                  - ((bfd_byte *)
+                                     obj_coff_external_syms(abfd)))
                   / symesz));
 	      csect = NULL;
 	    }
 
 	  if (csect != NULL)
 	    *csect_cache = csect;
-	  else if (first_csect == NULL || sym.n_sclass == C_FILE)
-	    *csect_cache = coff_section_from_bfd_index (abfd, sym.n_scnum);
+	  else if ((first_csect == NULL) || (sym.n_sclass == C_FILE))
+	    *csect_cache = coff_section_from_bfd_index(abfd, sym.n_scnum);
 	  else
 	    *csect_cache = NULL;
-	  esym += (sym.n_numaux + 1) * symesz;
-	  sym_hash += sym.n_numaux + 1;
-	  csect_cache += sym.n_numaux + 1;
+	  esym += ((bfd_size_type)(sym.n_numaux + 1U) * symesz);
+	  sym_hash += (sym.n_numaux + 1U);
+	  csect_cache += (sym.n_numaux + 1U);
 
 	  continue;
 	}
 
-      name = _bfd_coff_internal_syment_name (abfd, &sym, buf);
+      name = _bfd_coff_internal_syment_name(abfd, &sym, buf);
 
       if (name == NULL)
 	goto error_return;
@@ -1169,36 +1170,39 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 		}
 	      linoff = (auxlin.x_sym.x_fcnary.x_fcn.x_lnnoptr
 			- enclosing->line_filepos);
-	      /* Explicit cast to bfd_signed_vma for compiler.  */
-	      if (linoff < (bfd_signed_vma) (enclosing->lineno_count * linesz))
+	      /* Explicit cast to bfd_signed_vma for compiler: */
+	      if (linoff < (bfd_signed_vma)(enclosing->lineno_count * linesz))
 		{
 		  struct internal_lineno lin;
 		  bfd_byte *linpstart;
 
 		  linpstart = (reloc_info[enclosing->target_index].linenos
 			       + linoff);
-		  bfd_coff_swap_lineno_in (abfd, (void *) linpstart, (void *) &lin);
-		  if (lin.l_lnno == 0
-		      && ((bfd_size_type) lin.l_addr.l_symndx
-			  == ((esym
-			       - (bfd_byte *) obj_coff_external_syms (abfd))
+		  bfd_coff_swap_lineno_in(abfd, (void *)linpstart,
+                                          (void *)&lin);
+		  if ((lin.l_lnno == 0)
+		      && ((bfd_size_type)lin.l_addr.l_symndx
+			  == (((bfd_size_type)
+                               (esym - ((bfd_byte *)
+                                        obj_coff_external_syms(abfd))))
 			      / symesz)))
 		    {
 		      bfd_byte *linpend, *linp;
 
 		      linpend = (reloc_info[enclosing->target_index].linenos
-				 + enclosing->lineno_count * linesz);
-		      for (linp = linpstart + linesz;
+				 + (enclosing->lineno_count * linesz));
+		      for (linp = (linpstart + linesz);
 			   linp < linpend;
 			   linp += linesz)
 			{
-			  bfd_coff_swap_lineno_in (abfd, (void *) linp,
-						   (void *) &lin);
+			  bfd_coff_swap_lineno_in(abfd, (void *)linp,
+						  (void *)&lin);
 			  if (lin.l_lnno == 0)
 			    break;
 			}
 		      csect->lineno_count +=
-                        (unsigned int)((linp - linpstart) / linesz);
+                        (unsigned int)((bfd_size_type)(linp - linpstart)
+                                       / linesz);
 		      /* The setting of line_filepos will only be
 			 useful if all the line number entries for a
 			 csect are contiguous; this only matters for
@@ -1211,23 +1215,21 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 	    }
 	}
 
-      /* Pick up the csect auxiliary information.  */
+      /* Pick up the csect auxiliary information: */
       if (sym.n_numaux == 0)
 	{
 	  (*_bfd_error_handler)
 	    (_("%B: class %d symbol `%s' has no aux entries"),
 	     abfd, sym.n_sclass, name);
-	  bfd_set_error (bfd_error_bad_value);
+	  bfd_set_error(bfd_error_bad_value);
 	  goto error_return;
 	}
 
-      bfd_coff_swap_aux_in (abfd,
-			    (void *) (esym + symesz * sym.n_numaux),
-			    sym.n_type, sym.n_sclass,
-			    sym.n_numaux - 1, sym.n_numaux,
-			    (void *) &aux);
+      bfd_coff_swap_aux_in(abfd, (void *)(esym + symesz * sym.n_numaux),
+			   sym.n_type, sym.n_sclass, (sym.n_numaux - 1),
+                           sym.n_numaux, (void *)&aux);
 
-      smtyp = SMTYP_SMTYP (aux.x_csect.x_smtyp);
+      smtyp = SMTYP_SMTYP(aux.x_csect.x_smtyp);
 
       flags = BSF_GLOBAL;
       section = NULL;
@@ -1240,20 +1242,19 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 	  (*_bfd_error_handler)
 	    (_("%B: symbol `%s' has unrecognized csect type %d"),
 	     abfd, name, smtyp);
-	  bfd_set_error (bfd_error_bad_value);
+	  bfd_set_error(bfd_error_bad_value);
 	  goto error_return;
 
 	case XTY_ER:
-	  /* This is an external reference.  */
-	  if (sym.n_sclass == C_HIDEXT
-	      || sym.n_scnum != N_UNDEF
-	      || aux.x_csect.x_scnlen.l != 0)
+	  /* This is an external reference: */
+	  if ((sym.n_sclass == C_HIDEXT) || (sym.n_scnum != N_UNDEF)
+	      || (aux.x_csect.x_scnlen.l != 0))
 	    {
 	      (*_bfd_error_handler)
 		(_("%B: bad XTY_ER symbol `%s': class %d scnum %d scnlen %d"),
 		 abfd, name, sym.n_sclass, sym.n_scnum,
 		 aux.x_csect.x_scnlen.l);
-	      bfd_set_error (bfd_error_bad_value);
+	      bfd_set_error(bfd_error_bad_value);
 	      goto error_return;
 	    }
 
@@ -1269,32 +1270,32 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 	  break;
 
 	case XTY_SD:
-	  /* This is a csect definition.  */
+	  /* This is a csect definition: */
 	  if (csect != NULL)
 	    {
 	      xcoff_section_data(abfd, csect)->last_symndx =
 		((unsigned long)
-                 ((esym
-                   - (bfd_byte *)obj_coff_external_syms(abfd))
+                 (((bfd_size_type)
+                   (esym - (bfd_byte *)obj_coff_external_syms(abfd)))
                   / symesz));
 	    }
 
 	  csect = NULL;
-	  csect_index = -(unsigned)1;
+	  csect_index = -(unsigned int)1U;
 
-	  /* When we see a TOC anchor, we record the TOC value.  */
+	  /* When we see a TOC anchor, we record the TOC value: */
 	  if (aux.x_csect.x_smclas == XMC_TC0)
 	    {
-	      if (sym.n_sclass != C_HIDEXT
-		  || aux.x_csect.x_scnlen.l != 0)
+	      if ((sym.n_sclass != C_HIDEXT)
+		  || (aux.x_csect.x_scnlen.l != 0))
 		{
 		  (*_bfd_error_handler)
 		    (_("%B: XMC_TC0 symbol `%s' is class %d scnlen %d"),
 		     abfd, name, sym.n_sclass, aux.x_csect.x_scnlen.l);
-		  bfd_set_error (bfd_error_bad_value);
+		  bfd_set_error(bfd_error_bad_value);
 		  goto error_return;
 		}
-	      xcoff_data (abfd)->toc = sym.n_value;
+	      xcoff_data(abfd)->toc = sym.n_value;
 	    }
 
 	  /* We must merge TOC entries for the same symbol.  We can
@@ -1311,45 +1312,46 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 	     The conditions to get past the if-check are not that bad.
 	     They are what is used to create the TOC csects in the first
 	     place.  */
-	  if (aux.x_csect.x_smclas == XMC_TC
-	      && sym.n_sclass == C_HIDEXT
-	      && info->hash->creator == abfd->xvec
-	      && ((bfd_xcoff_is_xcoff32 (abfd)
-		   && aux.x_csect.x_scnlen.l == 4)
-		  || (bfd_xcoff_is_xcoff64 (abfd)
-		      && aux.x_csect.x_scnlen.l == 8)))
+	  if ((aux.x_csect.x_smclas == XMC_TC)
+	      && (sym.n_sclass == C_HIDEXT)
+	      && (info->hash->creator == abfd->xvec)
+	      && ((bfd_xcoff_is_xcoff32(abfd)
+		   && (aux.x_csect.x_scnlen.l == 4))
+		  || (bfd_xcoff_is_xcoff64(abfd)
+		      && (aux.x_csect.x_scnlen.l == 8))))
 	    {
 	      asection *enclosing;
 	      struct internal_reloc *relocs;
 	      bfd_size_type relindx;
 	      struct internal_reloc *rel;
 
-	      enclosing = coff_section_from_bfd_index (abfd, sym.n_scnum);
+	      enclosing = coff_section_from_bfd_index(abfd, sym.n_scnum);
 	      if (enclosing == NULL)
 		goto error_return;
 
 	      relocs = reloc_info[enclosing->target_index].relocs;
 	      amt = enclosing->reloc_count;
-	      relindx = xcoff_find_reloc (relocs, amt, sym.n_value);
-	      rel = relocs + relindx;
+	      relindx = xcoff_find_reloc(relocs, amt, sym.n_value);
+	      rel = (relocs + relindx);
 
 	      /* 32 bit R_POS r_size is 31
 		 64 bit R_POS r_size is 63  */
-	      if (relindx < enclosing->reloc_count
-		  && rel->r_vaddr == (bfd_vma) sym.n_value
-		  && rel->r_type == R_POS
-		  && ((bfd_xcoff_is_xcoff32 (abfd)
-		       && rel->r_size == 31)
-		      || (bfd_xcoff_is_xcoff64 (abfd)
-			  && rel->r_size == 63)))
+	      if ((relindx < enclosing->reloc_count)
+		  && (rel->r_vaddr == (bfd_vma)sym.n_value)
+		  && (rel->r_type == R_POS)
+		  && ((bfd_xcoff_is_xcoff32(abfd)
+		       && (rel->r_size == 31))
+		      || (bfd_xcoff_is_xcoff64(abfd)
+			  && (rel->r_size == 63))))
 		{
 		  bfd_byte *erelsym;
 
 		  struct internal_syment relsym;
 
-		  erelsym = ((bfd_byte *) obj_coff_external_syms (abfd)
-			     + rel->r_symndx * symesz);
-		  bfd_coff_swap_sym_in (abfd, (void *) erelsym, (void *) &relsym);
+		  erelsym = ((bfd_byte *)obj_coff_external_syms(abfd)
+			     + ((bfd_size_type)rel->r_symndx * symesz));
+		  bfd_coff_swap_sym_in(abfd, (void *)erelsym,
+                                       (void *)&relsym);
 		  if (relsym.n_sclass == C_EXT)
 		    {
 		      const char *relname;
@@ -1359,8 +1361,8 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 
 		      /* At this point we know that the TOC entry is
 			 for an externally visible symbol.  */
-		      relname = _bfd_coff_internal_syment_name (abfd, &relsym,
-								relbuf);
+		      relname = _bfd_coff_internal_syment_name(abfd, &relsym,
+                                                               relbuf);
 		      if (relname == NULL)
 			goto error_return;
 
@@ -1369,14 +1371,14 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 			 the normal case, but not common cases like
 			 SYM.P4 which gcc generates to store SYM + 4
 			 in the TOC.  FIXME.  */
-		      if (strcmp (name, relname) == 0)
+		      if (strcmp(name, relname) == 0)
 			{
 			  copy = (! info->keep_memory
-				  || relsym._n._n_n._n_zeroes != 0
-				  || relsym._n._n_n._n_offset == 0);
-			  h = xcoff_link_hash_lookup (xcoff_hash_table (info),
-						      relname, TRUE, copy,
-						      FALSE);
+				  || (relsym._n._n_n._n_zeroes != 0)
+				  || (relsym._n._n_n._n_offset == 0));
+			  h = xcoff_link_hash_lookup(xcoff_hash_table(info),
+						     relname, TRUE, copy,
+						     FALSE);
 			  if (h == NULL)
 			    goto error_return;
 
@@ -1431,7 +1433,8 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 
 	    if (! bfd_is_abs_section(enclosing)
 		&& (((bfd_vma)sym.n_value < enclosing->vma)
-		    || (((bfd_vma)sym.n_value + aux.x_csect.x_scnlen.l)
+		    || ((bfd_vma)((bfd_signed_vma)sym.n_value
+                                  + aux.x_csect.x_scnlen.l)
 			> (enclosing->vma + enclosing->size))))
 	      {
 		(*_bfd_error_handler)
@@ -1441,8 +1444,9 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 		goto error_return;
 	      }
 	    csect->vma = sym.n_value;
-	    csect->filepos = (enclosing->filepos + sym.n_value
-			      - enclosing->vma);
+	    csect->filepos = (file_ptr)(enclosing->filepos
+                                        + (file_ptr)sym.n_value
+                                        - (file_ptr)enclosing->vma);
 	    csect->size = (bfd_size_type)aux.x_csect.x_scnlen.l;
 	    csect->flags |= (SEC_ALLOC | SEC_LOAD | SEC_HAS_CONTENTS);
 	    csect->alignment_power = SMTYP_ALIGN(aux.x_csect.x_smtyp);
@@ -1453,12 +1457,12 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 	    csect->used_by_bfd = bfd_zalloc(abfd, amt);
 	    if (csect->used_by_bfd == NULL)
 	      goto error_return;
-	    amt = sizeof (struct xcoff_section_tdata);
-	    coff_section_data (abfd, csect)->tdata = bfd_zalloc (abfd, amt);
-	    if (coff_section_data (abfd, csect)->tdata == NULL)
+	    amt = sizeof(struct xcoff_section_tdata);
+	    coff_section_data(abfd, csect)->tdata = bfd_zalloc(abfd, amt);
+	    if (coff_section_data(abfd, csect)->tdata == NULL)
 	      goto error_return;
-	    xcoff_section_data (abfd, csect)->enclosing = enclosing;
-	    xcoff_section_data (abfd, csect)->lineno_count =
+	    xcoff_section_data(abfd, csect)->enclosing = enclosing;
+	    xcoff_section_data(abfd, csect)->lineno_count =
 	      enclosing->lineno_count;
 
 	    if (enclosing->owner == abfd)
@@ -1470,17 +1474,18 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 
 		relocs = reloc_info[enclosing->target_index].relocs;
 		amt = enclosing->reloc_count;
-		relindx = xcoff_find_reloc (relocs, amt, csect->vma);
+		relindx = xcoff_find_reloc(relocs, amt, csect->vma);
 
-		rel = relocs + relindx;
+		rel = (relocs + relindx);
 		rel_csect = (reloc_info[enclosing->target_index].csects
 			     + relindx);
 
-		csect->rel_filepos = (enclosing->rel_filepos
-				      + relindx * bfd_coff_relsz (abfd));
-		while (relindx < enclosing->reloc_count
-		       && *rel_csect == NULL
-		       && rel->r_vaddr < csect->vma + csect->size)
+		csect->rel_filepos =
+                  (file_ptr)(enclosing->rel_filepos
+                             + (file_ptr)(relindx * bfd_coff_relsz(abfd)));
+		while ((relindx < enclosing->reloc_count)
+		       && (*rel_csect == NULL)
+		       && (rel->r_vaddr < (csect->vma + csect->size)))
 		  {
 
 		    *rel_csect = csect;
@@ -1496,9 +1501,10 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 	       which we do not bother to set.  */
 
 	    csect_index =
-              (unsigned int)((esym
-                              - (bfd_byte *)obj_coff_external_syms(abfd))
-                             / symesz);
+              ((unsigned int)
+               ((bfd_size_type)(esym
+                                - (bfd_byte *)obj_coff_external_syms(abfd))
+                / symesz));
 
 	    xcoff_section_data(abfd, csect)->first_symndx = csect_index;
 
@@ -1564,8 +1570,9 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 	    {
 	      xcoff_section_data(abfd, csect)->last_symndx =
 		((unsigned long)
-                 ((esym
-                   - (bfd_byte *)obj_coff_external_syms(abfd))
+                 ((bfd_size_type)(esym
+                                  - ((bfd_byte *)
+                                     obj_coff_external_syms(abfd)))
                   / symesz));
 	    }
 
@@ -1588,9 +1595,10 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 	     which we do not bother to set.  */
 
 	  csect_index =
-              (unsigned int)((esym
+            ((unsigned int)
+             ((bfd_size_type)(esym
                               - (bfd_byte *)obj_coff_external_syms(abfd))
-                             / symesz);
+              / symesz));
 
 	  amt = sizeof(struct coff_section_tdata);
 	  csect->used_by_bfd = bfd_zalloc(abfd, amt);
@@ -1767,15 +1775,15 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 		     sure the XCOFF linker is wholly prepared to
 		     handle them, and that would only be a warning,
 		     not an error.  */
-		  if (! ((*info->callbacks->multiple_definition)
-			 (info, (*sym_hash)->root.root.string,
-			  NULL, NULL, (bfd_vma) 0,
-			  (*sym_hash)->root.u.def.section->owner,
-			  (*sym_hash)->root.u.def.section,
-			  (*sym_hash)->root.u.def.value)))
+		  if (!((*info->callbacks->multiple_definition)
+                        (info, (*sym_hash)->root.root.string,
+                         NULL, NULL, (bfd_vma)0UL,
+                         (*sym_hash)->root.u.def.section->owner,
+                         (*sym_hash)->root.u.def.section,
+                         (*sym_hash)->root.u.def.value)))
 		    goto error_return;
-		  /* Try not to give this error too many times.  */
-		  (*sym_hash)->flags &= ~XCOFF_MULTIPLY_DEFINED;
+		  /* Try not to give this error too many times: */
+		  (*sym_hash)->flags &= (flagword)~XCOFF_MULTIPLY_DEFINED;
 		}
 	    }
 
@@ -1918,19 +1926,19 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 		}
 	    }
 
-	  free (reloc_info[o->target_index].csects);
+	  free(reloc_info[o->target_index].csects);
 	  reloc_info[o->target_index].csects = NULL;
 
 	  /* Reset SEC_RELOC and the reloc_count, since the reloc
 	     information is now attached to the csects.  */
-	  o->flags &=~ SEC_RELOC;
+	  o->flags &= (flagword)~SEC_RELOC;
 	  o->reloc_count = 0;
 
 	  /* If we are not keeping memory, free the reloc information.  */
 	  if (! info->keep_memory
-	      && coff_section_data (abfd, o) != NULL
-	      && coff_section_data (abfd, o)->relocs != NULL
-	      && ! coff_section_data (abfd, o)->keep_relocs)
+	      && (coff_section_data(abfd, o) != NULL)
+	      && (coff_section_data(abfd, o)->relocs != NULL)
+	      && ! coff_section_data(abfd, o)->keep_relocs)
 	    {
 	      free (coff_section_data (abfd, o)->relocs);
 	      coff_section_data (abfd, o)->relocs = NULL;
@@ -5309,6 +5317,14 @@ xcoff_reloc_link_order(bfd *output_bfd,
   return TRUE;
 }
 
+/* welp, I give up: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
+# endif /* gcc 4.6+ */
+#endif /* __GNUC__ && __GNUC_MINOR__ */
+
 /* Do the final link step: */
 bfd_boolean
 _bfd_xcoff_bfd_final_link(bfd *abfd, struct bfd_link_info *info)
@@ -5950,5 +5966,12 @@ _bfd_xcoff_bfd_final_link(bfd *abfd, struct bfd_link_info *info)
     free(external_relocs);
   return FALSE;
 }
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* __GNUC__ && __GNUC_MINOR__ */
 
 /* EOF */

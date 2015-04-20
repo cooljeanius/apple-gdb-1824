@@ -66,7 +66,7 @@ otherwise, it has to perform the complicated lookup function.
 @subsubsection @code{bfd_cache_init}
 @strong{Synopsis}
 @example
-bfd_boolean bfd_cache_init (bfd *abfd);
+bfd_boolean bfd_cache_init(bfd *abfd);
 @end example
 @strong{Description}@*
 Add a newly opened BFD to the cache.
@@ -75,7 +75,7 @@ Add a newly opened BFD to the cache.
 @subsubsection @code{bfd_cache_close}
 @strong{Synopsis}
 @example
-bfd_boolean bfd_cache_close (bfd *abfd);
+bfd_boolean bfd_cache_close(bfd *abfd);
 @end example
 @strong{Description}@*
 Remove the BFD @var{abfd} from the cache. If the attached file is open,
@@ -89,7 +89,7 @@ returned if all is well.
 @subsubsection @code{bfd_cache_close_all}
 @strong{Synopsis}
 @example
-bfd_boolean bfd_cache_close_all (void);
+bfd_boolean bfd_cache_close_all(void);
 @end example
 @strong{Description}@*
 Remove all BFDs from the cache. If the attached file is open,
@@ -103,7 +103,7 @@ returned if all is well.
 @subsubsection @code{bfd_open_file}
 @strong{Synopsis}
 @example
-FILE* bfd_open_file (bfd *abfd);
+FILE* bfd_open_file(bfd *abfd);
 @end example
 @strong{Description}@*
 Call the OS to open a file for @var{abfd}.  Return the @code{FILE *}
@@ -116,7 +116,7 @@ cache, so it won't have to be removed from it.
 @subsubsection @code{bfd_cache_lookup_worker}
 @strong{Synopsis}
 @example
-FILE *bfd_cache_lookup_worker (bfd *abfd);
+FILE *bfd_cache_lookup_worker(bfd *abfd);
 @end example
 @strong{Description}@*
 Called when the macro @code{bfd_cache_lookup} fails to find a
@@ -130,7 +130,7 @@ returning NULL if it is unable to (re)open the @var{abfd}.
 @subsubsection @code{bfd_cache_flush}
 @strong{Synopsis}
 @example
-void bfd_cache_flush (void);
+void bfd_cache_flush(void);
 @end example
 @strong{Description}@*
 Flushes BFD file cache.

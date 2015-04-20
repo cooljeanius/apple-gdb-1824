@@ -1,8 +1,8 @@
-/* Motorola 68HC11/HC12-specific support for 32-bit ELF
-   Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005
-   Free Software Foundation, Inc.
-   Contributed by Stephane Carrez (stcarrez@nerim.fr)
-
+/* elf32-m68hc1x.c: Motorola 68HC11/HC12-specific support for 32-bit ELF
+ * Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005
+ * Free Software Foundation, Inc.
+ * Contributed by Stephane Carrez <stcarrez@nerim.fr>  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -1379,27 +1379,27 @@ static void scan_sections_for_abi (bfd *abfd ATTRIBUTE_UNUSED,
     p->use_memory_banks = TRUE;
 }
 
-/* Tweak the OSABI field of the elf header.  */
-
+/* Tweak the OSABI field of the elf header: */
 void
-elf32_m68hc11_post_process_headers (bfd *abfd, struct bfd_link_info *link_info)
+elf32_m68hc11_post_process_headers(bfd *abfd, struct bfd_link_info *link_info)
 {
   struct m68hc11_scan_param param;
 
   if (link_info == 0)
     return;
 
-  m68hc11_elf_get_bank_parameters (link_info);
+  m68hc11_elf_get_bank_parameters(link_info);
 
   param.use_memory_banks = FALSE;
-  param.pinfo = &m68hc11_elf_hash_table (link_info)->pinfo;
-  bfd_map_over_sections (abfd, scan_sections_for_abi, &param);
+  param.pinfo = &m68hc11_elf_hash_table(link_info)->pinfo;
+  bfd_map_over_sections(abfd, scan_sections_for_abi, & param);
   if (param.use_memory_banks)
     {
-      Elf_Internal_Ehdr * i_ehdrp;
+      Elf_Internal_Ehdr *i_ehdrp;
 
-      i_ehdrp = elf_elfheader (abfd);
+      i_ehdrp = elf_elfheader(abfd);
       i_ehdrp->e_flags |= E_M68HC12_BANKS;
     }
 }
 
+/* EOF */

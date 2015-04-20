@@ -1,3 +1,23 @@
+2015-04-18  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	add efence target to Xcode proj; more bfd stuff
+
+	Change-Id: Ib952c0647f4b3356de9280f14c27e0e131b6c0f1
+
+2015-04-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	go through all subdirs and do stuff
+
+	idk
+
+	Change-Id: I38fd4ab4db07b8e02ddbfb2b1a99e5e3b6ae3dd0
+
+2015-04-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	convert libcheckpoint to use automake
+
+	Change-Id: I80e5daf9a8e035bd94ad31462ed771a838f10bd1
+
 2015-04-02  Eric Gallager   <egall@gwmail.gwu.edu>
 
 	back to trying to get the topmost-level Makefile working again

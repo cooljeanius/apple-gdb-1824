@@ -600,11 +600,11 @@ riscix_some_aout_object_p(bfd *abfd, struct internal_exec *execp,
 
     if ((abfd->iostream != NULL)
 	&& ((abfd->flags & BFD_IN_MEMORY) == 0)
-        && ((fstat(fileno((FILE *)(abfd->iostream)), &stat_buf) == 0))
+        && (fstat(fileno((FILE *)(abfd->iostream)), &stat_buf) == 0)
         && ((stat_buf.st_mode & 0111) != 0))
       abfd->flags |= EXEC_P;
   }
-#else /* ! MACH */
+#else /* !(MACH || STAT_FOR_EXEC): */
   /* Now that the segment addresses have been worked out, take a better
      guess at whether the file is executable.  If the entry point
      is within the text segment, assume it is.  (This makes files
@@ -613,10 +613,11 @@ riscix_some_aout_object_p(bfd *abfd, struct internal_exec *execp,
 
      At some point we should probably break down and stat the file and
      declare it executable if (one of) its 'x' bits are on...  */
-  if ((execp->a_entry >= obj_textsec(abfd)->vma) &&
-      (execp->a_entry < obj_textsec(abfd)->vma + obj_textsec(abfd)->size))
+  if ((execp->a_entry >= obj_textsec(abfd)->vma)
+      && (execp->a_entry < (obj_textsec(abfd)->vma
+                            + obj_textsec(abfd)->size)))
     abfd->flags |= EXEC_P;
-#endif /* MACH */
+#endif /* MACH || STAT_FOR_EXEC */
   if (result == NULL)
     {
       free(rawptr);

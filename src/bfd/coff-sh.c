@@ -2827,20 +2827,21 @@ sh_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	      name = "*ABS*";
 	    else if (h != NULL)
 	      name = NULL;
-	    else if (sym->_n._n_n._n_zeroes == 0
-		     && sym->_n._n_n._n_offset != 0)
-	      name = obj_coff_strings (input_bfd) + sym->_n._n_n._n_offset;
+	    else if ((sym->_n._n_n._n_zeroes == 0)
+		     && (sym->_n._n_n._n_offset != 0))
+	      name = (obj_coff_strings(input_bfd)
+                      + sym->_n._n_n._n_offset);
 	    else
 	      {
- 		strncpy (buf, sym->_n._n_name, SYMNMLEN);
+ 		strncpy(buf, sym->_n._n_name, (size_t)SYMNMLEN);
 		buf[SYMNMLEN] = '\0';
 		name = buf;
 	      }
 
-	    if (! ((*info->callbacks->reloc_overflow)
-		   (info, (h ? &h->root : NULL), name, howto->name,
-		    (bfd_vma) 0, input_bfd, input_section,
-		    rel->r_vaddr - input_section->vma)))
+	    if (!((*info->callbacks->reloc_overflow)
+		  (info, (h ? &h->root : NULL), name, howto->name,
+		   (bfd_vma)0UL, input_bfd, input_section,
+		   (rel->r_vaddr - input_section->vma))))
 	      return FALSE;
 	  }
 	}

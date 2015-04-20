@@ -30,8 +30,14 @@
 /* The normal alignment of `long long', in bytes. */
 #undef ALIGNOF_LONG_LONG
 
+/* The normal alignment of `off64_t', in bytes. */
+#undef ALIGNOF_OFF64_T
+
 /* The normal alignment of `off_t', in bytes. */
 #undef ALIGNOF_OFF_T
+
+/* The normal alignment of `unsigned long long', in bytes. */
+#undef ALIGNOF_UNSIGNED_LONG_LONG
 
 /* The normal alignment of `void *', in bytes. */
 #undef ALIGNOF_VOID_P
@@ -394,6 +400,9 @@
 /* Define to 1 if you have the <nl_types.h> header file. */
 #undef HAVE_NL_TYPES_H
 
+/* Define to 1 if the system has the type `off64_t'. */
+#undef HAVE_OFF64_T
+
 /* Define to 1 if you have the `open' function. */
 #undef HAVE_OPEN
 
@@ -630,6 +639,9 @@
    `HAVE_STRUCT_TM_TM_ZONE' instead. */
 #undef HAVE_TM_ZONE
 
+/* Define to 1 if typeof works with your compiler. */
+#undef HAVE_TYPEOF
+
 /* Define to 1 if you don't have `tm_zone' but do have the external array
    `tzname'. */
 #undef HAVE_TZNAME
@@ -746,11 +758,17 @@
 /* The size of `long long', as computed by sizeof. */
 #undef SIZEOF_LONG_LONG
 
+/* The size of `off64_t', as computed by sizeof. */
+#undef SIZEOF_OFF64_T
+
 /* The size of `off_t', as computed by sizeof. */
 #undef SIZEOF_OFF_T
 
 /* The size of `short', as computed by sizeof. */
 #undef SIZEOF_SHORT
+
+/* The size of `unsigned long long', as computed by sizeof. */
+#undef SIZEOF_UNSIGNED_LONG_LONG
 
 /* The size of `void *', as computed by sizeof. */
 #undef SIZEOF_VOID_P
@@ -923,6 +941,9 @@
 /* Define to `int' if <sys/types.h> does not define. */
 #undef mode_t
 
+/* Define to `unsigned long' if <sys/types.h> does not define. */
+#undef off64_t
+
 /* Define to `long int' if <sys/types.h> does not define. */
 #undef off_t
 
@@ -948,6 +969,9 @@
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
+
+/* Define to __typeof__ if your compiler spells it that way. */
+#undef typeof
 
 /* Define to `int' if <sys/types.h> doesn't define. */
 #undef uid_t

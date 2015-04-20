@@ -842,7 +842,7 @@
 /* Define to `int' if <sys/types.h> does not define. */
 #undef mode_t
 
-/* Define to `unsigned long long' if <sys/types.h> does not define. */
+/* Define to `unsigned long' if <sys/types.h> does not define. */
 #undef off64_t
 
 /* Define to `long int' if <sys/types.h> does not define. */

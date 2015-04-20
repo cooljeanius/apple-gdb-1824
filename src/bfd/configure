@@ -20521,6 +20521,7 @@ $as_echo "${bfd_cv_has_long_long}" >&6; }
   ## if so, further checks:
 if test "x${bfd_cv_has_long_long}" = "xyes"; then
   BFD_HOST_LONG_LONG=1
+  BFD_HOST_UNSIGNED_LONG_LONG=1
   # The cast to long int works around a bug in the HP C Compiler
 # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
 # declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
@@ -20585,6 +20586,72 @@ $as_echo "$ac_cv_alignof_long_long" >&6; }
 
 cat >>confdefs.h <<_ACEOF
 #define ALIGNOF_LONG_LONG $ac_cv_alignof_long_long
+_ACEOF
+
+  # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking size of unsigned long long" >&5
+$as_echo_n "checking size of unsigned long long... " >&6; }
+if ${ac_cv_sizeof_unsigned_long_long+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (unsigned long long))" "ac_cv_sizeof_unsigned_long_long"        "$ac_includes_default"; then :
+
+else
+  if test "$ac_cv_type_unsigned_long_long" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (unsigned long long)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof_unsigned_long_long=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof_unsigned_long_long" >&5
+$as_echo "$ac_cv_sizeof_unsigned_long_long" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define SIZEOF_UNSIGNED_LONG_LONG $ac_cv_sizeof_unsigned_long_long
+_ACEOF
+
+  # The cast to long int works around a bug in the HP C Compiler,
+# see AC_CHECK_SIZEOF for more information.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of unsigned long long" >&5
+$as_echo_n "checking alignment of unsigned long long... " >&6; }
+if ${ac_cv_alignof_unsigned_long_long+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) offsetof (ac__type_alignof_, y)" "ac_cv_alignof_unsigned_long_long"        "$ac_includes_default
+#ifndef offsetof
+# define offsetof(type, member) ((char *) &((type *) 0)->member - (char *) 0)
+#endif
+typedef struct { char x; unsigned long long y; } ac__type_alignof_;"; then :
+
+else
+  if test "$ac_cv_type_unsigned_long_long" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute alignment of unsigned long long
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_alignof_unsigned_long_long=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_alignof_unsigned_long_long" >&5
+$as_echo "$ac_cv_alignof_unsigned_long_long" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define ALIGNOF_UNSIGNED_LONG_LONG $ac_cv_alignof_unsigned_long_long
 _ACEOF
 
   ## ok
@@ -22594,6 +22661,60 @@ if test $ac_cv_c_stringize = yes; then
 $as_echo "#define HAVE_STRINGIZE 1" >>confdefs.h
 
 fi
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for typeof syntax and keyword spelling" >&5
+$as_echo_n "checking for typeof syntax and keyword spelling... " >&6; }
+if ${ac_cv_c_typeof+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_c_typeof=no
+     for ac_kw in typeof __typeof__ no; do
+       test $ac_kw = no && break
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+	   int value;
+	   typedef struct {
+		   char a [1
+			   + ! (($ac_kw (value))
+				(($ac_kw (value)) 0 < ($ac_kw (value)) -1
+				 ? ($ac_kw (value)) - 1
+				 : ~ (~ ($ac_kw (value)) 0
+				      << sizeof ($ac_kw (value)))))]; }
+	      ac__typeof_type_;
+	   return
+	     (! ((void) ((ac__typeof_type_ *) 0), 0));
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_c_typeof=$ac_kw
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+       test $ac_cv_c_typeof != no && break
+     done
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_typeof" >&5
+$as_echo "$ac_cv_c_typeof" >&6; }
+  if test $ac_cv_c_typeof != no; then
+
+$as_echo "#define HAVE_TYPEOF 1" >>confdefs.h
+
+    if test $ac_cv_c_typeof != typeof; then
+
+cat >>confdefs.h <<_ACEOF
+#define typeof $ac_cv_c_typeof
+_ACEOF
+
+    fi
+  fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for working volatile" >&5
 $as_echo_n "checking for working volatile... " >&6; }
@@ -26831,7 +26952,7 @@ do
     s390_elf64_vec) tb="${tb} elf64-s390.lo elf64.lo $elf"; target_size=64 ;;
     score_elf32_be_vec) tb="${tb} elf32-score.lo elf32-score7.lo elf32.lo $elf"; want64=true; target_size=64 ;;
     score_elf32_le_vec) tb="${tb} elf32-score.lo elf32-score7.lo elf32.lo $elf"; want64=true; target_size=64 ;;
-    # FIXME: We include cofflink.lo not because it's needed for
+    # FIXME: We include cofflink.lo not because it is needed for
     # sh64_elf32[_le]_vec, but because we include sh_elf32[_le]_vec
     # which needs it but does not list it.  Should be fixed in right place.
     sh64_elf32_vec) tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf-vxworks.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
@@ -27167,14 +27288,141 @@ cat >>confdefs.h <<_ACEOF
 #define ALIGNOF_OFF_T $ac_cv_alignof_off_t
 _ACEOF
 
-    ## TODO: off64_t next?
+fi
+if test "x${ac_cv_sizeof_off_t}" != "x${ac_cv_sizeof_unsigned_long_long}"; then
+  ac_fn_c_check_type "$LINENO" "off64_t" "ac_cv_type_off64_t" "$ac_includes_default"
+if test "x$ac_cv_type_off64_t" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_OFF64_T 1
+_ACEOF
+
+
+    test -z "${ac_cv_sizeof_off64_t}"
+    test -z "${ac_cv_alignof_off64_t}"
+    # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking size of off64_t" >&5
+$as_echo_n "checking size of off64_t... " >&6; }
+if ${ac_cv_sizeof_off64_t+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (off64_t))" "ac_cv_sizeof_off64_t"        "$ac_includes_default"; then :
+
+else
+  if test "$ac_cv_type_off64_t" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (off64_t)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof_off64_t=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof_off64_t" >&5
+$as_echo "$ac_cv_sizeof_off64_t" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define SIZEOF_OFF64_T $ac_cv_sizeof_off64_t
+_ACEOF
+
+    # The cast to long int works around a bug in the HP C Compiler,
+# see AC_CHECK_SIZEOF for more information.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of off64_t" >&5
+$as_echo_n "checking alignment of off64_t... " >&6; }
+if ${ac_cv_alignof_off64_t+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) offsetof (ac__type_alignof_, y)" "ac_cv_alignof_off64_t"        "$ac_includes_default
+#ifndef offsetof
+# define offsetof(type, member) ((char *) &((type *) 0)->member - (char *) 0)
+#endif
+typedef struct { char x; off64_t y; } ac__type_alignof_;"; then :
+
+else
+  if test "$ac_cv_type_off64_t" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute alignment of off64_t
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_alignof_off64_t=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_alignof_off64_t" >&5
+$as_echo "$ac_cv_alignof_off64_t" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define ALIGNOF_OFF64_T $ac_cv_alignof_off64_t
+_ACEOF
+
+
+else
+
+    unset ac_cv_type_off64_t
+    if test "x${ac_cv_type_off_t}" = "xyes"; then
+      ac_fn_c_check_type "$LINENO" "off64_t" "ac_cv_type_off64_t" "$ac_includes_default"
+if test "x$ac_cv_type_off64_t" = xyes; then :
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define off64_t off_t
+_ACEOF
+
+fi
+      ## hope that is okay...
+    elif test "x${ac_cv_type_unsigned_long_long}" = "xyes"; then
+      ac_fn_c_check_type "$LINENO" "off64_t" "ac_cv_type_off64_t" "$ac_includes_default"
+if test "x$ac_cv_type_off64_t" = xyes; then :
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define off64_t unsigned long long
+_ACEOF
+
+fi
+    else
+      ac_fn_c_check_type "$LINENO" "off64_t" "ac_cv_type_off64_t" "$ac_includes_default"
+if test "x$ac_cv_type_off64_t" = xyes; then :
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define off64_t unsigned long
+_ACEOF
+
+fi
+    fi
+
+fi
+  ## maybe use it as a replacement, idk...
+elif test "x${ac_cv_sizeof_off_t}" = "x${ac_cv_sizeof_unsigned_long_long}";  then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: it seems that your off_t is already 64-bit; in that case, there is no need to check for an off64_t type..." >&5
+$as_echo "$as_me: it seems that your off_t is already 64-bit; in that case, there is no need to check for an off64_t type..." >&6;}
+else
+  test -z "${ac_cv_sizeof_off_t}"
+  test -z "${ac_cv_sizeof_unsigned_long_long}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unsure if off_t is 64-bit or not..." >&5
+$as_echo "$as_me: WARNING: unsure if off_t is 64-bit or not..." >&2;}
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking file_ptr type" >&5
 $as_echo_n "checking file_ptr type... " >&6; }
 bfd_file_ptr="long"
 bfd_ufile_ptr="unsigned long"
-if test x"${ac_cv_func_ftello64}" = xyes -a x"${ac_cv_func_fseeko64}" = xyes \
-	-o x"${ac_cv_sizeof_off_t}" = x8; then
+if test x"${ac_cv_func_ftello64}" = x"yes" -a x"${ac_cv_func_fseeko64}" = x"yes" \
+	-o x"${ac_cv_sizeof_off_t}" = x"8"; then
     bfd_file_ptr=BFD_HOST_64_BIT
     bfd_ufile_ptr=BFD_HOST_U_64_BIT
 fi
@@ -30314,10 +30562,10 @@ fi
  ;;
     "bfd_h_vpath_fix":C)
 if test ! -e bfd.h; then
-  if test -e doc/bfd.h; then
+  if test -e doc/bfd.h && test -z "`grep @BFD_HOST_64_BIT_DEFINED@ doc/bfd.h`"; then
     cp -v doc/bfd.h bfd.h || echo ""
   elif test "${srcdir}" != "."; then
-    if test -e ${srcdir}/doc/bfd.h; then
+    if test -e ${srcdir}/doc/bfd.h && test -z "`grep @BFD_HOST_64_BIT_DEFINED@ ${srcdir}/doc/bfd.h`"; then
       cp -v ${srcdir}/doc/bfd.h bfd.h || echo ""
     elif test -e ${srcdir}/bfd.h -a "${srcdir}" != "."; then
       cp -v ${srcdir}/bfd.h bfd.h || echo ""
@@ -30327,10 +30575,10 @@ fi
  ;;
     "bfd_h_vpath_fix2":C)
 if test ! -e ${srcdir}/bfd.h; then
-  if test -e ${srcdir}/doc/bfd.h; then
+  if test -e ${srcdir}/doc/bfd.h && test -z "`grep @BFD_HOST_64_BIT_DEFINED@ ${srcdir}/doc/bfd.h`"; then
     cp -v ${srcdir}/doc/bfd.h ${srcdir}/bfd.h || echo ""
   elif test "${srcdir}" != "."; then
-    if test -e doc/bfd.h; then
+    if test -e doc/bfd.h && test -z "`grep @BFD_HOST_64_BIT_DEFINED@ doc/bfd.h`"; then
       cp -v doc/bfd.h ${srcdir}/bfd.h || echo ""
     elif test -e bfd.h -a "${srcdir}" != "."; then
       cp -v bfd.h ${srcdir}/bfd.h || echo ""
@@ -30410,9 +30658,7 @@ if test -x ./config.status; then
     fi
   fi
   if test -z "${LIBTOOL}"; then
-    if test -n "${SHELL}"; then
-      LIBTOOL="${SHELL} ${our_libtool_script}"
-    elif test -x /bin/sh; then
+    if test -x /bin/sh; then
       LIBTOOL="/bin/sh ${our_libtool_script}"
     else
       LIBTOOL="${our_libtool_script}"

@@ -205,12 +205,13 @@ CONFIG_ENABLE_GDBMI=--enable-gdbmi
 CONFIG_ENABLE_BUILD_WARNINGS=--enable-build-warnings --disable-werror
 CONFIG_ENABLE_TUI=--disable-tui
 CONFIG_ALL_BFD_TARGETS=--enable-targets#=all
-CONFIG_ALL_BFD_APPLE_TARGETS=--enable-targets=m68k-apple-aux,powerpc-apple-rhapsody,arm-apple-darwin,i386-apple-darwin,x86_64-apple-darwin,powerpc-apple-macos,powerpc64-apple-darwin
+CONFIG_ALL_BFD_APPLE_TARGETS=--enable-targets=m68k-apple-aux,powerpc-apple-rhapsody,arm-apple-darwin,i386-apple-darwin,x86_64-apple-darwin,powerpc-apple-macos,powerpc64-apple-darwin,powerpc64-apple-macos
 CONFIG_64_BIT_BFD=--enable-64-bit-bfd
 CONFIG_WITH_MMAP=--with-mmap
 CONFIG_ENABLE_SHARED=--disable-shared
 CONFIG_MAINTAINER_MODE=#--enable-maintainer-mode
 CONFIG_SILENT_RULES=
+CONFIG_DEP_TRACK=--disable-dependency-tracking
 CONFIG_BUILD=--build=$(BUILD_ARCH)
 CONFIG_OTHER_OPTIONS?=--disable-serial-configure --disable-opts-test --with-x --enable-carbon-framework --enable-debug-symbols-framework
 
@@ -258,6 +259,7 @@ CONFIGURE_OPTIONS = $(filter-out ,\
 	$(CONFIG_WITH_MMAP) \
 	$(CONFIG_ENABLE_SHARED) \
 	$(CONFIG_MAINTAINER_MODE) \
+	$(CONFIG_DEP_TRACK) \
 	$(CONFIG_BUILD) \
 	$(CONFIG_OTHER_OPTIONS))
 

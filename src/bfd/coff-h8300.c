@@ -136,14 +136,16 @@ funcvec_hash_newfunc (struct bfd_hash_entry *entry,
      subclass.  */
   if (ret == NULL)
     ret = ((struct funcvec_hash_entry *)
-	   bfd_hash_allocate (gen_table,
-			      sizeof (struct funcvec_hash_entry)));
+	   bfd_hash_allocate(gen_table,
+			     ((unsigned int)
+                              sizeof(struct funcvec_hash_entry))));
   if (ret == NULL)
     return NULL;
 
-  /* Call the allocation method of the superclass.  */
+  /* Call the allocation method of the superclass: */
   ret = ((struct funcvec_hash_entry *)
-	 bfd_hash_newfunc ((struct bfd_hash_entry *) ret, gen_table, string));
+	 bfd_hash_newfunc((struct bfd_hash_entry *)ret, gen_table,
+                          string));
 
   if (ret == NULL)
     return NULL;
@@ -473,14 +475,15 @@ h8300_reloc16_estimate (bfd *abfd, asection *input_section, arelent *reloc,
       /* If the distance is within -128..+128 inclusive, then we can relax
 	 this jump.  +128 is valid since the target will move two bytes
 	 closer if we do relax this branch.  */
-      if ((int) gap >= -128 && (int) gap <= 128)
+      if (((int)gap >= -128) && ((int)gap <= 128))
 	{
 	  bfd_byte code;
 
-	  if (!bfd_get_section_contents (abfd, input_section, & code,
-					 reloc->address, 1))
+	  if (!bfd_get_section_contents(abfd, input_section, & code,
+                                        (file_ptr)reloc->address,
+                                        (bfd_size_type)1UL))
 	    break;
-	  code = bfd_get_8 (abfd, & code);
+	  code = bfd_get_8(abfd, &code);
 
 	  /* It's possible we may be able to eliminate this branch entirely;
 	     if the previous instruction is a branch around this instruction,

@@ -40,7 +40,9 @@
 
 #ifdef __GNUC__
 # define alloca __builtin_alloca
-# define HAVE_ALLOCA 1
+# ifndef HAVE_ALLOCA
+#  define HAVE_ALLOCA 1
+# endif /* !HAVE_ALLOCA */
 #else
 # ifdef _MSC_VER
 #  include <malloc.h>
@@ -443,6 +445,15 @@ static int enable_secure;
 /* Get the function to evaluate the plural expression.  */
 #include "eval-plural.h"
 
+/* Same condition as where this was extracted from: */
+#ifndef _LIBC
+extern void _nl_log_untranslated PARAMS((const char *logfilename,
+                                         const char *domainname,
+                                         const char *msgid1,
+                                         const char *msgid2,
+                                         int plural));
+#endif /* !_LIBC */
+
 /* Look up MSGID in the DOMAINNAME message catalog for the current
    CATEGORY locale and, if PLURAL is nonzero, search over string
    depending on the plural form determined by N.  */
@@ -554,12 +565,12 @@ char *DCIGETTEXT(const char *domainname, const char *msgid1,
     dirname = binding->dirname;
   } else {
       /* We have a relative path. Make it absolute now: */
-      size_t dirname_len = (strlen(binding->dirname) + 1);
+      size_t dirname_len = (strlen(binding->dirname) + 1UL);
       size_t path_max;
       char *ret;
 
       path_max = (unsigned int)PATH_MAX;
-      path_max += 2; /* The getcwd docs say to do this. */
+      path_max += 2UL; /* The getcwd docs say to do this. */
 
       for (;;) {
 	  dirname = (char *)alloca(path_max + dirname_len);
@@ -571,7 +582,7 @@ char *DCIGETTEXT(const char *domainname, const char *msgid1,
 	    break;
           }
 
-	  path_max += (path_max / 2);
+	  path_max += (path_max / 2UL);
 	  path_max += PATH_INCR;
       }
 
@@ -724,11 +735,6 @@ char *DCIGETTEXT(const char *domainname, const char *msgid1,
   __libc_rwlock_unlock(_nl_state_lock);
 #ifndef _LIBC
   if (!ENABLE_SECURE) {
-      extern void _nl_log_untranslated PARAMS((const char *logfilename,
-                                               const char *domainname,
-                                               const char *msgid1,
-                                               const char *msgid2,
-                                               int plural));
       const char *logfilename = getenv("GETTEXT_LOG_UNTRANSLATED");
 
       if ((logfilename != NULL) && (logfilename[0] != '\0')) {
@@ -762,6 +768,9 @@ _nl_find_msg(struct loaded_l10nfile *domain_file,
     _nl_load_domain(domain_file, domainbinding);
 #else
     _nl_load_domain(domain_file);
+    if (domainbinding != NULL) {
+      ; /* do nothing; just silence a warning */
+    }
 #endif /* 0 */
   }
 
@@ -1253,5 +1262,9 @@ libc_freeres_fn(free_mem)
   }
 }
 #endif /* _LIBC */
+
+#ifdef HAVE_ALLOCA
+# undef HAVE_ALLOCA
+#endif /* HAVE_ALLOCA */
 
 /* EOF */

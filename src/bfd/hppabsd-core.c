@@ -1,4 +1,4 @@
-/* BFD back-end for HPPA BSD core files.
+/* hppabsd-core.c: BFD back-end for HPPA BSD core files.
    Copyright 1993, 1994, 1995, 1998, 1999, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
 
@@ -37,7 +37,7 @@
 #include "sysdep.h"
 #include "libbfd.h"
 
-#if defined (HOST_HPPABSD)
+#if defined(HOST_HPPABSD)
 
 #include "machine/vmparam.h"
 
@@ -48,22 +48,25 @@
 #include <sys/user.h>		/* After a.out.h  */
 #include <sys/file.h>
 
+#ifndef __TRAD_USER_H__
+# include "trad-user.h"
+#endif /* !__TRAD_USER_H__ */
+
 static asection *make_bfd_asection
-  PARAMS ((bfd *, const char *, flagword, bfd_size_type, file_ptr,
-	   unsigned int));
+  PARAMS((bfd *, const char *, flagword, bfd_size_type, file_ptr,
+	  unsigned int));
 static const bfd_target *hppabsd_core_core_file_p
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 static char *hppabsd_core_core_file_failing_command
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 static int hppabsd_core_core_file_failing_signal
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 static bfd_boolean hppabsd_core_core_file_matches_executable_p
-  PARAMS ((bfd *, bfd *));
+  PARAMS((bfd *, bfd *));
 static void swap_abort
-  PARAMS ((void));
+  PARAMS((void));
 
-/* These are stored in the bfd's tdata.  */
-
+/* These are stored in the bfd's tdata: */
 struct hppabsd_core_struct
   {
     int sig;
@@ -81,17 +84,13 @@ struct hppabsd_core_struct
 #define core_regsec(bfd) (core_hdr(bfd)->reg_section)
 
 static asection *
-make_bfd_asection (abfd, name, flags, size, offset, alignment_power)
-     bfd *abfd;
-     const char *name;
-     flagword flags;
-     bfd_size_type size;
-     file_ptr offset;
-     unsigned int alignment_power;
+make_bfd_asection(bfd *abfd, const char *name, flagword flags,
+                  bfd_size_type size, file_ptr offset,
+                  unsigned int alignment_power)
 {
   asection *asect;
 
-  asect = bfd_make_section (abfd, name);
+  asect = bfd_make_section(abfd, name);
   if (!asect)
     return NULL;
 
@@ -103,22 +102,25 @@ make_bfd_asection (abfd, name, flags, size, offset, alignment_power)
   return asect;
 }
 
+#ifndef UPAGES
+# define UPAGES 0
+#endif /* !UPAGES */
+
 static const bfd_target *
-hppabsd_core_core_file_p (abfd)
-     bfd *abfd;
+hppabsd_core_core_file_p(bfd *abfd)
 {
   int val;
-  struct user u;
+  user_struct_t u; /* an alias for struct user; defined in "trad-user.h" */
   struct hppabsd_core_struct *coredata;
   int clicksz;
 
   /* Try to read in the u-area.  We will need information from this
      to know how to grok the rest of the core structures.  */
-  val = bfd_bread ((void *) &u, (bfd_size_type) sizeof u, abfd);
-  if (val != sizeof u)
+  val = bfd_bread((void *)&u, (bfd_size_type)sizeof(u), abfd);
+  if (val != sizeof(u))
     {
-      if (bfd_get_error () != bfd_error_system_call)
-	bfd_set_error (bfd_error_wrong_format);
+      if (bfd_get_error() != bfd_error_system_call)
+	bfd_set_error(bfd_error_wrong_format);
       return NULL;
     }
 
@@ -127,30 +129,30 @@ hppabsd_core_core_file_p (abfd)
   clicksz = u.u_pcb.pcb_pgsz;
 
   /* clicksz must be a power of two >= 2k.  */
-  if (clicksz < 0x800
-      || clicksz != (clicksz & -clicksz))
+  if ((clicksz < 0x800)
+      || (clicksz != (clicksz & -clicksz)))
     {
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return NULL;
     }
 
   /* Sanity checks.  Make sure the size of the core file matches the
      the size computed from information within the core itself.  */
   {
-    FILE *stream = bfd_cache_lookup (abfd);
+    FILE *stream = bfd_cache_lookup(abfd);
     struct stat statbuf;
 
-    if (fstat (fileno (stream), &statbuf) < 0)
+    if (fstat(fileno(stream), &statbuf) < 0)
       {
-	bfd_set_error (bfd_error_system_call);
+	bfd_set_error(bfd_error_system_call);
 	return NULL;
       }
-    if (NBPG * (UPAGES + u.u_dsize + u.u_ssize) > statbuf.st_size)
+    if ((NBPG * (UPAGES + u.u_dsize + u.u_ssize)) > statbuf.st_size)
       {
 	bfd_set_error (bfd_error_file_truncated);
 	return NULL;
       }
-    if (clicksz * (UPAGES + u.u_dsize + u.u_ssize) < statbuf.st_size)
+    if ((clicksz * (UPAGES + u.u_dsize + u.u_ssize)) < statbuf.st_size)
       {
 	/* The file is too big.  Maybe it's not a core file
 	   or we otherwise have bad values for u_dsize and u_ssize).  */
@@ -166,83 +168,79 @@ hppabsd_core_core_file_p (abfd)
   if (!coredata)
     return NULL;
 
-  /* Make the core data and available via the tdata part of the BFD.  */
+  /* Make the core data and available via the tdata part of the BFD: */
   abfd->tdata.hppabsd_core_data = coredata;
 
-  /* Create the sections.  */
-  core_stacksec (abfd) = make_bfd_asection (abfd, ".stack",
-					   SEC_ALLOC + SEC_HAS_CONTENTS,
-					   clicksz * u.u_ssize,
-					   NBPG * (USIZE + KSTAKSIZE)
-					     + clicksz * u.u_dsize, 2);
-  if (core_stacksec (abfd) == NULL)
+  /* Create the sections: */
+  core_stacksec(abfd) = make_bfd_asection(abfd, ".stack",
+                                          (SEC_ALLOC + SEC_HAS_CONTENTS),
+                                          (clicksz * u.u_ssize),
+                                          (NBPG * (USIZE + KSTAKSIZE)
+                                           + clicksz * u.u_dsize), 2);
+  if (core_stacksec(abfd) == NULL)
     goto fail;
-  core_stacksec (abfd)->vma = USRSTACK;
+  core_stacksec(abfd)->vma = USRSTACK;
 
-  core_datasec (abfd) = make_bfd_asection (abfd, ".data",
-					  SEC_ALLOC + SEC_LOAD
-					    + SEC_HAS_CONTENTS,
-					  clicksz * u.u_dsize,
-					  NBPG * (USIZE + KSTAKSIZE), 2);
-  if (core_datasec (abfd) == NULL)
+  core_datasec(abfd) = make_bfd_asection(abfd, ".data",
+                                         (SEC_ALLOC + SEC_LOAD
+                                          + SEC_HAS_CONTENTS),
+                                         (clicksz * u.u_dsize),
+                                         (NBPG * (USIZE + KSTAKSIZE)), 2);
+  if (core_datasec(abfd) == NULL)
     goto fail;
-  core_datasec (abfd)->vma = UDATASEG;
+  core_datasec(abfd)->vma = UDATASEG;
 
-  core_regsec (abfd) = make_bfd_asection (abfd, ".reg",
-					 SEC_HAS_CONTENTS,
-					 KSTAKSIZE * NBPG,
-					 NBPG * USIZE, 2);
-  if (core_regsec (abfd) == NULL)
+  core_regsec(abfd) = make_bfd_asection(abfd, ".reg", SEC_HAS_CONTENTS,
+                                        (KSTAKSIZE * NBPG),
+                                        (NBPG * USIZE), 2);
+  if (core_regsec(abfd) == NULL)
     goto fail;
-  core_regsec (abfd)->vma = 0;
+  core_regsec(abfd)->vma = 0;
 
-  strncpy (core_command (abfd), u.u_comm, MAXCOMLEN + 1);
-  core_signal (abfd) = u.u_code;
+  strncpy(core_command(abfd), u.u_comm, (size_t)(MAXCOMLEN + 1UL));
+  core_signal(abfd) = u.u_code;
   return abfd->xvec;
 
  fail:
-  bfd_release (abfd, abfd->tdata.any);
+  bfd_release(abfd, abfd->tdata.any);
   abfd->tdata.any = NULL;
-  bfd_section_list_clear (abfd);
+  bfd_section_list_clear(abfd);
   return NULL;
 }
 
 static char *
-hppabsd_core_core_file_failing_command (abfd)
-     bfd *abfd;
+hppabsd_core_core_file_failing_command(bfd *abfd)
 {
-  return core_command (abfd);
+  return core_command(abfd);
 }
 
 static int
-hppabsd_core_core_file_failing_signal (abfd)
-     bfd *abfd;
+hppabsd_core_core_file_failing_signal(bfd *abfd)
 {
-  return core_signal (abfd);
+  return core_signal(abfd);
 }
 
 static bfd_boolean
-hppabsd_core_core_file_matches_executable_p (core_bfd, exec_bfd)
-     bfd *core_bfd, *exec_bfd;
+hppabsd_core_core_file_matches_executable_p(bfd *core_bfd, bfd *exec_bfd)
 {
-  /* There's no way to know this...  */
+  /* There is no way to know this...  */
   return TRUE;
 }
 
-/* If somebody calls any byte-swapping routines, shoot them.  */
-static void
-swap_abort ()
+/* If somebody calls any byte-swapping routines, then shoot them: */
+static void ATTRIBUTE_NORETURN
+swap_abort(void)
 {
-  /* This way doesn't require any declaration for ANSI to fuck up.  */
-  abort ();
+  /* This way does NOT require any declaration for ANSI to mess up (?) */
+  abort();
 }
 
-#define	NO_GET ((bfd_vma (*) (const void *)) swap_abort)
-#define	NO_PUT ((void (*) (bfd_vma, void *)) swap_abort)
-#define	NO_GETS ((bfd_signed_vma (*) (const void *)) swap_abort)
-#define	NO_GET64 ((bfd_uint64_t (*) (const void *)) swap_abort)
-#define	NO_PUT64 ((void (*) (bfd_uint64_t, void *)) swap_abort)
-#define	NO_GETS64 ((bfd_int64_t (*) (const void *)) swap_abort)
+#define	NO_GET ((bfd_vma (*)(const void *))swap_abort)
+#define	NO_PUT ((void (*)(bfd_vma, void *))swap_abort)
+#define	NO_GETS ((bfd_signed_vma (*)(const void *))swap_abort)
+#define	NO_GET64 ((bfd_uint64_t (*)(const void *))swap_abort)
+#define	NO_PUT64 ((void (*)(bfd_uint64_t, void *))swap_abort)
+#define	NO_GETS64 ((bfd_int64_t (*)(const void *))swap_abort)
 
 const bfd_target hppabsd_core_vec =
   {
@@ -254,9 +252,9 @@ const bfd_target hppabsd_core_vec =
      HAS_LINENO | HAS_DEBUG |
      HAS_SYMS | HAS_LOCALS | WP_TEXT | D_PAGED),
     (SEC_HAS_CONTENTS | SEC_ALLOC | SEC_LOAD | SEC_RELOC), /* section flags */
-    0,			                                   /* symbol prefix */
-    ' ',						   /* ar_pad_char */
-    16,							   /* ar_max_namelen */
+    0,			                                 /* symbol prefix */
+    ' ',						  /* ar_pad_char */
+    16,						/* ar_max_namelen */
     NO_GET64, NO_GETS64, NO_PUT64,	/* 64 bit data */
     NO_GET, NO_GETS, NO_PUT,		/* 32 bit data */
     NO_GET, NO_GETS, NO_PUT,		/* 16 bit data */
@@ -279,18 +277,20 @@ const bfd_target hppabsd_core_vec =
       bfd_false, bfd_false
     },
 
-    BFD_JUMP_TABLE_GENERIC (_bfd_generic),
-    BFD_JUMP_TABLE_COPY (_bfd_generic),
-    BFD_JUMP_TABLE_CORE (hppabsd_core),
-    BFD_JUMP_TABLE_ARCHIVE (_bfd_noarchive),
-    BFD_JUMP_TABLE_SYMBOLS (_bfd_nosymbols),
-    BFD_JUMP_TABLE_RELOCS (_bfd_norelocs),
-    BFD_JUMP_TABLE_WRITE (_bfd_generic),
-    BFD_JUMP_TABLE_LINK (_bfd_nolink),
-    BFD_JUMP_TABLE_DYNAMIC (_bfd_nodynamic),
+    BFD_JUMP_TABLE_GENERIC(_bfd_generic),
+    BFD_JUMP_TABLE_COPY(_bfd_generic),
+    BFD_JUMP_TABLE_CORE(hppabsd_core),
+    BFD_JUMP_TABLE_ARCHIVE(_bfd_noarchive),
+    BFD_JUMP_TABLE_SYMBOLS(_bfd_nosymbols),
+    BFD_JUMP_TABLE_RELOCS(_bfd_norelocs),
+    BFD_JUMP_TABLE_WRITE(_bfd_generic),
+    BFD_JUMP_TABLE_LINK(_bfd_nolink),
+    BFD_JUMP_TABLE_DYNAMIC(_bfd_nodynamic),
 
     NULL,
 
-    (PTR) 0			/* backend_data */
+    (PTR)0			/* backend_data */
   };
-#endif
+#endif /* HOST_HPPABSD */
+
+/* EOF */

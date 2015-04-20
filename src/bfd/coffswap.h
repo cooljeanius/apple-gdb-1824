@@ -291,7 +291,8 @@ coff_swap_filehdr_out(bfd *abfd, void *in, void * out)
   H_PUT_16(abfd, (bfd_vma)filehdr_in->f_opthdr, filehdr_out->f_opthdr);
   H_PUT_16(abfd, (bfd_vma)filehdr_in->f_flags, filehdr_out->f_flags);
 #ifdef TIC80_TARGET_ID
-  H_PUT_16(abfd, filehdr_in->f_target_id, filehdr_out->f_target_id);
+  H_PUT_16(abfd, (bfd_vma)filehdr_in->f_target_id,
+           filehdr_out->f_target_id);
 #endif /* TIC80_TARGET_ID */
 
 #ifdef COFF_ADJUST_FILEHDR_OUT_POST
@@ -605,53 +606,53 @@ coff_swap_aouthdr_in(bfd * abfd, void * aouthdr_ext1, void * aouthdr_int1)
 #endif /* I960 */
 
 #ifdef APOLLO_M68
-  H_PUT_32 (abfd, aouthdr_int->o_inlib, aouthdr_ext->o_inlib);
-  H_PUT_32 (abfd, aouthdr_int->o_sri, aouthdr_ext->o_sri);
-  H_PUT_32 (abfd, aouthdr_int->vid[0], aouthdr_ext->vid);
-  H_PUT_32 (abfd, aouthdr_int->vid[1], aouthdr_ext->vid + 4);
-#endif
+  H_PUT_32(abfd, (bfd_vma)aouthdr_int->o_inlib, aouthdr_ext->o_inlib);
+  H_PUT_32(abfd, (bfd_vma)aouthdr_int->o_sri, aouthdr_ext->o_sri);
+  H_PUT_32(abfd, (bfd_vma)aouthdr_int->vid[0], aouthdr_ext->vid);
+  H_PUT_32(abfd, (bfd_vma)aouthdr_int->vid[1], (aouthdr_ext->vid + 4));
+#endif /* APOLLO_M68 */
 
 #ifdef RS6000COFF_C
-#ifdef XCOFF64
-  aouthdr_int->o_toc = H_GET_64 (abfd, aouthdr_ext->o_toc);
-#else
-  aouthdr_int->o_toc = H_GET_32 (abfd, aouthdr_ext->o_toc);
-#endif
-  aouthdr_int->o_snentry  = H_GET_16 (abfd, aouthdr_ext->o_snentry);
-  aouthdr_int->o_sntext   = H_GET_16 (abfd, aouthdr_ext->o_sntext);
-  aouthdr_int->o_sndata   = H_GET_16 (abfd, aouthdr_ext->o_sndata);
-  aouthdr_int->o_sntoc    = H_GET_16 (abfd, aouthdr_ext->o_sntoc);
-  aouthdr_int->o_snloader = H_GET_16 (abfd, aouthdr_ext->o_snloader);
-  aouthdr_int->o_snbss    = H_GET_16 (abfd, aouthdr_ext->o_snbss);
-  aouthdr_int->o_algntext = H_GET_16 (abfd, aouthdr_ext->o_algntext);
-  aouthdr_int->o_algndata = H_GET_16 (abfd, aouthdr_ext->o_algndata);
-  aouthdr_int->o_modtype  = H_GET_16 (abfd, aouthdr_ext->o_modtype);
-  aouthdr_int->o_cputype  = H_GET_16 (abfd, aouthdr_ext->o_cputype);
-#ifdef XCOFF64
-  aouthdr_int->o_maxstack = H_GET_64 (abfd, aouthdr_ext->o_maxstack);
-  aouthdr_int->o_maxdata  = H_GET_64 (abfd, aouthdr_ext->o_maxdata);
-#else
-  aouthdr_int->o_maxstack = H_GET_32 (abfd, aouthdr_ext->o_maxstack);
-  aouthdr_int->o_maxdata  = H_GET_32 (abfd, aouthdr_ext->o_maxdata);
-#endif
-#endif
+# ifdef XCOFF64
+  aouthdr_int->o_toc = H_GET_64(abfd, aouthdr_ext->o_toc);
+# else
+  aouthdr_int->o_toc = H_GET_32(abfd, aouthdr_ext->o_toc);
+# endif /* XCOFF64 */
+  aouthdr_int->o_snentry = H_GET_16(abfd, aouthdr_ext->o_snentry);
+  aouthdr_int->o_sntext = H_GET_16(abfd, aouthdr_ext->o_sntext);
+  aouthdr_int->o_sndata = H_GET_16(abfd, aouthdr_ext->o_sndata);
+  aouthdr_int->o_sntoc = H_GET_16(abfd, aouthdr_ext->o_sntoc);
+  aouthdr_int->o_snloader = H_GET_16(abfd, aouthdr_ext->o_snloader);
+  aouthdr_int->o_snbss = H_GET_16(abfd, aouthdr_ext->o_snbss);
+  aouthdr_int->o_algntext = H_GET_16(abfd, aouthdr_ext->o_algntext);
+  aouthdr_int->o_algndata = H_GET_16(abfd, aouthdr_ext->o_algndata);
+  aouthdr_int->o_modtype = H_GET_16(abfd, aouthdr_ext->o_modtype);
+  aouthdr_int->o_cputype = H_GET_16(abfd, aouthdr_ext->o_cputype);
+# ifdef XCOFF64
+  aouthdr_int->o_maxstack = H_GET_64(abfd, aouthdr_ext->o_maxstack);
+  aouthdr_int->o_maxdata = H_GET_64(abfd, aouthdr_ext->o_maxdata);
+# else
+  aouthdr_int->o_maxstack = H_GET_32(abfd, aouthdr_ext->o_maxstack);
+  aouthdr_int->o_maxdata = H_GET_32(abfd, aouthdr_ext->o_maxdata);
+# endif /* XCOFF64 */
+#endif /* RS6000COFF_C */
 
 #ifdef MIPSECOFF
-  aouthdr_int->bss_start  = H_GET_32 (abfd, aouthdr_ext->bss_start);
-  aouthdr_int->gp_value   = H_GET_32 (abfd, aouthdr_ext->gp_value);
-  aouthdr_int->gprmask    = H_GET_32 (abfd, aouthdr_ext->gprmask);
-  aouthdr_int->cprmask[0] = H_GET_32 (abfd, aouthdr_ext->cprmask[0]);
-  aouthdr_int->cprmask[1] = H_GET_32 (abfd, aouthdr_ext->cprmask[1]);
-  aouthdr_int->cprmask[2] = H_GET_32 (abfd, aouthdr_ext->cprmask[2]);
-  aouthdr_int->cprmask[3] = H_GET_32 (abfd, aouthdr_ext->cprmask[3]);
-#endif
+  aouthdr_int->bss_start = H_GET_32(abfd, aouthdr_ext->bss_start);
+  aouthdr_int->gp_value = H_GET_32(abfd, aouthdr_ext->gp_value);
+  aouthdr_int->gprmask = H_GET_32(abfd, aouthdr_ext->gprmask);
+  aouthdr_int->cprmask[0] = H_GET_32(abfd, aouthdr_ext->cprmask[0]);
+  aouthdr_int->cprmask[1] = H_GET_32(abfd, aouthdr_ext->cprmask[1]);
+  aouthdr_int->cprmask[2] = H_GET_32(abfd, aouthdr_ext->cprmask[2]);
+  aouthdr_int->cprmask[3] = H_GET_32(abfd, aouthdr_ext->cprmask[3]);
+#endif /* MIPSECOFF */
 
 #ifdef ALPHAECOFF
-  aouthdr_int->bss_start = H_GET_64 (abfd, aouthdr_ext->bss_start);
-  aouthdr_int->gp_value  = H_GET_64 (abfd, aouthdr_ext->gp_value);
-  aouthdr_int->gprmask   = H_GET_32 (abfd, aouthdr_ext->gprmask);
-  aouthdr_int->fprmask   = H_GET_32 (abfd, aouthdr_ext->fprmask);
-#endif
+  aouthdr_int->bss_start = H_GET_64(abfd, aouthdr_ext->bss_start);
+  aouthdr_int->gp_value = H_GET_64(abfd, aouthdr_ext->gp_value);
+  aouthdr_int->gprmask = H_GET_32(abfd, aouthdr_ext->gprmask);
+  aouthdr_int->fprmask = H_GET_32(abfd, aouthdr_ext->fprmask);
+#endif /* ALPHAECOFF */
 }
 
 static unsigned int
@@ -823,7 +824,8 @@ coff_swap_scnhdr_out(bfd * abfd, void *inp, void *outp)
 #endif /* M88 */
 
 #ifdef I960
-  PUT_SCNHDR_ALIGN(abfd, scnhdr_int->s_align, scnhdr_ext->s_align);
+  PUT_SCNHDR_ALIGN(abfd, (bfd_vma)scnhdr_int->s_align,
+                   scnhdr_ext->s_align);
 #endif /* I960 */
 #ifdef COFF_ADJUST_SCNHDR_OUT_POST
   COFF_ADJUST_SCNHDR_OUT_POST(abfd, inp, outp);

@@ -549,8 +549,8 @@ mips_swap_reloc_out(bfd * abfd, void * src, void * dst)
 	     PAIR reloc and output it accordingly.  The symndx is really
 	     the low 16 bits of the addend */
 	  H_PUT_32(abfd, reloc_src->r_vaddr, reloc_dst->r_vaddr);
-	  H_PUT_32(abfd, reloc_src->r_symndx, reloc_dst->r_symndx);
-	  H_PUT_16(abfd, MIPS_R_PAIR, reloc_dst->r_type);
+	  H_PUT_32(abfd, (bfd_vma)reloc_src->r_symndx, reloc_dst->r_symndx);
+	  H_PUT_16(abfd, (bfd_vma)MIPS_R_PAIR, reloc_dst->r_type);
 	  return RELSZ;
 	}
       break;
@@ -559,9 +559,9 @@ mips_swap_reloc_out(bfd * abfd, void * src, void * dst)
     }
 
   H_PUT_32(abfd, reloc_src->r_vaddr, reloc_dst->r_vaddr);
-  H_PUT_32(abfd, reloc_src->r_symndx, reloc_dst->r_symndx);
+  H_PUT_32(abfd, (bfd_vma)reloc_src->r_symndx, reloc_dst->r_symndx);
 
-  H_PUT_16(abfd, reloc_src->r_type, reloc_dst->r_type);
+  H_PUT_16(abfd, (bfd_vma)reloc_src->r_type, reloc_dst->r_type);
   return RELSZ;
 }
 

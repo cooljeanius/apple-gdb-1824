@@ -430,8 +430,11 @@ AC_MSG_RESULT([${bfd_cv_has_long_long}])
   ## if so, further checks:
 if test "x${bfd_cv_has_long_long}" = "xyes"; then
   BFD_HOST_LONG_LONG=1
+  BFD_HOST_UNSIGNED_LONG_LONG=1
   AC_CHECK_SIZEOF([long long])dnl
   AC_CHECK_ALIGNOF([long long])dnl
+  AC_CHECK_SIZEOF([unsigned long long])dnl
+  AC_CHECK_ALIGNOF([unsigned long long])dnl
   ## ok
 fi
 
@@ -617,6 +620,7 @@ AC_C_BIGENDIAN
 AC_C_PROTOTYPES
 AC_C_RESTRICT
 AC_C_STRINGIZE
+AC_C_TYPEOF
 AC_C_VOLATILE
 AC_MSG_CHECKING([other types that did not fit with the host ones above])
 AC_MSG_RESULT([ ])
@@ -1716,7 +1720,7 @@ do
     s390_elf64_vec) tb="${tb} elf64-s390.lo elf64.lo $elf"; target_size=64 ;;
     score_elf32_be_vec) tb="${tb} elf32-score.lo elf32-score7.lo elf32.lo $elf"; want64=true; target_size=64 ;;
     score_elf32_le_vec) tb="${tb} elf32-score.lo elf32-score7.lo elf32.lo $elf"; want64=true; target_size=64 ;;
-    # FIXME: We include cofflink.lo not because it's needed for
+    # FIXME: We include cofflink.lo not because it is needed for
     # sh64_elf32[_le]_vec, but because we include sh_elf32[_le]_vec
     # which needs it but does not list it.  Should be fixed in right place.
     sh64_elf32_vec) tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf-vxworks.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
@@ -1972,13 +1976,37 @@ AC_CHECK_FUNCS([ftello ftello64 fseeko fseeko64 fopen64])dnl
 if test x"${ac_cv_func_ftello}" = xyes -a x"${ac_cv_func_fseeko}" = xyes; then
     AC_CHECK_SIZEOF([off_t])dnl
     AC_CHECK_ALIGNOF([off_t])dnl
-    ## TODO: off64_t next?
+fi
+if test "x${ac_cv_sizeof_off_t}" != "x${ac_cv_sizeof_unsigned_long_long}"; then
+  AC_CHECK_TYPES([off64_t],[
+    test -z "${ac_cv_sizeof_off64_t}"
+    test -z "${ac_cv_alignof_off64_t}"
+    AC_CHECK_SIZEOF([off64_t])dnl
+    AC_CHECK_ALIGNOF([off64_t])dnl
+  ],[
+    unset ac_cv_type_off64_t
+    if test "x${ac_cv_type_off_t}" = "xyes"; then
+      _AC_CHECK_TYPE_OLD([off64_t],[off_t])dnl
+      ## hope that is okay...
+    elif test "x${ac_cv_type_unsigned_long_long}" = "xyes"; then
+      _AC_CHECK_TYPE_OLD([off64_t],[unsigned long long])dnl
+    else
+      _AC_CHECK_TYPE_OLD([off64_t],[unsigned long])dnl
+    fi
+  ])dnl
+  ## maybe use it as a replacement, idk...
+elif test "x${ac_cv_sizeof_off_t}" = "x${ac_cv_sizeof_unsigned_long_long}";  then
+  AC_MSG_NOTICE([it seems that your off_t is already 64-bit; in that case, there is no need to check for an off64_t type...])
+else
+  test -z "${ac_cv_sizeof_off_t}"
+  test -z "${ac_cv_sizeof_unsigned_long_long}"
+  AC_MSG_WARN([unsure if off_t is 64-bit or not...])
 fi
 AC_MSG_CHECKING([file_ptr type])
 bfd_file_ptr="long"
 bfd_ufile_ptr="unsigned long"
-if test x"${ac_cv_func_ftello64}" = xyes -a x"${ac_cv_func_fseeko64}" = xyes \
-	-o x"${ac_cv_sizeof_off_t}" = x8; then
+if test x"${ac_cv_func_ftello64}" = x"yes" -a x"${ac_cv_func_fseeko64}" = x"yes" \
+	-o x"${ac_cv_sizeof_off_t}" = x"8"; then
     bfd_file_ptr=BFD_HOST_64_BIT
     bfd_ufile_ptr=BFD_HOST_U_64_BIT
 fi
@@ -2062,10 +2090,10 @@ fi
 
 AC_CONFIG_COMMANDS([bfd_h_vpath_fix],[
 if test ! -e bfd.h; then
-  if test -e doc/bfd.h; then
+  if test -e doc/bfd.h && test -z "`grep @BFD_HOST_64_BIT_DEFINED@ doc/bfd.h`"; then
     cp -v doc/bfd.h bfd.h || echo ""
   elif test "${srcdir}" != "."; then
-    if test -e ${srcdir}/doc/bfd.h; then
+    if test -e ${srcdir}/doc/bfd.h && test -z "`grep @BFD_HOST_64_BIT_DEFINED@ ${srcdir}/doc/bfd.h`"; then
       cp -v ${srcdir}/doc/bfd.h bfd.h || echo ""
     elif test -e ${srcdir}/bfd.h -a "${srcdir}" != "."; then
       cp -v ${srcdir}/bfd.h bfd.h || echo ""
@@ -2074,12 +2102,13 @@ if test ! -e bfd.h; then
 fi
 ],[])dnl
 
+dnl# does the reverse of the previous one:
 AC_CONFIG_COMMANDS([bfd_h_vpath_fix2],[
 if test ! -e ${srcdir}/bfd.h; then
-  if test -e ${srcdir}/doc/bfd.h; then
+  if test -e ${srcdir}/doc/bfd.h && test -z "`grep @BFD_HOST_64_BIT_DEFINED@ ${srcdir}/doc/bfd.h`"; then
     cp -v ${srcdir}/doc/bfd.h ${srcdir}/bfd.h || echo ""
   elif test "${srcdir}" != "."; then
-    if test -e doc/bfd.h; then
+    if test -e doc/bfd.h && test -z "`grep @BFD_HOST_64_BIT_DEFINED@ doc/bfd.h`"; then
       cp -v doc/bfd.h ${srcdir}/bfd.h || echo ""
     elif test -e bfd.h -a "${srcdir}" != "."; then
       cp -v bfd.h ${srcdir}/bfd.h || echo ""
@@ -2162,9 +2191,7 @@ if test -x ./config.status; then
     fi
   fi
   if test -z "${LIBTOOL}"; then
-    if test -n "${SHELL}"; then
-      LIBTOOL="${SHELL} ${our_libtool_script}"
-    elif test -x /bin/sh; then
+    if test -x /bin/sh; then
       LIBTOOL="/bin/sh ${our_libtool_script}"
     else
       LIBTOOL="${our_libtool_script}"

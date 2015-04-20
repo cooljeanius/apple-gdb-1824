@@ -57,6 +57,11 @@ static bfd_boolean _bfd_get_file_window_malloc
    non-overlapping read-write windows.  It's not implemented yet
    though.  */
 
+/*
+CODE_FRAGMENT
+. {* *}
+*/
+
 /* APPLE LOCAL: Add new value for 'mapped', for the case where we have
    a window into a bfd that has already been fully mapped into
    memory. */
@@ -69,7 +74,7 @@ INTERNAL_DEFINITION
 .  void *data;
 .  bfd_size_type size;
 .  int refcount : 30;		{* should be enough...  *}
-.  unsigned mapped : 2;		{* 2 = window into mapped bfd, 1 = mmap, 0 = malloc *}
+.  unsigned mapped : 2; {* 2 = window into mapped bfd, 1 = mmap, 0 = malloc *}
 .};
 */
 

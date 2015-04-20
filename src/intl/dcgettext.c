@@ -42,7 +42,9 @@
 
 #ifdef __GNUC__
 # define alloca __builtin_alloca
-# define HAVE_ALLOCA 1
+# ifndef HAVE_ALLOCA
+#  define HAVE_ALLOCA 1
+# endif /* !HAVE_ALLOCA */
 #else
 # if defined HAVE_ALLOCA_H || defined _LIBC
 #  include <alloca.h>
@@ -288,44 +290,44 @@ char *DCGETTEXT(const char *domainname, const char *msgid, int category)
   if (domainname == NULL)
     domainname = _nl_current_default_domain;
 
-  /* First find matching binding.  */
+  /* First find matching binding: */
   for (binding = _nl_domain_bindings; binding != NULL; binding = binding->next)
     {
-      int compare = strcmp (domainname, binding->domainname);
+      int compare = strcmp(domainname, binding->domainname);
       if (compare == 0)
 	/* We found it!  */
 	break;
       if (compare < 0)
 	{
-	  /* It is not in the list.  */
+	  /* It is not in the list: */
 	  binding = NULL;
 	  break;
 	}
     }
 
   if (binding == NULL)
-    dirname = (char *) _nl_default_dirname;
+    dirname = (char *)_nl_default_dirname;
   else if (binding->dirname[0] == '/')
     dirname = binding->dirname;
   else
     {
-      /* We have a relative path.  Make it absolute now.  */
-      size_t dirname_len = strlen (binding->dirname) + 1;
+      /* We have a relative path.  Make it absolute now: */
+      size_t dirname_len = (strlen(binding->dirname) + 1UL);
       size_t path_max;
       char *ret;
 
-      path_max = (unsigned) PATH_MAX;
-      path_max += 2; /* The getcwd docs say to do this.  */
+      path_max = (size_t)PATH_MAX;
+      path_max += 2UL; /* The getcwd docs say to do this.  */
 
-      dirname = (char *) alloca (path_max + dirname_len);
-      ADD_BLOCK (block_list, dirname);
+      dirname = (char *)alloca(path_max + dirname_len);
+      ADD_BLOCK(block_list, dirname);
 
-      __set_errno (0);
+      __set_errno(0);
       while (((ret = getcwd(dirname, path_max)) == NULL) && (errno == ERANGE))
 	{
 	  path_max += PATH_INCR;
 	  dirname = (char *)alloca(path_max + dirname_len);
-	  ADD_BLOCK (block_list, dirname);
+	  ADD_BLOCK(block_list, dirname);
 	  __set_errno(0);
 	}
 
@@ -333,29 +335,29 @@ char *DCGETTEXT(const char *domainname, const char *msgid, int category)
 	{
 	  /* We cannot get the current working directory.  Don't signal an
 	     error but simply return the default string.  */
-	  FREE_BLOCKS (block_list);
-	  __set_errno (saved_errno);
-	  return (char *) msgid;
+	  FREE_BLOCKS(block_list);
+	  __set_errno(saved_errno);
+	  return (char *)msgid;
 	}
 
-      stpcpy (stpcpy (strchr (dirname, '\0'), "/"), binding->dirname);
+      stpcpy(stpcpy(strchr(dirname, '\0'), "/"), binding->dirname);
     }
 
-  /* Now determine the symbolic name of CATEGORY and its value.  */
-  categoryname = category_to_name (category);
-  categoryvalue = guess_category_value (category, categoryname);
+  /* Now determine the symbolic name of CATEGORY and its value: */
+  categoryname = category_to_name(category);
+  categoryvalue = guess_category_value(category, categoryname);
 
-  xdomainname = (char *) alloca (strlen (categoryname)
-				 + strlen (domainname) + 5);
-  ADD_BLOCK (block_list, xdomainname);
+  xdomainname = (char *)alloca(strlen(categoryname)
+                               + strlen(domainname) + 5UL);
+  ADD_BLOCK(block_list, xdomainname);
 
-  stpcpy (stpcpy (stpcpy (stpcpy (xdomainname, categoryname), "/"),
-		  domainname),
-	  ".mo");
+  stpcpy(stpcpy(stpcpy(stpcpy(xdomainname, categoryname), "/"),
+                domainname),
+	 ".mo");
 
-  /* Creating working area.  */
-  single_locale = (char *) alloca (strlen (categoryvalue) + 1);
-  ADD_BLOCK (block_list, single_locale);
+  /* Creating working area: */
+  single_locale = (char *)alloca(strlen(categoryvalue) + 1UL);
+  ADD_BLOCK(block_list, single_locale);
 
 
   /* Search for the given string.  This is a loop because we perhaps
@@ -363,7 +365,7 @@ char *DCGETTEXT(const char *domainname, const char *msgid, int category)
   while (1)
     {
       /* Make CATEGORYVALUE point to the next element of the list.  */
-      while (categoryvalue[0] != '\0' && categoryvalue[0] == ':')
+      while ((categoryvalue[0] != '\0') && (categoryvalue[0] == ':'))
 	++categoryvalue;
       if (categoryvalue[0] == '\0')
 	{
@@ -377,29 +379,29 @@ char *DCGETTEXT(const char *domainname, const char *msgid, int category)
       else
 	{
 	  char *cp = single_locale;
-	  while (categoryvalue[0] != '\0' && categoryvalue[0] != ':')
+	  while ((categoryvalue[0] != '\0') && (categoryvalue[0] != ':'))
 	    *cp++ = *categoryvalue++;
 	  *cp = '\0';
 	}
 
       /* If the current locale value is C (or POSIX) we don't load a
 	 domain.  Return the MSGID.  */
-      if (strcmp (single_locale, "C") == 0
-	  || strcmp (single_locale, "POSIX") == 0)
+      if ((strcmp(single_locale, "C") == 0)
+	  || (strcmp(single_locale, "POSIX") == 0))
 	{
-	  FREE_BLOCKS (block_list);
-	  __set_errno (saved_errno);
-	  return (char *) msgid;
+	  FREE_BLOCKS(block_list);
+	  __set_errno(saved_errno);
+	  return (char *)msgid;
 	}
 
 
       /* Find structure describing the message catalog matching the
 	 DOMAINNAME and CATEGORY.  */
-      domain = _nl_find_domain (dirname, single_locale, xdomainname);
+      domain = _nl_find_domain(dirname, single_locale, xdomainname);
 
       if (domain != NULL)
 	{
-	  retval = find_msg (domain, msgid);
+	  retval = find_msg(domain, msgid);
 
 	  if (retval == NULL)
 	    {
@@ -407,7 +409,7 @@ char *DCGETTEXT(const char *domainname, const char *msgid, int category)
 
 	      for (cnt = 0; domain->successor[cnt] != NULL; ++cnt)
 		{
-		  retval = find_msg (domain->successor[cnt], msgid);
+		  retval = find_msg(domain->successor[cnt], msgid);
 
 		  if (retval != NULL)
 		    break;
@@ -416,8 +418,8 @@ char *DCGETTEXT(const char *domainname, const char *msgid, int category)
 
 	  if (retval != NULL)
 	    {
-	      FREE_BLOCKS (block_list);
-	      __set_errno (saved_errno);
+	      FREE_BLOCKS(block_list);
+	      __set_errno(saved_errno);
 	      return retval;
 	    }
 	}
@@ -663,5 +665,9 @@ free_mem(void)
 
 text_set_element(__libc_subfreeres, free_mem);
 #endif /* _LIBC */
+
+#ifdef HAVE_ALLOCA
+# undef HAVE_ALLOCA
+#endif /* HAVE_ALLOCA */
 
 /* EOF */

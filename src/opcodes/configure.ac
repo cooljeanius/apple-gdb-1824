@@ -733,9 +733,7 @@ if test -x ./config.status; then
     fi
   fi
   if test -z "${LIBTOOL}"; then
-    if test -n "${SHELL}"; then
-      LIBTOOL="${SHELL} ${our_libtool_script}"
-    elif test -x /bin/sh; then
+    if test -x /bin/sh; then
       LIBTOOL="/bin/sh ${our_libtool_script}"
     else
       LIBTOOL="${our_libtool_script}"

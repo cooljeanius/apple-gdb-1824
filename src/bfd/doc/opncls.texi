@@ -5,7 +5,7 @@
 @subsubsection @code{bfd_fopen}
 @strong{Synopsis}
 @example
-bfd *bfd_fopen (const char *filename, const char *target,
+bfd *bfd_fopen(const char *filename, const char *target,
     const char *mode, int fd);
 @end example
 @strong{Description}@*
@@ -95,7 +95,7 @@ Possible errors are @code{bfd_error_no_memory},
 @subsubsection @code{bfd_openstreamr}
 @strong{Synopsis}
 @example
-bfd *bfd_openstreamr (const char *, const char *, void *);
+bfd *bfd_openstreamr(const char *, const char *, void *);
 @end example
 @strong{Description}@*
 Open a BFD for read access on an existing stdio stream. When
@@ -149,7 +149,7 @@ occurred.  Possible errors are @code{bfd_error_no_memory},
 @subsubsection @code{bfd_openw}
 @strong{Synopsis}
 @example
-bfd *bfd_openw (const char *filename, const char *target);
+bfd *bfd_openw(const char *filename, const char *target);
 @end example
 @strong{Description}@*
 Create a BFD, associated with file @var{filename}, using the
@@ -162,7 +162,7 @@ Possible errors are @code{bfd_error_system_call}, @code{bfd_error_no_memory},
 @subsubsection @code{bfd_close}
 @strong{Synopsis}
 @example
-bfd_boolean bfd_close (bfd *abfd);
+bfd_boolean bfd_close(bfd *abfd);
 @end example
 @strong{Description}@*
 Close a BFD. If the BFD was open for writing, then pending
@@ -182,7 +182,7 @@ if it was passed in to BFD by @code{bfd_fdopenr}).
 @subsubsection @code{bfd_close_all_done}
 @strong{Synopsis}
 @example
-bfd_boolean bfd_close_all_done (bfd *);
+bfd_boolean bfd_close_all_done(bfd *);
 @end example
 @strong{Description}@*
 Close a BFD.  Differs from @code{bfd_close} since it does not
@@ -202,7 +202,7 @@ All memory attached to the BFD is released.
 @subsubsection @code{bfd_create}
 @strong{Synopsis}
 @example
-bfd *bfd_create (const char *filename, bfd *templ);
+bfd *bfd_create(const char *filename, bfd *templ);
 @end example
 @strong{Description}@*
 Create a new BFD in the manner of @code{bfd_openw}, but without
@@ -213,7 +213,7 @@ used by @var{template}. The format is always set to @code{bfd_object}.
 @subsubsection @code{bfd_make_writable}
 @strong{Synopsis}
 @example
-bfd_boolean bfd_make_writable (bfd *abfd);
+bfd_boolean bfd_make_writable(bfd *abfd);
 @end example
 @strong{Description}@*
 Takes a BFD as created by @code{bfd_create} and converts it
@@ -228,7 +228,7 @@ you will call @code{bfd_make_readable} on this bfd later.
 @subsubsection @code{bfd_make_readable}
 @strong{Synopsis}
 @example
-bfd_boolean bfd_make_readable (bfd *abfd);
+bfd_boolean bfd_make_readable(bfd *abfd);
 @end example
 @strong{Description}@*
 Takes a BFD as created by @code{bfd_create} and
@@ -244,7 +244,7 @@ direction.
 @subsubsection @code{bfd_alloc}
 @strong{Synopsis}
 @example
-void *bfd_alloc (bfd *abfd, bfd_size_type wanted);
+void *bfd_alloc(bfd *abfd, bfd_size_type wanted);
 @end example
 @strong{Description}@*
 Allocate a block of @var{wanted} bytes of memory attached to
@@ -254,7 +254,7 @@ Allocate a block of @var{wanted} bytes of memory attached to
 @subsubsection @code{bfd_alloc2}
 @strong{Synopsis}
 @example
-void *bfd_alloc2 (bfd *abfd, bfd_size_type nmemb, bfd_size_type size);
+void *bfd_alloc2(bfd *abfd, bfd_size_type nmemb, bfd_size_type size);
 @end example
 @strong{Description}@*
 Allocate a block of @var{nmemb} elements of @var{size} bytes each
@@ -264,7 +264,7 @@ of memory attached to @code{abfd} and return a pointer to it.
 @subsubsection @code{bfd_zalloc}
 @strong{Synopsis}
 @example
-void *bfd_zalloc (bfd *abfd, bfd_size_type wanted);
+void *bfd_zalloc(bfd *abfd, bfd_size_type wanted);
 @end example
 @strong{Description}@*
 Allocate a block of @var{wanted} bytes of zeroed memory
@@ -274,11 +274,21 @@ attached to @code{abfd} and return a pointer to it.
 @subsubsection @code{bfd_zalloc2}
 @strong{Synopsis}
 @example
-void *bfd_zalloc2 (bfd *abfd, bfd_size_type nmemb, bfd_size_type size);
+void *bfd_zalloc2(bfd *abfd, bfd_size_type nmemb, bfd_size_type size);
 @end example
 @strong{Description}@*
 Allocate a block of @var{nmemb} elements of @var{size} bytes each
 of zeroed memory attached to @code{abfd} and return a pointer to it.
+
+@findex bfd_release
+@subsubsection @code{bfd_release}
+@strong{Synopsis}
+@example
+void bfd_release(bfd *abfd, void *block);
+@end example
+@strong{Description}@*
+Free a block allocated for a BFD.
+Note: Also frees all more recently allocated blocks!
 
 @findex bfd_calc_gnu_debuglink_crc32
 @subsubsection @code{bfd_calc_gnu_debuglink_crc32}
@@ -299,7 +309,7 @@ Return the updated CRC32 value.
 @subsubsection @code{get_debug_link_info}
 @strong{Synopsis}
 @example
-char *get_debug_link_info (bfd *abfd, unsigned long *crc32_out);
+char *get_debug_link_info(bfd *abfd, unsigned long *crc32_out);
 @end example
 @strong{Description}@*
 fetch the filename and CRC32 value for any separate debuginfo
@@ -321,7 +331,7 @@ match @var{crc32}.
 @subsubsection @code{find_separate_debug_file}
 @strong{Synopsis}
 @example
-char *find_separate_debug_file (bfd *abfd);
+char *find_separate_debug_file(bfd *abfd);
 @end example
 @strong{Description}@*
 Searches @var{abfd} for a reference to separate debugging
@@ -335,7 +345,7 @@ exists, or file cannot be found.
 @subsubsection @code{bfd_follow_gnu_debuglink}
 @strong{Synopsis}
 @example
-char *bfd_follow_gnu_debuglink (bfd *abfd, const char *dir);
+char *bfd_follow_gnu_debuglink(bfd *abfd, const char *dir);
 @end example
 @strong{Description}@*
 Takes a BFD and searches it for a .gnu_debuglink section.  If this

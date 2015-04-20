@@ -151,12 +151,14 @@ extern char *bindtextdomain__ PARAMS((const char *__domainname,
 # if (!defined(HAVE_CATGETS) || (defined(HAVE_CATGETS) && !HAVE_CATGETS)) && \
      ((!defined(HAVE_GETTEXT) || (defined(HAVE_GETTEXT) && !HAVE_GETTEXT)) || \
       (defined(HAVE_DCGETTEXT) && HAVE_DCGETTEXT))
-
-#  define gettext(Msgid) \
-     dgettext(NULL, Msgid)
-
-#  define dgettext(Domainname, Msgid) \
-     dcgettext(Domainname, Msgid, LC_MESSAGES)
+#  ifndef gettext
+#   define gettext(Msgid) \
+      dgettext(NULL, Msgid)
+#  endif /* !gettext */
+#  ifndef dgettext
+#   define dgettext(Domainname, Msgid) \
+      dcgettext(Domainname, Msgid, LC_MESSAGES)
+#  endif /* !dgettext */
 
 #  if defined(__GNUC__) && (__GNUC__ == 2) && \
       defined(__GNUC_MINOR__) && (__GNUC_MINOR__ >= 7)

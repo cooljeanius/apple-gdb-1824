@@ -375,6 +375,8 @@
 # define HAVE_LOCALE_NULL
 #endif /* _LIBC || glibc2+ */
 
+extern const char *_nl_locale_name(int, const char *);
+
 /* Determine the current locale's name, and canonicalize it into XPG syntax
      language[_territory[.codeset]][@modifier]
    The codeset part in the result is not reliable; the locale_charset()

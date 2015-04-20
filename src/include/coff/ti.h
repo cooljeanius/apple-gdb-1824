@@ -113,12 +113,10 @@ struct external_filehdr
 
 #ifndef COFF_ADJUST_FILEHDR_OUT_POST
 #define COFF_ADJUST_FILEHDR_OUT_POST(abfd, src, dst) \
-  do									\
-    {									\
-      H_PUT_16 (abfd, ((struct internal_filehdr *)(src))->f_target_id,	\
-	       ((FILHDR *)(dst))->f_target_id);				\
-    }									\
-  while (0)
+  do {									\
+    H_PUT_16(abfd, (bfd_vma)((struct internal_filehdr *)(src))->f_target_id, \
+             ((FILHDR *)(dst))->f_target_id);				\
+  } while (0)
 #endif
 
 #define	FILHDR	struct external_filehdr
@@ -219,24 +217,24 @@ struct external_scnhdr {
    accordingly
  */
 #define GET_SCNHDR_NRELOC(ABFD, LOC) \
-  (COFF2_P (ABFD) ? H_GET_32 (ABFD, LOC) : H_GET_16 (ABFD, LOC))
+  (COFF2_P(ABFD) ? H_GET_32(ABFD, LOC) : H_GET_16(ABFD, LOC))
 #define PUT_SCNHDR_NRELOC(ABFD, VAL, LOC) \
-  (COFF2_P (ABFD) ? H_PUT_32 (ABFD, VAL, LOC) : H_PUT_16 (ABFD, VAL, LOC))
+  (COFF2_P(ABFD) ? H_PUT_32(ABFD, VAL, LOC) : H_PUT_16(ABFD, VAL, LOC))
 #define GET_SCNHDR_NLNNO(ABFD, LOC) \
-  (COFF2_P (ABFD) ? H_GET_32 (ABFD, LOC) : H_GET_16 (ABFD, (LOC) - 2))
+  (COFF2_P(ABFD) ? H_GET_32(ABFD, LOC) : H_GET_16(ABFD, (LOC) - 2))
 #define PUT_SCNHDR_NLNNO(ABFD, VAL, LOC) \
-  (COFF2_P (ABFD) ? H_PUT_32 (ABFD, VAL, LOC) : H_PUT_16 (ABFD, VAL, (LOC) - 2))
+  (COFF2_P(ABFD) ? H_PUT_32(ABFD, VAL, LOC) : H_PUT_16(ABFD, VAL, (LOC) - 2))
 #define GET_SCNHDR_FLAGS(ABFD, LOC) \
-  (COFF2_P (ABFD) ? H_GET_32 (ABFD, LOC) : H_GET_16 (ABFD, (LOC) - 4))
+  (COFF2_P(ABFD) ? H_GET_32(ABFD, LOC) : H_GET_16(ABFD, (LOC) - 4))
 #define PUT_SCNHDR_FLAGS(ABFD, VAL, LOC) \
-  (COFF2_P (ABFD) ? H_PUT_32 (ABFD, VAL, LOC) : H_PUT_16 (ABFD, VAL, (LOC) - 4))
+  (COFF2_P(ABFD) ? H_PUT_32(ABFD, (bfd_vma)VAL, LOC) : H_PUT_16(ABFD, (bfd_vma)VAL, (LOC) - 4))
 #define GET_SCNHDR_PAGE(ABFD, LOC) \
-  (COFF2_P (ABFD) ? H_GET_16 (ABFD, LOC) : (unsigned) H_GET_8 (ABFD, (LOC) - 7))
+  (COFF2_P(ABFD) ? H_GET_16(ABFD, LOC) : (unsigned)H_GET_8(ABFD, (LOC) - 7))
 /* on output, make sure that the "reserved" field is zero */
 #define PUT_SCNHDR_PAGE(ABFD, VAL, LOC) \
-  (COFF2_P (ABFD) \
-   ? H_PUT_16 (ABFD, VAL, LOC) \
-   : H_PUT_8 (ABFD, VAL, (LOC) - 7), H_PUT_8 (ABFD, 0, (LOC) - 8))
+  (COFF2_P(ABFD) \
+   ? H_PUT_16(ABFD, VAL, LOC) \
+   : H_PUT_8(ABFD, VAL, (LOC) - 7), H_PUT_8(ABFD, 0, (LOC) - 8))
 
 /* TI COFF stores section size as number of bytes (address units, not octets),
    so adjust to be number of octets, which is what BFD expects */
@@ -259,18 +257,16 @@ struct external_scnhdr {
    fields.
  */
 #define COFF_ADJUST_SCNHDR_OUT_POST(ABFD, INT, EXT) \
-  do									   \
-    {									   \
-      PUT_SCNHDR_NLNNO (ABFD, ((struct internal_scnhdr *)(INT))->s_nlnno,  \
-			((SCNHDR *)(EXT))->s_nlnno);			   \
-      PUT_SCNHDR_NRELOC (ABFD, ((struct internal_scnhdr *)(INT))->s_nreloc,\
-			 ((SCNHDR *)(EXT))->s_nreloc);			   \
-      PUT_SCNHDR_FLAGS (ABFD, ((struct internal_scnhdr *)(INT))->s_flags,  \
-			((SCNHDR *)(EXT))->s_flags);			   \
-      PUT_SCNHDR_PAGE (ABFD, ((struct internal_scnhdr *)(INT))->s_page,    \
-		       ((SCNHDR *)(EXT))->s_page);			   \
-    }									   \
-   while (0)
+  do {									  \
+    PUT_SCNHDR_NLNNO(ABFD, ((struct internal_scnhdr *)(INT))->s_nlnno,  \
+                     ((SCNHDR *)(EXT))->s_nlnno);			  \
+    PUT_SCNHDR_NRELOC(ABFD, ((struct internal_scnhdr *)(INT))->s_nreloc,\
+                      ((SCNHDR *)(EXT))->s_nreloc);			  \
+    PUT_SCNHDR_FLAGS(ABFD, ((struct internal_scnhdr *)(INT))->s_flags,  \
+                     ((SCNHDR *)(EXT))->s_flags);			  \
+    PUT_SCNHDR_PAGE(ABFD, (bfd_vma)((struct internal_scnhdr *)(INT))->s_page,    \
+                    ((SCNHDR *)(EXT))->s_page);			  \
+  } while (0)
 
 /*
  * names of "special" sections

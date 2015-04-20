@@ -27,6 +27,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+extern void _nl_log_untranslated(const char *, const char *, const char *,
+                                 const char *, int);
+
 /* Print an ASCII string with quotes and escape sequences where needed: */
 static void print_escaped(FILE *stream, const char *str)
 {

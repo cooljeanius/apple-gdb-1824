@@ -118,7 +118,7 @@ char *textdomain(const char *domainname)
   }
 #endif /* HAVE_SETLOCALE && HAVE_LC_MESSAGES && HAVE_LOCALE_NULL */
   if ((lang == NULL) || (lang[0] == '\0')) {
-    lang = "C";
+    lang = (char *)"C";
   }
 
   /* See whether name of currently used domain is asked: */

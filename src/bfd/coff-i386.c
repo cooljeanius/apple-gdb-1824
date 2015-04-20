@@ -43,13 +43,13 @@
 #include "libcoff.h"
 
 static bfd_reloc_status_type coff_i386_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
 static reloc_howto_type *coff_i386_rtype_to_howto
-  PARAMS ((bfd *, asection *, struct internal_reloc *,
-	   struct coff_link_hash_entry *, struct internal_syment *,
-	   bfd_vma *));
+  PARAMS((bfd *, asection *, struct internal_reloc *,
+	  struct coff_link_hash_entry *, struct internal_syment *,
+	  bfd_vma *));
 static reloc_howto_type *coff_i386_reloc_type_lookup
-  PARAMS ((bfd *, bfd_reloc_code_real_type));
+  PARAMS((bfd *, bfd_reloc_code_real_type));
 
 #define COFF_DEFAULT_SECTION_ALIGNMENT_POWER (2)
 /* The page size is a guess based on ELF.  */
@@ -72,26 +72,26 @@ coff_i386_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, PTR data,
   symvalue diff;
 
 #ifndef COFF_WITH_PE
-  if (output_bfd == (bfd *) NULL) {
+  if (output_bfd == (bfd *)NULL) {
     return bfd_reloc_continue;
   }
 #endif /* !COFF_WITH_PE */
 
-  if (bfd_is_com_section (symbol->section))
+  if (bfd_is_com_section(symbol->section))
     {
 #ifndef COFF_WITH_PE
       /* We are relocating a common symbol. The current value in the
-	   * object file is ORIG + OFFSET, where ORIG is the value of the
-	   * common symbol as seen by the object file when it was compiled
-	   * (this may be zero if the symbol was undefined) and OFFSET is
-	   * the offset into the common symbol (normally zero, but may be
-	   * non-zero when referring to a field in a common structure).
-	   * ORIG is the negative of reloc_entry->addend, which is set by
-	   * the CALC_ADDEND macro below. We want to replace the value in
-	   * the object file with NEW + OFFSET, where NEW is the value of
-	   * the common symbol which we are going to put in the final
-	   * object file.  NEW is symbol->value.  */
-      diff = symbol->value + reloc_entry->addend;
+       * object file is ORIG + OFFSET, where ORIG is the value of the
+       * common symbol as seen by the object file when it was compiled
+       * (this may be zero if the symbol was undefined) and OFFSET is
+       * the offset into the common symbol (normally zero, but may be
+       * non-zero when referring to a field in a common structure).
+       * ORIG is the negative of reloc_entry->addend, which is set by
+       * the CALC_ADDEND macro below. We want to replace the value in
+       * the object file with NEW + OFFSET, where NEW is the value of
+       * the common symbol which we are going to put in the final
+       * object file.  NEW is symbol->value.  */
+      diff = (symbol->value + reloc_entry->addend);
 #else
       /* In PE mode, we do not offset the common symbol.  */
       diff = reloc_entry->addend;
@@ -100,11 +100,11 @@ coff_i386_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, PTR data,
   else
     {
       /* For some reason bfd_perform_relocation always effectively
-	   * ignores the addend for a COFF target when producing
-	   * relocatable output.  This seems to be always wrong for 386
-	   * COFF, so we handle the addend here instead.  */
+       * ignores the addend for a COFF target when producing
+       * relocatable output.  This seems to be always wrong for 386
+       * COFF, so we handle the addend here instead.  */
 #ifdef COFF_WITH_PE
-      if (output_bfd == (bfd *) NULL)
+      if (output_bfd == (bfd *)NULL)
 	{
 	  reloc_howto_type *howto = reloc_entry->howto;
 
@@ -115,13 +115,13 @@ coff_i386_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, PTR data,
 	     When we link PE and non-PE object files together to
 	     generate a non-PE executable, we have to compensate it
 	     here.  */
-		if (howto->pc_relative && howto->pcrel_offset) {
-			diff = -(1 << howto->size);
-		} else if (symbol->flags & BSF_WEAK) {
-			diff = reloc_entry->addend - symbol->value;
-		} else {
-			diff = -reloc_entry->addend;
-		}
+          if (howto->pc_relative && howto->pcrel_offset) {
+            diff = (symvalue)-(1UL << howto->size);
+          } else if (symbol->flags & BSF_WEAK) {
+            diff = (reloc_entry->addend - symbol->value);
+          } else {
+            diff = -reloc_entry->addend;
+          }
 	}
       else
 #endif /* COFF_WITH_PE */
@@ -130,51 +130,54 @@ coff_i386_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, PTR data,
 
 #ifdef COFF_WITH_PE
   /* FIXME: How should this case be handled?  */
-  if (reloc_entry->howto->type == R_IMAGEBASE
-      && output_bfd != NULL
-      && bfd_get_flavour(output_bfd) == bfd_target_coff_flavour) {
-	  diff -= pe_data (output_bfd)->pe_opthdr.ImageBase;
+  if ((reloc_entry->howto->type == R_IMAGEBASE) && (output_bfd != NULL)
+      && (bfd_get_flavour(output_bfd) == bfd_target_coff_flavour)) {
+    diff -= pe_data(output_bfd)->pe_opthdr.ImageBase;
   }
 #endif /* COFF_WITH_PE */
 
-#define DOIT(x) \
-  x = ((x & ~howto->dst_mask) | (((x & howto->src_mask) + diff) & howto->dst_mask))
+/* FIXME: use "typeof" if available: */
+#define DOIT(x, t) \
+  x = (t)(((bfd_vma)x & ~howto->dst_mask) \
+          | ((((bfd_vma)x & howto->src_mask) + diff) & howto->dst_mask))
 
     if (diff != 0)
       {
 	reloc_howto_type *howto = reloc_entry->howto;
-	unsigned char *addr = (unsigned char *) data + reloc_entry->address;
+	unsigned char *addr = (unsigned char *)data + reloc_entry->address;
 
 	switch (howto->size)
 	  {
 	  case 0:
 	    {
-	      char x = bfd_get_8 (abfd, addr);
-	      DOIT (x);
-	      bfd_put_8 (abfd, x, addr);
+	      char x = (char)bfd_get_8(abfd, addr);
+	      DOIT(x, char);
+	      bfd_put_8(abfd, (bfd_vma)x, addr);
 	    }
 	    break;
 
 	  case 1:
 	    {
-	      short x = bfd_get_16 (abfd, addr);
-	      DOIT (x);
-	      bfd_put_16 (abfd, (bfd_vma) x, addr);
+	      short x = (short)bfd_get_16(abfd, addr);
+	      DOIT(x, short);
+	      bfd_put_16(abfd, (bfd_vma)x, addr);
 	    }
 	    break;
 
 	  case 2:
 	    {
-	      long x = bfd_get_32 (abfd, addr);
-	      DOIT (x);
-	      bfd_put_32 (abfd, (bfd_vma) x, addr);
+	      long x = (long)bfd_get_32(abfd, addr);
+	      DOIT(x, long);
+	      bfd_put_32(abfd, (bfd_vma)x, addr);
 	    }
 	    break;
 
 	  default:
-	    abort ();
+	    abort();
 	  }
       }
+
+#undef DOIT
 
   /* Now let bfd_perform_relocation finish everything up.  */
   return bfd_reloc_continue;
@@ -342,7 +345,7 @@ static reloc_howto_type howto_table[] =
 };
 
 /* Turn a howto into a reloc nunmber: */
-#define SELECT_RELOC(x,howto) { x.r_type = howto->type; }
+#define SELECT_RELOC(x,howto) { x.r_type = (unsigned short)howto->type; }
 #define BADMAG(x) I386BADMAG(x)
 #define I386 1			/* Customize coffcode.h */
 

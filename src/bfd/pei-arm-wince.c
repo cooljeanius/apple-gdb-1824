@@ -1,4 +1,4 @@
-/* BFD back-end for ARM WINCE PE IMAGE COFF files.
+/* pei-arm-wince.c: BFD back-end for ARM WINCE PE IMAGE COFF files.
    Copyright 2006, 2007 Free Software Foundation, Inc.
 
    This file is part of BFD, the Binary File Descriptor library.
@@ -26,6 +26,14 @@
 #define TARGET_BIG_SYM       arm_wince_pei_big_vec
 #define TARGET_BIG_NAME      "pei-arm-wince-big"
 
-#define LOCAL_LABEL_PREFIX "."
+#ifndef LOCAL_LABEL_PREFIX
+# define LOCAL_LABEL_PREFIX "."
+#endif /* !LOCAL_LABEL_PREFIX */
 
 #include "pei-arm.c"
+
+#ifdef LOCAL_LABEL_PREFIX
+# undef LOCAL_LABEL_PREFIX
+#endif /* LOCAL_LABEL_PREFIX */
+
+/* End of pei-arm-wince.c */

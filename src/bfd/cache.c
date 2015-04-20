@@ -310,7 +310,7 @@ INTERNAL_FUNCTION
 	bfd_cache_init
 
 SYNOPSIS
-	bfd_boolean bfd_cache_init (bfd *abfd);
+	bfd_boolean bfd_cache_init(bfd *abfd);
 
 DESCRIPTION
 	Add a newly opened BFD to the cache.
@@ -338,7 +338,7 @@ INTERNAL_FUNCTION
 	bfd_cache_close
 
 SYNOPSIS
-	bfd_boolean bfd_cache_close (bfd *abfd);
+	bfd_boolean bfd_cache_close(bfd *abfd);
 
 DESCRIPTION
 	Remove the BFD @var{abfd} from the cache. If the attached file is open,
@@ -367,7 +367,7 @@ FUNCTION
 	bfd_cache_close_all
 
 SYNOPSIS
-	bfd_boolean bfd_cache_close_all (void);
+	bfd_boolean bfd_cache_close_all(void);
 
 DESCRIPTION
 	Remove all BFDs from the cache. If the attached file is open,
@@ -394,7 +394,7 @@ INTERNAL_FUNCTION
 	bfd_open_file
 
 SYNOPSIS
-	FILE* bfd_open_file (bfd *abfd);
+	FILE* bfd_open_file(bfd *abfd);
 
 DESCRIPTION
 	Call the OS to open a file for @var{abfd}.  Return the <<FILE *>>
@@ -479,7 +479,7 @@ INTERNAL_FUNCTION
 	bfd_cache_lookup_worker
 
 SYNOPSIS
-	FILE *bfd_cache_lookup_worker (bfd *abfd);
+	FILE *bfd_cache_lookup_worker(bfd *abfd);
 
 DESCRIPTION
 	Called when the macro <<bfd_cache_lookup>> fails to find a
@@ -527,7 +527,7 @@ INTERNAL_FUNCTION
 	bfd_cache_flush
 
 SYNOPSIS
-	void bfd_cache_flush (void);
+	void bfd_cache_flush(void);
 
 DESCRIPTION
 	Flushes BFD file cache.

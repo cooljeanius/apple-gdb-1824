@@ -1,7 +1,7 @@
 /* coff-tic54x.c: BFD back-end for TMS320C54X coff binaries.
    Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
-   Contributed by Timothy Wall (twall@cygnus.com)
+   Contributed by Timothy Wall <twall@cygnus.com>
 
    This file is part of BFD, the Binary File Descriptor library.
 

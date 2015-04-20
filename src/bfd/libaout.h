@@ -373,6 +373,15 @@ typedef struct aout_symbol
   unsigned char type;
 } aout_symbol_type;
 
+/* un-nested from the struct that follows it, for '-Wc++-compat': */
+enum magic_values
+{
+  undecided_magic = 0,
+  z_magic,
+  o_magic,
+  n_magic
+};
+
 /* The `tdata' struct for all a.out-like object file formats.
    Various things depend on this struct being around any time an a.out
    file is being handled.  An example is dbxread.c in GDB.  */
@@ -421,13 +430,7 @@ struct aoutdata
       q_magic_format
     } subformat;
 
-  enum
-    {
-      undecided_magic = 0,
-      z_magic,
-      o_magic,
-      n_magic
-    } magic;
+  enum magic_values magic;
 
   /* A buffer for find_nearest_line.  */
   char *line_buf;

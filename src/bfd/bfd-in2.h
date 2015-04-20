@@ -919,10 +919,10 @@ extern struct coff_comdat_info *bfd_coff_get_comdat_section
 
 /* End of bfd-in.h */
 /* Extracted from init.c.  */
-void bfd_init (void);
+void bfd_init(void);
 
 /* Extracted from opncls.c.  */
-bfd *bfd_fopen (const char *filename, const char *target,
+bfd *bfd_fopen(const char *filename, const char *target,
     const char *mode, int fd);
 
 bfd_boolean bfd_mmap_file(bfd *abfd, void *addr);
@@ -933,7 +933,7 @@ bfd *bfd_openr (const char *filename, const char *target);
 
 bfd *bfd_fdopenr (const char *filename, const char *target, int fd);
 
-bfd *bfd_openstreamr (const char *, const char *, void *);
+bfd *bfd_openstreamr(const char *, const char *, void *);
 
 bfd *bfd_openr_iovec (const char *filename, const char *target,
     void *(*open) (struct bfd *nbfd,
@@ -947,22 +947,22 @@ bfd *bfd_openr_iovec (const char *filename, const char *target,
     int (*close) (struct bfd *nbfd,
     void *stream));
 
-bfd *bfd_openw (const char *filename, const char *target);
+bfd *bfd_openw(const char *filename, const char *target);
 
-bfd_boolean bfd_close (bfd *abfd);
+bfd_boolean bfd_close(bfd *abfd);
 
-bfd_boolean bfd_close_all_done (bfd *);
+bfd_boolean bfd_close_all_done(bfd *);
 
-bfd *bfd_create (const char *filename, bfd *templ);
+bfd *bfd_create(const char *filename, bfd *templ);
 
-bfd_boolean bfd_make_writable (bfd *abfd);
+bfd_boolean bfd_make_writable(bfd *abfd);
 
-bfd_boolean bfd_make_readable (bfd *abfd);
+bfd_boolean bfd_make_readable(bfd *abfd);
 
 unsigned long bfd_calc_gnu_debuglink_crc32
    (unsigned long crc, const unsigned char *buf, bfd_size_type len);
 
-char *bfd_follow_gnu_debuglink (bfd *abfd, const char *dir);
+char *bfd_follow_gnu_debuglink(bfd *abfd, const char *dir);
 
 struct bfd_section *bfd_create_gnu_debuglink_section
    (bfd *abfd, const char *filename);
@@ -1084,9 +1084,9 @@ bfd_boolean bfd_fill_in_gnu_debuglink_section
 
 
 /* Extracted from bfdio.c.  */
-long bfd_get_mtime (bfd *abfd);
+long bfd_get_mtime(bfd *abfd);
 
-long bfd_get_size (bfd *abfd);
+long bfd_get_size(bfd *abfd);
 
 /* Extracted from bfdwin.c.  */
 /* Extracted from section.c.  */
@@ -1708,7 +1708,7 @@ bfd_boolean bfd_generic_discard_group (bfd *abfd, asection *group);
 /* Extracted from cache.c.  */
 void bfd_set_cache_max_open(unsigned int nmax);
 
-bfd_boolean bfd_cache_close_all (void);
+bfd_boolean bfd_cache_close_all(void);
 
 /* Extracted from archures.c.  */
 enum bfd_architecture

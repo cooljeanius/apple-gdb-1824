@@ -76,6 +76,7 @@ struct trad_user
   unsigned long magic;
   char u_comm[32];
   int u_debugreg[8];
+  /* FIXME: hppabsd-core.c needs members 'u_pcb' and 'u_code'; research */
 };
 
 /* these defines should be in "config.h": */

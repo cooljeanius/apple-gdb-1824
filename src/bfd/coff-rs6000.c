@@ -1118,45 +1118,45 @@ _bfd_xcoff_slurp_armap(bfd *abfd)
   carsym *arsym;
   bfd_byte *p;
 
-  if (xcoff_ardata (abfd) == NULL)
+  if (xcoff_ardata(abfd) == NULL)
     {
-      bfd_has_map (abfd) = FALSE;
+      bfd_has_map(abfd) = FALSE;
       return TRUE;
     }
 
-  if (! xcoff_big_format_p (abfd))
+  if (! xcoff_big_format_p(abfd))
     {
-      /* This is for the old format.  */
+      /* This is for the old format: */
       struct xcoff_ar_hdr hdr;
 
-      off = strtol (xcoff_ardata (abfd)->symoff, (char **) NULL, 10);
+      off = strtol(xcoff_ardata(abfd)->symoff, (char **)NULL, 10);
       if (off == 0)
 	{
-	  bfd_has_map (abfd) = FALSE;
+	  bfd_has_map(abfd) = FALSE;
 	  return TRUE;
 	}
 
-      if (bfd_seek (abfd, off, SEEK_SET) != 0)
+      if (bfd_seek(abfd, off, SEEK_SET) != 0)
 	return FALSE;
 
-      /* The symbol table starts with a normal archive header.  */
-      if (bfd_bread ((PTR) &hdr, (bfd_size_type) SIZEOF_AR_HDR, abfd)
+      /* The symbol table starts with a normal archive header: */
+      if (bfd_bread((PTR)&hdr, (bfd_size_type)SIZEOF_AR_HDR, abfd)
 	  != SIZEOF_AR_HDR)
 	return FALSE;
 
-      /* Skip the name (normally empty).  */
-      namlen = strtol (hdr.namlen, (char **) NULL, 10);
-      off = ((namlen + 1) & ~ (size_t) 1) + SXCOFFARFMAG;
-      if (bfd_seek (abfd, off, SEEK_CUR) != 0)
+      /* Skip the name (normally empty): */
+      namlen = (size_t)strtol(hdr.namlen, (char **)NULL, 10);
+      off = (((namlen + 1UL) & ~(size_t)1UL) + SXCOFFARFMAG);
+      if (bfd_seek(abfd, off, SEEK_CUR) != 0)
 	return FALSE;
 
-      sz = strtol (hdr.size, (char **) NULL, 10);
+      sz = (bfd_size_type)strtol(hdr.size, (char **)NULL, 10);
 
-      /* Read in the entire symbol table.  */
-      contents = (bfd_byte *) bfd_alloc (abfd, sz);
+      /* Read in the entire symbol table: */
+      contents = (bfd_byte *)bfd_alloc(abfd, sz);
       if (contents == NULL)
 	return FALSE;
-      if (bfd_bread ((PTR) contents, sz, abfd) != sz)
+      if (bfd_bread((PTR)contents, sz, abfd) != sz)
 	return FALSE;
 
       /* The symbol table starts with a four byte count.  */
@@ -1173,34 +1173,34 @@ _bfd_xcoff_slurp_armap(bfd *abfd)
       if (bfd_ardata (abfd)->symdefs == NULL)
 	return FALSE;
 
-      /* After the count comes a list of four byte file offsets.  */
-      for (i = 0, arsym = bfd_ardata (abfd)->symdefs, p = contents + 4;
+      /* After the count comes a list of four byte file offsets: */
+      for (i = 0, arsym = bfd_ardata(abfd)->symdefs, p = (contents + 4);
 	   i < c;
 	   ++i, ++arsym, p += 4)
-	arsym->file_offset = H_GET_32 (abfd, p);
+	arsym->file_offset = (file_ptr)H_GET_32(abfd, p);
     }
   else
     {
-      /* This is for the new format.  */
+      /* This is for the new format: */
       struct xcoff_ar_hdr_big hdr;
 
-      off = strtol (xcoff_ardata_big (abfd)->symoff, (char **) NULL, 10);
+      off = strtol(xcoff_ardata_big(abfd)->symoff, (char **)NULL, 10);
       if (off == 0)
 	{
-	  bfd_has_map (abfd) = FALSE;
+	  bfd_has_map(abfd) = FALSE;
 	  return TRUE;
 	}
 
-      if (bfd_seek (abfd, off, SEEK_SET) != 0)
+      if (bfd_seek(abfd, off, SEEK_SET) != 0)
 	return FALSE;
 
-      /* The symbol table starts with a normal archive header.  */
-      if (bfd_bread ((PTR) &hdr, (bfd_size_type) SIZEOF_AR_HDR_BIG, abfd)
+      /* The symbol table starts with a normal archive header: */
+      if (bfd_bread((PTR)&hdr, (bfd_size_type)SIZEOF_AR_HDR_BIG, abfd)
 	  != SIZEOF_AR_HDR_BIG)
 	return FALSE;
 
-      /* Skip the name (normally empty).  */
-      namlen = strtol(hdr.namlen, (char **)NULL, 10);
+      /* Skip the name (normally empty): */
+      namlen = (size_t)strtol(hdr.namlen, (char **)NULL, 10);
       off = (((namlen + 1) & ~(size_t)1UL) + SXCOFFARFMAG);
       if (bfd_seek(abfd, off, SEEK_CUR) != 0)
 	return FALSE;
@@ -1664,10 +1664,12 @@ static char buff20[XCOFFARMAGBIG_ELEMENT_SIZE + 1];
   sprintf(buff20, FMT4, (int)(v)), \
   memcpy((void *)(d), buff20, 4UL)
 
-#define READ20(d, v) \
+/* new parameter: 't' is the type of 'v': */
+#define READ20(d, v, t) \
   buff20[20] = 0, \
   memcpy(buff20, (d), 20UL), \
-  (v) = bfd_scan_vma(buff20, (const char **)NULL, 10)
+  (v) = (t)bfd_scan_vma(buff20, (const char **)NULL, 10)
+/* FIXME: use "typeof" if available */
 
 static bfd_boolean
 do_pad(bfd *abfd, unsigned int number)
@@ -1732,7 +1734,7 @@ do_shared_object_padding(bfd *out_bfd, bfd *in_bfd, file_ptr *offset,
       text_align_power = bfd_xcoff_text_align_power(in_bfd);
 
       pad = (bfd_size_type)(1UL << text_align_power);
-      pad -= ((*offset + ar_header_size) & (pad - 1UL));
+      pad -= ((bfd_size_type)(*offset + ar_header_size) & (pad - 1UL));
 
       if (! do_pad(out_bfd, (unsigned int)pad))
 	return FALSE;
@@ -1782,21 +1784,21 @@ xcoff_write_armap_big(bfd *abfd, unsigned int elength ATTRIBUTE_UNUSED,
 	}
       current_bfd = current_bfd->next;
       if (current_bfd != NULL)
-	arch_info = bfd_get_arch_info (current_bfd);
+	arch_info = bfd_get_arch_info(current_bfd);
     }
 
   /* A quick sanity check... */
   BFD_ASSERT(sym_64 + sym_32 == orl_count);
-  /* Explicit cast to int for compiler.  */
+  /* Explicit cast to int for compiler: */
   BFD_ASSERT((int)(str_64 + str_32) == stridx);
 
-  fhdr = xcoff_ardata_big (abfd);
+  fhdr = xcoff_ardata_big(abfd);
 
-  /* xcoff_write_archive_contents_big passes nextoff in symoff. */
-  READ20(fhdr->memoff, prevoff);
-  READ20(fhdr->symoff, nextoff);
+  /* xcoff_write_archive_contents_big passes nextoff in symoff: */
+  READ20(fhdr->memoff, prevoff, file_ptr);
+  READ20(fhdr->symoff, nextoff, file_ptr);
 
-  BFD_ASSERT (nextoff == bfd_tell (abfd));
+  BFD_ASSERT(nextoff == bfd_tell(abfd));
 
   /* Write out the symbol table.
      Layout :

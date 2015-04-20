@@ -17446,7 +17446,7 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
 -Wmissing-parameter-type -Wshadow -Wabi -Wmissing-include-dirs \
 -Wconversion -Wfloat-conversion -Wsign-conversion -Wsign-compare \
--Wshorten-64-to-32 -Wshadow"
+-Wshorten-64-to-32 -Wshadow -Wdouble-promotion"
 # "-Wconversion" and friends are because of a comment in libbfd.c
 WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint"
 WARN_LDFLAGS=""
@@ -17468,13 +17468,14 @@ case "${host}" in
 esac
 
 # GCC supports -Wuninitialized only with -O or -On, n != 0.
-# and also -Winit-self only with -Wuninitialized
-# others in this section are technically supported at other optimization
+# ...and also -Winit-self only works when -Wuninitialized is also used.
+# -Wmissing-noreturn requires -O or higher, or -fipa-pure-const to work.
+# Others in this section are technically supported at other optimization
 # levels, but really only make sense with it on.
-opt_warnings="-Wuninitialized -Winit-self -Wvolatile-register-var \
--Wdisabled-optimization -Waggressive-loop-optimizations \
--Wvector-operation-performance -Wmaybe-uninitialized \
--Wunsafe-loop-optimizations"
+opt_warnings="-Wuninitialized -Winit-self -Wmissing-noreturn \
+-Wvolatile-register-var -Wdisabled-optimization \
+-Waggressive-loop-optimizations -Wvector-operation-performance \
+-Wmaybe-uninitialized -Wunsafe-loop-optimizations"
 if test x${CFLAGS+set} = xset; then
   case "${CFLAGS}" in
     *"-O0"* ) ;;
@@ -17517,6 +17518,11 @@ fi
 
 if test "x${PEDANTIC_WARNINGS}" = "xyes"; then
     WARN_CFLAGS="${WARN_CFLAGS} -pedantic -Wdeclaration-after-statement"
+    ## avoid warnings about "long long" when we are using it:
+    if test "x${want64}" = "xtrue" && test "x${bfd_cv_has_long_long}" = "xyes" && test "x${BFD_HOST_64BIT_LONG_LONG}" = "x1"; then
+      ## add something else to make up for the removed warnings:
+      WARN_CFLAGS="${WARN_CFLAGS} -Wno-long-long -Wpointer-arith"
+    fi
     ## fake the '-ansi' flag; actually using it has additional effects:
     WARN_CFLAGS="${WARN_CFLAGS} -D__STRICT_ANSI__"
     WARN_DEFS="${WARN_DEFS} -D__STRICT_ANSI__"
@@ -24959,9 +24965,7 @@ if test -x ./config.status; then
     fi
   fi
   if test -z "${LIBTOOL}"; then
-    if test -n "${SHELL}"; then
-      LIBTOOL="${SHELL} ${our_libtool_script}"
-    elif test -x /bin/sh; then
+    if test -x /bin/sh; then
       LIBTOOL="/bin/sh ${our_libtool_script}"
     else
       LIBTOOL="${our_libtool_script}"
