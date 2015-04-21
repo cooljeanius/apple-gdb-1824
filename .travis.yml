@@ -18,3 +18,4 @@ compiler:
   - gcc
 
 after_success: pwd
+after_failure: find . -name config.log | xargs cat
