@@ -20,7 +20,7 @@
    with Bash; see the file COPYING.  If not, write to the Free Software
    Foundation, 59 Temple Place, Suite 330, Boston, MA 02111 USA. */
 
-#if !defined (_STDLIB_H_)
+#if !defined(_STDLIB_H_)
 #define	_STDLIB_H_ 1
 
 /* String conversion functions. */

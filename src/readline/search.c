@@ -175,42 +175,40 @@ noninc_dosearch (string, dir)
    history list.  PCHAR is the character to use for prompting when reading
    the search string; if not specified (0), it defaults to `:'. */
 static void
-noninc_search (dir, pchar)
-     int dir;
-     int pchar;
+noninc_search(int dir, int pchar)
 {
   int saved_point, saved_mark, c;
   char *p;
-#if defined (HANDLE_MULTIBYTE)
+#if defined(HANDLE_MULTIBYTE)
   char mb[MB_LEN_MAX];
-#endif
+#endif /* HANDLE_MULTIBYTE */
 
-  rl_maybe_save_line ();
+  rl_maybe_save_line();
   saved_point = rl_point;
   saved_mark = rl_mark;
 
-  /* Use the line buffer to read the search string. */
+  /* Use the line buffer to read the search string: */
   rl_line_buffer[0] = 0;
   rl_end = rl_point = 0;
 
-  p = _rl_make_prompt_for_search (pchar ? pchar : ':');
-  rl_message (p, 0, 0);
-  free (p);
+  p = _rl_make_prompt_for_search(pchar ? pchar : ':');
+  rl_message(p, 0, 0);
+  free(p);
 
-#define SEARCH_RETURN rl_restore_prompt (); RL_UNSETSTATE(RL_STATE_NSEARCH); return
+#define SEARCH_RETURN rl_restore_prompt(); RL_UNSETSTATE(RL_STATE_NSEARCH); return
 
   RL_SETSTATE(RL_STATE_NSEARCH);
   /* Read the search string. */
   while (1)
     {
       RL_SETSTATE(RL_STATE_MOREINPUT);
-      c = rl_read_key ();
+      c = rl_read_key();
       RL_UNSETSTATE(RL_STATE_MOREINPUT);
 
-#if defined (HANDLE_MULTIBYTE)
-      if (MB_CUR_MAX > 1 && rl_byte_oriented == 0)
-	c = _rl_read_mbstring (c, mb, MB_LEN_MAX);
-#endif
+#if defined(HANDLE_MULTIBYTE)
+      if ((MB_CUR_MAX > 1) && (rl_byte_oriented == 0))
+	c = _rl_read_mbstring(c, mb, MB_LEN_MAX);
+#endif /* HANDLE_MULTIBYTE */
 
       if (c == 0)
 	break;
@@ -398,7 +396,7 @@ rl_history_search_internal (count, dir)
     }
 
   /* Copy the line we found into the current line buffer. */
-  make_history_line_current (temp);
+  make_history_line_current(temp);
 
   rl_point = rl_history_search_len;
   rl_mark = rl_end;
@@ -407,23 +405,26 @@ rl_history_search_internal (count, dir)
 }
 
 static void
-rl_history_search_reinit ()
+rl_history_search_reinit(void)
 {
-  rl_history_search_pos = where_history ();
+  rl_history_search_pos = where_history();
   rl_history_search_len = rl_point;
   prev_line_found = (char *)NULL;
   if (rl_point)
     {
       if (rl_history_search_len >= history_string_size - 2)
 	{
-	  history_string_size = rl_history_search_len + 2;
-	  history_search_string = (char *)xrealloc (history_search_string, history_string_size);
+	  history_string_size = (rl_history_search_len + 2);
+	  history_search_string =
+            (char *)xrealloc(history_search_string,
+                             (size_t)history_string_size);
 	}
       history_search_string[0] = '^';
-      strncpy (history_search_string + 1, rl_line_buffer, rl_point);
+      strncpy((history_search_string + 1), rl_line_buffer,
+              (size_t)rl_point);
       history_search_string[rl_point + 1] = '\0';
     }
-  _rl_free_saved_history_line ();
+  _rl_free_saved_history_line();
 }
 
 /* Search forward in the history for the string of characters

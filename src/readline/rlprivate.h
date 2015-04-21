@@ -47,7 +47,7 @@ extern int rl_visible_stats;
 #endif /* VISIBLE_STATS */
 
 /* readline.c */
-extern int rl_line_buffer_len;
+extern size_t rl_line_buffer_len;
 extern int rl_arg_sign;
 extern int rl_visible_prompt_length;
 extern int readline_echoing_p;

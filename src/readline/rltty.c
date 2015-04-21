@@ -551,7 +551,7 @@ set_tty_settings (tty, tiop)
 {
   if (_set_tty_settings (tty, tiop) < 0)
     return -1;
-    
+
 #if 0
 
 #if defined (TERMIOS_TTY_DRIVER)
@@ -792,14 +792,14 @@ rl_stop_output (count, key)
   ioctl (fildes, TIOCSTOP, 0);
 # endif /* apollo */
 #else /* !TIOCSTOP */
-# if defined (TERMIOS_TTY_DRIVER)
-#  if defined (__ksr1__)
+# if defined(TERMIOS_TTY_DRIVER)
+#  if defined(__ksr1__)
   ksrflow = 1;
 #  endif /* ksr1 */
-  tcflow (fildes, TCOOFF);
+  tcflow(fildes, TCOOFF);
 # else
-#   if defined (TCXONC)
-  ioctl (fildes, TCXONC, TCOON);
+#   if defined(TCXONC)
+  ioctl(fildes, TCXONC, TCOON);
 #   endif /* TCXONC */
 # endif /* !TERMIOS_TTY_DRIVER */
 #endif /* !TIOCSTOP */
@@ -817,14 +817,13 @@ rl_stop_output (count, key)
 /* Set the system's default editing characters to their readline equivalents
    in KMAP.  Should be static, now that we have rl_tty_set_default_bindings. */
 void
-rltty_set_default_bindings (kmap)
-     Keymap kmap;
+rltty_set_default_bindings(Keymap kmap)
 {
-#if !defined (NO_TTY_DRIVER)
+#if !defined(NO_TTY_DRIVER)
   TIOTYPE ttybuff;
-  int tty = fileno (rl_instream);
+  int tty = fileno(rl_instream);
 
-#if defined (NEW_TTY_DRIVER)
+#if defined(NEW_TTY_DRIVER)
 
 #define SET_SPECIAL(sc, func) \
   do \

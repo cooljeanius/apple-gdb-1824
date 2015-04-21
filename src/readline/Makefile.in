@@ -982,7 +982,7 @@ everything: config.status all examples
 
 static: $(STATIC_LIBS)
 
-libreadline.a: $(OBJECTS) $(HISTOBJ) $(TILDEOBJ) $(XMALLOCOBJ) $(srcdir)/compat.o $(srcdir)/malloc.o $(srcdir)/realloc.o
+libreadline.a: $(OBJECTS) $(HISTOBJ) $(TILDEOBJ) $(XMALLOCOBJ) ${LIBOBJDIR}compat$U.o ${LIBOBJDIR}malloc$U.o ${LIBOBJDIR}realloc$U.o
 	$(RM) $@
 	$(AR) $(ARFLAGS) $@ $(OBJECTS)
 	-test -n "$(RANLIB)" && $(RANLIB) $@

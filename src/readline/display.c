@@ -19,21 +19,22 @@
    is generally kept in a file called COPYING or LICENSE.  If you do not
    have a copy of the license, write to the Free Software Foundation,
    59 Temple Place, Suite 330, Boston, MA 02111 USA. */
+
 #define READLINE_LIBRARY
 
-#if defined (HAVE_CONFIG_H)
+#if defined(HAVE_CONFIG_H)
 #  include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
 
 #include <sys/types.h>
 
-#if defined (HAVE_UNISTD_H)
+#if defined(HAVE_UNISTD_H)
 #  include <unistd.h>
 #endif /* HAVE_UNISTD_H */
 
 #include "posixstat.h"
 
-#if defined (HAVE_STDLIB_H)
+#if defined(HAVE_STDLIB_H)
 #  include <stdlib.h>
 #else
 #  include "ansi_stdlib.h"
@@ -43,7 +44,7 @@
 
 #ifdef __MSDOS__
 # include <pc.h>
-#endif
+#endif /* __MSDOS__ */
 
 /* System-specific feature definitions and include files. */
 #include "rldefs.h"
@@ -59,13 +60,13 @@
 #include "rlprivate.h"
 #include "xmalloc.h"
 
-#if !defined (strchr) && !defined (__STDC__)
-extern char *strchr (), *strrchr ();
+#if !defined(strchr) && !defined(__STDC__)
+extern char *strchr(), *strrchr();
 #endif /* !strchr && !__STDC__ */
 
-#if defined (HACK_TERMCAP_MOTION)
+#if defined(HACK_TERMCAP_MOTION)
 extern char *_rl_term_forward_char;
-#endif
+#endif /* HACK_TERMCAP_MOTION */
 
 static void update_line PARAMS((char *, char *, int, int, int, int));
 static void space_to_eol PARAMS((int));
@@ -73,12 +74,12 @@ static void delete_chars PARAMS((int));
 static void insert_some_chars PARAMS((char *, int, int));
 static void cr PARAMS((void));
 
-#if defined (HANDLE_MULTIBYTE)
+#if defined(HANDLE_MULTIBYTE)
 static int _rl_col_width PARAMS((const char *, int, int));
 static int *_rl_wrapped_line;
 #else
 #  define _rl_col_width(l, s, e)	(((e) <= (s)) ? 0 : (e) - (s))
-#endif
+#endif /* HANDLE_MULTIBYTE */
 
 static int *inv_lbreaks, *vis_lbreaks;
 static int inv_lbsize, vis_lbsize;
@@ -197,19 +198,17 @@ static int prompt_last_screen_line;
    \002 are assumed to be `visible'. */
 
 static char *
-expand_prompt (pmt, lp, lip, niflp)
-     char *pmt;
-     int *lp, *lip, *niflp;
+expand_prompt(char *pmt, int *lp, int *lip, int *niflp)
 {
   char *r, *ret, *p;
   int l, rl, last, ignoring, ninvis, invfl;
 
   /* Short-circuit if we can. */
-  if (strchr (pmt, RL_PROMPT_START_IGNORE) == 0)
+  if (strchr(pmt, RL_PROMPT_START_IGNORE) == 0)
     {
-      r = savestring (pmt);
+      r = savestring(pmt);
       if (lp)
-	*lp = strlen (r);
+	*lp = strlen(r);
       return r;
     }
 
@@ -338,8 +337,7 @@ rl_expand_prompt (prompt)
    increased.  If the lines have already been allocated, this ensures that
    they can hold at least MINSIZE characters. */
 static void
-init_line_structures (minsize)
-      int minsize;
+init_line_structures(int minsize)
 {
   register int n;
 
@@ -347,8 +345,8 @@ init_line_structures (minsize)
     {
       if (line_size < minsize)
 	line_size = minsize;
-      visible_line = (char *)xmalloc (line_size);
-      invisible_line = (char *)xmalloc (line_size);
+      visible_line = (char *)xmalloc(line_size);
+      invisible_line = (char *)xmalloc(line_size);
     }
   else if (line_size < minsize)	/* ensure it can hold MINSIZE chars */
     {
@@ -380,20 +378,20 @@ init_line_structures (minsize)
 
 /* Basic redisplay algorithm. */
 void
-rl_redisplay ()
+rl_redisplay(void)
 {
   register int in, out, c, linenum, cursor_linenum;
   register char *line;
   int c_pos, inv_botlin, lb_botlin, lb_linenum;
   int newlines, lpos, temp;
   char *prompt_this_line;
-#if defined (HANDLE_MULTIBYTE)
+#if defined(HANDLE_MULTIBYTE)
   wchar_t wc;
   size_t wc_bytes;
-  int wc_width;
+  int wc_width = 0;
   mbstate_t ps;
   int _rl_wrapped_multicolumn = 0;
-#endif
+#endif /* HANDLE_MULTIBYTE */
 
   if (!readline_echoing_p)
     return;
@@ -1043,10 +1041,11 @@ update_line (old, new, current_line, omax, nmax, inv_botlin)
   int temp, lendiff, wsatend, od, nd;
   int current_invis_chars;
   int col_lendiff, col_temp;
-#if defined (HANDLE_MULTIBYTE)
+#if defined(HANDLE_MULTIBYTE)
   mbstate_t ps_new, ps_old;
-  int new_offset, old_offset, tmp;
-#endif
+  int new_offset, old_offset;
+  int tmp = 0;
+#endif /* HANDLE_MULTIBYTE */
 
   /* If we're at the right edge of a terminal that supports xn, we're
      ready to wrap around, so do so.  This fixes problems with knowing
@@ -1687,19 +1686,18 @@ rl_show_char (c)
 }
 
 int
-rl_character_len (c, pos)
-     register int c, pos;
+rl_character_len(register int c, register int pos)
 {
   unsigned char uc;
 
   uc = (unsigned char)c;
 
-  if (META_CHAR (uc))
+  if (META_CHAR(uc))
     return ((_rl_output_meta_chars == 0) ? 4 : 1);
 
   if (uc == '\t')
     {
-#if defined (DISPLAY_TABS)
+#if defined(DISPLAY_TABS)
       return (((pos | 7) + 1) - pos);
 #else
       return (2);
@@ -1810,49 +1808,47 @@ rl_restore_prompt ()
 }
 
 char *
-_rl_make_prompt_for_search (pchar)
-     int pchar;
+_rl_make_prompt_for_search(int pchar)
 {
-  int len;
+  size_t len;
   char *pmt;
 
-  rl_save_prompt ();
+  rl_save_prompt();
 
   if (saved_local_prompt == 0)
     {
-      len = (rl_prompt && *rl_prompt) ? strlen (rl_prompt) : 0;
-      pmt = (char *)xmalloc (len + 2);
+      len = ((rl_prompt && *rl_prompt) ? strlen(rl_prompt) : 0UL);
+      pmt = (char *)xmalloc(len + 2UL);
       if (len)
-	strcpy (pmt, rl_prompt);
-      pmt[len] = pchar;
-      pmt[len+1] = '\0';
+	strcpy(pmt, rl_prompt);
+      pmt[len] = (char)pchar;
+      pmt[len + 1] = '\0';
     }
   else
     {
-      len = *saved_local_prompt ? strlen (saved_local_prompt) : 0;
-      pmt = (char *)xmalloc (len + 2);
+      len = (*saved_local_prompt ? strlen(saved_local_prompt) : 0UL);
+      pmt = (char *)xmalloc(len + 2UL);
       if (len)
-	strcpy (pmt, saved_local_prompt);
-      pmt[len] = pchar;
-      pmt[len+1] = '\0';
-      local_prompt = savestring (pmt);
+	strcpy(pmt, saved_local_prompt);
+      pmt[len] = (char)pchar;
+      pmt[len + 1] = '\0';
+      local_prompt = savestring(pmt);
       prompt_last_invisible = saved_last_invisible;
-      prompt_visible_length = saved_visible_length + 1;
+      prompt_visible_length = (saved_visible_length + 1);
     }
   return pmt;
 }
 
 /* Quick redisplay hack when erasing characters at the end of the line. */
 void
-_rl_erase_at_end_of_line (l)
-     int l;
+_rl_erase_at_end_of_line(int l)
 {
   register int i;
 
-  _rl_backspace (l);
+  _rl_backspace(l);
   for (i = 0; i < l; i++)
-    putc (' ', rl_outstream);
-  _rl_backspace (l);
+    putc(' ', rl_outstream);
+  _rl_backspace(l);
   for (i = 0; i < l; i++)
     visible_line[--_rl_last_c_pos] = '\0';
   rl_display_fixed++;
@@ -2022,8 +2018,7 @@ cr ()
    terminal escape sequences.  Called with the cursor at column 0 of the
    line to draw the prompt on. */
 static void
-redraw_prompt (t)
-     char *t;
+redraw_prompt(char * t)
 {
   char *oldp, *oldl, *oldlprefix;
   int oldlen, oldlast, oldplen, oldninvis;
@@ -2143,12 +2138,10 @@ _rl_current_display_line ()
    In the case of multibyte characters with stateful encoding, we have to
    scan from the beginning of the string to take the state into account. */
 static int
-_rl_col_width (str, start, end)
-     const char *str;
-     int start, end;
+_rl_col_width(const char *str, int start, int end)
 {
   wchar_t wc;
-  mbstate_t ps = {0};
+  mbstate_t ps = { { 0 } };
   int tmp, point, width, max;
 
   if (end <= start)

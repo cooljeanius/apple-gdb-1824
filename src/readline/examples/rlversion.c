@@ -51,8 +51,10 @@
 # include <readline/readline.h>
 #endif /* READLINE_LIBRARY */
 
-int main()
+int main(void)
 {
-	printf ("%s\n", rl_library_version ? rl_library_version : "unknown");
-	exit (0);
+  printf("%s\n", rl_library_version ? rl_library_version : "unknown");
+  exit(0);
 }
+
+/* EOF */

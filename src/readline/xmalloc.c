@@ -20,17 +20,19 @@
    Software Foundation, 59 Temple Place, Suite 330, Boston, MA 02111 USA. */
 #define READLINE_LIBRARY
 
-#if defined (HAVE_CONFIG_H)
-#include <config.h>
-#endif
+#if defined(HAVE_CONFIG_H)
+# include <config.h>
+#endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
 
-#if defined (HAVE_STDLIB_H)
+#if defined(HAVE_STDLIB_H)
 #  include <stdlib.h>
 #else
 #  include "ansi_stdlib.h"
 #endif /* HAVE_STDLIB_H */
+
+#include "rlstdc.h"
 
 #include "xmalloc.h"
 
@@ -40,7 +42,7 @@
 /*								    */
 /* **************************************************************** */
 
-static void
+static void __attribute__((noreturn))
 memory_error_and_abort(const char *fname)
 {
   fprintf(stderr, "%s: out of virtual memory\n", fname);

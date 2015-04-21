@@ -720,11 +720,12 @@ _rl_find_completion_word (fp, dp)
       /* We didn't find an unclosed quoted substring upon which to do
          completion, so use the word break characters to find the
          substring on which to complete. */
-#if defined (HANDLE_MULTIBYTE)
-      while (rl_point = _rl_find_prev_mbchar (rl_line_buffer, rl_point, MB_FIND_ANY))
+#if defined(HANDLE_MULTIBYTE)
+      while ((rl_point = _rl_find_prev_mbchar(rl_line_buffer, rl_point,
+                                              MB_FIND_ANY)))
 #else
       while (--rl_point)
-#endif
+#endif /* HANDLE_MULTIBYTE */
 	{
 	  scan = rl_line_buffer[rl_point];
 
@@ -889,18 +890,16 @@ remove_duplicate_matches (matches)
 /* Find the common prefix of the list of matches, and put it into
    matches[0]. */
 static int
-compute_lcd_of_matches (match_list, matches, text)
-     char **match_list;
-     int matches;
-     const char *text;
+compute_lcd_of_matches(char **match_list, int matches, const char *text)
 {
-  register int i, c1, c2, si;
-  int low;		/* Count of max-matched characters. */
-#if defined (HANDLE_MULTIBYTE)
-  int v;
+  register int i, c1, c2;
+  register size_t si;
+  size_t low;		/* Count of max-matched characters. */
+#if defined(HANDLE_MULTIBYTE)
+  size_t v;
   mbstate_t ps1, ps2;
   wchar_t wc1, wc2;
-#endif
+#endif /* HANDLE_MULTIBYTE */
 
   /* If only one match, just use that.  Otherwise, compare each
      member of the list with the next, finding out where they
@@ -914,53 +913,56 @@ compute_lcd_of_matches (match_list, matches, text)
 
   for (i = 1, low = 100000; i < matches; i++)
     {
-#if defined (HANDLE_MULTIBYTE)
-      if (MB_CUR_MAX > 1 && rl_byte_oriented == 0)
+#if defined(HANDLE_MULTIBYTE)
+      if ((MB_CUR_MAX > 1) && (rl_byte_oriented == 0))
 	{
-	  memset (&ps1, 0, sizeof (mbstate_t));
-	  memset (&ps2, 0, sizeof (mbstate_t));
+	  memset(&ps1, 0, sizeof(mbstate_t));
+	  memset(&ps2, 0, sizeof(mbstate_t));
 	}
-#endif
+#endif /* HANDLE_MULTIBYTE */
       if (_rl_completion_case_fold)
 	{
-	  for (si = 0;
+	  for (si = 0UL;
 	       (c1 = _rl_to_lower(match_list[i][si])) &&
 	       (c2 = _rl_to_lower(match_list[i + 1][si]));
 	       si++)
-#if defined (HANDLE_MULTIBYTE)
-	    if (MB_CUR_MAX > 1 && rl_byte_oriented == 0)
+#if defined(HANDLE_MULTIBYTE)
+	    if ((MB_CUR_MAX > 1) && (rl_byte_oriented == 0))
 	      {
-		v = mbrtowc (&wc1, match_list[i]+si, strlen (match_list[i]+si), &ps1);
-		mbrtowc (&wc2, match_list[i+1]+si, strlen (match_list[i+1]+si), &ps2);
-		wc1 = towlower (wc1);
-		wc2 = towlower (wc2);
+		v = mbrtowc(&wc1, (match_list[i] + si),
+                            strlen(match_list[i] + si), &ps1);
+		mbrtowc(&wc2, (match_list[i + 1] + si),
+                        strlen(match_list[i + 1] + si), &ps2);
+		wc1 = towlower(wc1);
+		wc2 = towlower(wc2);
 		if (wc1 != wc2)
 		  break;
 		else if (v > 1)
-		  si += v - 1;
+		  si += (v - 1UL);
 	      }
 	    else
-#endif
+#endif /* HANDLE_MULTIBYTE */
 	    if (c1 != c2)
 	      break;
 	}
       else
 	{
-	  for (si = 0;
+	  for (si = 0UL;
 	       (c1 = match_list[i][si]) &&
 	       (c2 = match_list[i + 1][si]);
 	       si++)
-#if defined (HANDLE_MULTIBYTE)
-	    if (MB_CUR_MAX > 1 && rl_byte_oriented == 0)
+#if defined(HANDLE_MULTIBYTE)
+	    if ((MB_CUR_MAX > 1) && (rl_byte_oriented == 0))
 	      {
 		mbstate_t ps_back = ps1;
-		if (!_rl_compare_chars (match_list[i], si, &ps1, match_list[i+1], si, &ps2))
+		if (!_rl_compare_chars(match_list[i], si, &ps1,
+                                       match_list[i + 1], si, &ps2))
 		  break;
-		else if ((v = _rl_get_char_len (&match_list[i][si], &ps_back)) > 1)
-		  si += v - 1;
+		else if ((v = _rl_get_char_len(&match_list[i][si], &ps_back)) > 1)
+		  si += (v - 1UL);
 	      }
 	    else
-#endif
+#endif /* HANDLE_MULTIBYTE */
 	    if (c1 != c2)
 	      break;
 	}
@@ -972,14 +974,14 @@ compute_lcd_of_matches (match_list, matches, text)
   /* If there were multiple matches, but none matched up to even the
      first character, and the user typed something, use that as the
      value of matches[0]. */
-  if (low == 0 && text && *text)
+  if ((low == 0) && text && *text)
     {
-      match_list[0] = (char *)xmalloc (strlen (text) + 1);
-      strcpy (match_list[0], text);
+      match_list[0] = (char *)xmalloc(strlen(text) + 1UL);
+      strcpy(match_list[0], text);
     }
   else
     {
-      match_list[0] = (char *)xmalloc (low + 1);
+      match_list[0] = (char *)xmalloc(low + 1UL);
 
       /* XXX - this might need changes in the presence of multibyte chars */
 
@@ -987,28 +989,29 @@ compute_lcd_of_matches (match_list, matches, text)
 	 the user typed in the face of multiple matches differing in case. */
       if (_rl_completion_case_fold)
 	{
-	  /* sort the list to get consistent answers. */
-	  qsort (match_list+1, matches, sizeof(char *), (QSFUNC *)_rl_qsort_string_compare);
+	  /* sort the list to get consistent answer: */
+	  qsort((match_list + 1), (size_t)matches, sizeof(char *),
+                (QSFUNC *)_rl_qsort_string_compare);
 
-	  si = strlen (text);
+	  si = strlen(text);
 	  if (si <= low)
 	    {
 	      for (i = 1; i <= matches; i++)
-		if (strncmp (match_list[i], text, si) == 0)
+		if (strncmp(match_list[i], text, si) == 0)
 		  {
-		    strncpy (match_list[0], match_list[i], low);
+		    strncpy(match_list[0], match_list[i], low);
 		    break;
 		  }
 	      /* no casematch, use first entry */
 	      if (i > matches)
-		strncpy (match_list[0], match_list[1], low);
+		strncpy(match_list[0], match_list[1], low);
 	    }
 	  else
 	    /* otherwise, just use the text the user typed. */
-	    strncpy (match_list[0], text, low);
+	    strncpy(match_list[0], text, low);
 	}
       else
-        strncpy (match_list[0], match_list[1], low);
+        strncpy(match_list[0], match_list[1], low);
 
       match_list[0][low] = '\0';
     }
@@ -1616,14 +1619,16 @@ rl_completion_matches (text, entry_function)
 
   matches = 0;
   match_list_size = 10;
-  match_list = (char **)xmalloc ((match_list_size + 1) * sizeof (char *));
+  match_list = (char **)xmalloc((match_list_size + 1) * sizeof(char *));
   match_list[1] = (char *)NULL;
 
-  while (string = (*entry_function) (text, matches))
+  while ((string = (*entry_function)(text, matches)))
     {
       if (matches + 1 == match_list_size)
-	match_list = (char **)xrealloc
-	  (match_list, ((match_list_size += 10) + 1) * sizeof (char *));
+	match_list =
+          ((char **)
+           xrealloc(match_list,
+                    ((match_list_size += 10) + 1) * sizeof(char *)));
 
       match_list[++matches] = string;
       match_list[matches + 1] = (char *)NULL;
@@ -1670,10 +1675,10 @@ rl_username_completion_function (text, state)
     }
 
 #ifdef HAVE_GETPWENT
-  while (entry = getpwent ())
+  while ((entry = getpwent()))
     {
       /* Null usernames should result in all users as possible completions. */
-      if (namelen == 0 || (STREQN (username, entry->pw_name, namelen)))
+      if ((namelen == 0) || (STREQN(username, entry->pw_name, namelen)))
 	break;
     }
 #endif
@@ -1681,8 +1686,8 @@ rl_username_completion_function (text, state)
   if (entry == 0)
     {
 #ifdef HAVE_GETPWENT
-      endpwent ();
-#endif
+      endpwent();
+#endif /* HAVE_GETPWENT */
       return ((char *)NULL);
     }
   else

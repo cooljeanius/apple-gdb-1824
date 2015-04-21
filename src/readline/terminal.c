@@ -84,20 +84,22 @@
 static char *term_buffer = (char *)NULL;
 static char *term_string_buffer = (char *)NULL;
 
-/* Non-zero means this terminal can't really do anything. */
+# ifdef ALLOW_UNUSED_VARIABLES
+/* Non-zero means this terminal cannot really do anything: */
 static int dumb_term;
+# endif /* ALLOW_UNUSED_VARIABLES */
 #endif /* !__MSDOS__ */
 
 static int tcap_initialized;
 
-#if !defined (__linux__) && !defined (__APPLE__)
-#  if defined (__EMX__) || defined (NEED_EXTERN_PC)
+#if !defined(__linux__) && !defined(__APPLE__)
+#  if defined(__EMX__) || defined(NEED_EXTERN_PC)
 extern
 #  endif /* __EMX__ || NEED_EXTERN_PC */
 char PC, *BC, *UP;
 #endif /* __linux__ */
 
-/* Some strings to control terminal actions.  These are output by tputs (). */
+/* Some strings to control terminal actions; output by tputs(): */
 char *_rl_term_clreol;
 char *_rl_term_clrpag;
 char *_rl_term_cr;
@@ -105,7 +107,7 @@ char *_rl_term_backspace;
 char *_rl_term_goto;
 char *_rl_term_pc;
 
-/* Non-zero if we determine that the terminal can do character insertion. */
+/* Non-zero if we determine that the terminal can do character insertion: */
 int _rl_terminal_can_insert = 0;
 
 /* How to insert characters. */

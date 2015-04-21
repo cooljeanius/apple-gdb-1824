@@ -63,7 +63,7 @@
 
 /* This typedef is equivalent to the one for Function; it allows us
    to say SigHandler *foo = signal (SIGKILL, SIG_IGN); */
-typedef RETSIGTYPE SigHandler ();
+typedef RETSIGTYPE SigHandler(int);
 
 #if defined (HAVE_POSIX_SIGNALS)
 typedef struct sigaction sighandler_cxt;
@@ -109,13 +109,12 @@ static sighandler_cxt old_winch;
 /* Readline signal handler functions. */
 
 static RETSIGTYPE
-rl_signal_handler (sig)
-     int sig;
+rl_signal_handler(int sig)
 {
-#if defined (HAVE_POSIX_SIGNALS)
+#if defined(HAVE_POSIX_SIGNALS)
   sigset_t set;
 #else /* !HAVE_POSIX_SIGNALS */
-#  if defined (HAVE_BSD_SIGNALS)
+#  if defined(HAVE_BSD_SIGNALS)
   long omask;
 #  else /* !HAVE_BSD_SIGNALS */
   sighandler_cxt dummy_cxt;	/* needed for rl_set_sighandler call */
@@ -127,7 +126,7 @@ rl_signal_handler (sig)
 #if !defined (HAVE_BSD_SIGNALS) && !defined (HAVE_POSIX_SIGNALS)
   /* Since the signal will not be blocked while we are in the signal
      handler, ignore it until rl_clear_signals resets the catcher. */
-  if (sig == SIGINT 
+  if (sig == SIGINT
 #ifdef SIGALRM
       || sig == SIGALRM
 #endif
@@ -181,37 +180,36 @@ rl_signal_handler (sig)
 #if defined (HAVE_POSIX_SIGNALS)
       sigprocmask (SIG_SETMASK, &set, (sigset_t *)NULL);
 #else /* !HAVE_POSIX_SIGNALS */
-#  if defined (HAVE_BSD_SIGNALS)
-      sigsetmask (omask & ~(sigmask (sig)));
+#  if defined(HAVE_BSD_SIGNALS)
+      sigsetmask(omask & ~(sigmask(sig)));
 #  endif /* HAVE_BSD_SIGNALS */
 #endif /* !HAVE_POSIX_SIGNALS */
 
-      rl_reset_after_signal ();
+      rl_reset_after_signal();
     }
 
   RL_UNSETSTATE(RL_STATE_SIGHANDLER);
   SIGHANDLER_RETURN;
 }
 
-#if defined (SIGWINCH)
+#if defined(SIGWINCH)
 static RETSIGTYPE
-rl_sigwinch_handler (sig)
-     int sig;
+rl_sigwinch_handler(int sig)
 {
   SigHandler *oh;
 
-#if defined (MUST_REINSTALL_SIGHANDLERS)
+#if defined(MUST_REINSTALL_SIGHANDLERS)
   sighandler_cxt dummy_winch;
 
   /* We don't want to change old_winch -- it holds the state of SIGWINCH
      disposition set by the calling application.  We need this state
      because we call the application's SIGWINCH handler after updating
      our own idea of the screen size. */
-  rl_set_sighandler (SIGWINCH, rl_sigwinch_handler, &dummy_winch);
-#endif
+  rl_set_sighandler(SIGWINCH, rl_sigwinch_handler, &dummy_winch);
+#endif /* MUST_REINSTALL_SIGHANDLERS */
 
   RL_SETSTATE(RL_STATE_SIGHANDLER);
-  rl_resize_terminal ();
+  rl_resize_terminal();
 
   /* If another sigwinch handler has been installed, call it. */
   oh = (SigHandler *)old_winch.sa_handler;
@@ -403,7 +401,7 @@ rl_reset_after_signal ()
 /* Free up the readline variable line state for the current line (undo list,
    any partial history entry, any keyboard macros in progress, and any
    numeric arguments in process) after catching a signal, before calling
-   rl_cleanup_after_signal(). */ 
+   rl_cleanup_after_signal(). */
 void
 rl_free_line_state ()
 {

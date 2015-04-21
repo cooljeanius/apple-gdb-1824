@@ -88,11 +88,12 @@ static int vflag;
 static void
 usage()
 {
-  fprintf (stderr, "%s: usage: %s [-vEVN] [filename]\n", progname, progname);
+  fprintf(stderr, "%s: usage: %s [-vEVN] [filename]\n",
+          progname, progname);
 }
 
 int
-main (argc, argv)
+main(argc, argv)
      int argc;
      char **argv;
 {
@@ -167,7 +168,7 @@ fcopy(fp)
 }
 
 int
-stdcat (argc, argv)
+stdcat(argc, argv)
      int argc;
      char **argv;
 {
@@ -180,20 +181,23 @@ stdcat (argc, argv)
 
   for (i = 0, r = 1; i < argc; i++)
     {
-      if (*argv[i] == '-' && argv[i][1] == 0)
+      if ((*argv[i] == '-') && (argv[i][1] == 0))
 	fp = stdin;
       else
 	{
-	  fp = fopen (argv[i], "r");
+	  fp = fopen(argv[i], "r");
 	  if (fp == 0)
 	    {
-	      fprintf (stderr, "%s: %s: cannot open: %s\n", progname, argv[i], strerror(errno));
+	      fprintf(stderr, "%s: %s: cannot open: %s\n",
+                      progname, argv[i], strerror(errno));
 	      continue;
 	    }
         }
-      r = fcopy (fp);
+      r = fcopy(fp);
       if (fp != stdin)
 	fclose(fp);
     }
   return r;
 }
+
+/* EOF */

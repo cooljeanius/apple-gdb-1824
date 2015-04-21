@@ -1,3 +1,9 @@
+2015-04-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	add intl target to Xcode proj; more bfd stuff again
+
+	Change-Id: Ife9188d71be243b05e114964ba34eb306564a053
+
 2015-04-18  Eric Gallager  <egall@gwmail.gwu.edu>
 
 	add efence target to Xcode proj; more bfd stuff

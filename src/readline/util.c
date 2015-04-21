@@ -119,19 +119,18 @@ rl_tty_status (count, key)
 /* Return a copy of the string between FROM and TO.
    FROM is inclusive, TO is not. */
 char *
-rl_copy_text (from, to)
-     int from, to;
+rl_copy_text(int from, int to)
 {
-  register int length;
+  register size_t length;
   char *copy;
 
-  /* Fix it if the caller is confused. */
+  /* Fix it if the caller is confused: */
   if (from > to)
-    SWAP (from, to);
+    SWAP(from, to);
 
-  length = to - from;
-  copy = (char *)xmalloc (1 + length);
-  strncpy (copy, rl_line_buffer + from, length);
+  length = (size_t)(to - from);
+  copy = (char *)xmalloc(1UL + length);
+  strncpy(copy, (rl_line_buffer + from), length);
   copy[length] = '\0';
   return (copy);
 }
@@ -139,50 +138,49 @@ rl_copy_text (from, to)
 /* Increase the size of RL_LINE_BUFFER until it has enough space to hold
    LEN characters. */
 void
-rl_extend_line_buffer (len)
-     int len;
+rl_extend_line_buffer(int len)
 {
-  while (len >= rl_line_buffer_len)
+  while ((size_t)len >= rl_line_buffer_len)
     {
       rl_line_buffer_len += DEFAULT_BUFFER_SIZE;
-      rl_line_buffer = (char *)xrealloc (rl_line_buffer, rl_line_buffer_len);
+      rl_line_buffer = (char *)xrealloc(rl_line_buffer,
+                                        rl_line_buffer_len);
     }
 
-  _rl_set_the_line ();
+  _rl_set_the_line();
 }
 
 
-/* A function for simple tilde expansion. */
+/* A function for simple tilde expansion: */
 int
-rl_tilde_expand (ignore, key)
-     int ignore, key;
+rl_tilde_expand(int ignore, int key)
 {
   register int start, end;
   char *homedir, *temp;
-  int len;
+  size_t len;
 
   end = rl_point;
-  start = end - 1;
+  start = (end - 1);
 
-  if (rl_point == rl_end && rl_line_buffer[rl_point] == '~')
+  if ((rl_point == rl_end) && (rl_line_buffer[rl_point] == '~'))
     {
-      homedir = tilde_expand ("~");
-      _rl_replace_text (homedir, start, end);
+      homedir = tilde_expand("~");
+      _rl_replace_text(homedir, start, end);
       return (0);
     }
   else if (rl_line_buffer[start] != '~')
     {
-      for (; !whitespace (rl_line_buffer[start]) && start >= 0; start--)
+      for (; !whitespace(rl_line_buffer[start]) && (start >= 0); start--)
         ;
       start++;
     }
 
   end = start;
-  do
+  do {
     end++;
-  while (whitespace (rl_line_buffer[end]) == 0 && end < rl_end);
+  } while ((whitespace(rl_line_buffer[end]) == 0) && (end < rl_end));
 
-  if (whitespace (rl_line_buffer[end]) || end >= rl_end)
+  if (whitespace(rl_line_buffer[end]) || (end >= rl_end))
     end--;
 
   /* If the first character of the current word is a tilde, perform
@@ -190,14 +188,14 @@ rl_tilde_expand (ignore, key)
      nothing. */
   if (rl_line_buffer[start] == '~')
     {
-      len = end - start + 1;
-      temp = (char *)xmalloc (len + 1);
-      strncpy (temp, rl_line_buffer + start, len);
+      len = ((size_t)(end - start) + 1UL);
+      temp = (char *)xmalloc(len + 1UL);
+      strncpy(temp, (rl_line_buffer + start), len);
       temp[len] = '\0';
-      homedir = tilde_expand (temp);
-      free (temp);
+      homedir = tilde_expand(temp);
+      free(temp);
 
-      _rl_replace_text (homedir, start, end);
+      _rl_replace_text(homedir, start, end);
     }
 
   return (0);
@@ -212,31 +210,29 @@ rl_tilde_expand (ignore, key)
 /* Determine if s2 occurs in s1.  If so, return a pointer to the
    match in s1.  The compare is case insensitive. */
 char *
-_rl_strindex (s1, s2)
-     register const char *s1, *s2;
+_rl_strindex(register const char *s1, register const char *s2)
 {
-  register int i, l, len;
+  register size_t i, l, len;
 
-  for (i = 0, l = strlen (s2), len = strlen (s1); (len - i) >= l; i++)
-    if (_rl_strnicmp (s1 + i, s2, l) == 0)
-      return ((char *) (s1 + i));
+  for (i = 0UL, l = strlen(s2), len = strlen(s1); (len - i) >= l; i++)
+    if (_rl_strnicmp((s1 + i), s2, l) == 0)
+      return ((char *)(s1 + i));
   return ((char *)NULL);
 }
 
-#ifndef HAVE_STRPBRK
+#if !defined(HAVE_STRPBRK)
 /* Find the first occurrence in STRING1 of any character from STRING2.
    Return a pointer to the character in STRING1. */
 char *
-_rl_strpbrk (string1, string2)
-     const char *string1, *string2;
+_rl_strpbrk(const char *string1, const char *string2)
 {
   register const char *scan;
-#if defined (HANDLE_MULTIBYTE)
+# if defined(HANDLE_MULTIBYTE)
   mbstate_t ps;
   register int i, v;
 
-  memset (&ps, 0, sizeof (mbstate_t));
-#endif
+  memset(&ps, 0, sizeof(mbstate_t));
+# endif /* HANDLE_MULTIBYTE */
 
   for (; *string1; string1++)
     {
@@ -245,26 +241,24 @@ _rl_strpbrk (string1, string2)
 	  if (*string1 == *scan)
 	    return ((char *)string1);
 	}
-#if defined (HANDLE_MULTIBYTE)
-      if (MB_CUR_MAX > 1 && rl_byte_oriented == 0)
+# if defined(HANDLE_MULTIBYTE)
+      if ((MB_CUR_MAX > 1) && (rl_byte_oriented == 0))
 	{
-	  v = _rl_get_char_len (string1, &ps);
+	  v = _rl_get_char_len(string1, &ps);
 	  if (v > 1)
-	    string += v - 1;	/* -1 to account for auto-increment in loop */
+	    string += v - 1; /* -1 to account for auto-increment in loop */
 	}
-#endif
+# endif /* HANDLE_MULTIBYTE */
     }
   return ((char *)NULL);
 }
-#endif
+#endif /* !HAVE_STRPBRK */
 
-#if !defined (HAVE_STRCASECMP)
+#if !defined(HAVE_STRCASECMP)
 /* Compare at most COUNT characters from string1 to string2.  Case
    doesn't matter. */
 int
-_rl_strnicmp (string1, string2, count)
-     char *string1, *string2;
-     int count;
+_rl_strnicmp(char *string1, char *string2, int count)
 {
   register char ch1, ch2;
 
@@ -280,10 +274,9 @@ _rl_strnicmp (string1, string2, count)
   return (count);
 }
 
-/* strcmp (), but caseless. */
+/* strcmp(), but caseless. */
 int
-_rl_stricmp (string1, string2)
-     char *string1, *string2;
+_rl_stricmp(char *string1, char *string2)
 {
   register char ch1, ch2;
 
@@ -298,41 +291,41 @@ _rl_stricmp (string1, string2)
 }
 #endif /* !HAVE_STRCASECMP */
 
-/* Stupid comparison routine for qsort () ing strings. */
+/* Stupid comparison routine for qsort()-ing strings. */
 int
-_rl_qsort_string_compare (s1, s2)
-  char **s1, **s2;
+_rl_qsort_string_compare(char **s1, char **s2)
 {
-#if defined (HAVE_STRCOLL)
-  return (strcoll (*s1, *s2));
+#if defined(HAVE_STRCOLL)
+  return (strcoll(*s1, *s2));
 #else
   int result;
 
-  result = **s1 - **s2;
+  result = (**s1 - **s2);
   if (result == 0)
-    result = strcmp (*s1, *s2);
+    result = strcmp(*s1, *s2);
 
   return result;
-#endif
+#endif /* HAVE_STRCOLL */
 }
 
 /* Function equivalents for the macros defined in chardefs.h. */
-#define FUNCTION_FOR_MACRO(f)	int (f) (c) int c; { return f (c); }
+#define FUNCTION_FOR_MACRO(f)	int (f)(int c) { return f(c); }
 
-FUNCTION_FOR_MACRO (_rl_digit_p)
-FUNCTION_FOR_MACRO (_rl_digit_value)
-FUNCTION_FOR_MACRO (_rl_lowercase_p)
-FUNCTION_FOR_MACRO (_rl_pure_alphabetic)
-FUNCTION_FOR_MACRO (_rl_to_lower)
-FUNCTION_FOR_MACRO (_rl_to_upper)
-FUNCTION_FOR_MACRO (_rl_uppercase_p)
+FUNCTION_FOR_MACRO(_rl_digit_p)
+FUNCTION_FOR_MACRO(_rl_digit_value)
+FUNCTION_FOR_MACRO(_rl_lowercase_p)
+FUNCTION_FOR_MACRO(_rl_pure_alphabetic)
+FUNCTION_FOR_MACRO(_rl_to_lower)
+FUNCTION_FOR_MACRO(_rl_to_upper)
+FUNCTION_FOR_MACRO(_rl_uppercase_p)
 
 /* Backwards compatibility, now that savestring has been removed from
    all `public' readline header files. */
 #undef _rl_savestring
 char *
-_rl_savestring (s)
-     const char *s;
+_rl_savestring(const char *s)
 {
-  return (strcpy ((char *)xmalloc (1 + (int)strlen (s)), (s)));
+  return (strcpy((char *)xmalloc(1UL + strlen(s)), (s)));
 }
+
+/* EOF */

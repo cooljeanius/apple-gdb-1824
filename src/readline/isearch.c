@@ -96,19 +96,17 @@ rl_forward_search_history (sign, key)
    WHERE is the history list number of the current line.  If it is
    -1, then this line is the starting one. */
 static void
-rl_display_search (search_string, reverse_p, where)
-     char *search_string;
-     int reverse_p, where;
+rl_display_search(char *search_string, int reverse_p, int where)
 {
   char *message;
   int msglen, searchlen;
 
-  searchlen = (search_string && *search_string) ? strlen (search_string) : 0;
+  searchlen = (search_string && *search_string) ? strlen(search_string) : 0;
 
-  message = (char *)xmalloc (searchlen + 33);
+  message = (char *)xmalloc(searchlen + 33);
   msglen = 0;
 
-#if defined (NOTDEF)
+#if defined(NOTDEF)
   if (where != -1)
     {
       sprintf (message, "[%d]", where + history_base);

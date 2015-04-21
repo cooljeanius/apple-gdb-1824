@@ -220,7 +220,7 @@ int _rl_mark_modified_lines = 0;
    AUDIBLE_BELL, or VISIBLE_BELL. */
 int _rl_bell_preference = AUDIBLE_BELL;
 
-/* String inserted into the line by rl_insert_comment (). */
+/* String inserted into the line by rl_insert_comment(). */
 char *_rl_comment_begin;
 
 /* Keymap holding the function currently being executed. */
@@ -235,7 +235,7 @@ int rl_num_chars_to_read;
 
 /* Line buffer and maintenence. */
 char *rl_line_buffer = (char *)NULL;
-int rl_line_buffer_len = 0;
+size_t rl_line_buffer_len = 0UL;
 
 /* Forward declarations used by the display, termcap, and history code. */
 
@@ -303,7 +303,7 @@ readline (prompt)
 #if defined (HANDLE_SIGNALS)
   rl_set_signals ();
 #endif /* HANDLE_SIGNALS */
- 
+
   value = readline_internal ();
   (*rl_deprep_term_function) ();
 
@@ -487,14 +487,14 @@ readline_internal_charloop ()
 #endif /* READLINE_CALLBACKS */
 }
 
-#if defined (READLINE_CALLBACKS)
+#if defined(READLINE_CALLBACKS)
 static int
-readline_internal_charloop ()
+readline_internal_charloop(void)
 {
   int eof = 1;
 
   while (rl_done == 0)
-    eof = readline_internal_char ();
+    eof = readline_internal_char();
   return (eof);
 }
 #endif /* READLINE_CALLBACKS */
@@ -751,25 +751,25 @@ rl_initialize ()
 }
 
 #if 0
-# if defined (__EMX__)
+# if defined(__EMX__)
 static void
-_emx_build_environ ()
+_emx_build_environ(void)
 {
   TIB *tibp;
   PIB *pibp;
   char *t, **tp;
   int c;
 
-  DosGetInfoBlocks (&tibp, &pibp);
+  DosGetInfoBlocks(&tibp, &pibp);
   t = pibp->pib_pchenv;
   for (c = 1; *t; c++)
-    t += strlen (t) + 1;
-  tp = environ = (char **)xmalloc ((c + 1) * sizeof (char *));
+    t += (strlen(t) + 1);
+  tp = environ = (char **)xmalloc((c + 1) * sizeof(char *));
   t = pibp->pib_pchenv;
   while (*t)
     {
       *tp++ = t;
-      t += strlen (t) + 1;
+      t += (strlen(t) + 1);
     }
   *tp = 0;
 }
@@ -778,19 +778,19 @@ _emx_build_environ ()
 
 /* Initialize the entire state of the world. */
 static void
-readline_initialize_everything ()
+readline_initialize_everything(void)
 {
 #if 0
 # if defined (__EMX__)
-	if (environ == 0) {
-		_emx_build_environ ();
-	}
+  if (environ == 0) {
+    _emx_build_environ();
+  }
 # endif /* __EMX__ */
 #endif /* 0 */
 
 #if 0
   /* Find out if we are running in Emacs -- UNUSED. */
-  running_in_emacs = sh_get_env_value ("EMACS") != (char *)0;
+  running_in_emacs = (sh_get_env_value("EMACS") != (char *)0);
 #endif /* 0 */
 
   /* Set up input and output if they are not already set up. */
@@ -806,17 +806,17 @@ readline_initialize_everything ()
   _rl_in_stream = rl_instream;
   _rl_out_stream = rl_outstream;
 
-  /* Allocate data structures. */
+  /* Allocate data structures: */
   if (rl_line_buffer == 0)
-    rl_line_buffer = (char *)xmalloc (rl_line_buffer_len = DEFAULT_BUFFER_SIZE);
+    rl_line_buffer = (char *)xmalloc(rl_line_buffer_len = DEFAULT_BUFFER_SIZE);
 
   /* Initialize the terminal interface. */
   if (rl_terminal_name == 0)
-    rl_terminal_name = sh_get_env_value ("TERM");
-  _rl_init_terminal_io (rl_terminal_name);
+    rl_terminal_name = sh_get_env_value("TERM");
+  _rl_init_terminal_io(rl_terminal_name);
 
   /* Bind tty characters to readline functions. */
-  readline_default_bindings ();
+  readline_default_bindings();
 
   /* Initialize the function names. */
   rl_initialize_funmap ();

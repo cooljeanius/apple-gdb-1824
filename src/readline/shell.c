@@ -73,7 +73,7 @@ extern struct passwd *getpwuid PARAMS((uid_t));
 #endif
 
 /* Nonzero if the integer type T is signed.  */
-#define TYPE_SIGNED(t) (! ((t) 0 < (t) -1))
+#define TYPE_SIGNED(t) (!((t) 0 < (t) -1))
 
 /* Bound on length of the string representing an integer value of type T.
    Subtract one for the sign bit if T is signed;
@@ -81,8 +81,8 @@ extern struct passwd *getpwuid PARAMS((uid_t));
    add one for integer division truncation;
    add one more for a minus sign if t is signed.  */
 #define INT_STRLEN_BOUND(t) \
-  ((sizeof (t) * CHAR_BIT - TYPE_SIGNED (t)) * 302 / 1000 \
-   + 1 + TYPE_SIGNED (t))
+  ((sizeof(t) * CHAR_BIT - TYPE_SIGNED(t)) * 302 / 1000 \
+   + 1 + TYPE_SIGNED(t))
 
 /* All of these functions are resolved from bash if we are linking readline
    as part of bash. */
@@ -100,7 +100,7 @@ sh_single_quote(char *string)
 
   for (s = string; s && (c = *s); s++)
     {
-      *r++ = c;
+      *r++ = (char)c;
 
       if (c == '\'')
 	{

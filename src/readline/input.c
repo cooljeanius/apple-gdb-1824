@@ -302,8 +302,8 @@ _rl_input_queued (t)
 
 void
 _rl_insert_typein (c)
-     int c;     
-{    	
+     int c;
+{
   int key, t, i;
   char *string;
 
@@ -348,20 +348,19 @@ rl_stuff_char (key)
 
 /* Make C be the next command to be executed. */
 int
-rl_execute_next (c)
-     int c;
+rl_execute_next(int c)
 {
   rl_pending_input = c;
-  RL_SETSTATE (RL_STATE_INPUTPENDING);
+  RL_SETSTATE(RL_STATE_INPUTPENDING);
   return 0;
 }
 
 /* Clear any pending input pushed with rl_execute_next() */
 int
-rl_clear_pending_input ()
+rl_clear_pending_input(void)
 {
   rl_pending_input = 0;
-  RL_UNSETSTATE (RL_STATE_INPUTPENDING);
+  RL_UNSETSTATE(RL_STATE_INPUTPENDING);
   return 0;
 }
 
@@ -371,9 +370,9 @@ rl_clear_pending_input ()
 /*								    */
 /* **************************************************************** */
 
-/* Read a key, including pending input. */
+/* Read a key, including pending input: */
 int
-rl_read_key ()
+rl_read_key(void)
 {
   int c;
 
@@ -382,23 +381,23 @@ rl_read_key ()
   if (rl_pending_input)
     {
       c = rl_pending_input;
-      rl_clear_pending_input ();
+      rl_clear_pending_input();
     }
   else
     {
-      /* If input is coming from a macro, then use that. */
-      if (c = _rl_next_macro_key ())
+      /* If input is coming from a macro, then use that: */
+      if ((c = _rl_next_macro_key()))
 	return (c);
 
       /* If the user has an event function, then call it periodically. */
       if (rl_event_hook)
 	{
-	  while (rl_event_hook && rl_get_char (&c) == 0)
+	  while (rl_event_hook && (rl_get_char(&c) == 0))
 	    {
-	      (*rl_event_hook) ();
+	      (*rl_event_hook)();
 	      if (rl_done)		/* XXX - experimental */
 		return ('\n');
-	      if (rl_gather_tyi () < 0)	/* XXX - EIO */
+	      if (rl_gather_tyi() < 0)	/* XXX - EIO */
 		{
 		  rl_done = 1;
 		  return ('\n');
@@ -490,7 +489,7 @@ _rl_read_mbchar (mbchar, size)
 
   memset(&ps, 0, sizeof (mbstate_t));
   memset(&ps_back, 0, sizeof (mbstate_t));
-  
+
   while (mb_len < size)
     {
       RL_SETSTATE(RL_STATE_MOREINPUT);
@@ -505,7 +504,7 @@ _rl_read_mbchar (mbchar, size)
 	  /* shorted bytes */
 	  ps = ps_back;
 	  continue;
-	} 
+	}
       else if (mbchar_bytes_length > (size_t)(0))
 	break;
     }

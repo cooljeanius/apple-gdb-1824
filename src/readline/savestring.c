@@ -24,13 +24,15 @@
 #ifdef HAVE_STRING_H
 #  include <string.h>
 #endif
+#include "rlcompat.h"
 #include "xmalloc.h"
 
 /* Backwards compatibility, now that savestring has been removed from
    all `public' readline header files. */
 char *
-savestring (s)
-     const char *s;
+savestring(const char *s)
 {
-  return ((char *)strcpy ((char *)xmalloc (1 + strlen (s)), (s)));
+  return ((char *)strcpy((char *)xmalloc(1UL + strlen(s)), (s)));
 }
+
+/* EOF */

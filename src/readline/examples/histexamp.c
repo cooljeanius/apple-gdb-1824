@@ -36,14 +36,14 @@
 # if defined(HAVE_STRINGS_H)
 #  include <strings.h>
 # else
-#  warning fileman.c expects either string.h or strings.h to be included.
+#  warning histexamp.c expects either string.h or strings.h to be included.
 # endif /* HAVE_STRINGS_H */
 #endif /* !HAVE_STRING_H */
 
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning fileman.c expects stdlib.h to be included.
+# warning histexamp.c expects stdlib.h to be included.
 #endif /* HAVE_STDLIB_H */
 
 #ifdef READLINE_LIBRARY
@@ -136,3 +136,5 @@ int main (argc, argv)
         }
     }
 }
+
+/* EOF */

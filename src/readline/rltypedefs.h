@@ -23,12 +23,16 @@
 #ifndef _RL_TYPEDEFS_H_
 #define _RL_TYPEDEFS_H_
 
+#if defined(HAVE_STDIO_H) || defined(__STDC__)
+# include <stdio.h> /* for file pointers */
+#endif /* HAVE_STDIO_H || __STDC__ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
 /* Old-style: */
-#if !defined (_FUNCTION_DEF)
+#if !defined(_FUNCTION_DEF)
 #  define _FUNCTION_DEF 1
 #  if !defined(__STDC__)
 /* really old style: */
@@ -46,7 +50,7 @@ typedef char **CPPFunction(void);
 
 /* New style. */
 
-#if !defined (_RL_FUNCTION_TYPEDEF)
+#if !defined(_RL_FUNCTION_TYPEDEF)
 #  define _RL_FUNCTION_TYPEDEF
 
 /* Bindable functions */

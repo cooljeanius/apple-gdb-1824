@@ -25,36 +25,48 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning fileman.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning fileman.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning fileman.c expects <sys/types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "fileman.c expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
 #ifdef HAVE_SYS_FILE_H
 # include <sys/file.h>
 #else
-# warning fileman.c expects <sys/file.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "fileman.c expects <sys/file.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_FILE_H */
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #else
-# warning fileman.c expects <sys/stat.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "fileman.c expects <sys/stat.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_STAT_H */
 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning fileman.c expects unistd.h to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "fileman.c expects unistd.h to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
 #include <fcntl.h>
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning fileman.c expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "fileman.c expects <stdio.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 #include <errno.h>
 
@@ -64,14 +76,18 @@
 # if defined(HAVE_STRINGS_H)
 #  include <strings.h>
 # else
-#  warning fileman.c expects either string.h or strings.h to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "fileman.c expects either string.h or strings.h to be included"
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_STRINGS_H */
 #endif /* !HAVE_STRING_H */
 
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning fileman.c expects stdlib.h to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "fileman.c expects stdlib.h to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H */
 
 #ifdef READLINE_LIBRARY
@@ -83,7 +99,7 @@
 #endif /* READLINE_LIBRARY */
 
 /* Why is there a prototype for this here? */
-extern char *xmalloc ();
+extern char *xmalloc();
 
 /* The names of functions that actually do the manipulation. */
 int com_list PARAMS((char *));
@@ -121,8 +137,8 @@ COMMAND commands[] = {
 };
 
 /* Forward declarations. */
-char *stripwhite ();
-COMMAND *find_command ();
+char *stripwhite();
+COMMAND *find_command();
 
 /* The name of this program, as taken from argv[0]. */
 char *progname;
@@ -511,3 +527,5 @@ valid_argument (caller, arg)
 
   return (1);
 }
+
+/* EOF */
