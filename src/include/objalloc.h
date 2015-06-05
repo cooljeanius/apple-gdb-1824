@@ -44,32 +44,31 @@ Boston, MA 02110-1301, USA.  */
 struct objalloc
 {
   char *current_ptr;
-  unsigned int current_space;
+  unsigned long current_space;
   void *chunks;
 };
 
-/* Work out the required alignment.  */
-
+/* Work out the required alignment: */
 struct objalloc_align { char x; double d; };
 
 #if defined (__STDC__) && __STDC__
+# ifndef offsetof
+#  include <stddef.h>
+# endif /* !offsetof */
+#endif /* __STDC__ */
 #ifndef offsetof
-#include <stddef.h>
-#endif
-#endif
-#ifndef offsetof
-#define offsetof(TYPE, MEMBER) ((unsigned long) &((TYPE *)0)->MEMBER)
-#endif
-#define OBJALLOC_ALIGN offsetof (struct objalloc_align, d)
+# define offsetof(TYPE, MEMBER) ((unsigned long) &((TYPE *)0)->MEMBER)
+#endif /* !offsetof */
+#define OBJALLOC_ALIGN offsetof(struct objalloc_align, d)
 
 /* Create an objalloc structure.  Returns NULL if malloc fails.  */
 
-extern struct objalloc *objalloc_create (void);
+extern struct objalloc *objalloc_create(void);
 
 /* Allocate space from an objalloc structure.  Returns NULL if malloc
    fails.  */
 
-extern void *_objalloc_alloc (struct objalloc *, unsigned long);
+extern void *_objalloc_alloc(struct objalloc *, unsigned long);
 
 /* The macro version of objalloc_alloc.  We only define this if using
    gcc, because otherwise we would have to evaluate the arguments

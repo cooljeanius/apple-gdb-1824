@@ -363,6 +363,7 @@ lib_LTLIBRARIES = libminizip.la
 zlib_top_srcdir = $(top_srcdir)/../..
 zlib_top_builddir = $(top_builddir)/../..
 ACLOCAL_AMFLAGS = -I../../m4 --install
+AUTOMAKE_OPTIONS = 1.11.6 foreign no-dist
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_CFLAGS = $(C_ARCHFLAGS)
 AM_CPPFLAGS = -I$(zlib_top_srcdir)

@@ -320,10 +320,12 @@ libbacktrace_cv_sys_filetype=${filetype}])dnl
 
 # Match the file type to decide what files to compile.
 FORMAT_FILE=""
+backtrace_supports_data=yes
 case "${libbacktrace_cv_sys_filetype}" in
 elf*) FORMAT_FILE="elf.lo" ;;
 mach-o*) AC_MSG_WARN([mach-o support is incomplete; treating as unknown])
          FORMAT_FILE="unknown.lo"
+         backtrace_supports_data=no
          backtrace_supported=no
          ;;
 *) AC_MSG_WARN([could not determine output file type])
@@ -346,6 +348,12 @@ if test "x${backtrace_supported}" = "xyes"; then
   BACKTRACE_SUPPORTED=1
 fi
 AC_SUBST([BACKTRACE_SUPPORTED])dnl
+
+BACKTRACE_SUPPORTS_DATA=0
+if test "x${backtrace_supports_data}" = "xyes"; then
+  BACKTRACE_SUPPORTS_DATA=1
+fi
+AC_SUBST([BACKTRACE_SUPPORTS_DATA])dnl
 
 AC_CHECK_HEADERS([stddef.h])dnl
 

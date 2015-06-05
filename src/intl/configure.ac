@@ -36,7 +36,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.7 gnits dejagnu])
+AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu])
 m4_ifdef([AM_MAINTAINER_MODE],[
   test -e "."
   if test -e "Makefile"; then
@@ -74,7 +74,7 @@ AC_DISABLE_SHARED
 LT_INIT([shared static win32-dll])dnl
 LT_LANG([C])dnl
 dnl# temporarily set this while I update everything libtool-related:
-LT_PREREQ([2.4.4])dnl
+LT_PREREQ([2.4.6])dnl
 AM_PROG_INSTALL_STRIP
 AC_PROG_INSTALL
 AC_SUBST([INSTALLdir])dnl
@@ -137,7 +137,7 @@ AC_CHECK_TYPES([iconv_t])dnl
 
 # Checks for library functions.
 AM_GNU_GETTEXT([external])dnl
-AM_GNU_GETTEXT_VERSION([0.19.3])dnl
+AM_GNU_GETTEXT_VERSION([0.19.4])dnl
 AC_SUBST([GT_YES],['#'])dnl
 AC_SUBST([GT_NO])dnl
 AC_DEFUN([AC_GETTEXT_SUBCHECKS],[

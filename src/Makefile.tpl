@@ -939,11 +939,11 @@ local-distclean:
 	-rm -f multilib.out multilib.tmp maybedep.tmp serdep.tmp
 	-if [ "$(TARGET_SUBDIR)" != "." ]; then \
 	  rm -rf $(TARGET_SUBDIR); \
-	else echo "vpath is irrelevant"; fi
+	else echo "vpath is irrelevant for target"; fi
 	-rm -rf $(BUILD_SUBDIR)
 	-if [ "$(HOST_SUBDIR)" != "." ]; then \
 	  rm -rf $(HOST_SUBDIR); \
-	else echo "vpath is irrelevant"; fi
+	else echo "vpath is irrelevant for host"; fi
 	-rm -f texinfo/po/Makefile texinfo/po/Makefile.in texinfo/info/Makefile
 	-rm -f texinfo/doc/Makefile texinfo/po/POTFILES
 	-rmdir texinfo/doc texinfo/info texinfo/intl texinfo/lib 2>/dev/null

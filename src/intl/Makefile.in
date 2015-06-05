@@ -447,6 +447,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = .
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I m4 --install
+AUTOMAKE_OPTIONS = 1.11.6 gnits dejagnu
 SUBDIRS = po
 gnulocaledir = $(datadir)/locale
 gettextsrcdir = @datadir@/gettext/intl

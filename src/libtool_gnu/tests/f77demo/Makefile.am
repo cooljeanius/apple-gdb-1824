@@ -22,7 +22,7 @@
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #####
 
-AUTOMAKE_OPTIONS = no-dependencies foreign
+AUTOMAKE_OPTIONS = 1.11.6 no-dependencies foreign
 ## cannot use '--install'; that will trash our local (newer) copies of
 ## libtool.m4 and friends:
 ACLOCAL_AMFLAGS  = -I ../../libltdl/m4

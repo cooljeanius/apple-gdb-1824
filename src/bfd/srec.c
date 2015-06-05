@@ -931,13 +931,13 @@ srec_write_record(bfd *abfd, unsigned int type, bfd_vma address,
 }
 
 static bfd_boolean
-srec_write_header (bfd *abfd)
+srec_write_header(bfd *abfd)
 {
-  unsigned int len = strlen(abfd->filename);
+  size_t len = strlen(abfd->filename);
 
   /* I shall put an arbitrary 40 char limit on header size: */
-  if (len > 40)
-    len = 40;
+  if (len > 40UL)
+    len = 40UL;
 
   return srec_write_record(abfd, 0, (bfd_vma)0L,
 			   (bfd_byte *)abfd->filename,
@@ -1096,7 +1096,7 @@ srec_sizeof_headers (bfd *abfd ATTRIBUTE_UNUSED,
 static long
 srec_get_symtab_upper_bound(bfd *abfd)
 {
-  return (long)((bfd_get_symcount(abfd) + 1L) * sizeof(asymbol *));
+  return (long)((size_t)(bfd_get_symcount(abfd) + 1L) * sizeof(asymbol *));
 }
 
 /* Return the symbol table: */

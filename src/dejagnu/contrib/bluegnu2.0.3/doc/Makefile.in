@@ -1,3 +1,5 @@
+# Makefile for bluegnu documentation.
+
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 srcdir = @srcdir@
@@ -125,14 +127,14 @@ dejagnu.me: $(srcdir)/dejagnu.texi
 
 ######################################################################
 
-clean mostlyclean:
+clean-local clean mostlyclean:
 	-rm -f \#* *~ core *.o a.out xgdb *.x
 	-rm -f core *.aux *.log
 	-rm -f dejagnu.cp \
 		dejagnu.fn dejagnu.ky dejagnu.log dejagnu.pg dejagnu.toc \
 		dejagnu.tp dejagnu.vr dejagnu.cps dejagnu.fns dejagnu.kys \
 		dejagnu.pgs dejagnu.tps dejagnu.vrs
-.PHONY: clean mostlyclean
+.PHONY: clean-local clean mostlyclean
 
 clean-info:
 	-rm -rf *.info*
@@ -140,12 +142,14 @@ clean-info:
 
 distclean: clean
 	-rm -f Makefile config.status config.log config.cache gdbme.c
+	-rm -f .DS_Store
 	-rm -fr READMEdvi
 	-rm -fr autom4te.cache || rmdir autom4te.cache
 .PHONY: distclean
 
 maintainer-clean realclean: clean clean-info
 	-rm -f Makefile config.status config.log config.cache gdbme.c
+	-rm -f .DS_Store
 	-rm -fr READMEdvi
 	-rm -fr autom4te.cache || rmdir autom4te.cache
 	-rm -f *.pdf *.ps *.html

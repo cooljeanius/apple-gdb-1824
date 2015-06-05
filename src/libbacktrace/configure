@@ -639,6 +639,7 @@ BACKTRACE_USES_MALLOC
 LIBOBJS
 ALLOC_FILE
 VIEW_FILE
+BACKTRACE_SUPPORTS_DATA
 BACKTRACE_SUPPORTED
 FORMAT_FILE
 BACKTRACE_SUPPORTS_THREADS
@@ -17670,6 +17671,11 @@ $as_echo "#define const /**/" >>confdefs.h
 fi
 
 
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
 WARN_FLAGS=""
 save_CFLAGS="${CFLAGS}"
 for real_option in -Wall -Wextra -Wwrite-strings -Wnested-externs \
@@ -17717,6 +17723,11 @@ $as_echo "$ac_res" >&6; }
 fi
   done
 CFLAGS="${save_CFLAGS}"
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 # deal with potential name mismatch:
 if test "x${WARN_FLAGS}" = "x" && test "x${WARN_CFLAGS}" != "x"; then
@@ -17939,11 +17950,13 @@ fi
 $as_echo "$libbacktrace_cv_sys_filetype" >&6; }
 # Match the file type to decide what files to compile.
 FORMAT_FILE=""
+backtrace_supports_data=yes
 case "${libbacktrace_cv_sys_filetype}" in
 elf*) FORMAT_FILE="elf.lo" ;;
 mach-o*) { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: mach-o support is incomplete; treating as unknown" >&5
 $as_echo "$as_me: WARNING: mach-o support is incomplete; treating as unknown" >&2;}
          FORMAT_FILE="unknown.lo"
+         backtrace_supports_data=no
          backtrace_supported=no
          ;;
 *) { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: could not determine output file type" >&5
@@ -17968,6 +17981,11 @@ _ACEOF
 BACKTRACE_SUPPORTED=0
 if test "x${backtrace_supported}" = "xyes"; then
   BACKTRACE_SUPPORTED=1
+fi
+
+BACKTRACE_SUPPORTS_DATA=0
+if test "x${backtrace_supports_data}" = "xyes"; then
+  BACKTRACE_SUPPORTS_DATA=1
 fi
 
 for ac_header in stddef.h

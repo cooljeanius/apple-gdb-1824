@@ -118,7 +118,7 @@ int main(int, char **);
 int
 main(int argc, char **argv)
 {
-  int temp;
+  long temp;
   int c;
 
 #if defined(HAVE_SETLOCALE) && defined(HAVE_LC_MESSAGES)

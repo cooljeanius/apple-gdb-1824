@@ -160,9 +160,9 @@ AC_ARG_WITH([oskith],
                             [directory where the db2 sgml tools are])],
             [with_docbook=${withval}])
 AC_CACHE_VAL([ac_cv_c_docbook],[
-dnl# first check to see if --with-docbook was specified
-if test x"${with_docbook}" != x ; then
-  if test -f ${with_docbook}/db2html ; then
+dnl# first check to see if --with-docbook was specified:
+if test x"${with_docbook}" != x""; then
+  if test -f ${with_docbook}/db2html; then
     ac_cv_c_docbook=`(cd ${with_docbook}; pwd)`
   else
     AC_MSG_ERROR([${with_docbook} directory does NOT contain SGML tools])
@@ -170,9 +170,9 @@ if test x"${with_docbook}" != x ; then
 fi
 ])
 if test x"${ac_cv_c_docbook}" = x""; then
-    for i in ${ac_default_prefix}/bin /usr/local/bin ${OSKITHDIR}/../bin /usr/bin /bin /opt /home; do
+    for i in ${ac_default_prefix}/bin ${prefix}/bin /usr/local/bin ${OSKITHDIR}/../bin /usr/bin /bin /opt /opt/local/bin /sw/bin /home; do
 	dnl# See is we have an SGML tool in that directory.
-	if test -f ${i}/db2html ; then
+	if test -f ${i}/db2html; then
 	    ac_cv_c_docbook=${i}
 	    break
 	fi

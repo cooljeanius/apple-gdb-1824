@@ -454,7 +454,7 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = 1.10 gnits no-dist dejagnu -Wall -Wno-portability
+AUTOMAKE_OPTIONS = 1.11.6 gnits no-dist dejagnu -Wall -Wno-portability
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 ACLOCAL_AMFLAGS = -I m4 --install
 

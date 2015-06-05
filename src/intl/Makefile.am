@@ -17,6 +17,8 @@
 
 ACLOCAL_AMFLAGS = -I m4 --install
 
+AUTOMAKE_OPTIONS = 1.11.6 gnits dejagnu
+
 SUBDIRS = po
 
 PACKAGE = @PACKAGE@

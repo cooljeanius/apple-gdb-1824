@@ -14,29 +14,33 @@
 
    You should have received a copy of the GNU Library General Public
    License along with the GNU C Library; see the file COPYING.LIB.  If not,
-   write to the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+   write to the Free Software Foundation, Inc., 51 Franklin St., 5th Floor,
    Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 
 #include <sys/types.h>
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 #ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+# include <string.h>
+#endif /* HAVE_STRING_H */
 #include <errno.h>
 #include <stdio.h>
 #include <fcntl.h>
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
 #ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
+# include <sys/time.h>
+#else
+# ifdef HAVE_TIME_H
+#  include <time.h>
+# endif /* HAVE_TIME_H */
+#endif /* HAVE_SYS_TIME_H */
 #include "ansidecl.h"
 
 /* We need to provide a type for gcc_uint64_t.  */
@@ -44,11 +48,11 @@
 __extension__ typedef unsigned long long gcc_uint64_t;
 #else
 typedef unsigned long gcc_uint64_t;
-#endif
+#endif /* __GNUC__ */
 
 #ifndef TMP_MAX
-#define TMP_MAX 16384
-#endif
+# define TMP_MAX 16384
+#endif /* !TMP_MAX */
 
 /*
 

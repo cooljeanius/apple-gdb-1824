@@ -271,19 +271,18 @@ read_n_bytes(bfd *abfd ATTRIBUTE_UNUSED,
 }
 
 static char *
-read_string(bfd *abfd ATTRIBUTE_UNUSED,
-	    bfd_byte *buf,
+read_string(bfd *abfd ATTRIBUTE_UNUSED, bfd_byte *buf,
 	    unsigned int *bytes_read_ptr)
 {
   /* Return a pointer to the embedded string: */
   char *str = (char *)buf;
   if (*str == '\0')
     {
-      *bytes_read_ptr = 1;
+      *bytes_read_ptr = 1U;
       return NULL;
     }
 
-  *bytes_read_ptr = (strlen(str) + 1UL);
+  *bytes_read_ptr = (unsigned int)(strlen(str) + 1UL);
   return str;
 }
 
@@ -875,8 +874,8 @@ concat_filename(struct line_info_table *table, unsigned int file)
 	 The best we can do is return the filename part.  */
       if (dirname != NULL)
 	{
-	  unsigned int len = (strlen(dirname) + strlen(filename) + 2U);
-	  char * name;
+	  size_t len = (strlen(dirname) + strlen(filename) + 2UL);
+	  char *name;
 
 	  name = (char *)bfd_malloc((bfd_size_type)len);
 	  if (name)

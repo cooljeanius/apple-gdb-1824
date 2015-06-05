@@ -352,7 +352,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([dejagnu gnits -Wall])
+AM_INIT_AUTOMAKE([1.11.6 dejagnu gnits -Wall])
 AM_MAINTAINER_MODE
 m4_ifdef([AC_REQUIRE_AUX_FILE],[
   AC_REQUIRE_AUX_FILE([compile])dnl
@@ -411,7 +411,7 @@ AC_MSG_RESULT([ ])
 LT_INIT([static disable-shared])dnl
 LT_LANG([C])dnl
 dnl# temporarily set this while I update everything libtool-related:
-LT_PREREQ([2.4.4])dnl
+LT_PREREQ([2.4.6])dnl
 
 # Some final things:
 AC_MSG_NOTICE([finishing up...])

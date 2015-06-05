@@ -156,7 +156,7 @@ bfd_simple_get_relocated_section_contents(bfd *abfd, asection *sec,
   struct bfd_link_order link_order;
   struct bfd_link_callbacks callbacks;
   bfd_byte *contents, *data;
-  int storage_needed;
+  long int storage_needed;
   void *saved_offsets;
 
   if (!(sec->flags & SEC_RELOC))
@@ -178,11 +178,11 @@ bfd_simple_get_relocated_section_contents(bfd *abfd, asection *sec,
   /* In order to use bfd_get_relocated_section_contents, we need
      to forge some data structures that it expects.  */
 
-  /* Fill in the bare minimum number of fields for our purposes.  */
-  memset (&link_info, 0, sizeof (link_info));
+  /* Fill in the bare minimum number of fields for our purposes: */
+  memset(&link_info, 0, sizeof(link_info));
   link_info.input_bfds = abfd;
 
-  link_info.hash = _bfd_generic_link_hash_table_create (abfd);
+  link_info.hash = _bfd_generic_link_hash_table_create(abfd);
   link_info.callbacks = &callbacks;
   callbacks.warning = simple_dummy_warning;
   callbacks.undefined_symbol = simple_dummy_undefined_symbol;
@@ -217,8 +217,8 @@ bfd_simple_get_relocated_section_contents(bfd *abfd, asection *sec,
      section->output_offset to equal section->vma, which we do by setting
      section->output_section to point back to section.  Save the original
      output offset and output section to restore later.  */
-  saved_offsets = malloc (sizeof (struct saved_output_info)
-			  * abfd->section_count);
+  saved_offsets = malloc(sizeof(struct saved_output_info)
+			 * abfd->section_count);
   if (saved_offsets == NULL)
     {
       if (data)
@@ -236,9 +236,9 @@ bfd_simple_get_relocated_section_contents(bfd *abfd, asection *sec,
       bfd_canonicalize_symtab(abfd, symbol_table);
     }
   else
-    storage_needed = 0;
+    storage_needed = 0L;
 
-  if (storage_needed == 0) {
+  if (storage_needed == 0L) {
     ; /* (do nothing) */
   }
 

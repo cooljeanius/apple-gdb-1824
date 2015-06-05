@@ -3868,6 +3868,15 @@
 		A5558E9A1992ADDB00A45587 /* relocatable.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = relocatable.c; path = "/Users/ericgallager/apple-gdb-1824/src/intl/relocatable.c"; sourceTree = "<absolute>"; };
 		A5558E9B1992ADDB00A45587 /* relocatable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = relocatable.h; path = "/Users/ericgallager/apple-gdb-1824/src/intl/relocatable.h"; sourceTree = "<absolute>"; };
 		A5558E9E1992B76300A45587 /* acconfig_obsolete.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = acconfig_obsolete.h; path = "/Users/ericgallager/apple-gdb-1824/src/intl/acconfig_obsolete.h"; sourceTree = "<absolute>"; };
+		A56E58EF1B210132005E1D43 /* calc.1 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.man; name = calc.1; path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu/contrib/bluegnu2.0.3/example/calc/calc.1"; sourceTree = "<absolute>"; };
+		A56E58F01B210132005E1D43 /* calc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = calc.c; path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu/contrib/bluegnu2.0.3/example/calc/calc.c"; sourceTree = "<absolute>"; };
+		A56E597A1B210132005E1D43 /* dejagnu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dejagnu.h; path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu/dejagnu.h"; sourceTree = "<absolute>"; };
+		A56E599C1B210132005E1D43 /* calc.1 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.man; name = calc.1; path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu/example/calc/calc.1"; sourceTree = "<absolute>"; };
+		A56E599D1B210132005E1D43 /* calc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = calc.c; path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu/example/calc/calc.c"; sourceTree = "<absolute>"; };
+		A56E59B11B210132005E1D43 /* i960glue.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = i960glue.c; path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu/i960glue.c"; sourceTree = "<absolute>"; };
+		A56E59D61B210132005E1D43 /* stub-loader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "stub-loader.c"; path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu/stub-loader.c"; sourceTree = "<absolute>"; };
+		A56E59D81B210132005E1D43 /* testglue.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = testglue.c; path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu/testglue.c"; sourceTree = "<absolute>"; };
+		A56E59E51B210132005E1D43 /* unit.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = unit.cc; path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu/testsuite/libdejagnu/unit.cc"; sourceTree = "<absolute>"; };
 		A589C8DC1A30EC3100E717B9 /* .profile_generic */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 4; name = .profile_generic; path = "/Users/ericgallager/apple-gdb-1824/.profile_generic"; sourceTree = "<absolute>"; };
 		A589C8DD1A30EC3100E717B9 /* .profile_leopard */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 4; name = .profile_leopard; path = "/Users/ericgallager/apple-gdb-1824/.profile_leopard"; sourceTree = "<absolute>"; };
 		A589C8DE1A30EC3100E717B9 /* .profile_leopard_universal */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 4; name = .profile_leopard_universal; path = "/Users/ericgallager/apple-gdb-1824/.profile_leopard_universal"; sourceTree = "<absolute>"; };
@@ -5334,6 +5343,7 @@
 			children = (
 				2609CE530E82C407008125DE /* bfd */,
 				2609D00D0E82C408008125DE /* binutils */,
+				A56E58251B210131005E1D43 /* dejagnu */,
 				A53AC1811A3F7EFE002F20B2 /* electric-fence */,
 				2609D2AC0E82C409008125DE /* gdb */,
 				2609DCE80E82C410008125DE /* include */,
@@ -10357,6 +10367,95 @@
 			);
 			name = PBGDBIntrospectionSupport_debug;
 			path = "/Users/ericgallager/apple-gdb-1824/src/gdb/mi/XcodePlugin/Resources/PBGDBIntrospectionSupport_debug";
+			sourceTree = "<absolute>";
+		};
+		A56E58251B210131005E1D43 /* dejagnu */ = {
+			isa = PBXGroup;
+			children = (
+				A56E58C71B210132005E1D43 /* contrib */,
+				A56E597A1B210132005E1D43 /* dejagnu.h */,
+				A56E59961B210132005E1D43 /* example */,
+				A56E59B11B210132005E1D43 /* i960glue.c */,
+				A56E59D61B210132005E1D43 /* stub-loader.c */,
+				A56E59D81B210132005E1D43 /* testglue.c */,
+				A56E59D91B210132005E1D43 /* testsuite */,
+			);
+			name = dejagnu;
+			path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu";
+			sourceTree = "<absolute>";
+		};
+		A56E58C71B210132005E1D43 /* contrib */ = {
+			isa = PBXGroup;
+			children = (
+				A56E58C81B210132005E1D43 /* bluegnu2.0.3 */,
+			);
+			name = contrib;
+			path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu/contrib";
+			sourceTree = "<absolute>";
+		};
+		A56E58C81B210132005E1D43 /* bluegnu2.0.3 */ = {
+			isa = PBXGroup;
+			children = (
+				A56E58EB1B210132005E1D43 /* example */,
+			);
+			name = bluegnu2.0.3;
+			path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu/contrib/bluegnu2.0.3";
+			sourceTree = "<absolute>";
+		};
+		A56E58EB1B210132005E1D43 /* example */ = {
+			isa = PBXGroup;
+			children = (
+				A56E58ED1B210132005E1D43 /* calc */,
+			);
+			name = example;
+			path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu/contrib/bluegnu2.0.3/example";
+			sourceTree = "<absolute>";
+		};
+		A56E58ED1B210132005E1D43 /* calc */ = {
+			isa = PBXGroup;
+			children = (
+				A56E58EF1B210132005E1D43 /* calc.1 */,
+				A56E58F01B210132005E1D43 /* calc.c */,
+			);
+			name = calc;
+			path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu/contrib/bluegnu2.0.3/example/calc";
+			sourceTree = "<absolute>";
+		};
+		A56E59961B210132005E1D43 /* example */ = {
+			isa = PBXGroup;
+			children = (
+				A56E59981B210132005E1D43 /* calc */,
+			);
+			name = example;
+			path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu/example";
+			sourceTree = "<absolute>";
+		};
+		A56E59981B210132005E1D43 /* calc */ = {
+			isa = PBXGroup;
+			children = (
+				A56E599C1B210132005E1D43 /* calc.1 */,
+				A56E599D1B210132005E1D43 /* calc.c */,
+			);
+			name = calc;
+			path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu/example/calc";
+			sourceTree = "<absolute>";
+		};
+		A56E59D91B210132005E1D43 /* testsuite */ = {
+			isa = PBXGroup;
+			children = (
+				A56E59E01B210132005E1D43 /* libdejagnu */,
+			);
+			name = testsuite;
+			path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu/testsuite";
+			sourceTree = "<absolute>";
+		};
+		A56E59E01B210132005E1D43 /* libdejagnu */ = {
+			isa = PBXGroup;
+			children = (
+				A56E59E51B210132005E1D43 /* unit.cc */,
+			);
+			name = libdejagnu;
+			path = "/Users/ericgallager/apple-gdb-1824/src/dejagnu/testsuite/libdejagnu";
 			sourceTree = "<absolute>";
 		};
 		A589C8CF1A30EBDC00E717B9 /* top_level */ = {

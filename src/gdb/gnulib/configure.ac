@@ -76,7 +76,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.1 gnits dejagnu no-define subdir-objects])dnl
+AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu no-define subdir-objects])dnl
   ## do this part again, to set a default:
 if test "x${am_cv_make_support_nested_variables}" = "x"; then
   test -z "${am_cv_make_support_nested_variables}"

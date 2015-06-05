@@ -151,8 +151,8 @@ fi
 
 dnl# These are bootstrap requirements! Once built, libtool may work with
 dnl# much older releases of autoconf and automake. See release notes.
-dnl# 1.11 is needed for color-tests, 1.11.1 fixes a security issue.
-AM_INIT_AUTOMAKE([1.11.1 gnits subdir-objects dist-xz color-tests parallel-tests])
+dnl# 1.11 is needed for color-tests, 1.11.6 fixes security issues.
+AM_INIT_AUTOMAKE([1.11.6 gnits subdir-objects dist-xz color-tests parallel-tests])
 AM_MAINTAINER_MODE
 
 

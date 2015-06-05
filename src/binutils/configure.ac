@@ -49,7 +49,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.9.6 gnits dejagnu])
+AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu])
 AM_SANITY_CHECK
 
 # Make sure that sed is checked early:
@@ -71,7 +71,7 @@ LT_LANG([C])dnl
 LT_LANG([C++])dnl
 LT_LANG([Windows Resource])dnl
 dnl# temporarily set this while I update everything libtool-related:
-LT_PREREQ([2.4.4])dnl
+LT_PREREQ([2.4.6])dnl
 dnl# (largefile check is done farther below)
 
 # flags:

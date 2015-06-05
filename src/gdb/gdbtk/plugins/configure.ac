@@ -17,7 +17,7 @@ AC_PROG_CC
 AC_PROG_MAKE_SET
 
 # Automake:
-AM_INIT_AUTOMAKE([foreign no-dist dejagnu -Wall -Wno-obsolete])
+AM_INIT_AUTOMAKE([1.11.6 foreign no-dist dejagnu -Wall -Wno-obsolete])
 AM_MAINTAINER_MODE
 
 dnl########################################################################

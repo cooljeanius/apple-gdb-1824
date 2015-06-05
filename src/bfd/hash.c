@@ -309,20 +309,21 @@ bfd_hash_table_init_n(struct bfd_hash_table *table,
                                                         const char *),
                       unsigned int size)
 {
-  unsigned int alloc;
+  unsigned long alloc;
 
   alloc = (size * sizeof(struct bfd_hash_entry *));
 
   table->memory = (void *)objalloc_create();
   if (table->memory == NULL)
     {
-      bfd_set_error (bfd_error_no_memory);
+      bfd_set_error(bfd_error_no_memory);
       return FALSE;
     }
-  table->table = (struct bfd_hash_entry **)objalloc_alloc((struct objalloc *)table->memory, alloc);
+  table->table = ((struct bfd_hash_entry **)
+                  objalloc_alloc((struct objalloc *)table->memory, alloc));
   if (table->table == NULL)
     {
-      bfd_set_error (bfd_error_no_memory);
+      bfd_set_error(bfd_error_no_memory);
       return FALSE;
     }
   memset((void *)table->table, 0, (size_t)alloc);
@@ -376,7 +377,7 @@ bfd_hash_lookup(struct bfd_hash_table *table, const char *string,
   hash += (len + (len << 17));
   hash ^= (hash >> 2);
 
-  uindex = (hash % table->size);
+  uindex = (unsigned int)(hash % table->size);
   for (hashp = table->table[uindex];
        hashp != NULL;
        hashp = hashp->next)
@@ -422,7 +423,7 @@ bfd_hash_replace(struct bfd_hash_table *table, struct bfd_hash_entry *old,
   unsigned int u_index;
   struct bfd_hash_entry **pph;
 
-  u_index = (old->hash % table->size);
+  u_index = (unsigned int)(old->hash % table->size);
   for (pph = &table->table[u_index];
        (*pph) != NULL;
        pph = &(*pph)->next)

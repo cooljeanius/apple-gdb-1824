@@ -8,7 +8,7 @@ AC_CONFIG_AUX_DIR([../..])
 AC_CONFIG_MACRO_DIR([../../m4])
 AC_CANONICAL_TARGET
 AC_SYS_LARGEFILE
-AM_INIT_AUTOMAKE([foreign no-dist])
+AM_INIT_AUTOMAKE([1.11.6 foreign no-dist])
 AM_MAINTAINER_MODE
 AC_PROG_MKDIR_P
 
@@ -34,6 +34,7 @@ AC_REQUIRE_RANLIB
 LT_INIT([win32-dll])dnl
 LT_LANG([C])dnl
 LT_LANG([Windows Resource])dnl
+LT_PREREQ([2.4.6])dnl
 
 AC_MSG_CHECKING([whether to build example programs])
 AC_ARG_ENABLE([demos],

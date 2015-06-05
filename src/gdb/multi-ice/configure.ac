@@ -28,7 +28,7 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
 fi
 
 # Automake:
-AM_INIT_AUTOMAKE([foreign dejagnu])
+AM_INIT_AUTOMAKE([1.11.6 foreign dejagnu])
 AM_MAINTAINER_MODE
 
 AC_CONFIG_HEADERS([config.h])

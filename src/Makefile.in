@@ -2895,11 +2895,11 @@ local-distclean:
 	-rm -f multilib.out multilib.tmp maybedep.tmp serdep.tmp
 	-if [ "$(TARGET_SUBDIR)" != "." ]; then \
 	  rm -rf $(TARGET_SUBDIR); \
-	else echo "vpath is irrelevant"; fi
+	else echo "vpath is irrelevant for target"; fi
 	-rm -rf $(BUILD_SUBDIR)
 	-if [ "$(HOST_SUBDIR)" != "." ]; then \
 	  rm -rf $(HOST_SUBDIR); \
-	else echo "vpath is irrelevant"; fi
+	else echo "vpath is irrelevant for host"; fi
 	-rm -f texinfo/po/Makefile texinfo/po/Makefile.in texinfo/info/Makefile
 	-rm -f texinfo/doc/Makefile texinfo/po/POTFILES
 	-rmdir texinfo/doc texinfo/info texinfo/intl texinfo/lib 2>/dev/null
@@ -29106,23 +29106,8 @@ maybe-info-libiconv:
 @if libiconv
 maybe-info-libiconv: info-libiconv
 
-info-libiconv: \
-    configure-libiconv 
-	$(AM_V_at)[ -f ./libiconv/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing info in libiconv"; \
-	(cd $(HOST_SUBDIR)/libiconv && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          info) \
-	  || exit 1
+# libiconv doesn't support info.
+info-libiconv:
 
 @endif libiconv
 
@@ -29156,23 +29141,8 @@ maybe-pdf-libiconv:
 @if libiconv
 maybe-pdf-libiconv: pdf-libiconv
 
-pdf-libiconv: \
-    configure-libiconv 
-	$(AM_V_at)[ -f ./libiconv/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing pdf in libiconv"; \
-	(cd $(HOST_SUBDIR)/libiconv && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          pdf) \
-	  || exit 1
+# libiconv doesn't support pdf.
+pdf-libiconv:
 
 @endif libiconv
 
@@ -29181,23 +29151,8 @@ maybe-html-libiconv:
 @if libiconv
 maybe-html-libiconv: html-libiconv
 
-html-libiconv: \
-    configure-libiconv 
-	$(AM_V_at)[ -f ./libiconv/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing html in libiconv"; \
-	(cd $(HOST_SUBDIR)/libiconv && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          html) \
-	  || exit 1
+# libiconv doesn't support html.
+html-libiconv:
 
 @endif libiconv
 
@@ -61194,6 +61149,7 @@ configure-stage3-gcc: maybe-all-stage3-libelf
 configure-stage4-gcc: maybe-all-stage4-libelf
 configure-stageprofile-gcc: maybe-all-stageprofile-libelf
 configure-stagefeedback-gcc: maybe-all-stagefeedback-libelf
+configure-gcc: maybe-all-libiconv
 all-gcc: all-libiberty
 
 all-stage1-gcc: all-stage1-libiberty
@@ -61346,6 +61302,7 @@ all-stage3-gcc: maybe-all-stage3-lto-plugin
 all-stage4-gcc: maybe-all-stage4-lto-plugin
 all-stageprofile-gcc: maybe-all-stageprofile-lto-plugin
 all-stagefeedback-gcc: maybe-all-stagefeedback-lto-plugin
+all-gcc: maybe-all-libiconv
 info-gcc: maybe-all-build-libiberty
 
 info-stage1-gcc: maybe-all-build-libiberty
@@ -61402,6 +61359,7 @@ configure-stage3-libcpp: maybe-configure-stage3-intl
 configure-stage4-libcpp: maybe-configure-stage4-intl
 configure-stageprofile-libcpp: maybe-configure-stageprofile-intl
 configure-stagefeedback-libcpp: maybe-configure-stagefeedback-intl
+configure-libcpp: maybe-all-libiconv
 all-libcpp: all-libiberty
 
 all-stage1-libcpp: all-stage1-libiberty
@@ -61418,6 +61376,7 @@ all-stage3-libcpp: maybe-all-stage3-intl
 all-stage4-libcpp: maybe-all-stage4-intl
 all-stageprofile-libcpp: maybe-all-stageprofile-intl
 all-stagefeedback-libcpp: maybe-all-stagefeedback-intl
+all-libcpp: maybe-all-libiconv
 all-fixincludes: maybe-all-libiberty
 all-gnattools: maybe-all-target-libada
 all-gnattools: maybe-all-target-libstdc++-v3
@@ -61441,6 +61400,7 @@ configure-libcc1: maybe-configure-gcc
 all-libcc1: maybe-all-gcc
 all-gotools: maybe-all-target-libgo
 all-utils: maybe-all-libiberty
+configure-intl: maybe-all-libiconv
 configure-mpfr: maybe-all-gmp
 
 configure-stage1-mpfr: maybe-all-stage1-gmp

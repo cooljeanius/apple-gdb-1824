@@ -1070,6 +1070,7 @@ GMAKE_FALSE
 GMAKE_TRUE
 MAKE_IS_GNU
 MAKE
+HOST_CPU_C_ABI
 TARGET_ARCHITECTURE
 HOST_ARCHITECTURE
 BUILD_ARCHITECTURE
@@ -5760,6 +5761,245 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   export TARGET_ARCHITECTURE="${target_cpu}"
 
 fi
+
+
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking host operating system" >&5
+$as_echo_n "checking host operating system... " >&6; }
+if ${gl_cv_host_operating_system+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $host_os in
+
+       # These operating system names do not use the default heuristic below.
+       # They are in reverse order, so that more-specific prefixes come first.
+       winnt*)          os='Windows NT';;
+       vos*)            os='VOS';;
+       sysv*)           os='Unix System V';;
+       superux*)        os='SUPER-UX';;
+       sunos*)          os='SunOS';;
+       stop*)           os='STOP';;
+       sco*)            os='SCO Unix';;
+       riscos*)         os='RISC OS';;
+       riscix*)         os='RISCiX';;
+       qnx*)            os='QNX';;
+       pw32*)           os='PW32';;
+       ptx*)            os='ptx';;
+       plan9*)          os='Plan 9';;
+       osf*)            os='Tru64';;
+       os2*)            os='OS/2';;
+       openbsd*)        os='OpenBSD';;
+       nsk*)            os='NonStop Kernel';;
+       nonstopux*)      os='NonStop-UX';;
+       netbsd*-gnu*)    os='GNU/NetBSD';; # NetBSD kernel+libc, GNU userland
+       netbsd*)         os='NetBSD';;
+       mirbsd*)         os='MirBSD';;
+       knetbsd*-gnu)    os='GNU/kNetBSD';; # NetBSD kernel, GNU libc+userland
+       kfreebsd*-gnu)   os='GNU/kFreeBSD';; # FreeBSD kernel, GNU libc+userland
+       msdosdjgpp*)     os='DJGPP';;
+       mpeix*)          os='MPE/iX';;
+       mint*)           os='MiNT';;
+       mingw*)          os='MinGW';;
+       lynxos*)         os='LynxOS';;
+       linux*)          os='GNU/Linux';;
+       hpux*)           os='HP-UX';;
+       hiux*)           os='HI-UX';;
+       gnu*)            os='GNU';;
+       freebsd*)        os='FreeBSD';;
+       dgux*)           os='DG/UX';;
+       bsdi*)           os='BSD/OS';;
+       bsd*)            os='BSD';;
+       beos*)           os='BeOS';;
+       aux*)            os='A/UX';;
+       atheos*)         os='AtheOS';;
+       amigaos*)        os='Amiga OS';;
+       aix*)            os='AIX';;
+
+       # The default heuristic takes the initial alphabetic string
+       # from $host_os, but capitalizes its first letter.
+       [A-Za-z]*)
+         os=`
+           expr "X$host_os" : 'X\([A-Za-z]\)' | LC_ALL=C tr '[a-z]' '[A-Z]'
+         ``
+           expr "X$host_os" : 'X.\([A-Za-z]*\)'
+         `
+         ;;
+
+       # If $host_os does not start with an alphabetic string, use it unchanged.
+       *)
+         os=$host_os;;
+     esac
+     gl_cv_host_operating_system=$os
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_host_operating_system" >&5
+$as_echo "$gl_cv_host_operating_system" >&6; }
+
+cat >>confdefs.h <<_ACEOF
+#define HOST_OPERATING_SYSTEM "$gl_cv_host_operating_system"
+_ACEOF
+
+
+
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking host CPU and C ABI" >&5
+$as_echo_n "checking host CPU and C ABI... " >&6; }
+if ${gl_cv_host_cpu_c_abi+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case "$host_cpu" in
+
+       i[4567]86 )
+         gl_cv_host_cpu_c_abi=i386
+         ;;
+
+       x86_64 )
+         # On x86_64 systems, the C compiler may still be generating
+         # 32-bit code.
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined __LP64__ || defined __x86_64__ || defined __amd64__
+            yes
+            #endif
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "yes" >/dev/null 2>&1; then :
+  gl_cv_host_cpu_c_abi=x86_64
+else
+  gl_cv_host_cpu_c_abi=i386
+fi
+rm -f conftest*
+
+         ;;
+
+       alphaev[4-8] | alphaev56 | alphapca5[67] | alphaev6[78] )
+         gl_cv_host_cpu_c_abi=alpha
+         ;;
+
+       arm* )
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined __ARMEL__
+            yes
+            #endif
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "yes" >/dev/null 2>&1; then :
+  gl_cv_host_cpu_c_abi=armel
+else
+  gl_cv_host_cpu_c_abi=arm
+fi
+rm -f conftest*
+
+         ;;
+
+       hppa1.0 | hppa1.1 | hppa2.0* | hppa64 )
+         # TODO: Distinguish hppa and hppa64 correctly.
+         gl_cv_host_cpu_c_abi=hppa
+         ;;
+
+       mips* )
+         # We should also check for (_MIPS_SZPTR == 64), but gcc keeps this
+         # at 32.
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined _MIPS_SZLONG && (_MIPS_SZLONG == 64)
+            yes
+            #endif
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "yes" >/dev/null 2>&1; then :
+  gl_cv_host_cpu_c_abi=mips64
+else
+  # Strictly speaking, the MIPS ABI (-32 or -n32) is independent
+            # from the CPU identification (-mips[12] or -mips[34]). But -n32
+            # is commonly used together with -mips3, and it's easier to test
+            # the CPU identification.
+            cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if __mips >= 3
+               yes
+               #endif
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "yes" >/dev/null 2>&1; then :
+  gl_cv_host_cpu_c_abi=mipsn32
+else
+  gl_cv_host_cpu_c_abi=mips
+fi
+rm -f conftest*
+
+fi
+rm -f conftest*
+
+         ;;
+
+       powerpc64 )
+         # On powerpc64 systems, the C compiler may still be generating
+         # 32-bit code.
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined __powerpc64__ || defined _ARCH_PPC64
+            yes
+            #endif
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "yes" >/dev/null 2>&1; then :
+  gl_cv_host_cpu_c_abi=powerpc64
+else
+  gl_cv_host_cpu_c_abi=powerpc
+fi
+rm -f conftest*
+
+         ;;
+
+       rs6000 )
+         gl_cv_host_cpu_c_abi=powerpc
+         ;;
+
+       # TODO: Distinguish s390 and s390x correctly.
+
+       sparc | sparc64 )
+         # UltraSPARCs running Linux have `uname -m` = "sparc64", but the
+         # C compiler still generates 32-bit code.
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined __sparcv9 || defined __arch64__
+            yes
+            #endif
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "yes" >/dev/null 2>&1; then :
+  gl_cv_host_cpu_c_abi=sparc64
+else
+  gl_cv_host_cpu_c_abi=sparc
+fi
+rm -f conftest*
+
+         ;;
+
+       *)
+         gl_cv_host_cpu_c_abi="$host_cpu"
+         ;;
+     esac
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_host_cpu_c_abi" >&5
+$as_echo "$gl_cv_host_cpu_c_abi" >&6; }
+
+  HOST_CPU_C_ABI="$gl_cv_host_cpu_c_abi"
+
+
+  # This was AC_DEFINE_UNQUOTED([__${gl_cv_host_cpu_c_abi}__]) earlier,
+  # but KAI C++ 3.2d doesn't like this.
+  cat >> confdefs.h <<EOF
+#ifndef __${gl_cv_host_cpu_c_abi}__
+#define __${gl_cv_host_cpu_c_abi}__ 1
+#endif
+EOF
+
+
+
 
 # Check for the 'make' the user wants to use:
 for ac_prog in make gmake gnumake remake
@@ -45366,12 +45606,14 @@ build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
 -Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc -Wlogical-op \
 -Wunsuffixed-float-constants -Wfloat-conversion -Wjump-misses-init \
--Wmissing-field-initializers -Wno-deprecated-declarations"
+-Wmissing-field-initializers -Wno-deprecated-declarations -Wbool-compare \
+-Wlogical-not-parentheses -Wsizeof-array-argument -Wswitch-bool \
+-Wshift-count-negative -Wshift-count-overflow"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
   ## Special warnings only for C++ compilations:
-  cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo \
+  cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo -Wodr \
 -Wno-write-strings -Wno-narrowing"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
@@ -45478,14 +45720,6 @@ fi
 #  * -Wenum-compare (not really sure how to solve for now...)
 #  * -Wunsafe-loop-optimizations (lex/yacc generate code that triggers it)
 #  * -Waggregate-return (too noisy and hard to avoid)
-# Once gcc 5 is relesaed, the following might be worth consideration:
-#  * -Wbool-compare
-#  * -Wlogical-not-parentheses
-#  * -Wsizeof-array-argument
-#  * -Wswitch-bool
-#  * -Wshift-count-negative
-#  * -Wshift-count-overflow
-#  * -Wbitfield-conversion (if it makes it in on time)
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)
@@ -45517,7 +45751,7 @@ fi
 #  * -pedantic-errors (likewise, never add this)
 #  * -Wunused-parameter (despite the existence of clang's
 #    -Wused-but-marked-unused flag, upstream still insists on leaving this
-#    one out, presumably because gcc does not support it yet...)
+#    one out, presumably because gcc does not support the other one yet...)
 #  * -Wunused-but-set-parameter (likewise)
 #  * -Wall (contains -Wunused-parameter)
 # Check whether --enable-build-warnings was given.

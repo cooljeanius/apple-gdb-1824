@@ -3,12 +3,12 @@
 
 ACLOCAL_AMFLAGS = -I./m4 --install
 
-AUTOMAKE_OPTIONS = 1.4 gnits dejagnu -Wno-portability subdir-objects
+AUTOMAKE_OPTIONS = 1.11.6 gnits dejagnu -Wno-portability subdir-objects
 
 # Install all the associated data files
 EXTRA_DIST = MAINTAINERS runtest site.tmpl
 
-SUBDIRS = doc testsuite example .
+SUBDIRS = doc testsuite example . contrib/bluegnu2.0.3
 
 # Install the bourne shell script driver in the bindir:
 bin_SCRIPTS = runtest
@@ -195,7 +195,9 @@ OFILES = testglue.o stub-loader.o
 ALL_OFILES = $(OFILES) i960glue.o
 
 CLEANFILES = x.log x.sum site.bak setval.tmp $(ALL_OFILES) *~
-DISTCLEANFILES = xXx.log xXx.sum testrun.log testrun.sum .DS_Store
+DISTCLEANFILES = xXx.log xXx.sum testrun.log testrun.sum .DS_Store \
+  contrib/.DS_Store autoscan.log
+MAINTAINERCLEANFILES = configure.scan
 
 CFILES = testglue.c stub-loader.c i960glue.c
 
@@ -227,12 +229,15 @@ i960glue.o: i960glue.c
 all: $(OFILES)
 .PHONY: all
 
+configure.scan: mostlyclean
+	autoscan || touch $@
+
 # Since we do (did) NOT use SUBDIRS, we have to manually clean the sub
 # directories.
 # We do (did) NOT use SUBDIRS, so the example or test cases do (did) NOT
 # get built by default for a "make all".
 clean-local: Makefile
-	for my_subdir in `echo doc testsuite example`; do \
+	for my_subdir in `echo doc testsuite example contrib/bluegnu2.0.3`; do \
 	  if test -e $${my_subdir}/Makefile; then \
 	    cd $${my_subdir} && $(MAKE) clean-local; \
 	  fi; \
@@ -244,7 +249,27 @@ clean-local: Makefile
 
 distclean-local: config.status Makefile
 	-rm -fr autom4te.cache || rmdir autom4te.cache
+	-if test -e doc/Makefile; then \
+	  cd doc && $(MAKE) distclean-local; \
+	fi
 .PHONY: distclean-local
+
+realclean: config.status Makefile
+	-if test -e doc/Makefile; then \
+	  cd doc && $(MAKE) realclean; \
+	  if test -d doc/autom4te.cache; then \
+	    rm -fr doc/autom4te.cache || rmdir doc/autom4te.cache; \
+	  fi; \
+	fi
+.PHONY: realclean
+
+maintainer-clean-local: realclean
+	-if test -e doc/Makefile; then \
+	  cd doc && $(MAKE) maintainer-clean-local; \
+	elif test -d doc/autom4te.cache; then \
+	  rm -fr doc/autom4te.cache || rmdir doc/autom4te.cache; \
+	fi
+.PHONY: maintainer-clean-local
 
 # Set ourselves up to build a RedHat package
 tarball: overview.html overview.ps overview.pdf

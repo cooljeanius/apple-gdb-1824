@@ -601,7 +601,7 @@ print_strings(const char *filename, FILE *stream, file_off address,
 
       /* See if the next `string_min' chars are all graphic chars: */
     tryline:
-      if (stop_point && address >= stop_point)
+      if (stop_point && (address >= stop_point))
 	break;
       start = address;
       for (i = 0; i < string_min; i++)
@@ -610,7 +610,7 @@ print_strings(const char *filename, FILE *stream, file_off address,
 	  if (c == EOF) {
 	    return;
           }
-	  if (! STRING_ISGRAPHIC (c)) {
+	  if (! STRING_ISGRAPHIC(c)) {
 	    /* Found a non-graphic.  Try again starting with next char: */
 	    goto tryline;
           }
@@ -676,19 +676,19 @@ print_strings(const char *filename, FILE *stream, file_off address,
 	  }
 
       buf[i] = '\0';
-      fputs (buf, stdout);
+      fputs(buf, stdout);
 
       while (1)
 	{
-	  c = get_char (stream, &address, &magiccount, &magic);
+	  c = get_char(stream, &address, &magiccount, &magic);
 	  if (c == EOF)
 	    break;
-	  if (! STRING_ISGRAPHIC (c))
+	  if (! STRING_ISGRAPHIC(c))
 	    break;
-	  putchar (c);
+	  putchar((int)c);
 	}
 
-      putchar ('\n');
+      putchar('\n');
     }
 }
 

@@ -1,8 +1,8 @@
-/* An expandable hash tables datatype.
-   Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004
-   Free Software Foundation, Inc.
-   Contributed by Vladimir Makarov (vmakarov@cygnus.com).
-
+/* hashtab.c: An expandable hash tables datatype.
+ * Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004
+ * Free Software Foundation, Inc.
+ * Contributed by Vladimir Makarov <vmakarov@cygnus.com>.  */
+/*
 This file is part of the libiberty library.
 Libiberty is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
@@ -16,7 +16,7 @@ Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
 License along with libiberty; see the file COPYING.LIB.  If
-not, write to the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+not, write to the Free Software Foundation, Inc., 51 Franklin St., 5th Floor,
 Boston, MA 02110-1301, USA.  */
 
 /* This package implements basic hash table functionality.  It is possible
@@ -33,26 +33,30 @@ Boston, MA 02110-1301, USA.  */
    the old table to the new table. */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 
 #include <sys/types.h>
 
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 #ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+# include <string.h>
+#endif /* HAVE_STRING_H */
 #ifdef HAVE_MALLOC_H
-#include <malloc.h>
-#endif
+# include <malloc.h>
+#else
+# ifdef HAVE_MALLOC_MALLOC_H
+#  include <malloc/malloc.h>
+# endif /* HAVE_MALLOC_MALLOC_H */
+#endif /* HAVE_MALLOC_H */
 #ifdef HAVE_LIMITS_H
-#include <limits.h>
-#endif
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
 #ifdef HAVE_STDINT_H
-#include <stdint.h>
-#endif
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
 
 #include <stdio.h>
 
@@ -61,17 +65,17 @@ Boston, MA 02110-1301, USA.  */
 #include "hashtab.h"
 
 #ifndef CHAR_BIT
-#define CHAR_BIT 8
-#endif
+# define CHAR_BIT 8
+#endif /* !CHAR_BIT */
 
-static unsigned int higher_prime_index (unsigned long);
-static hashval_t htab_mod_1 (hashval_t, hashval_t, hashval_t, int);
-static hashval_t htab_mod (hashval_t, htab_t);
-static hashval_t htab_mod_m2 (hashval_t, htab_t);
-static hashval_t hash_pointer (const void *);
-static int eq_pointer (const void *, const void *);
-static int htab_expand (htab_t);
-static PTR *find_empty_slot_for_expand (htab_t, hashval_t);
+static unsigned int higher_prime_index(unsigned long);
+static hashval_t htab_mod_1(hashval_t, hashval_t, hashval_t, int);
+static hashval_t htab_mod(hashval_t, htab_t);
+static hashval_t htab_mod_m2(hashval_t, htab_t);
+static hashval_t hash_pointer(const void *);
+static int eq_pointer(const void *, const void *);
+static int htab_expand(htab_t);
+static PTR *find_empty_slot_for_expand(htab_t, hashval_t);
 
 /* At some point, we could make these be NULL, and modify the
    hash-table routines to handle NULL specially; that would avoid
@@ -97,7 +101,10 @@ htab_eq htab_eq_pointer = eq_pointer;
 #  endif /* HAVE_MATH_H */
 # endif /* !__MATH__ */
 
-unsigned int
+extern unsigned int choose_multiplier(unsigned int, unsigned int *,
+                                      unsigned char *);
+
+static unsigned int
 ceil_log2(unsigned int x)
 {
   int i;
@@ -124,7 +131,7 @@ choose_multiplier(unsigned int d, unsigned int *mlp, unsigned char *shiftp)
   pow2 = (n + lgup - precision);
 
   nx = (ldexp(1.0, pow) + ldexp(1.0, pow2));
-  mhigh = (nx / d);
+  mhigh = (unsigned long long)(nx / d);
 
   *shiftp = (lgup - 1);
   *mlp = mhigh;
@@ -266,7 +273,7 @@ htab_mod_1 (hashval_t x, hashval_t y, hashval_t inv, int shift)
 
       return r;
     }
-#endif
+#endif /* UNSIGNED_64BIT_TYPE */
 
   /* Otherwise just use the native division routines: */
   return (x % y);

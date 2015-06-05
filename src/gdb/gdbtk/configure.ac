@@ -38,7 +38,7 @@ AC_FUNC_STAT
 AC_CHECK_FUNCS([memset strchr strdup strrchr strtol])dnl
 
 # Automake:
-AM_INIT_AUTOMAKE([foreign dejagnu no-dist -Wall -Wno-obsolete])
+AM_INIT_AUTOMAKE([1.11.6 foreign dejagnu no-dist -Wall -Wno-obsolete])
 AM_MAINTAINER_MODE
 m4_ifdef([AC_REQUIRE_AUX_FILE],[
   AC_REQUIRE_AUX_FILE([depcomp])dnl

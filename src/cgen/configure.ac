@@ -9,7 +9,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([${srcdir}/config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.9.6 gnits dejagnu])dnl
+AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu])dnl
 
 AC_PROG_INSTALL
 AC_EXEEXT

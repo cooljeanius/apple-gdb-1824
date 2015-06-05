@@ -132,8 +132,8 @@ sec_merge_hash_newfunc(struct bfd_hash_entry *entry,
 /* Look up an entry in a section merge hash table.  */
 
 static struct sec_merge_hash_entry *
-sec_merge_hash_lookup (struct sec_merge_hash *table, const char *string,
-		       unsigned int alignment, bfd_boolean create)
+sec_merge_hash_lookup(struct sec_merge_hash *table, const char *string,
+		      unsigned int alignment, bfd_boolean create)
 {
   register const unsigned char *s;
   register unsigned long hash;
@@ -142,8 +142,8 @@ sec_merge_hash_lookup (struct sec_merge_hash *table, const char *string,
   unsigned int len, i;
   unsigned int uindex;
 
-  hash = 0;
-  len = 0;
+  hash = 0UL;
+  len = 0U;
   s = (const unsigned char *)string;
   if (table->strings)
     {
@@ -151,11 +151,11 @@ sec_merge_hash_lookup (struct sec_merge_hash *table, const char *string,
 	{
 	  while ((c = *s++) != '\0')
 	    {
-	      hash += c + (c << 17);
-	      hash ^= hash >> 2;
+	      hash += (c + (c << 17));
+	      hash ^= (hash >> 2);
 	      ++len;
 	    }
-	  hash += len + (len << 17);
+	  hash += (len + (len << 17));
 	}
       else
 	{
@@ -169,15 +169,15 @@ sec_merge_hash_lookup (struct sec_merge_hash *table, const char *string,
 	      for (i = 0; i < table->entsize; ++i)
 		{
 		  c = *s++;
-		  hash += c + (c << 17);
-		  hash ^= hash >> 2;
+		  hash += (c + (c << 17));
+		  hash ^= (hash >> 2);
 		}
 	      ++len;
 	    }
-	  hash += len + (len << 17);
+	  hash += (len + (len << 17));
 	  len *= table->entsize;
 	}
-      hash ^= hash >> 2;
+      hash ^= (hash >> 2);
       len += table->entsize;
     }
   else
@@ -185,13 +185,13 @@ sec_merge_hash_lookup (struct sec_merge_hash *table, const char *string,
       for (i = 0; i < table->entsize; ++i)
 	{
 	  c = *s++;
-	  hash += c + (c << 17);
-	  hash ^= hash >> 2;
+	  hash += (c + (c << 17));
+	  hash ^= (hash >> 2);
 	}
       len = table->entsize;
     }
 
-  uindex = hash % table->table.size;
+  uindex = (unsigned int)(hash % table->table.size);
   for (hashp = (struct sec_merge_hash_entry *)table->table.table[uindex];
        hashp != NULL;
        hashp = (struct sec_merge_hash_entry *)hashp->root.next)
@@ -220,7 +220,7 @@ sec_merge_hash_lookup (struct sec_merge_hash *table, const char *string,
     return NULL;
 
   hashp = ((struct sec_merge_hash_entry *)
-	   sec_merge_hash_newfunc (NULL, &table->table, string));
+	   sec_merge_hash_newfunc(NULL, &table->table, string));
   if (hashp == NULL)
     return NULL;
   hashp->root.string = string;
@@ -228,7 +228,7 @@ sec_merge_hash_lookup (struct sec_merge_hash *table, const char *string,
   hashp->len = len;
   hashp->alignment = alignment;
   hashp->root.next = table->table.table[uindex];
-  table->table.table[uindex] = (struct bfd_hash_entry *) hashp;
+  table->table.table[uindex] = (struct bfd_hash_entry *)hashp;
 
   return hashp;
 }

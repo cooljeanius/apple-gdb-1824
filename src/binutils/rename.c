@@ -48,7 +48,8 @@ static int simple_copy (const char *, const char *);
 static int
 simple_copy(const char *from, const char *to)
 {
-  int fromfd, tofd, nread;
+  int fromfd, tofd;
+  ssize_t nread;
   int saved;
   char buf[COPY_BUF];
 

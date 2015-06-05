@@ -25,7 +25,7 @@
 top_distdir = ../..
 extradir    = $(libdir)/extra
 
-AUTOMAKE_OPTIONS = no-dependencies gnits
+AUTOMAKE_OPTIONS = 1.11.6 no-dependencies gnits
 
 AM_CPPFLAGS = -I$(top_srcdir) -DBUILDING_LIBL3
 

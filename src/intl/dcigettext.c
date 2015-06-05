@@ -1195,8 +1195,8 @@ guess_category_value(int category, const char *categoryname)
      2. The precise output of some programs in the "C" locale is specified
 	by POSIX and should not depend on environment variables like
 	"LANGUAGE".  We allow such programs to use gettext().  */
-  return (const char *)((language != NULL) &&
-                        ((strcmp(retval, "C") != 0) ? language : retval));
+  return (((language != NULL) && (strcmp(retval, "C") != 0))
+          ? language : retval);
 }
 
 /* @@ begin of epilog @@ */

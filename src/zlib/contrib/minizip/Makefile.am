@@ -11,6 +11,8 @@ zlib_top_builddir = $(top_builddir)/../..
 
 ACLOCAL_AMFLAGS = -I../../m4 --install
 
+AUTOMAKE_OPTIONS = 1.11.6 foreign no-dist
+
 ## configure should subst HOST_ARCHITECTURE for us:
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_CFLAGS = $(C_ARCHFLAGS)

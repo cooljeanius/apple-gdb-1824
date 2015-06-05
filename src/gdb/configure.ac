@@ -82,6 +82,13 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   AC_SUBST([TARGET_ARCHITECTURE])
 fi
 
+m4_ifdef([gl_HOST_OS],[
+  gl_HOST_OS
+])dnl
+m4_ifdef([gl_HOST_CPU_C_ABI],[
+  gl_HOST_CPU_C_ABI
+])dnl
+
 # Check for the 'make' the user wants to use:
 AC_CHECK_PROGS([MAKE],[make gmake gnumake remake])dnl
 AC_SUBST([MAKE])
@@ -2845,12 +2852,14 @@ build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
 -Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc -Wlogical-op \
 -Wunsuffixed-float-constants -Wfloat-conversion -Wjump-misses-init \
--Wmissing-field-initializers -Wno-deprecated-declarations"
+-Wmissing-field-initializers -Wno-deprecated-declarations -Wbool-compare \
+-Wlogical-not-parentheses -Wsizeof-array-argument -Wswitch-bool \
+-Wshift-count-negative -Wshift-count-overflow"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
   ## Special warnings only for C++ compilations:
-  cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo \
+  cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo -Wodr \
 -Wno-write-strings -Wno-narrowing"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
@@ -2958,14 +2967,6 @@ fi
 #  * -Wenum-compare (not really sure how to solve for now...)
 #  * -Wunsafe-loop-optimizations (lex/yacc generate code that triggers it)
 #  * -Waggregate-return (too noisy and hard to avoid)
-# Once gcc 5 is relesaed, the following might be worth consideration:
-#  * -Wbool-compare
-#  * -Wlogical-not-parentheses
-#  * -Wsizeof-array-argument
-#  * -Wswitch-bool
-#  * -Wshift-count-negative
-#  * -Wshift-count-overflow
-#  * -Wbitfield-conversion (if it makes it in on time)
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)
@@ -2997,7 +2998,7 @@ fi
 #  * -pedantic-errors (likewise, never add this)
 #  * -Wunused-parameter (despite the existence of clang's
 #    -Wused-but-marked-unused flag, upstream still insists on leaving this
-#    one out, presumably because gcc does not support it yet...)
+#    one out, presumably because gcc does not support the other one yet...)
 #  * -Wunused-but-set-parameter (likewise)
 #  * -Wall (contains -Wunused-parameter)
 AC_ARG_ENABLE([build-warnings],

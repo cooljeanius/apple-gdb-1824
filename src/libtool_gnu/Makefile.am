@@ -26,7 +26,7 @@
 ## cannot use '--install'; that will trash our local (newer) copies of
 ## libtool.m4 and friends:
 ACLOCAL_AMFLAGS  	= -I libltdl/m4
-AUTOMAKE_OPTIONS 	= 1.11.1 gnits subdir-objects dist-xz color-tests parallel-tests
+AUTOMAKE_OPTIONS 	= 1.11.6 gnits subdir-objects dist-xz color-tests parallel-tests
 
 AM_CFLAGS		=
 AM_CPPFLAGS		=

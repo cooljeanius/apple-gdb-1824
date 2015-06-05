@@ -718,7 +718,7 @@ ihex_write_record(bfd *abfd, size_t count, unsigned int addr,
                   unsigned int type, bfd_byte *data)
 {
   static const char digs[] = "0123456789ABCDEF";
-  char buf[9 + CHUNK * 2 + 4];
+  char buf[9 + (CHUNK * 2) + 4];
   char *p;
   unsigned int chksum;
   unsigned int i;
@@ -728,25 +728,25 @@ ihex_write_record(bfd *abfd, size_t count, unsigned int addr,
   ((buf)[0] = digs[((v) >> 4) & 0xf], (buf)[1] = digs[(v) & 0xf])
 
   buf[0] = ':';
-  TOHEX (buf + 1, count);
-  TOHEX (buf + 3, (addr >> 8) & 0xff);
-  TOHEX (buf + 5, addr & 0xff);
-  TOHEX (buf + 7, type);
+  TOHEX((buf + 1), count);
+  TOHEX((buf + 3), ((addr >> 8) & 0xff));
+  TOHEX((buf + 5), (addr & 0xff));
+  TOHEX((buf + 7), type);
 
-  chksum = count + addr + (addr >> 8) + type;
+  chksum = (unsigned int)(count + addr + (addr >> 8) + type);
 
-  for (i = 0, p = buf + 9; i < count; i++, p += 2, data++)
+  for (i = 0, p = (buf + 9); i < count; i++, p += 2, data++)
     {
-      TOHEX (p, *data);
+      TOHEX(p, *data);
       chksum += *data;
     }
 
-  TOHEX (p, (- chksum) & 0xff);
+  TOHEX(p, ((0 - chksum) & 0xff));
   p[2] = '\r';
   p[3] = '\n';
 
-  total = 9 + count * 2 + 4;
-  if (bfd_bwrite (buf, (bfd_size_type) total, abfd) != total)
+  total = (9 + (count * 2) + 4);
+  if (bfd_bwrite(buf, (bfd_size_type)total, abfd) != total)
     return FALSE;
 
   return TRUE;

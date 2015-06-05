@@ -90,8 +90,9 @@ host_triplet = @host@
 target_triplet = @target@
 subdir = testsuite
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/xorg-macros.m4 \
-	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/extern-inline.m4 \
+	$(top_srcdir)/m4/xorg-macros.m4 $(top_srcdir)/acinclude.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -311,13 +312,13 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = dejagnu subdir-objects gnits
+AUTOMAKE_OPTIONS = 1.11.6 dejagnu subdir-objects gnits
 
 # renamed because the old variable overrode the default Automake one:
 RUNTESTLOCAL = ` \
   if [ -f ${top_srcdir}/runtest$(EXEEXT) ] ; then \
     echo ${top_srcdir}/runtest$(EXEEXT); \
-  else echo "ERROR: runtest not found" ; exit 1; fi`
+  else echo "ERROR: runtest not found"; exit 1; fi`
 
 RUNTESTDEFAULTFLAGSLOCAL = --srcdir $$srcdir
 CLEANFILES = *.log *.sum site.bak setval.tmp .DS_Store
@@ -681,6 +682,7 @@ all all-am all-am-local all-local all-redirect-local all-redirect: force
 force:
 
 clean-local: Makefile
+	-find . -name .DS_Store -delete 2>&1
 .PHONY: clean-local
 
 my_site.exp: Makefile

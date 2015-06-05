@@ -113,6 +113,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_check_compile_flag.m4 \
 	$(top_srcdir)/m4/extern-inline.m4 \
 	$(top_srcdir)/m4/gnulib_stdint.m4 \
 	$(top_srcdir)/m4/gnulib_string_h.m4 \
+	$(top_srcdir)/m4/host-cpu-c-abi.m4 $(top_srcdir)/m4/host-os.m4 \
 	$(top_srcdir)/m4/include_next.m4 $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/ltoptions.m4 \
 	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
@@ -378,6 +379,7 @@ HAVE_SYS_INTTYPES_H = @HAVE_SYS_INTTYPES_H@
 HAVE_SYS_TYPES_H = @HAVE_SYS_TYPES_H@
 HAVE_UNSIGNED_LONG_LONG_INT = @HAVE_UNSIGNED_LONG_LONG_INT@
 HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
+HOST_CPU_C_ABI = @HOST_CPU_C_ABI@
 IGNORE_SIM = @IGNORE_SIM@
 IGNORE_SIM_OBS = @IGNORE_SIM_OBS@
 INCLUDE_LOCALE_H = @INCLUDE_LOCALE_H@
@@ -655,7 +657,7 @@ xm_h = @xm_h@
 zlibdir = @zlibdir@
 zlibinc = @zlibinc@
 ACLOCAL_AMFLAGS = -I./import/m4 -I./m4 --install
-AUTOMAKE_OPTIONS = 1.11.1 gnits -Wall no-dist
+AUTOMAKE_OPTIONS = 1.11.6 gnits -Wall no-dist
 SUBDIRS = import
 noinst_HEADERS = str-two-way.h
 noinst_LIBRARIES = libgnu.a

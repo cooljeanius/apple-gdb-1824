@@ -5755,12 +5755,18 @@ $as_echo "$MKDIR_P" >&6; }
 
 
 
-      ac_libiberty_warn_cflags=""
+      ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+ac_libiberty_warn_cflags=""
 save_CFLAGS="${CFLAGS}"
 for real_option in -Wall -Wextra -Wwrite-strings -Wc++-compat \
--Wstrict-prototypes -Wmissing-prototypes -Wmissing-parameter-type \
+-Wodr -Wstrict-prototypes -Wmissing-prototypes -Wmissing-parameter-type \
 -Wmissing-declarations -Wnested-externs -Wundef -Wshadow -Wformat=2 \
--Wold-style-definition -Wold-style-declaration -Wfloat-conversion; do
+-Wold-style-definition -Wold-style-declaration -Wfloat-conversion -Wabi \
+-Wc99-c11-compat; do
   # Do the check with the no- prefix removed since gcc silently accepts
   # any -Wno-* option on purpose:
   case ${real_option} in
@@ -5802,8 +5808,18 @@ $as_echo "$ac_res" >&6; }
 fi
   done
 CFLAGS="${save_CFLAGS}"
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-    # Do the check with the no- prefix removed from the warning options
+    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+# Do the check with the no- prefix removed from the warning options
 # since gcc silently accepts any -Wno-* option on purpose:
 if test "x${GCC}" = "xyes"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ${CC} supports -pedantic " >&5
@@ -5839,6 +5855,11 @@ if test $acx_cv_prog_cc_pedantic_ = yes; then :
 fi
 
 fi
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
     ##FIXME: old versions of the above macros omitted the second argument:
   if test "x${ac_libiberty_warn_cflags}" = "x"; then
     test -z "${ac_libiberty_warn_cflags}"
@@ -17950,11 +17971,15 @@ fi
 case "${host}" in
     # PIC is the default on some targets or must not be used.
     *-*-darwin*)
-	# PIC is the default on this platform
-	# Common symbols not allowed in MH_DYLIB files
-	# Cancel any earlier -mdynamic-no-pic, as that makes
-	# the code not suitable for shared libraries.
-	PICFLAG='-fno-common -mno-dynamic-no-pic'
+	# For darwin, common symbols are not allowed in MH_DYLIB files:
+	case "${CFLAGS}" in
+	  # If we are using a compiler supporting mdynamic-no-pic
+	  # and the option has been tested as safe to add, then cancel
+	  # it here, since the code generated is incompatible with shared
+	  # libs:
+	  *-mdynamic-no-pic*) PICFLAG='-fno-common -mno-dynamic-no-pic' ;;
+	  *) PICFLAG=-fno-common ;;
+	esac
 	;;
     alpha*-dec-osf5*)
 	# PIC is the default.

@@ -106,13 +106,13 @@ make_a_section_from_file(bfd *abfd, struct internal_scnhdr *hdr,
   return_section->size = hdr->s_size;
   return_section->filepos = (file_ptr)hdr->s_scnptr;
   return_section->rel_filepos = (file_ptr)hdr->s_relptr;
-  return_section->reloc_count = hdr->s_nreloc;
+  return_section->reloc_count = (unsigned int)hdr->s_nreloc;
 
   bfd_coff_set_alignment_hook(abfd, return_section, hdr);
 
   return_section->line_filepos = (file_ptr)hdr->s_lnnoptr;
 
-  return_section->lineno_count = hdr->s_nlnno;
+  return_section->lineno_count = (unsigned int)hdr->s_nlnno;
   return_section->userdata = NULL;
   return_section->next = NULL;
   return_section->target_index = (int)target_index;
@@ -323,7 +323,8 @@ coff_get_symtab_upper_bound(bfd *abfd)
   if (!bfd_coff_slurp_symbol_table(abfd))
     return -1;
 
-  return (long)((bfd_get_symcount(abfd) + 1L) * sizeof(coff_symbol_type*));
+  return (long)((size_t)(bfd_get_symcount(abfd) + 1L)
+                * sizeof(coff_symbol_type*));
 }
 
 /* Canonicalize a COFF symbol table: */
@@ -649,7 +650,7 @@ coff_renumber_symbols(bfd *bfd_ptr, int *first_undef)
 		      != 0))))
 	*newsyms++ = symbol_ptr_ptr[i];
 
-    *first_undef = (newsyms - bfd_ptr->outsymbols);
+    *first_undef = (int)(newsyms - bfd_ptr->outsymbols);
 
     for (i = 0; i < symbol_count; i++)
       if (((symbol_ptr_ptr[i]->flags & BSF_NOT_AT_END) == 0)
@@ -765,7 +766,7 @@ coff_fix_symbol_name(bfd *abfd, asymbol *symbol,
 		     asection **debug_string_section_p,
 		     bfd_size_type *debug_string_size_p)
 {
-  unsigned int name_length;
+  size_t name_length;
   union internal_auxent *auxent;
   char *name = (char *)(symbol->name);
 

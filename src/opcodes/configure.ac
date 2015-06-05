@@ -43,7 +43,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.10 gnits dejagnu])dnl
+AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu])dnl
 dnl# (maintainer mode macro is called farther below)
   ## whitespace...
 
@@ -95,7 +95,7 @@ AC_MSG_RESULT([ ])
 LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])dnl
 LT_LANG([C])dnl
 dnl# (temporarily) set this while I update everything libtool-related:
-LT_PREREQ([2.4.4])dnl
+LT_PREREQ([2.4.6])dnl
 
 if test -z "${lt_cv_objdir}"; then
   AC_MSG_WARN([lt_cv_objdir somehow was left unset, setting to default])

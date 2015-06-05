@@ -17,7 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 ACLOCAL_AMFLAGS = -I m4 --install
 
-AUTOMAKE_OPTIONS = dejagnu gnits no-dist
+AUTOMAKE_OPTIONS = 1.11.6 dejagnu gnits no-dist
 
 SUBDIRS = . doc shlib examples
 

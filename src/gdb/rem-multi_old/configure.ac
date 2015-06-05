@@ -51,7 +51,7 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   export TARGET_ARCHITECTURE="${target_cpu}"
   AC_SUBST([TARGET_ARCHITECTURE])
 fi
-AM_INIT_AUTOMAKE([foreign dejagnu])dnl
+AM_INIT_AUTOMAKE([1.11.6 foreign dejagnu])dnl
 AM_MAINTAINER_MODE
 
 # Checks for programs.

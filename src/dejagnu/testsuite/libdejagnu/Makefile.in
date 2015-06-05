@@ -92,8 +92,9 @@ target_triplet = @target@
 noinst_PROGRAMS = unit$(EXEEXT)
 subdir = testsuite/libdejagnu
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/xorg-macros.m4 \
-	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/extern-inline.m4 \
+	$(top_srcdir)/m4/xorg-macros.m4 $(top_srcdir)/acinclude.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -293,10 +294,13 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = dejagnu gnits
-AM_CFLAGS = -I$(top_srcdir) -ggdb -Wall
+AUTOMAKE_OPTIONS = 1.11.6 dejagnu gnits
+AM_CFLAGS = -I$(top_srcdir) -ggdb -Wall -Wextra -Wabi
 AM_CPPFLAGS = -I$(top_srcdir)
-AM_CXXFLAGS = -I$(top_srcdir) -ggdb -Wall
+AM_CXXFLAGS = -I$(top_srcdir) -ggdb -Wall -Wextra -Wabi -Wsign-promo \
+  -Wstrict-null-sentinel -Woverloaded-virtual -Wctor-dtor-privacy \
+  -Wuninitialized -Wshadow -Wconversion -pedantic
+
 unit_SOURCES = unit.cc
 all: all-am
 
@@ -614,9 +618,10 @@ uninstall-am:
 
 
 clean-local: Makefile
+	-rm -rf *.dSYM || rmdir *.dSYM
 .PHONY: clean-local
 
-distclean-local: $(top_srcdir)/config.status
+distclean-local: $(top_srcdir)/config.status clean-local
 .PHONY: distclean-local
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

@@ -533,7 +533,8 @@ tekhex_canonicalize_symtab(bfd *abfd, asymbol **table)
 static long
 tekhex_get_symtab_upper_bound(bfd *abfd)
 {
-  return (long)((abfd->symcount + 1L) * sizeof(struct tekhex_asymbol_struct *));
+  return (long)((size_t)(abfd->symcount + 1L)
+                * sizeof(struct tekhex_asymbol_struct *));
 }
 
 static bfd_boolean

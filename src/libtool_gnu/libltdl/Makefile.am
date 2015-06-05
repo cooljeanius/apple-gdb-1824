@@ -31,7 +31,7 @@
 ## cannot use '--install'; that will trash our local (newer) copies of
 ## libtool.m4 and friends:
 ACLOCAL_AMFLAGS = -I m4
-AUTOMAKE_OPTIONS = foreign subdir-objects
+AUTOMAKE_OPTIONS = 1.11.6 foreign subdir-objects
 AM_CFLAGS =
 AM_CPPFLAGS =
 AM_LDFLAGS =

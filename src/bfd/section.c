@@ -944,29 +944,27 @@ DESCRIPTION
 */
 
 char *
-bfd_get_unique_section_name (bfd *abfd, const char *templat, int *count)
+bfd_get_unique_section_name(bfd *abfd, const char *templat, int *count)
 {
   int num;
-  unsigned int len;
+  size_t len;
   char *sname;
 
   len = strlen(templat);
-  sname = (char *)bfd_malloc(len + 8);
+  sname = (char *)bfd_malloc(len + 8UL);
   if (sname == NULL)
     return NULL;
-  memcpy (sname, templat, len);
+  memcpy(sname, templat, len);
   num = 1;
   if (count != NULL)
     num = *count;
 
-  do
-    {
-      /* If we have a million sections, something is badly wrong.  */
-      if (num > 999999)
-	abort ();
-      sprintf (sname + len, ".%d", num++);
-    }
-  while (section_hash_lookup (&abfd->section_htab, sname, FALSE, FALSE));
+  do {
+    /* If we have a million sections, then something is badly wrong: */
+    if (num > 999999)
+      abort();
+    sprintf((sname + len), ".%d", num++);
+  } while (section_hash_lookup(&abfd->section_htab, sname, FALSE, FALSE));
 
   if (count != NULL)
     *count = num;

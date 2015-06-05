@@ -76,7 +76,7 @@ fi
 ## Automake Initialization. ##
 ## ------------------------ ##
 
-AM_INIT_AUTOMAKE([foreign subdir-objects])
+AM_INIT_AUTOMAKE([1.11.6 foreign subdir-objects])
 AM_MAINTAINER_MODE
 
 # Checks for programs.

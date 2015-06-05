@@ -521,7 +521,7 @@ top_srcdir = @top_srcdir@
 wordsize = @wordsize@
 zlibdir = @zlibdir@
 zlibinc = @zlibinc@
-AUTOMAKE_OPTIONS = 1.9.6 no-dist gnits dejagnu -Wall -Wno-portability
+AUTOMAKE_OPTIONS = 1.11.6 no-dist gnits dejagnu -Wall -Wno-portability
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 ACLOCAL_AMFLAGS = -I m4 --install
 
