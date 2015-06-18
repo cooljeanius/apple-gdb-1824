@@ -395,7 +395,7 @@ static void mark_symbols_used_in_relocations(bfd *, asection *, void *);
 static bfd_boolean write_debugging_info(bfd *, void *, long *, asymbol ***);
 static const char *lookup_sym_redefinition(const char *);
 
-static void
+static ATTRIBUTE_NORETURN void
 copy_usage(FILE *stream, int exit_status)
 {
   fprintf(stream, _("Usage: %s [option(s)] in-file [out-file]\n"), program_name);
@@ -489,7 +489,7 @@ copy_usage(FILE *stream, int exit_status)
   exit(exit_status);
 }
 
-static void
+static ATTRIBUTE_NORETURN void
 strip_usage(FILE *stream, int exit_status)
 {
   fprintf(stream, _("Usage: %s <option(s)> in-file(s)\n"), program_name);
@@ -2461,20 +2461,20 @@ strip_main (int argc, char *argv[])
 	  break;
 	case 'H':
 	case 'h':
-	  strip_usage (stdout, 0);
+	  strip_usage(stdout, 0);
 	default:
-	  strip_usage (stderr, 1);
+	  strip_usage(stderr, 1);
 	}
     }
 
   if (formats_info)
     {
-      display_info ();
+      display_info();
       return 0;
     }
 
   if (show_version)
-    print_version ("strip");
+    print_version("strip");
 
   /* Default is to strip all symbols.  */
   if (strip_symbols == STRIP_UNDEF
@@ -2486,9 +2486,9 @@ strip_main (int argc, char *argv[])
     output_target = input_target;
 
   i = optind;
-  if (i == argc
-      || (output_file != NULL && (i + 1) < argc))
-    strip_usage (stderr, 1);
+  if ((i == argc)
+      || ((output_file != NULL) && ((i + 1) < argc)))
+    strip_usage(stderr, 1);
 
   for (; i < argc; i++)
     {

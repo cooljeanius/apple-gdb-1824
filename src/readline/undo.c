@@ -69,12 +69,9 @@ UNDO_LIST *rl_undo_list = (UNDO_LIST *)NULL;
 /* Remember how to undo something.  Concatenate some undos if that
    seems right. */
 void
-rl_add_undo (what, start, end, text)
-     enum undo_code what;
-     int start, end;
-     char *text;
+rl_add_undo(enum undo_code what, int start, int end, char *text)
 {
-  UNDO_LIST *temp = (UNDO_LIST *)xmalloc (sizeof (UNDO_LIST));
+  UNDO_LIST *temp = (UNDO_LIST *)xmalloc(sizeof(UNDO_LIST));
   temp->what = what;
   temp->start = start;
   temp->end = end;
@@ -83,9 +80,9 @@ rl_add_undo (what, start, end, text)
   rl_undo_list = temp;
 }
 
-/* Free the existing undo list. */
+/* Free the existing undo list: */
 void
-rl_free_undo_list ()
+rl_free_undo_list(void)
 {
   while (rl_undo_list)
     {
@@ -93,9 +90,9 @@ rl_free_undo_list ()
       rl_undo_list = rl_undo_list->next;
 
       if (release->what == UNDO_DELETE)
-	free (release->text);
+	free(release->text);
 
-      free (release);
+      free(release);
     }
   rl_undo_list = (UNDO_LIST *)NULL;
 }
@@ -103,7 +100,7 @@ rl_free_undo_list ()
 /* Undo the next thing in the list.  Return 0 if there
    is nothing to undo, or non-zero if there was. */
 int
-rl_do_undo ()
+rl_do_undo(void)
 {
   UNDO_LIST *release;
   int waiting_for_begin, start, end;
@@ -111,34 +108,33 @@ rl_do_undo ()
 #define TRANS(i) ((i) == -1 ? rl_point : ((i) == -2 ? rl_end : (i)))
 
   start = end = waiting_for_begin = 0;
-  do
-    {
-      if (!rl_undo_list)
-	return (0);
+  do {
+    if (!rl_undo_list)
+      return (0);
 
-      _rl_doing_an_undo = 1;
-      RL_SETSTATE(RL_STATE_UNDOING);
+    _rl_doing_an_undo = 1;
+    RL_SETSTATE(RL_STATE_UNDOING);
 
-      /* To better support vi-mode, a start or end value of -1 means
-	 rl_point, and a value of -2 means rl_end. */
-      if (rl_undo_list->what == UNDO_DELETE || rl_undo_list->what == UNDO_INSERT)
-	{
-	  start = TRANS (rl_undo_list->start);
-	  end = TRANS (rl_undo_list->end);
-	}
+    /* To better support vi-mode, a start or end value of -1 means
+     * rl_point, and a value of -2 means rl_end. */
+    if (rl_undo_list->what == UNDO_DELETE || rl_undo_list->what == UNDO_INSERT)
+      {
+        start = TRANS(rl_undo_list->start);
+        end = TRANS(rl_undo_list->end);
+      }
 
-      switch (rl_undo_list->what)
-	{
+    switch (rl_undo_list->what)
+      {
 	/* Undoing deletes means inserting some text. */
 	case UNDO_DELETE:
 	  rl_point = start;
-	  rl_insert_text (rl_undo_list->text);
-	  free (rl_undo_list->text);
+	  rl_insert_text(rl_undo_list->text);
+	  free(rl_undo_list->text);
 	  break;
 
 	/* Undoing inserts means deleting some text. */
 	case UNDO_INSERT:
-	  rl_delete_text (start, end);
+	  rl_delete_text(start, end);
 	  rl_point = start;
 	  break;
 
@@ -152,32 +148,33 @@ rl_do_undo ()
 	  if (waiting_for_begin)
 	    waiting_for_begin--;
 	  else
-	    rl_ding ();
+	    rl_ding();
 	  break;
-	}
 
-      _rl_doing_an_undo = 0;
-      RL_UNSETSTATE(RL_STATE_UNDOING);
+        default:
+          break;
+      }
 
-      release = rl_undo_list;
-      rl_undo_list = rl_undo_list->next;
-      free (release);
-    }
-  while (waiting_for_begin);
+    _rl_doing_an_undo = 0;
+    RL_UNSETSTATE(RL_STATE_UNDOING);
+
+    release = rl_undo_list;
+    rl_undo_list = rl_undo_list->next;
+    free(release);
+  } while (waiting_for_begin);
 
   return (1);
 }
 #undef TRANS
 
 int
-_rl_fix_last_undo_of_type (type, start, end)
-     int type, start, end;
+_rl_fix_last_undo_of_type(int type, int start, int end)
 {
   UNDO_LIST *rl;
 
   for (rl = rl_undo_list; rl; rl = rl->next)
     {
-      if (rl->what == type)
+      if ((int)rl->what == type)
 	{
 	  rl->start = start;
 	  rl->end = end;
@@ -187,77 +184,76 @@ _rl_fix_last_undo_of_type (type, start, end)
   return 1;
 }
 
-/* Begin a group.  Subsequent undos are undone as an atomic operation. */
+/* Begin a group.  Subsequent undos are undone as an atomic operation: */
 int
-rl_begin_undo_group ()
+rl_begin_undo_group(void)
 {
-  rl_add_undo (UNDO_BEGIN, 0, 0, 0);
+  rl_add_undo(UNDO_BEGIN, 0, 0, 0);
   _rl_undo_group_level++;
   return 0;
 }
 
-/* End an undo group started with rl_begin_undo_group (). */
+/* End an undo group started with rl_begin_undo_group(): */
 int
-rl_end_undo_group ()
+rl_end_undo_group(void)
 {
-  rl_add_undo (UNDO_END, 0, 0, 0);
+  rl_add_undo(UNDO_END, 0, 0, 0);
   _rl_undo_group_level--;
   return 0;
 }
 
-/* Save an undo entry for the text from START to END. */
+/* Save an undo entry for the text from START to END: */
 int
-rl_modifying (start, end)
-     int start, end;
+rl_modifying(int start, int end)
 {
   if (start > end)
     {
-      SWAP (start, end);
+      SWAP(start, end);
     }
 
   if (start != end)
     {
-      char *temp = rl_copy_text (start, end);
-      rl_begin_undo_group ();
-      rl_add_undo (UNDO_DELETE, start, end, temp);
-      rl_add_undo (UNDO_INSERT, start, end, (char *)NULL);
-      rl_end_undo_group ();
+      char *temp = rl_copy_text(start, end);
+      rl_begin_undo_group();
+      rl_add_undo(UNDO_DELETE, start, end, temp);
+      rl_add_undo(UNDO_INSERT, start, end, (char *)NULL);
+      rl_end_undo_group();
     }
   return 0;
 }
 
 /* Revert the current line to its previous state. */
 int
-rl_revert_line (count, key)
-     int count, key;
+rl_revert_line(int count, int key)
 {
   if (!rl_undo_list)
-    rl_ding ();
+    rl_ding();
   else
     {
       while (rl_undo_list)
-	rl_do_undo ();
+	rl_do_undo();
     }
   return 0;
 }
 
 /* Do some undoing of things that were done. */
 int
-rl_undo_command (count, key)
-     int count, key;
+rl_undo_command(int count, int key)
 {
   if (count < 0)
     return 0;	/* Nothing to do. */
 
   while (count)
     {
-      if (rl_do_undo ())
+      if (rl_do_undo())
 	count--;
       else
 	{
-	  rl_ding ();
+	  rl_ding();
 	  break;
 	}
     }
   return 0;
 }
+
+/* EOF */

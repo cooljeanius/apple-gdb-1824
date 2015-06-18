@@ -64,7 +64,7 @@ DEFS = @DEFS@
 CONFIG_CFLAGS = @DEFS@ $(SIM_CFLAGS) $(HDEFINES) $(TDEFINES)
 CSEARCH = -I. -I$(srcdir) -I$(srcroot)/include -I../../include -I../../bfd
 ALL_CFLAGS = $(CFLAGS) $(CONFIG_CFLAGS) $(CSEARCH)
-BUILD_CFLAGS = -g -O $(CSEARCH)
+BUILD_CFLAGS = -ggdb -O1 $(CSEARCH)
 
 AR = @AR@
 AR_FLAGS = rc
@@ -80,7 +80,7 @@ ansi2knr: ansi2knr.o
 	$(CC) $(CFLAGS) ansi2knr.o -o ansi2knr $(LDFLAGS)
 
 ansi2knr.o: ansi2knr.c
-	$(CC) -c ./../common/ansi2knr.c -o ansi2knr.o $(ALL_CFLAGS)
+	$(CC) $(ALL_CFLAGS) -ansi -c ./../common/ansi2knr.c -o ansi2knr.o
 
 # Generate nltvals.def for newlib/libgloss using devo and build tree.
 # This file is shipped with distributions so we build in the source dir.

@@ -83,11 +83,11 @@ static asection bfd_debug_section =
 /* Create an ECOFF object.  */
 
 bfd_boolean
-_bfd_ecoff_mkobject (bfd *abfd)
+_bfd_ecoff_mkobject(bfd *abfd)
 {
-  bfd_size_type amt = sizeof (ecoff_data_type);
+  bfd_size_type amt = sizeof(ecoff_data_type);
 
-  abfd->tdata.ecoff_obj_data = bfd_zalloc (abfd, amt);
+  abfd->tdata.ecoff_obj_data = (ecoff_data_type *)bfd_zalloc(abfd, amt);
   if (abfd->tdata.ecoff_obj_data == NULL)
     return FALSE;
 

@@ -164,16 +164,16 @@ static int encoding_bytes;
 
 static struct option long_options[] =
 {
-  {"all", no_argument, NULL, 'a'},
-  {"data", no_argument, NULL, 'd'},
-  {"print-file-name", no_argument, NULL, 'f'},
-  {"bytes", required_argument, NULL, 'n'},
-  {"radix", required_argument, NULL, 't'},
-  {"encoding", required_argument, NULL, 'e'},
-  {"target", required_argument, NULL, 'T'},
-  {"help", no_argument, NULL, 'h'},
-  {"version", no_argument, NULL, 'v'},
-  {NULL, 0, NULL, 0}
+  { "all", no_argument, NULL, 'a' },
+  { "data", no_argument, NULL, 'd' },
+  { "print-file-name", no_argument, NULL, 'f' },
+  { "bytes", required_argument, NULL, 'n' },
+  { "radix", required_argument, NULL, 't' },
+  { "encoding", required_argument, NULL, 'e' },
+  { "target", required_argument, NULL, 'T' },
+  { "help", no_argument, NULL, 'h' },
+  { "version", no_argument, NULL, 'v' },
+  { NULL, 0, NULL, 0 }
 };
 
 /* Records the size of a named file so that we
@@ -181,22 +181,23 @@ static struct option long_options[] =
 
 typedef struct
 {
-  const char *  filename;
+  const char *filename;
   bfd_size_type filesize;
 } filename_and_size_t;
 
-static void strings_a_section (bfd *, asection *, void *);
-static bfd_boolean strings_object_file (const char *);
-static bfd_boolean strings_file (char *);
-static int integer_arg (char *s);
-static void print_strings (const char *, FILE *, file_off, int, int, char *);
-static void usage (FILE *, int);
-static long get_char (FILE *, file_off *, int *, char **);
+static void strings_a_section(bfd *, asection *, void *);
+static bfd_boolean strings_object_file(const char *);
+static bfd_boolean strings_file(char *);
+static int integer_arg(char *s);
+static void print_strings(const char *, FILE *, file_off, int, int,
+                          char *);
+static ATTRIBUTE_NORETURN void usage(FILE *, int);
+static long get_char(FILE *, file_off *, int *, char **);
 
-int main (int, char **);
+int main(int, char **);
 
 int
-main (int argc, char **argv)
+main(int argc, char **argv)
 {
   int optc;
   int exit_status = 0;
@@ -736,7 +737,7 @@ integer_arg(char *s)
   return value;
 }
 
-static void
+static ATTRIBUTE_NORETURN void
 usage(FILE *stream, int status)
 {
   fprintf(stream, _("Usage: %s [option(s)] [file(s)]\n"), program_name);

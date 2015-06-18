@@ -1,4 +1,4 @@
-/*
+/* (filename is already written in here, just lower)
  * Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
  *
  * @APPLE_LICENSE_HEADER_START@
@@ -53,9 +53,9 @@ main(int argc, const char * const *argv)
 {
 	const char *arg;
 	const char *base_dir = NULL;
-	char start_path[MAXPATHLEN+1];
-	char end_path[MAXPATHLEN+1];
-	char base_path[MAXPATHLEN+1];
+	char start_path[MAXPATHLEN + 1];
+	char end_path[MAXPATHLEN + 1];
+	char base_path[MAXPATHLEN + 1];
 	struct stat st;
 	int i;
 	int last_elem;
@@ -63,41 +63,41 @@ main(int argc, const char * const *argv)
 
 	unsetenv("PWD");
 
-	progname = (arg = rindex(*argv, '/')) != NULL ? arg + 1 : *argv;
+	progname = (((arg = rindex(*argv, '/')) != NULL) ? (arg + 1) : *argv);
 	argc -= 1; argv += 1;
 
-	for (; argc > 1 && **argv == '-'; argv += 1, argc -= 1) {
+	for (; (argc > 1) && (**argv == '-'); argv += 1, argc -= 1) {
 
 		arg = &(*argv)[1];
 		do {
 			switch (*arg) {
-			case 'd':
-				argc -= 1; argv += 1;
-				if (argc <= 0) {
-					fprintf(stderr, "%s: -d takes "
-					  "directory name\n", progname);
-					exit(1);
-				}
-				base_dir = *argv;
-				break;
-			default:
-				fprintf(stderr, "%s: Illegal flag: %c\n",
-				  progname, *arg);
-				exit(1);
+                case 'd':
+                    argc -= 1; argv += 1;
+                    if (argc <= 0) {
+                        fprintf(stderr, "%s: -d takes "
+                                "directory name\n", progname);
+                        exit(1);
+                    }
+                    base_dir = *argv;
+                    break;
+                default:
+                    fprintf(stderr, "%s: Illegal flag: %c\n",
+                            progname, *arg);
+                    exit(1);
 			}
 		} while (*++arg);
 	}
 	if (argc < 2) {
 		fprintf(stderr, "Usage: %s [-d DIR] START_PATH END_PATH\n",
-		  progname);
+                progname);
 		exit(1);
 	}
-	(void) abspath(argv[0], start_path);
-	(void) abspath(argv[1], end_path);
+	(void)abspath(argv[0], start_path);
+	(void)abspath(argv[1], end_path);
 	if (base_dir) {
-		(void) abspath(base_dir, base_path);
-		if (!is_prefix(base_path, start_path) ||
-		    !is_prefix(base_path, end_path)) {
+		(void)abspath(base_dir, base_path);
+		if (!is_prefix(base_path, start_path)
+            || !is_prefix(base_path, end_path)) {
 			printf("%s\n", end_path);
 			exit(0);
 		}
@@ -108,7 +108,7 @@ main(int argc, const char * const *argv)
 		}
 		if ((st.st_mode & S_IFMT) != S_IFDIR) {
 			fprintf(stderr, "%s: -d DIR must be directory\n",
-			  progname);
+                    progname);
 			exit(1);
 		}
 	}
@@ -119,27 +119,29 @@ main(int argc, const char * const *argv)
 	}
 	if ((st.st_mode & S_IFMT) != S_IFDIR) {
 		fprintf(stderr, "%s: START_PATH must be directory\n",
-		   progname);
+                progname);
 		exit(1);
 	}
-	if (start_path[strlen(start_path) - 1] != '/')
+	if (start_path[strlen(start_path) - 1UL] != '/') {
 		strcat(start_path, "/");
+    }
 
 	if (stat(end_path, &st) < 0) {
 		fprintf(stderr, "%s: ", progname);
 		perror(end_path);
 		exit(1);
 	}
-	if ((st.st_mode & S_IFMT) == S_IFDIR
-	  && end_path[strlen(end_path) - 1] != '/')
+	if (((st.st_mode & S_IFMT) == S_IFDIR)
+        && (end_path[strlen(end_path) - 1UL] != '/')) {
 		strcat(end_path, "/");
+    }
 
-	/* strip common prefix */
+	/* strip common prefix: */
 	i = 0;
 	last_elem = 0;
-	while (start_path[i] && start_path[i] == end_path[i]) {
+	while (start_path[i] && (start_path[i] == end_path[i])) {
 		if (start_path[i] == '/') {
-			last_elem = i + 1;
+			last_elem = (i + 1);
 		}
 		i += 1;
 	}
@@ -158,8 +160,8 @@ main(int argc, const char * const *argv)
 			putchar('/');
 		}
 		prev_path = 1;
-		while (end_path[strlen(end_path) - 1] == '/') {
-			end_path[strlen(end_path) - 1] = '\0';
+		while (end_path[strlen(end_path) - 1UL] == '/') {
+			end_path[strlen(end_path) - 1UL] = '\0';
 		}
 		printf("%s", &end_path[last_elem]);
 	}
@@ -173,21 +175,21 @@ main(int argc, const char * const *argv)
 static int
 is_prefix(const char *path1, const char *path2)
 {
-	while (*path1 && *path1 == *path2) {
+	while (*path1 && (*path1 == *path2)) {
 		path1 += 1;
 		path2 += 1;
 	}
-	return (*path1 == '\0' && (*path2 == '/' || *path2 == '\0'));
+	return ((*path1 == '\0') && ((*path2 == '/') || (*path2 == '\0')));
 }
 
 static char *
 abspath(const char *opath, char *absbuf)
 {
 	struct stat st;
-	char curdir[MAXPATHLEN+1];
-	char symlink[MAXPATHLEN+1];
-	char path[MAXPATHLEN+1];
-	char file[MAXPATHLEN+1];
+	char curdir[MAXPATHLEN + 1];
+	char symlink[MAXPATHLEN + 1];
+	char path[MAXPATHLEN + 1];
+	char file[MAXPATHLEN + 1];
 	char *cp;
 	int cc;
 
@@ -196,11 +198,11 @@ abspath(const char *opath, char *absbuf)
 	 * resolve last element of path until we know it is not
 	 * a symbolic link
 	 */
-	while (lstat(path, &st) >= 0
-	    && (st.st_mode & S_IFMT) == S_IFLNK
-	    && (cc = readlink(path, symlink, sizeof(symlink)-1)) > 0) {
+	while ((lstat(path, &st) >= 0)
+           && ((st.st_mode & S_IFMT) == S_IFLNK)
+           && (cc = readlink(path, symlink, sizeof(symlink) - 1UL)) > 0) {
 		symlink[cc] = '\0';
-		if ((cp = rindex(path, '/')) != NULL && symlink[0] != '/') {
+		if (((cp = rindex(path, '/')) != NULL) && (symlink[0] != '/')) {
 			*++cp = '\0';
 		} else {
 			path[0] = '\0';
@@ -240,7 +242,7 @@ abspath(const char *opath, char *absbuf)
 		 * now not a symbolic link, so we are done
 		 */
 		strcpy(absbuf, curdir);
-		if (absbuf[strlen(absbuf) - 1] != '/') {
+		if (absbuf[strlen(absbuf) - 1UL] != '/') {
 			strcat(absbuf, "/");
 		}
 		return strcat(absbuf, path);
@@ -263,7 +265,7 @@ abspath(const char *opath, char *absbuf)
 		perror(path);
 		exit(1);
 	}
-	if (absbuf[strlen(absbuf)-1] != '/') {
+	if (absbuf[strlen(absbuf) - 1UL] != '/') {
 		strcat(absbuf, "/");
 	}
 	return strcat(absbuf, file);

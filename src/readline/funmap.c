@@ -49,7 +49,7 @@ typedef int QSFUNC ();
 extern int _rl_qsort_string_compare PARAMS((char **, char **));
 
 FUNMAP **funmap;
-static int funmap_size;
+static size_t funmap_size;
 static int funmap_entry;
 
 /* After initializing the function map, this is the index of the first
@@ -188,16 +188,14 @@ static FUNMAP default_funmap[] = {
 };
 
 int
-rl_add_funmap_entry (name, function)
-     const char *name;
-     rl_command_func_t *function;
+rl_add_funmap_entry(const char *name, rl_command_func_t *function)
 {
-  if (funmap_entry + 2 >= funmap_size)
+  if ((size_t)(funmap_entry + 2) >= funmap_size)
     {
       funmap_size += 64;
-      funmap = (FUNMAP **)xrealloc (funmap, funmap_size * sizeof (FUNMAP *));
+      funmap = (FUNMAP **)xrealloc(funmap, funmap_size * sizeof(FUNMAP *));
     }
-  
+
   funmap[funmap_entry] = (FUNMAP *)xmalloc (sizeof (FUNMAP));
   funmap[funmap_entry]->name = name;
   funmap[funmap_entry]->function = function;
@@ -210,7 +208,7 @@ static int funmap_initialized;
 
 /* Make the funmap contain all of the default entries. */
 void
-rl_initialize_funmap ()
+rl_initialize_funmap(void)
 {
   register int i;
 
@@ -226,28 +224,30 @@ rl_initialize_funmap ()
 
 /* Produce a NULL terminated array of known function names.  The array
    is sorted.  The array itself is allocated, but not the strings inside.
-   You should free () the array when you done, but not the pointrs. */
+   You should free() the array when you done, but not the pointrs. */
 const char **
-rl_funmap_names ()
+rl_funmap_names(void)
 {
   const char **result;
-  int result_size, result_index;
+  size_t result_size, result_index;
 
   /* Make sure that the function map has been initialized. */
-  rl_initialize_funmap ();
+  rl_initialize_funmap();
 
   for (result_index = result_size = 0, result = (const char **)NULL; funmap[result_index]; result_index++)
     {
-      if (result_index + 2 > result_size)
+      if ((result_index + 2) > result_size)
 	{
 	  result_size += 20;
-	  result = (const char **)xrealloc (result, result_size * sizeof (char *));
+	  result = (const char **)xrealloc(result, result_size * sizeof(char *));
 	}
 
       result[result_index] = funmap[result_index]->name;
       result[result_index + 1] = (char *)NULL;
     }
 
-  qsort (result, result_index, sizeof (char *), (QSFUNC *)_rl_qsort_string_compare);
+  qsort(result, result_index, sizeof(char *), (QSFUNC *)_rl_qsort_string_compare);
   return (result);
 }
+
+/* EOF */

@@ -63,20 +63,20 @@ int return_code = 0;
 static char *target = NULL;
 
 /* Static declarations: */
-static void usage (FILE *, int);
-static void display_file (char *);
-static void display_bfd (bfd *);
-static void display_archive (bfd *);
-static size_t size_number (bfd_size_type);
-static void rprint_number (int, bfd_size_type);
-static void print_berkeley_format (bfd *);
-static void sysv_internal_sizer (bfd *, asection *, void *);
-static void sysv_internal_printer (bfd *, asection *, void *);
-static void print_sysv_format (bfd *);
-static void print_sizes (bfd * file);
-static void berkeley_sum (bfd *, sec_ptr, void *);
+static ATTRIBUTE_NORETURN void usage(FILE *, int);
+static void display_file(char *);
+static void display_bfd(bfd *);
+static void display_archive(bfd *);
+static size_t size_number(bfd_size_type);
+static void rprint_number(int, bfd_size_type);
+static void print_berkeley_format(bfd *);
+static void sysv_internal_sizer(bfd *, asection *, void *);
+static void sysv_internal_printer(bfd *, asection *, void *);
+static void print_sysv_format(bfd *);
+static void print_sizes(bfd *file);
+static void berkeley_sum(bfd *, sec_ptr, void *);
 
-static void
+static ATTRIBUTE_NORETURN void
 usage(FILE *stream, int status)
 {
   fprintf(stream, _("Usage: %s [option(s)] [file(s)]\n"), program_name);

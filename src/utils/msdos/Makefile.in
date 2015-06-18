@@ -39,7 +39,7 @@ INSTALL_DATA = $(INSTALL)
 AR_FLAGS = qv
 MAKEINFO = makeinfo
 
-SUBDIRS=
+SUBDIRS= # bin
 
 .NOEXPORT:
 MAKEOVERRIDES=
@@ -62,6 +62,7 @@ FLAGS_TO_PASS = \
 
 all:
 	@for dir in ${SUBDIRS}; do \
+	echo "$${dir}:"; \
 	if [ -d $${dir} ]; then \
 	    (rootme=`pwd`/ ; export rootme ; \
 	    rootsrc=`cd $(srcdir); pwd`/ ; export rootsrc ; \

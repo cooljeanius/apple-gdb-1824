@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-27 12:55-0400\n"
+"POT-Creation-Date: 2015-06-16 14:41-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -167,13 +167,13 @@ msgstr ""
 msgid "<unknown register %d>"
 msgstr ""
 
-#. Can't happen.
-#: dis-buf.c:57
+#. Cannot happen:
+#: dis-buf.c:54
 #, c-format
 msgid "Unknown error %d\n"
 msgstr ""
 
-#: dis-buf.c:66
+#: dis-buf.c:63
 #, c-format
 msgid "Address 0x%s is out of bounds.\n"
 msgstr ""
@@ -261,14 +261,14 @@ msgid "bad instruction `%.50s'"
 msgstr ""
 
 #. Default text to print if an instruction isn't recognized.
-#: fr30-dis.c:41 frv-dis.c:41 ip2k-dis.c:41 iq2000-dis.c:41 m32c-dis.c:41
-#: m32r-dis.c:41 mmix-dis.c:282 ms1-dis.c:41 openrisc-dis.c:41
-#: xstormy16-dis.c:41
+#: fr30-dis.c:42 frv-dis.c:42 ip2k-dis.c:42 iq2000-dis.c:42 m32c-dis.c:42
+#: m32r-dis.c:42 mmix-dis.c:282 ms1-dis.c:42 openrisc-dis.c:42
+#: xstormy16-dis.c:42
 msgid "*unknown*"
 msgstr ""
 
-#: fr30-dis.c:299 frv-dis.c:396 ip2k-dis.c:288 iq2000-dis.c:189 m32c-dis.c:860
-#: m32r-dis.c:256 ms1-dis.c:258 openrisc-dis.c:135 xstormy16-dis.c:168
+#: fr30-dis.c:300 frv-dis.c:397 ip2k-dis.c:289 iq2000-dis.c:190 m32c-dis.c:861
+#: m32r-dis.c:257 ms1-dis.c:259 openrisc-dis.c:136 xstormy16-dis.c:169
 #, c-format
 msgid "Unrecognized field %d while printing insn.\n"
 msgstr ""

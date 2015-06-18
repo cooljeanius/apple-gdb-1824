@@ -461,9 +461,9 @@ random_computer_word(void)
 int
 main(int argc, char **argv)
 {
+  /* FIXME: make num 'long' eventually, instead of all the casts: */
   int i, num;
   char *arg;
-
 
   /* Parse all the arguments. */
   /* (should check on numeric values) */
@@ -476,52 +476,52 @@ main(int argc, char **argv)
 	}
       else if (strcmp(arg, "--classes") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  num_classes = num;
 	}
       else if (strcmp(arg, "--comments") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  commenting = num;
 	}
       else if (strcmp(arg, "--enums") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  num_enums = num;
 	}
       else if (strcmp(arg, "--enumerators") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  num_enumerators = num;
 	}
       else if (strcmp(arg, "--fields") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  num_fields = num;
 	}
       else if (strcmp(arg, "--files") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  num_files = num;
 	}
       else if (strcmp(arg, "--functions") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  num_functions = num;
 	}
       else if (strcmp(arg, "--function-length") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  function_length = num;
 	}
       else if (strcmp(arg, "--function-depth") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  function_depth = num;
 	}
       else if (strcmp(arg, "--header-files") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  num_header_files = num;
 	}
       else if (strcmp(arg, "--help") == 0)
@@ -543,47 +543,47 @@ main(int argc, char **argv)
 	}
       else if (strcmp(arg, "--lib-classes") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  num_lib_classes = num;
 	}
       else if (strcmp(arg, "--lib-enums") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  num_lib_enums = num;
 	}
       else if (strcmp(arg, "--lib-functions") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  num_lib_functions = num;
 	}
       else if (strcmp(arg, "--lib-macros") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  num_lib_macros = num;
 	}
       else if (strcmp(arg, "--lib-structs") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  num_lib_structs = num;
 	}
       else if (strcmp(arg, "--macros") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  num_macros = num;
 	}
       else if (strcmp(arg, "--methods") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  num_methods = num;
 	}
       else if (strcmp(arg, "--seed") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  seed = num;
 	}
       else if (strcmp(arg, "--structs") == 0)
 	{
-	  num = strtol(argv[++i], NULL, 10);
+	  num = (int)strtol(argv[++i], NULL, 10);
 	  num_structs = num;
 	}
       else if (strcmp(arg, "--version") == 0)

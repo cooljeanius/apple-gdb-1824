@@ -1334,8 +1334,8 @@ static int gdbserver_has_a_terminal(void)
 	      our_process_group = tcgetpgrp (0);
 	    }
 	}
-      macosx_low_debug(6, "%s () => %d\n", __FUNCTION__,
-					   we_have_a_terminal == yes);
+      macosx_low_debug(6, "%s () => %d\n", __extension__ __FUNCTION__,
+                       (we_have_a_terminal == yes));
       return we_have_a_terminal == yes;
 
     default:

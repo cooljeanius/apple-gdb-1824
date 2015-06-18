@@ -1,5 +1,5 @@
 /* sysinfo.y: Copyright 2001, 2003, 2005 Free Software Foundation, Inc.
- * Written by Steve Chamberlain of Cygnus Support (steve@cygnus.com).  */
+ * Written by Steve Chamberlain of Cygnus Support <steve@cygnus.com>.  */
 /*
 This file is part of GNU binutils.
 
@@ -414,4 +414,4 @@ yyerror(char *s)
   return 0;
 }
 
-/* EOF */
+/* End of sysinfo.y */

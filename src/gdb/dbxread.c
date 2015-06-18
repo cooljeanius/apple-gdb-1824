@@ -2365,8 +2365,10 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
                 else
                   {
                     if (cur_oso_list != NULL)
-                      end_oso_pst_list (cur_oso_list, objfile);
-                      cur_oso_list = NULL;
+                      {
+                        end_oso_pst_list(cur_oso_list, objfile);
+                        cur_oso_list = NULL;
+                      }
                   }
               }
             last_oso_pst = pst;

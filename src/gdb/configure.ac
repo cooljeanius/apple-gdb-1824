@@ -2854,12 +2854,13 @@ build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Wunsuffixed-float-constants -Wfloat-conversion -Wjump-misses-init \
 -Wmissing-field-initializers -Wno-deprecated-declarations -Wbool-compare \
 -Wlogical-not-parentheses -Wsizeof-array-argument -Wswitch-bool \
--Wshift-count-negative -Wshift-count-overflow"
+-Wshift-count-negative -Wshift-count-overflow -Wshift-negative-value \
+-Wshift-overflow -Wmisleading-indentation"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
   ## Special warnings only for C++ compilations:
-  cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo -Wodr \
+  cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo -Wodr -Wterminate \
 -Wno-write-strings -Wno-narrowing"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
@@ -2881,7 +2882,12 @@ fi
 
 # clang-specific warnings:
 if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
-  build_warnings="${build_warnings} -Wused-but-marked-unused"
+  ## mig typechecks cause paramaters that would otherwise be unused to be
+  ## used, triggering this:
+  if test "x${MIG_CHECKING}" = "x"; then
+    test -z "${MIG_CHECKING}"
+    build_warnings="${build_warnings} -Wused-but-marked-unused"
+  fi
 fi
 
 dnl# (we now ensure that 'acl_cv_wl' is set elsewhere above)
@@ -2892,19 +2898,25 @@ case "${host}" in
     # (-Wmost might have to be removed for the same reason as -Wall)
     # -Wnonportable-cfstrings is actually a flag for newer versions of the
     # FSF gcc, but it only makes sense on Apple platforms.
-    build_warnings="${build_warnings} -Wmost -Wformat -Wformat-nonliteral -Wformat-y2k -Wextra-tokens -Wnewline-eof -std=gnu99 -Wnonportable-cfstrings -Wendif-labels"
+    build_warnings="${build_warnings} -Wmost -Wextra-tokens -Wnewline-eof \
+-Wendif-labels -Wformat -Wformat-nonliteral -Wformat-y2k \
+-Wnonportable-cfstrings -std=gnu99"
     case "${host}" in
       *64*-apple-darwin9* | *64*-apple-darwin1[[0123456789]].*.*)
         build_warnings="${build_warnings} -Wshorten-64-to-32"
       ;;
     esac
-    link_warnings="${link_warnings} ${acl_cv_wl}-warn_compact_unwind ${acl_cv_wl}-warn_weak_exports ${acl_cv_wl}-warn_stabs ${acl_cv_wl}-warn_commons"
+    link_warnings="${link_warnings} ${acl_cv_wl}-warn_compact_unwind \
+${acl_cv_wl}-warn_weak_exports ${acl_cv_wl}-warn_stabs \
+${acl_cv_wl}-warn_commons"
     # also consider: "${acl_cv_wl}-why_load"
   ;;
   *-gnu*-* | gnu*-*-* | *-*-gnu*)
     #FIXME: these flags are untested, and are only based on my
     # my reading of the GNU ld manpage:
-    link_warnings="${link_warnings} ${acl_cv_wl}--warn-alternate-em ${acl_cv_wl}--warn-common ${acl_cv_wl}--warn-constructors ${acl_cv_wl}--warn-multiple-gp ${acl_cv_wl}--warn-section-align"
+    link_warnings="${link_warnings} ${acl_cv_wl}--warn-alternate-em \
+${acl_cv_wl}--warn-common ${acl_cv_wl}--warn-constructors \
+${acl_cv_wl}--warn-multiple-gp ${acl_cv_wl}--warn-section-align"
   ;;
   *-*-mingw32*)
     # Enable -Wno-format by default when using gcc on mingw since many
@@ -2984,6 +2996,7 @@ fi
 #    the warnings back though.)
 #  * -Wformat (we used to explicitly disable this; but it was required for
 #    others such as -Wformat-nonliteral, so I added it back)
+#  * -Wformat-nonliteral (see the previous)
 #  * -Wnested-externs (if it gets redundant with -Wimplicit again)
 #  * -Wtype-limits (often triggered on purpose, so okay to just ignore it)
 # Up for debate in some other way:

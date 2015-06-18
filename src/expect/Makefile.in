@@ -80,7 +80,7 @@ X11_LD_FLAGS =
 # tradition at some sites (e.g., Cygnus)!
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 CFLAGS = @CFLAGS@
-XCFLAGS = @CFLAGS@ @EXP_CFLAGS@ $(C_ARCHFLAGS)
+XCFLAGS = @CFLAGS@ @EXP_CFLAGS@ $(C_ARCHFLAGS) -std=gnu89
 
 # Flags to pass only to linker (after .o files but before libraries)
 LDFLAGS = @EXP_LDFLAGS@
@@ -352,7 +352,8 @@ all: expect-bld.sh
 expect-bld.sh: Makefile
 	-rm -f $@ $@T
 	echo "#! $(SHELL)" > $@T
-	r=`pwd`; for var in LD_LIBRARY_PATH SHLIB_PATH ; do \
+	r=`pwd`; \
+	for var in LD_LIBRARY_PATH SHLIB_PATH DYLD_LIBRARY_PATH; do \
 	  echo "$$var=$$r:$$r/../tk/unix:$$r/../tcl/unix\$${$$var+:\$$$$var}; export $$var" >> $@T ; \
 	done; echo "exec $$r/expect \$${1+\"\$$@\"}" >> $@T
 	chmod +x $@T
@@ -565,11 +566,11 @@ Dbgconfigure:
 
 # delete all files from current directory that are created by "make"
 clean:
-	-rm -rf *~ *.o shared core lib*.a \
+	-rm -rf *~ *.o *.log shared core lib*.a \
 	        expect$(EXEEXT) expect_installed$(EXEEXT) \
 	        expecti$(EXEEXT) expecti_installed$(EXEEXT) \
 		expectk$(EXEEXT) expectk_installed$(EXEEXT) \
-	        dumb exho devtty \
+	        expect-bld.sh dumb exho devtty \
 		$(EXP_UNSHARED_LIB_FILE) $(EXP_SHARED_LIB_FILE) \
 		$(SCRIPT_LIST)
 	@$(MAKE) subdir_do DO=$@ $(FLAGS_TO_PASS)
@@ -577,14 +578,14 @@ clean:
 # like "clean", but also delete files created by "configure"
 distclean: clean
 	@$(MAKE) subdir_do DO=$@  $(FLAGS_TO_PASS)
-	-rm -f Makefile config.status config.cache config.log expect_cf.h
-	-rm -f Dbg_cf.h
+	-rm -f Makefile *config.status config.cache config.log expect_cf.h
+	-rm -f Dbg_cf.h DbgMkfl pkgIndex .DS_Store
 	-rm -rf autom4te.cache || rmdir autom4te.cache
 
 # like "clean", but does NOT delete test utilities or massaged scripts
 # because most people do NOT have to worry about them
 mostlyclean:
-	-rm -f *~ *.o shared core \
+	-rm -f *~ *.o *.log shared core \
 	        expect$(EXEEXT) expect_installed$(EXEEXT) \
 	        expecti$(EXEEXT) expecti_installed$(EXEEXT) \
 		expectk$(EXEEXT) expectk_installed$(EXEEXT) \
@@ -593,7 +594,17 @@ mostlyclean:
 
 # delete everything from current directory that can be reconstructed
 # except for configure
-realclean:	distclean
+realclean maintainer-clean: distclean
+	@if [ -f Makefile ]; then \
+	  $(MAKE) subdir_do DO=$@ $(FLAGS_TO_PASS); \
+	elif [ -f testsuite/Makefile ]; then \
+	  echo "need to run $(MAKE) $@ for testsuite manually"; \
+	  cd testsuite && $(MAKE) $(FLAGS_TO_PASS) $@; \
+	elif [ -d testsuite ]; then \
+	  echo "cleaning up testsuite from here..."; \
+	  rm -f testsuite/*~ testsuite/*.log; \
+	  rm -fr testsuite/autom4te.cache || rmdir testsuite/autom4te.cache; \
+	fi
 
 ##################################
 # Targets for development at NIST
@@ -782,14 +793,15 @@ install-html:	FAQ.html homepage.html
 # add recursive support to the build process.
 subdir_do: force
 	@for i in $(SUBDIRS); do \
-	   echo "Making $(DO) in $${i}..." ; \
-	   if [ -d ./$${i} ] ; then \
-	     if (rootme=`pwd`/ ; export rootme ; \
-	       rootsrc=`cd $(srcdir); pwd`/ ; export rootsrc ; \
-	       cd ./$$i; \
-	       $(MAKE) $(FLAGS_TO_PASS) $(DO)) ; then true ; \
-	     else exit 1 ; fi ; \
-	   else echo "never mind about $${i}..."; fi ; \
+	   echo "Making $(DO) in $${i}..."; \
+	   if [ -d ./$${i} -a -e ./$${i}/Makefile ]; then \
+	     if (rootme=`pwd`/; export rootme; \
+	       rootsrc=`cd $(srcdir); pwd`/; export rootsrc; \
+	       cd ./$${i}; \
+	       $(MAKE) $(FLAGS_TO_PASS) $(DO)); \
+	     then echo "$(DO) succeeded for $${i}."; \
+	     else exit 1; fi; \
+	   else echo "never mind about $${i}..."; fi; \
 	done
 force:
 

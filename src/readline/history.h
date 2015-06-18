@@ -221,7 +221,7 @@ extern char **history_tokenize PARAMS((const char *));
 
 /* Exported history variables. */
 extern int history_base;
-extern int history_length;
+extern size_t history_length;
 extern int history_max_entries;
 extern char history_expansion_char;
 extern char history_subst_char;

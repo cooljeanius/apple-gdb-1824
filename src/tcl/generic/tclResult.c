@@ -1,4 +1,4 @@
-/* 
+/*
  * tclResult.c --
  *
  *	This file contains code to manage the interpreter result.
@@ -29,7 +29,7 @@ static void		SetupAppendBuffer _ANSI_ARGS_((Interp *iPtr,
  *
  *      Takes a snapshot of the current result state of the interpreter.
  *      The snapshot can be restored at any point by
- *      Tcl_RestoreResult. Note that this routine does not 
+ *      Tcl_RestoreResult. Note that this routine does not
  *	preserve the errorCode, errorInfo, or flags fields so it
  *	should not be used if an error is in progress.
  *
@@ -60,11 +60,11 @@ Tcl_SaveResult(interp, statePtr)
      */
 
     statePtr->objResultPtr = iPtr->objResultPtr;
-    iPtr->objResultPtr = Tcl_NewObj(); 
-    Tcl_IncrRefCount(iPtr->objResultPtr); 
+    iPtr->objResultPtr = Tcl_NewObj();
+    Tcl_IncrRefCount(iPtr->objResultPtr);
 
     /*
-     * Save the string result. 
+     * Save the string result.
      */
 
     statePtr->freeProc = iPtr->freeProc;
@@ -235,7 +235,7 @@ Tcl_SetResult(interp, string, freeProc)
 				 * of a Tcl_FreeProc such as free. */
 {
     Interp *iPtr = (Interp *) interp;
-    int length;
+    size_t length;
     register Tcl_FreeProc *oldFreeProc = iPtr->freeProc;
     char *oldResult = iPtr->result;
 
@@ -305,7 +305,7 @@ Tcl_GetStringResult(interp)
      * If the string result is empty, move the object result to the
      * string result, then reset the object result.
      */
-    
+
     if (*(interp->result) == 0) {
 	Tcl_SetResult(interp, TclGetString(Tcl_GetObjResult(interp)),
 	        TCL_VOLATILE);
@@ -351,7 +351,7 @@ Tcl_SetObjResult(interp, objPtr)
      * We wait until the end to release the old object result, in case
      * we are setting the result to itself.
      */
-    
+
     TclDecrRefCount(oldObjResult);
 
     /*
@@ -398,20 +398,20 @@ Tcl_GetObjResult(interp)
 {
     register Interp *iPtr = (Interp *) interp;
     Tcl_Obj *objResultPtr;
-    int length;
+    size_t length;
 
     /*
      * If the string result is non-empty, move the string result to the
      * object result, then reset the string result.
      */
-    
+
     if (*(iPtr->result) != 0) {
 	ResetObjResult(iPtr);
-	
+
 	objResultPtr = iPtr->objResultPtr;
 	length = strlen(iPtr->result);
-	TclInitStringRep(objResultPtr, iPtr->result, length);
-	
+	TclInitStringRep(objResultPtr, iPtr->result, (int)length);
+
 	if (iPtr->freeProc != NULL) {
 	    if ((iPtr->freeProc == TCL_DYNAMIC)
 	            || (iPtr->freeProc == (Tcl_FreeProc *) free)) {
@@ -459,7 +459,7 @@ Tcl_AppendResultVA (interp, argList)
     Interp *iPtr = (Interp *) interp;
     char *string, *static_list[STATIC_LIST_SIZE];
     char **args = static_list;
-    int nargs_space = STATIC_LIST_SIZE;
+    size_t nargs_space = STATIC_LIST_SIZE;
     int nargs, newSpace, i;
 
     /*
@@ -472,7 +472,7 @@ Tcl_AppendResultVA (interp, argList)
 	        TclGetString(Tcl_GetObjResult((Tcl_Interp *) iPtr)),
 	        TCL_VOLATILE);
     }
-    
+
     /*
      * Scan through all the arguments to see how much space is needed
      * and save pointers to the arguments in the args array,
@@ -487,7 +487,7 @@ Tcl_AppendResultVA (interp, argList)
 	    break;
 	}
  	if (nargs >= nargs_space) {
- 	    /* 
+ 	    /*
  	     * Expand the args buffer
  	     */
  	    nargs_space += STATIC_LIST_SIZE;
@@ -498,7 +498,7 @@ Tcl_AppendResultVA (interp, argList)
  		}
  	    } else {
  		args = (void *)ckrealloc((void *)args,
-			nargs_space * sizeof(char *));
+			(nargs_space * sizeof(char *)));
  	    }
  	}
   	newSpace += strlen(string);
@@ -526,12 +526,12 @@ Tcl_AppendResultVA (interp, argList)
   	strcpy(iPtr->appendResult + iPtr->appendUsed, string);
   	iPtr->appendUsed += strlen(string);
     }
- 
+
     /*
-     * If we had to allocate a buffer from the heap, 
+     * If we had to allocate a buffer from the heap,
      * free it now.
      */
- 
+
     if (args != static_list) {
      	ckfree((void *)args);
     }
@@ -687,7 +687,7 @@ SetupAppendBuffer(iPtr, newSpace)
 	    iPtr->appendResult = NULL;
 	    iPtr->appendAvl = 0;
 	}
-	iPtr->appendUsed = strlen(iPtr->result);
+	iPtr->appendUsed = (int)strlen(iPtr->result);
     } else if (iPtr->result[iPtr->appendUsed] != 0) {
 	/*
 	 * Most likely someone has modified a result created by
@@ -695,9 +695,9 @@ SetupAppendBuffer(iPtr, newSpace)
 	 * Just recompute the size.
 	 */
 
-	iPtr->appendUsed = strlen(iPtr->result);
+	iPtr->appendUsed = (int)strlen(iPtr->result);
     }
-    
+
     totalSpace = newSpace + iPtr->appendUsed;
     if (totalSpace >= iPtr->appendAvl) {
 	char *new;
@@ -717,7 +717,7 @@ SetupAppendBuffer(iPtr, newSpace)
     } else if (iPtr->result != iPtr->appendResult) {
 	strcpy(iPtr->appendResult, iPtr->result);
     }
-    
+
     Tcl_FreeResult((Tcl_Interp *) iPtr);
     iPtr->result = iPtr->appendResult;
 }
@@ -749,7 +749,7 @@ Tcl_FreeResult(interp)
     register Tcl_Interp *interp; /* Interpreter for which to free result. */
 {
     register Interp *iPtr = (Interp *) interp;
-    
+
     if (iPtr->freeProc != NULL) {
 	if ((iPtr->freeProc == TCL_DYNAMIC)
 	        || (iPtr->freeProc == (Tcl_FreeProc *) free)) {
@@ -759,7 +759,7 @@ Tcl_FreeResult(interp)
 	}
 	iPtr->freeProc = 0;
     }
-    
+
     ResetObjResult(iPtr);
 }
 
@@ -962,7 +962,7 @@ Tcl_SetObjErrorCode(interp, errorObjPtr)
     Tcl_Obj *errorObjPtr;
 {
     Interp *iPtr;
-    
+
     iPtr = (Interp *) interp;
     Tcl_SetVar2Ex(interp, "errorCode", NULL, errorObjPtr, TCL_GLOBAL_ONLY);
     iPtr->flags |= ERROR_CODE_SET;
@@ -973,17 +973,17 @@ Tcl_SetObjErrorCode(interp, errorObjPtr)
  *
  * TclTransferResult --
  *
- *	Copy the result (and error information) from one interp to 
- *	another.  Used when one interp has caused another interp to 
+ *	Copy the result (and error information) from one interp to
+ *	another.  Used when one interp has caused another interp to
  *	evaluate a script and then wants to transfer the results back
  *	to itself.
  *
- *	This routine copies the string reps of the result and error 
+ *	This routine copies the string reps of the result and error
  *	information.  It does not simply increment the refcounts of the
  *	result and error information objects themselves.
  *	It is not legal to exchange objects between interps, because an
- *	object may be kept alive by one interp, but have an internal rep 
- *	that is only valid while some other interp is alive.  
+ *	object may be kept alive by one interp, but have an internal rep
+ *	that is only valid while some other interp is alive.
  *
  * Results:
  *	The target interp's result is set to a copy of the source interp's
@@ -996,17 +996,17 @@ Tcl_SetObjErrorCode(interp, errorObjPtr)
  *
  *-------------------------------------------------------------------------
  */
-	
+
 void
 TclTransferResult(sourceInterp, result, targetInterp)
     Tcl_Interp *sourceInterp;	/* Interp whose result and error information
-				 * should be moved to the target interp.  
-				 * After moving result, this interp's result 
+				 * should be moved to the target interp.
+				 * After moving result, this interp's result
 				 * is reset. */
-    int result;			/* TCL_OK if just the result should be copied, 
-				 * TCL_ERROR if both the result and error 
+    int result;			/* TCL_OK if just the result should be copied,
+				 * TCL_ERROR if both the result and error
 				 * information should be copied. */
-    Tcl_Interp *targetInterp;	/* Interp where result and error information 
+    Tcl_Interp *targetInterp;	/* Interp where result and error information
 				 * should be stored.  If source and target
 				 * are the same, nothing is done. */
 {
@@ -1030,9 +1030,9 @@ TclTransferResult(sourceInterp, result, targetInterp)
             Tcl_AddErrorInfo(sourceInterp, "");
         }
         iPtr->flags &= ~(ERR_ALREADY_LOGGED);
-        
+
         Tcl_ResetResult(targetInterp);
-        
+
 	objPtr = Tcl_GetVar2Ex(sourceInterp, "errorInfo", NULL,
 		TCL_GLOBAL_ONLY);
 	Tcl_SetVar2Ex(targetInterp, "errorInfo", NULL, objPtr,

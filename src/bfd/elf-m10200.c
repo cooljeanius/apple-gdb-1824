@@ -220,20 +220,14 @@ mn10200_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
 
 /* Perform a relocation as part of a final link: */
 static bfd_reloc_status_type
-mn10200_elf_final_link_relocate(howto, input_bfd, output_bfd,
-                                input_section, contents, offset, value,
-                                addend, info, sym_sec, is_local)
-     reloc_howto_type *howto;
-     bfd *input_bfd;
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     asection *input_section;
-     bfd_byte *contents;
-     bfd_vma offset;
-     bfd_vma value;
-     bfd_vma addend;
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
-     asection *sym_sec ATTRIBUTE_UNUSED;
-     int is_local ATTRIBUTE_UNUSED;
+mn10200_elf_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
+                                bfd *output_bfd ATTRIBUTE_UNUSED,
+                                asection *input_section,
+                                bfd_byte *contents, bfd_vma offset,
+                                bfd_vma value, bfd_vma addend,
+                                struct bfd_link_info *info ATTRIBUTE_UNUSED,
+                                asection *sym_sec ATTRIBUTE_UNUSED,
+                                int is_local ATTRIBUTE_UNUSED)
 {
   unsigned long r_type = howto->type;
   bfd_byte *hit_data = (contents + offset);
@@ -322,16 +316,11 @@ mn10200_elf_final_link_relocate(howto, input_bfd, output_bfd,
 
 /* Relocate an MN10200 ELF section: */
 static bfd_boolean
-mn10200_elf_relocate_section(output_bfd, info, input_bfd, input_section,
-			     contents, relocs, local_syms, local_sections)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     Elf_Internal_Rela *relocs;
-     Elf_Internal_Sym *local_syms;
-     asection **local_sections;
+mn10200_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+                             bfd *input_bfd, asection *input_section,
+			     bfd_byte *contents, Elf_Internal_Rela *relocs,
+                             Elf_Internal_Sym *local_syms,
+                             asection **local_sections)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
@@ -1272,14 +1261,12 @@ mn10200_elf_symbol_address_p(bfd *abfd, asection *sec,
    which uses mn10200_elf_relocate_section.  */
 
 static bfd_byte *
-mn10200_elf_get_relocated_section_contents(output_bfd, link_info, link_order,
-					   data, relocatable, symbols)
-     bfd *output_bfd;
-     struct bfd_link_info *link_info;
-     struct bfd_link_order *link_order;
-     bfd_byte *data;
-     bfd_boolean relocatable;
-     asymbol **symbols;
+mn10200_elf_get_relocated_section_contents(bfd *output_bfd,
+                                           struct bfd_link_info *link_info,
+                                           struct bfd_link_order *link_order,
+					   bfd_byte *data,
+                                           bfd_boolean relocatable,
+                                           asymbol **symbols)
 {
   Elf_Internal_Shdr *symtab_hdr;
   asection *input_section = link_order->u.indirect.section;

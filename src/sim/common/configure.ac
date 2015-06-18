@@ -17,16 +17,16 @@ AC_SYS_LONG_FILE_NAMES
 
 # This is intended for use by the target specific directories, and by us.
 AC_DEFUN([AC_REQUIRE_SIM_AC_COMMON],[
-  AC_REQUIRE([SIM_AC_COMMON])
-])
+  AC_REQUIRE([SIM_AC_COMMON])dnl
+])dnl
 AC_REQUIRE_SIM_AC_COMMON
 
-# Compiler
+# Compiler:
 AC_DEFUN([AC_REQUIRE_COMPILER],[
-  AC_REQUIRE([AC_PROG_CC])
-  AC_REQUIRE([AC_PROG_CPP])
-  AC_REQUIRE([AC_C_PROTOTYPES])
-])
+  AC_REQUIRE([AC_PROG_CC])dnl
+  AC_REQUIRE([AC_PROG_CPP])dnl
+  AC_REQUIRE([AC_C_PROTOTYPES])dnl
+])dnl
 AC_REQUIRE_COMPILER
 
 # Put a useful copy of CPP_FOR_TARGET in Makefile.
@@ -47,46 +47,47 @@ CPP_FOR_TARGET="\` \
       t='\$(program_transform_name)'; echo gcc | sed -e 's/x/x/' \$\$t; \
     fi; \
   fi\` -E"
-AC_SUBST([CPP_FOR_TARGET])
+AC_SUBST([CPP_FOR_TARGET])dnl
 
 # Set TARGET_SUBDIR, needed by CPP_FOR_TARGET.
-if test x"${host}" = x"${target}" ; then
-	TARGET_SUBDIR="."
+if test x"${host}" = x"${target}"; then
+  TARGET_SUBDIR="."
 else
-	TARGET_SUBDIR=${target_alias}
+  TARGET_SUBDIR=${target_alias}
 fi
-AC_SUBST([TARGET_SUBDIR])
+AC_SUBST([TARGET_SUBDIR])dnl
 
 AC_MSG_CHECKING([additional directories to include headers from])
 for includedir in $(echo "../../include ${srcdir} ../../bfd"); do
   if test -d "${includedir}"; then
     echo "${includedir} \c"
-    export CPPFLAGS="$CPPFLAGS -I${includedir}"
-    export AM_CPPFLAGS="$AM_CPPFLAGS -I${includedir}"
+    export CPPFLAGS="${CPPFLAGS} -I${includedir}"
+    export AM_CPPFLAGS="${AM_CPPFLAGS} -I${includedir}"
   else
     echo ""
     echo "Warning: ${includedir} is not a directory; not including files from it."
   fi
 done
 
-AC_SUBST([CPPFLAGS])
-AC_SUBST([AM_CPPFLAGS])
+AC_SUBST([CPPFLAGS])dnl
+AC_SUBST([AM_CPPFLAGS])dnl
 
 echo ""
-AC_CHECK_HEADERS([gdb/callback.h])
+AC_CHECK_HEADERS([gdb/callback.h])dnl
 
 # These are NOT all needed yet, but will be eventually.
 AC_DEFUN([AC_REQUIRE_FUNC_MMAP],[
-  AC_REQUIRE([AC_FUNC_MMAP])
-  AC_CHECK_HEADERS([sys/mman.h])
-])
+  AC_REQUIRE([AC_FUNC_MMAP])dnl
+  AC_CHECK_HEADERS([sys/mman.h])dnl
+])dnl
 AC_REQUIRE_FUNC_MMAP
-AC_CHECK_HEADERS([stdarg.h stdio.h sys/times.h varargs.h])
+AC_CHECK_HEADERS([stdarg.h stdio.h sys/times.h varargs.h])dnl
 
-AC_CHECK_FUNCS([fprintf isascii])
+AC_CHECK_FUNCS([fprintf isascii])dnl
 
-AC_SUBST([LDFLAGS])
+AC_SUBST([LDFLAGS])dnl
 
+# Output.
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_COMMANDS([default],[case x${CONFIG_HEADERS} in xcconfig.h:config.in) echo > stamp-h ;; esac],[])
 AC_OUTPUT

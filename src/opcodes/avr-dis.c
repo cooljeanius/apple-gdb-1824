@@ -43,8 +43,9 @@ const struct avr_opcodes_s avr_opcodes[] =
 };
 
 static int
-avr_operand (unsigned int insn, unsigned int insn2, unsigned int pc, int constraint,
-             char *buf, char *comment, int regs, int *sym, bfd_vma *sym_addr)
+avr_operand(unsigned int insn, unsigned int insn2, unsigned int pc,
+            int constraint, char *buf, char *comment, int regs, int *sym,
+            bfd_vma *sym_addr)
 {
   int ok = 1;
   *sym = 0;
@@ -58,32 +59,32 @@ avr_operand (unsigned int insn, unsigned int insn2, unsigned int pc, int constra
       else
 	insn = (insn & 0x01f0) >> 4; /* Destination register.  */
 
-      sprintf (buf, "r%d", insn);
+      sprintf(buf, "r%d", insn);
       break;
 
     case 'd':
       if (regs)
-	sprintf (buf, "r%d", 16 + (insn & 0xf));
+	sprintf(buf, "r%d", 16 + (insn & 0xf));
       else
-	sprintf (buf, "r%d", 16 + ((insn & 0xf0) >> 4));
+	sprintf(buf, "r%d", 16 + ((insn & 0xf0) >> 4));
       break;
 
     case 'w':
-      sprintf (buf, "r%d", 24 + ((insn & 0x30) >> 3));
+      sprintf(buf, "r%d", 24 + ((insn & 0x30) >> 3));
       break;
 
     case 'a':
       if (regs)
-	sprintf (buf, "r%d", 16 + (insn & 7));
+	sprintf(buf, "r%d", 16 + (insn & 7));
       else
-	sprintf (buf, "r%d", 16 + ((insn >> 4) & 7));
+	sprintf(buf, "r%d", 16 + ((insn >> 4) & 7));
       break;
 
     case 'v':
       if (regs)
-	sprintf (buf, "r%d", (insn & 0xf) * 2);
+	sprintf(buf, "r%d", (insn & 0xf) * 2);
       else
-	sprintf (buf, "r%d", ((insn & 0xf0) >> 3));
+	sprintf(buf, "r%d", ((insn & 0xf0) >> 3));
       break;
 
     case 'e':
@@ -103,10 +104,10 @@ avr_operand (unsigned int insn, unsigned int insn2, unsigned int pc, int constra
 	    case 0x100e: xyz = "-X"; break;
 	    default: xyz = "??"; ok = 0;
 	  }
-	sprintf (buf, xyz);
+	sprintf(buf, "%s", xyz);
 
 	if (AVR_UNDEF_P (insn))
-	  sprintf (comment, _("undefined"));
+	  sprintf(comment, _("undefined"));
       }
       break;
 

@@ -388,7 +388,7 @@ print_insn_@arch@ (bfd_vma pc, disassemble_info *info)
 #ifdef CGEN_COMPUTE_ISA
   isa = CGEN_COMPUTE_ISA (info);
 #else
-  isa = info->insn_sets;
+  isa = (int)(intptr_t)info->insn_sets;
 #endif
 
   /* If we've switched cpu's, try to find a handle we've used before */

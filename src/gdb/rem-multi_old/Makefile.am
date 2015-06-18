@@ -32,7 +32,7 @@ AM_CPPFLAGS = -I. -I.. -I${upsrcdir} -I${upupsrcdir} -I${upsrcdir}/common \
 DEFS = @DEFS@ @EXTRA_DEFS@
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_CFLAGS = $(C_ARCHFLAGS) -ggdb -fno-strict-aliasing -std=gnu99 -Wall \
--Wextra -Wold-style-definition -Wtrampolines -Wwrite-strings -Wformat=2 \
+-Wextra -Wold-style-definition -Wwrite-strings -Wformat=2 \
 -Wmissing-include-dirs @MAINT@ -Wstrict-prototypes -Wnested-externs
 REMOTE_CFLAGS_COMBINED = ${AM_CPPFLAGS} ${DEFS} ${AM_CFLAGS}
 AM_LDFLAGS = -L. -L.. $(C_ARCHFLAGS)

@@ -59,7 +59,10 @@
 /* parts of gdbarch.[c|h] we need: */
 int gdbarch_debug = 0;
 
+#if !defined(GDBARCH_H) || \
+    (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) && !defined(__STRICT_ANSI__))
 typedef int (gdbarch_deprecated_register_byte_ftype)(int reg_nr);
+#endif /* !GDBARCH_H || C11 */
 
 struct gdbarch
 {
@@ -359,7 +362,7 @@ int read_inferior_memory(CORE_ADDR memaddr, char *myaddr, int len)
 
   /* Read all the longwords */
   for ((i = 0); (i < count); i++, (addr += sizeof(int))) {
-    buffer[i] = ptrace(1, inferior_pid, (PTRACE_TYPE_ARG3)addr, 0);
+    buffer[i] = ptrace(1, inferior_pid, (PTRACE_TYPE_ARG3)(intptr_t)addr, 0);
   }
 
   /* Copy appropriate bytes out of the buffer: */
@@ -386,11 +389,12 @@ int write_inferior_memory(CORE_ADDR memaddr, char *myaddr, int len)
   buffer = (int *)alloca(count * sizeof(int));
 
   /* Fill start and end extra bytes of buffer with existing memory data: */
-  buffer[0] = ptrace(1, inferior_pid, (PTRACE_TYPE_ARG3)addr, 0);
+  buffer[0] = ptrace(1, inferior_pid, (PTRACE_TYPE_ARG3)(intptr_t)addr, 0);
 
   if (count > 1) {
     buffer[(count - 1)] = ptrace(1, inferior_pid,
-                                 (PTRACE_TYPE_ARG3)(addr + (count - 1) * sizeof(int)), 0);
+                                 ((PTRACE_TYPE_ARG3)
+                                  (intptr_t)(addr + (count - 1) * sizeof(int))), 0);
   }
 
   /* Copy data to be written over corresponding part of buffer: */
@@ -399,7 +403,7 @@ int write_inferior_memory(CORE_ADDR memaddr, char *myaddr, int len)
   /* Write the entire buffer: */
   for ((i = 0); (i < count); i++, (addr += sizeof(int))) {
       errno = 0;
-      ptrace(4, inferior_pid, (PTRACE_TYPE_ARG3)addr, buffer[i]);
+      ptrace(4, inferior_pid, (PTRACE_TYPE_ARG3)(intptr_t)addr, buffer[i]);
       if (errno) {
           return errno;
       }

@@ -306,24 +306,25 @@ elf32_m68hc11_setup_section_lists (bfd *output_bfd, struct bfd_link_info *info)
    instruction.  */
 
 bfd_boolean
-elf32_m68hc11_size_stubs (bfd *output_bfd, bfd *stub_bfd,
-                          struct bfd_link_info *info,
-                          asection * (*add_stub_section) (const char*, asection*))
+elf32_m68hc11_size_stubs(bfd *output_bfd, bfd *stub_bfd,
+                         struct bfd_link_info *info,
+                         asection *(*add_stub_section)(const char *,
+                                                       asection *))
 {
   bfd *input_bfd;
   asection *section;
-  Elf_Internal_Sym *local_syms, **all_local_syms;
+  Elf_Internal_Sym *local_elf_syms, **all_local_syms;
   unsigned int bfd_indx, bfd_count;
   bfd_size_type amt;
   asection *stub_sec;
 
-  struct m68hc11_elf_link_hash_table *htab = m68hc11_elf_hash_table (info);
+  struct m68hc11_elf_link_hash_table *htab = m68hc11_elf_hash_table(info);
 
-  /* Stash our params away.  */
+  /* Stash our params away: */
   htab->stub_bfd = stub_bfd;
   htab->add_stub_section = add_stub_section;
 
-  /* Count the number of input BFDs and find the top input section id.  */
+  /* Count the number of input BFDs and find the top input section id: */
   for (input_bfd = info->input_bfds, bfd_count = 0;
        input_bfd != NULL;
        input_bfd = input_bfd->link_next)
@@ -334,40 +335,40 @@ elf32_m68hc11_size_stubs (bfd *output_bfd, bfd *stub_bfd,
   /* We want to read in symbol extension records only once.  To do this
      we need to read in the local symbols in parallel and save them for
      later use; so hold pointers to the local symbols in an array.  */
-  amt = sizeof (Elf_Internal_Sym *) * bfd_count;
-  all_local_syms = (Elf_Internal_Sym **) bfd_zmalloc (amt);
+  amt = (sizeof(Elf_Internal_Sym *) * bfd_count);
+  all_local_syms = (Elf_Internal_Sym **)bfd_zmalloc(amt);
   if (all_local_syms == NULL)
     return FALSE;
 
-  /* Walk over all the input BFDs, swapping in local symbols.  */
+  /* Walk over all the input BFDs, swapping in local symbols: */
   for (input_bfd = info->input_bfds, bfd_indx = 0;
        input_bfd != NULL;
        input_bfd = input_bfd->link_next, bfd_indx++)
     {
       Elf_Internal_Shdr *symtab_hdr;
 
-      /* We'll need the symbol table in a second.  */
-      symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
+      /* We'll need the symbol table in a second: */
+      symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
       if (symtab_hdr->sh_info == 0)
 	continue;
 
       /* We need an array of the local symbols attached to the input bfd.  */
-      local_syms = (Elf_Internal_Sym *) symtab_hdr->contents;
-      if (local_syms == NULL)
+      local_elf_syms = (Elf_Internal_Sym *)symtab_hdr->contents;
+      if (local_elf_syms == NULL)
 	{
-	  local_syms = bfd_elf_get_elf_syms (input_bfd, symtab_hdr,
-					     symtab_hdr->sh_info, 0,
-					     NULL, NULL, NULL);
-	  /* Cache them for elf_link_input_bfd.  */
-	  symtab_hdr->contents = (unsigned char *) local_syms;
+	  local_elf_syms = bfd_elf_get_elf_syms(input_bfd, symtab_hdr,
+                                                symtab_hdr->sh_info, 0,
+                                                NULL, NULL, NULL);
+	  /* Cache them for elf_link_input_bfd: */
+	  symtab_hdr->contents = (unsigned char *)local_elf_syms;
 	}
-      if (local_syms == NULL)
+      if (local_elf_syms == NULL)
         {
-          free (all_local_syms);
+          free(all_local_syms);
 	  return FALSE;
         }
 
-      all_local_syms[bfd_indx] = local_syms;
+      all_local_syms[bfd_indx] = local_elf_syms;
     }
 
   for (input_bfd = info->input_bfds, bfd_indx = 0;
@@ -375,19 +376,19 @@ elf32_m68hc11_size_stubs (bfd *output_bfd, bfd *stub_bfd,
        input_bfd = input_bfd->link_next, bfd_indx++)
     {
       Elf_Internal_Shdr *symtab_hdr;
-      Elf_Internal_Sym *local_syms;
-      struct elf_link_hash_entry ** sym_hashes;
+      Elf_Internal_Sym *local_internal_syms;
+      struct elf_link_hash_entry **sym_hashes;
 
-      sym_hashes = elf_sym_hashes (input_bfd);
+      sym_hashes = elf_sym_hashes(input_bfd);
 
-      /* We'll need the symbol table in a second.  */
-      symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
+      /* We shall need the symbol table in a second: */
+      symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
       if (symtab_hdr->sh_info == 0)
         continue;
 
-      local_syms = all_local_syms[bfd_indx];
+      local_internal_syms = all_local_syms[bfd_indx];
 
-      /* Walk over each section attached to the input bfd.  */
+      /* Walk over each section attached to the input bfd: */
       for (section = input_bfd->sections;
            section != NULL;
            section = section->next)
@@ -406,17 +407,17 @@ elf32_m68hc11_size_stubs (bfd *output_bfd, bfd *stub_bfd,
               || section->output_section->owner != output_bfd)
             continue;
 
-          /* Get the relocs.  */
+          /* Get the relocs: */
           internal_relocs
-            = _bfd_elf_link_read_relocs (input_bfd, section, NULL,
-					 (Elf_Internal_Rela *) NULL,
-					 info->keep_memory);
+            = _bfd_elf_link_read_relocs(input_bfd, section, NULL,
+                                        (Elf_Internal_Rela *)NULL,
+                                        info->keep_memory);
           if (internal_relocs == NULL)
             goto error_ret_free_local;
 
-          /* Now examine each relocation.  */
+          /* Now examine each relocation: */
           irela = internal_relocs;
-          irelaend = irela + section->reloc_count;
+          irelaend = (irela + section->reloc_count);
           for (; irela < irelaend; irela++)
             {
               unsigned int r_type, r_indx;
@@ -427,40 +428,41 @@ elf32_m68hc11_size_stubs (bfd *output_bfd, bfd *stub_bfd,
               const char *stub_name;
               Elf_Internal_Sym *sym;
 
-              r_type = ELF32_R_TYPE (irela->r_info);
+              r_type = ELF32_R_TYPE(irela->r_info);
 
-              /* Only look at 16-bit relocs.  */
-              if (r_type != (unsigned int) R_M68HC11_16)
+              /* Only look at 16-bit relocs: */
+              if (r_type != (unsigned int)R_M68HC11_16)
                 continue;
 
               /* Now determine the call target, its name, value,
                  section.  */
-              r_indx = ELF32_R_SYM (irela->r_info);
+              r_indx = ELF32_R_SYM(irela->r_info);
               if (r_indx < symtab_hdr->sh_info)
                 {
-                  /* It's a local symbol.  */
+                  /* It is a local symbol: */
                   Elf_Internal_Shdr *hdr;
                   bfd_boolean is_far;
 
-                  sym = local_syms + r_indx;
+                  sym = local_internal_syms + r_indx;
                   is_far = (sym && (sym->st_other & STO_M68HC12_FAR));
                   if (!is_far)
                     continue;
 
-                  hdr = elf_elfsections (input_bfd)[sym->st_shndx];
+                  hdr = elf_elfsections(input_bfd)[sym->st_shndx];
                   sym_sec = hdr->bfd_section;
-                  stub_name = (bfd_elf_string_from_elf_section
-                               (input_bfd, symtab_hdr->sh_link,
-                                sym->st_name));
+                  stub_name =
+                    (bfd_elf_string_from_elf_section(input_bfd,
+                                                     symtab_hdr->sh_link,
+                                                     sym->st_name));
                   sym_value = sym->st_value;
                   hash = NULL;
                 }
               else
                 {
-                  /* It's an external symbol.  */
+                  /* It is an external symbol: */
                   int e_indx;
 
-                  e_indx = r_indx - symtab_hdr->sh_info;
+                  e_indx = (r_indx - symtab_hdr->sh_info);
                   hash = (struct elf_link_hash_entry *)
                     (sym_hashes[e_indx]);
 
@@ -497,21 +499,20 @@ elf32_m68hc11_size_stubs (bfd *output_bfd, bfd *stub_bfd,
               if (!stub_name)
                 goto error_ret_free_internal;
 
-              stub_entry = m68hc12_stub_hash_lookup
-                (htab->stub_hash_table,
-                 stub_name,
-                 FALSE, FALSE);
+              stub_entry =
+                m68hc12_stub_hash_lookup(htab->stub_hash_table,
+                                         stub_name, FALSE, FALSE);
               if (stub_entry == NULL)
                 {
                   if (add_stub_section == 0)
                     continue;
 
-                  stub_entry = m68hc12_add_stub (stub_name, section, htab);
+                  stub_entry = m68hc12_add_stub(stub_name, section, htab);
                   if (stub_entry == NULL)
                     {
                     error_ret_free_internal:
-                      if (elf_section_data (section)->relocs == NULL)
-                        free (internal_relocs);
+                      if (elf_section_data(section)->relocs == NULL)
+                        free(internal_relocs);
                       goto error_ret_free_local;
                     }
                 }
@@ -520,9 +521,9 @@ elf32_m68hc11_size_stubs (bfd *output_bfd, bfd *stub_bfd,
               stub_entry->target_section = sym_sec;
             }
 
-          /* We're done with the internal relocs, free them.  */
-          if (elf_section_data (section)->relocs == NULL)
-            free (internal_relocs);
+          /* We are done with the internal relocs, so free them: */
+          if (elf_section_data(section)->relocs == NULL)
+            free(internal_relocs);
         }
     }
 
@@ -537,13 +538,13 @@ elf32_m68hc11_size_stubs (bfd *output_bfd, bfd *stub_bfd,
           stub_sec->size = 0;
         }
 
-      bfd_hash_traverse (htab->stub_hash_table, htab->size_one_stub, htab);
+      bfd_hash_traverse(htab->stub_hash_table, htab->size_one_stub, htab);
     }
-  free (all_local_syms);
+  free(all_local_syms);
   return TRUE;
 
  error_ret_free_local:
-  free (all_local_syms);
+  free(all_local_syms);
   return FALSE;
 }
 

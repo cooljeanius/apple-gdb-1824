@@ -112,7 +112,7 @@ extern char *_rl_strpbrk PARAMS((const char *, const char *));
 #endif
 
 #ifndef savestring
-#define savestring(x) strcpy ((char *)xmalloc (1 + strlen (x)), (x))
+#define savestring(x) strcpy((char *)xmalloc(1UL + strlen(x)), (x))
 #endif
 
 /* Possible values for _rl_bell_preference. */

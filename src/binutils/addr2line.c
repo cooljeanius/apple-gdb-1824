@@ -17,9 +17,9 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA.  */
 
-/* Derived from objdump.c and nm.c by Ulrich.Lauther@mchp.siemens.de
+/* Derived from objdump.c and nm.c by <Ulrich.Lauther@mchp.siemens.de>
 
    Usage:
    addr2line [options] addr addr ...
@@ -51,32 +51,31 @@ static asymbol **syms;		/* Symbol table.  */
 
 static struct option long_options[] =
 {
-  {"basenames", no_argument, NULL, 's'},
-  {"demangle", optional_argument, NULL, 'C'},
-  {"exe", required_argument, NULL, 'e'},
-  {"functions", no_argument, NULL, 'f'},
-  {"inlines", no_argument, NULL, 'i'},
-  {"target", required_argument, NULL, 'b'},
-  {"help", no_argument, NULL, 'H'},
-  {"version", no_argument, NULL, 'V'},
-  {0, no_argument, 0, 0}
+  { "basenames", no_argument, NULL, 's' },
+  { "demangle", optional_argument, NULL, 'C' },
+  { "exe", required_argument, NULL, 'e' },
+  { "functions", no_argument, NULL, 'f' },
+  { "inlines", no_argument, NULL, 'i' },
+  { "target", required_argument, NULL, 'b' },
+  { "help", no_argument, NULL, 'H' },
+  { "version", no_argument, NULL, 'V' },
+  { 0, no_argument, 0, 0 }
 };
 
-static void usage (FILE *, int);
-static void slurp_symtab (bfd *);
-static void find_address_in_section (bfd *, asection *, void *);
-static void translate_addresses (bfd *);
-static void process_file (const char *, const char *);
+static ATTRIBUTE_NORETURN void usage(FILE *, int);
+static void slurp_symtab(bfd *);
+static void find_address_in_section(bfd *, asection *, void *);
+static void translate_addresses(bfd *);
+static void process_file(const char *, const char *);
 
-/* Print a usage message to STREAM and exit with STATUS.  */
-
-static void
-usage (FILE *stream, int status)
+/* Print a usage message to STREAM and exit with STATUS: */
+static ATTRIBUTE_NORETURN void
+usage(FILE *stream, int status)
 {
-  fprintf (stream, _("Usage: %s [option(s)] [addr(s)]\n"), program_name);
-  fprintf (stream, _(" Convert addresses into line number/file name pairs.\n"));
-  fprintf (stream, _(" If no addresses are specified on the command line, they will be read from stdin\n"));
-  fprintf (stream, _(" The options are:\n\
+  fprintf(stream, _("Usage: %s [option(s)] [addr(s)]\n"), program_name);
+  fprintf(stream, _(" Convert addresses into line number/file name pairs.\n"));
+  fprintf(stream, _(" If no addresses are specified on the command line, they will be read from stdin\n"));
+  fprintf(stream, _(" The options are:\n\
   -b --target=<bfdname>  Set the binary file format\n\
   -e --exe=<executable>  Set the input file name (default is a.out)\n\
   -i --inlines		 Unwind inlined functions\n\
@@ -87,10 +86,10 @@ usage (FILE *stream, int status)
   -v --version           Display the program's version\n\
 \n"));
 
-  list_supported_targets (program_name, stream);
+  list_supported_targets(program_name, stream);
   if (status == 0)
-    fprintf (stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
-  exit (status);
+    fprintf(stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
+  exit(status);
 }
 
 /* Read in the symbol table: */

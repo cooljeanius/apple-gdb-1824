@@ -803,6 +803,7 @@ target_subdir
 host_subdir
 build_subdir
 AWK
+AUTOCONF
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
@@ -822,6 +823,7 @@ INSTALL_SCRIPT
 INSTALL_PROGRAM
 AUTOOPTS_LIBS
 AUTOGEN_LDFLAGS
+AUTOGEN_BAD_LDFLAGS
 AUTOOPTS_CFLAGS
 AUTOGEN
 AUTOOPTS_CONFIG
@@ -1608,7 +1610,6 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-multilib       build many library versions (default off)
   --disable-opts-test     Do not try to run a test AutoOpts program
-
   --enable-silent-rules   less verbose build output (undo: "make V=1")
   --disable-silent-rules  verbose build output (undo: "make V=0")
   --enable-as-accelerator-for=ARG
@@ -1673,7 +1674,6 @@ Optional Packages:
   --with-opts-prefix=PFX  Prefix where autoopts is installed (optional)
   --with-opts-exec-prefix=PFX
                           Exec prefix where autoopts is installed (optional)
-
   --with-x                use the X Window System
   --with-mpc=PATH         specify prefix directory for installed MPC package.
                           Equivalent to --with-mpc-include=PATH/include plus
@@ -4530,33 +4530,30 @@ if test "${with_opts_prefix+set}" = set; then :
 fi
 
 
-
 # Check whether --with-opts-exec-prefix was given.
 if test "${with_opts_exec_prefix+set}" = set; then :
   withval=$with_opts_exec_prefix;
 fi
-
 
 # Check whether --enable-opts-test was given.
 if test "${enable_opts_test+set}" = set; then :
   enableval=$enable_opts_test;
 fi
 
-
-  if test x$with_opts_exec_prefix != x ; then
-    aocfg_args="$aocfg_args --exec-prefix=$with_opts_exec_prefix"
+  if test "x${with_opts_exec_prefix}" != "x"; then
+    aocfg_args="${aocfg_args} --exec-prefix=${with_opts_exec_prefix}"
     if test x${AUTOOPTS_CONFIG+set} != xset ; then
-      AUTOOPTS_CONFIG=$with_opts_exec_prefix/bin/autoopts-config
+      AUTOOPTS_CONFIG=${with_opts_exec_prefix}/bin/autoopts-config
     fi
   fi
-  if test x$with_opts_prefix != x ; then
-     aocfg_args="$aocfg_args --prefix=$with_opts_prefix"
+  if test "x${with_opts_prefix}" != "x"; then
+     aocfg_args="${aocfg_args} --prefix=${with_opts_prefix}"
     if test x${AUTOOPTS_CONFIG+set} != xset ; then
-      AUTOOPTS_CONFIG=$with_opts_prefix/bin/autoopts-config
+      AUTOOPTS_CONFIG=${with_opts_prefix}/bin/autoopts-config
     fi
   fi
-  if test -n "$AUTOOPTS_CONFIG"; then
-    :
+  if test -n "${AUTOOPTS_CONFIG}"; then
+    test -x "${AUTOOPTS_CONFIG}"
   else
     # Extract the first word of "autoopts-config", so it can be a program name with args.
 set dummy autoopts-config; ac_word=$2
@@ -4603,35 +4600,43 @@ fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for compatible autoopts version" >&5
 $as_echo_n "checking for compatible autoopts version... " >&6; }
   no_autoopts=""
-  if test "$AUTOOPTS_CONFIG" = "no" ; then
+  if test "x${AUTOOPTS_CONFIG}" = "xno"; then
     no_autoopts=yes
   else
-    AUTOGEN=`$AUTOOPTS_CONFIG $aocfg_args --autogen`
-    AUTOOPTS_CFLAGS=`$AUTOOPTS_CONFIG $aocfg_args --cflags`
-    AUTOGEN_LDFLAGS=`$AUTOOPTS_CONFIG $aocfg_args --pkgdatadir`
-    AUTOOPTS_LIBS=`$AUTOOPTS_CONFIG $aocfg_args --libs`
-    aocfg_version=`$AUTOOPTS_CONFIG $aocfg_args --version`
+    AUTOGEN=`${AUTOOPTS_CONFIG} ${aocfg_args} --autogen`
+    AUTOOPTS_CFLAGS=`${AUTOOPTS_CONFIG} ${aocfg_args} --cflags`
+    ## Wait, is this correct?
+    AUTOGEN_LDFLAGS=`${AUTOOPTS_CONFIG} ${aocfg_args} --pkgdatadir`
+    ## Just in case it is incorrect, assign it to a different variable:
+    AUTOGEN_BAD_LDFLAGS="${AUTOGEN_LDFLAGS}"
+    ## ...and overwrite it with a more intuitively-correct value:
+    AUTOGEN_LDFLAGS=`${AUTOOPTS_CONFIG} ${aocfg_args} --ldflags`
+    AUTOOPTS_LIBS=`${AUTOOPTS_CONFIG} ${aocfg_args} --libs`
+    aocfg_version=`${AUTOOPTS_CONFIG} ${aocfg_args} --version`
     save_IFS=$IFS
     IFS=' :'
     set -- $aocfg_version
     IFS=$save_IFS
-    aocfg_current=5.17.4
-    aocfg_revision=
-    aocfg_age=
-    aocfg_currev=5.17.4.
-    if test "x$enable_opts_test" != "xno" ; then
+    ## I think these are supposed to be shell variables instead of m4-level
+    ## argument parameters, so add the extra brackets to make sure that
+    ## they are interpreted that way:
+    aocfg_current=${1}
+    aocfg_revision=${2}
+    aocfg_age=${3}
+    aocfg_currev=${1}.${2}
+    if test "x${enable_opts_test}" != "xno"; then
       ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-      ac_save_CFLAGS="$CFLAGS"
-      ac_save_LDFLAGS="$LDFLAGS"
-      ac_save_LIBS="$LIBS"
-      CFLAGS="$CFLAGS $AUTOOPTS_CFLAGS"
-      LDFLAGS="$LDFLAGS $AUTOOPTS $CFLAGS"
-      LIBS="$LIBS $AUTOOPTS_LIBS"
+      ac_save_CFLAGS="${CFLAGS}"
+      ac_save_LDFLAGS="${LDFLAGS}"
+      ac_save_LIBS="${LIBS}"
+      CFLAGS="${CFLAGS} ${AUTOOPTS_CFLAGS}"
+      LDFLAGS="${LDFLAGS} ${AUTOOPTS_CFLAGS}"
+      LIBS="${LIBS} ${AUTOOPTS_LIBS}"
 
       rm -f confopts.def conf.optstest
       if test "$cross_compiling" = yes; then :
@@ -4649,7 +4654,7 @@ else
 #endif /* !OPTIONS_VER_TO_NUM */
 
 static char const zBadVer[] = "\n\\
-*** 'autoopts-config --version' returned $aocfg_version,\n\\
+*** 'autoopts-config --version' returned ${aocfg_version},\n\\
 ***                but autoopts returned %d:%d:0\n\\
 ***             and the header file says %s\n\\
 *** These should all be consistent.\n\n\\
@@ -4688,7 +4693,7 @@ main (int argc, char ** argv)
     /*
      *  Test autoopts-config against header version
      */
-    if (   OPTIONS_VER_TO_NUM($aocfg_current, $aocfg_revision)
+    if (   OPTIONS_VER_TO_NUM(${aocfg_current}, ${aocfg_revision})
         != OPTIONS_STRUCT_VERSION) {
         printf("*** autoopts header file version "OPTIONS_VERSION_STRING"\n"
                "*** does not match autoopts-config value $aocfg_version\n"
@@ -4709,9 +4714,9 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
 
-      CFLAGS="$ac_save_CFLAGS"
-      LDFLAGS="$ac_save_LDFLAGS"
-      LIBS="$ac_save_LIBS"
+      CFLAGS="${ac_save_CFLAGS}"
+      LDFLAGS="${ac_save_LDFLAGS}"
+      LIBS="${ac_save_LIBS}"
       ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -4721,14 +4726,14 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
     fi
   fi
 
-  if test "x$no_autoopts" = x ; then
+  if test "x${no_autoopts}" = "x"; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
     :
   else
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-    if test "$AUTOOPTS_CONFIG" = "no" ; then
+    if test "x${AUTOOPTS_CONFIG}" = "xno"; then
       cat <<- _EOF_
 	*** The autoopts-config script installed by AutoGen could not be found
 	*** If AutoGen was installed in PREFIX, make sure PREFIX/bin is in
@@ -4740,8 +4745,8 @@ $as_echo "no" >&6; }
          :
        else
          echo "*** Could not run autoopts test program, checking why..."
-         CFLAGS="$CFLAGS $AUTOOPTS_CFLAGS"
-         LIBS="$LIBS $AUTOOPTS_LIBS"
+         CFLAGS="${CFLAGS} ${AUTOOPTS_CFLAGS}"
+         LIBS="${LIBS} ${AUTOOPTS_LIBS}"
          ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -4753,7 +4758,15 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 #include <autoopts/options.h>
 #include <stdio.h>
+#include <string.h>
 
+int
+main ()
+{
+return strcmp("$aocfg_current:$aocfg_revision:$aocfg_age", optionVersion());
+  ;
+  return 0;
+}
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
    cat << _EOF_
@@ -4780,8 +4793,8 @@ _EOF_
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
-          CFLAGS="$ac_save_CFLAGS"
-          LIBS="$ac_save_LIBS"
+          CFLAGS="${ac_save_CFLAGS}"
+          LIBS="${ac_save_LIBS}"
           ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -4795,14 +4808,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
      AUTOOPTS_LIBS=""
      :
   fi
-
-
-
-
+            ## clean up after ourselves:
   rm -f confopts.def conf.optstest
-
-# TODO: figure out how to pass the --disable-opts-test configure flag
-# to the configure script in the "utils" subdirectory.
 
 # Get 'install' or 'install-sh' and its variants:
 # Find a good install program.  We prefer a C program (faster),
@@ -5345,6 +5352,27 @@ AM_BACKSLASH='\'
 : ${AM_DEFAULT_VERBOSITY=1}
 : ${AM_V=${AM_DEFAULT_VERBOSITY}}
 : ${AM_DEFAULT_V=${AM_DEFAULT_VERBOSITY}}
+
+
+  if test x"${MISSING+set}" != xset; then
+  case $am_aux_dir in
+  *\ * | *\	*)
+    MISSING="\${SHELL} \"$am_aux_dir/missing\"" ;;
+  *)
+    MISSING="\${SHELL} $am_aux_dir/missing" ;;
+  esac
+fi
+# Use eval to expand $SHELL
+if eval "$MISSING --is-lightweight"; then
+  am_missing_run="$MISSING "
+else
+  am_missing_run=
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: 'missing' script is too old or missing" >&5
+$as_echo "$as_me: WARNING: 'missing' script is too old or missing" >&2;}
+fi
+
+
+AUTOCONF=${AUTOCONF-"${am_missing_run}autoconf"}
 
 # Set srcdir to "." if that is what it is.
 # This is important for multilib support.
@@ -14192,23 +14220,6 @@ fi
   test -n "$CONFIGURED_MAKEINFO" && break
 done
 test -n "$CONFIGURED_MAKEINFO" || CONFIGURED_MAKEINFO="${MISSING} makeinfo"
-
-if test x"${MISSING+set}" != xset; then
-  case $am_aux_dir in
-  *\ * | *\	*)
-    MISSING="\${SHELL} \"$am_aux_dir/missing\"" ;;
-  *)
-    MISSING="\${SHELL} $am_aux_dir/missing" ;;
-  esac
-fi
-# Use eval to expand $SHELL
-if eval "$MISSING --is-lightweight"; then
-  am_missing_run="$MISSING "
-else
-  am_missing_run=
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: 'missing' script is too old or missing" >&5
-$as_echo "$as_me: WARNING: 'missing' script is too old or missing" >&2;}
-fi
 
 for ac_prog in flex lex
 do

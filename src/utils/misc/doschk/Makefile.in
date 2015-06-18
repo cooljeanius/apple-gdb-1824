@@ -40,7 +40,8 @@ CWARNFLAGS = -Wall -Wextra -Wstrict-prototypes -Wmissing-prototypes \
 ## * -Wold-style-declaration
 ## * -Wmissing-parameter-type
 ## (should really check which warning flags are supported when configuring)
-CFLAGS = -ggdb $(CWARNFLAGS)
+CFLAGS = -ggdb
+ALL_CFLAGS = $(CFLAGS) $(CWARNFLAGS)
 LDFLAGS = -ggdb
 
 prefix = @prefix@
@@ -61,7 +62,7 @@ mandir = $(prefix)/man/man1
 manext = 1
 
 # Simplify the analyzer command by aggregating variables into one:
-RUN_CLANG_ANALYZER = $(CLANG_ANALYZER) $(DEFS) $(CPPFLAGS) $(CFLAGS) \
+RUN_CLANG_ANALYZER = $(CLANG_ANALYZER) $(DEFS) $(CPPFLAGS) $(ALL_CFLAGS) \
 	--analyze
 
 #### End of system configuration section. ####
@@ -84,7 +85,7 @@ SUFFIXES = .c .o .plist
 .SUFFIXES: .c .o .plist
 
 .c.o:
-	$(CC) -c -I. -I$(srcdir) $(DEFS) $(CPPFLAGS) $(CFLAGS) $<
+	$(CC) -c -I. -I$(srcdir) $(DEFS) $(CPPFLAGS) $(ALL_CFLAGS) $<
 
 .c.plist:
 	@if test ! -d $(analysisdir); then $(MKDIR_P) $(analysisdir); fi
@@ -132,7 +133,7 @@ Makefile: Makefile.in config.status
 doschk.o: doschk.c config.h
 
 doschk: doschk.o
-	$(CC) $(LDFLAGS) $(CFLAGS) $< -o $@
+	$(CC) $(LDFLAGS) $(ALL_CFLAGS) $< -o $@
 
 doschk_check: doschk
 	ls -1 -d * | ./doschk

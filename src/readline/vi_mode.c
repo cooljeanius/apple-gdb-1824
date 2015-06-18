@@ -233,17 +233,19 @@ rl_vi_fetch_history (count, c)
 
 /* Search again for the last thing searched for. */
 int
-rl_vi_search_again (count, key)
-     int count, key;
+rl_vi_search_again(int count, int key)
 {
   switch (key)
     {
     case 'n':
-      rl_noninc_reverse_search_again (count, key);
+      rl_noninc_reverse_search_again(count, key);
       break;
 
     case 'N':
-      rl_noninc_forward_search_again (count, key);
+      rl_noninc_forward_search_again(count, key);
+      break;
+
+    default:
       break;
     }
   return (0);
@@ -1093,10 +1095,9 @@ rl_vi_first_print (count, key)
 }
 
 int
-rl_vi_char_search (count, key)
-     int count, key;
+rl_vi_char_search(int count, int key)
 {
-#if defined (HANDLE_MULTIBYTE)
+#if defined(HANDLE_MULTIBYTE)
   static char *target;
   static int mb_len;
 #else
@@ -1104,24 +1105,24 @@ rl_vi_char_search (count, key)
 #endif
   static int orig_dir, dir;
 
-  if (key == ';' || key == ',')
-    dir = key == ';' ? orig_dir : -orig_dir;
+  if ((key == ';') || (key == ','))
+    dir = ((key == ';') ? orig_dir : -orig_dir);
   else
     {
       if (vi_redoing)
-#if defined (HANDLE_MULTIBYTE)
+#if defined(HANDLE_MULTIBYTE)
 	target = _rl_vi_last_search_mbchar;
 #else
-	target = _rl_vi_last_search_char;
+	target = (char)_rl_vi_last_search_char;
 #endif
       else
 	{
-#if defined (HANDLE_MULTIBYTE)
-	  mb_len = _rl_read_mbchar (_rl_vi_last_search_mbchar, MB_LEN_MAX);
+#if defined(HANDLE_MULTIBYTE)
+	  mb_len = _rl_read_mbchar(_rl_vi_last_search_mbchar, MB_LEN_MAX);
 	  target = _rl_vi_last_search_mbchar;
 #else
 	  RL_SETSTATE(RL_STATE_MOREINPUT);
-	  _rl_vi_last_search_char = target = rl_read_key ();
+	  _rl_vi_last_search_char = target = (char)rl_read_key();
 	  RL_UNSETSTATE(RL_STATE_MOREINPUT);
 #endif
 	}
@@ -1143,14 +1144,17 @@ rl_vi_char_search (count, key)
         case 'F':
           orig_dir = dir = BFIND;
           break;
+
+        default:
+          break;
         }
     }
 
-#if defined (HANDLE_MULTIBYTE)
-   return (_rl_char_search_internal (count, dir, target, mb_len));
+#if defined(HANDLE_MULTIBYTE)
+   return (_rl_char_search_internal(count, dir, target, mb_len));
 #else
-  return (_rl_char_search_internal (count, dir, target));
-#endif
+  return (_rl_char_search_internal(count, dir, target));
+#endif /* HANDLE_MULTIBYTE */
 }
 
 /* Match brackets */

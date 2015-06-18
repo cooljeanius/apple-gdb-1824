@@ -41,8 +41,8 @@ AC_CONFIG_HEADERS([config.h])
 
 # Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
-  AC_REQUIRE([AC_HEADER_STDC])
-])
+  AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE_HEADER_STDC
 AC_CHECK_HEADERS([ctype.h fcntl.h getopt.h stdarg.h stdio.h varargs.h])
 AC_HEADER_DIRENT
@@ -56,23 +56,24 @@ AC_TYPE_SIZE_T
 # Checks for library functions.
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([memset strchr strdup])
+AC_CHECK_FUNCS([memset strchr strdup])dnl
 
-# Checks for declarations
+# Checks for declarations.
 AC_CHECK_DECLS([NULL])
 
-# Substitutions
-AC_SUBST([AR_FOR_BUILD])
-AC_SUBST([AR_FLAGS_FOR_BUILD])
-AC_SUBST([CC_FOR_BUILD])
-AC_SUBST([CFLAGS_FOR_BUILD])
-AC_SUBST([RANLIB_FOR_BUILD])
-AC_SUBST([LIBIBERTY_LIB])
+dnl# Substitutions:
+AC_SUBST([AR_FOR_BUILD])dnl
+AC_SUBST([AR_FLAGS_FOR_BUILD])dnl
+AC_SUBST([CC_FOR_BUILD])dnl
+AC_SUBST([CFLAGS_FOR_BUILD])dnl
+AC_SUBST([RANLIB_FOR_BUILD])dnl
+AC_SUBST([LIBIBERTY_LIB])dnl
 
-AC_SUBST([AR])
-AC_SUBST([CFLAGS])
+AC_SUBST([AR])dnl
+AC_SUBST([CFLAGS])dnl
 AC_PROG_RANLIB
 
+# Output.
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_COMMANDS([default],[case x${CONFIG_HEADERS} in xconfig.h:config.in) echo > stamp-h ;; esac],[])
 AC_OUTPUT

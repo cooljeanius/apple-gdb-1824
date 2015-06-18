@@ -476,6 +476,9 @@
 /* Define to 1 if you have the <termio.h> header file. */
 #undef HAVE_TERMIO_H
 
+/* Define to 1 if you have the <time.h> header file. */
+#undef HAVE_TIME_H
+
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
@@ -605,6 +608,9 @@
 
 /* Define to 1 if the winsize struct is in termios.h */
 #undef STRUCT_WINSIZE_IN_TERMIOS
+
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#undef TIME_WITH_SYS_TIME
 
 /* Define to 1 if TIOCSTAT is in sys/ioctl.h */
 #undef TIOCSTAT_IN_SYS_IOCTL

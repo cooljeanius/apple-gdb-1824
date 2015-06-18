@@ -1,4 +1,4 @@
-/* testlib.c for c++ - test expectlib */
+/* testlib.c for -*- C++ -*- - test expectlib */
 
 #include <stdio.h>
 #include "expect.h"

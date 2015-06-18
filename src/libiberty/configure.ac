@@ -294,7 +294,8 @@ m4_ifdef([ACX_PROG_CC_WARNING_OPTS],[
 -Wodr -Wstrict-prototypes -Wmissing-prototypes -Wmissing-parameter-type \
 -Wmissing-declarations -Wnested-externs -Wundef -Wshadow -Wformat=2 \
 -Wold-style-definition -Wold-style-declaration -Wfloat-conversion -Wabi \
--Wc99-c11-compat],[ac_libiberty_warn_cflags])dnl
+-Wc99-c11-compat -Wout-of-line-declaration -Wno-extended-offsetof],
+                           [ac_libiberty_warn_cflags])dnl
   m4_ifdef([ACX_PROG_CC_WARNING_ALMOST_PEDANTIC],[
     ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([],[ac_libiberty_warn_cflags])dnl
   ])dnl

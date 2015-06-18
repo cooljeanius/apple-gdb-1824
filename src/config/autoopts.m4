@@ -31,63 +31,74 @@ dnl# Code:
 dnl# AG_PATH_AUTOOPTS([MIN-VERSION],[ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 dnl# Test for AUTOOPTS, and define AUTOGEN, AUTOOPTS_CFLAGS,
 dnl# AUTOGEN_LDFLAGS and AUTOOPTS_LIBS.
-dnl#
+dnl#FIXME: currently we can only pass the major and minor parts of the
+dnl# version under MIN-VERSION, but not the micro...
+dnl# Er, actually, I take that back; MIN-VERSION is not even used now...
 AC_DEFUN([AG_PATH_AUTOOPTS],
-[dnl# Get the cflags and libraries from the autoopts-config script
+[dnl# Get the cflags and libraries from the autoopts-config script.
 AC_ARG_WITH([opts-prefix],
-[AS_HELP_STRING([--with-opts-prefix=PFX],[Prefix where autoopts is installed (optional)])])
+[AS_HELP_STRING([--with-opts-prefix=PFX],
+                [Prefix where autoopts is installed (optional)])])dnl
 
 AC_ARG_WITH([opts-exec-prefix],
-[AS_HELP_STRING([--with-opts-exec-prefix=PFX],[Exec prefix where autoopts is installed (optional) ])
-])
+[AS_HELP_STRING([--with-opts-exec-prefix=PFX],
+                [Exec prefix where autoopts is installed (optional)])])dnl
 
 AC_ARG_ENABLE([opts-test],
-[AS_HELP_STRING([--disable-opts-test],[Do not try to run a test AutoOpts program])
-])
+[AS_HELP_STRING([--disable-opts-test],
+                [Do not try to run a test AutoOpts program])])dnl
 
-  if test x$with_opts_exec_prefix != x ; then
-    aocfg_args="$aocfg_args --exec-prefix=$with_opts_exec_prefix"
+  if test "x${with_opts_exec_prefix}" != "x"; then
+    aocfg_args="${aocfg_args} --exec-prefix=${with_opts_exec_prefix}"
     if test x${AUTOOPTS_CONFIG+set} != xset ; then
-      AUTOOPTS_CONFIG=$with_opts_exec_prefix/bin/autoopts-config
+      AUTOOPTS_CONFIG=${with_opts_exec_prefix}/bin/autoopts-config
     fi
   fi
-  if test x$with_opts_prefix != x ; then
-     aocfg_args="$aocfg_args --prefix=$with_opts_prefix"
+  if test "x${with_opts_prefix}" != "x"; then
+     aocfg_args="${aocfg_args} --prefix=${with_opts_prefix}"
     if test x${AUTOOPTS_CONFIG+set} != xset ; then
-      AUTOOPTS_CONFIG=$with_opts_prefix/bin/autoopts-config
+      AUTOOPTS_CONFIG=${with_opts_prefix}/bin/autoopts-config
     fi
   fi
-  if test -n "$AUTOOPTS_CONFIG"; then
-    :
+  if test -n "${AUTOOPTS_CONFIG}"; then
+    test -x "${AUTOOPTS_CONFIG}"
   else
     AC_PATH_PROG([AUTOOPTS_CONFIG],[autoopts-config],[no])
   fi
   AC_MSG_CHECKING([for compatible autoopts version])
   no_autoopts=""
-  if test "$AUTOOPTS_CONFIG" = "no" ; then
+  if test "x${AUTOOPTS_CONFIG}" = "xno"; then
     no_autoopts=yes
   else
-    AUTOGEN=`$AUTOOPTS_CONFIG $aocfg_args --autogen`
-    AUTOOPTS_CFLAGS=`$AUTOOPTS_CONFIG $aocfg_args --cflags`
-    AUTOGEN_LDFLAGS=`$AUTOOPTS_CONFIG $aocfg_args --pkgdatadir`
-    AUTOOPTS_LIBS=`$AUTOOPTS_CONFIG $aocfg_args --libs`
-    aocfg_version=`$AUTOOPTS_CONFIG $aocfg_args --version`
+    AUTOGEN=`${AUTOOPTS_CONFIG} ${aocfg_args} --autogen`
+    AUTOOPTS_CFLAGS=`${AUTOOPTS_CONFIG} ${aocfg_args} --cflags`
+    ## Wait, is this correct?
+    AUTOGEN_LDFLAGS=`${AUTOOPTS_CONFIG} ${aocfg_args} --pkgdatadir`
+    ## Just in case it is incorrect, assign it to a different variable:
+    AUTOGEN_BAD_LDFLAGS="${AUTOGEN_LDFLAGS}"
+    ## ...and overwrite it with a more intuitively-correct value:
+    AUTOGEN_LDFLAGS=`${AUTOOPTS_CONFIG} ${aocfg_args} --ldflags`
+    AUTOOPTS_LIBS=`${AUTOOPTS_CONFIG} ${aocfg_args} --libs`
+    aocfg_version=`${AUTOOPTS_CONFIG} ${aocfg_args} --version`
     save_IFS=$IFS
     IFS=' :'
     set -- $aocfg_version
     IFS=$save_IFS
-    aocfg_current=$1
-    aocfg_revision=$2
-    aocfg_age=$3
-    aocfg_currev=$1.$2
-    if test "x$enable_opts_test" != "xno" ; then
+    ## I think these are supposed to be shell variables instead of m4-level
+    ## argument parameters, so add the extra brackets to make sure that
+    ## they are interpreted that way:
+    aocfg_current=${1}
+    aocfg_revision=${2}
+    aocfg_age=${3}
+    aocfg_currev=${1}.${2}
+    if test "x${enable_opts_test}" != "xno"; then
       AC_LANG_PUSH([C])
-      ac_save_CFLAGS="$CFLAGS"
-      ac_save_LDFLAGS="$LDFLAGS"
-      ac_save_LIBS="$LIBS"
-      CFLAGS="$CFLAGS $AUTOOPTS_CFLAGS"
-      LDFLAGS="$LDFLAGS $AUTOOPTS $CFLAGS"
-      LIBS="$LIBS $AUTOOPTS_LIBS"
+      ac_save_CFLAGS="${CFLAGS}"
+      ac_save_LDFLAGS="${LDFLAGS}"
+      ac_save_LIBS="${LIBS}"
+      CFLAGS="${CFLAGS} ${AUTOOPTS_CFLAGS}"
+      LDFLAGS="${LDFLAGS} ${AUTOOPTS_CFLAGS}"
+      LIBS="${LIBS} ${AUTOOPTS_LIBS}"
       dnl#
       dnl# Now check if the installed AUTOOPTS is sufficiently new. (Also
       dnl# sanity checks the results of autoopts-config to some extent.)
@@ -104,7 +115,7 @@ AC_ARG_ENABLE([opts-test],
 #endif /* !OPTIONS_VER_TO_NUM */
 
 static char const zBadVer[] = "\n\\
-*** 'autoopts-config --version' returned $aocfg_version,\n\\
+*** 'autoopts-config --version' returned ${aocfg_version},\n\\
 ***                but autoopts returned %d:%d:0\n\\
 ***             and the header file says %s\n\\
 *** These should all be consistent.\n\n\\
@@ -143,7 +154,7 @@ main (int argc, char ** argv)
     /*
      *  Test autoopts-config against header version
      */
-    if (   OPTIONS_VER_TO_NUM($aocfg_current, $aocfg_revision)
+    if (   OPTIONS_VER_TO_NUM(${aocfg_current}, ${aocfg_revision})
         != OPTIONS_STRUCT_VERSION) {
         printf("*** autoopts header file version "OPTIONS_VERSION_STRING"\n"
                "*** does not match autoopts-config value $aocfg_version\n"
@@ -154,19 +165,19 @@ main (int argc, char ** argv)
     return 0;
 }
 ]])],[],[no_autoopts=yes],[echo $ac_n "cross compiling; assumed OK... $ac_c"])
-      CFLAGS="$ac_save_CFLAGS"
-      LDFLAGS="$ac_save_LDFLAGS"
-      LIBS="$ac_save_LIBS"
+      CFLAGS="${ac_save_CFLAGS}"
+      LDFLAGS="${ac_save_LDFLAGS}"
+      LIBS="${ac_save_LIBS}"
       AC_LANG_POP
     fi
   fi
 
-  if test "x$no_autoopts" = x ; then
+  if test "x${no_autoopts}" = "x"; then
     AC_MSG_RESULT([yes])
     ifelse([$2],[],[:],[$2])
   else
     AC_MSG_RESULT([no])
-    if test "$AUTOOPTS_CONFIG" = "no" ; then
+    if test "x${AUTOOPTS_CONFIG}" = "xno"; then
       cat <<- _EOF_
 	*** The autoopts-config script installed by AutoGen could not be found
 	*** If AutoGen was installed in PREFIX, make sure PREFIX/bin is in
@@ -178,12 +189,13 @@ main (int argc, char ** argv)
          :
        else
          echo "*** Could not run autoopts test program, checking why..."
-         CFLAGS="$CFLAGS $AUTOOPTS_CFLAGS"
-         LIBS="$LIBS $AUTOOPTS_LIBS"
+         CFLAGS="${CFLAGS} ${AUTOOPTS_CFLAGS}"
+         LIBS="${LIBS} ${AUTOOPTS_LIBS}"
          AC_LANG_PUSH([C])
-         AC_LINK_IFELSE([AC_LANG_SOURCE([[
+         AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <autoopts/options.h>
 #include <stdio.h>
+#include <string.h>
 ]],[[return strcmp("$aocfg_current:$aocfg_revision:$aocfg_age", optionVersion());]])],
         [ cat << _EOF_
 *** The test program compiled, but did not run. This usually means that
@@ -204,8 +216,8 @@ _EOF_
 *** $AUTOOPTS_CONFIG
 _EOF_
 ])
-          CFLAGS="$ac_save_CFLAGS"
-          LIBS="$ac_save_LIBS"
+          CFLAGS="${ac_save_CFLAGS}"
+          LIBS="${ac_save_LIBS}"
           AC_LANG_POP
        fi
      fi
@@ -214,10 +226,12 @@ _EOF_
      AUTOOPTS_LIBS=""
      ifelse([$3],[],[:],[$3])
   fi
-  AC_SUBST([AUTOGEN])
-  AC_SUBST([AUTOOPTS_CFLAGS])
-  AC_SUBST([AUTOGEN_LDFLAGS])
-  AC_SUBST([AUTOOPTS_LIBS])
+  AC_SUBST([AUTOGEN])dnl
+  AC_SUBST([AUTOOPTS_CFLAGS])dnl
+  AC_SUBST([AUTOGEN_BAD_LDFLAGS])dnl
+  AC_SUBST([AUTOGEN_LDFLAGS])dnl
+  AC_SUBST([AUTOOPTS_LIBS])dnl
+  ## clean up after ourselves:
   rm -f confopts.def conf.optstest
 ])
 dnl#

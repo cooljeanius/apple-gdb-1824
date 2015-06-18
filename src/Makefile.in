@@ -943,10 +943,10 @@ FLAGS_TO_PASS = $(BASE_FLAGS_TO_PASS) $(EXTRA_HOST_FLAGS)
 # and library files
 #
 # NOTE: until the top-level is getting the values via autoconf, it only
-# causes problems to have this top-level Makefile overriding the autoconf-set
-# values in child directories.  Only variables that don't conflict with
-# autoconf'ed ones should be passed by X11_FLAGS_TO_PASS for now.
-#
+# causes problems to have this top-level Makefile overriding the
+# autoconf-set values in child directories.  Only variables that do NOT
+# conflict with autoconf-ed ones should be passed by X11_FLAGS_TO_PASS
+# for now:
 X11_FLAGS_TO_PASS = \
 	'X11_EXTRA_CFLAGS=$(X11_EXTRA_CFLAGS)' \
 	'X11_EXTRA_LIBS=$(X11_EXTRA_LIBS)'
@@ -11091,6 +11091,11 @@ maybe-check-electric-fence:
 maybe-check-electric-fence: check-electric-fence
 
 check-electric-fence:
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/electric-fence && \
+	  $(MAKE) $(FLAGS_TO_PASS)  check)
 
 @endif electric-fence
 
@@ -30584,6 +30589,11 @@ maybe-check-mmalloc:
 maybe-check-mmalloc: check-mmalloc
 
 check-mmalloc:
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/mmalloc && \
+	  $(MAKE) $(FLAGS_TO_PASS)  check)
 
 @endif mmalloc
 
@@ -38894,6 +38904,11 @@ maybe-check-zlib:
 maybe-check-zlib: check-zlib
 
 check-zlib:
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/zlib && \
+	  $(MAKE) $(FLAGS_TO_PASS)  check)
 
 @endif zlib
 
@@ -41193,7 +41208,7 @@ configure-utils:
 	srcdiroption="--srcdir=$${topdir}/utils"; \
 	libsrcdir="$$s/utils"; \
 	$(SHELL) $${libsrcdir}/configure \
-	  $(HOST_CONFIGARGS) $${srcdiroption} --disable-opts-test \
+	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || exit 1
 @endif utils
 
@@ -41223,6 +41238,11 @@ maybe-check-utils:
 maybe-check-utils: check-utils
 
 check-utils:
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/utils && \
+	  $(MAKE) $(FLAGS_TO_PASS)  check)
 
 @endif utils
 
@@ -62079,6 +62099,7 @@ config.status_target: configure
 
 # Rebuilding configure.
 AUTOCONF = autoconf
+CONFIGURED_AUTOCONF = @AUTOCONF@
 M4CONFDIR = $(srcdir)/config
 MACRO_DEPS = $(M4CONFDIR)/acx.m4 $(M4CONFDIR)/override.m4 \
   $(M4CONFDIR)/proginstall.m4

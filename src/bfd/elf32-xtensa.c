@@ -1557,7 +1557,9 @@ elf_xtensa_modify_segment_map (bfd *abfd,
    howto.  */
 
 #define CALL_SEGMENT_BITS (30)
-#define CALL_SEGMENT_SIZE (1 << CALL_SEGMENT_BITS)
+#ifndef CALL_SEGMENT_SIZE
+# define CALL_SEGMENT_SIZE (1 << CALL_SEGMENT_BITS)
+#endif /* !CALL_SEGMENT_SIZE */
 
 static bfd_reloc_status_type
 elf_xtensa_do_reloc (reloc_howto_type *howto,
@@ -9537,3 +9539,9 @@ static const struct bfd_elf_special_section elf_xtensa_special_sections[] =
 #define elf_backend_special_sections	     elf_xtensa_special_sections
 
 #include "elf32-target.h"
+
+#ifdef CALL_SEGMENT_SIZE
+# undef CALL_SEGMENT_SIZE
+#endif /* CALL_SEGMENT_SIZE */
+
+/* EOF */

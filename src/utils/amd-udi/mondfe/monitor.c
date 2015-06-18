@@ -76,6 +76,9 @@ static char _[] = "@(#)monitor.c	5.28 93/11/02 11:46:54, Srini, AMD.";
 #   warning "monitor.c might want to include <sys/ioctl.h>, but it is not present."
 #  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_SYS_IOCTL_H */
+# ifdef HAVE_SYS_IOCTL_COMPAT_H
+#  include <sys/ioctl_compat.h>
+# endif /* HAVE_SYS_IOCTL_COMPAT_H */
 #endif /* MSDOS */
 #ifndef malloc
 # ifdef HAVE_STDLIB_H
@@ -300,7 +303,8 @@ Mini_monitor()
    */
 
    if (io_config.log_mode == (INT32) TRUE) { /* -log option given */
-     if (io_config.log_filename) {
+     char *io_config_log_filename = io_config.log_filename;
+     if (io_config_log_filename) {
        io_config.log_file = fopen(io_config.log_filename, "w");
        if (io_config.log_file == NULL) {
           io_config.log_mode = (INT32) FALSE;

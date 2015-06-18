@@ -84,18 +84,16 @@ _rl_callback_newline(void)
 
 /* Install a readline handler, set up the terminal, and issue the prompt. */
 void
-rl_callback_handler_install (prompt, linefunc)
-     const char *prompt;
-     rl_vcpfunc_t *linefunc;
+rl_callback_handler_install(const char *prompt, rl_vcpfunc_t *linefunc)
 {
-  rl_set_prompt (prompt);
+  rl_set_prompt(prompt);
   rl_linefunc = linefunc;
-  _rl_callback_newline ();
+  _rl_callback_newline();
 }
 
 /* Read one character, and dispatch to the handler if it ends the line. */
 void
-rl_callback_read_char ()
+rl_callback_read_char(void)
 {
   char *line;
   int eof;
@@ -132,7 +130,7 @@ rl_callback_read_char ()
 	    _rl_callback_newline ();
 	}
       if (rl_pending_input)
-	eof = readline_internal_char ();
+	eof = readline_internal_char();
       else
         break;
     }
@@ -140,7 +138,7 @@ rl_callback_read_char ()
 
 /* Remove the handler, and make sure the terminal is in its normal state. */
 void
-rl_callback_handler_remove ()
+rl_callback_handler_remove(void)
 {
   rl_linefunc = NULL;
   if (in_handler)

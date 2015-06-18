@@ -141,8 +141,8 @@ static int
 _rl_find_prev_mbchar_internal(char *string, int seed, int find_non_zero)
 {
   mbstate_t ps;
-  int prev, non_zero_prev, point, length;
-  size_t tmp;
+  int prev, non_zero_prev, point;
+  size_t length, tmp;
   wchar_t wc;
 
   memset(&ps, 0, sizeof(mbstate_t));
@@ -150,14 +150,14 @@ _rl_find_prev_mbchar_internal(char *string, int seed, int find_non_zero)
 
   if (seed < 0)
     return 0;
-  else if (length < seed)
-    return length;
+  else if ((int)length < seed)
+    return (int)length;
 
   prev = non_zero_prev = point = 0;
   while (point < seed)
     {
-      tmp = mbrtowc (&wc, string + point, length - point, &ps);
-      if ((size_t)(tmp) == (size_t)-1 || (size_t)(tmp) == (size_t)-2)
+      tmp = mbrtowc(&wc, (string + point), (length - (size_t)point), &ps);
+      if ((size_t)(tmp) == (size_t)-1L || (size_t)(tmp) == (size_t)-2L)
 	{
 	  /* in this case, bytes are invalid or shorted to compose
 	     multibyte char, so assume that the first byte represents
@@ -165,7 +165,7 @@ _rl_find_prev_mbchar_internal(char *string, int seed, int find_non_zero)
 	  tmp = 1;
 	  /* clear the state of the byte sequence, because
 	     in this case effect of mbstate is undefined  */
-	  memset(&ps, 0, sizeof (mbstate_t));
+	  memset(&ps, 0, sizeof(mbstate_t));
 	}
       else if (tmp == 0)
 	break;			/* Found '\0' char.  Can this happen? */
@@ -173,7 +173,7 @@ _rl_find_prev_mbchar_internal(char *string, int seed, int find_non_zero)
 	{
 	  if (find_non_zero)
 	    {
-	      if (wcwidth (wc) != 0)
+	      if (wcwidth(wc) != 0)
 		prev = point;
 	    }
 	  else
@@ -248,19 +248,19 @@ int
 _rl_adjust_point(char *string, int point, mbstate_t *ps)
 {
   size_t tmp = 0;
-  int length;
+  size_t length;
   int pos = 0;
 
   length = strlen(string);
   if (point < 0)
     return -1;
-  if (length < point)
+  if ((int)length < point)
     return -1;
 
   while (pos < point)
     {
-      tmp = mbrlen (string + pos, length - pos, ps);
-      if((size_t)(tmp) == (size_t)-1 || (size_t)(tmp) == (size_t)-2)
+      tmp = mbrlen((string + pos), (length - (size_t)pos), ps);
+      if((size_t)(tmp) == (size_t)-1L || (size_t)(tmp) == (size_t)-2L)
 	{
 	  /* in this case, bytes are invalid or shorted to compose
 	     multibyte char, so assume that the first byte represents
@@ -269,7 +269,7 @@ _rl_adjust_point(char *string, int point, mbstate_t *ps)
 	  /* clear the state of the byte sequence, because
 	     in this case effect of mbstate is undefined  */
 	  if (ps)
-	    memset (ps, 0, sizeof (mbstate_t));
+	    memset(ps, 0, sizeof(mbstate_t));
 	}
       else if (tmp == 0)
 	pos++;

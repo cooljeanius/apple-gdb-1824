@@ -41,6 +41,9 @@ CFLAGS = @CFLAGS@
 AR = @AR@
 AS = @CCAS@
 
+AUTOCONF = @AUTOCONF@
+AUTOGEN = @AUTOGEN@
+
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 bindir = @bindir@
@@ -105,13 +108,17 @@ Makefile: $(srcdir)/Makefile.in config.status
 	./config.status
 
 $(srcdir)/Makefile.in: $(srcdir)/Makefile.tpl $(srcdir)/Makefile.def
-	cd $(srcdir) && autogen Makefile.def
+	cd $(srcdir) && $(AUTOGEN) Makefile.def
 
 config.status: $(srcdir)/configure
 	./config.status --recheck
 
 $(srcdir)/configure: $(srcdir)/configure.ac
-	cd $(srcdir) && autoconf
+	cd $(srcdir) && $(AUTOCONF)
+
+## so subdirs can use automake if they want:
+am--refresh:
+	@:
 
 # Miscellaneous variable setting
 AR_FLAGS = qv

@@ -26,9 +26,9 @@ static char _[] = "@(#)getdata.c	5.21 93/07/30 16:38:33, Srini, AMD.";
  *****************************************************************************
  *      Engineer: Srini Subramanian.
  *****************************************************************************
- ** 
+ **
  **       This file contains functions used to parse strings into
- **       various data structures. 
+ **       various data structures.
  **
  *****************************************************************************
  */
@@ -100,7 +100,7 @@ get_addr_29k(addr_str, addr_29k)
    {
    /* defaults memory addresses to D_MEM */
    return(get_addr_29k_m(addr_str, addr_29k, D_MEM));
-   } 
+   }
 
 
 int
@@ -148,12 +148,12 @@ addr_29k_ok(addr_29k)
    return_code = 0;
 
    if (addr_29k->memory_space == LOCAL_REG) {
-      if (addr_29k->address > 127)
+      if (addr_29k->address > 127UL)
          return_code = EMBADREG;
       }
    else
    if (addr_29k->memory_space == ABSOLUTE_REG) {
-	if ((addr_29k->address >= 0) && (addr_29k->address <= 255))
+	if ((addr_29k->address >= 0UL) && (addr_29k->address <= 255UL))
 	   return (0);
 	else
 	   return (EMBADREG);
@@ -356,7 +356,7 @@ print_addr_29k(memory_space, address)
    fprintf (stderr, "%s", &buf[0]);
    if (io_config.echo_mode == (INT32) TRUE)
        fprintf (io_config.echo_file, "%s", &buf[0]);
-   return (0);      
+   return (0);
    }  /* end print_addr_29k() */
 
 
@@ -403,7 +403,7 @@ get_memory_29k(memory_str, addr_29k, default_space)
       addr_29k->memory_space = PC_RELATIVE;
       addr_29k->address = addr;
       return (0);
-   } 
+   }
 
    for (i=1; i<(string_length-1); i=i+1)
     if (isxdigit(memory_str[i]) == 0)
@@ -449,7 +449,7 @@ get_memory_29k(memory_str, addr_29k, default_space)
    else
       return (EMBADADDR);
 
-   return (0);      
+   return (0);
    }  /* end get_memory_29k() */
 
 
@@ -499,7 +499,7 @@ get_register_29k(reg_str, addr_29k)
    if (addr_29k->memory_space != -1) {
       fields = sscanf(&(reg_str[2]), "%ld%c", &reg_number, &error);
       if ((fields == 1) &&
-          (error == '\0')) 
+          (error == '\0'))
          addr_29k->address = reg_number;
          else
             addr_29k->memory_space = -1;
@@ -508,7 +508,7 @@ get_register_29k(reg_str, addr_29k)
    if (addr_29k->memory_space == -1)
       return (EMBADREG);
       else
-         return (0);      
+         return (0);
    }  /* end get_register_29k() */
 
 
@@ -556,7 +556,7 @@ get_alias_29k(reg_str, addr_29k)
       }  /* end while */
 
    if (found == TRUE)
-      return (0);      
+      return (0);
       else
          return (EMBADREG);
 
@@ -736,7 +736,7 @@ set_data(out_data, in_data, size)
          for (i=0; i<size; i=i+1)
             out_data[i] = in_data[((size-1)-i)];
 
-   return (0);      
+   return (0);
    }  /* end set_data() */
 
 
@@ -762,7 +762,7 @@ get_data(out_data, in_data, size)
          for (i=0; i<size; i=i+1)
             out_data[i] = in_data[((size-1)-i)];
 
-   return (0);      
+   return (0);
    }  /* end get_data() */
 
 

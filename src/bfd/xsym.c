@@ -913,7 +913,11 @@ bfd_sym_fetch_contained_modules_table_entry(bfd *abfd,
   void (*parser)(unsigned char *, size_t, bfd_sym_contained_modules_table_entry *);
   unsigned long offset;
   unsigned long entry_size = 0UL;
+#ifdef NDEBUG /* i.e. Release */
+  unsigned char buf[8];
+#else
   unsigned char buf[6];
+#endif /* NDEBUG */
   bfd_sym_data_struct *sdata = (bfd_sym_data_struct *)NULL;
 
   parser = NULL;
@@ -1326,7 +1330,11 @@ bfd_sym_fetch_type_table_entry(bfd *abfd,
   void (*parser)(unsigned char *, size_t, bfd_sym_type_table_entry *);
   unsigned long offset;
   unsigned long entry_size = 0UL;
+#ifdef NDEBUG /* i.e. Release */
+  unsigned char buf[8];
+#else
   unsigned char buf[4];
+#endif /* NDEBUG */
   bfd_sym_data_struct *sdata = (bfd_sym_data_struct *)NULL;
 
   parser = NULL;
@@ -1371,7 +1379,11 @@ bfd_sym_fetch_type_information_table_entry(bfd *abfd,
                                            bfd_sym_type_information_table_entry *entry,
                                            unsigned long offset)
 {
+#ifdef NDEBUG /* i.e. Release */
+  unsigned char buf[8];
+#else
   unsigned char buf[4];
+#endif /* NDEBUG */
   bfd_sym_data_struct *sdata = (bfd_sym_data_struct *)NULL;
 
   BFD_ASSERT(bfd_sym_valid(abfd));

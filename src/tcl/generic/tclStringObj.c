@@ -1,4 +1,4 @@
-/* 
+/*
  * tclStringObj.c --
  *
  *	This file contains procedures that implement string operations on Tcl
@@ -117,7 +117,7 @@ typedef struct String {
  *   Attempt to allocate 2 * (originalLength + appendLength)
  *   On failure:
  *	attempt to allocate originalLength + 2*appendLength +
- *			TCL_GROWTH_MIN_ALLOC 
+ *			TCL_GROWTH_MIN_ALLOC
  *
  * This algorithm allows very good performance, as it rapidly increases the
  * memory allocated for a given string, which minimizes the number of
@@ -129,7 +129,7 @@ typedef struct String {
  * algorithm requests a smaller amount of memory, which is still enough to
  * cover the request, but which hopefully will be less than the total available
  * memory.
- * 
+ *
  * The addition of TCL_GROWTH_MIN_ALLOC allows for efficient handling
  * of very small appends.  Without this extra slush factor, a sequence
  * of several small appends would cause several memory allocations.
@@ -181,7 +181,7 @@ Tcl_NewStringObj(bytes, length)
     CONST char *bytes;		/* Points to the first of the length bytes
 				 * used to initialize the new object. */
     int length;			/* The number of bytes to copy from "bytes"
-				 * when initializing the new object. If 
+				 * when initializing the new object. If
 				 * negative, use bytes up to the first
 				 * NULL byte. */
 {
@@ -195,14 +195,14 @@ Tcl_NewStringObj(bytes, length)
     CONST char *bytes;		/* Points to the first of the length bytes
 				 * used to initialize the new object. */
     int length;			/* The number of bytes to copy from "bytes"
-				 * when initializing the new object. If 
+				 * when initializing the new object. If
 				 * negative, use bytes up to the first
 				 * NULL byte. */
 {
     register Tcl_Obj *objPtr;
 
     if (length < 0) {
-	length = (bytes? strlen(bytes) : 0);
+	length = (int)(bytes? strlen(bytes) : 0);
     }
     TclNewObj(objPtr);
     TclInitStringRep(objPtr, bytes, length);
@@ -247,7 +247,7 @@ Tcl_DbNewStringObj(bytes, length, file, line)
     CONST char *bytes;		/* Points to the first of the length bytes
 				 * used to initialize the new object. */
     int length;			/* The number of bytes to copy from "bytes"
-				 * when initializing the new object. If 
+				 * when initializing the new object. If
 				 * negative, use bytes up to the first
 				 * NULL byte. */
     CONST char *file;		/* The name of the source file calling this
@@ -272,7 +272,7 @@ Tcl_DbNewStringObj(bytes, length, file, line)
     CONST char *bytes;		/* Points to the first of the length bytes
 				 * used to initialize the new object. */
     register int length;	/* The number of bytes to copy from "bytes"
-				 * when initializing the new object. If 
+				 * when initializing the new object. If
 				 * negative, use bytes up to the first
 				 * NULL byte. */
     CONST char *file;		/* The name of the source file calling this
@@ -321,7 +321,7 @@ Tcl_NewUnicodeObj(unicode, numChars)
 	    while (unicode[numChars] != 0) { numChars++; }
 	}
     }
-    uallocated = (numChars + 1) * sizeof(Tcl_UniChar);
+    uallocated = (((size_t)numChars + 1UL) * sizeof(Tcl_UniChar));
 
     /*
      * Create a new obj with an invalid string rep.
@@ -363,7 +363,7 @@ Tcl_GetCharLength(objPtr)
     Tcl_Obj *objPtr;	/* The String object to get the num chars of. */
 {
     String *stringPtr;
-    
+
     SetStringFromAny(NULL, objPtr);
     stringPtr = GET_STRING(objPtr);
 
@@ -371,7 +371,7 @@ Tcl_GetCharLength(objPtr)
      * If numChars is unknown, then calculate the number of characaters
      * while populating the Unicode string.
      */
-    
+
     if (stringPtr->numChars == -1) {
 
 	stringPtr->numChars = Tcl_NumUtfChars(objPtr->bytes, objPtr->length);
@@ -387,7 +387,7 @@ Tcl_GetCharLength(objPtr)
 	    stringPtr->uallocated = 0;
 
 	} else {
-    
+
 	    /*
 	     * Since we've just calucalated the number of chars, and not
 	     * all UTF chars are 1-byte long, go ahead and populate the
@@ -400,7 +400,7 @@ Tcl_GetCharLength(objPtr)
 	     * We need to fetch the pointer again because we have just
 	     * reallocated the structure to make room for the Unicode data.
 	     */
-	    
+
 	    stringPtr = GET_STRING(objPtr);
 	}
     }
@@ -431,7 +431,7 @@ Tcl_GetUniChar(objPtr, index)
 {
     Tcl_UniChar unichar;
     String *stringPtr;
-    
+
     SetStringFromAny(NULL, objPtr);
     stringPtr = GET_STRING(objPtr);
 
@@ -449,7 +449,7 @@ Tcl_GetUniChar(objPtr, index)
 	 * We need to fetch the pointer again because we may have just
 	 * reallocated the structure.
 	 */
-	
+
 	stringPtr = GET_STRING(objPtr);
     }
     if (stringPtr->uallocated == 0) {
@@ -459,8 +459,8 @@ Tcl_GetUniChar(objPtr, index)
 	 * so we don't store the unicode char.  We get the Utf string
 	 * and convert the index'th byte to a Unicode character.
 	 */
-	
-	Tcl_UtfToUniChar(&objPtr->bytes[index], &unichar);	
+
+	Tcl_UtfToUniChar(&objPtr->bytes[index], &unichar);
     } else {
 	unichar = stringPtr->unicode[index];
     }
@@ -491,10 +491,10 @@ Tcl_GetUnicode(objPtr)
     Tcl_Obj *objPtr;	/* The object to find the unicode string for. */
 {
     String *stringPtr;
-    
+
     SetStringFromAny(NULL, objPtr);
     stringPtr = GET_STRING(objPtr);
-    
+
     if ((stringPtr->numChars == -1) || (stringPtr->uallocated == 0)) {
 
 	/*
@@ -511,7 +511,7 @@ Tcl_GetUnicode(objPtr)
 	 * We need to fetch the pointer again because we have just
 	 * reallocated the structure to make room for the Unicode data.
 	 */
-	
+
 	stringPtr = GET_STRING(objPtr);
     }
     return stringPtr->unicode;
@@ -544,10 +544,10 @@ Tcl_GetUnicodeFromObj(objPtr, lengthPtr)
 			 * stored. If NULL, no length is stored. */
 {
     String *stringPtr;
-    
+
     SetStringFromAny(NULL, objPtr);
     stringPtr = GET_STRING(objPtr);
-    
+
     if ((stringPtr->numChars == -1) || (stringPtr->uallocated == 0)) {
 
 	/*
@@ -564,7 +564,7 @@ Tcl_GetUnicodeFromObj(objPtr, lengthPtr)
 	 * We need to fetch the pointer again because we have just
 	 * reallocated the structure to make room for the Unicode data.
 	 */
-	
+
 	stringPtr = GET_STRING(objPtr);
     }
 
@@ -601,12 +601,12 @@ Tcl_GetRange(objPtr, first, last)
 {
     Tcl_Obj *newObjPtr;		/* The Tcl object to find the range of. */
     String *stringPtr;
-    
+
     SetStringFromAny(NULL, objPtr);
     stringPtr = GET_STRING(objPtr);
 
     if (stringPtr->numChars == -1) {
-    
+
 	/*
 	 * We haven't yet calculated the length, so we don't have the
 	 * Unicode str.  We need to know the number of chars before we
@@ -619,7 +619,7 @@ Tcl_GetRange(objPtr, first, last)
 	 * We need to fetch the pointer again because we may have just
 	 * reallocated the structure.
 	 */
-	
+
 	stringPtr = GET_STRING(objPtr);
     }
 
@@ -631,14 +631,14 @@ Tcl_GetRange(objPtr, first, last)
 	 * so we don't store the unicode char.  Create a new string
 	 * object containing the specified range of chars.
 	 */
-	
+
 	newObjPtr = Tcl_NewStringObj(&str[first], last-first+1);
 
 	/*
 	 * Since we know the new string only has 1-byte chars, we
 	 * can set it's numChars field.
 	 */
-	
+
 	SetStringFromAny(NULL, newObjPtr);
 	stringPtr = GET_STRING(newObjPtr);
 	stringPtr->numChars = last-first+1;
@@ -655,7 +655,7 @@ Tcl_GetRange(objPtr, first, last)
  * Tcl_SetStringObj --
  *
  *	Modify an object to hold a string that is a copy of the bytes
- *	indicated by the byte pointer and length arguments. 
+ *	indicated by the byte pointer and length arguments.
  *
  * Results:
  *	None.
@@ -676,7 +676,7 @@ Tcl_SetStringObj(objPtr, bytes, length)
     CONST char *bytes;		/* Points to the first of the length bytes
 				 * used to initialize the object. */
     register int length;	/* The number of bytes to copy from "bytes"
-				 * when initializing the object. If 
+				 * when initializing the object. If
 				 * negative, use bytes up to the first
 				 * NULL byte.*/
 {
@@ -702,7 +702,7 @@ Tcl_SetStringObj(objPtr, bytes, length)
 
     Tcl_InvalidateStringRep(objPtr);
     if (length < 0) {
-	length = (bytes? strlen(bytes) : 0);
+	length = (int)(bytes? strlen(bytes) : 0);
     }
     TclInitStringRep(objPtr, bytes, length);
 }
@@ -746,7 +746,7 @@ Tcl_SetObjLength(objPtr, length)
 	panic("Tcl_SetObjLength called with shared object");
     }
     SetStringFromAny(NULL, objPtr);
-        
+
     /*
      * Invalidate the unicode data.
      */
@@ -773,9 +773,9 @@ Tcl_SetObjLength(objPtr, length)
 	    }
 	}
 	objPtr->bytes = new;
-	stringPtr->allocated = length;
+	stringPtr->allocated = (size_t)length;
     }
-    
+
     objPtr->length = length;
     if ((objPtr->bytes != NULL) && (objPtr->bytes != tclEmptyStringRep)) {
 	objPtr->bytes[length] = 0;
@@ -821,7 +821,7 @@ Tcl_AttemptSetObjLength(objPtr, length)
 	panic("Tcl_AttemptSetObjLength called with shared object");
     }
     SetStringFromAny(NULL, objPtr);
-        
+
     /*
      * Invalidate the unicode data.
      */
@@ -854,9 +854,9 @@ Tcl_AttemptSetObjLength(objPtr, length)
 	    }
 	}
 	objPtr->bytes = new;
-	stringPtr->allocated = length;
+	stringPtr->allocated = (size_t)length;
     }
-    
+
     objPtr->length = length;
     if ((objPtr->bytes != NULL) && (objPtr->bytes != tclEmptyStringRep)) {
 	objPtr->bytes[length] = 0;
@@ -898,7 +898,7 @@ Tcl_SetUnicodeObj(objPtr, unicode, numChars)
 	    while (unicode[numChars] != 0) { numChars++; }
 	}
     }
-    uallocated = (numChars + 1) * sizeof(Tcl_UniChar);
+    uallocated = (((size_t)numChars + 1UL) * sizeof(Tcl_UniChar));
 
     /*
      * Free the internal rep if one exists, and invalidate the string rep.
@@ -913,7 +913,7 @@ Tcl_SetUnicodeObj(objPtr, unicode, numChars)
     /*
      * Allocate enough space for the String structure + Unicode string.
      */
-	
+
     stringPtr = (String *) ckalloc(STRING_SIZE(uallocated));
     stringPtr->numChars = numChars;
     stringPtr->uallocated = uallocated;
@@ -956,11 +956,11 @@ Tcl_AppendToObj(objPtr, bytes, length)
     if (Tcl_IsShared(objPtr)) {
 	panic("Tcl_AppendToObj called with shared object");
     }
-    
+
     SetStringFromAny(NULL, objPtr);
 
     if (length < 0) {
-	length = (bytes ? strlen(bytes) : 0);
+	length = (int)(bytes ? strlen(bytes) : 0);
     }
     if (length == 0) {
 	return;
@@ -1044,7 +1044,7 @@ Tcl_AppendUnicodeToObj(objPtr, unicode, length)
  *	None.
  *
  * Side effects:
- *	The string rep of appendObjPtr is appended to the string 
+ *	The string rep of appendObjPtr is appended to the string
  *	representation of objPtr.
  *
  *----------------------------------------------------------------------
@@ -1068,7 +1068,7 @@ Tcl_AppendObjToObj(objPtr, appendObjPtr)
 
     stringPtr = GET_STRING(objPtr);
     if (stringPtr->uallocated > 0) {
-	
+
 	/*
 	 * If appendObjPtr is not of the "String" type, don't convert it.
 	 */
@@ -1077,7 +1077,7 @@ Tcl_AppendObjToObj(objPtr, appendObjPtr)
 	    stringPtr = GET_STRING(appendObjPtr);
 	    if ((stringPtr->numChars == -1)
 		    || (stringPtr->uallocated == 0)) {
-		
+
 		/*
 		 * If appendObjPtr is a string obj with no valide Unicode
 		 * rep, then fill its unicode rep.
@@ -1168,7 +1168,7 @@ AppendUnicodeToUnicodeRep(objPtr, unicode, appendNumChars)
      * this file for an explanation of this growth algorithm.
      */
 
-    numChars = stringPtr->numChars + appendNumChars;
+    numChars = (size_t)(stringPtr->numChars + appendNumChars);
 
     if (numChars >= stringPtr->uallocated) {
  	stringPtr->uallocated = 2 * numChars;
@@ -1176,7 +1176,7 @@ AppendUnicodeToUnicodeRep(objPtr, unicode, appendNumChars)
 		STRING_SIZE(stringPtr->uallocated));
 	if (tmpString == NULL) {
 	    stringPtr->uallocated =
-		numChars + appendNumChars + TCL_GROWTH_MIN_ALLOC;
+		(numChars + (size_t)appendNumChars + TCL_GROWTH_MIN_ALLOC);
 	    tmpString = (String *) ckrealloc((char *)stringPtr,
 		    STRING_SIZE(stringPtr->uallocated));
 	}
@@ -1189,10 +1189,10 @@ AppendUnicodeToUnicodeRep(objPtr, unicode, appendNumChars)
      * trailing null.
      */
 
-    memcpy((VOID*) (stringPtr->unicode + stringPtr->numChars), unicode,
-	    appendNumChars * sizeof(Tcl_UniChar));
+    memcpy((VOID *)(stringPtr->unicode + stringPtr->numChars), unicode,
+	    ((size_t)appendNumChars * sizeof(Tcl_UniChar)));
     stringPtr->unicode[numChars] = 0;
-    stringPtr->numChars = numChars;
+    stringPtr->numChars = (int)numChars;
 
     Tcl_InvalidateStringRep(objPtr);
 }
@@ -1222,7 +1222,7 @@ AppendUnicodeToUtfRep(objPtr, unicode, numChars)
 {
     Tcl_DString dsPtr;
     CONST char *bytes;
-    
+
     if (numChars < 0) {
 	numChars = 0;
 	if (unicode) {
@@ -1268,12 +1268,12 @@ AppendUtfToUnicodeRep(objPtr, bytes, numBytes)
     Tcl_UniChar *unicode;
 
     if (numBytes < 0) {
-	numBytes = (bytes ? strlen(bytes) : 0);
+	numBytes = (int)(bytes ? strlen(bytes) : 0);
     }
     if (numBytes == 0) {
 	return;
     }
-    
+
     Tcl_DStringInit(&dsPtr);
     numChars = Tcl_NumUtfChars(bytes, numBytes);
     unicode = (Tcl_UniChar *)Tcl_UtfToUniCharDString(bytes, numBytes, &dsPtr);
@@ -1308,7 +1308,7 @@ AppendUtfToUtfRep(objPtr, bytes, numBytes)
     int newLength, oldLength;
 
     if (numBytes < 0) {
-	numBytes = (bytes ? strlen(bytes) : 0);
+	numBytes = (int)(bytes ? strlen(bytes) : 0);
     }
     if (numBytes == 0) {
 	return;
@@ -1342,11 +1342,11 @@ AppendUtfToUtfRep(objPtr, bytes, numBytes)
 	/*
 	 * Invalidate the unicode data.
 	 */
-	
+
 	stringPtr->numChars = -1;
 	stringPtr->uallocated = 0;
     }
-    
+
     memcpy((VOID *) (objPtr->bytes + oldLength), (VOID *) bytes,
 	    (size_t) numBytes);
     objPtr->bytes[newLength] = 0;
@@ -1382,7 +1382,7 @@ Tcl_AppendStringsToObjVA (objPtr, argList)
     register char *string, *dst;
     char *static_list[STATIC_LIST_SIZE];
     char **args = static_list;
-    int nargs_space = STATIC_LIST_SIZE;
+    size_t nargs_space = STATIC_LIST_SIZE;
     int nargs, i;
 
     if (Tcl_IsShared(objPtr)) {
@@ -1407,7 +1407,7 @@ Tcl_AppendStringsToObjVA (objPtr, argList)
 	    break;
 	}
  	if (nargs >= nargs_space) {
- 	    /* 
+ 	    /*
  	     * Expand the args buffer
  	     */
  	    nargs_space += STATIC_LIST_SIZE;
@@ -1418,7 +1418,7 @@ Tcl_AppendStringsToObjVA (objPtr, argList)
  		}
  	    } else {
  		args = (void *)ckrealloc((void *)args,
-			nargs_space * sizeof(char *));
+			(nargs_space * sizeof(char *)));
  	    }
  	}
 	newLength += strlen(string);
@@ -1487,10 +1487,10 @@ Tcl_AppendStringsToObjVA (objPtr, argList)
 
     done:
     /*
-     * If we had to allocate a buffer from the heap, 
+     * If we had to allocate a buffer from the heap,
      * free it now.
      */
- 
+
     if (args != static_list) {
      	ckfree((void *)args);
     }
@@ -1552,15 +1552,15 @@ FillUnicodeRep(objPtr)
     char *src, *srcEnd;
     Tcl_UniChar *dst;
     src = objPtr->bytes;
-    
+
     stringPtr = GET_STRING(objPtr);
     if (stringPtr->numChars == -1) {
 	stringPtr->numChars = Tcl_NumUtfChars(src, objPtr->length);
     }
 
-    uallocated = stringPtr->numChars * sizeof(Tcl_UniChar);
+    uallocated = ((size_t)stringPtr->numChars * sizeof(Tcl_UniChar));
     if (uallocated > stringPtr->uallocated) {
-    
+
 	/*
 	 * If not enough space has been allocated for the unicode rep,
 	 * reallocate the internal rep object.
@@ -1585,13 +1585,13 @@ FillUnicodeRep(objPtr)
     /*
      * Convert src to Unicode and store the coverted data in "unicode".
      */
-    
+
     srcEnd = src + objPtr->length;
     for (dst = stringPtr->unicode; src < srcEnd; dst++) {
 	src += Tcl_UtfToUniChar(src, dst);
     }
     *dst = 0;
-    
+
     SET_STRING(objPtr, stringPtr);
 }
 
@@ -1629,7 +1629,7 @@ DupStringInternalRep(srcPtr, copyPtr)
      * internal rep for the new object.  Otherwise, copy Unicode
      * internal rep, and invalidate the string rep of the new object.
      */
-    
+
     if (srcStringPtr->uallocated == 0) {
     	copyStringPtr = (String *) ckalloc(sizeof(String));
 	copyStringPtr->uallocated = 0;
@@ -1652,7 +1652,7 @@ DupStringInternalRep(srcPtr, copyPtr)
      * might exist in the source object.
      */
 
-    copyStringPtr->allocated = copyPtr->length;
+    copyStringPtr->allocated = (size_t)copyPtr->length;
 
     SET_STRING(copyPtr, copyStringPtr);
     copyPtr->typePtr = &tclStringType;
@@ -1703,12 +1703,12 @@ SetStringFromAny(interp, objPtr)
 	 * Allocate enough space for the basic String structure.
 	 */
 
-	stringPtr = (String *) ckalloc(sizeof(String));
+	stringPtr = (String *)ckalloc(sizeof(String));
 	stringPtr->numChars = -1;
 	stringPtr->uallocated = 0;
 
 	if (objPtr->bytes != NULL) {
-	    stringPtr->allocated = objPtr->length;	    
+	    stringPtr->allocated = (size_t)objPtr->length;
  	    objPtr->bytes[objPtr->length] = 0;
 	} else {
 	    objPtr->length = 0;
@@ -1740,7 +1740,8 @@ static void
 UpdateStringOfString(objPtr)
     Tcl_Obj *objPtr;		/* Object with string rep to update. */
 {
-    int i, length, size;
+    int i;
+    size_t length, size;
     Tcl_UniChar *unicode;
     char dummy[TCL_UTF_MAX];
     char *dst;
@@ -1762,21 +1763,21 @@ UpdateStringOfString(objPtr)
 	}
 
 	unicode = stringPtr->unicode;
-	length = stringPtr->numChars * sizeof(Tcl_UniChar);
+	length = ((size_t)stringPtr->numChars * sizeof(Tcl_UniChar));
 
 	/*
 	 * Translate the Unicode string to UTF.  "size" will hold the
 	 * amount of space the UTF string needs.
 	 */
 
-	size = 0;
+	size = 0UL;
 	for (i = 0; i < stringPtr->numChars; i++) {
-	    size += Tcl_UniCharToUtf((int) unicode[i], dummy);
+	    size += (size_t)Tcl_UniCharToUtf((int)unicode[i], dummy);
 	}
-	
-	dst = (char *) ckalloc((unsigned) (size + 1));
+
+	dst = (char *)ckalloc(size + 1UL);
 	objPtr->bytes = dst;
-	objPtr->length = size;
+	objPtr->length = (int)size;
 	stringPtr->allocated = size;
 
 	for (i = 0; i < stringPtr->numChars; i++) {
@@ -1799,7 +1800,7 @@ UpdateStringOfString(objPtr)
  *	None.
  *
  * Side effects:
- *	Frees memory. 
+ *	Frees memory.
  *
  *----------------------------------------------------------------------
  */

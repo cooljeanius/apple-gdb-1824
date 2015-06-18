@@ -66,8 +66,8 @@ static int executing_macro_index;
    in here by add_macro_char (). */
 static char *current_macro = (char *)NULL;
 
-/* The size of the buffer allocated to current_macro. */
-static int current_macro_size;
+/* The size of the buffer allocated to current_macro: */
+static size_t current_macro_size;
 
 /* The index at which characters are being added to current_macro. */
 static int current_macro_index;
@@ -86,10 +86,9 @@ static struct saved_macro *macro_list = (struct saved_macro *)NULL;
 /* Set up to read subsequent input from STRING.
    STRING is free ()'ed when we are done with it. */
 void
-_rl_with_macro_input (string)
-     char *string;
+_rl_with_macro_input(char *string)
 {
-  _rl_push_executing_macro ();
+  _rl_push_executing_macro();
   rl_executing_macro = string;
   executing_macro_index = 0;
   RL_SETSTATE(RL_STATE_MACROINPUT);
@@ -98,15 +97,15 @@ _rl_with_macro_input (string)
 /* Return the next character available from a macro, or 0 if
    there are no macro characters. */
 int
-_rl_next_macro_key ()
+_rl_next_macro_key(void)
 {
   if (rl_executing_macro == 0)
     return (0);
 
   if (rl_executing_macro[executing_macro_index] == 0)
     {
-      _rl_pop_executing_macro ();
-      return (_rl_next_macro_key ());
+      _rl_pop_executing_macro();
+      return (_rl_next_macro_key());
     }
 
   return (rl_executing_macro[executing_macro_index++]);
@@ -114,11 +113,11 @@ _rl_next_macro_key ()
 
 /* Save the currently executing macro on a stack of saved macros. */
 void
-_rl_push_executing_macro ()
+_rl_push_executing_macro(void)
 {
   struct saved_macro *saver;
 
-  saver = (struct saved_macro *)xmalloc (sizeof (struct saved_macro));
+  saver = (struct saved_macro *)xmalloc(sizeof(struct saved_macro));
   saver->next = macro_list;
   saver->sindex = executing_macro_index;
   saver->string = rl_executing_macro;
@@ -129,11 +128,11 @@ _rl_push_executing_macro ()
 /* Discard the current macro, replacing it with the one
    on the top of the stack of saved macros. */
 void
-_rl_pop_executing_macro ()
+_rl_pop_executing_macro(void)
 {
   struct saved_macro *macro;
 
-  FREE (rl_executing_macro);
+  FREE(rl_executing_macro);
   rl_executing_macro = (char *)NULL;
   executing_macro_index = 0;
 
@@ -143,7 +142,7 @@ _rl_pop_executing_macro ()
       rl_executing_macro = macro_list->string;
       executing_macro_index = macro_list->sindex;
       macro_list = macro_list->next;
-      free (macro);
+      free(macro);
     }
 
   if (rl_executing_macro == 0)
@@ -152,33 +151,34 @@ _rl_pop_executing_macro ()
 
 /* Add a character to the macro being built. */
 void
-_rl_add_macro_char (c)
-     int c;
+_rl_add_macro_char(int c)
 {
-  if (current_macro_index + 1 >= current_macro_size)
+  if (((size_t)current_macro_index + 1UL) >= current_macro_size)
     {
       if (current_macro == 0)
-	current_macro = (char *)xmalloc (current_macro_size = 25);
+	current_macro = (char *)xmalloc(current_macro_size = 25UL);
       else
-	current_macro = (char *)xrealloc (current_macro, current_macro_size += 25);
+	current_macro = (char *)xrealloc(current_macro,
+                                         (current_macro_size += 25UL));
     }
 
-  current_macro[current_macro_index++] = c;
+  current_macro[current_macro_index++] = (char)c;
   current_macro[current_macro_index] = '\0';
 }
 
 void
-_rl_kill_kbd_macro ()
+_rl_kill_kbd_macro(void)
 {
   if (current_macro)
     {
-      free (current_macro);
-      current_macro = (char *) NULL;
+      free(current_macro);
+      current_macro = (char *)NULL;
     }
-  current_macro_size = current_macro_index = 0;
+  current_macro_index = 0;
+  current_macro_size = (size_t)current_macro_index;
 
-  FREE (rl_executing_macro);
-  rl_executing_macro = (char *) NULL;
+  FREE(rl_executing_macro);
+  rl_executing_macro = (char *)NULL;
   executing_macro_index = 0;
 
   RL_UNSETSTATE(RL_STATE_MACRODEF);
@@ -191,19 +191,18 @@ _rl_kill_kbd_macro ()
    definition to the end of the existing macro, and start by
    re-executing the existing macro. */
 int
-rl_start_kbd_macro (ignore1, ignore2)
-     int ignore1, ignore2;
+rl_start_kbd_macro(int ignore1, int ignore2)
 {
-  if (RL_ISSTATE (RL_STATE_MACRODEF))
+  if (RL_ISSTATE(RL_STATE_MACRODEF))
     {
-      _rl_abort_internal ();
+      _rl_abort_internal();
       return -1;
     }
 
   if (rl_explicit_arg)
     {
       if (current_macro)
-	_rl_with_macro_input (savestring (current_macro));
+	_rl_with_macro_input(savestring(current_macro));
     }
   else
     current_macro_index = 0;
@@ -216,47 +215,46 @@ rl_start_kbd_macro (ignore1, ignore2)
    A numeric argument says to execute the macro right now,
    that many times, counting the definition as the first time. */
 int
-rl_end_kbd_macro (count, ignore)
-     int count, ignore;
+rl_end_kbd_macro(int count, int ignore)
 {
-  if (RL_ISSTATE (RL_STATE_MACRODEF) == 0)
+  if (RL_ISSTATE(RL_STATE_MACRODEF) == 0)
     {
-      _rl_abort_internal ();
+      _rl_abort_internal();
       return -1;
     }
 
-  current_macro_index -= rl_key_sequence_length - 1;
+  current_macro_index -= (rl_key_sequence_length - 1);
   current_macro[current_macro_index] = '\0';
 
   RL_UNSETSTATE(RL_STATE_MACRODEF);
 
-  return (rl_call_last_kbd_macro (--count, 0));
+  return (rl_call_last_kbd_macro(--count, 0));
 }
 
 /* Execute the most recently defined keyboard macro.
    COUNT says how many times to execute it. */
 int
-rl_call_last_kbd_macro (count, ignore)
-     int count, ignore;
+rl_call_last_kbd_macro(int count, int ignore)
 {
   if (current_macro == 0)
-    _rl_abort_internal ();
+    _rl_abort_internal();
 
   if (RL_ISSTATE (RL_STATE_MACRODEF))
     {
-      rl_ding ();		/* no recursive macros */
-      current_macro[--current_macro_index] = '\0';	/* erase this char */
+      rl_ding();		/* no recursive macros */
+      current_macro[--current_macro_index] = '\0'; /* erase this char */
       return 0;
     }
 
   while (count--)
-    _rl_with_macro_input (savestring (current_macro));
+    _rl_with_macro_input(savestring(current_macro));
   return 0;
 }
 
 void
-rl_push_macro_input (macro)
-     char *macro;
+rl_push_macro_input(char *macro)
 {
-  _rl_with_macro_input (macro);
+  _rl_with_macro_input(macro);
 }
+
+/* EOF */

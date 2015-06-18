@@ -591,6 +591,10 @@ const int crx_num_opcodes = ARRAY_SIZE(crx_instruction);
  #  pragma GCC diagnostic push
  #  pragma GCC diagnostic warning "-Wtraditional"
 # endif /* gcc 4.6+ */
+#else
+# if defined(__clang__)
+ #  pragma GCC diagnostic ignored "-Wenum-conversion"
+# endif /* __clang__ */
 #endif /* GCC */
 
 /* Macro to build a reg_entry, which have an opcode image :
@@ -730,8 +734,10 @@ const long cst4_map[] =
 
 const int cst4_maps = ARRAY_SIZE (cst4_map);
 
-/* CRX instructions that don't have arguments.  */
+/* CRX instructions that do NOT have arguments: */
 const char* no_op_insn[] =
 {
   "di", "ei", "eiwait", "nop", "retx", "wait", NULL
 };
+
+/* EOF */

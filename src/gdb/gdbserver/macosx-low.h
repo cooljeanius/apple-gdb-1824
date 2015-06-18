@@ -64,13 +64,20 @@ struct macosx_target_ops
 
 extern struct macosx_target_ops the_low_target;
 
+/* NeXTStep 2.0 cc is really gcc 1.93 but it defines __GNUC__ = 2 and
+ * does not implement __extension__.  But that compiler does NOT define
+ * __GNUC_MINOR__.  */
+#if (__GNUC__ < 2) || ((defined(__NeXT__) && __NeXT__) && !__GNUC_MINOR__)
+# define __extension__
+#endif /* gcc pre-2 || NeXT gcc */
+
 /* This originally comes from macosx-nat-mutils.h - though I moved it to
    macosx-tdep.h because it was needed for kdp...  */
-#if (defined __GNUC__)
-# define __MACH_CHECK_FUNCTION __PRETTY_FUNCTION__
+#if (defined(__GNUC__) && !defined(__STRICT_ANSI__))
+# define __MACH_CHECK_FUNCTION __extension__ __PRETTY_FUNCTION__
 #else
 # define __MACH_CHECK_FUNCTION ((__const char *) 0)
-#endif /* __GNUC__ */
+#endif /* __GNUC__ && !__STRICT_ANSI__ */
 
 #define MACH_PROPAGATE_ERROR(ret) \
 { MACH_WARN_ERROR(ret); if ((ret) != KERN_SUCCESS) { return ret; } }

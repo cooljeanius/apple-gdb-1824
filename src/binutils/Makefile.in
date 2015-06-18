@@ -761,7 +761,7 @@ am__v_redir_a_ = $(am__v_redir_a_@AM_DEFAULT_V@)
 am__v_redir_a_0 = >>
 am__v_redir_a_1 = | tee -a
 AM_YFLAGS = -d -t $(AM_V_v) @MAINT@@EXTRA_YFLAGS_SEP@ -k -Wall -Wyacc
-AM_LFLAGS = -d
+AM_LFLAGS = @MAINT@ -d
 
 # Automake 1.10+ disables lex and yacc output file regeneration if
 # maintainer mode is disabled.  Avoid this.

@@ -58,8 +58,8 @@ AC_CHECK_HEADERS([arpa/inet.h bios.h conio.h ctype.h dos.h errno.h \
                   fcntl.h io.h malloc.h malloc/malloc.h \
                   netdb.h netinet/in.h  setjmp.h sgtty.h signal.h \
                   socket.h stdio.h sys/fcntl.h sys/file.h sys/ioctl.h \
-                  sys/socket.h sys/sockio.h sys/time.h sys/timeb.h \
-                  term.h termio.h termios.h])dnl
+                  sys/ioctl_compat.h sys/socket.h sys/sockio.h \
+                  sys/time.h sys/timeb.h term.h termio.h termios.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN

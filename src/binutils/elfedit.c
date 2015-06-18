@@ -612,18 +612,18 @@ enum command_line_switch
 
 static struct option options[] =
 {
-  {"input-mach",	required_argument, 0, OPTION_INPUT_MACH},
-  {"output-mach",	required_argument, 0, OPTION_OUTPUT_MACH},
-  {"input-type",	required_argument, 0, OPTION_INPUT_TYPE},
-  {"output-type",	required_argument, 0, OPTION_OUTPUT_TYPE},
-  {"input-osabi",	required_argument, 0, OPTION_INPUT_OSABI},
-  {"output-osabi",	required_argument, 0, OPTION_OUTPUT_OSABI},
-  {"version",		no_argument, 0, 'v'},
-  {"help",		no_argument, 0, 'h'},
-  {0,			no_argument, 0, 0}
+  { "input-mach",	required_argument, 0, OPTION_INPUT_MACH },
+  { "output-mach",	required_argument, 0, OPTION_OUTPUT_MACH },
+  { "input-type",	required_argument, 0, OPTION_INPUT_TYPE },
+  { "output-type",	required_argument, 0, OPTION_OUTPUT_TYPE },
+  { "input-osabi",	required_argument, 0, OPTION_INPUT_OSABI },
+  { "output-osabi",	required_argument, 0, OPTION_OUTPUT_OSABI },
+  { "version",		no_argument, 0, 'v' },
+  { "help",		no_argument, 0, 'h' },
+  { 0,			no_argument, 0, 0 }
 };
 
-static void usage(FILE *stream, int exit_status)
+static ATTRIBUTE_NORETURN void usage(FILE *stream, int exit_status)
 {
   fprintf(stream, _("Usage: %s <option(s)> elffile(s)\n"),
 	  program_name);

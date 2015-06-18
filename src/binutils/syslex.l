@@ -1,4 +1,4 @@
-%{
+%{ /* syslex.l */
 /* Copyright 2001, 2003, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Binutils.
@@ -15,7 +15,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GLD; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA
+Software Foundation, 51 Franklin St., 5th Floor, Boston, MA
 02110-1301, USA.  */
 
 #include "config.h"
@@ -77,3 +77,7 @@ extern int yylex(void);
 "segsize" { yylval.i = -1; return NUMBER; }
 "cond" { return COND;}
 "repeat" { return REPEAT;}
+
+%{
+/* End of syslex.l */
+%}

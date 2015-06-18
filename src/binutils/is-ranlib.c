@@ -3,3 +3,5 @@
 
 extern int is_ranlib;
 int is_ranlib = 1;
+
+/* EOF */

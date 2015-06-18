@@ -632,27 +632,29 @@ struct elf_i386_link_hash_table
 /* Create an entry in an i386 ELF linker hash table.  */
 
 static struct bfd_hash_entry *
-link_hash_newfunc (struct bfd_hash_entry *entry,
-		   struct bfd_hash_table *table,
-		   const char *string)
+link_hash_newfunc(struct bfd_hash_entry *entry,
+		  struct bfd_hash_table *table,
+		  const char *string)
 {
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
   if (entry == NULL)
     {
-      entry = bfd_hash_allocate (table,
-				 sizeof (struct elf_i386_link_hash_entry));
+      entry =
+        ((struct bfd_hash_entry *)
+         bfd_hash_allocate(table,
+                           sizeof(struct elf_i386_link_hash_entry)));
       if (entry == NULL)
 	return entry;
     }
 
-  /* Call the allocation method of the superclass.  */
-  entry = _bfd_elf_link_hash_newfunc (entry, table, string);
+  /* Call the allocation method of the superclass: */
+  entry = _bfd_elf_link_hash_newfunc(entry, table, string);
   if (entry != NULL)
     {
       struct elf_i386_link_hash_entry *eh;
 
-      eh = (struct elf_i386_link_hash_entry *) entry;
+      eh = (struct elf_i386_link_hash_entry *)entry;
       eh->dyn_relocs = NULL;
       eh->tls_type = GOT_UNKNOWN;
     }
@@ -663,18 +665,18 @@ link_hash_newfunc (struct bfd_hash_entry *entry,
 /* Create an i386 ELF linker hash table.  */
 
 static struct bfd_link_hash_table *
-elf_i386_link_hash_table_create (bfd *abfd)
+elf_i386_link_hash_table_create(bfd *abfd)
 {
   struct elf_i386_link_hash_table *ret;
-  bfd_size_type amt = sizeof (struct elf_i386_link_hash_table);
+  bfd_size_type amt = sizeof(struct elf_i386_link_hash_table);
 
-  ret = bfd_malloc (amt);
+  ret = (struct elf_i386_link_hash_table *)bfd_malloc(amt);
   if (ret == NULL)
     return NULL;
 
-  if (! _bfd_elf_link_hash_table_init (&ret->elf, abfd, link_hash_newfunc))
+  if (!_bfd_elf_link_hash_table_init(&ret->elf, abfd, link_hash_newfunc))
     {
-      free (ret);
+      free(ret);
       return NULL;
     }
 
@@ -1185,7 +1187,8 @@ elf_i386_check_relocs (bfd *abfd,
 	      if ((p == NULL) || (p->sec != sec))
 		{
 		  bfd_size_type amt = sizeof(*p);
-		  p = bfd_alloc(htab->elf.dynobj, amt);
+		  p = ((struct elf_i386_dyn_relocs *)
+                       bfd_alloc(htab->elf.dynobj, amt));
 		  if (p == NULL)
 		    return FALSE;
 		  p->next = *head;

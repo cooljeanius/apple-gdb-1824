@@ -49,7 +49,7 @@ RANLIB = @RANLIB@
 AR = ar
 AR_FLAGS = rv
 
-AM_CFLAGS = -ggdb
+AM_CFLAGS = -ggdb -O1 -Wall -Wextra
 
 LD = ld
 # Darwin linker (ld64) fails to recognize this flag, so conditionalize:
@@ -154,7 +154,8 @@ install-info-local: info
 
 installcheck-local:
 
-check: 
+check: @MAINT@ all-local
+.PHONY: check
 
 rebuild_Makefile: Makefile.in configure.ac
 	$(SHELL) ./config.status

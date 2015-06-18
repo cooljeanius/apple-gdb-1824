@@ -288,8 +288,9 @@ AC_CHECK_DECLS([exit, free, strchr, strcpy, strlen, strncpy])dnl
 AC_MSG_CHECKING([headers])
 AC_MSG_RESULT([ ])
 AC_HEADER_DIRENT
-AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
+AC_HEADER_STDBOOL dnl# also "_CHECK"s it.
 AC_HEADER_STAT
+AC_HEADER_TIME
 AC_HEADER_TIOCGWINSZ
 AC_CHECK_HEADERS([arpa/inet.h errno.h fcntl.h features.h limits.h \
                   locale.h malloc.h malloca.h malloc/malloc.h netdb.h \
@@ -298,7 +299,7 @@ AC_CHECK_HEADERS([arpa/inet.h errno.h fcntl.h features.h limits.h \
                   signal.h stdarg.h stddef.h stdio.h sys/file.h \
                   sys/ioctl.h sys/pte.h sys/ptem.h sys/select.h \
                   sys/socket.h sys/stream.h sys/time.h termcap.h \
-                  termio.h termios.h varargs.h wchar.h wctype.h])dnl
+                  termio.h termios.h time.h varargs.h wchar.h wctype.h])dnl
 
 # Checks using macros from Bash's configure script
 AC_MSG_NOTICE([running checks stolen from Bash's configure script])

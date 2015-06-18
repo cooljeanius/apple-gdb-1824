@@ -24,7 +24,9 @@
 #if defined(HAVE_CONFIG_H)
 # include <config.h>
 #else
-# warning complete.c expects config.h to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "complete.c expects <config.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #include <sys/types.h>
@@ -32,14 +34,16 @@
 #if defined(HAVE_SYS_FILE_H)
 # include <sys/file.h>
 #else
-# warning complete.c expects sys/file.h to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "complete.c expects sys/file.h to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_FILE_H */
 
-#if defined (HAVE_UNISTD_H)
+#if defined(HAVE_UNISTD_H)
 #  include <unistd.h>
 #endif /* HAVE_UNISTD_H */
 
-#if defined (HAVE_STDLIB_H)
+#if defined(HAVE_STDLIB_H)
 # include <stdlib.h>
 #else
 # include "ansi_stdlib.h"
@@ -48,7 +52,7 @@
 #include <stdio.h>
 
 #include <errno.h>
-#if !defined (errno)
+#if !defined(errno)
 extern int errno;
 #endif /* !errno */
 
@@ -69,10 +73,22 @@ extern int errno;
 #include "rlprivate.h"
 
 #ifdef __STDC__
-typedef int QSFUNC (const void *, const void *);
+typedef int QSFUNC(const void *, const void *);
 #else
-typedef int QSFUNC ();
+typedef int QSFUNC();
 #endif /* __STDC__ */
+
+#ifndef INT_MAX
+# ifdef HAVE_LIMITS_H
+#  include <limits.h>
+# else
+#  ifdef HAVE_SYS_LIMITS_H
+#   include <sys/limits.h>
+#  else
+#   define INT_MAX 2147483647 /* max value for an int */
+#  endif /* HAVE_SYS_LIMITS_H */
+# endif /* HAVE_LIMITS_H */
+#endif /* !INT_MAX */
 
 #ifdef HAVE_LSTAT
 # define LSTAT lstat
@@ -86,9 +102,9 @@ typedef int QSFUNC ();
 /* Most systems don't declare getpwent in <pwd.h> if _POSIX_SOURCE is
    defined. */
 #if defined(HAVE_GETPWENT) && \
-    (!defined (HAVE_GETPW_DECLS) || defined (_POSIX_SOURCE))
+    (!defined(HAVE_GETPW_DECLS) || defined(_POSIX_SOURCE))
 extern struct passwd *getpwent PARAMS((void));
-#endif /* defiend (HAVE_GETPWENT) && (!HAVE_GETPW_DECLS || _POSIX_SOURCE) */
+#endif /* defiend(HAVE_GETPWENT) && (!HAVE_GETPW_DECLS || _POSIX_SOURCE) */
 
 /* If non-zero, then this is the address of a function to call when
    completing a word would normally display the list of possible matches.
@@ -151,11 +167,11 @@ int _rl_complete_mark_symlink_dirs = 0;
 int _rl_print_completions_horizontally;
 
 /* Non-zero means that case is not significant in filename completion. */
-#if defined (__MSDOS__) && !defined (__DJGPP__)
+#if defined(__MSDOS__) && !defined(__DJGPP__)
 int _rl_completion_case_fold = 1;
 #else
 int _rl_completion_case_fold;
-#endif
+#endif /* __MSDOS__ && !__DJGPP__ */
 
 /* If non-zero, don't match hidden files (filenames beginning with a `.' on
    Unix) when doing filename completion. */
@@ -163,7 +179,7 @@ int _rl_match_hidden_files = 1;
 
 /* Global variables available to applications using readline. */
 
-#if defined (VISIBLE_STATS)
+#if defined(VISIBLE_STATS)
 /* Non-zero means add an additional character to each filename displayed
    during listing completion iff rl_filename_completion_desired which helps
    to indicate the type of file being listed. */
@@ -996,7 +1012,7 @@ compute_lcd_of_matches(char **match_list, int matches, const char *text)
 	  si = strlen(text);
 	  if (si <= low)
 	    {
-	      for (i = 1; i <= matches; i++)
+	      for (i = 1; (i <= matches) && (i < INT_MAX); i++)
 		if (strncmp(match_list[i], text, si) == 0)
 		  {
 		    strncpy(match_list[0], match_list[i], low);
@@ -1108,15 +1124,15 @@ rl_display_match_list (matches, len, max)
 
   /* Sort the items if they are not already sorted. */
   if (rl_ignore_completion_duplicates == 0)
-    qsort (matches + 1, len, sizeof (char *), (QSFUNC *)_rl_qsort_string_compare);
+    qsort(matches + 1, len, sizeof(char *), (QSFUNC *)_rl_qsort_string_compare);
 
-  rl_crlf ();
+  rl_crlf();
 
   lines = 0;
   if (_rl_print_completions_horizontally == 0)
     {
       /* Print the sorted items, up-and-down alphabetically, like ls. */
-      for (i = 1; i <= count; i++)
+      for (i = 1; (i <= count) && (i < INT_MAX); i++)
 	{
 	  for (j = 0, l = i; j < limit; j++)
 	    {
@@ -1339,11 +1355,10 @@ insert_match (match, start, mtype, qc)
    value of _rl_complete_mark_symlink_dirs, but may be modified by an
    application's completion function). */
 static int
-append_to_match (text, delimiter, quote_char, nontrivial_match)
-     char *text;
-     int delimiter, quote_char, nontrivial_match;
+append_to_match(char *text, int delimiter, int quote_char,
+                int nontrivial_match)
 {
-  char temp_string[4], *filename;
+  char temp_string[8], *filename;
   int temp_string_index, s;
   struct stat finfo;
 
@@ -1360,11 +1375,11 @@ append_to_match (text, delimiter, quote_char, nontrivial_match)
 
   if (rl_filename_completion_desired)
     {
-      filename = tilde_expand (text);
+      filename = tilde_expand(text);
       s = (nontrivial_match && rl_completion_mark_symlink_dirs == 0)
-		? LSTAT (filename, &finfo)
-		: stat (filename, &finfo);
-      if (s == 0 && S_ISDIR (finfo.st_mode))
+		? LSTAT(filename, &finfo)
+		: stat(filename, &finfo);
+      if (s == 0 && S_ISDIR(finfo.st_mode))
 	{
 	  if (_rl_complete_mark_directories)
 	    {
@@ -1374,27 +1389,27 @@ append_to_match (text, delimiter, quote_char, nontrivial_match)
 	      if (rl_point && rl_line_buffer[rl_point] == '\0' && rl_line_buffer[rl_point - 1] == '/')
 		;
 	      else if (rl_line_buffer[rl_point] != '/')
-		rl_insert_text ("/");
+		rl_insert_text("/");
 	    }
 	}
 #ifdef S_ISLNK
       /* Don't add anything if the filename is a symlink and resolves to a
 	 directory. */
-      else if (s == 0 && S_ISLNK (finfo.st_mode) &&
-	       stat (filename, &finfo) == 0 && S_ISDIR (finfo.st_mode))
+      else if (s == 0 && S_ISLNK(finfo.st_mode) &&
+	       stat(filename, &finfo) == 0 && S_ISDIR(finfo.st_mode))
 	;
-#endif
+#endif /* S_ISLNK */
       else
 	{
 	  if (rl_point == rl_end && temp_string_index)
-	    rl_insert_text (temp_string);
+	    rl_insert_text(temp_string);
 	}
-      free (filename);
+      free(filename);
     }
   else
     {
       if (rl_point == rl_end && temp_string_index)
-	rl_insert_text (temp_string);
+	rl_insert_text(temp_string);
     }
 
   return (temp_string_index);
@@ -1650,28 +1665,27 @@ rl_completion_matches (text, entry_function)
    TEXT contains a partial username preceded by a random
    character (usually `~').  */
 char *
-rl_username_completion_function (text, state)
-     const char *text;
-     int state;
+rl_username_completion_function(const char *text, int state)
 {
-#if defined (__WIN32__) || defined (__OPENNT)
+#if defined(__WIN32__) || defined(__OPENNT)
   return (char *)NULL;
 #else /* !__WIN32__ && !__OPENNT) */
   static char *username = (char *)NULL;
   static struct passwd *entry;
-  static int namelen, first_char, first_char_loc;
+  static size_t namelen;
+  static int first_char, first_char_loc;
   char *value;
 
   if (state == 0)
     {
-      FREE (username);
+      FREE(username);
 
       first_char = *text;
       first_char_loc = first_char == '~';
 
-      username = savestring (&text[first_char_loc]);
-      namelen = strlen (username);
-      setpwent ();
+      username = savestring(&text[first_char_loc]);
+      namelen = strlen(username);
+      setpwent();
     }
 
 #ifdef HAVE_GETPWENT
@@ -1681,7 +1695,7 @@ rl_username_completion_function (text, state)
       if ((namelen == 0) || (STREQN(username, entry->pw_name, namelen)))
 	break;
     }
-#endif
+#endif /* HAVE_GETPWENT */
 
   if (entry == 0)
     {
@@ -1692,11 +1706,11 @@ rl_username_completion_function (text, state)
     }
   else
     {
-      value = (char *)xmalloc (2 + strlen (entry->pw_name));
+      value = (char *)xmalloc(2UL + strlen(entry->pw_name));
 
       *value = *text;
 
-      strcpy (value + first_char_loc, entry->pw_name);
+      strcpy(value + first_char_loc, entry->pw_name);
 
       if (first_char == '~')
 	rl_filename_completion_desired = 1;
@@ -1711,17 +1725,15 @@ rl_username_completion_function (text, state)
    because of all the pathnames that must be followed when looking up the
    completion for a command. */
 char *
-rl_filename_completion_function (text, state)
-     const char *text;
-     int state;
+rl_filename_completion_function(const char *text, int state)
 {
   static DIR *directory = (DIR *)NULL;
   static char *filename = (char *)NULL;
   static char *dirname = (char *)NULL;
   static char *users_dirname = (char *)NULL;
-  static int filename_len;
+  static size_t filename_len;
   char *temp;
-  int dirlen;
+  size_t dirlen;
   struct dirent *entry;
 
   /* If we don't have any state, then do some initialization. */
@@ -1731,39 +1743,39 @@ rl_filename_completion_function (text, state)
 	 all of its contents, close it. */
       if (directory)
 	{
-	  closedir (directory);
+	  closedir(directory);
 	  directory = (DIR *)NULL;
 	}
-      FREE (dirname);
-      FREE (filename);
-      FREE (users_dirname);
+      FREE(dirname);
+      FREE(filename);
+      FREE(users_dirname);
 
-      filename = savestring (text);
+      filename = savestring(text);
       if (*text == 0)
 	text = ".";
-      dirname = savestring (text);
+      dirname = savestring(text);
 
-      temp = strrchr (dirname, '/');
+      temp = strrchr(dirname, '/');
 
-#if defined (__MSDOS__)
+#if defined(__MSDOS__)
       /* special hack for //X/... */
-      if (dirname[0] == '/' && dirname[1] == '/' && ISALPHA ((unsigned char)dirname[2]) && dirname[3] == '/')
-        temp = strrchr (dirname + 3, '/');
-#endif
+      if (dirname[0] == '/' && dirname[1] == '/' && ISALPHA((unsigned char)dirname[2]) && dirname[3] == '/')
+        temp = strrchr(dirname + 3, '/');
+#endif /* __MSDOS__ */
 
       if (temp)
 	{
-	  strcpy (filename, ++temp);
+	  strcpy(filename, ++temp);
 	  *temp = '\0';
 	}
-#if defined (__MSDOS__)
+#if defined(__MSDOS__)
       /* searches from current directory on the drive */
-      else if (ISALPHA ((unsigned char)dirname[0]) && dirname[1] == ':')
+      else if (ISALPHA((unsigned char)dirname[0]) && dirname[1] == ':')
         {
-          strcpy (filename, dirname + 2);
+          strcpy(filename, (dirname + 2));
           dirname[2] = '\0';
         }
-#endif
+#endif /* __MSDOS__ */
       else
 	{
 	  dirname[0] = '.';
@@ -1773,26 +1785,26 @@ rl_filename_completion_function (text, state)
       /* We aren't done yet.  We also support the "~user" syntax. */
 
       /* Save the version of the directory that the user typed. */
-      users_dirname = savestring (dirname);
+      users_dirname = savestring(dirname);
 
       if (*dirname == '~')
 	{
-	  temp = tilde_expand (dirname);
-	  free (dirname);
+	  temp = tilde_expand(dirname);
+	  free(dirname);
 	  dirname = temp;
 	}
 
       if (rl_directory_rewrite_hook)
-	(*rl_directory_rewrite_hook) (&dirname);
+	(*rl_directory_rewrite_hook)(&dirname);
 
-      if (rl_directory_completion_hook && (*rl_directory_completion_hook) (&dirname))
+      if (rl_directory_completion_hook && (*rl_directory_completion_hook)(&dirname))
 	{
-	  free (users_dirname);
-	  users_dirname = savestring (dirname);
+	  free(users_dirname);
+	  users_dirname = savestring(dirname);
 	}
 
-      directory = opendir (dirname);
-      filename_len = strlen (filename);
+      directory = opendir(dirname);
+      filename_len = strlen(filename);
 
       rl_filename_completion_desired = 1;
     }
@@ -1806,14 +1818,14 @@ rl_filename_completion_function (text, state)
   /* Now that we have some state, we can read the directory. */
 
   entry = (struct dirent *)NULL;
-  while (directory && (entry = readdir (directory)))
+  while (directory && (entry = readdir(directory)))
     {
       /* Special case for no filename.  If the user has disabled the
          `match-hidden-files' variable, skip filenames beginning with `.'.
 	 All other entries except "." and ".." match. */
       if (filename_len == 0)
 	{
-	  if (_rl_match_hidden_files == 0 && HIDDEN_FILE (entry->d_name))
+	  if (_rl_match_hidden_files == 0 && HIDDEN_FILE(entry->d_name))
 	    continue;
 
 	  if (entry->d_name[0] != '.' ||
@@ -1827,16 +1839,16 @@ rl_filename_completion_function (text, state)
 	     it is a match. */
 	  if (_rl_completion_case_fold)
 	    {
-	      if ((_rl_to_lower (entry->d_name[0]) == _rl_to_lower (filename[0])) &&
-		  (((int)D_NAMLEN (entry)) >= filename_len) &&
-		  (_rl_strnicmp (filename, entry->d_name, filename_len) == 0))
+	      if ((_rl_to_lower(entry->d_name[0]) == _rl_to_lower(filename[0])) &&
+		  (D_NAMLEN(entry) >= filename_len) &&
+		  (_rl_strnicmp(filename, entry->d_name, filename_len) == 0))
 		break;
 	    }
 	  else
 	    {
 	      if ((entry->d_name[0] == filename[0]) &&
-		  (((int)D_NAMLEN (entry)) >= filename_len) &&
-		  (strncmp (filename, entry->d_name, filename_len) == 0))
+		  (D_NAMLEN(entry) >= filename_len) &&
+		  (strncmp(filename, entry->d_name, filename_len) == 0))
 		break;
 	    }
 	}
@@ -1846,22 +1858,22 @@ rl_filename_completion_function (text, state)
     {
       if (directory)
 	{
-	  closedir (directory);
+	  closedir(directory);
 	  directory = (DIR *)NULL;
 	}
       if (dirname)
 	{
-	  free (dirname);
+	  free(dirname);
 	  dirname = (char *)NULL;
 	}
       if (filename)
 	{
-	  free (filename);
+	  free(filename);
 	  filename = (char *)NULL;
 	}
       if (users_dirname)
 	{
-	  free (users_dirname);
+	  free(users_dirname);
 	  users_dirname = (char *)NULL;
 	}
 
@@ -1874,9 +1886,9 @@ rl_filename_completion_function (text, state)
 	{
 	  if (rl_complete_with_tilde_expansion && *users_dirname == '~')
 	    {
-	      dirlen = strlen (dirname);
-	      temp = (char *)xmalloc (2 + dirlen + D_NAMLEN (entry));
-	      strcpy (temp, dirname);
+	      dirlen = strlen(dirname);
+	      temp = (char *)xmalloc(2UL + dirlen + D_NAMLEN(entry));
+	      strcpy(temp, dirname);
 	      /* Canonicalization cuts off any final slash present.  We
 		 may need to add it back. */
 	      if (dirname[dirlen - 1] != '/')
@@ -1887,18 +1899,18 @@ rl_filename_completion_function (text, state)
 	    }
 	  else
 	    {
-	      dirlen = strlen (users_dirname);
-	      temp = (char *)xmalloc (2 + dirlen + D_NAMLEN (entry));
-	      strcpy (temp, users_dirname);
-	      /* Make sure that temp has a trailing slash here. */
+	      dirlen = strlen(users_dirname);
+	      temp = (char *)xmalloc(2UL + dirlen + D_NAMLEN(entry));
+	      strcpy(temp, users_dirname);
+	      /* Make sure that temp has a trailing slash here: */
 	      if (users_dirname[dirlen - 1] != '/')
 		temp[dirlen++] = '/';
 	    }
 
-	  strcpy (temp + dirlen, entry->d_name);
+	  strcpy((temp + dirlen), entry->d_name);
 	}
       else
-	temp = savestring (entry->d_name);
+	temp = savestring(entry->d_name);
 
       return (temp);
     }
@@ -1914,8 +1926,7 @@ rl_filename_completion_function (text, state)
    hit the end of the match list, we restore the original unmatched text,
    ring the bell, and reset the counter to zero. */
 int
-rl_menu_complete (count, ignore)
-     int count, ignore;
+rl_menu_complete(int count, int ignore)
 {
   rl_compentry_func_t *our_func;
   int matching_filenames, found_quote;

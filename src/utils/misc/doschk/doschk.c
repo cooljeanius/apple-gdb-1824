@@ -1,5 +1,5 @@
-/* doschk.c
- * doschk - check filenames for DOS (and SYSV) compatibility
+/* doschk.c -*- C -*-
+ * doschk - check filenames for DOS (and SYSV) compatibility.
  *
  * Copyright (C) 1993 DJ Delorie
  *
@@ -45,7 +45,6 @@
  * compatible.  Any output messages are designed to be self-explanatory
  * and indicate cases where the files will not transfer to MS-DOS without
  * problems.
- *
  */
 
 #ifdef HAVE_CONFIG_H
@@ -527,4 +526,4 @@ main(int argc, char **argv)
   return 0;
 }
 
-/* End of file */
+/* End of file. */

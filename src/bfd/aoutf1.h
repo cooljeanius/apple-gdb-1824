@@ -413,7 +413,7 @@ swapcore_sun3(bfd *abfd, char *ext, struct internal_sunos_core *intcore)
   intcore->fp_stuff_pos = (long)(((struct external_sun3_core *)0)->fp_stuff);
   /* FP stuff takes up whole rest of struct, except c_ucode: */
   intcore->fp_stuff_size = (int)(intcore->c_len - sizeof(extcore->c_ucode)
-    - (file_ptr)(((struct external_sun3_core *)0L)->fp_stuff));
+    - (file_ptr)(intptr_t)(((struct external_sun3_core *)0L)->fp_stuff));
   /* Ucode is the last thing in the struct -- just before the end: */
   intcore->c_ucode = (int)H_GET_32(abfd, (intcore->c_len
                                           - sizeof(extcore->c_ucode)
@@ -447,7 +447,7 @@ swapcore_sparc(bfd *abfd, char *ext, struct internal_sunos_core *intcore)
   intcore->fp_stuff_pos = (long)(((struct external_sparc_core *)0L)->fp_stuff);
   /* FP stuff takes up whole rest of struct, except c_ucode: */
   intcore->fp_stuff_size = (int)(intcore->c_len - sizeof(extcore->c_ucode)
-    - (file_ptr)(((struct external_sparc_core *)0L)->fp_stuff));
+    - (file_ptr)(intptr_t)(((struct external_sparc_core *)0L)->fp_stuff));
   /* Ucode is the last thing in the struct -- just before the end.  */
   intcore->c_ucode = (int)H_GET_32(abfd,
                                    (intcore->c_len
@@ -511,7 +511,7 @@ swapcore_solaris_bcp(bfd *abfd, char *ext, struct internal_sunos_core *intcore)
     (long)(((struct external_solaris_bcp_core *)0L)->fp_stuff);
   /* FP stuff takes up whole rest of struct, except c_ucode: */
   intcore->fp_stuff_size = (int)(intcore->c_len - sizeof(extcore->c_ucode)
-    - (file_ptr)(((struct external_solaris_bcp_core *)0L)->fp_stuff));
+    - (file_ptr)(intptr_t)(((struct external_solaris_bcp_core *)0L)->fp_stuff));
   /* Ucode is the last thing in the struct -- just before the end */
   intcore->c_ucode = (int)H_GET_32(abfd,
                                    (intcore->c_len

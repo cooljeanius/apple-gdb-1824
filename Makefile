@@ -213,7 +213,7 @@ CONFIG_MAINTAINER_MODE=#--enable-maintainer-mode
 CONFIG_SILENT_RULES=
 CONFIG_DEP_TRACK=--disable-dependency-tracking
 CONFIG_BUILD=--build=$(BUILD_ARCH)
-CONFIG_OTHER_OPTIONS?=--disable-serial-configure --disable-opts-test --with-x --enable-carbon-framework --enable-debug-symbols-framework
+CONFIG_OTHER_OPTIONS?=--disable-serial-configure --with-x --enable-carbon-framework --enable-debug-symbols-framework
 
 ifneq ($(findstring macosx,$(CANONICAL_ARCHS))$(findstring darwin,$(CANONICAL_ARCHS)),)
 CC = clang -arch $(HOST_ARCHITECTURE)

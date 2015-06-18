@@ -462,10 +462,10 @@ bfd_mach_o_get_symtab_upper_bound(bfd *abfd)
 }
 
 static long
-bfd_mach_o_canonicalize_symtab (bfd *abfd, asymbol **alocation)
+bfd_mach_o_canonicalize_symtab(bfd *abfd, asymbol **alocation)
 {
   bfd_mach_o_data_struct *mdata = abfd->tdata.mach_o_data;
-  long nsyms = bfd_mach_o_count_symbols (abfd);
+  long nsyms = bfd_mach_o_count_symbols(abfd);
   asymbol **csym = alocation;
   unsigned long i, j;
 
@@ -478,17 +478,17 @@ bfd_mach_o_canonicalize_symtab (bfd *abfd, asymbol **alocation)
 	{
 	  bfd_mach_o_symtab_command *sym = &mdata->commands[i].command.symtab;
 
-	  if (bfd_mach_o_scan_read_symtab_symbols (abfd, &mdata->commands[i].command.symtab) != 0)
+	  if (bfd_mach_o_scan_read_symtab_symbols(abfd, &mdata->commands[i].command.symtab) != 0)
 	    {
-	      fprintf (stderr, "bfd_mach_o_canonicalize_symtab: unable to load symbols for section %lu\n", i);
+	      fprintf(stderr, "bfd_mach_o_canonicalize_symtab: unable to load symbols for section %lu\n", i);
 	      return 0;
 	    }
 
-	  BFD_ASSERT (sym->symbols != NULL);
+	  BFD_ASSERT(sym->symbols != NULL);
 
 	  for (j = 0; j < sym->nsyms; j++)
 	    {
-	      BFD_ASSERT (csym < (alocation + nsyms));
+	      BFD_ASSERT(csym < (alocation + nsyms));
 	      *csym++ = &sym->symbols[j];
 	    }
 	}
@@ -617,25 +617,29 @@ bfd_mach_o_symbol_type(bfd *abfd, unsigned char macho_type,
           const bfd_mach_o_section *sect =
             abfd->tdata.mach_o_data->sections[macho_sect - 1];
 
+          const char *sect_segname = sect->segname;
+          const char *sect_sectname = sect->sectname;
+
           if (sect == NULL)
             {
 #if 0
               complain(&unknown_macho_section_complaint,
                        local_hex_string(macho_sect));
 #else
-              ;
+              fprintf(stderr,
+                      "bfd_mach_o_symbol_type: invalid section.\n");
 #endif /* 0 */
             }
-          else if ((sect->segname != NULL)
+          else if ((sect_segname != NULL)
                    && (strcmp(sect->segname, "__DATA") == 0))
             {
-              if ((sect->sectname != NULL)
+              if ((sect_sectname != NULL)
                   && (strcmp(sect->sectname, "__bss") == 0))
                 ntype |= N_BSS;
               else
                 ntype |= N_DATA;
             }
-          else if ((sect->segname != NULL)
+          else if ((sect_segname != NULL)
                    && (strcmp(sect->segname, "__TEXT") == 0))
             {
               ntype |= N_TEXT;
@@ -649,7 +653,6 @@ bfd_mach_o_symbol_type(bfd *abfd, unsigned char macho_type,
               ntype |= N_DATA;
             }
         }
-
       else
         {
 #if 0
@@ -929,7 +932,11 @@ bfd_mach_o_scan_write_segment(bfd *abfd,
 
       bfd_seek(abfd, (file_ptr)(command->offset + 8L), SEEK_SET);
       if (bfd_bwrite((PTR)ubuf, (bfd_size_type)64UL, abfd) != 64)
-	return -1;
+        {
+          /* we are failing here anyways, so why not stick in an extra assertion? */
+          BFD_ASSERT(bfd_mach_o_wide_p(abfd) == (bfd_boolean)wide);
+          return -1;
+        }
     }
   else
     {
@@ -986,7 +993,11 @@ bfd_mach_o_scan_write_segment(bfd *abfd,
 
       if (bfd_mach_o_scan_write_section(abfd, &seg->sections[i], segoff,
                                         wide) != 0)
-	return -1;
+        {
+          /* we are failing here anyways, so why not stick in an extra assertion? */
+          BFD_ASSERT(bfd_mach_o_wide_p(abfd) == (bfd_boolean)wide);
+          return -1;
+        }
     }
 
   return 0;
@@ -1504,6 +1515,8 @@ bfd_mach_o_scan_read_symtab_symbol(bfd *abfd,
     {
       fprintf(stderr, "bfd_mach_o_scan_read_symtab_symbol: symbol name out of range (%lu >= %lu)\n",
 	      (unsigned long)stroff, (unsigned long)sym->strsize);
+      /* we are failing here anyways, so why not stick in an extra assertion? */
+      BFD_ASSERT(bfd_mach_o_wide_p(abfd) == (bfd_boolean)wide);
       return -1;
     }
 
@@ -2253,7 +2266,7 @@ bfd_mach_o_scan_read_symtab(bfd *abfd, bfd_mach_o_load_command *command)
   sname = (char *)bfd_alloc(abfd, (bfd_size_type)(strlen(prefix) + 1UL));
   if (sname == NULL)
     return -1;
-  strcpy (sname, prefix);
+  strcpy(sname, prefix);
 
   bfdsec = bfd_make_section_anyway(abfd, sname);
   if (bfdsec == NULL)
@@ -2307,8 +2320,12 @@ bfd_mach_o_scan_read_segment(bfd *abfd, bfd_mach_o_load_command *command,
       BFD_ASSERT(command->type == BFD_MACH_O_LC_SEGMENT_64);
 
       bfd_seek(abfd, (file_ptr)(command->offset + 8L), SEEK_SET);
-      if (bfd_bread((PTR) buf, (bfd_size_type)64UL, abfd) != 64UL)
-	return -1;
+      if (bfd_bread((PTR)buf, (bfd_size_type)64UL, abfd) != 64UL)
+        {
+          /* we are failing here anyways, so why not stick in an extra assertion? */
+          BFD_ASSERT(bfd_mach_o_wide_p(abfd) == (bfd_boolean)wide);
+          return -1;
+        }
 
       memcpy(seg->segname, buf, (size_t)16UL);
 
@@ -2327,7 +2344,11 @@ bfd_mach_o_scan_read_segment(bfd *abfd, bfd_mach_o_load_command *command,
 
       bfd_seek(abfd, (file_ptr)(command->offset + 8L), SEEK_SET);
       if (bfd_bread((PTR)buf, (bfd_size_type)48UL, abfd) != 48UL)
-	return -1;
+        {
+          /* we are failing here anyways, so why not stick in an extra assertion? */
+          BFD_ASSERT(bfd_mach_o_wide_p(abfd) == (bfd_boolean)wide);
+          return -1;
+        }
 
       memcpy(seg->segname, buf, (size_t)16UL);
 
@@ -2381,7 +2402,11 @@ bfd_mach_o_scan_read_segment(bfd *abfd, bfd_mach_o_load_command *command,
 
 	  if (bfd_mach_o_scan_read_section(abfd, &seg->sections[i],
                                            segoff, wide) != 0)
-	    return -1;
+            {
+              /* we are failing here anyways, so why not stick in an extra assertion? */
+              BFD_ASSERT(bfd_mach_o_wide_p(abfd) == (bfd_boolean)wide);
+              return -1;
+            }
 	}
     }
 
@@ -3320,31 +3345,31 @@ bfd_mach_o_core_fetch_environment(bfd *abfd, unsigned char **rbuf,
 }
 
 char *
-bfd_mach_o_core_file_failing_command (bfd *abfd)
+bfd_mach_o_core_file_failing_command(bfd *abfd)
 {
   unsigned char *buf = NULL;
   bfd_size_type len = 0;
   char *p;
   int ret = -1;
 
-  ret = bfd_mach_o_core_fetch_environment (abfd, &buf, &len);
+  ret = bfd_mach_o_core_fetch_environment(abfd, &buf, &len);
   if (ret <= 0)
     return NULL;
 
-  p = xstrdup ((char *) buf);
-  free (buf);
+  p = xstrdup((char *)buf);
+  free(buf);
 
   return p;
 }
 
 int
-bfd_mach_o_core_file_failing_signal (bfd *abfd ATTRIBUTE_UNUSED)
+bfd_mach_o_core_file_failing_signal(bfd *abfd ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
 bfd_boolean
-bfd_mach_o_core_file_matches_executable_p (bfd *core_bfd, bfd *exec_bfd)
+bfd_mach_o_core_file_matches_executable_p(bfd *core_bfd, bfd *exec_bfd)
 {
   if (core_bfd->tdata.mach_o_data->header.cputype == exec_bfd->tdata.mach_o_data->header.cputype)
     return TRUE;
@@ -3359,21 +3384,20 @@ bfd_mach_o_core_file_matches_executable_p (bfd *core_bfd, bfd *exec_bfd)
  */
 
 bfd_boolean
-bfd_mach_o_get_uuid (bfd *abfd, unsigned char *buf, unsigned long buf_len)
+bfd_mach_o_get_uuid(bfd *abfd, unsigned char *buf, unsigned long buf_len)
 {
-  if (bfd_get_flavour (abfd) == bfd_target_mach_o_flavour)
+  if (bfd_get_flavour(abfd) == bfd_target_mach_o_flavour)
     {
       unsigned i;
       bfd_mach_o_data_struct *mdata = abfd->tdata.mach_o_data;
-      const unsigned k_uuid_size = sizeof (mdata->uuid);
-      /* Return true if we have any non-zero uuid bytes.  */
+      const unsigned k_uuid_size = sizeof(mdata->uuid);
+      /* Return true if we have any non-zero uuid bytes: */
       for (i = 0; i < k_uuid_size; ++i)
 	{
 	  if (mdata->uuid[i] != 0)
 	    {
-	      memcpy (buf,
-		      &mdata->uuid[0],
-		      buf_len > k_uuid_size ? k_uuid_size : buf_len);
+	      memcpy(buf, &mdata->uuid[0],
+		     (buf_len > k_uuid_size) ? k_uuid_size : buf_len);
 	      return TRUE;
 	    }
 	}
@@ -3386,7 +3410,7 @@ bfd_mach_o_get_uuid (bfd *abfd, unsigned char *buf, unsigned long buf_len)
    rather read it from memory.  */
 
 bfd_boolean
-bfd_mach_o_encrypted_binary (bfd *abfd)
+bfd_mach_o_encrypted_binary(bfd *abfd)
 {
   if (abfd->tdata.mach_o_data->encrypted == 0)
     return FALSE;
@@ -3401,10 +3425,10 @@ bfd_mach_o_encrypted_binary (bfd *abfd)
 
 /* The thin version closes all the member bfd's.  */
 static bfd_boolean
-mach_o_bfd_thin_free_cached_info (bfd *input)
+mach_o_bfd_thin_free_cached_info(bfd *input)
 {
-  if (bfd_check_format (input, bfd_archive))
-    bfd_archive_free_cached_info (input);
+  if (bfd_check_format(input, bfd_archive))
+    bfd_archive_free_cached_info(input);
   return TRUE;
 }
 
@@ -3429,7 +3453,6 @@ mach_o_bfd_fat_free_cached_info(bfd *input)
 	}
     }
   return TRUE;
-
 }
 
 #define bfd_mach_o_bfd_free_cached_info mach_o_bfd_thin_free_cached_info

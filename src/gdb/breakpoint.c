@@ -8647,11 +8647,11 @@ catch_exception_command_1 (enum exception_event_kind ex_event, char *arg,
    inside a catch_errors */
 
 static int
-cover_target_enable_exception_callback (void *arg)
+cover_target_enable_exception_callback(void *arg)
 {
-  args_for_catchpoint_enable *args = arg;
+  args_for_catchpoint_enable *args = (args_for_catchpoint_enable *)arg;
 
-  return target_enable_exception_callback (args->kind, args->enable_p);
+  return target_enable_exception_callback(args->kind, args->enable_p);
 }
 
 static void
@@ -8745,14 +8745,14 @@ catch_command_1 (char *arg, int tempflag, int from_tty)
     {
       error (_("Catch of stop not yet implemented"));
     }
-
-  /* This doesn't appear to be an event name */
-
+  /* This does NOT appear to be an event name */
   else
     {
       /* Pre-v.4.16 behaviour was to treat the argument
          as the name of an exception */
-      /* catch_throw_command_1 (arg1_start, tempflag, from_tty); */
+#ifdef __PRE_v4_16_BEHAVIOR__
+      catch_throw_command_1(arg1_start, tempflag, from_tty);
+#endif /* __PRE_v4_16_BEHAVIOR__ */
       /* Now this is not allowed */
       error (_("Unknown event kind specified for catch"));
 
@@ -9435,9 +9435,7 @@ breakpoint_re_set_one (void *bint)
 
 	for (j = 0; j < sals.nelts && !found; j++)
 	  {
-
-	    /* Check each SAL (until the correct one is found).  */
-
+	    /* Check each SAL (until the correct one is found): */
 	    struct objfile *bp_objfile = NULL;
 	    struct obj_section *osect = NULL;
 	    struct symtab_and_line *sal = &(sals.sals[j]);
@@ -9445,8 +9443,7 @@ breakpoint_re_set_one (void *bint)
 	    CORE_ADDR offset;
 	    CORE_ADDR target_pc;
 
-	    /* First, find the objfile for the SAL.  */
-
+	    /* First, find the objfile for the SAL: */
 	    if (sal->symtab != NULL)
 	      bp_objfile = sal->symtab->objfile;
 	    else if (sal->section != NULL)
@@ -9483,7 +9480,6 @@ breakpoint_re_set_one (void *bint)
 	      }
 	    else
 	      {
-
 		/* If the addresses don't match, we need to try to find an
 		   offset to add, from an objfile section,  to make them match.  */
 
@@ -9522,7 +9518,9 @@ breakpoint_re_set_one (void *bint)
 	 use the last one (which mimic's the old behavior of this function).  */
 
       if (!found)
-	i = sals.nelts - 1;
+        {
+          i = (sals.nelts - 1);
+        }
 
       /* APPLE LOCAL end dealing correctly with multiple sals.  */
 	{
@@ -10511,7 +10509,7 @@ save_breakpoints_command (char *arg, int from_tty)
           && b->type != bp_catch_fork
           && b->type != bp_catch_vfork
           && b->type != bp_catch_exec
-      /* APPLE LOCAL: Handle gnu_v3_catch types.  */
+          /* APPLE LOCAL: Handle gnu_v3_catch types.  */
           && b->type != bp_gnu_v3_catch_catch
           && b->type != bp_gnu_v3_catch_throw
           && b->type != bp_catch_catch
@@ -10525,30 +10523,30 @@ save_breakpoints_command (char *arg, int from_tty)
 
       if (! found_a_breakpoint++)
         {
-	    stream = gdb_fopen (pathname, FOPEN_WT);
+          stream = gdb_fopen(pathname, FOPEN_WT);
           if (stream == NULL)
-            error ("Unable to open file '%s' for saving breakpoints (%s)",
-		      arg, strerror (errno));
-	    make_cleanup_ui_file_delete (stream);
-	      uiout = cli_out_new (stream);
-	        if (uiout == NULL)
-		      error ("Unable to create cli_out from file for saving breakpoints");
-		  make_cleanup_ui_out_delete (uiout);
+            error("Unable to open file '%s' for saving breakpoints (%s)",
+                  arg, strerror(errno));
+          make_cleanup_ui_file_delete(stream);
+          uiout = cli_out_new(stream);
+          if (uiout == NULL)
+            error("Unable to create cli_out from file for saving breakpoints");
+          make_cleanup_ui_out_delete(uiout);
 
-          if (time (&t) != -1)
+          if (time(&t) != -1)
             {
-              char *l = setlocale (LC_ALL, NULL);
+              char *l = setlocale(LC_ALL, NULL);
               if (l)
                 {
-                  char *orig_locale = strcpy (xmalloc (strlen (l) + 1), l);
-                  setlocale (LC_ALL, "");
-                  if (strftime (buf, sizeof(buf), "%a %b %e %H:%M:%S %Z %Y", localtime (&t)))
-                    fprintf_unfiltered (stream, "# Saved breakpoints file created on %s\n\n", buf);
-                  setlocale (LC_ALL, orig_locale);
+                  char *orig_locale = strcpy(xmalloc(strlen(l) + 1), l);
+                  setlocale(LC_ALL, "");
+                  if (strftime(buf, sizeof(buf), "%a %b %e %H:%M:%S %Z %Y", localtime(&t)))
+                    fprintf_unfiltered(stream, "# Saved breakpoints file created on %s\n\n", buf);
+                  setlocale(LC_ALL, orig_locale);
                 }
             }
-          fprintf_unfiltered (stream, "set $current_radix = $input_radix\n"
-			            "set input-radix 012\n\n");
+          fprintf_unfiltered(stream, "set $current_radix = $input_radix\n"
+			           "set input-radix 012\n\n");
           current_radix = 10;
         }
 

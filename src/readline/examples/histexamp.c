@@ -21,13 +21,17 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning histexamp.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning histexamp.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning histexamp.c expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "histexamp.c expects <stdio.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 
 #if defined(HAVE_STRING_H)
@@ -36,14 +40,18 @@
 # if defined(HAVE_STRINGS_H)
 #  include <strings.h>
 # else
-#  warning histexamp.c expects either string.h or strings.h to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "histexamp.c expects either <string.h> or <strings.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_STRINGS_H */
 #endif /* !HAVE_STRING_H */
 
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning histexamp.c expects stdlib.h to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "histexamp.c expects stdlib.h to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H */
 
 #ifdef READLINE_LIBRARY
@@ -52,7 +60,7 @@
 # include <readline/history.h>
 #endif /* READLINE_LIBRARY */
 
-int main (argc, argv)
+int main(argc, argv)
      int argc;
      char **argv;
 {
@@ -61,77 +69,77 @@ int main (argc, argv)
 
   line[0] = 0;
 
-  using_history ();
+  using_history();
   while (!done)
     {
-      printf ("history$ ");
-      fflush (stdout);
-      t = fgets (line, sizeof (line) - 1, stdin);
+      printf("history$ ");
+      fflush(stdout);
+      t = fgets(line, (sizeof(line) - 1), stdin);
       if (t && *t)
         {
-          len = strlen (t);
+          len = strlen(t);
           if (t[len - 1] == '\n')
             t[len - 1] = '\0';
         }
 
       if (!t)
-        strcpy (line, "quit");
+        strcpy(line, "quit");
 
       if (line[0])
         {
           char *expansion;
           int result;
 
-          using_history ();
+          using_history();
 
-          result = history_expand (line, &expansion);
+          result = history_expand(line, &expansion);
           if (result)
-            fprintf (stderr, "%s\n", expansion);
+            fprintf(stderr, "%s\n", expansion);
 
-          if (result < 0 || result == 2)
+          if ((result < 0) || (result == 2))
             {
-              free (expansion);
+              free(expansion);
               continue;
             }
 
-          add_history (expansion);
-          strncpy (line, expansion, sizeof (line) - 1);
-          free (expansion);
+          add_history(expansion);
+          strncpy(line, expansion, sizeof(line) - 1);
+          free(expansion);
         }
 
-      if (strcmp (line, "quit") == 0)
+      if (strcmp(line, "quit") == 0)
         done = 1;
-      else if (strcmp (line, "save") == 0)
-        write_history ("history_file");
-      else if (strcmp (line, "read") == 0)
-        read_history ("history_file");
-      else if (strcmp (line, "list") == 0)
+      else if (strcmp(line, "save") == 0)
+        write_history("history_file");
+      else if (strcmp(line, "read") == 0)
+        read_history("history_file");
+      else if (strcmp(line, "list") == 0)
         {
           register HIST_ENTRY **the_list;
           register int i;
 
-          the_list = history_list ();
+          the_list = history_list();
           if (the_list)
             for (i = 0; the_list[i]; i++)
-              printf ("%d: %s\n", i + history_base, the_list[i]->line);
+              printf("%d: %s\n", i + history_base, the_list[i]->line);
         }
-      else if (strncmp (line, "delete", 6) == 0)
+      else if (strncmp(line, "delete", 6) == 0)
         {
           int which;
-          if ((sscanf (line + 6, "%d", &which)) == 1)
+          if ((sscanf(line + 6, "%d", &which)) == 1)
             {
-              HIST_ENTRY *entry = remove_history (which);
+              HIST_ENTRY *entry = remove_history(which);
               if (!entry)
-                fprintf (stderr, "No such entry %d\n", which);
+                fprintf(stderr, "No such entry %d\n", which);
               else
                 {
-                  free (entry->line);
-                  free (entry);
+                  free(entry->line);
+                  free(entry);
                 }
             }
           else
             {
-              fprintf (stderr, "non-numeric arg given to `delete'\n");
+              fprintf(stderr, "non-numeric arg given to `delete'\n");
             }
         }
     }

@@ -838,7 +838,7 @@ fi
 # -Wchar-subscripts -Wtraditional -Wshadow -Wcast-qual
 # -Wcast-align -Wwrite-strings -Wconversion -Wstrict-prototypes
 # -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls
-# -Woverloaded-virtual -Winline -Werror"
+# -Woverloaded-virtual -Winline -Werror
 AC_ARG_ENABLE([build-warnings],
 [AS_HELP_STRING([--enable-build-warnings],[Enable build-time compiler warnings if gcc is used])],
 [case "${enableval}" in
@@ -854,7 +854,7 @@ if test x"${silent}" != x"yes" && test x"${build_warnings}" != x""; then
   echo "Setting compiler warning flags = ${build_warnings}" 6>&1
 fi])dnl
 AC_ARG_ENABLE([sim-build-warnings],
-[AS_HELP_STRING([--enable-gdb-build-warnings],[Enable SIM specific build-time compiler warnings if gcc is used])],
+[AS_HELP_STRING([--enable-sim-build-warnings],[Enable SIM specific build-time compiler warnings if gcc is used])],
 [case "${enableval}" in
   yes)	;;
   no)	build_warnings="-w";;
@@ -865,7 +865,7 @@ AC_ARG_ENABLE([sim-build-warnings],
   *)    build_warnings=`echo "${enableval}" | sed -e "s/,/ /g"`;;
 esac
 if test x"${silent}" != x"yes" && test x"${build_warnings}" != x""; then
-  echo "Setting GDB specific compiler warning flags = ${build_warnings}" 6>&1
+  echo "Setting SIM specific compiler warning flags = ${build_warnings}" 6>&1
 fi])dnl
 WARN_CFLAGS=""
 WERROR_CFLAGS=""
@@ -901,8 +901,8 @@ then
     AC_MSG_RESULT([${WARN_CFLAGS}${WERROR_CFLAGS}])
 fi
 ])
-AC_SUBST([WARN_CFLAGS])
-AC_SUBST([WERROR_CFLAGS])
+AC_SUBST([WARN_CFLAGS])dnl
+AC_SUBST([WERROR_CFLAGS])dnl
 
 
 dnl# Generate the Makefile in a target specific directory.
@@ -1384,7 +1384,7 @@ if test "x${cgen_maint}" != "xno"; then
 else
   CGEN_MAINT='#'
 fi
-AC_SUBST([CGEN_MAINT])
-AC_SUBST([cgendir])
-AC_SUBST([cgen])
-])
+AC_SUBST([CGEN_MAINT])dnl
+AC_SUBST([cgendir])dnl
+AC_SUBST([cgen])dnl
+])dnl

@@ -441,16 +441,15 @@ avr_info_to_howto_rela(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
 }
 
 static asection *
-elf32_avr_gc_mark_hook(sec, info, rel, h, sym)
-     asection *sec;
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
-     Elf_Internal_Rela *rel;
-     struct elf_link_hash_entry *h;
-     Elf_Internal_Sym *sym;
+elf32_avr_gc_mark_hook(asection *sec,
+                       struct bfd_link_info *info ATTRIBUTE_UNUSED,
+                       Elf_Internal_Rela *rel,
+                       struct elf_link_hash_entry *h,
+                       Elf_Internal_Sym *sym)
 {
   if (h != NULL)
     {
-      switch (ELF32_R_TYPE (rel->r_info))
+      switch (ELF32_R_TYPE(rel->r_info))
 	{
 	default:
 	  switch (h->root.type)
@@ -474,11 +473,10 @@ elf32_avr_gc_mark_hook(sec, info, rel, h, sym)
 }
 
 static bfd_boolean
-elf32_avr_gc_sweep_hook(abfd, info, sec, relocs)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
-     asection *sec ATTRIBUTE_UNUSED;
-     const Elf_Internal_Rela *relocs ATTRIBUTE_UNUSED;
+elf32_avr_gc_sweep_hook(bfd *abfd ATTRIBUTE_UNUSED,
+                        struct bfd_link_info *info ATTRIBUTE_UNUSED,
+                        asection *sec ATTRIBUTE_UNUSED,
+                        const Elf_Internal_Rela *relocs ATTRIBUTE_UNUSED)
 {
   /* We do NOT use got and plt entries for avr: */
   return TRUE;
@@ -532,14 +530,9 @@ elf32_avr_check_relocs(bfd *abfd, struct bfd_link_info *info,
    routines, but a few relocs, we have to do them ourselves.  */
 
 static bfd_reloc_status_type
-avr_final_link_relocate (howto, input_bfd, input_section,
-			 contents, rel, relocation)
-     reloc_howto_type *  howto;
-     bfd *               input_bfd;
-     asection *          input_section;
-     bfd_byte *          contents;
-     Elf_Internal_Rela * rel;
-     bfd_vma             relocation;
+avr_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
+                        asection *input_section, bfd_byte *contents,
+                        Elf_Internal_Rela *rel, bfd_vma relocation)
 {
   bfd_reloc_status_type r = bfd_reloc_ok;
   bfd_vma               x;
@@ -784,16 +777,12 @@ avr_final_link_relocate (howto, input_bfd, input_section,
 
 /* Relocate an AVR ELF section.  */
 static bfd_boolean
-elf32_avr_relocate_section (output_bfd, info, input_bfd, input_section,
-			    contents, relocs, local_syms, local_sections)
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     Elf_Internal_Rela *relocs;
-     Elf_Internal_Sym *local_syms;
-     asection **local_sections;
+elf32_avr_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
+                           struct bfd_link_info *info, bfd *input_bfd,
+                           asection *input_section, bfd_byte *contents,
+                           Elf_Internal_Rela *relocs,
+                           Elf_Internal_Sym *local_syms,
+                           asection **local_sections)
 {
   Elf_Internal_Shdr *           symtab_hdr;
   struct elf_link_hash_entry ** sym_hashes;
@@ -904,13 +893,12 @@ elf32_avr_relocate_section (output_bfd, info, input_bfd, input_section,
    number.  */
 
 static void
-bfd_elf_avr_final_write_processing (abfd, linker)
-     bfd *abfd;
-     bfd_boolean linker ATTRIBUTE_UNUSED;
+bfd_elf_avr_final_write_processing(bfd *abfd,
+                                   bfd_boolean linker ATTRIBUTE_UNUSED)
 {
   unsigned long val;
 
-  switch (bfd_get_mach (abfd))
+  switch (bfd_get_mach(abfd))
     {
     default:
     case bfd_mach_avr2:
@@ -934,22 +922,20 @@ bfd_elf_avr_final_write_processing (abfd, linker)
       break;
     }
 
-  elf_elfheader (abfd)->e_machine = EM_AVR;
-  elf_elfheader (abfd)->e_flags &= ~ EF_AVR_MACH;
-  elf_elfheader (abfd)->e_flags |= val;
+  elf_elfheader(abfd)->e_machine = EM_AVR;
+  elf_elfheader(abfd)->e_flags &= ~EF_AVR_MACH;
+  elf_elfheader(abfd)->e_flags |= val;
 }
 
-/* Set the right machine number.  */
-
+/* Set the right machine number: */
 static bfd_boolean
-elf32_avr_object_p (abfd)
-     bfd *abfd;
+elf32_avr_object_p(bfd *abfd)
 {
   unsigned int e_set = bfd_mach_avr2;
-  if (elf_elfheader (abfd)->e_machine == EM_AVR
-      || elf_elfheader (abfd)->e_machine == EM_AVR_OLD)
+  if (elf_elfheader(abfd)->e_machine == EM_AVR
+      || elf_elfheader(abfd)->e_machine == EM_AVR_OLD)
     {
-      int e_mach = elf_elfheader (abfd)->e_flags & EF_AVR_MACH;
+      int e_mach = elf_elfheader(abfd)->e_flags & EF_AVR_MACH;
       switch (e_mach)
 	{
 	default:

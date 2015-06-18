@@ -7,26 +7,28 @@ AC_CONFIG_SRCDIR([Makefile.in])
 AC_PROG_CC
 AC_PROG_INSTALL
 m4_ifdef([AM_PROG_AR],[
-AM_PROG_AR
+  AM_PROG_AR
 ],[
-AC_CHECK_TOOL([AR],[ar])
-])
-AC_CHECK_TOOL([RANLIB],[ranlib],[:])
+  AC_CHECK_TOOL([AR],[ar])dnl
+])dnl
+AC_CHECK_TOOL([RANLIB],[ranlib],[:])dnl
 
 AC_CONFIG_AUX_DIR([..])
 AC_CANONICAL_TARGET
 AC_ARG_PROGRAM
 AC_PROG_CXX
-AC_SUBST([CFLAGS])
-AC_SUBST([HDEFINES])
+AC_SUBST([CFLAGS])dnl
+AC_SUBST([HDEFINES])dnl
 AR=${AR-ar}
-AC_SUBST([AR])
+AC_SUBST([AR])dnl
+  ## keep autoscan happy:
 if test "x${RANLIB}" = "x"; then
-	test -z "${RANLIB}"
-	AC_PROG_RANLIB
+  test -z "${RANLIB}"
+  AC_PROG_RANLIB
 else
-	test ! -z "${RANLIB}" && export RANLIB
-	AC_SUBST([RANLIB])
+  test ! -z "${RANLIB}" && export RANLIB
+  AC_SUBST([RANLIB])dnl
+  ## gotta do something here...
 fi
 
 # Put a plausible default for CC_FOR_BUILD in Makefile.
@@ -35,7 +37,7 @@ if test "x${cross_compiling}" = "xno"; then
 else
   CC_FOR_BUILD=gcc
 fi
-AC_SUBST([CC_FOR_BUILD])
+AC_SUBST([CC_FOR_BUILD])dnl
 
 # If a cpu ever has more than one simulator to choose from, use
 # --enable-sim=... to choose.
@@ -43,8 +45,8 @@ AC_ARG_ENABLE([sim],
 [AS_HELP_STRING([--enable-sim],[If a cpu ever has more than one simulator to choose from, use this flag.])],
 [case "${enableval}" in
 yes | no) ;;
-*)	AC_MSG_ERROR([bad value ${enableval} given for --enable-sim option]) ;;
-esac])
+*) AC_MSG_ERROR([bad value ${enableval} given for --enable-sim option]) ;;
+esac])dnl
 
 # Assume simulator can be built with cc.
 # If the user passes --enable-sim built it regardless of $(CC).
@@ -55,12 +57,12 @@ extra_subdirs=common
 dnl# Macro for adding sim directory to subdirectories, assuming it exists:
 dnl# Usage: $1 = target subdir
 AC_DEFUN([AC_SIM_TARGET_SUBDIR],[
-	if test -d $1; then
-		sim_target=$1
-	else
-		AC_MSG_WARN([the $1 target was requested but the subdirectory for it is not present])
-	fi
-])
+  if test -d $1; then
+    sim_target=$1
+  else
+    AC_MSG_WARN([the $1 target was requested but the subdirectory for it is not present])
+  fi
+])dnl
 
 # WHEN ADDING ENTRIES TO THIS MATRIX:
 #  Make sure that the left side always has two dashes. Otherwise you
@@ -182,39 +184,40 @@ fi
 
 
 case "${enable_sim}" in
-no)	sim_target=none ;;
+no) sim_target=none ;;
 yes)
-	if test ${only_if_gcc} = yes ; then
-		if test "${GCC}" != yes ; then
-			echo "Cannot enable simulator since not compiling with GCC."
-			sim_target=none
-		fi
-	fi
-	;;
+  if test "x${only_if_gcc}" = "xyes"; then
+    if test "x${GCC}" != "xyes"; then
+      echo "Cannot enable simulator since not compiling with GCC."
+      sim_target=none
+    fi
+  fi
+  ;;
 *)
-	if test ${only_if_enabled} = yes ; then
-		echo "The simulator was not explicitly enabled, so disabling."
-		sim_target=none
-	else
-		if test ${only_if_gcc} = yes ; then
-			if test "${GCC}" != yes ; then
-				echo "The requested simulator requires gcc, but you are not using gcc, so disabling."
-				sim_target=none
-			fi
-		fi
-	fi
-	;;
+  if test "x${only_if_enabled}" = "xyes"; then
+    echo "The simulator was not explicitly enabled, so disabling."
+    sim_target=none
+  else
+    if test "x${only_if_gcc}" = "xyes"; then
+      if test "x${GCC}" != "xyes"; then
+        echo "The requested simulator requires gcc, but you are not using gcc, so disabling."
+        sim_target=none
+      fi
+    fi
+  fi
+  ;;
 esac
 
-if test x"${sim_target}" != xnone ; then
-	configdirs="${extra_subdirs} ${sim_target}"
-	AC_MSG_NOTICE([config subdirs are "${configdirs}"])
-	AC_CONFIG_SUBDIRS([${configdirs}])
+if test x"${sim_target}" != x"none"; then
+  configdirs="${extra_subdirs} ${sim_target}"
+  AC_MSG_NOTICE([config subdirs are "${configdirs}"])
+  AC_CONFIG_SUBDIRS([${configdirs}])
 else
-	AC_MSG_NOTICE([config subdirs are just "${extra_subdirs}"])
-	AC_CONFIG_SUBDIRS([${extra_subdirs}])
+  AC_MSG_NOTICE([config subdirs are just "${extra_subdirs}"])
+  AC_CONFIG_SUBDIRS([${extra_subdirs}])
 fi
 
+# Output.
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
 

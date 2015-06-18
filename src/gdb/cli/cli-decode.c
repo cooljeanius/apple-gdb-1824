@@ -582,10 +582,10 @@ delete_cmd(char *name, struct cmd_list_element **list)
             c->next->hookee_pre->hook_pre = 0; /* hooked cmd gets away.  */
           if (c->next->hookee_post)
             c->next->hookee_post->hook_post = 0; /* remove post hook */
-                                               /* :( no fishing metaphore */
-	    p = c->next->next;
-	    xfree (c->next);
-	    c->next = p;
+                                               /* :( no fishing metaphor */
+          p = c->next->next;
+          xfree(c->next);
+          c->next = p;
 	  }
 	else
 	  c = c->next;

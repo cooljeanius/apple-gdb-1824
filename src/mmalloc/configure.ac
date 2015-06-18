@@ -186,6 +186,7 @@ AC_CHECK_TYPES([port_t],[],[
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_PORT_H */
 ])dnl
+AC_TYPE_INTPTR_T
 AC_TYPE_INT32_T
 AC_TYPE_UINT32_T
 

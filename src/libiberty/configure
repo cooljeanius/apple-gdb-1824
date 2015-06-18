@@ -5761,12 +5761,15 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 ac_libiberty_warn_cflags=""
+if test "x${GCC}" = "xyes" && test "x${WERROR_CFLAGS}" = "x"; then
+  WERROR_CFLAGS="-Werror"
+fi
 save_CFLAGS="${CFLAGS}"
 for real_option in -Wall -Wextra -Wwrite-strings -Wc++-compat \
 -Wodr -Wstrict-prototypes -Wmissing-prototypes -Wmissing-parameter-type \
 -Wmissing-declarations -Wnested-externs -Wundef -Wshadow -Wformat=2 \
 -Wold-style-definition -Wold-style-declaration -Wfloat-conversion -Wabi \
--Wc99-c11-compat; do
+-Wc99-c11-compat -Wout-of-line-declaration -Wno-extended-offsetof; do
   # Do the check with the no- prefix removed since gcc silently accepts
   # any -Wno-* option on purpose:
   case ${real_option} in
@@ -5780,7 +5783,7 @@ $as_echo_n "checking whether ${CC} supports ${option}... " >&6; }
 if eval \${$as_acx_Woption+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  CFLAGS="${option}"
+  CFLAGS="${option} ${WERROR_CFLAGS}"
     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 

@@ -301,7 +301,7 @@ _bfd_xcoff64_swap_lineno_out(bfd *abfd, PTR inp, PTR outp)
   struct external_lineno *ext = (struct external_lineno *)outp;
 
   H_PUT_32(abfd, (bfd_vma)in->l_addr.l_symndx, ext->l_addr.l_symndx);
-  H_PUT_32(abfd, in->l_lnno, (ext->l_lnno));
+  H_PUT_32(abfd, (bfd_vma)in->l_lnno, (ext->l_lnno));
 
   if (in->l_lnno == 0)
     H_PUT_32(abfd, (bfd_vma)in->l_addr.l_symndx, ext->l_addr.l_symndx);
@@ -2417,7 +2417,8 @@ xcoff64_generate_rtinit(bfd *abfd, const char *init, const char *fini,
   bfd_coff_swap_scnhdr_out(abfd, &bss_scnhdr, &scnhdr_ext[SCNHSZ * 2]);
   bfd_bwrite(scnhdr_ext, (bfd_size_type)(3UL * SCNHSZ), abfd);
   bfd_bwrite(data_buffer, data_buffer_size, abfd);
-  bfd_bwrite(reloc_ext, (data_scnhdr.s_nreloc * RELSZ), abfd);
+  bfd_bwrite(reloc_ext, (bfd_size_type)(data_scnhdr.s_nreloc * RELSZ),
+             abfd);
   bfd_bwrite(syment_ext, (bfd_size_type)(filehdr.f_nsyms * SYMESZ), abfd);
   bfd_bwrite(string_table, string_table_size, abfd);
 

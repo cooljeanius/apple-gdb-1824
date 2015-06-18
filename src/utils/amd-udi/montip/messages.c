@@ -553,7 +553,8 @@ if ((DebugCoreVersion >= (int) 0x13) && (m_space == (INT32) SPECIAL_REG))
 send_msg_buffer->fill_msg.start_addr = start;
 send_msg_buffer->fill_msg.fill_count = fill_count;
 send_msg_buffer->fill_msg.byte_count = byte_count;
-(void) strcpy ( &(send_msg_buffer->fill_msg.fill_data),pattern);
+(void)strcpy((char *)&(send_msg_buffer->fill_msg.fill_data),
+             (const char *)pattern);
 }
 
 void
@@ -946,15 +947,19 @@ INT32 match_name(name)
 char	*name;
 {
  int	i;
+ char **TDF_target_names = NULL;
 
  i = 0;
- while (TDF[i].target_name) {
+ /* the comparison against NULL is not strictly necessary, but it helps
+  * to clarify that the assignment is indeed supposed to be an assignment
+  * instead of an equality comparison: */
+ while ((TDF_target_names[i] = TDF[i].target_name) != NULL) {
    if (strcmp(TDF[i].target_name, name))
      i++;
    else
-     return((INT32) i);
+     return ((INT32)i);
  }
- return(FAILURE);
+ return (FAILURE);
 }
 
 /*

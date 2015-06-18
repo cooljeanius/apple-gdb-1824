@@ -743,7 +743,11 @@ out(bfd *abfd, int type, char *start, char *end)
 {
   int sum = 0;
   char *s;
+#ifdef NDEBUG /* i.e. Release */
+  char front[8];
+#else
   char front[6];
+#endif /* NDEBUG */
   bfd_size_type wrlen;
 
   front[0] = '%';

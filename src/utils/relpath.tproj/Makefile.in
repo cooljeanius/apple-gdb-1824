@@ -1,3 +1,5 @@
+## Makefile for relpath to use with ../configure
+
 PROJECT = relpath
 PRODUCT_TYPE = tool
 
@@ -7,7 +9,7 @@ CFILES = relpath.c
 OFILES = relpath.o
 CLEANFILES = *.o *~ relpath
 
-AM_CFLAGS = -Wall -mdynamic-no-pic
+AM_CFLAGS = -Wall -Wextra -mdynamic-no-pic
 AM_LDFLAGS = -dead_strip
 
 bin_PROGRAMS = relpath

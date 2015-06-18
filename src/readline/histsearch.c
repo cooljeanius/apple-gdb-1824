@@ -65,7 +65,7 @@ history_search_internal(const char *string, int direction, int anchored)
   register int i, reverse;
   register char *line;
   register int line_index;
-  int string_len;
+  size_t string_len;
   HIST_ENTRY **the_history; 	/* local */
 
   i = history_offset;
@@ -75,44 +75,44 @@ history_search_internal(const char *string, int direction, int anchored)
   if ((string == 0) || (*string == '\0'))
     return (-1);
 
-  if (!history_length || ((i == history_length) && !reverse))
+  if (!history_length || ((i == (int)history_length) && !reverse))
     return (-1);
 
-  if (reverse && (i == history_length))
+  if (reverse && (i == (int)history_length))
     i--;
 
 #define NEXT_LINE() do { if (reverse) i--; else i++; } while (0)
 
-  the_history = history_list ();
-  string_len = strlen (string);
+  the_history = history_list();
+  string_len = strlen(string);
   while (1)
     {
       /* Search each line in the history list for STRING. */
 
       /* At limit for direction? */
-      if ((reverse && i < 0) || (!reverse && i == history_length))
+      if ((reverse && i < 0) || (!reverse && i == (int)history_length))
 	return (-1);
 
       line = the_history[i]->line;
-      line_index = strlen (line);
+      line_index = (int)strlen(line);
 
       /* If STRING is longer than line, no match. */
-      if (string_len > line_index)
+      if ((int)string_len > line_index)
 	{
-	  NEXT_LINE ();
+	  NEXT_LINE();
 	  continue;
 	}
 
       /* Handle anchored searches first. */
       if (anchored == ANCHORED_SEARCH)
 	{
-	  if (STREQN (string, line, string_len))
+	  if (STREQN(string, line, string_len))
 	    {
 	      history_offset = i;
 	      return (0);
 	    }
 
-	  NEXT_LINE ();
+	  NEXT_LINE();
 	  continue;
 	}
 
@@ -123,7 +123,7 @@ history_search_internal(const char *string, int direction, int anchored)
 
 	  while (line_index >= 0)
 	    {
-	      if (STREQN (string, line + line_index, string_len))
+	      if (STREQN(string, (line + line_index), string_len))
 		{
 		  history_offset = i;
 		  return (line_index);
@@ -135,12 +135,12 @@ history_search_internal(const char *string, int direction, int anchored)
 	{
 	  register int limit;
 
-	  limit = line_index - string_len + 1;
+	  limit = (line_index - (int)string_len + 1);
 	  line_index = 0;
 
 	  while (line_index < limit)
 	    {
-	      if (STREQN (string, line + line_index, string_len))
+	      if (STREQN(string, (line + line_index), string_len))
 		{
 		  history_offset = i;
 		  return (line_index);

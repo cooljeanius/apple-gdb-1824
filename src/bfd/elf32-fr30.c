@@ -246,18 +246,11 @@ static reloc_howto_type fr30_elf_howto_table [] =
          FALSE),                /* pcrel_offset */
 };
 
-/* Utility to actually perform an R_FR30_20 reloc.  */
-
+/* Utility to actually perform an R_FR30_20 reloc: */
 static bfd_reloc_status_type
-fr30_elf_i20_reloc(abfd, reloc_entry, symbol, data,
-		   input_section, output_bfd, error_message)
-     bfd *abfd;
-     arelent *reloc_entry;
-     asymbol *symbol;
-     PTR data;
-     asection *input_section;
-     bfd *output_bfd;
-     char **error_message ATTRIBUTE_UNUSED;
+fr30_elf_i20_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+                   PTR data, asection *input_section, bfd *output_bfd,
+                   char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
   unsigned long x;
@@ -292,18 +285,11 @@ fr30_elf_i20_reloc(abfd, reloc_entry, symbol, data,
   return bfd_reloc_ok;
 }
 
-/* Utility to actually perform a R_FR30_48 reloc.  */
-
+/* Utility to actually perform a R_FR30_48 reloc: */
 static bfd_reloc_status_type
-fr30_elf_i32_reloc(abfd, reloc_entry, symbol, data,
-		   input_section, output_bfd, error_message)
-     bfd *abfd;
-     arelent *reloc_entry;
-     asymbol *symbol;
-     PTR data;
-     asection *input_section;
-     bfd *output_bfd;
-     char **error_message ATTRIBUTE_UNUSED;
+fr30_elf_i32_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+                   PTR data, asection *input_section, bfd *output_bfd,
+                   char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
 
@@ -371,33 +357,25 @@ fr30_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
   return NULL;
 }
 
-/* Set the howto pointer for an FR30 ELF reloc.  */
-
+/* Set the howto pointer for an FR30 ELF reloc: */
 static void
-fr30_info_to_howto_rela (abfd, cache_ptr, dst)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *cache_ptr;
-     Elf_Internal_Rela *dst;
+fr30_info_to_howto_rela(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+                        Elf_Internal_Rela *dst)
 {
   unsigned int r_type;
 
-  r_type = ELF32_R_TYPE (dst->r_info);
-  BFD_ASSERT (r_type < (unsigned int) R_FR30_max);
-  cache_ptr->howto = & fr30_elf_howto_table [r_type];
+  r_type = ELF32_R_TYPE(dst->r_info);
+  BFD_ASSERT(r_type < (unsigned int)R_FR30_max);
+  cache_ptr->howto = &fr30_elf_howto_table[r_type];
 }
 
 /* Perform a single relocation.  By default we use the standard BFD
    routines, but a few relocs, we have to do them ourselves.  */
 
 static bfd_reloc_status_type
-fr30_final_link_relocate (howto, input_bfd, input_section, contents, rel,
-			  relocation)
-     reloc_howto_type *howto;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     Elf_Internal_Rela *rel;
-     bfd_vma relocation;
+fr30_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
+                         asection *input_section, bfd_byte *contents,
+                         Elf_Internal_Rela *rel, bfd_vma relocation)
 {
   bfd_reloc_status_type r = bfd_reloc_ok;
   bfd_vma x;
@@ -499,16 +477,11 @@ fr30_final_link_relocate (howto, input_bfd, input_section, contents, rel,
    accordingly.  */
 
 static bfd_boolean
-fr30_elf_relocate_section (output_bfd, info, input_bfd, input_section,
-			   contents, relocs, local_syms, local_sections)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     Elf_Internal_Rela *relocs;
-     Elf_Internal_Sym *local_syms;
-     asection **local_sections;
+fr30_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+                          bfd *input_bfd, asection *input_section,
+			  bfd_byte *contents, Elf_Internal_Rela *relocs,
+                          Elf_Internal_Sym *local_syms,
+                          asection **local_sections)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
@@ -623,16 +596,15 @@ fr30_elf_relocate_section (output_bfd, info, input_bfd, input_section,
    relocation.  */
 
 static asection *
-fr30_elf_gc_mark_hook (sec, info, rel, h, sym)
-     asection *sec;
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
-     Elf_Internal_Rela *rel;
-     struct elf_link_hash_entry *h;
-     Elf_Internal_Sym * sym;
+fr30_elf_gc_mark_hook(asection *sec,
+                      struct bfd_link_info *info ATTRIBUTE_UNUSED,
+                      Elf_Internal_Rela *rel,
+                      struct elf_link_hash_entry *h,
+                      Elf_Internal_Sym *sym)
 {
   if (h != NULL)
     {
-      switch (ELF32_R_TYPE (rel->r_info))
+      switch (ELF32_R_TYPE(rel->r_info))
 	{
 	case R_FR30_GNU_VTINHERIT:
 	case R_FR30_GNU_VTENTRY:
@@ -654,19 +626,17 @@ fr30_elf_gc_mark_hook (sec, info, rel, h, sym)
 	}
     }
   else
-    return bfd_section_from_elf_index (sec->owner, sym->st_shndx);
+    return bfd_section_from_elf_index(sec->owner, sym->st_shndx);
 
   return NULL;
 }
 
-/* Update the got entry reference counts for the section being removed.  */
-
+/* Update the got entry reference counts for the section being removed: */
 static bfd_boolean
-fr30_elf_gc_sweep_hook (abfd, info, sec, relocs)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
-     asection *sec ATTRIBUTE_UNUSED;
-     const Elf_Internal_Rela *relocs ATTRIBUTE_UNUSED;
+fr30_elf_gc_sweep_hook(bfd *abfd ATTRIBUTE_UNUSED,
+                       struct bfd_link_info *info ATTRIBUTE_UNUSED,
+                       asection *sec ATTRIBUTE_UNUSED,
+                       const Elf_Internal_Rela *relocs ATTRIBUTE_UNUSED)
 {
   return TRUE;
 }
@@ -676,11 +646,8 @@ fr30_elf_gc_sweep_hook (abfd, info, sec, relocs)
    virtual table relocs for gc.  */
 
 static bfd_boolean
-fr30_elf_check_relocs (abfd, info, sec, relocs)
-     bfd *abfd;
-     struct bfd_link_info *info;
-     asection *sec;
-     const Elf_Internal_Rela *relocs;
+fr30_elf_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
+                      const Elf_Internal_Rela *relocs)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes, **sym_hashes_end;

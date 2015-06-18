@@ -218,12 +218,12 @@ static struct option long_options[] =
 
 /* Some error-reporting functions.  */
 
-static void
-usage (FILE *stream, int status)
+static ATTRIBUTE_NORETURN void
+usage(FILE *stream, int status)
 {
-  fprintf (stream, _("Usage: %s [option(s)] [file(s)]\n"), program_name);
-  fprintf (stream, _(" List symbols in [file(s)] (a.out by default).\n"));
-  fprintf (stream, _(" The options are:\n\
+  fprintf(stream, _("Usage: %s [option(s)] [file(s)]\n"), program_name);
+  fprintf(stream, _(" List symbols in [file(s)] (a.out by default).\n"));
+  fprintf(stream, _(" The options are:\n\
   -a, --debug-syms       Display debugger-only symbols\n\
   -A, --print-file-name  Print name of the input file before every symbol\n\
   -B                     Same as --format=bsd\n\
@@ -1528,14 +1528,14 @@ main (int argc, char **argv)
 	  /* Ignored for HP/UX compatibility.  */
 	  break;
 	case 'f':
-	  set_output_format (optarg);
+	  set_output_format(optarg);
 	  break;
 	case 'g':
 	  external_only = 1;
 	  break;
 	case 'H':
 	case 'h':
-	  usage (stdout, 0);
+	  usage(stdout, 0);
 	case 'l':
 	  line_numbers = 1;
 	  break;
@@ -1587,12 +1587,12 @@ main (int argc, char **argv)
 	  break;
 
 	default:
-	  usage (stderr, 1);
+	  usage(stderr, 1);
 	}
     }
 
   if (show_version)
-    print_version ("nm");
+    print_version("nm");
 
   if (sort_by_size && undefined_only)
     {

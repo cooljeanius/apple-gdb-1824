@@ -147,7 +147,7 @@ coff_swap_reloc_out(bfd *abfd, void *src, void *dst)
   H_PUT_16(abfd, (bfd_vma)reloc_src->r_type, reloc_dst->r_type);
 
 # ifdef SWAP_OUT_RELOC_OFFSET
-  SWAP_OUT_RELOC_OFFSET(abfd, reloc_src->r_offset, reloc_dst->r_offset);
+  SWAP_OUT_RELOC_OFFSET(abfd, (bfd_vma)reloc_src->r_offset, reloc_dst->r_offset);
 # endif /* SWAP_OUT_RELOC_OFFSET */
 # ifdef SWAP_OUT_RELOC_EXTRA
   SWAP_OUT_RELOC_EXTRA(abfd, reloc_src, reloc_dst);

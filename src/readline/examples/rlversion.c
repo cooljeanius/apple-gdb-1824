@@ -25,23 +25,31 @@
 #if defined(HAVE_CONFIG_H)
 # include "config.h"
 #else
-# warning rlversion.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning rlversion.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning rlversion.c expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "rlversion.c expects <stdio.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning rlversion.c expects <stdlib.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "rlversion.c expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H */
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning rlversion.c expects <sys/types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "rlversion.c expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
 #include "posixstat.h"
 

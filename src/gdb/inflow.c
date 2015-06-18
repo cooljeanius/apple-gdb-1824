@@ -403,33 +403,33 @@ terminal_ours_1(int output_only)
 
 #ifdef HAVE_SGTTY
 	  result = ioctl(0, TIOCSPGRP, &our_process_group);
-#endif
+#endif /* HAVE_SGTTY */
 	}
 
 #ifdef SIGTTOU
       if (job_control)
-	signal (SIGTTOU, osigttou);
-#endif
+	signal(SIGTTOU, osigttou);
+#endif /* SIGTTOU */
 
       if (!job_control)
 	{
-	  signal (SIGINT, sigint_ours);
+	  signal(SIGINT, sigint_ours);
 #ifdef SIGQUIT
-	  signal (SIGQUIT, sigquit_ours);
-#endif
+	  signal(SIGQUIT, sigquit_ours);
+#endif /* SIGQUIT */
 	}
 
 #ifdef F_GETFL
-      tflags_inferior = fcntl (0, F_GETFL, 0);
+      tflags_inferior = fcntl(0, F_GETFL, 0);
 
       /* Is there a reason this is being done twice?  It happens both
-         places we use F_SETFL, so I'm inclined to think perhaps there
+         places we use F_SETFL, so I am inclined to think perhaps there
          is some reason, however perverse.  Perhaps not though...  */
-      result = fcntl (0, F_SETFL, tflags_ours);
-      result = fcntl (0, F_SETFL, tflags_ours);
-#endif
+      result = fcntl(0, F_SETFL, tflags_ours);
+      result = fcntl(0, F_SETFL, tflags_ours);
+#endif /* F_GETFL */
 
-      result = result;		/* lint */
+      result = (int)result;		/* lint */
     }
 }
 

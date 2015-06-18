@@ -471,6 +471,7 @@ char *DCIGETTEXT(const char *domainname, const char *msgid1,
   char *dirname, *xdomainname;
   char *single_locale;
   char *retval;
+  char *retstr;
   size_t retlen;
   int saved_errno;
 #if defined HAVE_TSEARCH || defined _LIBC
@@ -603,9 +604,14 @@ char *DCIGETTEXT(const char *domainname, const char *msgid1,
   xdomainname = (char *)alloca(strlen(categoryname) + domainname_len + 5);
   ADD_BLOCK(block_list, xdomainname);
 
-  (char *)stpcpy((char *)mempcpy(stpcpy(stpcpy(xdomainname,
-                                               categoryname), "/"),
-                                 domainname, domainname_len), ".mo");
+  retstr =
+    (char *)stpcpy((char *)mempcpy(stpcpy(stpcpy(xdomainname,
+                                                 categoryname), "/"),
+                                   domainname, domainname_len), ".mo");
+
+  if (retstr == NULL) {
+    ; /* do something? */
+  }
 
   /* Creating working area: */
   single_locale = (char *)alloca(strlen(categoryvalue) + 1);

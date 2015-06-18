@@ -237,7 +237,7 @@ coff_swap_reloc_out(bfd * abfd, void *src, void *dst)
   H_PUT_16(abfd, (bfd_vma)reloc_src->r_type, reloc_dst->r_type);
 
 # ifdef SWAP_OUT_RELOC_OFFSET
-  SWAP_OUT_RELOC_OFFSET(abfd, reloc_src->r_offset, reloc_dst->r_offset);
+  SWAP_OUT_RELOC_OFFSET(abfd, (bfd_vma)reloc_src->r_offset, reloc_dst->r_offset);
 # endif /* SWAP_OUT_RELOC_OFFSET */
 # ifdef SWAP_OUT_RELOC_EXTRA
   SWAP_OUT_RELOC_EXTRA(abfd, reloc_src, reloc_dst);
@@ -678,8 +678,8 @@ coff_swap_aouthdr_out(bfd * abfd, void * in, void * out)
 #endif /* !IA64 || (IA64 && !BFD64) */
 
 #ifdef I960
-  H_PUT_32 (abfd, aouthdr_in->tagentries, aouthdr_out->tagentries);
-#endif
+  H_PUT_32(abfd, (bfd_vma)aouthdr_in->tagentries, aouthdr_out->tagentries);
+#endif /* I960 */
 
 #ifdef RS6000COFF_C
 #ifdef XCOFF64
@@ -786,8 +786,8 @@ coff_swap_scnhdr_out(bfd * abfd, void *inp, void *outp)
   PUT_SCNHDR_LNNOPTR(abfd, scnhdr_int->s_lnnoptr, scnhdr_ext->s_lnnoptr);
   PUT_SCNHDR_FLAGS(abfd, (bfd_vma)scnhdr_int->s_flags, scnhdr_ext->s_flags);
 #if defined(M88)
-  H_PUT_32(abfd, scnhdr_int->s_nlnno, scnhdr_ext->s_nlnno);
-  H_PUT_32(abfd, scnhdr_int->s_nreloc, scnhdr_ext->s_nreloc);
+  H_PUT_32(abfd, (bfd_vma)scnhdr_int->s_nlnno, scnhdr_ext->s_nlnno);
+  H_PUT_32(abfd, (bfd_vma)scnhdr_int->s_nreloc, scnhdr_ext->s_nreloc);
 #else
   if (scnhdr_int->s_nlnno <= MAX_SCNHDR_NLNNO)
     PUT_SCNHDR_NLNNO(abfd, (bfd_vma)scnhdr_int->s_nlnno,

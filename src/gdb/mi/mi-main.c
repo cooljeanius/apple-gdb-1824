@@ -1615,8 +1615,8 @@ mi_cmd_data_read_memory (char *command, char **argv, int argc)
   mbuf = (char *)xcalloc(total_bytes, 1);
   make_cleanup(xfree, mbuf);
 
-  nr_bytes = target_read(&current_target, TARGET_OBJECT_MEMORY, NULL,
-                         (gdb_byte *)mbuf, addr, total_bytes);
+  nr_bytes = (int)target_read(&current_target, TARGET_OBJECT_MEMORY, NULL,
+                              (gdb_byte *)mbuf, addr, total_bytes);
   if (nr_bytes <= 0)
     {
       do_cleanups (cleanups);

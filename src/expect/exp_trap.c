@@ -10,6 +10,8 @@ would appreciate credit if this program or parts of it are used.
 
 #include "expect_cf.h"
 
+#include <assert.h>
+
 #include <stdio.h>
 #include <signal.h>
 #include <sys/types.h>
@@ -17,7 +19,9 @@ would appreciate credit if this program or parts of it are used.
 #ifdef HAVE_SYS_WAIT_H
 # include <sys/wait.h>
 #else
-# warning exp_trap.c expects <sys/wait.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "exp_trap.c expects <sys/wait.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_WAIT_H */
 
 #ifdef HAVE_STRING_H
@@ -26,7 +30,9 @@ would appreciate credit if this program or parts of it are used.
 # ifdef HAVE_STRINGS_H
 #  include <strings.h>
 # else
-#  warning exp_trap.c expects a string-related header to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "exp_trap.c expects a string-related header to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_STRINGS_H */
 #endif /* HAVE_STRING_H */
 
@@ -42,7 +48,9 @@ would appreciate credit if this program or parts of it are used.
 #   ifdef HAVE_MALLOC_MALLOC_H
 #    include <malloc/malloc.h>
 #   else
-#    warning exp_trap.c expects a header that provides malloc() to be included.
+#    if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#     warning "exp_trap.c expects a header that provides malloc() to be included."
+#    endif /* __GNUC__ && !__STRICT_ANSI__ */
 #   endif /* HAVE_MALLOC_MALLOC_H */
 #  endif /* HAVE_MALLOC_H */
 # endif /* HAVE_STDLIB_H */
@@ -77,10 +85,10 @@ static struct trap {
 				/* Each is handled by the eval_trap_action */
 	int mark;		/* TRUE if signal has occurred */
 	Tcl_Interp *interp;	/* interp to use or 0 if we should use the */
-				/* interpreter active at the time the sig */
-				/* is processed */
+						/* interpreter active at the time the sig */
+						/* is processed */
 	int code;		/* return our new code instead of code */
-				/* available when signal is processed */
+					/* available when signal is processed */
 	char *name;		/* name of signal */
 	int reserved;		/* if unavailable for trapping */
 } traps[NSIG];
@@ -90,10 +98,10 @@ int sigchld_count = 0;	/* # of sigchlds caught but not yet processed */
 static int eval_trap_action();
 
 static int got_sig;		/* this records the last signal received */
-				/* it is only a hint and can be wiped out */
-				/* by multiple signals, but it will always */
-				/* be left with a valid signal that is */
-				/* pending */
+						/* it is only a hint and can be wiped out */
+						/* by multiple signals, but it will always */
+						/* be left with a valid signal that is */
+						/* pending */
 
 static Tcl_AsyncHandler async_handler;
 
@@ -108,8 +116,8 @@ int sig;
 /* current sig being processed by user sig handler */
 static int current_sig = NO_SIG;
 
-int exp_nostack_dump = FALSE;	/* TRUE if user has requested unrolling of */
-				/* stack with no trace */
+int exp_nostack_dump = FALSE; /* TRUE if user has requested unrolling of */
+							  /* stack with no trace */
 
 
 
@@ -124,7 +132,9 @@ int code;
 	int rc;
 	int i;
 	Tcl_Interp *sig_interp;
-/*	extern Tcl_Interp *exp_interp;*/
+#if 0
+	extern Tcl_Interp *exp_interp;
+#endif /* 0 */
 
 	exp_debuglog("sighandler: handling signal(%d)\r\n",got_sig);
 
@@ -273,8 +283,8 @@ exp_init_trap()
 {
 	int i;
 
-	for (i=1;i<NSIG;i++) {
-		traps[i].name = Tcl_SignalId(i);
+	for (i = 1; i < NSIG; i++) {
+		traps[i].name = (char *)Tcl_SignalId(i);
 		traps[i].action = 0;
 		traps[i].reserved = FALSE;
 	}
@@ -406,7 +416,7 @@ char **argv;
 	action = *argv;
 
 	/* argv[1] is the list of signals - crack it open */
-	if (TCL_OK != Tcl_SplitList(interp,argv[1],&n,&list)) {
+	if (TCL_OK != Tcl_SplitList(interp, argv[1], &n, (CONST84 char ***)&list)) {
 		errorlog("%s\r\n",interp->result);
 		goto usage_error;
 	}
@@ -489,18 +499,19 @@ int oldcode;
 		/*
 		 * save return values
 		 */
-		eip = Tcl_GetVar(interp,"errorInfo",TCL_GLOBAL_ONLY);
+		eip = (char *)Tcl_GetVar(interp,"errorInfo",TCL_GLOBAL_ONLY);
 		if (eip) {
 			Tcl_DStringInit(&ei);
 			eip = Tcl_DStringAppend(&ei,eip,-1);
 		}
-		ecp = Tcl_GetVar(interp,"errorCode",TCL_GLOBAL_ONLY);
+		ecp = (char *)Tcl_GetVar(interp,"errorCode",TCL_GLOBAL_ONLY);
 		if (ecp) {
 			Tcl_DStringInit(&ec);
 			ecp = Tcl_DStringAppend(&ec,ecp,-1);
 		}
 		/* I assume interp->result is always non-zero, right? */
 		Tcl_DStringInit(&ir);
+		assert(interp->result != (char *)0);
 		Tcl_DStringAppend(&ir,interp->result,-1);
 	}
 
@@ -525,7 +536,7 @@ int oldcode;
 			 * get back, we will have lost the value of errorInfo
 			 */
 
-			eip = Tcl_GetVar(interp,"errorInfo",TCL_GLOBAL_ONLY);
+			eip = (char *)Tcl_GetVar(interp,"errorInfo",TCL_GLOBAL_ONLY);
 			exp_nostack_dump =
 				(eip && (0 == strncmp("-nostack",eip,8)));
 		}

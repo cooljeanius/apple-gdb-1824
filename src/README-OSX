@@ -22,7 +22,7 @@ Building
 --------
 
     export CFLAGS="-Wno-format"
-    ./configure --with-x --disable-werror --enable-carbon-framework --enable-debug-symbols-framework --disable-opts-test --enable-64-bit-bfd --prefix=$(pwd)/dist
+    ./configure --with-x --disable-werror --enable-carbon-framework --enable-debug-symbols-framework --enable-64-bit-bfd --prefix=$(pwd)/dist
     make
     make install
 

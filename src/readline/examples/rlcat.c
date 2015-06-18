@@ -27,31 +27,41 @@
 #if defined(HAVE_CONFIG_H)
 # include "config.h"
 #else
-# warning rlcat.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning rlcat.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning rlcat.c expects unistd.h to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "rlcat.c expects unistd.h to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning rlcat.c expects <sys/types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "rlcat.c expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
 #include "posixstat.h"
 
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning rlcat.c expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "rlcat.c expects <stdio.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning rlcat.c expects <stdlib.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "rlcat.c expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H */
 #include <ctype.h>
 #if defined(HAVE_STRING_H)
@@ -60,7 +70,9 @@
 # if defined(HAVE_STRINGS_H)
 #  include <strings.h>
 # else
-#  warning rlcat.c expects either string.h or strings.h to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "rlcat.c expects either string.h or strings.h to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_STRINGS_H */
 #endif /* !HAVE_STRING_H */
 #include <errno.h>
@@ -124,26 +136,26 @@ main(argc, argv)
 	  Nflag = 1;
 	  break;
 	default:
-	  usage ();
-	  exit (2);
+	  usage();
+	  exit(2);
 	}
     }
 
   argc -= optind;
   argv += optind;
 
-  if (isatty(0) == 0 || argc || Nflag)
+  if ((isatty(0) == 0) || argc || Nflag)
     return stdcat(argc, argv);
 
-  rl_variable_bind ("editing-mode", Vflag ? "vi" : "emacs");
-  while (temp = readline (""))
+  rl_variable_bind("editing-mode", Vflag ? "vi" : "emacs");
+  while ((temp = readline("")))
     {
       if (*temp)
-        add_history (temp);
-      printf ("%s\n", temp);
+        add_history(temp);
+      printf("%s\n", temp);
     }
 
-  return (ferror (stdout));
+  return (ferror(stdout));
 }
 
 static int

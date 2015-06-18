@@ -170,13 +170,13 @@ static bfd_size_type stab_size;
 static char *strtab;
 static bfd_size_type stabstr_size;
 
-static void
-usage (FILE *stream, int status)
+static ATTRIBUTE_NORETURN void
+usage(FILE *stream, int status)
 {
-  fprintf (stream, _("Usage: %s <option(s)> <file(s)>\n"), program_name);
-  fprintf (stream, _(" Display information from object <file(s)>.\n"));
-  fprintf (stream, _(" At least one of the following switches must be given:\n"));
-  fprintf (stream, _("\
+  fprintf(stream, _("Usage: %s <option(s)> <file(s)>\n"), program_name);
+  fprintf(stream, _(" Display information from object <file(s)>.\n"));
+  fprintf(stream, _(" At least one of the following switches must be given:\n"));
+  fprintf(stream, _("\
   -a, --archive-headers    Display archive header information\n\
   -f, --file-headers       Display the contents of the overall file header\n\
   -p, --private-headers    Display object format specific file header contents\n\
@@ -199,8 +199,8 @@ usage (FILE *stream, int status)
 "));
   if (status != 2)
     {
-      fprintf (stream, _("\n The following switches are optional:\n"));
-      fprintf (stream, _("\
+      fprintf(stream, _("\n The following switches are optional:\n"));
+      fprintf(stream, _("\
   -b, --target=BFDNAME           Specify the target object format as BFDNAME\n\
   -m, --architecture=MACHINE     Specify the target architecture as MACHINE\n\
   -j, --section=NAME             Only display information for section NAME\n\
@@ -223,20 +223,20 @@ usage (FILE *stream, int status)
       --adjust-vma=OFFSET        Add OFFSET to all displayed section addresses\n\
       --special-syms             Include special symbols in symbol dumps\n\
 \n"));
-      list_supported_targets (program_name, stream);
-      list_supported_architectures (program_name, stream);
+      list_supported_targets(program_name, stream);
+      list_supported_architectures(program_name, stream);
 
-      disassembler_usage (stream);
+      disassembler_usage(stream);
     }
   if (status == 0)
-    fprintf (stream, _("Report bugs to %s.\n"), REPORT_BUGS_TO);
-  exit (status);
+    fprintf(stream, _("Report bugs to %s.\n"), REPORT_BUGS_TO);
+  exit(status);
 }
 
-/* 150 isn't special; it's just an arbitrary non-ASCII char value.  */
+/* 150 is NOT special; it is just an arbitrary non-ASCII char value: */
 enum option_values
   {
-    OPTION_ENDIAN=150,
+    OPTION_ENDIAN = 150,
     OPTION_START_ADDRESS,
     OPTION_STOP_ADDRESS,
     OPTION_ADJUST_VMA
@@ -244,60 +244,60 @@ enum option_values
 
 static struct option long_options[]=
 {
-  {"adjust-vma", required_argument, NULL, OPTION_ADJUST_VMA},
-  {"all-headers", no_argument, NULL, 'x'},
-  {"private-headers", no_argument, NULL, 'p'},
-  {"architecture", required_argument, NULL, 'm'},
-  {"archive-headers", no_argument, NULL, 'a'},
-  {"debugging", no_argument, NULL, 'g'},
-  {"debugging-tags", no_argument, NULL, 'e'},
-  {"demangle", optional_argument, NULL, 'C'},
-  {"disassemble", no_argument, NULL, 'd'},
-  {"disassemble-all", no_argument, NULL, 'D'},
-  {"disassembler-options", required_argument, NULL, 'M'},
-  {"disassemble-zeroes", no_argument, NULL, 'z'},
-  {"dynamic-reloc", no_argument, NULL, 'R'},
-  {"dynamic-syms", no_argument, NULL, 'T'},
-  {"endian", required_argument, NULL, OPTION_ENDIAN},
-  {"file-headers", no_argument, NULL, 'f'},
-  {"file-start-context", no_argument, &file_start_context, 1},
-  {"full-contents", no_argument, NULL, 's'},
-  {"headers", no_argument, NULL, 'h'},
-  {"help", no_argument, NULL, 'H'},
-  {"info", no_argument, NULL, 'i'},
-  {"line-numbers", no_argument, NULL, 'l'},
-  {"no-show-raw-insn", no_argument, &show_raw_insn, -1},
-  {"prefix-addresses", no_argument, &prefix_addresses, 1},
-  {"reloc", no_argument, NULL, 'r'},
-  {"section", required_argument, NULL, 'j'},
-  {"section-headers", no_argument, NULL, 'h'},
-  {"show-raw-insn", no_argument, &show_raw_insn, 1},
-  {"source", no_argument, NULL, 'S'},
-  {"special-syms", no_argument, &dump_special_syms, 1},
-  {"include", required_argument, NULL, 'I'},
-  {"stabs", no_argument, NULL, 'G'},
-  {"start-address", required_argument, NULL, OPTION_START_ADDRESS},
-  {"stop-address", required_argument, NULL, OPTION_STOP_ADDRESS},
-  {"syms", no_argument, NULL, 't'},
-  {"target", required_argument, NULL, 'b'},
-  {"version", no_argument, NULL, 'V'},
-  {"wide", no_argument, NULL, 'w'},
-  {0, no_argument, 0, 0}
+  { "adjust-vma", required_argument, NULL, OPTION_ADJUST_VMA },
+  { "all-headers", no_argument, NULL, 'x' },
+  { "private-headers", no_argument, NULL, 'p' },
+  { "architecture", required_argument, NULL, 'm' },
+  { "archive-headers", no_argument, NULL, 'a' },
+  { "debugging", no_argument, NULL, 'g' },
+  { "debugging-tags", no_argument, NULL, 'e' },
+  { "demangle", optional_argument, NULL, 'C' },
+  { "disassemble", no_argument, NULL, 'd' },
+  { "disassemble-all", no_argument, NULL, 'D' },
+  { "disassembler-options", required_argument, NULL, 'M' },
+  { "disassemble-zeroes", no_argument, NULL, 'z' },
+  { "dynamic-reloc", no_argument, NULL, 'R' },
+  { "dynamic-syms", no_argument, NULL, 'T' },
+  { "endian", required_argument, NULL, OPTION_ENDIAN },
+  { "file-headers", no_argument, NULL, 'f' },
+  { "file-start-context", no_argument, &file_start_context, 1 },
+  { "full-contents", no_argument, NULL, 's' },
+  { "headers", no_argument, NULL, 'h' },
+  { "help", no_argument, NULL, 'H' },
+  { "info", no_argument, NULL, 'i' },
+  { "line-numbers", no_argument, NULL, 'l' },
+  { "no-show-raw-insn", no_argument, &show_raw_insn, -1 },
+  { "prefix-addresses", no_argument, &prefix_addresses, 1 },
+  { "reloc", no_argument, NULL, 'r' },
+  { "section", required_argument, NULL, 'j' },
+  { "section-headers", no_argument, NULL, 'h' },
+  { "show-raw-insn", no_argument, &show_raw_insn, 1 },
+  { "source", no_argument, NULL, 'S' },
+  { "special-syms", no_argument, &dump_special_syms, 1 },
+  { "include", required_argument, NULL, 'I' },
+  { "stabs", no_argument, NULL, 'G' },
+  { "start-address", required_argument, NULL, OPTION_START_ADDRESS },
+  { "stop-address", required_argument, NULL, OPTION_STOP_ADDRESS },
+  { "syms", no_argument, NULL, 't' },
+  { "target", required_argument, NULL, 'b' },
+  { "version", no_argument, NULL, 'V' },
+  { "wide", no_argument, NULL, 'w' },
+  { 0, no_argument, 0, 0 }
 };
 
 static void
-nonfatal (const char *msg)
+nonfatal(const char *msg)
 {
-  bfd_nonfatal (msg);
+  bfd_nonfatal(msg);
   exit_status = 1;
 }
 
 static void
-dump_section_header (bfd *abfd, asection *section,
-		     void *ignored ATTRIBUTE_UNUSED)
+dump_section_header(bfd *abfd, asection *section,
+		    void *ignored ATTRIBUTE_UNUSED)
 {
   char *comma = "";
-  unsigned int opb = bfd_octets_per_byte (abfd);
+  unsigned int opb = bfd_octets_per_byte(abfd);
 
   /* Ignore linker created section.  See elfNN_ia64_object_p in
      bfd/elfxx-ia64.c.  */
@@ -1586,18 +1586,18 @@ disassemble_bytes(struct disassemble_info *info,
 		    {
 		      asection *sym_sec;
 
-		      sym_sec = bfd_get_section (*q->sym_ptr_ptr);
-		      sym_name = bfd_get_section_name (aux->abfd, sym_sec);
-		      if (sym_name == NULL || *sym_name == '\0')
+		      sym_sec = bfd_get_section(*q->sym_ptr_ptr);
+		      sym_name = bfd_get_section_name(aux->abfd, sym_sec);
+		      if ((sym_name == NULL) || (*sym_name == '\0'))
 			sym_name = "*unknown*";
-		      printf ("%s", sym_name);
+		      printf("%s", sym_name);
 		    }
 		}
 
 	      if (q->addend)
 		{
-		  printf ("+0x");
-		  objdump_print_value (q->addend, info, TRUE);
+		  printf("+0x");
+		  objdump_print_value(q->addend, info, TRUE);
 		}
 
 	      printf("\n");

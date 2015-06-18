@@ -300,8 +300,8 @@ map_over_members(bfd *arch, void (*function)(bfd *), char **files,
 extern bfd_boolean operation_alters_arch;
 bfd_boolean operation_alters_arch = FALSE;
 
-/* see comment in version.c about NORETURN in binutils; relevant here: */
-static void
+/* ATTRIBUTE_NORETURN is from "../include/ansidecl.h": */
+static ATTRIBUTE_NORETURN void
 usage(int help)
 {
   FILE *s;
@@ -1182,6 +1182,10 @@ extract_file(bfd *abfd)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored "-Wtype-limits"
+# else
+#  if defined(__clang__)
+#   pragma GCC diagnostic ignored "-Wtautological-compare"
+#  endif /* __clang__ */
 # endif /* gcc 4.6+ */
 #endif /* GCC */
   if (size < 0L) {

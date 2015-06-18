@@ -97,12 +97,12 @@ static int rl_gather_tyi PARAMS((void));
 
 static int pop_index, push_index;
 static unsigned char ibuffer[512];
-static int ibuffer_len = sizeof (ibuffer) - 1;
+static size_t ibuffer_len = (sizeof(ibuffer) - 1UL);
 
 #define any_typein (push_index != pop_index)
 
 int
-_rl_any_typein ()
+_rl_any_typein(void)
 {
   return any_typein;
 }
@@ -110,27 +110,26 @@ _rl_any_typein ()
 /* Return the amount of space available in the buffer for stuffing
    characters. */
 static int
-ibuffer_space ()
+ibuffer_space(void)
 {
   if (pop_index > push_index)
     return (pop_index - push_index - 1);
   else
-    return (ibuffer_len - (push_index - pop_index));
+    return ((int)ibuffer_len - (push_index - pop_index));
 }
 
 /* Get a key from the buffer of characters to be read.
    Return the key in KEY.
    Result is KEY if there was a key, or 0 if there wasn't. */
 static int
-rl_get_char (key)
-     int *key;
+rl_get_char(int *key)
 {
   if (push_index == pop_index)
     return (0);
 
   *key = ibuffer[pop_index++];
 
-  if (pop_index >= ibuffer_len)
+  if (pop_index >= (int)ibuffer_len)
     pop_index = 0;
 
   return (1);
@@ -140,15 +139,14 @@ rl_get_char (key)
    Returns non-zero if successful, zero if there is
    no space left in the buffer. */
 int
-_rl_unget_char (key)
-     int key;
+_rl_unget_char(int key)
 {
-  if (ibuffer_space ())
+  if (ibuffer_space())
     {
       pop_index--;
       if (pop_index < 0)
-	pop_index = ibuffer_len - 1;
-      ibuffer[pop_index] = key;
+	pop_index = (int)(ibuffer_len - 1);
+      ibuffer[pop_index] = (unsigned char)key;
       return (1);
     }
   return (0);
@@ -158,48 +156,48 @@ _rl_unget_char (key)
    IBUFFER.  Otherwise, just return.  Returns number of characters read
    (0 if none available) and -1 on error (EIO). */
 static int
-rl_gather_tyi ()
+rl_gather_tyi(void)
 {
   int tty;
   register int tem, result;
-  int chars_avail;
+  ssize_t chars_avail;
   char input;
 #if defined(HAVE_SELECT)
   fd_set readfds, exceptfds;
   struct timeval timeout;
-#endif
+#endif /* HAVE_SELECT */
 
-  tty = fileno (rl_instream);
+  tty = fileno(rl_instream);
 
-#if defined (HAVE_SELECT)
-  FD_ZERO (&readfds);
-  FD_ZERO (&exceptfds);
-  FD_SET (tty, &readfds);
-  FD_SET (tty, &exceptfds);
+#if defined(HAVE_SELECT)
+  FD_ZERO(&readfds);
+  FD_ZERO(&exceptfds);
+  FD_SET(tty, &readfds);
+  FD_SET(tty, &exceptfds);
   timeout.tv_sec = 0;
   timeout.tv_usec = _keyboard_input_timeout;
-  result = select (tty + 1, &readfds, (fd_set *)NULL, &exceptfds, &timeout);
+  result = select(tty + 1, &readfds, (fd_set *)NULL, &exceptfds, &timeout);
   if (result <= 0)
     return 0;	/* Nothing to read. */
-#endif
+#endif /* HAVE_SELECT */
 
   result = -1;
-#if defined (FIONREAD)
+#if defined(FIONREAD)
   errno = 0;
-  result = ioctl (tty, FIONREAD, &chars_avail);
-  if (result == -1 && errno == EIO)
+  result = ioctl(tty, FIONREAD, &chars_avail);
+  if ((result == -1) && (errno == EIO))
     return -1;
-#endif
+#endif /* FIONREAD */
 
-#if defined (O_NDELAY)
+#if defined(O_NDELAY)
   if (result == -1)
     {
-      tem = fcntl (tty, F_GETFL, 0);
+      tem = fcntl(tty, F_GETFL, 0);
 
-      fcntl (tty, F_SETFL, (tem | O_NDELAY));
-      chars_avail = read (tty, &input, 1);
+      fcntl(tty, F_SETFL, (tem | O_NDELAY));
+      chars_avail = read(tty, &input, 1);
 
-      fcntl (tty, F_SETFL, tem);
+      fcntl(tty, F_SETFL, tem);
       if (chars_avail == -1 && errno == EAGAIN)
 	return 0;
     }
@@ -210,7 +208,7 @@ rl_gather_tyi ()
   if (chars_avail <= 0)
     return 0;
 
-  tem = ibuffer_space ();
+  tem = ibuffer_space();
 
   if (chars_avail > tem)
     chars_avail = tem;
@@ -219,26 +217,25 @@ rl_gather_tyi ()
      character at a time, or else programs which require input can be
      thwarted.  If the buffer is larger than one character, I lose.
      Damn! */
-  if (tem < ibuffer_len)
+  if (tem < (int)ibuffer_len)
     chars_avail = 0;
 
   if (result != -1)
     {
       while (chars_avail--)
-	rl_stuff_char ((*rl_getc_function) (rl_instream));
+	rl_stuff_char((*rl_getc_function)(rl_instream));
     }
   else
     {
       if (chars_avail)
-	rl_stuff_char (input);
+	rl_stuff_char(input);
     }
 
   return 1;
 }
 
 int
-rl_set_keyboard_input_timeout (u)
-     int u;
+rl_set_keyboard_input_timeout(int u)
 {
   int o;
 
@@ -255,15 +252,15 @@ rl_set_keyboard_input_timeout (u)
    the user, it should use _rl_input_queued(timeout_value_in_microseconds)
    instead. */
 int
-_rl_input_available ()
+_rl_input_available(void)
 {
 #if defined(HAVE_SELECT)
   fd_set readfds, exceptfds;
   struct timeval timeout;
-#endif
-#if !defined (HAVE_SELECT) && defined(FIONREAD)
+#endif /* HAVE_SELECT */
+#if !defined(HAVE_SELECT) && defined(FIONREAD)
   int chars_avail;
-#endif
+#endif /* !HAVE_SELECT && FIONREAD */
   int tty;
 
   tty = fileno (rl_instream);
@@ -289,58 +286,55 @@ _rl_input_available ()
 }
 
 int
-_rl_input_queued (t)
-     int t;
+_rl_input_queued(int t)
 {
   int old_timeout, r;
 
-  old_timeout = rl_set_keyboard_input_timeout (t);
-  r = _rl_input_available ();
-  rl_set_keyboard_input_timeout (old_timeout);
+  old_timeout = rl_set_keyboard_input_timeout(t);
+  r = _rl_input_available();
+  rl_set_keyboard_input_timeout(old_timeout);
   return r;
 }
 
 void
-_rl_insert_typein (c)
-     int c;
+_rl_insert_typein(int c)
 {
   int key, t, i;
   char *string;
 
   i = key = 0;
-  string = (char *)xmalloc (ibuffer_len + 1);
-  string[i++] = (char) c;
+  string = (char *)xmalloc(ibuffer_len + 1);
+  string[i++] = (char)c;
 
-  while ((t = rl_get_char (&key)) &&
+  while ((t = rl_get_char(&key)) &&
 	 _rl_keymap[key].type == ISFUNC &&
 	 _rl_keymap[key].function == rl_insert)
-    string[i++] = key;
+    string[i++] = (char)key;
 
   if (t)
-    _rl_unget_char (key);
+    _rl_unget_char(key);
 
   string[i] = '\0';
-  rl_insert_text (string);
-  free (string);
+  rl_insert_text(string);
+  free(string);
 }
 
 /* Add KEY to the buffer of characters to be read.  Returns 1 if the
    character was stuffed correctly; 0 otherwise. */
 int
-rl_stuff_char (key)
-     int key;
+rl_stuff_char(int key)
 {
-  if (ibuffer_space () == 0)
+  if (ibuffer_space() == 0)
     return 0;
 
   if (key == EOF)
     {
       key = NEWLINE;
       rl_pending_input = EOF;
-      RL_SETSTATE (RL_STATE_INPUTPENDING);
+      RL_SETSTATE(RL_STATE_INPUTPENDING);
     }
-  ibuffer[push_index++] = key;
-  if (push_index >= ibuffer_len)
+  ibuffer[push_index++] = (unsigned char)key;
+  if (push_index >= (int)ibuffer_len)
     push_index = 0;
 
   return 1;
@@ -415,10 +409,9 @@ rl_read_key(void)
 }
 
 int
-rl_getc (stream)
-     FILE *stream;
+rl_getc(FILE *stream)
 {
-  int result;
+  ssize_t result;
   unsigned char c;
 
   while (1)
@@ -427,12 +420,12 @@ rl_getc (stream)
       /* On Windows, use a special routine to read a single  character
 	 from the console.  (Otherwise, no characters are available
 	 until the user hits the return key.)  */
-      if (isatty (fileno (stream)))
-	return getch ();
-#endif
-      result = read (fileno (stream), &c, sizeof (unsigned char));
+      if (isatty(fileno(stream)))
+	return getch();
+#endif /* __MINGW32__ */
+      result = read(fileno(stream), &c, sizeof(unsigned char));
 
-      if (result == sizeof (unsigned char))
+      if (result == sizeof(unsigned char))
 	return (c);
 
       /* If zero characters are returned, then the file that we are
@@ -443,23 +436,23 @@ rl_getc (stream)
 #if defined (__BEOS__)
       if (errno == EINTR)
 	continue;
-#endif
+#endif /* __BEOS__ */
 
-#if defined (EWOULDBLOCK)
+#if defined(EWOULDBLOCK)
 #  define X_EWOULDBLOCK EWOULDBLOCK
 #else
 #  define X_EWOULDBLOCK -99
-#endif
+#endif /* EWOULDBLOCK */
 
-#if defined (EAGAIN)
+#if defined(EAGAIN)
 #  define X_EAGAIN EAGAIN
 #else
 #  define X_EAGAIN -99
-#endif
+#endif /* EAGAIN */
 
       if (errno == X_EWOULDBLOCK || errno == X_EAGAIN)
 	{
-	  if (sh_unset_nodelay_mode (fileno (stream)) < 0)
+	  if (sh_unset_nodelay_mode(fileno(stream)) < 0)
 	    return (EOF);
 	  continue;
 	}
@@ -475,41 +468,39 @@ rl_getc (stream)
     }
 }
 
-#if defined (HANDLE_MULTIBYTE)
+#if defined(HANDLE_MULTIBYTE)
 /* read multibyte char */
 int
-_rl_read_mbchar (mbchar, size)
-     char *mbchar;
-     int size;
+_rl_read_mbchar(char *mbchar, int size)
 {
-  int mb_len = 0;
+  size_t mb_len = 0UL;
   size_t mbchar_bytes_length;
   wchar_t wc;
   mbstate_t ps, ps_back;
 
-  memset(&ps, 0, sizeof (mbstate_t));
-  memset(&ps_back, 0, sizeof (mbstate_t));
+  memset(&ps, 0, sizeof(mbstate_t));
+  memset(&ps_back, 0, sizeof(mbstate_t));
 
-  while (mb_len < size)
+  while ((int)mb_len < size)
     {
       RL_SETSTATE(RL_STATE_MOREINPUT);
-      mbchar[mb_len++] = rl_read_key ();
+      mbchar[mb_len++] = (char)rl_read_key();
       RL_UNSETSTATE(RL_STATE_MOREINPUT);
 
-      mbchar_bytes_length = mbrtowc (&wc, mbchar, mb_len, &ps);
-      if (mbchar_bytes_length == (size_t)(-1))
+      mbchar_bytes_length = mbrtowc(&wc, mbchar, mb_len, &ps);
+      if (mbchar_bytes_length == (size_t)(-1L))
 	break;		/* invalid byte sequence for the current locale */
-      else if (mbchar_bytes_length == (size_t)(-2))
+      else if (mbchar_bytes_length == (size_t)(-2L))
 	{
 	  /* shorted bytes */
 	  ps = ps_back;
 	  continue;
 	}
-      else if (mbchar_bytes_length > (size_t)(0))
+      else if (mbchar_bytes_length > (size_t)(0UL))
 	break;
     }
 
-  return mb_len;
+  return (int)mb_len;
 }
 
 /* Read a multibyte-character string whose first character is FIRST into
@@ -517,26 +508,23 @@ _rl_read_mbchar (mbchar, size)
    may be FIRST.  Used by the search functions, among others.  Very similar
    to _rl_read_mbchar. */
 int
-_rl_read_mbstring (first, mb, mblen)
-     int first;
-     char *mb;
-     int mblen;
+_rl_read_mbstring(int first, char *mb, int i_mblen)
 {
   int i, c;
   mbstate_t ps;
 
   c = first;
-  memset (mb, 0, mblen);
-  for (i = 0; i < mblen; i++)
+  memset(mb, 0, (size_t)i_mblen);
+  for (i = 0; i < i_mblen; i++)
     {
       mb[i] = (char)c;
-      memset (&ps, 0, sizeof (mbstate_t));
-      if (_rl_get_char_len (mb, &ps) == -2)
+      memset(&ps, 0, sizeof(mbstate_t));
+      if (_rl_get_char_len(mb, &ps) == -2)
 	{
-	  /* Read more for multibyte character */
-	  RL_SETSTATE (RL_STATE_MOREINPUT);
-	  c = rl_read_key ();
-	  RL_UNSETSTATE (RL_STATE_MOREINPUT);
+	  /* Read more for multibyte character: */
+	  RL_SETSTATE(RL_STATE_MOREINPUT);
+	  c = rl_read_key();
+	  RL_UNSETSTATE(RL_STATE_MOREINPUT);
 	}
       else
 	break;
@@ -544,3 +532,5 @@ _rl_read_mbstring (first, mb, mblen)
   return c;
 }
 #endif /* HANDLE_MULTIBYTE */
+
+/* EOF */

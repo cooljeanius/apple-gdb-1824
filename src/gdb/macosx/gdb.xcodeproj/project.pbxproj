@@ -448,10 +448,10 @@
 		A53B87991AE586140067328B /* readline.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DFA60E82C412008125DE /* readline.c */; };
 		A53B879A1AE586140067328B /* rltty.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DFAF0E82C412008125DE /* rltty.c */; };
 		A53B879B1AE586140067328B /* savestring.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DFB30E82C412008125DE /* savestring.c */; };
-		A53B879C1AE586140067328B /* search.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DFB40E82C412008125DE /* search.c */; };
+		A53B879C1AE586140067328B /* search.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DFB40E82C412008125DE /* search.c */; settings = {COMPILER_FLAGS = "-Wno-format-nonliteral"; }; };
 		A53B879D1AE586140067328B /* shell.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DFB50E82C412008125DE /* shell.c */; };
 		A53B879E1AE586140067328B /* signals.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DFB80E82C412008125DE /* signals.c */; };
-		A53B879F1AE586140067328B /* terminal.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DFC30E82C412008125DE /* terminal.c */; };
+		A53B879F1AE586140067328B /* terminal.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DFC30E82C412008125DE /* terminal.c */; settings = {COMPILER_FLAGS = "-Wno-write-strings"; }; };
 		A53B87A01AE586140067328B /* text.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DFC40E82C412008125DE /* text.c */; };
 		A53B87A11AE586140067328B /* tilde.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DFC50E82C412008125DE /* tilde.c */; };
 		A53B87A21AE586140067328B /* undo.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DFC70E82C412008125DE /* undo.c */; };
@@ -2521,6 +2521,63 @@
 		2633ABCC101A22EC00337952 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../tot/gdb/Makefile; sourceTree = "<group>"; };
 		61D22058192D60D100FA979E /* libbfd-shared.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libbfd-shared.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		61D8186E192FE3AB00E440C0 /* chew */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = chew; sourceTree = BUILT_PRODUCTS_DIR; };
+		A50DD7D41B30D2AC00F50318 /* AppleMakefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = AppleMakefile; path = "/Users/ericgallager/apple-gdb-1824/src/expect/AppleMakefile"; sourceTree = "<absolute>"; };
+		A50DD7DF1B30D2AC00F50318 /* Dbg.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = Dbg.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/Dbg.c"; sourceTree = "<absolute>"; tabWidth = 4; usesTabs = 1; };
+		A50DD7E01B30D2AC00F50318 /* Dbg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dbg.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/Dbg.h"; sourceTree = "<absolute>"; };
+		A50DD7ED1B30D2AC00F50318 /* chesslib++.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = "chesslib++.c"; path = "/Users/ericgallager/apple-gdb-1824/src/expect/example/chesslib++.c"; sourceTree = "<absolute>"; };
+		A50DD7EE1B30D2AC00F50318 /* chesslib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = chesslib.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/example/chesslib.c"; sourceTree = "<absolute>"; };
+		A50DD7EF1B30D2AC00F50318 /* chesslib2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = chesslib2.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/example/chesslib2.c"; sourceTree = "<absolute>"; };
+		A50DD7FE1B30D2AC00F50318 /* passwd.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = passwd.html; path = "/Users/ericgallager/apple-gdb-1824/src/expect/example/passwd.html"; sourceTree = "<absolute>"; };
+		A50DD80A1B30D2AC00F50318 /* unbuffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unbuffer.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/example/unbuffer.c"; sourceTree = "<absolute>"; };
+		A50DD8101B30D2AC00F50318 /* exp_chan.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_chan.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_chan.c"; sourceTree = "<absolute>"; };
+		A50DD8111B30D2AC00F50318 /* exp_clib.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = exp_clib.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_clib.c"; sourceTree = "<absolute>"; tabWidth = 4; usesTabs = 1; };
+		A50DD8121B30D2AC00F50318 /* exp_closetcl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_closetcl.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_closetcl.c"; sourceTree = "<absolute>"; };
+		A50DD8131B30D2AC00F50318 /* exp_command.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = exp_command.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_command.c"; sourceTree = "<absolute>"; tabWidth = 4; usesTabs = 1; };
+		A50DD8141B30D2AC00F50318 /* exp_command.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exp_command.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_command.h"; sourceTree = "<absolute>"; };
+		A50DD8151B30D2AC00F50318 /* exp_console.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_console.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_console.c"; sourceTree = "<absolute>"; };
+		A50DD8161B30D2AC00F50318 /* exp_event.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_event.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_event.c"; sourceTree = "<absolute>"; };
+		A50DD8171B30D2AC00F50318 /* exp_event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exp_event.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_event.h"; sourceTree = "<absolute>"; };
+		A50DD8181B30D2AC00F50318 /* exp_glob.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_glob.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_glob.c"; sourceTree = "<absolute>"; };
+		A50DD8191B30D2AC00F50318 /* exp_int.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exp_int.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_int.h"; sourceTree = "<absolute>"; };
+		A50DD81A1B30D2AC00F50318 /* exp_inter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_inter.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_inter.c"; sourceTree = "<absolute>"; };
+		A50DD81B1B30D2AC00F50318 /* exp_log.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_log.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_log.c"; sourceTree = "<absolute>"; };
+		A50DD81C1B30D2AC00F50318 /* exp_log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exp_log.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_log.h"; sourceTree = "<absolute>"; };
+		A50DD81D1B30D2AC00F50318 /* exp_main_exp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_main_exp.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_main_exp.c"; sourceTree = "<absolute>"; };
+		A50DD81E1B30D2AC00F50318 /* exp_main_sub.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = exp_main_sub.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_main_sub.c"; sourceTree = "<absolute>"; tabWidth = 4; usesTabs = 1; };
+		A50DD81F1B30D2AC00F50318 /* exp_main_tk.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_main_tk.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_main_tk.c"; sourceTree = "<absolute>"; };
+		A50DD8201B30D2AC00F50318 /* exp_memmove.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_memmove.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_memmove.c"; sourceTree = "<absolute>"; };
+		A50DD8211B30D2AC00F50318 /* exp_noevent.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_noevent.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_noevent.c"; sourceTree = "<absolute>"; };
+		A50DD8221B30D2AC00F50318 /* exp_poll.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_poll.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_poll.c"; sourceTree = "<absolute>"; };
+		A50DD8231B30D2AC00F50318 /* exp_printify.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_printify.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_printify.c"; sourceTree = "<absolute>"; };
+		A50DD8241B30D2AC00F50318 /* exp_printify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exp_printify.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_printify.h"; sourceTree = "<absolute>"; };
+		A50DD8251B30D2AC00F50318 /* exp_prog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exp_prog.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_prog.h"; sourceTree = "<absolute>"; };
+		A50DD8261B30D2AC00F50318 /* exp_pty.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_pty.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_pty.c"; sourceTree = "<absolute>"; };
+		A50DD8271B30D2AC00F50318 /* exp_pty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exp_pty.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_pty.h"; sourceTree = "<absolute>"; };
+		A50DD8281B30D2AC00F50318 /* exp_regexp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_regexp.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_regexp.c"; sourceTree = "<absolute>"; };
+		A50DD8291B30D2AC00F50318 /* exp_regexp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exp_regexp.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_regexp.h"; sourceTree = "<absolute>"; };
+		A50DD82A1B30D2AC00F50318 /* exp_rename.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exp_rename.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_rename.h"; sourceTree = "<absolute>"; };
+		A50DD82B1B30D2AC00F50318 /* exp_select.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_select.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_select.c"; sourceTree = "<absolute>"; };
+		A50DD82C1B30D2AC00F50318 /* exp_simple.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_simple.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_simple.c"; sourceTree = "<absolute>"; };
+		A50DD82D1B30D2AC00F50318 /* exp_strf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_strf.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_strf.c"; sourceTree = "<absolute>"; };
+		A50DD82E1B30D2AC00F50318 /* exp_trap.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = exp_trap.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_trap.c"; sourceTree = "<absolute>"; tabWidth = 4; usesTabs = 1; };
+		A50DD82F1B30D2AC00F50318 /* exp_tstamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exp_tstamp.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_tstamp.h"; sourceTree = "<absolute>"; };
+		A50DD8301B30D2AC00F50318 /* exp_tty.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_tty.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_tty.c"; sourceTree = "<absolute>"; };
+		A50DD8311B30D2AC00F50318 /* exp_tty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exp_tty.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_tty.h"; sourceTree = "<absolute>"; };
+		A50DD8321B30D2AC00F50318 /* exp_tty_comm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_tty_comm.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_tty_comm.c"; sourceTree = "<absolute>"; };
+		A50DD8331B30D2AC00F50318 /* exp_tty_in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exp_tty_in.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_tty_in.h"; sourceTree = "<absolute>"; };
+		A50DD8341B30D2AC00F50318 /* exp_win.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = exp_win.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_win.c"; sourceTree = "<absolute>"; tabWidth = 4; usesTabs = 1; };
+		A50DD8351B30D2AC00F50318 /* exp_win.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exp_win.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/exp_win.h"; sourceTree = "<absolute>"; };
+		A50DD8361B30D2AC00F50318 /* expect.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = expect.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/expect.c"; sourceTree = "<absolute>"; tabWidth = 4; usesTabs = 1; };
+		A50DD8371B30D2AC00F50318 /* expect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = expect.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/expect.h"; sourceTree = "<absolute>"; };
+		A50DD83A1B30D2AC00F50318 /* expect_comm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = expect_comm.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/expect_comm.h"; sourceTree = "<absolute>"; };
+		A50DD83B1B30D2AC00F50318 /* expect_tcl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = expect_tcl.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/expect_tcl.h"; sourceTree = "<absolute>"; };
+		A50DD8491B30D2AC00F50318 /* pty_sgttyb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pty_sgttyb.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/pty_sgttyb.c"; sourceTree = "<absolute>"; };
+		A50DD84A1B30D2AC00F50318 /* pty_termios.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = pty_termios.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/pty_termios.c"; sourceTree = "<absolute>"; tabWidth = 4; usesTabs = 1; };
+		A50DD84B1B30D2AC00F50318 /* pty_unicos.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pty_unicos.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/pty_unicos.c"; sourceTree = "<absolute>"; };
+		A50DD84D1B30D2AC00F50318 /* tcl_regexp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tcl_regexp.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/tcl_regexp.c"; sourceTree = "<absolute>"; };
+		A50DD84E1B30D2AC00F50318 /* tcl_regexp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tcl_regexp.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/tcl_regexp.h"; sourceTree = "<absolute>"; };
+		A50DD84F1B30D2AC00F50318 /* tclParse-compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "tclParse-compat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/expect/tclParse-compat.c"; sourceTree = "<absolute>"; };
+		A50DD8691B30D2AC00F50318 /* exp_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_test.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/testsuite/exp_test.c"; sourceTree = "<absolute>"; };
 		A515998019870F0A0079DD4F /* arm-singlestep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "arm-singlestep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/multi-ice/arm-singlestep.c"; sourceTree = "<absolute>"; };
 		A515998119870F0A0079DD4F /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/multi-ice/ChangeLog"; sourceTree = "<absolute>"; };
 		A515999019870F0A0079DD4F /* Using_The_ARM_Multi-ICE_with_GDB.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = "Using_The_ARM_Multi-ICE_with_GDB.html"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/multi-ice/doc/Using_The_ARM_Multi-ICE_with_GDB.html"; sourceTree = "<absolute>"; };
@@ -4305,11 +4362,11 @@
 		A5924A481AAFEF1B00050903 /* udiptcfg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = udiptcfg.h; path = "/Users/ericgallager/apple-gdb-1824/src/utils/amd-udi/udi/udiptcfg.h"; sourceTree = "<absolute>"; };
 		A5924A491AAFEF1B00050903 /* udisoc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = udisoc.h; path = "/Users/ericgallager/apple-gdb-1824/src/utils/amd-udi/udi/udisoc.h"; sourceTree = "<absolute>"; };
 		A5924A4A1AAFEF1B00050903 /* udr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = udr.c; path = "/Users/ericgallager/apple-gdb-1824/src/utils/amd-udi/udi/udr.c"; sourceTree = "<absolute>"; };
-		A5924A531AAFEF1B00050903 /* decomment.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = decomment.c; path = "/Users/ericgallager/apple-gdb-1824/src/utils/decomment.tproj/decomment.c"; sourceTree = "<absolute>"; };
+		A5924A531AAFEF1B00050903 /* decomment.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = decomment.c; path = "/Users/ericgallager/apple-gdb-1824/src/utils/decomment.tproj/decomment.c"; sourceTree = "<absolute>"; tabWidth = 4; };
 		A5924A6C1AAFEF1B00050903 /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog; path = "/Users/ericgallager/apple-gdb-1824/src/utils/misc/doschk/ChangeLog"; sourceTree = "<absolute>"; };
 		A5924A741AAFEF1B00050903 /* doschk.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = doschk.c; path = "/Users/ericgallager/apple-gdb-1824/src/utils/misc/doschk/doschk.c"; sourceTree = "<absolute>"; };
 		A5924A761AAFEF1B00050903 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README; path = "/Users/ericgallager/apple-gdb-1824/src/utils/misc/doschk/README"; sourceTree = "<absolute>"; };
-		A5924A9F1AAFEF1B00050903 /* relpath.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = relpath.c; path = "/Users/ericgallager/apple-gdb-1824/src/utils/relpath.tproj/relpath.c"; sourceTree = "<absolute>"; };
+		A5924A9F1AAFEF1B00050903 /* relpath.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = relpath.c; path = "/Users/ericgallager/apple-gdb-1824/src/utils/relpath.tproj/relpath.c"; sourceTree = "<absolute>"; tabWidth = 4; };
 		A5924AA21AAFEF1B00050903 /* aload.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.c; name = aload.c; path = "/Users/ericgallager/apple-gdb-1824/src/utils/sparclite/aload.c"; sourceTree = "<absolute>"; tabWidth = 8; usesTabs = 0; };
 		A5924AAC1AAFEF1B00050903 /* bfd_compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bfd_compat.c; path = "/Users/ericgallager/apple-gdb-1824/src/utils/sparclite/bfd_compat.c"; sourceTree = "<absolute>"; };
 		A5924AAD1AAFEF1B00050903 /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog; path = "/Users/ericgallager/apple-gdb-1824/src/utils/sparclite/ChangeLog"; sourceTree = "<absolute>"; };
@@ -5345,6 +5402,7 @@
 				2609D00D0E82C408008125DE /* binutils */,
 				A56E58251B210131005E1D43 /* dejagnu */,
 				A53AC1811A3F7EFE002F20B2 /* electric-fence */,
+				A50DD7D01B30D2AC00F50318 /* expect */,
 				2609D2AC0E82C409008125DE /* gdb */,
 				2609DCE80E82C410008125DE /* include */,
 				2609DDCD0E82C410008125DE /* intl */,
@@ -8765,6 +8823,89 @@
 			);
 			name = Products;
 			sourceTree = "<group>";
+		};
+		A50DD7D01B30D2AC00F50318 /* expect */ = {
+			isa = PBXGroup;
+			children = (
+				A50DD7D41B30D2AC00F50318 /* AppleMakefile */,
+				A50DD7DF1B30D2AC00F50318 /* Dbg.c */,
+				A50DD7E01B30D2AC00F50318 /* Dbg.h */,
+				A50DD7E71B30D2AC00F50318 /* example */,
+				A50DD8101B30D2AC00F50318 /* exp_chan.c */,
+				A50DD8111B30D2AC00F50318 /* exp_clib.c */,
+				A50DD8121B30D2AC00F50318 /* exp_closetcl.c */,
+				A50DD8131B30D2AC00F50318 /* exp_command.c */,
+				A50DD8141B30D2AC00F50318 /* exp_command.h */,
+				A50DD8151B30D2AC00F50318 /* exp_console.c */,
+				A50DD8161B30D2AC00F50318 /* exp_event.c */,
+				A50DD8171B30D2AC00F50318 /* exp_event.h */,
+				A50DD8181B30D2AC00F50318 /* exp_glob.c */,
+				A50DD8191B30D2AC00F50318 /* exp_int.h */,
+				A50DD81A1B30D2AC00F50318 /* exp_inter.c */,
+				A50DD81B1B30D2AC00F50318 /* exp_log.c */,
+				A50DD81C1B30D2AC00F50318 /* exp_log.h */,
+				A50DD81D1B30D2AC00F50318 /* exp_main_exp.c */,
+				A50DD81E1B30D2AC00F50318 /* exp_main_sub.c */,
+				A50DD81F1B30D2AC00F50318 /* exp_main_tk.c */,
+				A50DD8201B30D2AC00F50318 /* exp_memmove.c */,
+				A50DD8211B30D2AC00F50318 /* exp_noevent.c */,
+				A50DD8221B30D2AC00F50318 /* exp_poll.c */,
+				A50DD8231B30D2AC00F50318 /* exp_printify.c */,
+				A50DD8241B30D2AC00F50318 /* exp_printify.h */,
+				A50DD8251B30D2AC00F50318 /* exp_prog.h */,
+				A50DD8261B30D2AC00F50318 /* exp_pty.c */,
+				A50DD8271B30D2AC00F50318 /* exp_pty.h */,
+				A50DD8281B30D2AC00F50318 /* exp_regexp.c */,
+				A50DD8291B30D2AC00F50318 /* exp_regexp.h */,
+				A50DD82A1B30D2AC00F50318 /* exp_rename.h */,
+				A50DD82B1B30D2AC00F50318 /* exp_select.c */,
+				A50DD82C1B30D2AC00F50318 /* exp_simple.c */,
+				A50DD82D1B30D2AC00F50318 /* exp_strf.c */,
+				A50DD82E1B30D2AC00F50318 /* exp_trap.c */,
+				A50DD82F1B30D2AC00F50318 /* exp_tstamp.h */,
+				A50DD8301B30D2AC00F50318 /* exp_tty.c */,
+				A50DD8311B30D2AC00F50318 /* exp_tty.h */,
+				A50DD8321B30D2AC00F50318 /* exp_tty_comm.c */,
+				A50DD8331B30D2AC00F50318 /* exp_tty_in.h */,
+				A50DD8341B30D2AC00F50318 /* exp_win.c */,
+				A50DD8351B30D2AC00F50318 /* exp_win.h */,
+				A50DD8361B30D2AC00F50318 /* expect.c */,
+				A50DD8371B30D2AC00F50318 /* expect.h */,
+				A50DD83A1B30D2AC00F50318 /* expect_comm.h */,
+				A50DD83B1B30D2AC00F50318 /* expect_tcl.h */,
+				A50DD8491B30D2AC00F50318 /* pty_sgttyb.c */,
+				A50DD84A1B30D2AC00F50318 /* pty_termios.c */,
+				A50DD84B1B30D2AC00F50318 /* pty_unicos.c */,
+				A50DD84D1B30D2AC00F50318 /* tcl_regexp.c */,
+				A50DD84E1B30D2AC00F50318 /* tcl_regexp.h */,
+				A50DD84F1B30D2AC00F50318 /* tclParse-compat.c */,
+				A50DD85D1B30D2AC00F50318 /* testsuite */,
+			);
+			name = expect;
+			path = "/Users/ericgallager/apple-gdb-1824/src/expect";
+			sourceTree = "<absolute>";
+		};
+		A50DD7E71B30D2AC00F50318 /* example */ = {
+			isa = PBXGroup;
+			children = (
+				A50DD7ED1B30D2AC00F50318 /* chesslib++.c */,
+				A50DD7EE1B30D2AC00F50318 /* chesslib.c */,
+				A50DD7EF1B30D2AC00F50318 /* chesslib2.c */,
+				A50DD7FE1B30D2AC00F50318 /* passwd.html */,
+				A50DD80A1B30D2AC00F50318 /* unbuffer.c */,
+			);
+			name = example;
+			path = "/Users/ericgallager/apple-gdb-1824/src/expect/example";
+			sourceTree = "<absolute>";
+		};
+		A50DD85D1B30D2AC00F50318 /* testsuite */ = {
+			isa = PBXGroup;
+			children = (
+				A50DD8691B30D2AC00F50318 /* exp_test.c */,
+			);
+			name = testsuite;
+			path = "/Users/ericgallager/apple-gdb-1824/src/expect/testsuite";
+			sourceTree = "<absolute>";
 		};
 		A515997C19870F0A0079DD4F /* multi-ice */ = {
 			isa = PBXGroup;
@@ -13512,7 +13653,11 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "HAVE_CONFIG_H=1";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"HAVE_CONFIG_H=1",
+					HANDLE_MULTIBYTE,
+					VI_MODE,
+				);
 				GCC_STRICT_ALIASING = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = YES;
@@ -13600,7 +13745,11 @@
 				"GCC_MODEL_PPC64[arch=ppc64]" = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = "HAVE_CONFIG_H=1";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"HAVE_CONFIG_H=1",
+					HANDLE_MULTIBYTE,
+					VI_MODE,
+				);
 				GCC_STRICT_ALIASING = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
@@ -13631,7 +13780,7 @@
 					"-Wformat-security",
 					"-Winit-self",
 					"-Wstrict-aliasing=1",
-					"-Wstrict-overflow=2",
+					"-Wstrict-overflow=1",
 					"-Wstrict-prototypes",
 					"-Wvolatile-register-var",
 					"-Wmissing-include-dirs",

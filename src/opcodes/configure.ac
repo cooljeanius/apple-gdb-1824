@@ -192,9 +192,7 @@ AC_ARG_ENABLE([commonbfdlib],
 esac
 test -n "${commonbfdlib}"])dnl
 
-dnl# APPLE LOCAL change is to omit the following:
-AM_BINUTILS_WARNINGS
-dnl# (I uncommented it to add it back in anyways)
+dnl# (warnings are moved farther below)
 
 if test -z "${target}"; then
   AC_MSG_ERROR([Unrecognized target system type; please check config.sub.])
@@ -366,6 +364,7 @@ AC_C_PROTOTYPES
 AC_C_STRINGIZE
 AC_MSG_CHECKING([types])
 AC_MSG_RESULT([ ])
+AC_TYPE_INTPTR_T
 AC_TYPE_INT8_T
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
@@ -641,6 +640,14 @@ fi
 
 AC_SUBST([archdefs])dnl
 AC_SUBST([BFD_MACHINES])dnl
+
+dnl# APPLE LOCAL change is to omit the following:
+if test "x${cgen_maint}" = "xyes" && test "x${using_cgen}" = "xno"; then
+  dnl# only do warnings if we can regenerate cgen-erated sources, but are
+  dnl# not actually going to do so:
+  AM_BINUTILS_WARNINGS
+fi
+dnl# (I uncommented it to add it back in anyways)
 
 ## Output.
 AC_CONFIG_FILES([Makefile \

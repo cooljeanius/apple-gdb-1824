@@ -28,24 +28,43 @@
 #if defined(HAVE_CONFIG_H)
 # include "config.h"
 #else
-# warning rl.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning rl.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning rl.c expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "rl.c expects <stdio.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning rl.c expects <stdlib.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "rl.c expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H */
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning rl.c expects <sys/types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "rl.c expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#else
+# if defined(HAVE_GETOPT_H)
+#  include <getopt.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "rl.c wants to include a header with a declaration of getopt."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_GETOPT_H */
+#endif /* HAVE_UNISTD_H */
 
 #include "posixstat.h"
 

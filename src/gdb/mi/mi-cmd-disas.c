@@ -67,7 +67,8 @@
    only; 1 means mixed source and disassembly, respectively.
 */
 
-static void mi_cmd_disassemble_usage (const char *message)
+static ATTRIBUTE_NORETURN void
+mi_cmd_disassemble_usage(const char *message)
 {
   const char *const usage =
     "[-P peeklimit]"
@@ -78,7 +79,7 @@ static void mi_cmd_disassemble_usage (const char *message)
     " )"
     " [--] mixed_mode.";
 
-  error ("mi_cmd_disassemble: %s  Usage: %s", message, usage);
+  error("mi_cmd_disassemble: %s  Usage: %s", message, usage);
 }
 
 enum mi_cmd_result
@@ -114,14 +115,14 @@ mi_cmd_disassemble (char *command, char **argv, int argc)
     FILE_OPT, LINE_OPT, NUM_OPT, START_OPT, END_OPT, PREV_OPT, PEEKLIMIT_OPT
   };
   static struct mi_opt opts[] = {
-    {"f", FILE_OPT, 1},
-    {"l", LINE_OPT, 1},
-    {"n", NUM_OPT, 1},
-    {"s", START_OPT, 1},
-    {"e", END_OPT, 1},
-    {"p", PREV_OPT, 1},
-    {"P", PEEKLIMIT_OPT, 1},
-    {0}
+    { "f", FILE_OPT, 1 },
+    { "l", LINE_OPT, 1 },
+    { "n", NUM_OPT, 1 },
+    { "s", START_OPT, 1 },
+    { "e", END_OPT, 1 },
+    { "p", PREV_OPT, 1 },
+    { "P", PEEKLIMIT_OPT, 1 },
+    { NULL, 0, 0 }
   };
 
   /* Get the options with their arguments. Keep track of what we

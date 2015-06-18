@@ -41,12 +41,11 @@ enum
     FROM_TTY = 0
   };
 
-/* Output a single breakpoint. */
-
+/* Output a single breakpoint: */
 static void
-breakpoint_notify (int b)
+breakpoint_notify(int b)
 {
-  gdb_breakpoint_query (uiout, b, NULL);
+  gdb_breakpoint_query(uiout, b, NULL);
 }
 
 
@@ -55,8 +54,12 @@ struct gdb_events breakpoint_hooks =
   breakpoint_notify,
   breakpoint_notify,
   breakpoint_notify,
+  (gdb_events_breakpoint_resolve_ftype *)NULL,
+  (gdb_events_tracepoint_create_ftype *)NULL,
+  (gdb_events_tracepoint_delete_ftype *)NULL,
+  (gdb_events_tracepoint_modify_ftype *)NULL,
+  (gdb_events_architecture_changed_ftype *)NULL
 };
-
 
 enum bp_type
   {
@@ -123,7 +126,7 @@ mi_cmd_break_insert (char *command, char **argv, int argc)
     { "p", THREAD_OPT, 1 },
     { "s", SHLIB_OPT, 1 },
     { "l", LIST_OPT, 1 },
-    { 0 }
+    { NULL, 0, 0 }
   };
 
   /* Parse arguments. It could be -r or -h or -t, <location> or ``--''
@@ -313,7 +316,7 @@ mi_cmd_break_watch (char *command, char **argv, int argc)
     { "r", READ_OPT, 0 },
     { "a", ACCESS_OPT, 0 },
     { "l", LOCATION_OPT, 0 },
-    { 0 }
+    { NULL, 0, 0 }
   };
 
   /* Parse arguments. */

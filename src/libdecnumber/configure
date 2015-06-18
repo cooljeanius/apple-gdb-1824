@@ -3599,13 +3599,21 @@ test -n "$AUTOHEADER" || AUTOHEADER="${MISSING} autoheader"
 # See ../config/warnings.m4 for details.
 
 
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
 WARN_CFLAGS=""
+if test "x${GCC}" = "xyes" && test "x${WERROR_CFLAGS}" = "x"; then
+  WERROR_CFLAGS="-Werror"
+fi
 save_CFLAGS="${CFLAGS}"
 for real_option in -Wall -Wextra -Wno-unused-value -Wwrite-strings \
 -Wstrict-prototypes -Wmissing-prototypes -Wmissing-parameter-type \
 -Wmissing-declarations -Wnested-externs -Wundef -Wshadow -Wformat=2 \
 -Wold-style-definition -Wold-style-declaration -Wc++-compat \
--Wmissing-format-attribute -Wcast-qual; do
+-Wmissing-format-attribute -Wcast-qual -Wout-of-line-declaration; do
   # Do the check with the no- prefix removed since gcc silently accepts
   # any -Wno-* option on purpose:
   case ${real_option} in
@@ -3619,7 +3627,7 @@ $as_echo_n "checking whether ${CC} supports ${option}... " >&6; }
 if { as_var=$as_acx_Woption; eval "test \"\${$as_var+set}\" = set"; }; then :
   $as_echo_n "(cached) " >&6
 else
-  CFLAGS="${option}"
+  CFLAGS="${option} ${WERROR_CFLAGS}"
     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -3647,7 +3655,17 @@ $as_echo "$ac_res" >&6; }
 fi
   done
 CFLAGS="${save_CFLAGS}"
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
 WARN_PEDANTIC=""
 # Do the check with the no- prefix removed from the warning options
 # since gcc silently accepts any -Wno-* option on purpose:
@@ -3685,9 +3703,19 @@ if test $acx_cv_prog_cc_pedantic__Wlong_long = yes; then :
 fi
 
 fi
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 # Only enable with --enable-werror-always until existing warnings are
 # corrected.
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
 WERROR=""
 # Check whether --enable-werror-always was given.
 if test "${enable_werror_always+set}" = set; then :
@@ -3699,6 +3727,11 @@ fi
 if test "x${enable_werror_always}" = "xyes"; then :
   WERROR=-Werror
 fi
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 # Checks for header files.
 ac_ext=c

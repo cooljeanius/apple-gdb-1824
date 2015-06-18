@@ -1,4 +1,4 @@
-/* Disassemble h8300 instructions.
+/* h8300-dis.c: Disassemble h8300 instructions.
    Copyright 1993, 1994, 1996, 1998, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -281,14 +281,14 @@ print_one_arg (disassemble_info *info,
 	{
 	  outfn (stream, ".%s%d (0x%lx)",
 		   (short) cst > 0 ? "+" : "",
-		   (short) cst, 
+		   (short) cst,
 		   (long)(addr + (short) cst + len));
 	}
       else
 	{
 	  outfn (stream, ".%s%d (0x%lx)",
 		   (char) cst > 0 ? "+" : "",
-		   (char) cst, 
+		   (char) cst,
 		   (long)(addr + (char) cst + len));
 	}
     }
@@ -297,12 +297,12 @@ print_one_arg (disassemble_info *info,
 
   else if ((x & MODE) == INDEXB)
     /* Always take low half of reg.  */
-    outfn (stream, "@(0x%x:%d,%s.b)", cst, cstlen, 
+    outfn (stream, "@(0x%x:%d,%s.b)", cst, cstlen,
 	   regnames[rdisp_n < 8 ? rdisp_n + 8 : rdisp_n]);
 
   else if ((x & MODE) == INDEXW)
     /* Always take low half of reg.  */
-    outfn (stream, "@(0x%x:%d,%s.w)", cst, cstlen, 
+    outfn (stream, "@(0x%x:%d,%s.w)", cst, cstlen,
 	   wregnames[rdisp_n < 8 ? rdisp_n : rdisp_n - 8]);
 
   else if ((x & MODE) == INDEXL)
@@ -362,7 +362,7 @@ bfd_h8_disassemble (bfd_vma addr, disassemble_info *info, int mach)
   for (qi = h8_instructions; qi->opcode->name; qi++)
     {
       const struct h8_opcode *q = qi->opcode;
-      op_type *nib = q->data.nib;
+      op_type *nib = (op_type *)q->data.nib;
       unsigned int len = 0;
 
       while (1)
@@ -472,8 +472,8 @@ bfd_h8_disassemble (bfd_vma addr, disassemble_info *info, int mach)
 		       || (looking_for & MODE) == INDEXW
 		       || (looking_for & MODE) == INDEXL)
 		{
-		  extract_immediate (stream, looking_for, thisnib, 
-				     data + len / 2, cst + opnr, 
+		  extract_immediate (stream, looking_for, thisnib,
+				     data + len / 2, cst + opnr,
 				     cstlen + opnr, q);
 		  /* Even address == bra, odd == bra/s.  */
 		  if (q->how == O (O_BRAS, SB))
@@ -541,8 +541,8 @@ bfd_h8_disassemble (bfd_vma addr, disassemble_info *info, int mach)
 		{
 		  int i = len / 2;
 
-		  cst[opnr] = ((data[i] << 24) 
-			       | (data[i + 1] << 16) 
+		  cst[opnr] = ((data[i] << 24)
+			       | (data[i + 1] << 16)
 			       | (data[i + 2] << 8)
 			       | (data[i + 3]));
 
@@ -552,7 +552,7 @@ bfd_h8_disassemble (bfd_vma addr, disassemble_info *info, int mach)
 		{
 		  int i = len / 2;
 
-		  cst[opnr] = 
+		  cst[opnr] =
 		    (data[i] << 16) | (data[i + 1] << 8) | (data[i + 2]);
 		  cstlen[opnr] = 24;
 		}
@@ -640,33 +640,33 @@ bfd_h8_disassemble (bfd_vma addr, disassemble_info *info, int mach)
 		    }
 		  if (strncmp (q->name, "mova", 4) == 0)
 		    {
-		      op_type *args = q->args.nib;
+		      op_type *args = (op_type *)q->args.nib;
 
 		      if (args[1] == (op_type) E)
 			{
 			  /* Short form.  */
-			  print_one_arg (info, addr, args[0], cst[0], 
-					 cstlen[0], dispregno[0], regno[0], 
+			  print_one_arg (info, addr, args[0], cst[0],
+					 cstlen[0], dispregno[0], regno[0],
 					 pregnames, qi->length);
 			  outfn (stream, ",er%d", dispregno[0]);
 			}
 		      else
 			{
 			  outfn (stream, "@(0x%x:%d,", cst[0], cstlen[0]);
-			  print_one_arg (info, addr, args[1], cst[1], 
-					 cstlen[1], dispregno[1], regno[1], 
+			  print_one_arg (info, addr, args[1], cst[1],
+					 cstlen[1], dispregno[1], regno[1],
 					 pregnames, qi->length);
 			  outfn (stream, ".%c),",
 				 (args[0] & MODE) == INDEXB ? 'b' : 'w');
-			  print_one_arg (info, addr, args[2], cst[2], 
-					 cstlen[2], dispregno[2], regno[2], 
+			  print_one_arg (info, addr, args[2], cst[2],
+					 cstlen[2], dispregno[2], regno[2],
 					 pregnames, qi->length);
 			}
 		      return qi->length;
 		    }
 		  /* Fill in the args.  */
 		  {
-		    op_type *args = q->args.nib;
+		    op_type *args = (op_type *)q->args.nib;
 		    int hadone = 0;
 		    int nargs;
 
@@ -681,7 +681,7 @@ bfd_h8_disassemble (bfd_vma addr, disassemble_info *info, int mach)
 			return qi->length;
 		      }
 
-		    for (nargs = 0; 
+		    for (nargs = 0;
 			 nargs < 3 && args[nargs] != (op_type) E;
 			 nargs++)
 		      {

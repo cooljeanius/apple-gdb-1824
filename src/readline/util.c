@@ -68,51 +68,48 @@ int _rl_allow_pathname_alphabetic_chars = 0;
 static const char *pathname_alphabetic_chars = "/-_=~.#$";
 
 int
-rl_alphabetic (c)
-     int c;
+rl_alphabetic(int c)
 {
-  if (ALPHABETIC (c))
+  if (ALPHABETIC(c))
     return (1);
 
   return (_rl_allow_pathname_alphabetic_chars &&
-	    strchr (pathname_alphabetic_chars, c) != NULL);
+	    strchr(pathname_alphabetic_chars, c) != NULL);
 }
 
-/* How to abort things. */
+/* How to abort things: */
 int
-_rl_abort_internal ()
+_rl_abort_internal(void)
 {
-  rl_ding ();
-  rl_clear_message ();
-  _rl_init_argument ();
-  rl_clear_pending_input ();
+  rl_ding();
+  rl_clear_message();
+  _rl_init_argument();
+  rl_clear_pending_input();
 
-  RL_UNSETSTATE (RL_STATE_MACRODEF);
+  RL_UNSETSTATE(RL_STATE_MACRODEF);
   while (rl_executing_macro)
-    _rl_pop_executing_macro ();
+    _rl_pop_executing_macro();
 
   rl_last_func = (rl_command_func_t *)NULL;
-  longjmp (readline_top_level, 1);
+  longjmp(readline_top_level, 1);
   return (0);
 }
 
 int
-rl_abort (count, key)
-     int count, key;
+rl_abort(int count, int key)
 {
-  return (_rl_abort_internal ());
+  return (_rl_abort_internal());
 }
 
 int
-rl_tty_status (count, key)
-     int count, key;
+rl_tty_status(int count, int key)
 {
-#if defined (TIOCSTAT)
-  ioctl (1, TIOCSTAT, (char *)0);
-  rl_refresh_line (count, key);
+#if defined(TIOCSTAT)
+  ioctl(1, TIOCSTAT, (char *)0);
+  rl_refresh_line(count, key);
 #else
-  rl_ding ();
-#endif
+  rl_ding();
+#endif /* TIOCSTAT */
   return 0;
 }
 
@@ -207,6 +204,18 @@ rl_tilde_expand(int ignore, int key)
 /*								    */
 /* **************************************************************** */
 
+#ifndef INT_MAX
+# ifdef HAVE_LIMITS_H
+#  include <limits.h>
+# else
+#  ifdef HAVE_SYS_LIMITS_H
+#   include <sys/limits.h>
+#  else
+#   define INT_MAX 2147483647 /* max value for an int */
+#  endif /* HAVE_SYS_LIMITS_H */
+# endif /* HAVE_LIMITS_H */
+#endif /* !INT_MAX */
+
 /* Determine if s2 occurs in s1.  If so, return a pointer to the
    match in s1.  The compare is case insensitive. */
 char *
@@ -214,7 +223,7 @@ _rl_strindex(register const char *s1, register const char *s2)
 {
   register size_t i, l, len;
 
-  for (i = 0UL, l = strlen(s2), len = strlen(s1); (len - i) >= l; i++)
+  for (i = 0UL, l = strlen(s2), len = strlen(s1); ((len - i) >= l) && (i < INT_MAX); i++)
     if (_rl_strnicmp((s1 + i), s2, l) == 0)
       return ((char *)(s1 + i));
   return ((char *)NULL);

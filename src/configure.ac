@@ -89,9 +89,7 @@ AC_USE_SYSTEM_EXTENSIONS
 AB_INIT
 
 # Check for an already-installed autogen:
-AG_PATH_AUTOOPTS([5.17.4])
-# TODO: figure out how to pass the --disable-opts-test configure flag
-# to the configure script in the "utils" subdirectory.
+AG_PATH_AUTOOPTS([5.17])dnl
 
 # Get 'install' or 'install-sh' and its variants:
 AC_PROG_INSTALL
@@ -191,6 +189,11 @@ AM_SUBST_NOTMAKE([AM_V])dnl
 AC_SUBST([AM_DEFAULT_V])dnl
 AM_SUBST_NOTMAKE([AM_DEFAULT_V])dnl
 AC_SUBST([AM_DEFAULT_VERBOSITY])dnl
+
+dnl# Might want to have a configured value for autoconf itself:
+m4_ifdef([AM_MISSING_PROG],[
+  AM_MISSING_PROG([AUTOCONF],[autoconf])dnl
+])dnl
 
 # Set srcdir to "." if that is what it is.
 # This is important for multilib support.

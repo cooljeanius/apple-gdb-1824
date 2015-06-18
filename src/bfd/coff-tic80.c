@@ -386,15 +386,13 @@ ppbase_reloc(bfd *abfd ATTRIBUTE_UNUSED,
 
 /* This special function is used for the global 15 bit relocations: */
 static bfd_reloc_status_type ATTRIBUTE_NORETURN
-glob15_reloc(abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
-             error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry ATTRIBUTE_UNUSED;
-     asymbol *symbol_in ATTRIBUTE_UNUSED;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section ATTRIBUTE_UNUSED;
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     char **error_message ATTRIBUTE_UNUSED;
+glob15_reloc(bfd *abfd ATTRIBUTE_UNUSED,
+             arelent *reloc_entry ATTRIBUTE_UNUSED,
+             asymbol *symbol_in ATTRIBUTE_UNUSED,
+             PTR data ATTRIBUTE_UNUSED,
+             asection *input_section ATTRIBUTE_UNUSED,
+             bfd *output_bfd ATTRIBUTE_UNUSED,
+             char **error_message ATTRIBUTE_UNUSED)
 {
   /* FIXME: */
   abort();
@@ -402,15 +400,13 @@ glob15_reloc(abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
 
 /* This special function is used for the global 16 bit relocations: */
 static bfd_reloc_status_type ATTRIBUTE_NORETURN
-glob16_reloc(abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
-             error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry ATTRIBUTE_UNUSED;
-     asymbol *symbol_in ATTRIBUTE_UNUSED;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section ATTRIBUTE_UNUSED;
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     char **error_message ATTRIBUTE_UNUSED;
+glob16_reloc(bfd *abfd ATTRIBUTE_UNUSED,
+             arelent *reloc_entry ATTRIBUTE_UNUSED,
+             asymbol *symbol_in ATTRIBUTE_UNUSED,
+             PTR data ATTRIBUTE_UNUSED,
+             asection *input_section ATTRIBUTE_UNUSED,
+             bfd *output_bfd ATTRIBUTE_UNUSED,
+             char **error_message ATTRIBUTE_UNUSED)
 {
   /* FIXME: */
   abort();
@@ -418,15 +414,13 @@ glob16_reloc(abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
 
 /* This special function is used for the local 16 bit relocations: */
 static bfd_reloc_status_type ATTRIBUTE_NORETURN
-local16_reloc(abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
-	      error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry ATTRIBUTE_UNUSED;
-     asymbol *symbol_in ATTRIBUTE_UNUSED;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section ATTRIBUTE_UNUSED;
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     char **error_message ATTRIBUTE_UNUSED;
+local16_reloc(bfd *abfd ATTRIBUTE_UNUSED,
+              arelent *reloc_entry ATTRIBUTE_UNUSED,
+              asymbol *symbol_in ATTRIBUTE_UNUSED,
+              PTR data ATTRIBUTE_UNUSED,
+              asection *input_section ATTRIBUTE_UNUSED,
+              bfd *output_bfd ATTRIBUTE_UNUSED,
+	      char **error_message ATTRIBUTE_UNUSED)
 {
   /* FIXME: */
   abort();
@@ -488,17 +482,12 @@ coff_tic80_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
    of this is a copy of _bfd_coff_generic_relocate_section.  */
 
 static bfd_boolean
-coff_tic80_relocate_section(output_bfd, info, input_bfd,
-			    input_section, contents, relocs, syms,
-			    sections)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     struct internal_reloc *relocs;
-     struct internal_syment *syms;
-     asection **sections;
+coff_tic80_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+                            bfd* input_bfd, asection *input_section,
+                            bfd_byte *contents,
+                            struct internal_reloc *relocs,
+                            struct internal_syment *syms,
+			    asection **sections)
 {
   struct internal_reloc *rel;
   struct internal_reloc *relend;

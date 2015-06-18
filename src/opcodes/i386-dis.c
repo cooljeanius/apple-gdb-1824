@@ -4185,16 +4185,16 @@ dofloat (int sizeflag)
 }
 
 static void
-OP_ST (int bytemode ATTRIBUTE_UNUSED, int sizeflag ATTRIBUTE_UNUSED)
+OP_ST(int bytemode ATTRIBUTE_UNUSED, int sizeflag ATTRIBUTE_UNUSED)
 {
-  oappend ("%st" + intel_syntax);
+  oappend("%st" + intel_syntax);
 }
 
 static void
-OP_STi (int bytemode ATTRIBUTE_UNUSED, int sizeflag ATTRIBUTE_UNUSED)
+OP_STi(int bytemode ATTRIBUTE_UNUSED, int sizeflag ATTRIBUTE_UNUSED)
 {
-  sprintf (scratchbuf, "%%st(%d)", modrm.rm);
-  oappend (scratchbuf + intel_syntax);
+  sprintf(scratchbuf, "%%st(%d)", modrm.rm);
+  oappend(scratchbuf + intel_syntax);
 }
 
 /* Capital letters in template are macros: */
@@ -4526,44 +4526,44 @@ putop(const char *template_str, int sizeflag)
 }
 
 static void
-oappend (const char *s)
+oappend(const char *s)
 {
-  strcpy (obufp, s);
-  obufp += strlen (s);
+  strcpy(obufp, s);
+  obufp += strlen(s);
 }
 
 static void
-append_seg (void)
+append_seg(void)
 {
   if (prefixes & PREFIX_CS)
     {
       used_prefixes |= PREFIX_CS;
-      oappend ("%cs:" + intel_syntax);
+      oappend("%cs:" + intel_syntax);
     }
   if (prefixes & PREFIX_DS)
     {
       used_prefixes |= PREFIX_DS;
-      oappend ("%ds:" + intel_syntax);
+      oappend("%ds:" + intel_syntax);
     }
   if (prefixes & PREFIX_SS)
     {
       used_prefixes |= PREFIX_SS;
-      oappend ("%ss:" + intel_syntax);
+      oappend("%ss:" + intel_syntax);
     }
   if (prefixes & PREFIX_ES)
     {
       used_prefixes |= PREFIX_ES;
-      oappend ("%es:" + intel_syntax);
+      oappend("%es:" + intel_syntax);
     }
   if (prefixes & PREFIX_FS)
     {
       used_prefixes |= PREFIX_FS;
-      oappend ("%fs:" + intel_syntax);
+      oappend("%fs:" + intel_syntax);
     }
   if (prefixes & PREFIX_GS)
     {
       used_prefixes |= PREFIX_GS;
-      oappend ("%gs:" + intel_syntax);
+      oappend("%gs:" + intel_syntax);
     }
 }
 
@@ -5604,31 +5604,31 @@ ptr_reg (int code, int sizeflag)
 }
 
 static void
-OP_ESreg (int code, int sizeflag)
+OP_ESreg(int code, int sizeflag)
 {
   if (intel_syntax)
     {
       switch (codep[-1])
 	{
 	case 0x6d:	/* insw/insl */
-	  intel_operand_size (z_mode, sizeflag);
+	  intel_operand_size(z_mode, sizeflag);
 	  break;
 	case 0xa5:	/* movsw/movsl/movsq */
 	case 0xa7:	/* cmpsw/cmpsl/cmpsq */
 	case 0xab:	/* stosw/stosl */
 	case 0xaf:	/* scasw/scasl */
-	  intel_operand_size (v_mode, sizeflag);
+	  intel_operand_size(v_mode, sizeflag);
 	  break;
 	default:
-	  intel_operand_size (b_mode, sizeflag);
+	  intel_operand_size(b_mode, sizeflag);
 	}
     }
-  oappend ("%es:" + intel_syntax);
-  ptr_reg (code, sizeflag);
+  oappend("%es:" + intel_syntax);
+  ptr_reg(code, sizeflag);
 }
 
 static void
-OP_DSreg (int code, int sizeflag)
+OP_DSreg(int code, int sizeflag)
 {
   if (intel_syntax)
     {

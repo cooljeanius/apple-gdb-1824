@@ -684,10 +684,13 @@ _rl_dispatch_subseq (key, map, got_subseq)
     case ISMACR:
       if (map[key].function != 0)
 	{
-	  macro = savestring ((char *)map[key].function);
-	  _rl_with_macro_input (macro);
+	  macro = savestring((char *)map[key].function);
+	  _rl_with_macro_input(macro);
 	  return 0;
 	}
+      break;
+
+    default:
       break;
     }
 #if defined (VI_MODE)
@@ -931,18 +934,17 @@ bind_arrow_keys ()
 /* **************************************************************** */
 
 int
-rl_save_state (sp)
-     struct readline_state *sp;
+rl_save_state(struct readline_state *sp)
 {
-	if (sp == 0) {
-		return -1;
-	}
+  if (sp == 0) {
+    return -1;
+  }
 
   sp->point = rl_point;
   sp->end = rl_end;
   sp->mark = rl_mark;
   sp->buffer = rl_line_buffer;
-  sp->buflen = rl_line_buffer_len;
+  sp->buflen = (int)rl_line_buffer_len;
   sp->ul = rl_undo_list;
   sp->prompt = rl_prompt;
 
@@ -968,8 +970,7 @@ rl_save_state (sp)
 }
 
 int
-rl_restore_state (sp)
-     struct readline_state *sp;
+rl_restore_state(struct readline_state *sp)
 {
   if (sp == 0)
     return -1;
@@ -978,7 +979,7 @@ rl_restore_state (sp)
   rl_end = sp->end;
   rl_mark = sp->mark;
   the_line = rl_line_buffer = sp->buffer;
-  rl_line_buffer_len = sp->buflen;
+  rl_line_buffer_len = (size_t)sp->buflen;
   rl_undo_list = sp->ul;
   rl_prompt = sp->prompt;
 

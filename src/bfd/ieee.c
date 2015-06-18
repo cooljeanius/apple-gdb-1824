@@ -1294,7 +1294,7 @@ ieee_slurp_debug (bfd *abfd)
 /* Archive stuff.  */
 
 static const bfd_target *
-ieee_archive_p (bfd *abfd)
+ieee_archive_p(bfd *abfd)
 {
   char *library;
   unsigned int i;
@@ -1304,42 +1304,42 @@ ieee_archive_p (bfd *abfd)
   ieee_ar_data_type *ieee;
   bfd_size_type alc_elts;
   ieee_ar_obstack_type *elts = NULL;
-  bfd_size_type amt = sizeof (ieee_ar_data_type);
+  bfd_size_type amt = sizeof(ieee_ar_data_type);
 
-  abfd->tdata.ieee_ar_data = bfd_alloc (abfd, amt);
+  abfd->tdata.ieee_ar_data = (ieee_ar_data_type *)bfd_alloc(abfd, amt);
   if (!abfd->tdata.ieee_ar_data)
     goto error_ret_restore;
-  ieee = IEEE_AR_DATA (abfd);
+  ieee = IEEE_AR_DATA(abfd);
 
   /* Ignore the return value here.  It doesn't matter if we don't read
      the entire buffer.  We might have a very small ieee file.  */
-  bfd_bread ((void *) buffer, (bfd_size_type) sizeof (buffer), abfd);
+  bfd_bread((void *)buffer, (bfd_size_type)sizeof(buffer), abfd);
 
   ieee->h.first_byte = buffer;
   ieee->h.input_p = buffer;
 
   ieee->h.abfd = abfd;
 
-  if (this_byte (&(ieee->h)) != Module_Beginning)
+  if (this_byte(&(ieee->h)) != Module_Beginning)
     goto got_wrong_format_error;
 
-  next_byte (&(ieee->h));
-  library = read_id (&(ieee->h));
-  if (strcmp (library, "LIBRARY") != 0)
+  next_byte(&(ieee->h));
+  library = read_id(&(ieee->h));
+  if (strcmp(library, "LIBRARY") != 0)
     goto got_wrong_format_error;
 
-  /* Throw away the filename.  */
-  read_id (&(ieee->h));
+  /* Throw away the filename: */
+  read_id(&(ieee->h));
 
   ieee->element_count = 0;
   ieee->element_index = 0;
 
-  next_byte (&(ieee->h));	/* Drop the ad part.  */
-  must_parse_int (&(ieee->h));	/* And the two dummy numbers.  */
-  must_parse_int (&(ieee->h));
+  next_byte(&(ieee->h));	/* Drop the ad part.  */
+  must_parse_int(&(ieee->h));	/* And the two dummy numbers.  */
+  must_parse_int(&(ieee->h));
 
   alc_elts = 10;
-  elts = bfd_malloc (alc_elts * sizeof *elts);
+  elts = (ieee_ar_obstack_type *)bfd_malloc(alc_elts * sizeof(*elts));
   if (elts == NULL)
     goto error_return;
 
@@ -1349,8 +1349,8 @@ ieee_archive_p (bfd *abfd)
       int rec;
       ieee_ar_obstack_type *t;
 
-      rec = read_2bytes (&(ieee->h));
-      if (rec != (int) ieee_assign_value_to_variable_enum)
+      rec = read_2bytes(&(ieee->h));
+      if (rec != (int)ieee_assign_value_to_variable_enum)
 	break;
 
       if (ieee->element_count >= alc_elts)
@@ -1358,7 +1358,7 @@ ieee_archive_p (bfd *abfd)
 	  ieee_ar_obstack_type *n;
 
 	  alc_elts *= 2;
-	  n = bfd_realloc (elts, alc_elts * sizeof (* elts));
+	  n = (ieee_ar_obstack_type *)bfd_realloc(elts, (alc_elts * sizeof(* elts)));
 	  if (n == NULL)
 	    goto error_return;
 	  elts = n;
@@ -1367,55 +1367,55 @@ ieee_archive_p (bfd *abfd)
       t = &elts[ieee->element_count];
       ieee->element_count++;
 
-      must_parse_int (&(ieee->h));
-      t->file_offset = must_parse_int (&(ieee->h));
-      t->abfd = (bfd *) NULL;
+      must_parse_int(&(ieee->h));
+      t->file_offset = must_parse_int(&(ieee->h));
+      t->abfd = (bfd *)NULL;
 
-      /* Make sure that we don't go over the end of the buffer.  */
-      if ((size_t) ieee_pos (IEEE_DATA (abfd)) > sizeof (buffer) / 2)
+      /* Make sure that we don't go over the end of the buffer: */
+      if ((size_t)ieee_pos(IEEE_DATA(abfd)) > (sizeof(buffer) / 2UL))
 	{
-	  /* Past half way, reseek and reprime.  */
-	  buffer_offset += ieee_pos (IEEE_DATA (abfd));
-	  if (bfd_seek (abfd, buffer_offset, SEEK_SET) != 0)
+	  /* Past half way, reseek and reprime: */
+	  buffer_offset += ieee_pos(IEEE_DATA(abfd));
+	  if (bfd_seek(abfd, buffer_offset, SEEK_SET) != 0)
 	    goto error_return;
 
-	  /* Again ignore return value of bfd_bread.  */
-	  bfd_bread ((void *) buffer, (bfd_size_type) sizeof (buffer), abfd);
+	  /* Again, ignore return value of bfd_bread: */
+	  bfd_bread((void *)buffer, (bfd_size_type)sizeof(buffer), abfd);
 	  ieee->h.first_byte = buffer;
 	  ieee->h.input_p = buffer;
 	}
     }
 
   amt = ieee->element_count;
-  amt *= sizeof *ieee->elements;
-  ieee->elements = bfd_alloc (abfd, amt);
+  amt *= sizeof(*ieee->elements);
+  ieee->elements = (ieee_ar_obstack_type *)bfd_alloc(abfd, amt);
   if (ieee->elements == NULL)
     goto error_return;
 
-  memcpy (ieee->elements, elts, (size_t) amt);
-  free (elts);
+  memcpy(ieee->elements, elts, (size_t)amt);
+  free(elts);
   elts = NULL;
 
   /* Now scan the area again, and replace BB offsets with file offsets.  */
   for (i = 2; i < ieee->element_count; i++)
     {
-      if (bfd_seek (abfd, ieee->elements[i].file_offset, SEEK_SET) != 0)
+      if (bfd_seek(abfd, ieee->elements[i].file_offset, SEEK_SET) != 0)
 	goto error_return;
 
-      /* Again ignore return value of bfd_bread.  */
-      bfd_bread ((void *) buffer, (bfd_size_type) sizeof (buffer), abfd);
+      /* Again, ignore return value of bfd_bread: */
+      bfd_bread((void *)buffer, (bfd_size_type)sizeof(buffer), abfd);
       ieee->h.first_byte = buffer;
       ieee->h.input_p = buffer;
 
-      next_byte (&(ieee->h));		/* Drop F8.  */
-      next_byte (&(ieee->h));		/* Drop 14.  */
-      must_parse_int (&(ieee->h));	/* Drop size of block.  */
+      next_byte(&(ieee->h));		/* Drop F8.  */
+      next_byte(&(ieee->h));		/* Drop 14.  */
+      must_parse_int(&(ieee->h));	/* Drop size of block.  */
 
       if (must_parse_int (&(ieee->h)) != 0)
 	/* This object has been deleted.  */
 	ieee->elements[i].file_offset = 0;
       else
-	ieee->elements[i].file_offset = must_parse_int (&(ieee->h));
+	ieee->elements[i].file_offset = must_parse_int(&(ieee->h));
     }
 
   /*  abfd->has_armap = ;*/
@@ -1423,11 +1423,11 @@ ieee_archive_p (bfd *abfd)
   return abfd->xvec;
 
  got_wrong_format_error:
-  bfd_set_error (bfd_error_wrong_format);
+  bfd_set_error(bfd_error_wrong_format);
  error_return:
   if (elts != NULL)
-    free (elts);
-  bfd_release (abfd, ieee);
+    free(elts);
+  bfd_release(abfd, ieee);
  error_ret_restore:
   abfd->tdata.ieee_ar_data = save;
 
@@ -1449,7 +1449,7 @@ ieee_mkobject(bfd *abfd)
   output_bfd = NULL;
   output_buffer = 0;
   amt = sizeof(ieee_data_type);
-  abfd->tdata.ieee_data = bfd_zalloc(abfd, amt);
+  abfd->tdata.ieee_data = (ieee_data_type *)bfd_zalloc(abfd, amt);
   return abfd->tdata.ieee_data != NULL;
 }
 
@@ -1495,7 +1495,7 @@ do_one(ieee_data_type *ieee, ieee_per_section_type *current_map,
 		  asection *section;
 		  ieee_reloc_type *r;
 
-		  r = bfd_alloc(ieee->h.abfd, sizeof(* r));
+		  r = (ieee_reloc_type *)bfd_alloc(ieee->h.abfd, sizeof(* r));
 		  if (!r)
 		    return FALSE;
 

@@ -19,7 +19,9 @@ would appreciate credit if this program or parts of it are used.
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning exp_inter.c expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "exp_inter.c expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
 #ifdef TIME_WITH_SYS_TIME
@@ -36,7 +38,9 @@ would appreciate credit if this program or parts of it are used.
 #ifdef HAVE_SYS_WAIT_H
 # include <sys/wait.h>
 #else
-# warning exp_inter.c expects <sys/wait.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "exp_inter.c expects <sys/wait.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_WAIT_H */
 
 #include <ctype.h>
@@ -245,7 +249,9 @@ int rm_nulls;			/* skip nulls if true */
 		/* known starting char - quick test before lotta work */
 		if (prog->regstart) {
 			/* if this is a problem for you, use exp_parity command */
-/*			/* if ((*start_search & 0x7f) != prog->regstart) continue; */
+#if 0
+			if ((*start_search & 0x7f) != prog->regstart) continue;
+#endif /* 0 */
 			if (*start_search != prog->regstart) continue;
 		}
 		r = exp_regtry(prog,start_search,match_length);
@@ -524,7 +530,9 @@ char **argv;
 	struct input **fd_to_input;	/* map from fd's to "struct input"s */
 	int *fd_list;
 	struct keymap *km;	/* ptr for above while parsing */
-/* 	extern char *tclRegexpError;	/* declared in tclInt.h */
+#if 0
+ 	extern char *tclRegexpError;	/* declared in tclInt.h */
+#endif /* 0 */
 	int master = EXP_SPAWN_ID_BAD;
 	char *master_string = 0;/* string representation of master */
 	int need_to_close_master = FALSE;	/* if an eof is received */

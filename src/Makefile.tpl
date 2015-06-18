@@ -792,10 +792,10 @@ FLAGS_TO_PASS = $(BASE_FLAGS_TO_PASS) $(EXTRA_HOST_FLAGS)
 # and library files
 #
 # NOTE: until the top-level is getting the values via autoconf, it only
-# causes problems to have this top-level Makefile overriding the autoconf-set
-# values in child directories.  Only variables that don't conflict with
-# autoconf'ed ones should be passed by X11_FLAGS_TO_PASS for now.
-#
+# causes problems to have this top-level Makefile overriding the
+# autoconf-set values in child directories.  Only variables that do NOT
+# conflict with autoconf-ed ones should be passed by X11_FLAGS_TO_PASS
+# for now:
 X11_FLAGS_TO_PASS = \
 	'X11_EXTRA_CFLAGS=$(X11_EXTRA_CFLAGS)' \
 	'X11_EXTRA_LIBS=$(X11_EXTRA_LIBS)'
@@ -1935,6 +1935,7 @@ config.status_target: configure
 
 # Rebuilding configure.
 AUTOCONF = autoconf
+CONFIGURED_AUTOCONF = @AUTOCONF@
 M4CONFDIR = $(srcdir)/config
 MACRO_DEPS = $(M4CONFDIR)/acx.m4 $(M4CONFDIR)/override.m4 \
   $(M4CONFDIR)/proginstall.m4

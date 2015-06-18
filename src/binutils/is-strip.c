@@ -4,3 +4,5 @@
 
 extern int is_strip;
 int is_strip = 1;
+
+/* EOF */

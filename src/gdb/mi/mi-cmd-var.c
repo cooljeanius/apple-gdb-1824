@@ -1162,7 +1162,7 @@ mi_cmd_var_update (char *command, char **argv, int argc)
       /* APPLE LOCAL Disable breakpoints while updating data formatters.  */
       do_cleanups (bp_cleanup);
     }
-    return MI_CMD_DONE;
+  return MI_CMD_DONE;
 }
 
 /* Helper for mi_cmd_var_update() Returns 0 if the update for

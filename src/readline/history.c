@@ -66,7 +66,7 @@ static HIST_ENTRY **the_history = (HIST_ENTRY **)NULL;
 static int history_stifled;
 
 /* The current number of slots allocated to the input_history. */
-static int history_size;
+static size_t history_size;
 
 /* If HISTORY_STIFLED is non-zero, then this is the maximum number of
    entries to remember. */
@@ -78,7 +78,7 @@ int max_input_history;	/* backwards compatibility */
 int history_offset;
 
 /* The number of strings currently stored in the history list. */
-int history_length;
+size_t history_length;
 
 /* The logical `base' of the history array.  It defaults to 1. */
 int history_base = 1;
@@ -237,12 +237,12 @@ add_history(const char *string)
       if (history_size == 0)
 	{
 	  history_size = DEFAULT_HISTORY_GROW_SIZE;
-	  the_history = (HIST_ENTRY **)xmalloc (history_size * sizeof (HIST_ENTRY *));
+	  the_history = (HIST_ENTRY **)xmalloc(history_size * sizeof(HIST_ENTRY *));
 	  history_length = 1;
 	}
       else
 	{
-	  if (history_length == (history_size - 1))
+	  if (history_length == (history_size - 1UL))
 	    {
 	      history_size += DEFAULT_HISTORY_GROW_SIZE;
 	      the_history = (HIST_ENTRY **)

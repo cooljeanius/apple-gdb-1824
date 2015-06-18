@@ -16,20 +16,26 @@
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
 #else
-# warning exp_tty.c expects <inttypes.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "exp_tty.c expects <inttypes.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_INTTYPES_H */
 #include <sys/types.h>
 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning exp_tty.c expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "exp_tty.c expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
 #ifdef HAVE_SYS_WAIT_H
 # include <sys/wait.h>
 #else
-# warning exp_tty.c expects <sys/wait.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "exp_tty.c expects <sys/wait.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_WAIT_H */
 
 #if defined(SIGCLD) && !defined(SIGCHLD)
@@ -343,7 +349,8 @@ int devtty;		/* if true, redirect to /dev/tty */
 #if (TCL_MAJOR_VERSION == 8) && (TCL_MINOR_VERSION < 3)
 	rc = Tcl_ExecCmd((ClientData)0,interp,argc+1+devtty,new_argv);
 #else
-	rc = Tcl_ExecObjCmd((ClientData)0,interp,argc+1+devtty,Tcl_NewStringObj(new_argv,-1));
+	rc = Tcl_ExecObjCmd((ClientData)0, interp, (argc + 1 + devtty),
+                            Tcl_NewStringObj((CONST char *)*new_argv, -1));
 #endif /* Tcl < 8.3 */
 	ckfree((char *)new_argv);
 
@@ -353,7 +360,7 @@ int devtty;		/* if true, redirect to /dev/tty */
 
 #ifdef STTY_READS_STDOUT
 	if (rc == TCL_ERROR) {
-		char *ec = Tcl_GetVar(interp,"errorCode",TCL_GLOBAL_ONLY);
+		char *ec = (char *)Tcl_GetVar(interp,"errorCode",TCL_GLOBAL_ONLY);
 		if (ec && !streq(ec,"NONE")) return TCL_ERROR;
 	}
 #endif /* STTY_READS_STDOUT */
@@ -724,7 +731,7 @@ char **argv;
 	    } else if (WIFSIGNALED(waitStatus)) {
 		char *p;
 
-		p = Tcl_SignalMsg((int) (WTERMSIG(waitStatus)));
+		p = (char *)Tcl_SignalMsg((int)(WTERMSIG(waitStatus)));
 		Tcl_SetErrorCode(interp, "CHILDKILLED", msg1,
 			Tcl_SignalId((int) (WTERMSIG(waitStatus))), p,
 			(char *) NULL);
@@ -733,7 +740,7 @@ char **argv;
 	    } else if (WIFSTOPPED(waitStatus)) {
 		char *p;
 
-		p = Tcl_SignalMsg((int) (WSTOPSIG(waitStatus)));
+		p = (char *)Tcl_SignalMsg((int)(WSTOPSIG(waitStatus)));
 		Tcl_SetErrorCode(interp, "CHILDSUSP", msg1,
 			Tcl_SignalId((int) (WSTOPSIG(waitStatus))), p, (char *) NULL);
 		Tcl_AppendResult(interp, "child suspended: ", p, "\n",

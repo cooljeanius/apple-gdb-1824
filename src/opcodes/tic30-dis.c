@@ -1,6 +1,6 @@
-/* Disassembly routines for TMS320C30 architecture
+/* tic30-dis.c: Disassembly routines for TMS320C30 architecture
    Copyright 1998, 1999, 2000, 2002, 2005 Free Software Foundation, Inc.
-   Contributed by Steven Haworth (steve@pm.cse.rmit.edu.au)
+   Contributed by Steven Haworth <steve@pm.cse.rmit.edu.au>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -665,11 +665,11 @@ print_branch (disassemble_info *info,
 	  address -= ((sym->section->vma + sym->value) / 4);
 	}
       if (address == 0)
-	info->fprintf_func (info->stream, " <%s>", sym->name);
+	info->fprintf_func(info->stream, " <%s>", sym->name);
       else
-	info->fprintf_func (info->stream, " <%s %c %d>", sym->name,
-			    ((short) address < 0) ? '-' : '+',
-			    abs (address));
+	info->fprintf_func(info->stream, " <%s %c %d>", sym->name,
+			   (((short)address < 0) ? '-' : '+'),
+			   abs((short)address));
     }
   return 1;
 }
@@ -712,3 +712,5 @@ print_insn_tic30 (bfd_vma pc, disassemble_info *info)
     }
   return 4;
 }
+
+/* EOF */

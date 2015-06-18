@@ -490,7 +490,7 @@ mmalloc_findbase_hidden(size_t size)
        * to signal an error return, and besides, it is useful to
        * catch NULL pointers if it is unmapped.  Instead start
        * at the next page boundary: */
-      base = (caddr_t)getpagesize();
+      base = (caddr_t)(intptr_t)getpagesize();
     }
   else if (base == (caddr_t)-1)
     {

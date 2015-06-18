@@ -97,6 +97,9 @@ INCLUDE = -I$(srcdir)/../udi -I$(srcdir)/../include -I$(srcdir)/..
 
 all:	mondfe
 
+just_objs: $(OBJS)
+.PHONY: just_objs
+
 mondfe: $(LIBUDIDFE) $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBDFE) $(LIBIBERTY)
 

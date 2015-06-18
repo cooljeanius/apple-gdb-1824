@@ -1355,7 +1355,7 @@ Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-build-warnings Enable build-time compiler warnings if gcc is used
-  --enable-gdb-build-warnings
+  --enable-sim-build-warnings
                           Enable SIM specific build-time compiler warnings if
                           gcc is used
 
@@ -3311,7 +3311,7 @@ fi
 # -Wchar-subscripts -Wtraditional -Wshadow -Wcast-qual
 # -Wcast-align -Wwrite-strings -Wconversion -Wstrict-prototypes
 # -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls
-# -Woverloaded-virtual -Winline -Werror"
+# -Woverloaded-virtual -Winline -Werror
 # Check whether --enable-build-warnings was given.
 if test "${enable_build_warnings+set}" = set; then :
   enableval=$enable_build_warnings; case "${enableval}" in
@@ -3339,7 +3339,7 @@ if test "${enable_sim_build_warnings+set}" = set; then :
   *)    build_warnings=`echo "${enableval}" | sed -e "s/,/ /g"`;;
 esac
 if test x"${silent}" != x"yes" && test x"${build_warnings}" != x""; then
-  echo "Setting GDB specific compiler warning flags = ${build_warnings}" 6>&1
+  echo "Setting SIM specific compiler warning flags = ${build_warnings}" 6>&1
 fi
 fi
 WARN_CFLAGS=""
@@ -3568,7 +3568,6 @@ ac_config_headers="$ac_config_headers config.h"
 
 
 # Checks for header files.
-
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -3948,7 +3947,6 @@ if test $ac_cv_header_stdc = yes; then
 $as_echo "#define STDC_HEADERS 1" >>confdefs.h
 
 fi
-
 
 
 
@@ -4551,8 +4549,7 @@ _ACEOF
 fi
 done
 
-
-# Checks for declarations
+# Checks for declarations.
 ac_fn_c_check_decl "$LINENO" "NULL" "ac_cv_have_decl_NULL" "$ac_includes_default"
 if test "x$ac_cv_have_decl_NULL" = xyes; then :
   ac_have_decl=1
@@ -4563,15 +4560,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_NULL $ac_have_decl
 _ACEOF
-
-
-# Substitutions
-
-
-
-
-
-
 
 
 
@@ -4668,6 +4656,7 @@ else
 fi
 
 
+# Output.
 ac_config_files="$ac_config_files Makefile"
 
 ac_config_commands="$ac_config_commands default"

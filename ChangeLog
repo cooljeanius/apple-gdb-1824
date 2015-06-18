@@ -1,3 +1,29 @@
+2015-06-04  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	stuff that shoulda gone in the prev. commit (Jun 4, 2014)
+
+	Change-Id: Ib7f42b93f28ccb04754893671ac7450d92c9e1e4
+
+2015-06-04  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more specific autotools version reqs, updates for gcc5
+
+	and stuff
+
+	Change-Id: Ic7bf6c1084093a14d9346867116200f5e2e9faa3
+
+2015-04-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	minor Travis tweak
+
+	Change-Id: I3659b835d70ab9798c3a6b533e4312d402cf1ff1
+
+2015-04-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	add readline target to Xcode proj
+
+	Change-Id: Ic119347af19b85cc4c343725c008b8f9b420ec67
+
 2015-04-20  Eric Gallager  <egall@gwmail.gwu.edu>
 
 	add intl target to Xcode proj; more bfd stuff again

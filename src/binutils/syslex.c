@@ -515,7 +515,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GLD; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA
+Software Foundation, 51 Franklin St., 5th Floor, Boston, MA
 02110-1301, USA.  */
 
 #include "config.h"
@@ -935,12 +935,15 @@ YY_RULE_SETUP
 #line 79 "syslex.l"
 { return REPEAT;}
 	YY_BREAK
+
+/* End of syslex.l */
+
 case 25:
 YY_RULE_SETUP
-#line 80 "syslex.l"
+#line 84 "syslex.l"
 ECHO;
 	YY_BREAK
-#line 944 "syslex.c"
+#line 947 "syslex.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1934,4 +1937,4 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 80 "syslex.l"
+#line 84 "syslex.l"

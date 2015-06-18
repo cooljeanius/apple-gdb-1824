@@ -180,13 +180,13 @@ TclpGetTimeZone (currentTime)
 
     return timeZone;
 #else
-# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(__STDC__)
 #  ifdef HAD_TM_TZADJ
 #   warning "We cannot use tm_tzadj from struct tm."
 #  else
 #   warning "We do not have tm_tzadj in struct tm."
 #  endif /* HAD_TM_TZADJ */
-# endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* __GNUC__ && !__STRICT_ANSI__ && !__STDC__ */
 #endif /* HAVE_TM_TZADJ */
 
 #if defined(HAVE_TM_GMTOFF) && !defined (TCL_GOT_TIMEZONE)

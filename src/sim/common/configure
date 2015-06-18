@@ -2503,7 +2503,6 @@ fi
 
 
 # This is intended for use by the target specific directories, and by us.
-
 test -x
 as_fn_executable_p
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for grep that handles long lines and -e" >&5
@@ -5882,9 +5881,7 @@ $as_echo "$as_me: Done with checks common to all simulators" >&6;}
 
 
 
-
-# Compiler
-
+# Compiler:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for function prototypes" >&5
 $as_echo_n "checking for function prototypes... " >&6; }
 if test "$ac_cv_prog_cc_c89" != no; then
@@ -5900,9 +5897,6 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
-
-
-
 
 
 
@@ -5926,29 +5920,25 @@ CPP_FOR_TARGET="\` \
     fi; \
   fi\` -E"
 
-
 # Set TARGET_SUBDIR, needed by CPP_FOR_TARGET.
-if test x"${host}" = x"${target}" ; then
-	TARGET_SUBDIR="."
+if test x"${host}" = x"${target}"; then
+  TARGET_SUBDIR="."
 else
-	TARGET_SUBDIR=${target_alias}
+  TARGET_SUBDIR=${target_alias}
 fi
-
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking additional directories to include headers from" >&5
 $as_echo_n "checking additional directories to include headers from... " >&6; }
 for includedir in $(echo "../../include ${srcdir} ../../bfd"); do
   if test -d "${includedir}"; then
     echo "${includedir} \c"
-    export CPPFLAGS="$CPPFLAGS -I${includedir}"
-    export AM_CPPFLAGS="$AM_CPPFLAGS -I${includedir}"
+    export CPPFLAGS="${CPPFLAGS} -I${includedir}"
+    export AM_CPPFLAGS="${AM_CPPFLAGS} -I${includedir}"
   else
     echo ""
     echo "Warning: ${includedir} is not a directory; not including files from it."
   fi
 done
-
-
 
 
 echo ""
@@ -5964,12 +5954,9 @@ fi
 
 done
 
-
 # These are NOT all needed yet, but will be eventually.
 
-
-
-  for ac_header in sys/mman.h
+    for ac_header in sys/mman.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "sys/mman.h" "ac_cv_header_sys_mman_h" "$ac_includes_default"
 if test "x$ac_cv_header_sys_mman_h" = xyes; then :
@@ -5980,7 +5967,6 @@ _ACEOF
 fi
 
 done
-
 
 for ac_header in stdarg.h stdio.h sys/times.h varargs.h
 do :
@@ -5995,7 +5981,6 @@ fi
 
 done
 
-
 for ac_func in fprintf isascii
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
@@ -6009,8 +5994,7 @@ fi
 done
 
 
-
-
+# Output.
 ac_config_files="$ac_config_files Makefile"
 
 ac_config_commands="$ac_config_commands default"

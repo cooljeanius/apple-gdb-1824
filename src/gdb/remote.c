@@ -6561,15 +6561,15 @@ remote_macosx_attach(char *args, int from_tty)
       char *out_ptr;
 
       if (*process == '\0')
-	error ("No process name supplied for \"-waitfor\"");
+	error("No process name supplied for \"-waitfor\"");
 
-	while (*process == ' ')
-	  process++;
-	if (*process == '"')
-	  {
-	    process++;
-	    quote_found = 1;
-	  }
+      while (*process == ' ')
+        process++;
+      if (*process == '"')
+        {
+          process++;
+          quote_found = 1;
+        }
 
       name_len = strlen (process);
 

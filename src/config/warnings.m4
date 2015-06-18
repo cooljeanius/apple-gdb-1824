@@ -32,6 +32,9 @@ m4_pushdef([acx_Var],[m4_default([$2],[WARN_CFLAGS])])dnl
 AC_SUBST(acx_Var)dnl
 m4_expand_once([acx_Var=""
 ],m4_quote(acx_Var=""))dnl
+if test "x${GCC}" = "xyes" && test "x${WERROR_CFLAGS}" = "x"; then
+  WERROR_CFLAGS="-Werror"
+fi
 save_CFLAGS="${CFLAGS}"
 for real_option in $1; do
   # Do the check with the no- prefix removed since gcc silently accepts
@@ -42,7 +45,7 @@ for real_option in $1; do
   esac
   AS_VAR_PUSHDEF([acx_Woption],[acx_cv_prog_cc_warning_$option])
   AC_CACHE_CHECK([whether ${CC} supports ${option}],[acx_Woption],
-    [CFLAGS="${option}"
+    [CFLAGS="${option} ${WERROR_CFLAGS}"
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
       [AS_VAR_SET(acx_Woption, yes)],
       [AS_VAR_SET(acx_Woption, no)])

@@ -258,9 +258,9 @@ struct external_scnhdr {
  */
 #define COFF_ADJUST_SCNHDR_OUT_POST(ABFD, INT, EXT) \
   do {									  \
-    PUT_SCNHDR_NLNNO(ABFD, ((struct internal_scnhdr *)(INT))->s_nlnno,  \
+    PUT_SCNHDR_NLNNO(ABFD, (bfd_vma)((struct internal_scnhdr *)(INT))->s_nlnno,  \
                      ((SCNHDR *)(EXT))->s_nlnno);			  \
-    PUT_SCNHDR_NRELOC(ABFD, ((struct internal_scnhdr *)(INT))->s_nreloc,\
+    PUT_SCNHDR_NRELOC(ABFD, (bfd_vma)((struct internal_scnhdr *)(INT))->s_nreloc,\
                       ((SCNHDR *)(EXT))->s_nreloc);			  \
     PUT_SCNHDR_FLAGS(ABFD, ((struct internal_scnhdr *)(INT))->s_flags,  \
                      ((SCNHDR *)(EXT))->s_flags);			  \

@@ -320,7 +320,7 @@ _bfd_XXi_swap_aux_out(bfd *abfd, void *inp, int type, int class,
 	  PUT_SCN_SCNLEN(abfd, (bfd_vma)in->x_scn.x_scnlen, ext);
 	  PUT_SCN_NRELOC(abfd, (bfd_vma)in->x_scn.x_nreloc, ext);
 	  PUT_SCN_NLINNO(abfd, (bfd_vma)in->x_scn.x_nlinno, ext);
-	  H_PUT_32(abfd, in->x_scn.x_checksum, ext->x_scn.x_checksum);
+	  H_PUT_32(abfd, (bfd_vma)in->x_scn.x_checksum, ext->x_scn.x_checksum);
 	  H_PUT_16(abfd, (bfd_vma)in->x_scn.x_associated,
                    ext->x_scn.x_associated);
 	  H_PUT_8(abfd, in->x_scn.x_comdat, ext->x_scn.x_comdat);
@@ -383,7 +383,7 @@ _bfd_XXi_swap_lineno_out(bfd * abfd, void * inp, void * outp)
   struct external_lineno *ext = (struct external_lineno *)outp;
   H_PUT_32(abfd, (bfd_vma)in->l_addr.l_symndx, ext->l_addr.l_symndx);
 
-  PUT_LINENO_LNNO(abfd, in->l_lnno, ext);
+  PUT_LINENO_LNNO(abfd, (bfd_vma)in->l_lnno, ext);
   return LINESZ;
 }
 
@@ -826,7 +826,7 @@ _bfd_XXi_only_swap_filehdr_out(bfd *abfd, void *in, void *out)
   H_PUT_32(abfd, filehdr_in->pe.e_lfanew, filehdr_out->e_lfanew);
 
   for (idx = 0; idx < 16; idx++)
-    H_PUT_32(abfd, filehdr_in->pe.dos_message[idx],
+    H_PUT_32(abfd, (bfd_vma)filehdr_in->pe.dos_message[idx],
 	     filehdr_out->dos_message[idx]);
 
   /* Also put in the NT signature: */
@@ -983,13 +983,13 @@ _bfd_XXi_swap_scnhdr_out(bfd *abfd, void *in, void *out)
 	 executables, but the 17-th bit has been observed to be there.
 	 Overflow is not an issue: a 4G-line program will overflow a
 	 bunch of other fields long before this!  */
-      H_PUT_16(abfd, (scnhdr_int->s_nlnno & 0xffff), scnhdr_ext->s_nlnno);
-      H_PUT_16(abfd, (scnhdr_int->s_nlnno >> 16), scnhdr_ext->s_nreloc);
+      H_PUT_16(abfd, (bfd_vma)(scnhdr_int->s_nlnno & 0xffff), scnhdr_ext->s_nlnno);
+      H_PUT_16(abfd, (bfd_vma)(scnhdr_int->s_nlnno >> 16), scnhdr_ext->s_nreloc);
     }
   else
     {
       if (scnhdr_int->s_nlnno <= 0xffff)
-	H_PUT_16(abfd, scnhdr_int->s_nlnno, scnhdr_ext->s_nlnno);
+	H_PUT_16(abfd, (bfd_vma)scnhdr_int->s_nlnno, scnhdr_ext->s_nlnno);
       else
 	{
 	  (*_bfd_error_handler)(_("%s: line number overflow: 0x%lx > 0xffff"),
@@ -1005,7 +1005,7 @@ _bfd_XXi_swap_scnhdr_out(bfd *abfd, void *in, void *out)
          we should never see 0xffff here w/o having the overflow flag
          set.  */
       if (scnhdr_int->s_nreloc < 0xffff)
-	H_PUT_16(abfd, scnhdr_int->s_nreloc, scnhdr_ext->s_nreloc);
+	H_PUT_16(abfd, (bfd_vma)scnhdr_int->s_nreloc, scnhdr_ext->s_nreloc);
       else
 	{
 	  /* PE can deal with large #s of relocs, but not here: */

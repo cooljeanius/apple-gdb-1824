@@ -22,7 +22,9 @@
 #if defined(HAVE_CONFIG_H)
 # include "config.h"
 #else
-# warning tilde.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning tilde.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #if defined(HAVE_UNISTD_H)
@@ -31,7 +33,9 @@
 # endif /* _MINIX */
 # include <unistd.h>
 #else
-# warning tilde.c expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "tilde.c expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif
 
 #if defined(HAVE_STRING_H)
@@ -40,7 +44,9 @@
 # ifdef HAVE_STRINGS_H
 #  include <strings.h>
 # else
-#  warning tilde.c expects either <string.h> or <strings.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "tilde.c expects either <string.h> or <strings.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_STRINGS_H */
 #endif /* !HAVE_STRING_H */
 
@@ -57,8 +63,8 @@
 
 #include "tilde.h"
 
-#if defined (TEST) || defined (STATIC_MALLOC)
-static void *xmalloc (), *xrealloc ();
+#if defined(TEST) || defined(STATIC_MALLOC)
+static void *xmalloc(), *xrealloc();
 #else
 # include "xmalloc.h"
 #endif /* TEST || STATIC_MALLOC */
@@ -120,7 +126,7 @@ char **tilde_additional_prefixes = (char **)default_prefixes;
    `:' and `=~'. */
 char **tilde_additional_suffixes = (char **)default_suffixes;
 
-static int tilde_find_prefix PARAMS((const char *, int *));
+static int tilde_find_prefix PARAMS((const char *, size_t *));
 static int tilde_find_suffix PARAMS((const char *));
 static char *isolate_tilde_prefix PARAMS((const char *, int *));
 static char *glue_prefix_and_suffix PARAMS((char *, const char *, int));
@@ -129,34 +135,35 @@ static char *glue_prefix_and_suffix PARAMS((char *, const char *, int));
    the tilde which starts the expansion. Place the length of the text
    which identified this tilde starter in LEN, excluding the tilde itself. */
 static int
-tilde_find_prefix(const char *string, int *len)
+tilde_find_prefix(const char *string, size_t *len)
 {
-  register int i, j, string_len;
+  register int i, j;
+  size_t string_len;
   register char **prefixes;
 
   prefixes = tilde_additional_prefixes;
 
-  string_len = strlen (string);
+  string_len = strlen(string);
   *len = 0;
 
-  if (*string == '\0' || *string == '~')
+  if ((*string == '\0') || (*string == '~'))
     return (0);
 
   if (prefixes)
     {
-      for (i = 0; i < string_len; i++)
+      for (i = 0; i < (int)string_len; i++)
 	{
 	  for (j = 0; prefixes[j]; j++)
 	    {
-	      if (strncmp (string + i, prefixes[j], strlen (prefixes[j])) == 0)
+	      if (strncmp((string + i), prefixes[j], strlen(prefixes[j])) == 0)
 		{
-		  *len = strlen (prefixes[j]) - 1;
-		  return (i + *len);
+		  *len = (strlen(prefixes[j]) - 1UL);
+		  return (int)((size_t)i + *len);
 		}
 	    }
 	}
     }
-  return (string_len);
+  return (int)string_len;
 }
 
 /* Find the end of a tilde expansion in STRING, and return the index of
@@ -164,13 +171,14 @@ tilde_find_prefix(const char *string, int *len)
 static int
 tilde_find_suffix(const char *string)
 {
-  register int i, j, string_len;
+  register int i, j;
+  size_t string_len;
   register char **suffixes;
 
   suffixes = tilde_additional_suffixes;
   string_len = strlen(string);
 
-  for (i = 0; i < string_len; i++)
+  for (i = 0; i < (int)string_len; i++)
     {
 #if defined(__MSDOS__)
       if (string[i] == '/' || string[i] == '\\' /* || !string[i] */)
@@ -193,31 +201,32 @@ char *
 tilde_expand(const char *string)
 {
   char *result;
-  int result_size, result_index;
+  size_t result_size, result_index;
 
-  result_index = result_size = 0;
+  result_index = result_size = 0UL;
   /* looks like this was supposed to be an assignment after all; doing it
    * as an equality comparison causes result to be used uninitialized: */
   if ((result = strchr(string, '~')))
-    result = (char *)xmalloc(result_size = (strlen(string) + 16));
+    result = (char *)xmalloc(result_size = (strlen(string) + 16UL));
   else
-    result = (char *)xmalloc(result_size = (strlen(string) + 1));
+    result = (char *)xmalloc(result_size = (strlen(string) + 1UL));
 
   /* Scan through STRING expanding tildes as we come to them. */
   while (1)
     {
-      register int start, end;
+      register size_t start, end;
       char *tilde_word, *expansion;
-      int len;
+      size_t len;
 
       /* Make START point to the tilde which starts the expansion. */
-      start = tilde_find_prefix (string, &len);
+      start = (size_t)tilde_find_prefix(string, &len);
 
       /* Copy the skipped text into the result. */
-      if ((result_index + start + 1) > result_size)
-	result = (char *)xrealloc (result, 1 + (result_size += (start + 20)));
+      if ((result_index + start + 1UL) > result_size)
+	result = (char *)xrealloc(result,
+                                  (1UL + (result_size += (start + 20UL))));
 
-      strncpy (result + result_index, string, start);
+      strncpy((result + result_index), string, start);
       result_index += start;
 
       /* Advance STRING to the starting tilde. */
@@ -225,22 +234,22 @@ tilde_expand(const char *string)
 
       /* Make END be the index of one after the last character of the
 	 username. */
-      end = tilde_find_suffix (string);
+      end = (size_t)tilde_find_suffix(string);
 
       /* If both START and END are zero, we are all done. */
       if (!start && !end)
 	break;
 
       /* Expand the entire tilde word, and copy it into RESULT. */
-      tilde_word = (char *)xmalloc (1 + end);
-      strncpy (tilde_word, string, end);
+      tilde_word = (char *)xmalloc(1UL + end);
+      strncpy(tilde_word, string, end);
       tilde_word[end] = '\0';
       string += end;
 
-      expansion = tilde_expand_word (tilde_word);
+      expansion = tilde_expand_word(tilde_word);
       free (tilde_word);
 
-      len = strlen (expansion);
+      len = strlen(expansion);
 #ifdef __CYGWIN__
       /* Fix for Cygwin to prevent ~user/xxx from expanding to //xxx when
 	 $HOME for `user' is /.  On cygwin, // denotes a network drive. */
@@ -289,11 +298,11 @@ static char *
 glue_prefix_and_suffix(char *prefix, const char *suffix, int suffind)
 {
   char *ret;
-  int plen, slen;
+  size_t plen, slen;
 
-  plen = ((prefix && *prefix) ? strlen(prefix) : 0);
+  plen = ((prefix && *prefix) ? strlen(prefix) : 0UL);
   slen = strlen(suffix + suffind);
-  ret = (char *)xmalloc(plen + slen + 1);
+  ret = (char *)xmalloc(plen + slen + 1UL);
   if (plen)
     strcpy(ret, prefix);
   strcpy((ret + plen), (suffix + suffind));
@@ -448,10 +457,10 @@ xrealloc (pointer, bytes)
 }
 
 static void
-memory_error_and_abort ()
+memory_error_and_abort()
 {
-  fprintf (stderr, "readline: out of virtual memory\n");
-  abort ();
+  fprintf(stderr, "readline: out of virtual memory\n");
+  abort();
 }
 
 /*

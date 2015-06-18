@@ -134,7 +134,9 @@ program under the GPL.
 #if HAVE_CONFIG_H
 # include <config.h>
 #else
-# warning not including <config.h>
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "not including <config.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
@@ -203,7 +205,9 @@ program under the GPL.
 # undef HAVE_ISASCII		/* just in case */
 # define HAVE_ISASCII 1
 #else
-# warning isascii was not already defined.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "isascii was not already defined."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* isascii */
 #if STDC_HEADERS || !HAVE_ISASCII
 # define is_ascii(c) 1
@@ -270,13 +274,13 @@ main(argc, argv)
 	  }
 	  fprintf(stderr, "%s: Unrecognized switch: %s\n", program_name,
 		  argv[1]);
-	  fprintf(stderr, usage);
+	  fprintf(stderr, "%s", usage);
 	  exit(1);
 	}
 	switch ( argc )
 	   {
 	default:
-		fprintf(stderr, usage);
+		fprintf(stderr, "%s", usage);
 		exit(0);
 	case 3:
 		output_name = argv[2];

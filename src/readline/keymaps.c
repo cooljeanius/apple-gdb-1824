@@ -53,10 +53,10 @@
 /* Return a new, empty keymap.
    Free it with free() when you are done. */
 Keymap
-rl_make_bare_keymap ()
+rl_make_bare_keymap(void)
 {
   register int i;
-  Keymap keymap = (Keymap)xmalloc (KEYMAP_SIZE * sizeof (KEYMAP_ENTRY));
+  Keymap keymap = (Keymap)xmalloc(KEYMAP_SIZE * sizeof(KEYMAP_ENTRY));
 
   for (i = 0; i < KEYMAP_SIZE; i++)
     {
@@ -73,13 +73,12 @@ rl_make_bare_keymap ()
   return (keymap);
 }
 
-/* Return a new keymap which is a copy of MAP. */
+/* Return a new keymap which is a copy of MAP: */
 Keymap
-rl_copy_keymap (map)
-     Keymap map;
+rl_copy_keymap(Keymap map)
 {
   register int i;
-  Keymap temp = rl_make_bare_keymap ();
+  Keymap temp = rl_make_bare_keymap();
 
   for (i = 0; i < KEYMAP_SIZE; i++)
     {
@@ -93,12 +92,12 @@ rl_copy_keymap (map)
    the uppercase Meta characters bound to run their lowercase equivalents,
    and the Meta digits bound to produce numeric arguments. */
 Keymap
-rl_make_keymap ()
+rl_make_keymap(void)
 {
   register int i;
   Keymap newmap;
 
-  newmap = rl_make_bare_keymap ();
+  newmap = rl_make_bare_keymap();
 
   /* All ASCII printing characters are self-inserting. */
   for (i = ' '; i < 127; i++)
@@ -121,10 +120,9 @@ rl_make_keymap ()
   return (newmap);
 }
 
-/* Free the storage associated with MAP. */
+/* Free the storage associated with MAP: */
 void
-rl_discard_keymap (map)
-     Keymap map;
+rl_discard_keymap(Keymap map)
 {
   int i;
 
@@ -139,12 +137,15 @@ rl_discard_keymap (map)
 	  break;
 
 	case ISKMAP:
-	  rl_discard_keymap ((Keymap)map[i].function);
+	  rl_discard_keymap((Keymap)map[i].function);
 	  break;
 
 	case ISMACR:
-	  free ((char *)map[i].function);
+	  free((char *)map[i].function);
 	  break;
+
+        default:
+          break;
 	}
     }
 }

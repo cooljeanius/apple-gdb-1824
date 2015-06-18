@@ -1846,22 +1846,21 @@ elf32_arm_copy_indirect_symbol (const struct elf_backend_data *bed,
   _bfd_elf_link_hash_copy_indirect (bed, dir, ind);
 }
 
-/* Create an ARM elf linker hash table.  */
-
+/* Create an ARM elf linker hash table: */
 static struct bfd_link_hash_table *
-elf32_arm_link_hash_table_create (bfd *abfd)
+elf32_arm_link_hash_table_create(bfd *abfd)
 {
   struct elf32_arm_link_hash_table *ret;
-  bfd_size_type amt = sizeof (struct elf32_arm_link_hash_table);
+  bfd_size_type amt = sizeof(struct elf32_arm_link_hash_table);
 
-  ret = bfd_malloc (amt);
+  ret = (struct elf32_arm_link_hash_table *)bfd_malloc(amt);
   if (ret == NULL)
     return NULL;
 
-  if (!_bfd_elf_link_hash_table_init (& ret->root, abfd,
-				      elf32_arm_link_hash_newfunc))
+  if (!_bfd_elf_link_hash_table_init(&ret->root, abfd,
+				     elf32_arm_link_hash_newfunc))
     {
-      free (ret);
+      free(ret);
       return NULL;
     }
 
@@ -5141,7 +5140,8 @@ elf32_arm_check_relocs(bfd *abfd, struct bfd_link_info *info,
 		  {
 		    bfd_size_type amt = sizeof(*p);
 
-		    p = bfd_alloc(htab->root.dynobj, amt);
+		    p = ((struct elf32_arm_relocs_copied *)
+                         bfd_alloc(htab->root.dynobj, amt));
 		    if (p == NULL)
 		      return FALSE;
 		    p->next = *head;
@@ -6544,14 +6544,14 @@ section_list;
    allocated for it (and so the used_by_bfd field is valid) but
    for which the ARM extended version of this structure - the
    _arm_elf_section_data structure - has not been allocated.  */
-static section_list * sections_with_arm_elf_section_data = NULL;
+static section_list *sections_with_arm_elf_section_data = NULL;
 
 static void
-record_section_with_arm_elf_section_data (asection * sec)
+record_section_with_arm_elf_section_data(asection *sec)
 {
-  struct section_list * entry;
+  struct section_list *entry;
 
-  entry = bfd_malloc (sizeof (* entry));
+  entry = (struct section_list *)bfd_malloc(sizeof(* entry));
   if (entry == NULL)
     return;
   entry->sec = sec;
@@ -6608,30 +6608,30 @@ elf32_arm_output_symbol_hook (struct bfd_link_info *info,
   _arm_elf_section_data *arm_data;
   struct elf32_arm_link_hash_table *globals;
 
-  /* Only do this on final link.  */
+  /* Only do this on final link: */
   if (info->relocatable)
     return TRUE;
 
-  /* Only build a map if we need to byteswap code.  */
-  globals = elf32_arm_hash_table (info);
+  /* Only build a map if we need to byteswap code: */
+  globals = elf32_arm_hash_table(info);
   if (!globals->byteswap_code)
     return TRUE;
 
-  /* We only want mapping symbols.  */
-  if (! bfd_is_arm_mapping_symbol_name (name))
+  /* We only want mapping symbols: */
+  if (! bfd_is_arm_mapping_symbol_name(name))
     return TRUE;
 
   /* If this section has not been allocated an _arm_elf_section_data
      structure then we cannot record anything.  */
-  arm_data = get_arm_elf_section_data (input_sec);
+  arm_data = get_arm_elf_section_data(input_sec);
   if (arm_data == NULL)
     return TRUE;
 
-  mapcount = arm_data->mapcount + 1;
+  mapcount = (arm_data->mapcount + 1);
   map = arm_data->map;
   /* TODO: This may be inefficient, but we probably don't usually have many
      mapping symbols per section.  */
-  newmap = bfd_realloc (map, mapcount * sizeof (* map));
+  newmap = (elf32_arm_section_map *)bfd_realloc(map, mapcount * sizeof(* map));
   if (newmap != NULL)
     {
       arm_data->map = newmap;
@@ -6644,22 +6644,21 @@ elf32_arm_output_symbol_hook (struct bfd_link_info *info,
   return TRUE;
 }
 
-/* Allocate target specific section data.  */
-
+/* Allocate target specific section data: */
 static bfd_boolean
-elf32_arm_new_section_hook (bfd *abfd, asection *sec)
+elf32_arm_new_section_hook(bfd *abfd, asection *sec)
 {
   _arm_elf_section_data *sdata;
-  bfd_size_type amt = sizeof (*sdata);
+  bfd_size_type amt = sizeof(*sdata);
 
-  sdata = bfd_zalloc (abfd, amt);
+  sdata = (_arm_elf_section_data *)bfd_zalloc(abfd, amt);
   if (sdata == NULL)
     return FALSE;
   sec->used_by_bfd = sdata;
 
-  record_section_with_arm_elf_section_data (sec);
+  record_section_with_arm_elf_section_data(sec);
 
-  return _bfd_elf_new_section_hook (abfd, sec);
+  return _bfd_elf_new_section_hook(abfd, sec);
 }
 
 
@@ -6831,35 +6830,34 @@ elf32_arm_swap_symbol_out (bfd *abfd,
   bfd_elf32_swap_symbol_out (abfd, src, cdst, shndx);
 }
 
-/* Add the PT_ARM_EXIDX program header.  */
-
+/* Add the PT_ARM_EXIDX program header: */
 static bfd_boolean
-elf32_arm_modify_segment_map (bfd *abfd,
-			      struct bfd_link_info *info ATTRIBUTE_UNUSED)
+elf32_arm_modify_segment_map(bfd *abfd,
+			     struct bfd_link_info *info ATTRIBUTE_UNUSED)
 {
   struct elf_segment_map *m;
   asection *sec;
 
-  sec = bfd_get_section_by_name (abfd, ".ARM.exidx");
+  sec = bfd_get_section_by_name(abfd, ".ARM.exidx");
   if (sec != NULL && (sec->flags & SEC_LOAD) != 0)
     {
       /* If there is already a PT_ARM_EXIDX header, then we do not
 	 want to add another one.  This situation arises when running
 	 "strip"; the input binary already has the header.  */
-      m = elf_tdata (abfd)->segment_map;
+      m = elf_tdata(abfd)->segment_map;
       while (m && m->p_type != PT_ARM_EXIDX)
 	m = m->next;
       if (!m)
 	{
-	  m = bfd_zalloc (abfd, sizeof (struct elf_segment_map));
+	  m = (struct elf_segment_map *)bfd_zalloc(abfd, sizeof(struct elf_segment_map));
 	  if (m == NULL)
 	    return FALSE;
 	  m->p_type = PT_ARM_EXIDX;
 	  m->count = 1;
 	  m->sections[0] = sec;
 
-	  m->next = elf_tdata (abfd)->segment_map;
-	  elf_tdata (abfd)->segment_map = m;
+	  m->next = elf_tdata(abfd)->segment_map;
+	  elf_tdata(abfd)->segment_map = m;
 	}
     }
 

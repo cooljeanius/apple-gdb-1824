@@ -3,6 +3,7 @@ dnl# Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])dnl
 
+# Autoconf initialization stuff.
 AC_INIT([gdb-utils],[???],[/dev/null])
 AC_CONFIG_SRCDIR([Makefile.in])
 AC_CONFIG_AUX_DIR([..])
@@ -12,6 +13,7 @@ AM_SANITY_CHECK
 AC_PROG_INSTALL
 AC_CANONICAL_TARGET
 AC_PROG_CC
+AC_PROG_CXX
 m4_ifdef([AM_PROG_AR],[
   AM_PROG_AR
 ],[
@@ -23,6 +25,9 @@ m4_ifdef([AM_PROG_AS],[
 ],[
   test -n "${CCAS}"
   AC_SUBST([CCAS])dnl
+])dnl
+m4_ifdef([AM_MISSING_PROG],[
+  AM_MISSING_PROG([AUTOCONF],[autoconf])dnl
 ])dnl
 
 # Checks for header files.
@@ -36,7 +41,7 @@ AC_CHECK_FUNCS([exit fopen fprintf getc getc_unlocked getwd getcwd \
 
 # Autogen stuff:
 sinclude(../config/autoopts.m4)
-AG_PATH_AUTOOPTS([5.17.4])dnl
+AG_PATH_AUTOOPTS([5.17])dnl
 
 # Choose which subdirs to use:
 if test -d ${srcdir}/spu ; then
