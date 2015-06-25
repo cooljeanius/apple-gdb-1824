@@ -16,8 +16,19 @@ AC_REQUIRE([AC_FUNC_ALLOCA])dnl
 AC_REQUIRE([AC_FUNC_MEMCMP])dnl
 dnl# from gnulib module alloca-opt:
 AC_REQUIRE([gl_FUNC_ALLOCA])dnl
+dnl# from gnulib module assert:
+AC_REQUIRE([gl_ASSERT])dnl
+dnl# from gnulib module assert-h:
+AC_REQUIRE([gl_ASSERT_H])dnl
 dnl# from gnulib module autobuild:
 AC_REQUIRE([AB_INIT])dnl
+dnl# from gnulib module chdir-long:
+AC_REQUIRE([gl_FUNC_CHDIR_LONG])dnl
+  ## set up libobj if needed:
+if test "x${gl_cv_have_arbitrary_file_name_length_limit}" = "xyes"; then
+  AC_LIBOBJ([chdir-long])dnl
+  gl_PREREQ_CHDIR_LONG
+fi
 dnl# from gnulib module configmake:
 AC_REQUIRE([gl_CONFIGMAKE_PREP])dnl
 dnl# from gnulib module closedir:
@@ -30,6 +41,9 @@ fi
 gl_DIRENT_MODULE_INDICATOR([closedir])dnl
 dnl# from gnulib module dirent:
 AC_REQUIRE([gl_DIRENT_H])dnl
+dnl# from gnulib module dirent-safer:
+AC_REQUIRE([gl_DIRENT_SAFER])dnl
+gl_MODULE_INDICATOR([dirent-safer])dnl
 dnl# from gnulib module dirfd:
 AC_REQUIRE([gl_FUNC_DIRFD])dnl
   ## set up libobj if needed:
@@ -54,6 +68,19 @@ dnl# from gnulib module extensions:
 AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])dnl
 dnl# from gnulib module extern-inline:
 AC_REQUIRE([gl_EXTERN_INLINE])dnl
+dnl# from gnulib module fcntl:
+AC_REQUIRE([gl_FUNC_FCNTL])dnl
+  ## set up libobj if needed:
+if test ${HAVE_FCNTL} = 0 || test ${REPLACE_FCNTL} = 1; then
+  AC_LIBOBJ([fcntl])dnl
+  ## end libobj
+fi
+gl_FCNTL_MODULE_INDICATOR([fcntl])dnl
+dnl# from gnulib module fcntl-h:
+AC_REQUIRE([gl_FCNTL_H])dnl
+dnl# from gnulib module fcntl-safer:
+AC_REQUIRE([gl_FCNTL_SAFER])dnl
+gl_MODULE_INDICATOR([fcntl-safer])dnl
 dnl# from gnulib module fileblocks:
 AC_REQUIRE([gl_FILEBLOCKS])dnl
   ## set up libobj if needed:
@@ -61,6 +88,8 @@ if test "x${ac_cv_member_struct_stat_st_blocks}" = "xno"; then
   AC_LIBOBJ([fileblocks])dnl
   gl_PREREQ_FILEBLOCKS
 fi
+dnl# from gnulib module flexmember:
+AC_REQUIRE([AC_C_FLEXIBLE_ARRAY_MEMBER])dnl
 dnl# from gnulib module float:
 AC_REQUIRE([gl_FLOAT_H])dnl
   ## set up libobjs if needed:
@@ -103,6 +132,22 @@ if test ${HAVE_DECL_FREXPL} = 0 || test "x${gl_func_frexpl}" = "xno"; then
   ## end libobj
 fi
 gl_MATH_MODULE_INDICATOR([frexpl])dnl
+dnl# from gnulib module fstatat:
+AC_REQUIRE([gl_FUNC_FSTATAT])dnl
+  ## set up libobj if needed:
+if test ${HAVE_FSTATAT} = 0 || test ${REPLACE_FSTATAT} = 1; then
+  AC_LIBOBJ([fstatat])dnl
+  ## end libobj
+fi
+gl_SYS_STAT_MODULE_INDICATOR([fstatat])dnl
+dnl# from gnulib module getpagesize:
+AC_REQUIRE([gl_FUNC_GETPAGESIZE])dnl
+  ## set up libobj if needed:
+if test ${REPLACE_GETPAGESIZE} = 1; then
+  AC_LIBOBJ([getpagesize])dnl
+  ## end libobj
+fi
+gl_UNISTD_MODULE_INDICATOR([getpagesize])dnl
 dnl# from gnulib module gettext-h:
 AC_SUBST([LIBINTL])dnl
 AC_SUBST([LTLIBINTL])dnl
@@ -165,6 +210,8 @@ if test "x${LOCALCHARSET_TESTS_ENVIRONMENT}" = "x"; then
   fi
 fi
 AC_SUBST([LOCALCHARSET_TESTS_ENVIRONMENT])dnl
+dnl# from gnulib module locale:
+AC_REQUIRE([gl_LOCALE_H])dnl
 dnl# from gnulib module lstat:
 AC_REQUIRE([gl_FUNC_LSTAT])dnl
   ## set up libobj if needed:
@@ -280,6 +327,14 @@ if test ${HAVE_POPEN} = 0 || test ${REPLACE_POPEN} = 1; then
   gl_PREREQ_POPEN
 fi
 gl_STDIO_MODULE_INDICATOR([popen])dnl
+dnl# from gnulib module putenv:
+AC_REQUIRE([gl_FUNC_PUTENV])dnl
+  ## set up libobj if needed:
+if test ${REPLACE_PUTENV} = 1; then
+  AC_LIBOBJ([putenv])dnl
+  gl_PREREQ_PUTENV
+fi
+gl_STDLIB_MODULE_INDICATOR([putenv])dnl
 dnl# from gnulib module readdir:
 AC_REQUIRE([gl_FUNC_READDIR])dnl
   ## set up libobj if needed:
@@ -300,6 +355,48 @@ dnl# from gnulib module realloc-posix:
 AC_REQUIRE([gl_FUNC_REALLOC_POSIX])dnl
 dnl# (libobj is already set above)
 gl_STDLIB_MODULE_INDICATOR([realloc-posix])dnl
+dnl# from gnulib module regex:
+AC_REQUIRE([gl_REGEX])dnl
+  ## set up libobj if needed:
+if test "x${ac_use_included_regex}" = "xyes"; then
+  AC_LIBOBJ([regex])dnl
+  gl_PREREQ_REGEX
+fi
+dnl# from gnulib module sigaction:
+AC_REQUIRE([gl_SIGACTION])dnl
+  ## set up libobj if needed:
+if test ${HAVE_SIGACTION} = 0; then
+  AC_LIBOBJ([sigaction])dnl
+  gl_PREREQ_SIGACTION
+fi
+gl_SIGNAL_MODULE_INDICATOR([sigaction])dnl
+dnl# from gnulib module signal-h:
+AC_REQUIRE([gl_SIGNAL_H])dnl
+dnl# from gnulib module sigpipe:
+AC_REQUIRE([gl_SIGNAL_SIGPIPE])dnl
+dnl## Define the C macro GNULIB_SIGPIPE to 1:
+gl_MODULE_INDICATOR([sigpipe])dnl
+dnl## Define the substituted variable GNULIB_SIGNAL_H_SIGPIPE to 1:
+AC_REQUIRE([gl_SIGNAL_H_DEFAULTS])dnl
+  ## ..and export it:
+export GNULIB_SIGNAL_H_SIGPIPE=1
+dnl## Define the substituted variable GNULIB_STDIO_H_SIGPIPE to 1:
+AC_REQUIRE([gl_STDIO_H_DEFAULTS])dnl
+AC_REQUIRE([gl_ASM_SYMBOL_PREFIX])dnl
+  ## ..and export it:
+export GNULIB_STDIO_H_SIGPIPE=1
+dnl## Define the substituted variable GNULIB_UNISTD_H_SIGPIPE to 1:
+AC_REQUIRE([gl_UNISTD_H_DEFAULTS])dnl
+  ## ..and export it:
+export GNULIB_UNISTD_H_SIGPIPE=1
+dnl# from gnulib module sigprocmask:
+AC_REQUIRE([gl_SIGNALBLOCKING])dnl
+  ## set up libobj if needed:
+if test ${HAVE_POSIX_SIGNALBLOCKING} = 0; then
+  AC_LIBOBJ([sigprocmask])dnl
+  gl_PREREQ_SIGPROCMASK
+fi
+gl_SIGNAL_MODULE_INDICATOR([sigprocmask])dnl
 dnl# from gnulib module snippet/link-warning:
 AC_REQUIRE([gl_FEATURES_H])dnl
 dnl# from gnulib module ssize_t:
@@ -378,17 +475,29 @@ dnl# from gnulib module strstr-simple:
 AC_REQUIRE([gl_FUNC_STRSTR_SIMPLE])dnl
 dnl# (libobj is already set above)
 gl_STRING_MODULE_INDICATOR([strstr])dnl
+dnl# from gnulib module sys_select:
+AC_REQUIRE([gl_HEADER_SYS_SELECT])dnl
+AC_REQUIRE([AC_PROG_MKDIR_P])dnl
 dnl# from gnulib module sys_stat:
 AC_REQUIRE([gl_HEADER_SYS_STAT_H])dnl
-AC_REQUIRE([AC_PROG_MKDIR_P])dnl
 dnl# from gnulib module sys_time:
 AC_REQUIRE([gl_HEADER_SYS_TIME_H])dnl
 dnl# from gnulib module sys_types:
 AC_REQUIRE([gl_SYS_TYPES_H])dnl
+dnl# from gnulib module sys_wait:
+AC_REQUIRE([gl_SYS_WAIT_H])dnl
 dnl# from gnulib module time:
 AC_REQUIRE([gl_HEADER_TIME_H])dnl
 dnl# from gnulib module unistd:
 AC_REQUIRE([gl_UNISTD_H])dnl
+dnl# from gnulib module usleep:
+AC_REQUIRE([gl_FUNC_USLEEP])dnl
+  ## set up libobj if needed:
+if test ${HAVE_USLEEP} = 0 || test ${REPLACE_USLEEP} = 1; then
+  AC_LIBOBJ([usleep])dnl
+  ## end libobj
+fi
+gl_UNISTD_MODULE_INDICATOR([usleep])dnl
 dnl# from gnulib module wchar:
 AC_REQUIRE([gl_WCHAR_H])dnl
 AC_REQUIRE([AC_FUNC_MBRTOWC])dnl
@@ -407,9 +516,16 @@ AC_REQUIRE([gl_WCTYPE_H_DEFAULTS])dnl
 AC_REQUIRE([gl_FUNC_TOWCTRANS])dnl
 AC_REQUIRE([gl_FUNC_WCTRANS])dnl
 AC_REQUIRE([gl_FUNC_WCTYPE])dnl
+dnl# from gnulib module winsz-ioctl:
+AC_REQUIRE([gl_HEADER_TIOCGWINSZ_NEEDS_SYS_IOCTL])dnl
+dnl# from gnulib module winsz-termios:
+AC_REQUIRE([gl_HEADER_TIOCGWINSZ_IN_TERMIOS_H])dnl
+AC_REQUIRE([gl_WINSIZE_IN_PTEM])dnl
 dnl# from gnulib module xalloc:
 AC_REQUIRE([gl_XALLOC])dnl
 dnl# other:
+AC_REQUIRE([gl_INCLUDE_NEXT])dnl
+  ## need this variable:
 if test "x${gl_LIBOBJS}" = "x"; then
   if test "x${LIBOBJS}" != "x"; then
     test -z "${gl_LIBOBJS}" && test -n "${LIBOBJS}" && export gl_LIBOBJS="${LIBOBJS}"

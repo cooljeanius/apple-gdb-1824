@@ -202,10 +202,9 @@ really_free_pendings (void *dummy)
     free_macro_table (pending_macros);
 }
 
-/* This function is called to discard any pending blocks. */
-
+/* This function is called to discard any pending blocks: */
 void
-free_pending_blocks (void)
+free_pending_blocks(void)
 {
 #if 0				/* Now we make the links in the
 				   objfile_obstack, so don't free
@@ -215,15 +214,24 @@ free_pending_blocks (void)
   for (bnext = pending_blocks; bnext; bnext = bnext1)
     {
       bnext1 = bnext->next;
-      xfree ((void *) bnext);
+      xfree((void *)bnext);
     }
-#endif
+#endif /* 0 */
   pending_blocks = NULL;
 }
 
 /* Take one of the lists of symbols and make a block from it.  Keep
    the order the symbols have in the list (reversed from the input
    file).  Put the block on the list of pending blocks.  */
+
+/* FIXME: need to rename some struct fields that currently live in headers,
+ * and deal with all of the resulting fallout, before removing this: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* APPLE LOCAL address ranges: Add a new parameter, RANGES, for the
    case in which the block is contained within multiple non-contiguous
@@ -237,12 +245,12 @@ free_pending_blocks (void)
    should just be NULL.  */
 
 void
-finish_block (struct symbol *symbol, struct pending **listhead,
-	      struct pending_block *old_blocks,
-	      CORE_ADDR start, CORE_ADDR end,
-	      /* APPLE LOCAL begin address ranges  */
-	      struct address_range_list *ranges, struct objfile *objfile)
-	      /* APPLE LOCAL end address ranges  */
+finish_block(struct symbol *symbol, struct pending **listhead,
+	     struct pending_block *old_blocks,
+	     CORE_ADDR start, CORE_ADDR end,
+	     /* APPLE LOCAL begin address ranges  */
+	     struct address_range_list *ranges, struct objfile *objfile)
+	     /* APPLE LOCAL end address ranges  */
 {
   struct pending *next, *next1;
   struct block *block;
@@ -531,6 +539,13 @@ finish_block (struct symbol *symbol, struct pending **listhead,
 
   record_pending_block (objfile, block, opblock);
 }
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 
 /* Record BLOCK on the list of all blocks in the file.  Put it after

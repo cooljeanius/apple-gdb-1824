@@ -373,6 +373,10 @@ ax_print(struct ui_file *f, struct agent_expr *x)
       i += (1 + aop_map[op].op_size);
 
       is_float = (op == aop_float);
+
+      if (is_float) {
+        ; /* ??? */
+      }
     }
 }
 
@@ -465,7 +469,7 @@ ax_reqs(struct agent_expr *ax, struct agent_reqs *reqs)
          jump target, and record the height we expect there.  */
       if ((aop_goto == (op - aop_map)) || (aop_if_goto == (op - aop_map)))
 	{
-	  int target = read_const(ax, i + 1, 2);
+	  int target = (int)read_const(ax, (i + 1), 2);
 	  if ((target < 0) || (target >= ax->len))
 	    {
 	      reqs->flaw = agent_flaw_bad_jump;
@@ -506,7 +510,7 @@ ax_reqs(struct agent_expr *ax, struct agent_reqs *reqs)
       /* For reg instructions, record the register in the bit mask: */
       if (aop_reg == (op - aop_map))
 	{
-	  int reg = read_const(ax, i + 1, 2);
+	  int reg = (int)read_const(ax, (i + 1), 2);
 	  int byte = (reg / 8);
 
 	  /* Grow the bit mask if necessary: */

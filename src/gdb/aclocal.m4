@@ -2750,6 +2750,7 @@ AC_DEFUN([AM_PROG_VALAC],
       m4_default([$2], [:])
     fi])
 
+m4_include([m4/absolute-header.m4])
 m4_include([m4/ax_check_compile_flag.m4])
 m4_include([m4/ax_check_gnu_make.m4])
 m4_include([m4/ax_compiler_vendor.m4])
@@ -2774,4 +2775,5 @@ m4_include([m4/progtest.m4])
 m4_include([m4/ptrace.m4])
 m4_include([m4/setpgrp.m4])
 m4_include([m4/wait3.m4])
+m4_include([m4/warn-on-use.m4])
 m4_include([acinclude.m4])

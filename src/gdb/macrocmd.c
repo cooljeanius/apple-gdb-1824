@@ -197,26 +197,25 @@ info_macro_command (char *name, int from_tty)
    things.  */
 static struct macro_table *user_macros;
 
-static void
-macro_define_command (char *exp, int from_tty)
+static void ATTR_NORETURN
+macro_define_command(char *exp, int from_tty)
 {
-  error (_("Command not implemented yet."));
+  error(_("Command not implemented yet."));
 }
 
 
-static void
-macro_undef_command (char *exp, int from_tty)
+static void ATTR_NORETURN
+macro_undef_command(char *exp, int from_tty)
 {
-  error (_("Command not implemented yet."));
+  error(_("Command not implemented yet."));
 }
 
 
-static void
-macro_list_command (char *exp, int from_tty)
+static void ATTR_NORETURN
+macro_list_command(char *exp, int from_tty)
 {
-  error (_("Command not implemented yet."));
+  error(_("Command not implemented yet."));
 }
-
 
 
 /* Initializing the `macrocmd' module.  */

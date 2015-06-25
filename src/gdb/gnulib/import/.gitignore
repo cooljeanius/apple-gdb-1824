@@ -8,6 +8,8 @@ core
 *.stackdump
 alloca.h
 alloca.h-t
+assert.h
+assert.h-t
 dirent.h
 dirent.h-t
 errno.h
@@ -20,6 +22,10 @@ fnmatch.h
 fnmatch.h-t
 inttypes.h
 inttypes.h-t
+langinfo.h
+langinfo.h-t
+locale.h
+locale.h-t
 math.h
 math.h-t
 ./arg-nonnull.h
@@ -28,6 +34,8 @@ arg-nonnull.h-t
 c++defs.h-t
 ./warn-on-use.h
 warn-on-use.h-t
+signal.h
+signal.h-t
 stdbool.h
 stdbool.h-t
 stddef.h
@@ -40,16 +48,24 @@ stdlib.h
 stdlib.h-t
 string.h
 string.h-t
+sys/select.h
+sys/select.h-t
 sys/stat.h
 sys/stat.h-t
 sys/time.h
 sys/time.h-t
 sys/types.h
 sys/types.h-t
+sys/wait.h
+sys/wait.h-t
 time.h
 time.h-t
 unistd.h
 unistd.h-t
+unitypes.h
+unitypes.h-t
+uniwidth.h
+uniwidth.h-t
 wchar.h
 wchar.h-t
 wctype.h
@@ -63,6 +79,7 @@ GSYMS
 GPATH
 *deps/*.*o
 Makefile
+*.dirstamp
 
 # The "./" prefix on these above originally made git fail to actually
 # ignore these, but now we no longer need to make git fail to ignore them

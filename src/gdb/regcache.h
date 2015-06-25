@@ -196,22 +196,26 @@ extern void deprecated_write_register_bytes(int regbyte, gdb_byte *myaddr,
 extern void deprecated_registers_fetched(void)
   ATTRIBUTE_DEPRECATED_FOR(regcache_raw_supply);
 
-extern int register_cached (int regnum);
+extern int register_cached(int regnum);
 
-extern void set_register_cached (int regnum, int state);
+extern void set_register_cached(int regnum, int state);
 
-extern void registers_changed (void);
+extern void registers_changed(void);
 
 
 /* Rename to read_unsigned_register()? */
-extern ULONGEST read_register (int regnum);
+extern ULONGEST read_register(int regnum);
 
 /* Rename to read_unsigned_register_pid()? */
-extern ULONGEST read_register_pid (int regnum, ptid_t ptid);
+extern ULONGEST read_register_pid(int regnum, ptid_t ptid);
 
-extern void write_register (int regnum, LONGEST val);
+extern void write_register(int regnum, LONGEST val);
 
-extern void write_register_pid (int regnum, CORE_ADDR val, ptid_t ptid);
+extern void write_register_pid(int regnum, CORE_ADDR val, ptid_t ptid);
+
+extern int regcache_compare(struct regcache *rc1, struct regcache *rc2);
+
+extern void regcache_observer_target_changed(struct target_ops *target);
 
 #endif /* REGCACHE_H */
 

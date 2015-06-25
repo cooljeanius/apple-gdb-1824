@@ -134,21 +134,21 @@ scm_ipruk (char *hdr, LONGEST ptr, struct ui_file *stream)
 }
 
 void
-scm_scmval_print (LONGEST svalue, struct ui_file *stream, int format,
-		  int deref_ref, int recurse, enum val_prettyprint pretty)
+scm_scmval_print(LONGEST svalue, struct ui_file *stream, int format,
+		 int deref_ref, int recurse, enum val_prettyprint pretty)
 {
 taloop:
-  switch (7 & (int) svalue)
+  switch (7 & (int)svalue)
     {
     case 2:
     case 6:
-      print_longest(stream, format ? format : 'd', 1, svalue >> 2);
+      print_longest(stream, (format ? format : 'd'), 1, (svalue >> 2));
       break;
     case 4:
       if (SCM_ICHRP(svalue))
 	{
 	  svalue = SCM_ICHR(svalue);
-	  scm_printchar(svalue, stream);
+	  scm_printchar((int)svalue, stream);
 	  break;
 	}
       else if (SCM_IFLAGP(svalue)
@@ -305,20 +305,20 @@ taloop:
 	case tc7_cvect:
 	  scm_raprin1 (exp, port, writing);
 	  break;
-#endif
+#endif /* 0 */
 	case scm_tcs_subrs:
 	  {
-	    int index = SCM_CAR (svalue) >> 8;
+	    int index = (int)(SCM_CAR(svalue) >> 8);
 #if 1
 	    char str[20];
-	    sprintf (str, "#%d", index);
+	    sprintf(str, "#%d", index);
 #else
-	    char *str = index ? SCM_CHARS (scm_heap_org + index) : "";
-#define SCM_CHARS(x) ((char *)(SCM_CDR(x)))
-	    char *str = CHARS (SNAME (exp));
-#endif
-	    fprintf_filtered (stream, "#<primitive-procedure %s>",
-			      str);
+	    char *str = (index ? SCM_CHARS(scm_heap_org + index) : "");
+# define SCM_CHARS(x) ((char *)(SCM_CDR(x)))
+	    char *str = CHARS(SNAME(exp));
+#endif /* 1 */
+	    fprintf_filtered(stream, "#<primitive-procedure %s>",
+			     str);
 	  }
 	  break;
 #if 0

@@ -177,9 +177,11 @@ enum type_code
    alias for TYPE_CODE_STRUCT.  This is for DWARF, which has a distinct
    "class" attribute.  Perhaps we should actually have a separate TYPE_CODE
    so that we can print "class" or "struct" depending on what the debug
-   info said.  It's not clear we should bother.  */
-
+   info said.  It was not clear if we should bother...  */
 #define TYPE_CODE_CLASS TYPE_CODE_STRUCT
+/* FIXME: some locations in the code check against both, as if they had
+ * different values, which provokes -Wlogical-op warnings with recent
+ * versions of gcc... */
 
 /* Some bits for the type's flags word, and macros to test them. */
 
@@ -1046,10 +1048,10 @@ extern void allocate_cplus_struct_type (struct type *);
    (at least by gcc's current behavior) and is a definition,
    not just a declaration.  */
 
-#define TYPE_IS_OPAQUE(thistype) (((TYPE_CODE (thistype) == TYPE_CODE_STRUCT) ||        \
-                                   (TYPE_CODE (thistype) == TYPE_CODE_UNION))        && \
-                                  (TYPE_NFIELDS (thistype) == 0 && TYPE_LENGTH (thistype) == 0) && \
-                                  (TYPE_CPLUS_SPECIFIC_NONULL (thistype) && (TYPE_NFN_FIELDS (thistype) == 0)))
+#define TYPE_IS_OPAQUE(thistype) (((TYPE_CODE(thistype) == TYPE_CODE_STRUCT) ||        \
+                                   (TYPE_CODE(thistype) == TYPE_CODE_UNION))        && \
+                                  ((TYPE_NFIELDS(thistype) == 0) && (TYPE_LENGTH(thistype) == 0)) && \
+                                  (TYPE_CPLUS_SPECIFIC_NONULL(thistype) && (TYPE_NFN_FIELDS(thistype) == 0)))
 
 struct builtin_type
 {

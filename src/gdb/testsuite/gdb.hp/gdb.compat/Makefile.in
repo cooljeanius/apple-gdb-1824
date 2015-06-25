@@ -25,7 +25,7 @@ clean mostlyclean:
 	-rm -fv core $(EXECUTABLES)
 
 distclean maintainer-clean realclean: clean
-	-rm -f Makefile config.status config.log
+	-rm -f Makefile config.status config.log autoscan.log .DS_Store
 	-rm -fv *-init.exp
 	-rm -frv *.log summary detail *.plog *.sum *.psum site.*
 	-rm -frv autom4te.cache || rmdir autom4te.cache

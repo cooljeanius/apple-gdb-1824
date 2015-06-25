@@ -62,11 +62,11 @@ struct ui_out_level
 
 struct ui_out_table
 {
-  /* If on, a table is being generated.  */
+  /* If on, a table is being generated: */
   int flag;
 
   /* If on, the body of a table is being generated.  If off, the table
-     header is being generated.  */
+     header is being generated: */
   int body_flag;
 
   /* The level at which each entry of the table is to be found.  A row
@@ -74,22 +74,21 @@ struct ui_out_table
      above that of the table.  */
   int entry_level;
 
-  /* Number of table columns (as specified in the table_begin call).  */
+  /* Number of table columns (as specified in the table_begin call): */
   int columns;
 
   /* String identifying the table (as specified in the table_begin
      call).  */
   char *id;
 
-  /* Points to the first table header (if any).  */
+  /* Points to the first table header (if any): */
   struct ui_out_hdr *header_first;
 
-  /* Points to the last table header (if any).  */
+  /* Points to the last table header (if any): */
   struct ui_out_hdr *header_last;
 
-  /* Points to header of NEXT column to format.  */
+  /* Points to header of NEXT column to format: */
   struct ui_out_hdr *header_next;
-
 };
 
 
@@ -218,8 +217,21 @@ struct ui_out_impl default_ui_out_impl =
 
 struct ui_out def_uiout =
 {
-  0,				/* flags */
-  &default_ui_out_impl,		/* impl */
+  0,                              /* flags */
+  &default_ui_out_impl,           /* impl */
+  NULL,                           /* data */
+  0,                              /* level */
+  { { 0, (enum ui_out_type)0 } }, /* levels */
+  {
+    0,    /* flag */
+    0,    /* body_flag */
+    0,    /* entry_level */
+    0,    /* columns */
+    NULL, /* id */
+    NULL, /* header_first */
+    NULL, /* header_last */
+    NULL  /* header_next */
+  }
 };
 
 /* Pointer to current ui_out */

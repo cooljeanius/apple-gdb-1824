@@ -422,6 +422,12 @@ getpkt(char *buf, int *buf_len)
 # endif /* DEPRECATED_REGISTER_BYTE */
 #endif /* !REGISTER_BYTE */
 
+#if !defined(REGISTER_RAW_SIZE)
+# if defined(DEPRECATED_REGISTER_RAW_SIZE)
+#  define REGISTER_RAW_SIZE(reg_nr) DEPRECATED_REGISTER_RAW_SIZE(reg_nr)
+# endif /* DEPRECATED_REGISTER_RAW_SIZE */
+#endif /* !REGISTER_RAW_SIZE */
+
 static char *
 outreg(int regno, char *buf)
 {

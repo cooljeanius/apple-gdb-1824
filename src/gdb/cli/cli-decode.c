@@ -116,6 +116,15 @@ set_cmd_completer (struct cmd_list_element *cmd,
 }
 
 
+/* FIXME: need to rename some struct fields that currently live in headers,
+ * and deal with all of the resulting fallout, before removing this: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* Add element named NAME.
    CLASS is the top level category into which commands are broken down
    for "help" purposes.
@@ -676,6 +685,9 @@ apropos_cmd(struct ui_file *stream, struct cmd_list_element *commandlist,
     }
 }
 
+/* just declare this once, up here: */
+extern struct cmd_list_element *cmdlist;
+
 /* This command really has to deal with two things:
  *     1) I want documentation on *this string* (usually called by
  * "help commandname").
@@ -684,28 +696,25 @@ apropos_cmd(struct ui_file *stream, struct cmd_list_element *commandlist,
  * just "help".)
  *
  *   I am going to split this into two seperate comamnds, help_cmd and
- * help_list.
- */
-
+ * help_list: */
 void
-help_cmd (char *command, struct ui_file *stream)
+help_cmd(char *command, struct ui_file *stream)
 {
   struct cmd_list_element *c;
-  extern struct cmd_list_element *cmdlist;
 
   if (!command)
     {
-      help_list (cmdlist, "", all_classes, stream);
+      help_list(cmdlist, "", all_classes, stream);
       return;
     }
 
-  if (strcmp (command, "all") == 0)
+  if (strcmp(command, "all") == 0)
     {
-      help_all (stream);
+      help_all(stream);
       return;
     }
 
-  c = lookup_cmd (&command, cmdlist, "", 0, 0);
+  c = lookup_cmd(&command, cmdlist, "", 0, 0);
 
   if (c == 0)
     return;
@@ -818,7 +827,6 @@ static void
 help_all(struct ui_file *stream)
 {
   struct cmd_list_element *c;
-  extern struct cmd_list_element *cmdlist;
 
   for (c = cmdlist; c; c = c->next)
     {
@@ -902,6 +910,13 @@ help_cmd_list(struct cmd_list_element *list, enum command_class cmd_class,
 	help_cmd_list(*c->prefixlist, cmd_class, c->prefixname, 1, stream);
     }
 }
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 
 /* Search the input clist for 'command'.  Return the command if
@@ -1102,17 +1117,13 @@ lookup_cmd_1 (char **text, struct cmd_list_element *clist,
     }
 }
 
-/* All this hair to move the space to the front of cmdtype */
-
-static void
-undef_cmd_error (char *cmdtype, char *q)
+/* All this hair to move the space to the front of cmdtype: */
+static void ATTR_NORETURN
+undef_cmd_error(char *cmdtype, char *q)
 {
-  error (_("Undefined %scommand: \"%s\".  Try \"help%s%.*s\"."),
-	 cmdtype,
-	 q,
-	 *cmdtype ? " " : "",
-	 (int) strlen (cmdtype) - 1,
-	 cmdtype);
+  error(_("Undefined %scommand: \"%s\".  Try \"help%s%.*s\"."),
+        cmdtype, q, (*cmdtype ? " " : ""), ((int)strlen(cmdtype) - 1),
+        cmdtype);
 }
 
 /* Look up the contents of *LINE as a command in the command list LIST.

@@ -58,7 +58,26 @@
 #include "stabsread.h"		/* Our own declarations */
 #undef	EXTERN
 
-extern void _initialize_stabsread (void);
+extern void _initialize_stabsread(void);
+
+/* These structs are un-nested from the struct following them to silence
+ * '-Wc++-compat': */
+struct nextfield
+{
+  struct nextfield *next;
+
+  /* This is the raw visibility from the stab.  It is not checked
+   * for being one of the visibilities we recognize, so code which
+   * examines this field better be able to deal.  */
+  int visibility;
+
+  struct field field;
+};
+struct next_fnfieldlist
+{
+  struct next_fnfieldlist *next;
+  struct fn_fieldlist fn_fieldlist;
+};
 
 /* The routines that read and process a complete stabs for a C struct or
    C++ class pass lists of data member fields and lists of member function
@@ -68,24 +87,8 @@ extern void _initialize_stabsread (void);
 
 struct field_info
   {
-    struct nextfield
-      {
-	struct nextfield *next;
-
-	/* This is the raw visibility from the stab.  It is not checked
-	   for being one of the visibilities we recognize, so code which
-	   examines this field better be able to deal.  */
-	int visibility;
-
-	struct field field;
-      }
-     *list;
-    struct next_fnfieldlist
-      {
-	struct next_fnfieldlist *next;
-	struct fn_fieldlist fn_fieldlist;
-      }
-     *fnlist;
+    struct nextfield *list;
+    struct next_fnfieldlist *fnlist;
   };
 
 static void
@@ -1115,11 +1118,11 @@ define_symbol (CORE_ADDR valu, char *string, const char *prefix,
          Dbx data never actually contains 'l'.  */
     case 's':
     case 'l':
-      SYMBOL_TYPE (sym) = read_type (&p, objfile);
-      SYMBOL_CLASS (sym) = LOC_LOCAL;
-      SYMBOL_VALUE (sym) = valu;
-      SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
-      add_symbol_to_list (sym, &local_symbols);
+      SYMBOL_TYPE(sym) = read_type(&p, objfile);
+      SYMBOL_CLASS(sym) = LOC_LOCAL;
+      SYMBOL_VALUE(sym) = (int)valu;
+      SYMBOL_DOMAIN(sym) = VAR_DOMAIN;
+      add_symbol_to_list(sym, &local_symbols);
       break;
 
     case 'p':
@@ -1129,17 +1132,17 @@ define_symbol (CORE_ADDR valu, char *string, const char *prefix,
 	   Translate it into a pointer-to-function type.  */
 	{
 	  p++;
-	  SYMBOL_TYPE (sym)
-	    = lookup_pointer_type
-	    (lookup_function_type (read_type (&p, objfile)));
+	  SYMBOL_TYPE(sym) =
+            lookup_pointer_type(lookup_function_type(read_type(&p,
+                                                               objfile)));
 	}
       else
-	SYMBOL_TYPE (sym) = read_type (&p, objfile);
+	SYMBOL_TYPE(sym) = read_type(&p, objfile);
 
-      SYMBOL_CLASS (sym) = LOC_ARG;
-      SYMBOL_VALUE (sym) = valu;
-      SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
-      add_symbol_to_list (sym, &local_symbols);
+      SYMBOL_CLASS(sym) = LOC_ARG;
+      SYMBOL_VALUE(sym) = (int)valu;
+      SYMBOL_DOMAIN(sym) = VAR_DOMAIN;
+      add_symbol_to_list(sym, &local_symbols);
 
       if (TARGET_BYTE_ORDER != BFD_ENDIAN_BIG)
 	{
@@ -1195,34 +1198,34 @@ define_symbol (CORE_ADDR valu, char *string, const char *prefix,
       /*FALLTHROUGH */
 
     case 'R':
-      /* Parameter which is in a register.  */
-      SYMBOL_TYPE (sym) = read_type (&p, objfile);
-      SYMBOL_CLASS (sym) = LOC_REGPARM;
-      SYMBOL_VALUE (sym) = STAB_REG_TO_REGNUM (valu);
-      if (SYMBOL_VALUE (sym) >= NUM_REGS + NUM_PSEUDO_REGS)
+      /* Parameter which is in a register: */
+      SYMBOL_TYPE(sym) = read_type (&p, objfile);
+      SYMBOL_CLASS(sym) = LOC_REGPARM;
+      SYMBOL_VALUE(sym) = STAB_REG_TO_REGNUM((int)valu);
+      if (SYMBOL_VALUE(sym) >= (NUM_REGS + NUM_PSEUDO_REGS))
 	{
-	  reg_value_complaint (SYMBOL_VALUE (sym),
-			       NUM_REGS + NUM_PSEUDO_REGS,
-			       SYMBOL_PRINT_NAME (sym));
-	  SYMBOL_VALUE (sym) = SP_REGNUM;	/* Known safe, though useless */
+	  reg_value_complaint(SYMBOL_VALUE(sym),
+			      (NUM_REGS + NUM_PSEUDO_REGS),
+			      SYMBOL_PRINT_NAME(sym));
+	  SYMBOL_VALUE(sym) = SP_REGNUM; /* Known safe, though useless */
 	}
-      SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
-      add_symbol_to_list (sym, &local_symbols);
+      SYMBOL_DOMAIN(sym) = VAR_DOMAIN;
+      add_symbol_to_list(sym, &local_symbols);
       break;
 
     case 'r':
       /* Register variable (either global or local).  */
-      SYMBOL_TYPE (sym) = read_type (&p, objfile);
-      SYMBOL_CLASS (sym) = LOC_REGISTER;
-      SYMBOL_VALUE (sym) = STAB_REG_TO_REGNUM (valu);
-      if (SYMBOL_VALUE (sym) >= NUM_REGS + NUM_PSEUDO_REGS)
+      SYMBOL_TYPE(sym) = read_type(&p, objfile);
+      SYMBOL_CLASS(sym) = LOC_REGISTER;
+      SYMBOL_VALUE(sym) = STAB_REG_TO_REGNUM((int)valu);
+      if (SYMBOL_VALUE(sym) >= (NUM_REGS + NUM_PSEUDO_REGS))
 	{
-	  reg_value_complaint (SYMBOL_VALUE (sym),
-			       NUM_REGS + NUM_PSEUDO_REGS,
-			       SYMBOL_PRINT_NAME (sym));
-	  SYMBOL_VALUE (sym) = SP_REGNUM;	/* Known safe, though useless */
+	  reg_value_complaint(SYMBOL_VALUE(sym),
+			      (NUM_REGS + NUM_PSEUDO_REGS),
+			      SYMBOL_PRINT_NAME(sym));
+	  SYMBOL_VALUE(sym) = SP_REGNUM; /* Known safe, though useless */
 	}
-      SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
+      SYMBOL_DOMAIN(sym) = VAR_DOMAIN;
       if (within_function)
 	{
 	  /* Sun cc uses a pair of symbols, one 'p' and one 'r', with
@@ -1302,9 +1305,9 @@ define_symbol (CORE_ADDR valu, char *string, const char *prefix,
       if (nameless)
 	return NULL;
 
-      SYMBOL_CLASS (sym) = LOC_TYPEDEF;
-      SYMBOL_VALUE (sym) = valu;
-      SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
+      SYMBOL_CLASS(sym) = LOC_TYPEDEF;
+      SYMBOL_VALUE(sym) = (int)valu;
+      SYMBOL_DOMAIN(sym) = VAR_DOMAIN;
       /* C++ vagaries: we may have a type which is derived from
          a base type which did not have its name defined when the
          derived class was output.  We fill in the derived class's
@@ -1397,86 +1400,90 @@ define_symbol (CORE_ADDR valu, char *string, const char *prefix,
     case 'T':
       /* Struct, union, or enum tag.  For GNU C++, this can be be followed
          by 't' which means we are typedef'ing it as well.  */
-      synonym = *p == 't';
+      synonym = (*p == 't');
 
       if (synonym)
 	p++;
 
-      SYMBOL_TYPE (sym) = read_type (&p, objfile);
+      SYMBOL_TYPE(sym) = read_type(&p, objfile);
 
       /* For a nameless type, we don't want a create a symbol, thus we
          did not use `sym'. Return without further processing. */
       if (nameless)
 	return NULL;
 
-      SYMBOL_CLASS (sym) = LOC_TYPEDEF;
-      SYMBOL_VALUE (sym) = valu;
-      SYMBOL_DOMAIN (sym) = STRUCT_DOMAIN;
-      if (TYPE_TAG_NAME (SYMBOL_TYPE (sym)) == 0)
-	TYPE_TAG_NAME (SYMBOL_TYPE (sym))
-	  = obconcat (&objfile->objfile_obstack, "", "", DEPRECATED_SYMBOL_NAME (sym));
-      add_symbol_to_list (sym, &file_symbols);
+      SYMBOL_CLASS(sym) = LOC_TYPEDEF;
+      SYMBOL_VALUE(sym) = (int)valu;
+      SYMBOL_DOMAIN(sym) = STRUCT_DOMAIN;
+      if (TYPE_TAG_NAME(SYMBOL_TYPE(sym)) == 0)
+	TYPE_TAG_NAME(SYMBOL_TYPE(sym)) =
+          obconcat(&objfile->objfile_obstack, "", "",
+                   DEPRECATED_SYMBOL_NAME(sym));
+      add_symbol_to_list(sym, &file_symbols);
 
       if (synonym)
 	{
-	  /* Clone the sym and then modify it. */
-	  struct symbol *typedef_sym = (struct symbol *)
-	  obstack_alloc (&objfile->objfile_obstack, sizeof (struct symbol));
+	  /* Clone the sym and then modify it: */
+	  struct symbol *typedef_sym =
+            ((struct symbol *)
+             obstack_alloc(&objfile->objfile_obstack,
+                           sizeof(struct symbol)));
 	  *typedef_sym = *sym;
-	  SYMBOL_CLASS (typedef_sym) = LOC_TYPEDEF;
-	  SYMBOL_VALUE (typedef_sym) = valu;
-	  SYMBOL_DOMAIN (typedef_sym) = VAR_DOMAIN;
-	  if (TYPE_NAME (SYMBOL_TYPE (sym)) == 0)
-	    TYPE_NAME (SYMBOL_TYPE (sym))
-	      = obconcat (&objfile->objfile_obstack, "", "", DEPRECATED_SYMBOL_NAME (sym));
-	  add_symbol_to_list (typedef_sym, &file_symbols);
+	  SYMBOL_CLASS(typedef_sym) = LOC_TYPEDEF;
+	  SYMBOL_VALUE(typedef_sym) = (int)valu;
+	  SYMBOL_DOMAIN(typedef_sym) = VAR_DOMAIN;
+	  if (TYPE_NAME(SYMBOL_TYPE(sym)) == 0)
+	    TYPE_NAME(SYMBOL_TYPE(sym)) =
+              obconcat(&objfile->objfile_obstack, "", "",
+                       DEPRECATED_SYMBOL_NAME(sym));
+	  add_symbol_to_list(typedef_sym, &file_symbols);
 	}
       break;
 
     case 'V':
-      /* Static symbol of local scope */
-      SYMBOL_TYPE (sym) = read_type (&p, objfile);
-      SYMBOL_CLASS (sym) = LOC_STATIC;
-      SYMBOL_VALUE_ADDRESS (sym) = valu;
+      /* Static symbol of local scope: */
+      SYMBOL_TYPE(sym) = read_type(&p, objfile);
+      SYMBOL_CLASS(sym) = LOC_STATIC;
+      SYMBOL_VALUE_ADDRESS(sym) = valu;
 #ifdef STATIC_TRANSFORM_NAME
-      if (IS_STATIC_TRANSFORM_NAME (DEPRECATED_SYMBOL_NAME (sym)))
+      if (IS_STATIC_TRANSFORM_NAME(DEPRECATED_SYMBOL_NAME(sym)))
 	{
 	  struct minimal_symbol *msym;
-	  msym = lookup_minimal_symbol (DEPRECATED_SYMBOL_NAME (sym), NULL, objfile);
+	  msym = lookup_minimal_symbol(DEPRECATED_SYMBOL_NAME(sym), NULL, objfile);
 	  if (msym != NULL)
 	    {
-	      DEPRECATED_SYMBOL_NAME (sym) = STATIC_TRANSFORM_NAME (DEPRECATED_SYMBOL_NAME (sym));
-	      SYMBOL_VALUE_ADDRESS (sym) = SYMBOL_VALUE_ADDRESS (msym);
+	      DEPRECATED_SYMBOL_NAME(sym) = STATIC_TRANSFORM_NAME(DEPRECATED_SYMBOL_NAME(sym));
+	      SYMBOL_VALUE_ADDRESS(sym) = SYMBOL_VALUE_ADDRESS(msym);
 	    }
 	}
-#endif
-      SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
-	add_symbol_to_list (sym, &local_symbols);
+#endif /* STATIC_TRANSFORM_NAME */
+      SYMBOL_DOMAIN(sym) = VAR_DOMAIN;
+	add_symbol_to_list(sym, &local_symbols);
       break;
 
     case 'v':
-      /* Reference parameter */
-      SYMBOL_TYPE (sym) = read_type (&p, objfile);
-      SYMBOL_CLASS (sym) = LOC_REF_ARG;
-      SYMBOL_VALUE (sym) = valu;
-      SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
-      add_symbol_to_list (sym, &local_symbols);
+      /* Reference parameter: */
+      SYMBOL_TYPE(sym) = read_type(&p, objfile);
+      SYMBOL_CLASS(sym) = LOC_REF_ARG;
+      SYMBOL_VALUE(sym) = (int)valu;
+      SYMBOL_DOMAIN(sym) = VAR_DOMAIN;
+      add_symbol_to_list(sym, &local_symbols);
       break;
 
     case 'a':
-      /* Reference parameter which is in a register.  */
-      SYMBOL_TYPE (sym) = read_type (&p, objfile);
-      SYMBOL_CLASS (sym) = LOC_REGPARM_ADDR;
-      SYMBOL_VALUE (sym) = STAB_REG_TO_REGNUM (valu);
-      if (SYMBOL_VALUE (sym) >= NUM_REGS + NUM_PSEUDO_REGS)
+      /* Reference parameter which is in a register: */
+      SYMBOL_TYPE(sym) = read_type(&p, objfile);
+      SYMBOL_CLASS(sym) = LOC_REGPARM_ADDR;
+      SYMBOL_VALUE(sym) = STAB_REG_TO_REGNUM((int)valu);
+      if (SYMBOL_VALUE(sym) >= (NUM_REGS + NUM_PSEUDO_REGS))
 	{
-	  reg_value_complaint (SYMBOL_VALUE (sym),
-			       NUM_REGS + NUM_PSEUDO_REGS,
-			       SYMBOL_PRINT_NAME (sym));
-	  SYMBOL_VALUE (sym) = SP_REGNUM;	/* Known safe, though useless */
+	  reg_value_complaint(SYMBOL_VALUE(sym),
+			      (NUM_REGS + NUM_PSEUDO_REGS),
+			      SYMBOL_PRINT_NAME(sym));
+	  SYMBOL_VALUE(sym) = SP_REGNUM; /* Known safe, though useless */
 	}
-      SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
-      add_symbol_to_list (sym, &local_symbols);
+      SYMBOL_DOMAIN(sym) = VAR_DOMAIN;
+      add_symbol_to_list(sym, &local_symbols);
       break;
 
     case 'X':
@@ -1484,19 +1491,19 @@ define_symbol (CORE_ADDR valu, char *string, const char *prefix,
          Sun claims ("dbx and dbxtool interfaces", 2nd ed)
          that Pascal uses it too, but when I tried it Pascal used
          "x:3" (local symbol) instead.  */
-      SYMBOL_TYPE (sym) = read_type (&p, objfile);
-      SYMBOL_CLASS (sym) = LOC_LOCAL;
-      SYMBOL_VALUE (sym) = valu;
-      SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
-      add_symbol_to_list (sym, &local_symbols);
+      SYMBOL_TYPE(sym) = read_type(&p, objfile);
+      SYMBOL_CLASS(sym) = LOC_LOCAL;
+      SYMBOL_VALUE(sym) = (int)valu;
+      SYMBOL_DOMAIN(sym) = VAR_DOMAIN;
+      add_symbol_to_list(sym, &local_symbols);
       break;
 
     default:
-      SYMBOL_TYPE (sym) = error_type (&p, objfile);
-      SYMBOL_CLASS (sym) = LOC_CONST;
-      SYMBOL_VALUE (sym) = 0;
-      SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
-      add_symbol_to_list (sym, &file_symbols);
+      SYMBOL_TYPE(sym) = error_type(&p, objfile);
+      SYMBOL_CLASS(sym) = LOC_CONST;
+      SYMBOL_VALUE(sym) = 0;
+      SYMBOL_DOMAIN(sym) = VAR_DOMAIN;
+      add_symbol_to_list(sym, &file_symbols);
       break;
     }
 
@@ -4774,17 +4781,17 @@ scan_file_globals (struct objfile *objfile)
 		     the same symbol if there are multiple references.  */
 		  if (sym)
 		    {
-		      if (SYMBOL_CLASS (sym) == LOC_BLOCK)
+		      if (SYMBOL_CLASS(sym) == LOC_BLOCK)
 			{
-			  fix_common_block (sym,
-					    SYMBOL_VALUE_ADDRESS (msymbol));
+			  fix_common_block(sym,
+					   (int)SYMBOL_VALUE_ADDRESS(msymbol));
 			}
 		      else
 			{
-			  SYMBOL_VALUE_ADDRESS (sym)
-			    = SYMBOL_VALUE_ADDRESS (msymbol);
+			  SYMBOL_VALUE_ADDRESS(sym)
+			    = SYMBOL_VALUE_ADDRESS(msymbol);
 			}
-		      SYMBOL_SECTION (sym) = SYMBOL_SECTION (msymbol);
+		      SYMBOL_SECTION(sym) = SYMBOL_SECTION(msymbol);
 		    }
 
 		  if (prev)

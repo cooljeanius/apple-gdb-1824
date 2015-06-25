@@ -206,25 +206,29 @@ logger(kdp_log_level l, const char *format, ...)
   va_end(ap);
 }
 
+#if KDP_TARGET_ARM
+extern int set_arm_single_step_mode(struct gdbarch *, int);
+#endif /* KDP_TARGET_ARM */
+
 static void
-kdp_open (char *name, int from_tty)
+kdp_open(char *name, int from_tty)
 {
-  push_target (&kdp_ops);
-  /* KDP cannot do inferior function calls.  */
+  push_target(&kdp_ops);
+  /* KDP cannot do inferior function calls: */
   inferior_function_calls_disabled_p = 1;
 #if KDP_TARGET_ARM
-  extern int set_arm_single_step_mode (struct gdbarch *, int);
-  set_arm_single_step_mode (current_gdbarch, arm_single_step_mode_software);
+  set_arm_single_step_mode(current_gdbarch, arm_single_step_mode_software);
 #endif /* KDP_TARGET_ARM */
 }
 
 static void
-kdp_close (int quitting)
+kdp_close(int quitting ATTRIBUTE_UNUSED)
 {
+  return;
 }
 
 static int
-convert_host_type (unsigned int mach_type)
+convert_host_type(unsigned int mach_type)
 {
   switch (mach_type)
     {
@@ -259,7 +263,7 @@ kdp_insert_breakpoint(CORE_ADDR addr, gdb_byte *contents_cache)
     c.request->breakpoint64_req.address = addr;
   } else {
     c.request->breakpoint_req.hdr.request = KDP_BREAKPOINT_SET;
-    c.request->breakpoint_req.address = addr;
+    c.request->breakpoint_req.address = (unsigned int)addr;
   }
 
   kdpret =
@@ -313,7 +317,7 @@ kdp_remove_breakpoint(CORE_ADDR addr, gdb_byte *contents_cache)
       c.request->breakpoint64_req.address = addr;
     } else {
       c.request->breakpoint_req.hdr.request = KDP_BREAKPOINT_REMOVE;
-      c.request->breakpoint_req.address = addr;
+      c.request->breakpoint_req.address = (unsigned int)addr;
     }
 
   kdpret =
@@ -340,24 +344,24 @@ kdp_remove_breakpoint(CORE_ADDR addr, gdb_byte *contents_cache)
 }
 
 static void
-kdp_kernelversion_command (char *args, int from_tty)
+kdp_kernelversion_command(char *args, int from_tty)
 {
   kdp_return_t kdpret;
 
   /* Ignore arguments */
 
-  if (!kdp_is_connected (&c))
+  if (!kdp_is_connected(&c))
     {
-      error ("kdp: unable to get kernel version (not connected)");
+      error("kdp: unable to get kernel version (not connected)");
     }
 
   c.request->kernelversion_req.hdr.request = KDP_KERNELVERSION;
   kdpret =
-    kdp_transaction (&c, c.request, c.response, "kdp_kernelversion");
-  logger (KDP_LOG_DEBUG,
-          "kdp_kernelversion: kdp_transaction returned %d\n", kdpret);
+    kdp_transaction(&c, c.request, c.response, "kdp_kernelversion");
+  logger(KDP_LOG_DEBUG,
+         "kdp_kernelversion: kdp_transaction returned %d\n", kdpret);
   if (kdpret == RR_SUCCESS) {
-    printf_unfiltered ("%s\n", c.response->kernelversion_reply.version);
+    printf_unfiltered("%s\n", c.response->kernelversion_reply.version);
   }
 }
 
@@ -460,16 +464,14 @@ kdp_uuid_and_load_addr(void)
       kdpret2 = kdp_disconnect(&c);
       if (kdpret2 != RR_SUCCESS)
         {
-          warning
-            ("unable to disconnect from host after requesting kernel version string: %s",
-             kdp_return_string(kdpret2));
+          warning("unable to disconnect from host after requesting kernel version string: %s",
+                  kdp_return_string(kdpret2));
         }
       kdpret2 = kdp_destroy(&c);
       if (kdpret2 != RR_SUCCESS)
         {
-          warning
-            ("unable to destroy host connection after error requesting kernel version string: %s",
-             kdp_return_string(kdpret2));
+          warning("unable to destroy host connection after error requesting kernel version string: %s",
+                  kdp_return_string(kdpret2));
         }
       error("kdp_attach: unable to determine kernel version string: %s",
             kdp_return_string(kdpret));
@@ -511,7 +513,9 @@ kdp_uuid_and_load_addr(void)
             {
               if (memcmp(remote_uuid, local_kernel_uuid, sizeof(uuid_t)) != 0)
                 {
-                  warning("Host-side kernel file has Mach-O UUID of %s but remote kernel has a UUID of %s -- a mismatched kernel file will result in a poor debugger experience.", puuid (local_kernel_uuid), puuid (remote_uuid));
+                  warning("Host-side kernel file has Mach-O UUID of %s but remote kernel has a UUID of %s "
+                          "-- a mismatched kernel file will result in a poor debugger experience.",
+                          puuid(local_kernel_uuid), puuid(remote_uuid));
                 }
               else
                 {
@@ -522,12 +526,12 @@ kdp_uuid_and_load_addr(void)
     }
 
   /* Slide the objfile even if the UUIDs do NOT match.
-     Maybe the user has given us a "pretty close" binary. Sliding
-     it to the correct address cannot make anything worse than it
-     would be.. */
+   * Maybe the user has given us a "pretty close" binary.
+   * Sliding it to the correct address cannot make anything
+   * worse than it would be otherwise... */
 
   slide = 0UL;
-  actual_load_address = INVALID_ADDRESS;
+  actual_load_address = (INVALID_ADDRESS + slide);
   if (strstr(c.response->kernelversion_reply.version, "; stext="))
     {
       const char *j = (strstr(c.response->kernelversion_reply.version,
@@ -573,6 +577,11 @@ kdp_uuid_and_load_addr(void)
       try_to_find_and_load_kernel_via_uuid(actual_load_address,
                                            remote_uuid, mem_osabi);
     }
+
+  /* use an unused variable: */
+  if (uuids_matched > 0) {
+    return; /* else just fall off the end; it matters little */
+  }
 }
 
 
@@ -859,13 +868,13 @@ kdp_reboot_command (char *args, int from_tty)
   kdp_ops.to_has_registers = 0;
   kdp_ops.to_has_execution = 0;
 
-  update_current_target ();
+  update_current_target();
 
-  kdp_mourn_inferior ();
+  kdp_mourn_inferior();
 }
 
 static void
-kdp_detach_command (char *args, int from_tty)
+kdp_detach_command(char *args, int from_tty)
 {
   kdp_connection c2;
   kdp_return_t kdpret;
@@ -874,25 +883,25 @@ kdp_detach_command (char *args, int from_tty)
   char *host;
   unsigned int seqno;
 
-  argv = buildargv (args);
+  argv = buildargv(args);
 
   if ((argv == NULL) || (argv[0] == NULL) || (argv[1] == NULL)
       || (argv[2] != NULL))
     {
-      error ("usage: kdp-detach <hostname> <seqno>");
+      error("usage: kdp-detach <hostname> <seqno>");
     }
   host = argv[0];
-  seqno = atoi (argv[1]);
+  seqno = atoi(argv[1]);
 
-  kdp_reset (&c2);
+  kdp_reset(&c2);
 
   kdpret =
-    kdp_create (&c2, logger, argv[0], kdp_default_port, kdp_timeout,
-                kdp_retries);
+    kdp_create(&c2, logger, argv[0], kdp_default_port, kdp_timeout,
+               kdp_retries);
   if (kdpret != RR_SUCCESS)
     {
-      error ("unable to create connection for host \"%s\": %s", args,
-             kdp_return_string (kdpret));
+      error("unable to create connection for host \"%s\": %s", args,
+            kdp_return_string(kdpret));
     }
 
   c2.request->disconnect_req.hdr.request = KDP_DISCONNECT;
@@ -900,29 +909,34 @@ kdp_detach_command (char *args, int from_tty)
   c2.request->hdr.is_reply = 0;
   c2.request->hdr.seq = seqno;
 
-  kdp_set_big_endian (&c2);
-  kdpret = kdp_transmit_debug (&c2, c2.request);
+  kdp_set_big_endian(&c2);
+  kdpret = kdp_transmit_debug(&c2, c2.request);
   if (kdpret != RR_SUCCESS)
     {
-      error ("unable to send reset request: %s", kdp_return_string (kdpret));
+      error("unable to send reset request: %s", kdp_return_string(kdpret));
     }
 
-  kdp_set_little_endian (&c2);
-  kdpret = kdp_transmit_debug (&c2, c2.request);
+  kdp_set_little_endian(&c2);
+  kdpret = kdp_transmit_debug(&c2, c2.request);
   if (kdpret != RR_SUCCESS)
     {
-      error ("unable to send reset request: %s", kdp_return_string (kdpret));
+      error("unable to send reset request: %s", kdp_return_string(kdpret));
     }
 
-  kdpret = kdp_destroy (&c2);
+  kdpret = kdp_destroy(&c2);
   if (kdpret != RR_SUCCESS)
     {
-      error ("unable to destroy connection: %s", kdp_return_string (kdpret));
+      error("unable to destroy connection: %s", kdp_return_string(kdpret));
     }
+
+  /* use an unused variable: */
+  if (host == NULL) {
+    return; /* else just fall off the end; it matters little either way */
+  }
 }
 
 static void
-kdp_set_trace_bit (int step)
+kdp_set_trace_bit(int step)
 {
   switch (kdp_cpu_type)
     {
@@ -1257,14 +1271,14 @@ kdp_store_registers_ppc (int regno)
 
 #if KDP_TARGET_I386
 static void
-kdp_fetch_registers_i386 (int regno)
+kdp_fetch_registers_i386(int regno)
 {
-  if (!kdp_is_connected (&c))
+  if (!kdp_is_connected(&c))
     {
-      error ("kdp: unable to fetch registers (not connected)");
+      error("kdp: unable to fetch registers (not connected)");
     }
 
-  if ((regno == -1) || IS_GP_REGNUM (regno))
+  if ((regno == -1) || IS_GP_REGNUM(regno))
     {
       kdp_return_t kdpret;
       gdb_i386_thread_state_t gp_regs;
@@ -1274,29 +1288,27 @@ kdp_fetch_registers_i386 (int regno)
       c.request->readregs_req.flavor = GDB_i386_THREAD_STATE;
 
       kdpret =
-        kdp_transaction (&c, c.request, c.response,
-                         "kdp_fetch_registers_i386");
+        kdp_transaction(&c, c.request, c.response,
+                        "kdp_fetch_registers_i386");
       if (kdpret != RR_SUCCESS)
         {
-          error
-            ("kdp_fetch_registers_i386: unable to fetch i386_THREAD_STATE: %s",
-             kdp_return_string (kdpret));
+          error("kdp_fetch_registers_i386: unable to fetch i386_THREAD_STATE: %s",
+                kdp_return_string (kdpret));
         }
       if (c.response->readregs_reply.nbytes !=
           (GDB_i386_THREAD_STATE_COUNT * 4))
         {
-          error
-            ("kdp_fetch_registers_i386: kdp returned %lu bytes of register data (expected %u)",
-             c.response->readregs_reply.nbytes,
-             (GDB_i386_THREAD_STATE_COUNT * 4));
+          error("kdp_fetch_registers_i386: kdp returned %lu bytes of register data (expected %u)",
+                c.response->readregs_reply.nbytes,
+                (GDB_i386_THREAD_STATE_COUNT * 4));
         }
 
-      memcpy (&gp_regs, c.response->readregs_reply.data,
-              (GDB_i386_THREAD_STATE_COUNT * 4));
-      i386_macosx_fetch_gp_registers (&gp_regs);
+      memcpy(&gp_regs, c.response->readregs_reply.data,
+             (GDB_i386_THREAD_STATE_COUNT * 4));
+      i386_macosx_fetch_gp_registers(&gp_regs);
     }
 
-  if ((regno == -1) || IS_FP_REGNUM (regno))
+  if ((regno == -1) || IS_FP_REGNUM(regno))
     {
       gdb_i386_thread_fpstate_t fp_regs = { };
 
@@ -1313,17 +1325,15 @@ kdp_fetch_registers_i386 (int regno)
                         "kdp_fetch_registers_i386");
       if (kdpret != RR_SUCCESS)
         {
-          error
-            ("kdp_fetch_registers_i386: unable to fetch GDB_i386_THREAD_FPSTATE: %s",
-             kdp_return_string(kdpret));
+          error("kdp_fetch_registers_i386: unable to fetch GDB_i386_THREAD_FPSTATE: %s",
+                kdp_return_string(kdpret));
         }
       if (c.response->readregs_reply.nbytes !=
           (GDB_i386_THREAD_FPSTATE_COUNT * 4))
         {
-          error
-            ("kdp_fetch_registers_i386: kdp returned %lu bytes of register data (expected %lu)",
-             c.response->readregs_reply.nbytes,
-             (GDB_i386_THREAD_FPSTATE_COUNT * 4));
+          error("kdp_fetch_registers_i386: kdp returned %lu bytes of register data (expected %lu)",
+                c.response->readregs_reply.nbytes,
+                (GDB_i386_THREAD_FPSTATE_COUNT * 4));
         }
 
       memcpy(&fp_regs.hw_fu_state, c.response->readregs_reply.data,
@@ -1357,22 +1367,20 @@ kdp_fetch_registers_x86_64(int regno)
                         "kdp_fetch_registers_x86_64");
       if (kdpret != RR_SUCCESS)
         {
-          error
-            ("kdp_fetch_registers_x86_64: unable to fetch x86_THREAD_STATE64: %s",
-             kdp_return_string(kdpret));
+          error("kdp_fetch_registers_x86_64: unable to fetch x86_THREAD_STATE64: %s",
+                kdp_return_string(kdpret));
         }
       if (c.response->readregs_reply.nbytes !=
           (GDB_x86_THREAD_STATE64_COUNT * 4))
         {
-          error
-            ("kdp_fetch_registers_x86_64: kdp returned %lu bytes of register data (expected %u)",
-             c.response->readregs_reply.nbytes,
-             (GDB_x86_THREAD_STATE64_COUNT * 4));
+          error("kdp_fetch_registers_x86_64: kdp returned %lu bytes of register data (expected %u)",
+                c.response->readregs_reply.nbytes,
+                (GDB_x86_THREAD_STATE64_COUNT * 4));
         }
 
-      memcpy (&gp_regs, c.response->readregs_reply.data,
-              (GDB_x86_THREAD_STATE64_COUNT * 4));
-      x86_64_macosx_fetch_gp_registers (&gp_regs);
+      memcpy(&gp_regs, c.response->readregs_reply.data,
+             (GDB_x86_THREAD_STATE64_COUNT * 4));
+      x86_64_macosx_fetch_gp_registers(&gp_regs);
     }
 
   if ((regno == -1) || IS_FP_REGNUM (regno))
@@ -1388,70 +1396,65 @@ kdp_fetch_registers_x86_64(int regno)
       c.request->readregs_req.flavor = GDB_x86_FLOAT_STATE64;
 
       kdpret =
-        kdp_transaction (&c, c.request, c.response,
-                         "kdp_fetch_registers_x86_64");
+        kdp_transaction(&c, c.request, c.response,
+                        "kdp_fetch_registers_x86_64");
       if (kdpret != RR_SUCCESS)
         {
-          error
-            ("kdp_fetch_registers_x86_64: unable to fetch x86_FLOAT_STATE64: %s",
-             kdp_return_string (kdpret));
+          error("kdp_fetch_registers_x86_64: unable to fetch x86_FLOAT_STATE64: %s",
+                kdp_return_string(kdpret));
         }
       if (c.response->readregs_reply.nbytes !=
           (GDB_x86_FLOAT_STATE64_COUNT * 4))
         {
-          error
-            ("kdp_fetch_registers_x86_64: kdp returned %lu bytes of register data (expected %u)",
-             c.response->readregs_reply.nbytes,
-             (GDB_x86_FLOAT_STATE64_COUNT * 4));
+          error("kdp_fetch_registers_x86_64: kdp returned %lu bytes of register data (expected %u)",
+                c.response->readregs_reply.nbytes,
+                (GDB_x86_FLOAT_STATE64_COUNT * 4));
         }
 
-      memcpy (&fp_regs, c.response->readregs_reply.data,
-              (GDB_x86_FLOAT_STATE64_COUNT * 4));
+      memcpy(&fp_regs, c.response->readregs_reply.data,
+             (GDB_x86_FLOAT_STATE64_COUNT * 4));
 # endif /* 1 */
-      x86_64_macosx_fetch_fp_registers (&fp_regs);
+      x86_64_macosx_fetch_fp_registers(&fp_regs);
     }
 }
 #endif /* KDP_TARGET_I386 */
 
 #if KDP_TARGET_I386
 static void
-kdp_store_registers_i386 (int regno)
+kdp_store_registers_i386(int regno)
 {
-  if (!kdp_is_connected (&c))
+  if (!kdp_is_connected(&c))
     {
-      error ("kdp: unable to store registers (not connected)");
+      error("kdp: unable to store registers (not connected)");
     }
 
-  if ((regno == -1) || IS_GP_REGNUM (regno))
+  if ((regno == -1) || IS_GP_REGNUM(regno))
     {
-
       gdb_i386_thread_state_t gp_regs;
       kdp_return_t kdpret;
 
-      i386_macosx_store_gp_registers (&gp_regs);
+      i386_macosx_store_gp_registers(&gp_regs);
 
-      memcpy (c.request->writeregs_req.data, &gp_regs,
-              (GDB_i386_THREAD_STATE_COUNT * 4));
+      memcpy(c.request->writeregs_req.data, &gp_regs,
+             (GDB_i386_THREAD_STATE_COUNT * 4));
 
       c.request->writeregs_req.hdr.request = KDP_WRITEREGS;
       c.request->writeregs_req.cpu = 0;
       c.request->writeregs_req.flavor = GDB_i386_THREAD_STATE;
-      c.request->writeregs_req.nbytes = GDB_i386_THREAD_STATE_COUNT * 4;
+      c.request->writeregs_req.nbytes = (GDB_i386_THREAD_STATE_COUNT * 4);
 
       kdpret =
-        kdp_transaction (&c, c.request, c.response,
-                         "kdp_store_registers_i386");
+        kdp_transaction(&c, c.request, c.response,
+                        "kdp_store_registers_i386");
       if (kdpret != RR_SUCCESS)
         {
-          error
-            ("kdp_store_registers_i386: unable to store i386_THREAD_STATE: %s",
-             kdp_return_string (kdpret));
+          error("kdp_store_registers_i386: unable to store i386_THREAD_STATE: %s",
+                kdp_return_string(kdpret));
         }
     }
 
   if ((regno == -1) || IS_FP_REGNUM(regno))
     {
-
       gdb_i386_thread_fpstate_t fp_regs;
       kdp_return_t kdpret;
 
@@ -1471,9 +1474,8 @@ kdp_store_registers_i386 (int regno)
                         "kdp_store_registers_i386");
       if (kdpret != RR_SUCCESS)
         {
-          error
-            ("kdp_store_registers_i386: unable to store i386_THREAD_FPSTATE: %s",
-             kdp_return_string (kdpret));
+          error("kdp_store_registers_i386: unable to store i386_THREAD_FPSTATE: %s",
+                kdp_return_string(kdpret));
         }
     }
 }
@@ -1481,16 +1483,16 @@ kdp_store_registers_i386 (int regno)
 
 #if KDP_TARGET_ARM
 static void
-kdp_fetch_registers_arm (int regno)
+kdp_fetch_registers_arm(int regno)
 {
   unsigned int i;
 
-  if (!kdp_is_connected (&c))
+  if (!kdp_is_connected(&c))
     {
-      error ("kdp: unable to fetch registers (not connected)");
+      error("kdp: unable to fetch registers (not connected)");
     }
 
-  if ((regno == -1) || ARM_MACOSX_IS_GP_RELATED_REGNUM (regno))
+  if ((regno == -1) || ARM_MACOSX_IS_GP_RELATED_REGNUM(regno))
     {
       kdp_return_t kdpret;
       gdb_arm_thread_state_t gp_regs;
@@ -1500,167 +1502,160 @@ kdp_fetch_registers_arm (int regno)
       c.request->readregs_req.flavor = GDB_ARM_THREAD_STATE;
 
       kdpret =
-        kdp_transaction (&c, c.request, c.response,
-                         "kdp_fetch_registers_arm");
+        kdp_transaction(&c, c.request, c.response,
+                        "kdp_fetch_registers_arm");
       if (kdpret != RR_SUCCESS)
         {
-          error
-            ("kdp_fetch_registers_arm: unable to fetch ARM_THREAD_STATE: %s",
-             kdp_return_string (kdpret));
+          error("kdp_fetch_registers_arm: unable to fetch ARM_THREAD_STATE: %s",
+                kdp_return_string(kdpret));
         }
       if (c.response->readregs_reply.nbytes !=
           (GDB_ARM_THREAD_STATE_COUNT * 4))
         {
-          error
-            ("kdp_fetch_registers_arm: kdp returned %lu bytes of register data (expected %lu)",
-             c.response->readregs_reply.nbytes,
-             (GDB_ARM_THREAD_STATE_COUNT * 4));
+          error("kdp_fetch_registers_arm: kdp returned %lu bytes of register data (expected %lu)",
+                c.response->readregs_reply.nbytes,
+                (GDB_ARM_THREAD_STATE_COUNT * 4));
         }
 
-      memcpy (&gp_regs, c.response->readregs_reply.data,
-              (GDB_ARM_THREAD_STATE_COUNT * 4));
-      arm_macosx_fetch_gp_registers (&gp_regs);
+      memcpy(&gp_regs, c.response->readregs_reply.data,
+             (GDB_ARM_THREAD_STATE_COUNT * 4));
+      arm_macosx_fetch_gp_registers(&gp_regs);
     }
 
 #if KDP_TARGET_SUPPORTS_FP
   if ((regno == -1) || ARM_MACOSX_IS_VFP_RELATED_REGNUM (regno))
     {
       enum arm_vfp_version vfp_version;
-      vfp_version = gdbarch_tdep (current_gdbarch)->vfp_version;
+      vfp_version = gdbarch_tdep(current_gdbarch)->vfp_version;
 
       switch (vfp_version)
 	{
 	  case ARM_VFP_UNSUPPORTED:
-	    /* No VFP support, so nothing to do.  */
+	    /* No VFP support, so nothing to do: */
 	    break;
 	  case ARM_VFP_VERSION_1:
 	  case ARM_VFP_VERSION_3:
 	    {
-      kdp_return_t kdpret;
-      c.request->readregs_req.hdr.request = KDP_READREGS;
-      c.request->readregs_req.cpu = 0;
-      c.request->readregs_req.flavor = GDB_ARM_THREAD_FPSTATE;
+              kdp_return_t kdpret;
+              c.request->readregs_req.hdr.request = KDP_READREGS;
+              c.request->readregs_req.cpu = 0;
+              c.request->readregs_req.flavor = GDB_ARM_THREAD_FPSTATE;
 
-	      kdpret = kdp_transaction (&c, c.request, c.response,
-                         "kdp_fetch_registers_arm");
-      if (kdpret != RR_SUCCESS)
-        {
-          error
-            ("kdp_fetch_registers_arm: unable to fetch ARM_THREAD_FPSTATE: %s",
-             kdp_return_string (kdpret));
-        }
+	      kdpret = kdp_transaction(&c, c.request, c.response,
+                                       "kdp_fetch_registers_arm");
+              if (kdpret != RR_SUCCESS)
+                {
+                  error("kdp_fetch_registers_arm: unable to fetch ARM_THREAD_FPSTATE: %s",
+                        kdp_return_string(kdpret));
+                }
 
 	      if (vfp_version == ARM_VFP_VERSION_1)
-        {
+                {
 		  if (c.response->readregs_reply.nbytes ==
-		      sizeof (gdb_arm_thread_vfpv1_state_t))
+		      sizeof(gdb_arm_thread_vfpv1_state_t))
 		    {
 		      gdb_arm_thread_vfpv1_state_t fp_regs;
-		      memcpy (&fp_regs, c.response->readregs_reply.data,
-			      c.response->readregs_reply.nbytes);
-		      arm_macosx_fetch_vfpv1_regs (&fp_regs);
+		      memcpy(&fp_regs, c.response->readregs_reply.data,
+			     c.response->readregs_reply.nbytes);
+		      arm_macosx_fetch_vfpv1_regs(&fp_regs);
 		    }
 		  else
 		    {
-          error
-			("kdp_fetch_registers_arm: kdp returned %lu bytes of "
-			  "register data (expected %lu)",
-             c.response->readregs_reply.nbytes,
-			  sizeof (gdb_arm_thread_vfpv1_state_t));
-        }
+                      error("kdp_fetch_registers_arm: kdp returned %lu bytes of "
+                            "register data (expected %lu)",
+                            c.response->readregs_reply.nbytes,
+                            sizeof(gdb_arm_thread_vfpv1_state_t));
+                    }
 		}
 	      else if (vfp_version == ARM_VFP_VERSION_3)
 		{
 		  if (c.response->readregs_reply.nbytes ==
-		      sizeof (gdb_arm_thread_vfpv3_state_t))
+		      sizeof(gdb_arm_thread_vfpv3_state_t))
 		    {
 		      gdb_arm_thread_vfpv3_state_t fp_regs;
-      memcpy (&fp_regs, c.response->readregs_reply.data,
-			      c.response->readregs_reply.nbytes);
-		      arm_macosx_fetch_vfpv3_regs (&fp_regs);
-    }
+                      memcpy(&fp_regs, c.response->readregs_reply.data,
+                             c.response->readregs_reply.nbytes);
+		      arm_macosx_fetch_vfpv3_regs(&fp_regs);
+                    }
 		  else
 		    {
-		      error
-			("kdp_fetch_registers_arm: kdp returned %lu bytes of "
-			  "register data (expected %lu)",
-			  c.response->readregs_reply.nbytes,
-			  sizeof (gdb_arm_thread_vfpv3_state_t));
+		      error("kdp_fetch_registers_arm: kdp returned %lu bytes of "
+                            "register data (expected %lu)",
+                            c.response->readregs_reply.nbytes,
+                            sizeof(gdb_arm_thread_vfpv3_state_t));
 		    }
 		}
 	    }
 	    break;
 
 	  default:
-	    error ("kdp_fetch_registers_arm: unable to fetch ARM_THREAD_FPSTATE: "
-		 "unsupported vfp version: %d", (int)vfp_version);
+	    error("kdp_fetch_registers_arm: unable to fetch ARM_THREAD_FPSTATE: "
+		  "unsupported vfp version: %d", (int)vfp_version);
 	    break;
 	}
     }
 #else
-  if ((regno == -1) || ARM_MACOSX_IS_VFP_RELATED_REGNUM (regno))
+  if ((regno == -1) || ARM_MACOSX_IS_VFP_RELATED_REGNUM(regno))
     {
       /* Accesses to the fp registers are NOT currently supported in
          the kernel. */
-      if (gdbarch_tdep (current_gdbarch)->fp_model == ARM_FLOAT_VFP)
+      if (gdbarch_tdep(current_gdbarch)->fp_model == ARM_FLOAT_VFP)
 	{
 	  for (i = 0; i <= ARM_MACOSX_NUM_VFP_REGS; i++)
-	    set_register_cached (ARM_VFP_REGNUM_S0 + i, 1);
-	  set_register_cached (ARM_VFP_REGNUM_FPSCR, 1);
+	    set_register_cached(ARM_VFP_REGNUM_S0 + i, 1);
+	  set_register_cached(ARM_VFP_REGNUM_FPSCR, 1);
 	}
     }
 #endif /* KDP_TARGET_SUPPORTS_FP */
   /* All other modes always include the F0-F7 and its FPS. */
-  if ((regno == -1) || ARM_MACOSX_IS_FP_RELATED_REGNUM (regno))
+  if ((regno == -1) || ARM_MACOSX_IS_FP_RELATED_REGNUM(regno))
     {
       for (i = ARM_F0_REGNUM; i <= ARM_F7_REGNUM; i++)
-	set_register_cached (i, 1);
-      set_register_cached (ARM_FPS_REGNUM, 1);
+	set_register_cached(i, 1);
+      set_register_cached(ARM_FPS_REGNUM, 1);
     }
 }
 #endif /* KDP_TARGET_ARM */
 
 #if KDP_TARGET_ARM
 static void
-kdp_store_registers_arm (int regno)
+kdp_store_registers_arm(int regno)
 {
-  if (!kdp_is_connected (&c))
+  if (!kdp_is_connected(&c))
     {
-      error ("kdp: unable to store registers (not connected)");
+      error("kdp: unable to store registers (not connected)");
     }
 
-  if ((regno == -1) || ARM_MACOSX_IS_GP_RELATED_REGNUM (regno))
+  if ((regno == -1) || ARM_MACOSX_IS_GP_RELATED_REGNUM(regno))
     {
-
       gdb_arm_thread_state_t gp_regs;
       kdp_return_t kdpret;
 
-      arm_macosx_store_gp_registers (&gp_regs);
+      arm_macosx_store_gp_registers(&gp_regs);
 
-      memcpy (c.request->writeregs_req.data, &gp_regs,
-              (GDB_ARM_THREAD_STATE_COUNT * 4));
+      memcpy(c.request->writeregs_req.data, &gp_regs,
+             (GDB_ARM_THREAD_STATE_COUNT * 4));
 
       c.request->writeregs_req.hdr.request = KDP_WRITEREGS;
       c.request->writeregs_req.cpu = 0;
       c.request->writeregs_req.flavor = GDB_ARM_THREAD_STATE;
-      c.request->writeregs_req.nbytes = GDB_ARM_THREAD_STATE_COUNT * 4;
+      c.request->writeregs_req.nbytes = (GDB_ARM_THREAD_STATE_COUNT * 4);
 
       kdpret =
-        kdp_transaction (&c, c.request, c.response,
-                         "kdp_store_registers_arm");
+        kdp_transaction(&c, c.request, c.response,
+                        "kdp_store_registers_arm");
       if (kdpret != RR_SUCCESS)
         {
-          error
-            ("kdp_store_registers_arm: unable to store ARM_THREAD_STATE: %s",
-             kdp_return_string (kdpret));
+          error("kdp_store_registers_arm: unable to store ARM_THREAD_STATE: %s",
+                kdp_return_string(kdpret));
         }
     }
 # if KDP_TARGET_SUPPORTS_FP
-  if ((regno == -1) || ARM_MACOSX_IS_VFP_RELATED_REGNUM (regno))
+  if ((regno == -1) || ARM_MACOSX_IS_VFP_RELATED_REGNUM(regno))
     {
       kdp_return_t kdpret;
       enum arm_vfp_version vfp_version;
-      vfp_version = gdbarch_tdep (current_gdbarch)->vfp_version;
+      vfp_version = gdbarch_tdep(current_gdbarch)->vfp_version;
       int fp_data_size = -1;
       union vfp_regs
       {
@@ -1671,7 +1666,7 @@ kdp_store_registers_arm (int regno)
       switch (vfp_version)
 	{
 	  case ARM_VFP_UNSUPPORTED:
-	    /* No VFP support, so nothing to do.  */
+	    /* No VFP support, so nothing to do: */
 	    fp_data_size = 0;
 	    break;
 	  case ARM_VFP_VERSION_1:
@@ -1693,28 +1688,27 @@ kdp_store_registers_arm (int regno)
 
       if (fp_data_size < 0)
 	{
-	    error ("kdp_store_registers_arm: unable to store ARM_THREAD_FPSTATE: "
-		   "unsupported vfp version: %d", (int)vfp_version);
+	    error("kdp_store_registers_arm: unable to store ARM_THREAD_FPSTATE: "
+		  "unsupported vfp version: %d", (int)vfp_version);
 	}
       else if (fp_data_size > 0)
 	{
-	  memcpy (c.response->readregs_reply.data, &fp_regs, fp_data_size);
+	  memcpy(c.response->readregs_reply.data, &fp_regs, fp_data_size);
 
-      c.request->writeregs_req.hdr.request = KDP_WRITEREGS;
-      c.request->writeregs_req.cpu = 0;
-      c.request->writeregs_req.flavor = GDB_ARM_THREAD_FPSTATE;
+          c.request->writeregs_req.hdr.request = KDP_WRITEREGS;
+          c.request->writeregs_req.cpu = 0;
+          c.request->writeregs_req.flavor = GDB_ARM_THREAD_FPSTATE;
 	  c.request->writeregs_req.nbytes = fp_data_size;
 
-	  kdpret = kdp_transaction (&c, c.request, c.response,
-                         "kdp_store_registers_arm");
+	  kdpret = kdp_transaction(&c, c.request, c.response,
+                                   "kdp_store_registers_arm");
 
-      if (kdpret != RR_SUCCESS)
-        {
-          error
-            ("kdp_store_registers_arm: unable to store ARM_THREAD_FPSTATE: %s",
-             kdp_return_string (kdpret));
+          if (kdpret != RR_SUCCESS)
+            {
+              error("kdp_store_registers_arm: unable to store ARM_THREAD_FPSTATE: %s",
+                    kdp_return_string(kdpret));
+            }
         }
-    }
     }
 # endif /* KDP_TARGET_SUPPORTS_FP */
 }
@@ -1722,145 +1716,140 @@ kdp_store_registers_arm (int regno)
 
 #if KDP_TARGET_I386
 static void
-kdp_store_registers_x86_64 (int regno)
+kdp_store_registers_x86_64(int regno)
 {
-  if (!kdp_is_connected (&c))
+  if (!kdp_is_connected(&c))
     {
-      error ("kdp: unable to store registers (not connected)");
+      error("kdp: unable to store registers (not connected)");
     }
 
   if ((regno == -1) || IS_GP_REGNUM_64(regno))
     {
-
       gdb_x86_thread_state64_t gp_regs;
       kdp_return_t kdpret;
 
-      x86_64_macosx_store_gp_registers (&gp_regs);
+      x86_64_macosx_store_gp_registers(&gp_regs);
 
-      memcpy (c.request->writeregs_req.data, &gp_regs,
-              (GDB_x86_THREAD_STATE64_COUNT * 4));
+      memcpy(c.request->writeregs_req.data, &gp_regs,
+             (GDB_x86_THREAD_STATE64_COUNT * 4));
 
       c.request->writeregs_req.hdr.request = KDP_WRITEREGS;
       c.request->writeregs_req.cpu = 0;
       c.request->writeregs_req.flavor = GDB_x86_THREAD_STATE64;
-      c.request->writeregs_req.nbytes = GDB_x86_THREAD_STATE64_COUNT * 4;
+      c.request->writeregs_req.nbytes = (GDB_x86_THREAD_STATE64_COUNT * 4);
 
       kdpret =
-        kdp_transaction (&c, c.request, c.response,
-                         "kdp_store_registers_x86_64");
+        kdp_transaction(&c, c.request, c.response,
+                        "kdp_store_registers_x86_64");
       if (kdpret != RR_SUCCESS)
         {
-          error
-            ("kdp_store_registers_x86_64: unable to store x86_THREAD_STATE64: %s",
-             kdp_return_string (kdpret));
+          error("kdp_store_registers_x86_64: unable to store x86_THREAD_STATE64: %s",
+                kdp_return_string(kdpret));
         }
     }
-
 }
 #endif /* KDP_TARGET_I386 */
 
 static void
-kdp_store_registers (int regno)
+kdp_store_registers(int regno)
 {
-  if (!kdp_is_connected (&c))
+  if (!kdp_is_connected(&c))
     {
-      error ("kdp: unable to store registers (not connected)");
+      error("kdp: unable to store registers (not connected)");
     }
 
   switch (kdp_cpu_type)
     {
-
     case CPU_TYPE_POWERPC:
 #if KDP_TARGET_POWERPC
-      kdp_store_registers_ppc (regno);
+      kdp_store_registers_ppc(regno);
 #else
-      error ("kdp_store_registers: not configured to support powerpc");
+      error("kdp_store_registers: not configured to support powerpc");
 #endif /* KDP_TARGET_POWERPC */
       break;
 
     case CPU_TYPE_X86_64:
 #if KDP_TARGET_I386
-      kdp_store_registers_x86_64 (regno);
+      kdp_store_registers_x86_64(regno);
 #else
-      error ("kdp_store_registers: not configured to support x86_64");
+      error("kdp_store_registers: not configured to support x86_64");
 #endif /* KDP_TARGET_I386 */
       break;
 
     case CPU_TYPE_I386:
 #if KDP_TARGET_I386
-      kdp_store_registers_i386 (regno);
+      kdp_store_registers_i386(regno);
 #else
-      error ("kdp_store_registers: not configured to support i386");
+      error("kdp_store_registers: not configured to support i386");
 #endif /* KDP_TARGET_I386 */
       break;
 
     case CPU_TYPE_ARM:
 #if KDP_TARGET_ARM
-      kdp_store_registers_arm (regno);
+      kdp_store_registers_arm(regno);
 #else
-      error ("kdp_store_registers: not configured to support arm");
+      error("kdp_store_registers: not configured to support arm");
 #endif /* KDP_TARGET_ARM */
       break;
 
     default:
-      error ("kdp_store_registers: unknown host type 0x%lx",
-             (unsigned long) kdp_host_type);
+      error("kdp_store_registers: unknown host type 0x%lx",
+            (unsigned long)kdp_host_type);
     }
 }
 
 static void
-kdp_fetch_registers (int regno)
+kdp_fetch_registers(int regno)
 {
-  if (!kdp_is_connected (&c))
+  if (!kdp_is_connected(&c))
     {
-      error ("kdp: unable to fetch registers (not connected)");
+      error("kdp: unable to fetch registers (not connected)");
     }
 
   switch (kdp_cpu_type)
     {
-
     case CPU_TYPE_POWERPC:
 #if KDP_TARGET_POWERPC
-      kdp_fetch_registers_ppc (regno);
+      kdp_fetch_registers_ppc(regno);
 #else
-      error ("kdp_fetch_registers: not configured to support powerpc");
+      error("kdp_fetch_registers: not configured to support powerpc");
 #endif /* KDP_TARGET_POWERPC */
       break;
 
     case CPU_TYPE_I386:
 #if KDP_TARGET_I386
-      kdp_fetch_registers_i386 (regno);
+      kdp_fetch_registers_i386(regno);
 #else
-      error ("kdp_fetch_registers: not configured to support i386");
+      error("kdp_fetch_registers: not configured to support i386");
 #endif /* KDP_TARGET_I386 */
       break;
 
     case CPU_TYPE_ARM:
 #if KDP_TARGET_ARM
-      kdp_fetch_registers_arm (regno);
+      kdp_fetch_registers_arm(regno);
 #else
-      error ("kdp_fetch_registers: not configured to support arm");
+      error("kdp_fetch_registers: not configured to support arm");
 #endif /* KDP_TARGET_ARM */
       break;
 
     case CPU_TYPE_X86_64:
 #if KDP_TARGET_I386
-      kdp_fetch_registers_x86_64 (regno);
+      kdp_fetch_registers_x86_64(regno);
 #else
-      error ("kdp_fetch_registers: not configured to support i386");
+      error("kdp_fetch_registers: not configured to support i386");
 #endif /* KDP_TARGET_I386 */
       break;
 
     default:
-      error ("kdp_fetch_registers: unknown host type 0x%lx",
-             (unsigned long) kdp_host_type);
+      error("kdp_fetch_registers: unknown host type 0x%lx",
+            (unsigned long)kdp_host_type);
     }
 }
 
 static void
-kdp_prepare_to_store (void)
+kdp_prepare_to_store(void)
 {
-  kdp_fetch_registers (-1);
+  kdp_fetch_registers(-1);
 }
 
 static int
@@ -1890,7 +1879,7 @@ kdp_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
 	memcpy(c.request->writemem64_req.data, myaddr, len);
       } else {
         c.request->writemem_req.hdr.request = KDP_WRITEMEM;
-        c.request->writemem_req.address = memaddr;
+        c.request->writemem_req.address = (unsigned int)memaddr;
         c.request->writemem_req.nbytes = len;
         memcpy(c.request->writemem_req.data, myaddr, len);
       }
@@ -1919,7 +1908,7 @@ kdp_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
 	c.request->readmem64_req.nbytes = len;
       } else {
         c.request->readmem_req.hdr.request = KDP_READMEM;
-        c.request->readmem_req.address = memaddr;
+        c.request->readmem_req.address = (unsigned int)memaddr;
         c.request->readmem_req.nbytes = len;
       }
 
@@ -1953,8 +1942,8 @@ kdp_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
           if (c.response->readmem_reply.nbytes != (size_t)len)
             {
               logger(KDP_LOG_DEBUG,
-                  "kdp_xfer_memory: kdp read only %d bytes of data (expected %d)\n",
-                  c.response->readmem_reply.nbytes, len);
+                     "kdp_xfer_memory: kdp read only %d bytes of data (expected %d)\n",
+                     c.response->readmem_reply.nbytes, len);
               return 0;
             }
 	  memcpy(myaddr, c.response->readmem_reply.data, len);
@@ -1965,9 +1954,9 @@ kdp_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
 }
 
 static void
-kdp_files_info (struct target_ops *ops)
+kdp_files_info(struct target_ops *ops)
 {
-  printf_unfiltered ("\tNo connection information available.\n");
+  printf_unfiltered("\tNo connection information available.\n");
 }
 
 static void
@@ -1976,13 +1965,13 @@ kdp_kill(void)
   kdp_detach("", 0);
 }
 
-static void
+static void ATTR_NORETURN
 kdp_load(char *args, int from_tty)
 {
   error("unsupported operation kdp_load");
 }
 
-static void
+static void ATTR_NORETURN
 kdp_create_inferior(char *execfile, char *args, char **env, int fromtty)
 {
   error("unsupported operation kdp_create_inferior");
@@ -1996,86 +1985,86 @@ kdp_mourn_inferior(void)
 }
 
 static int remote_async_terminal_ours_p = 1;
-static void (*ofunc) (int);
+static void (*ofunc)(int);
 static PTR sigint_remote_twice_token;
 static PTR sigint_remote_token;
 
-static void remote_interrupt_twice (int signo);
-static void remote_interrupt (int signo);
-static void handle_remote_sigint_twice (int sig);
-static void handle_remote_sigint (int sig);
-static void async_remote_interrupt_twice (gdb_client_data arg);
-static void async_remote_interrupt (gdb_client_data arg);
+static void remote_interrupt_twice(int signo);
+static void remote_interrupt(int signo);
+static void handle_remote_sigint_twice(int sig);
+static void handle_remote_sigint(int sig);
+static void async_remote_interrupt_twice(gdb_client_data arg);
+static void async_remote_interrupt(gdb_client_data arg);
 
 static void
-interrupt_query (void)
+interrupt_query(void)
 {
-  target_terminal_ours ();
+  target_terminal_ours();
 
-  if (query ("Interrupted while waiting for the program.\n\
+  if (query("Interrupted while waiting for the program.\n\
 Give up (and stop debugging it)? "))
     {
-      target_mourn_inferior ();
-      deprecated_throw_reason (RETURN_QUIT);
+      target_mourn_inferior();
+      deprecated_throw_reason(RETURN_QUIT);
     }
 
-  target_terminal_inferior ();
+  target_terminal_inferior();
 }
 
 static void
-remote_interrupt_twice (int signo)
+remote_interrupt_twice(int signo)
 {
-  signal (signo, ofunc);
-  interrupt_query ();
-  signal (signo, remote_interrupt);
+  signal(signo, ofunc);
+  interrupt_query();
+  signal(signo, remote_interrupt);
 }
 
 static void
-remote_interrupt (int signo)
+remote_interrupt(int signo)
 {
-  signal (signo, remote_interrupt_twice);
-  target_stop ();
+  signal(signo, remote_interrupt_twice);
+  target_stop();
 }
 
 static void
-handle_remote_sigint_twice (int sig)
+handle_remote_sigint_twice(int sig)
 {
-  signal (sig, handle_sigint);
+  signal(sig, handle_sigint);
   sigint_remote_twice_token =
-    create_async_signal_handler (inferior_event_handler_wrapper, NULL);
-  mark_async_signal_handler_wrapper (sigint_remote_twice_token);
+    create_async_signal_handler(inferior_event_handler_wrapper, NULL);
+  mark_async_signal_handler_wrapper(sigint_remote_twice_token);
 }
 
 static void
-handle_remote_sigint (int sig)
+handle_remote_sigint(int sig)
 {
-  signal (sig, handle_remote_sigint_twice);
+  signal(sig, handle_remote_sigint_twice);
   sigint_remote_twice_token =
-    create_async_signal_handler (async_remote_interrupt_twice, NULL);
-  mark_async_signal_handler_wrapper (sigint_remote_token);
+    create_async_signal_handler(async_remote_interrupt_twice, NULL);
+  mark_async_signal_handler_wrapper(sigint_remote_token);
 }
 
 static void
-async_remote_interrupt_twice (gdb_client_data arg)
+async_remote_interrupt_twice(gdb_client_data arg)
 {
   if (target_executing)
     {
-      signal (SIGINT, handle_remote_sigint);
-      interrupt_query ();
+      signal(SIGINT, handle_remote_sigint);
+      interrupt_query();
     }
 }
 
 static void
-async_remote_interrupt (gdb_client_data arg)
+async_remote_interrupt(gdb_client_data arg)
 {
   if (remote_debug)
-    fprintf_unfiltered (gdb_stdlog, "%s called\n", __FUNCTION__);
+    fprintf_unfiltered(gdb_stdlog, "%s called\n", __FUNCTION__);
 
   if (current_target.to_stop == target_ignore)
     {
-      target_terminal_ours ();
+      target_terminal_ours();
 
-      if (yquery ("remote-kdp cannot stop a running kernel.\n\
+      if (yquery("remote-kdp cannot stop a running kernel.\n\
 Would you like to disconnect? "))
 	{
 	  kdp_return_t kdpret;
@@ -2085,55 +2074,55 @@ Would you like to disconnect? "))
 	  kdp_ops.to_has_registers = 0;
 	  kdp_ops.to_has_execution = 0;
 
-	  update_current_target ();
+	  update_current_target();
 
-	  if (kdp_is_bound (&c))
+	  if (kdp_is_bound(&c))
 	    {
-	      kdpret = kdp_destroy (&c);
+	      kdpret = kdp_destroy(&c);
 	      if (kdpret != RR_SUCCESS)
 		{
-		  error ("unable to deallocate KDP connection: %s",
-			 kdp_return_string (kdpret));
+		  error("unable to deallocate KDP connection: %s",
+                        kdp_return_string(kdpret));
 		}
 	    }
-	  target_mourn_inferior ();
+	  target_mourn_inferior();
 	  target_executing = 0;
-	  printf_unfiltered ("Disconnected.\n");
-	  deprecated_throw_reason (RETURN_QUIT);
+	  printf_unfiltered("Disconnected.\n");
+	  deprecated_throw_reason(RETURN_QUIT);
 	}
       else
 	{
-	  target_terminal_inferior ();
+	  target_terminal_inferior();
 	}
     }
   else
     {
-      target_stop ();
+      target_stop();
     }
 }
 
 static void
-cleanup_sigint_signal_handler (void *dummy)
+cleanup_sigint_signal_handler(void *dummy)
 {
-  signal (SIGINT, handle_sigint);
+  signal(SIGINT, handle_sigint);
   if (sigint_remote_twice_token)
-    delete_async_signal_handler ((struct async_signal_handler **)
-                                 &sigint_remote_twice_token);
+    delete_async_signal_handler((struct async_signal_handler **)
+                                &sigint_remote_twice_token);
   if (sigint_remote_token)
-    delete_async_signal_handler ((struct async_signal_handler **)
-                                 &sigint_remote_token);
+    delete_async_signal_handler((struct async_signal_handler **)
+                                &sigint_remote_token);
 }
 
 static void
-initialize_sigint_signal_handler (void)
+initialize_sigint_signal_handler(void)
 {
   sigint_remote_token =
-    create_async_signal_handler (async_remote_interrupt, NULL);
-  signal (SIGINT, handle_remote_sigint);
+    create_async_signal_handler(async_remote_interrupt, NULL);
+  signal(SIGINT, handle_remote_sigint);
 }
 
 static void
-kdp_terminal_inferior (void)
+kdp_terminal_inferior(void)
 {
 #if 0
   terminal_inferior();
@@ -2143,70 +2132,72 @@ kdp_terminal_inferior (void)
     return;
   if (!remote_async_terminal_ours_p)
     return;
-  CHECK_FATAL (sync_execution);
-  CHECK_FATAL (remote_async_terminal_ours_p);
-  delete_file_handler (input_fd);
+  CHECK_FATAL(sync_execution);
+  CHECK_FATAL(remote_async_terminal_ours_p);
+  delete_file_handler(input_fd);
   remote_async_terminal_ours_p = 0;
-  initialize_sigint_signal_handler ();
+  initialize_sigint_signal_handler();
 }
 
 static void
-kdp_terminal_ours (void)
+kdp_terminal_ours(void)
 {
-  /* terminal_ours (); */
+#if 0
+  terminal_ours();
+#endif /* 0 */
 
   if (!sync_execution)
     return;
   if (remote_async_terminal_ours_p)
     return;
-  CHECK_FATAL (sync_execution);
-  CHECK_FATAL (!remote_async_terminal_ours_p);
-  cleanup_sigint_signal_handler (NULL);
+  CHECK_FATAL(sync_execution);
+  CHECK_FATAL(!remote_async_terminal_ours_p);
+  cleanup_sigint_signal_handler(NULL);
 
-  add_file_handler (input_fd, stdin_event_handler, 0);
+  add_file_handler(input_fd, stdin_event_handler, 0);
 
   remote_async_terminal_ours_p = 1;
 }
 
-static void (*async_client_callback) (enum inferior_event_type event_type,
-                                      void *context);
+static void (*async_client_callback)(enum inferior_event_type event_type,
+                                     void *context);
 static void *async_client_context;
 
 static void
-kdp_file_handler (int error, gdb_client_data client_data)
+kdp_file_handler(int error, gdb_client_data client_data)
 {
-  async_client_callback (INF_REG_EVENT, async_client_context);
+  async_client_callback(INF_REG_EVENT, async_client_context);
 }
 
 static void
-kdp_file_handler_callback (void *arg)
+kdp_file_handler_callback(void *arg)
 {
-  async_client_callback (INF_REG_EVENT, async_client_context);
+  async_client_callback(INF_REG_EVENT, async_client_context);
 }
 
 static void
-kdp_async (void (*callback) (enum inferior_event_type event_type,
-                             void *context), void *context)
+kdp_async(void (*callback)(enum inferior_event_type event_type,
+                           void *context), void *context)
 {
   if (current_target.to_async_mask_value == 0)
-    internal_error (__FILE__, __LINE__,
-                    "Calling remote_async when async is masked");
+    internal_error(__FILE__, __LINE__,
+                   "Calling remote_async when async is masked");
 
   if (callback != NULL)
     {
       async_client_callback = callback;
       async_client_context = context;
       if (c.reqfd > 0)
-        add_file_handler (c.reqfd, kdp_file_handler, NULL);
+        add_file_handler(c.reqfd, kdp_file_handler, NULL);
       if (c.excfd > 0)
-        add_file_handler (c.excfd, kdp_file_handler, NULL);
+        add_file_handler(c.excfd, kdp_file_handler, NULL);
     }
   else
     {
       if (c.reqfd > 0)
-        delete_file_handler (c.reqfd);
+        delete_file_handler(c.reqfd);
       if (c.excfd > 0)
-        delete_file_handler (c.excfd);
+        delete_file_handler(c.excfd);
     }
 
   if ((callback != NULL) && (c.saved_exception_pending))
@@ -2362,69 +2353,48 @@ _initialize_remote_kdp(void)
   add_com("kdp-kernelversion", class_run, kdp_kernelversion_command,
           "Print the version of a remote Mac OS X kernel.\n");
 
-  add_setshow_enum_cmd
-    ("kdp-default-host-type", class_obscure, archlist,
-     (const char **) &kdp_default_host_type_str, _("\
+  add_setshow_enum_cmd("kdp-default-host-type", class_obscure, archlist,
+                       (const char **)&kdp_default_host_type_str, _("\
 Set CPU type to be used for hosts providing incorrect information (powerpc/ia32)."), _("\
 Show CPU type to be used for hosts providing incorrect information (powerpc/ia32)."), _("\
-No additional help."),
-     update_kdp_default_host_type,
-     NULL,
-     &setlist, &showlist);
+No additional help."), update_kdp_default_host_type, NULL,
+                       &setlist, &showlist);
 
-  add_setshow_zinteger_cmd
-    ("kdp-timeout", class_obscure, &kdp_timeout, _("\
+  add_setshow_zinteger_cmd("kdp-timeout",
+                           class_obscure, &kdp_timeout, _("\
 Set UDP timeout in milliseconds for (non-exception) KDP transactions."), _("\
 Show UDP timeout in milliseconds for (non-exception) KDP transactions."), _("\
-No additional help."),
-     set_timeouts,
-     NULL,
-     &setlist, &showlist);
+No additional help."), set_timeouts, NULL, &setlist, &showlist);
 
-  add_setshow_zinteger_cmd
-    ("kdp-retries", class_obscure, &kdp_retries, _("\
+  add_setshow_zinteger_cmd("kdp-retries",
+                           class_obscure, &kdp_retries, _("\
 Set number of UDP retries for (non-exception) KDP transactions."), _("\
 Show number of UDP retries for (non-exception) KDP transactions."), _("\
-No additional help."),
-     set_timeouts,
-     NULL,
-     &setlist, &showlist);
+No additional help."), set_timeouts, NULL, &setlist, &showlist);
 
-  add_setshow_uinteger_cmd
-    ("kdp-default-port", class_obscure, &kdp_default_port, _("\
+  add_setshow_uinteger_cmd("kdp-default-port",
+                           class_obscure, &kdp_default_port, _("\
 Set default UDP port on which to attempt to contact KDP."), _("\
 Show default UDP port on which to attempt to contact KDP."), _("\
-No additional help."),
-     NULL,
-     NULL,
-     &setlist, &showlist);
+No additional help."), NULL, NULL, &setlist, &showlist);
 
-  add_setshow_uinteger_cmd
-    ("kdp-debug-level", class_obscure, &kdp_debug_level, _("\
+  add_setshow_uinteger_cmd("kdp-debug-level",
+                           class_obscure, &kdp_debug_level, _("\
 Set level of verbosity for KDP debugging information."), _("\
 Show level of verbosity for KDP debugging information."), _("\
-No additional help."),
-     NULL,
-     NULL,
-     &setlist, &showlist);
+No additional help."), NULL, NULL, &setlist, &showlist);
 
-  add_setshow_uinteger_cmd
-    ("kdp-sequence-number", class_obscure, &c.seqno, _("\
+  add_setshow_uinteger_cmd("kdp-sequence-number",
+                           class_obscure, &c.seqno, _("\
 Set current sequence number for KDP transactions."), _("\
 Show current sequence number for KDP transactions."), _("\
-No additional help."),
-     NULL,
-     NULL,
-     &setlist, &showlist);
+No additional help."), NULL, NULL, &setlist, &showlist);
 
-  add_setshow_uinteger_cmd
-    ("kdp-exception-sequence-number", class_obscure, &c.exc_seqno, _("\
+  add_setshow_uinteger_cmd("kdp-exception-sequence-number",
+                           class_obscure, &c.exc_seqno, _("\
 Set current sequence number for KDP exception transactions."), _("\
 Show current sequence number for KDP exception transactions."), _("\
-No additional help."),
-     NULL,
-     NULL,
-     &setlist, &showlist);
+No additional help."), NULL, NULL, &setlist, &showlist);
 
   kdp_reset(&c);
 }

@@ -99,23 +99,23 @@ delete_step_resume_breakpoint (void *arg)
 }
 
 static void
-free_thread (struct thread_info *tp)
+free_thread(struct thread_info *tp)
 {
   /* NOTE: this will take care of any left-over step_resume breakpoints,
      but not any user-specified thread-specific breakpoints. */
   if (tp->step_resume_breakpoint)
-    delete_breakpoint (tp->step_resume_breakpoint);
+    delete_breakpoint(tp->step_resume_breakpoint);
 
   /* FIXME: do I ever need to call the back-end to give it a
      chance at this private data before deleting the thread?  */
   if (tp->private)
-    xfree (tp->private);
+    xfree(tp->private);
 
-  xfree (tp);
+  xfree(tp);
 }
 
 void
-init_thread_list (void)
+init_thread_list(void)
 {
   struct thread_info *tp, *tpnext;
 
@@ -126,7 +126,7 @@ init_thread_list (void)
   for (tp = thread_list; tp; tp = tpnext)
     {
       tpnext = tp->next;
-      free_thread (tp);
+      free_thread(tp);
     }
 
   thread_list = NULL;
@@ -318,10 +318,11 @@ do_captured_list_thread_ids (struct ui_out *uiout, void *arg)
 /* Official gdblib interface function to get a list of thread ids and
    the total number. */
 enum gdb_rc
-gdb_list_thread_ids (struct ui_out *uiout, char **error_message)
+gdb_list_thread_ids(struct ui_out *uiout, char **error_message)
 {
-  return catch_exceptions_with_msg (uiout, do_captured_list_thread_ids, NULL,
-				    error_message, RETURN_MASK_ALL);
+  return ((enum gdb_rc)
+          catch_exceptions_with_msg(uiout, do_captured_list_thread_ids,
+                                    NULL, error_message, RETURN_MASK_ALL));
 }
 
 /* Load infrun state for the thread PID.  */
@@ -451,82 +452,85 @@ prune_threads (void)
  */
 
 static void
-info_threads_command (char *arg, int from_tty)
+info_threads_command(char *arg, int from_tty)
 {
   struct thread_info *tp;
   ptid_t current_ptid;
   struct frame_info *cur_frame;
-  struct frame_id saved_frame_id = get_frame_id (get_selected_frame (NULL));
+  struct frame_id saved_frame_id = get_frame_id(get_selected_frame(NULL));
   char *extra_info;
-  int longest_threadname = 0;
+  size_t longest_threadname = 0UL;
   int threadcount = 0;
 
-  prune_threads ();
-  target_find_new_threads ();
+  prune_threads();
+  target_find_new_threads();
   current_ptid = inferior_ptid;
 
   /* APPLE LOCAL: Get the name strings for all the threads, find the longest
      one.  */
   for (tp = thread_list; tp; tp = tp->next)
     {
-      char *t = target_get_thread_name (tp->ptid);
+      char *t = target_get_thread_name(tp->ptid);
       if (t)
         {
-          if (strlen (t) > longest_threadname)
-            longest_threadname = strlen (t);
+          if (strlen(t) > longest_threadname)
+            longest_threadname = strlen(t);
         }
       threadcount++;
     }
 
   /* Limit the thread name to 30 chars max for reasonable one-line printing. */
-  if (longest_threadname > 30)
-    longest_threadname = 30;
+  if (longest_threadname > 30UL)
+    longest_threadname = 30UL;
 
   for (tp = thread_list; tp; tp = tp->next)
     {
-      if (ptid_equal (tp->ptid, current_ptid))
-	ui_out_text (uiout, "* ");
+      char *s;
+
+      if (ptid_equal(tp->ptid, current_ptid))
+	ui_out_text(uiout, "* ");
       else
-	ui_out_text (uiout, "  ");
+	ui_out_text(uiout, "  ");
 
-      if (threadcount > 100 && tp->num < 100)
-        ui_out_text (uiout, " ");
-      if (threadcount > 10 && tp->num < 10)
-        ui_out_text (uiout, " ");
+      if ((threadcount > 100) && (tp->num < 100))
+        ui_out_text(uiout, " ");
+      if ((threadcount > 10) && (tp->num < 10))
+        ui_out_text(uiout, " ");
 
-      ui_out_field_int (uiout, "threadno", tp->num);
-      ui_out_text (uiout, " ");
+      ui_out_field_int(uiout, "threadno", tp->num);
+      ui_out_text(uiout, " ");
 
       /* APPLE LOCAL: Get the thread name string, put quote marks around it,
          truncate or pad it out to LONGEST_THREADNAME characters, print it.  */
-      char *s = target_get_thread_name (tp->ptid);
-      if (s && s[0] != '\0')
+      s = target_get_thread_name(tp->ptid);
+      if (s && (s[0] != '\0'))
         {
           char buf1[128];
           char buf2[128];
-          if (strlen (s) > longest_threadname)
-              s[longest_threadname] = '\0';
-          strlcpy (buf1, "\"", sizeof (buf1));
-          strlcat (buf1, s, sizeof (buf1));
-          strlcat (buf1, "\"", sizeof (buf1));
-          snprintf (buf2, sizeof (buf2) - 1,"%-*s",
-                    longest_threadname + 2, buf1);
-          buf2[sizeof (buf2) - 1] = '\0';
-          ui_out_field_string (uiout, "target_thread_name", buf2);
-          ui_out_text (uiout, " ");
+          if (strlen(s) > longest_threadname)
+            s[longest_threadname] = '\0';
+          strlcpy(buf1, "\"", sizeof(buf1));
+          strlcat(buf1, s, sizeof(buf1));
+          strlcat(buf1, "\"", sizeof(buf1));
+          snprintf(buf2, (sizeof(buf2) - 1UL), "%-*s",
+                   (int)(longest_threadname + 2UL), buf1);
+          buf2[sizeof(buf2) - 1UL] = '\0';
+          ui_out_field_string(uiout, "target_thread_name", buf2);
+          ui_out_text(uiout, " ");
        }
       else
        {
           /* There is at least one thread with a name; this thread has
              no name so print padding chars.  */
-          if (longest_threadname > 0)
+          if (longest_threadname > 0UL)
             {
-              ui_out_text_fmt (uiout, "%-*s", longest_threadname + 2, "");
-              ui_out_text (uiout, " ");
+              ui_out_text_fmt(uiout, "%-*s",
+                              (longest_threadname + 2UL), "");
+              ui_out_text(uiout, " ");
             }
        }
 
-      extra_info = target_extra_thread_info (tp);
+      extra_info = target_extra_thread_info(tp);
       if (extra_info)
 	{
 	  ui_out_text (uiout, " (");
@@ -612,16 +616,16 @@ switch_to_thread(ptid_t ptid)
 }
 
 static void
-restore_current_thread (ptid_t ptid, int print)
+restore_current_thread(ptid_t ptid, int print)
 {
-  if (!ptid_equal (ptid, inferior_ptid))
+  if (!ptid_equal(ptid, inferior_ptid))
     {
-      switch_to_thread (ptid);
+      switch_to_thread(ptid);
       if (print)
 	/* APPLE LOCAL begin subroutine inlining  */
 	{
-	  print_stack_frame (get_current_frame (), 0, -1);
-	  clear_inlined_subroutine_print_frames ();
+	  print_stack_frame(get_current_frame(), 0, (enum print_what)-1);
+	  clear_inlined_subroutine_print_frames();
 	}
         /* APPLE LOCAL end subroutine inlining  */
     }
@@ -634,22 +638,24 @@ struct current_thread_cleanup
 };
 
 static void
-do_restore_current_thread_cleanup (void *arg)
+do_restore_current_thread_cleanup(void *arg)
 {
-  struct current_thread_cleanup *old = arg;
-  restore_current_thread (old->inferior_ptid, old->print);
-  xfree (old);
+  struct current_thread_cleanup *old;
+  old = (struct current_thread_cleanup *)arg;
+  restore_current_thread(old->inferior_ptid, old->print);
+  xfree(old);
 }
 
 struct cleanup *
-make_cleanup_restore_current_thread (ptid_t inferior_ptid, int print)
+make_cleanup_restore_current_thread(ptid_t inferior_ptid, int print)
 {
-  struct current_thread_cleanup *old
-    = xmalloc (sizeof (struct current_thread_cleanup));
+  struct current_thread_cleanup *old;
+  old = ((struct current_thread_cleanup *)
+         xmalloc(sizeof(struct current_thread_cleanup)));
   old->inferior_ptid = inferior_ptid;
   old->print = print;
 
-  return make_cleanup (do_restore_current_thread_cleanup, old);
+  return make_cleanup(do_restore_current_thread_cleanup, old);
 }
 
 /* Apply a GDB command to a list of threads.  List syntax is a whitespace
@@ -808,42 +814,42 @@ static int
 do_captured_thread_select(struct ui_out *uiout,
 			  void *in_args)
 {
-  int num;
+  long num;
   struct thread_info *tp;
   struct select_thread_args *args = (struct select_thread_args *)in_args;
 
-  num = value_as_long(parse_and_eval(args->tidstr));
+  num = (long)value_as_long(parse_and_eval(args->tidstr));
 
   tp = find_thread_id(num);
 
   if (!tp)
-    error (_("Thread ID %d not known."), num);
+    error(_("Thread ID %ld not known."), num);
 
-  if (!thread_alive (tp))
-    error (_("Thread ID %d has terminated."), num);
+  if (!thread_alive(tp))
+    error(_("Thread ID %ld has terminated."), num);
 
-  switch_to_thread (tp->ptid);
+  switch_to_thread(tp->ptid);
 
   if (args->print)
     {
-
-      ui_out_text (uiout, "[Switching to thread ");
-      ui_out_field_int (uiout, "new-thread-id", pid_to_thread_id (inferior_ptid));
-      ui_out_text (uiout, " (");
+      char *s;
+      ui_out_text(uiout, "[Switching to thread ");
+      ui_out_field_int(uiout, "new-thread-id", pid_to_thread_id(inferior_ptid));
+      ui_out_text(uiout, " (");
 #if defined(HPUXHPPA)
-      ui_out_text (uiout, target_tid_to_str (inferior_ptid));
+      ui_out_text(uiout, target_tid_to_str(inferior_ptid));
 #else
-      ui_out_text (uiout, target_pid_to_str (inferior_ptid));
+      ui_out_text(uiout, target_pid_to_str(inferior_ptid));
 #endif /* HPUXHPPA */
-      ui_out_text (uiout, ")");
-      char *s = target_get_thread_name (inferior_ptid);
-      if (s && s[0] != '\0')
+      ui_out_text(uiout, ")");
+      s = target_get_thread_name(inferior_ptid);
+      if (s && (s[0] != '\0'))
         {
-          ui_out_text (uiout, ", \"");
-          ui_out_field_string (uiout, "thread-name", s);
-          ui_out_text (uiout, "\"");
+          ui_out_text(uiout, ", \"");
+          ui_out_field_string(uiout, "thread-name", s);
+          ui_out_text(uiout, "\"");
         }
-      ui_out_text (uiout, "]\n");
+      ui_out_text(uiout, "]\n");
 
       /* APPLE LOCAL begin subroutine inlining  */
       /* If we are inside an inlined function, we may have gotten there
@@ -852,15 +858,16 @@ do_captured_thread_select(struct ui_out *uiout,
        * this is not an error.  */
       if (deprecated_selected_frame == NULL)
 	{
-	  if (get_frame_type (get_current_frame ()) != INLINED_FRAME)
-	    error (_("No selected frame."));
+	  if (get_frame_type(get_current_frame()) != INLINED_FRAME)
+	    error(_("No selected frame."));
 	  else
-	    select_frame (get_current_frame ());
+	    select_frame(get_current_frame());
 	}
 
-      print_stack_frame (deprecated_selected_frame,
-			 frame_relative_level (deprecated_selected_frame), 1);
-      clear_inlined_subroutine_print_frames ();
+      print_stack_frame(deprecated_selected_frame,
+                        frame_relative_level(deprecated_selected_frame),
+                        (enum print_what)1);
+      clear_inlined_subroutine_print_frames();
       /* APPLE LOCAL end subroutine inlining  */
 
     }
@@ -868,49 +875,51 @@ do_captured_thread_select(struct ui_out *uiout,
      thread context */
 
   if (deprecated_context_hook)
-    deprecated_context_hook (pid_to_thread_id (inferior_ptid));
+    deprecated_context_hook(pid_to_thread_id(inferior_ptid));
 
   return GDB_RC_OK;
 }
 
 enum gdb_rc
-gdb_thread_select (struct ui_out *uiout, char *tidstr, int print,
-		   char **error_message)
+gdb_thread_select(struct ui_out *uiout, char *tidstr, int print,
+		  char **error_message)
 {
   struct select_thread_args args;
 
   args.tidstr = tidstr;
   args.print = print;
 
-  return catch_exceptions_with_msg(uiout, do_captured_thread_select, &args,
-				   error_message, RETURN_MASK_ALL);
+  return ((enum gdb_rc)
+          catch_exceptions_with_msg(uiout, do_captured_thread_select,
+                                    &args, error_message,
+                                    RETURN_MASK_ALL));
 }
 
 /* Commands with a prefix of `thread'.  */
 struct cmd_list_element *thread_cmd_list = NULL;
 
 void
-_initialize_thread (void)
+_initialize_thread(void)
 {
   static struct cmd_list_element *thread_apply_list = NULL;
 
-  add_info ("threads", info_threads_command,
-	    _("IDs of currently known threads."));
+  add_info("threads", info_threads_command,
+	   _("IDs of currently known threads."));
 
-  add_prefix_cmd ("thread", class_run, thread_command, _("\
+  add_prefix_cmd("thread", class_run, thread_command, _("\
 Use this command to switch between threads.\n\
 The new thread ID must be currently known."),
-		  &thread_cmd_list, "thread ", 1, &cmdlist);
+                 &thread_cmd_list, "thread ", 1, &cmdlist);
 
-  add_prefix_cmd ("apply", class_run, thread_apply_command,
-		  _("Apply a command to a list of threads."),
-		  &thread_apply_list, "apply ", 1, &thread_cmd_list);
+  add_prefix_cmd("apply", class_run, thread_apply_command,
+		 _("Apply a command to a list of threads."),
+		 &thread_apply_list, "apply ", 1, &thread_cmd_list);
 
-  add_cmd ("all", class_run, thread_apply_all_command,
-	   _("Apply a command to all threads."), &thread_apply_list);
+  add_cmd("all", class_run, thread_apply_all_command,
+	  _("Apply a command to all threads."), &thread_apply_list);
 
   if (!xdb_commands)
-    add_com_alias ("t", "thread", class_run, 1);
+    add_com_alias("t", "thread", class_run, 1);
 }
 
 /* EOF */

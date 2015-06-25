@@ -153,24 +153,26 @@ gnuv2_virtual_fn_field (struct value **arg1p, struct fn_field * f, int j,
   else
     {
       /* Handle the case where the vtbl field points directly to a structure. */
-      vtbl = value_add (vtbl, vi);
-      entry = value_ind (vtbl);
+      vtbl = value_add(vtbl, vi);
+      entry = value_ind(vtbl);
     }
 
-  entry_type = check_typedef (value_type (entry));
+  entry_type = check_typedef(value_type(entry));
 
-  if (TYPE_CODE (entry_type) == TYPE_CODE_STRUCT)
+  if (TYPE_CODE(entry_type) == TYPE_CODE_STRUCT)
     {
-      /* Move the `this' pointer according to the virtual function table. */
-      set_value_offset (arg1, value_offset (arg1) + value_as_long (value_field (entry, 0)));
+      /* Move the `this' pointer according to the virtual function table: */
+      set_value_offset(arg1,
+                       (int)(value_offset(arg1)
+                             + value_as_long(value_field(entry, 0))));
 
-      if (!value_lazy (arg1))
+      if (!value_lazy(arg1))
 	{
-	  set_value_lazy (arg1, 1);
-	  value_fetch_lazy (arg1);
+	  set_value_lazy(arg1, 1);
+	  value_fetch_lazy(arg1);
 	}
 
-      vfn = value_field (entry, 2);
+      vfn = value_field(entry, 2);
     }
   else if (TYPE_CODE (entry_type) == TYPE_CODE_PTR)
     vfn = entry;
@@ -365,13 +367,13 @@ gnuv2_baseclass_offset (struct type *type, int index,
          in the fields.  */
       for (i = n_baseclasses; i < len; i++)
 	{
-	  if (vb_match (type, i, basetype))
+	  if (vb_match(type, i, basetype))
 	    {
-	      CORE_ADDR addr
-	      = unpack_pointer (TYPE_FIELD_TYPE (type, i),
-				valaddr + (TYPE_FIELD_BITPOS (type, i) / 8));
+	      CORE_ADDR addr =
+                unpack_pointer(TYPE_FIELD_TYPE(type, i),
+                               valaddr + (TYPE_FIELD_BITPOS(type, i) / 8));
 
-	      return addr - (LONGEST) address;
+	      return (int)(addr - (LONGEST)address);
 	    }
 	}
       /* Not in the fields, so try looking through the baseclasses.  */

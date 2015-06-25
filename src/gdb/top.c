@@ -67,31 +67,29 @@
 #include "ui-out.h"
 #include "cli-out.h"
 
-/* Default command line prompt.  This is overriden in some configs. */
-
+/* Default command line prompt; this is overriden in some configs: */
 #ifndef DEFAULT_PROMPT
-#define DEFAULT_PROMPT	"(gdb) "
-#endif
+# define DEFAULT_PROMPT	"(gdb) "
+#endif /* !DEFAULT_PROMPT */
 
-/* Initialization file name for gdb.  This is overridden in some configs.  */
-
+/* Initialization file name for gdb; this is overridden in some configs: */
 #ifndef PATH_MAX
 # ifdef FILENAME_MAX
 #  define PATH_MAX FILENAME_MAX
 # else
 #  define PATH_MAX 512
-# endif
-#endif
+# endif /* FILENAME_MAX */
+#endif /* !PATH_MAX */
 
 #ifndef	GDBINIT_FILENAME
-#define	GDBINIT_FILENAME	".gdbinit"
-#endif
+# define GDBINIT_FILENAME	".gdbinit"
+#endif /* !GDBINIT_FILENAME */
 char gdbinit[PATH_MAX + 1] = GDBINIT_FILENAME;
 
 /* APPLE LOCAL begin global gdbinit */
 #ifndef GDBINIT_GLOBAL
-#define GDBINIT_GLOBAL          "/etc/gdb.conf"
-#endif
+# define GDBINIT_GLOBAL          "/etc/gdb.conf"
+#endif /* !GDBINIT_GLOBAL */
 char gdbinit_global[] = GDBINIT_GLOBAL;
 /* APPLE LOCAL end global gdbinit */
 
@@ -108,12 +106,12 @@ extern char lang_frame_mismatch_warn[];		/* language.c */
 
 int caution = 1;		/* Default is yes, sigh. */
 static void
-show_caution (struct ui_file *file, int from_tty,
-	      struct cmd_list_element *c, const char *value)
+show_caution(struct ui_file *file, int from_tty,
+	     struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("\
+  fprintf_filtered(file, _("\
 Whether to confirm potentially dangerous operations is %s.\n"),
-		    value);
+                   value);
 }
 
 /* stdio stream that command input is being read from.  Set to stdin normally.
@@ -122,8 +120,7 @@ Whether to confirm potentially dangerous operations is %s.\n"),
 
 FILE *instream;
 
-/* Current working directory.  */
-
+/* Current working directory: */
 char *current_directory;
 
 /* The directory name is actually stored here (usually).  */
@@ -133,7 +130,7 @@ char gdb_dirbuf[1024];
    The function receives two args: an input stream,
    and a prompt string.  */
 
-void (*window_hook) (FILE *, char *);
+void (*window_hook)(FILE *, char *);
 
 int epoch_interface;
 int xgdb_verbose;
@@ -142,7 +139,7 @@ int xgdb_verbose;
    allocated for it so far.  */
 
 char *line;
-int linesize = 100;
+size_t linesize = 100UL;
 
 /* Nonzero if the current command is modified by "server ".  This
    affects things like recording into the command history, commands
@@ -209,7 +206,7 @@ char *lim_at_start;
 #ifndef STOP_SIGNAL
 # ifdef SIGTSTP
 #  define STOP_SIGNAL SIGTSTP
-static void stop_sig (int);
+static void stop_sig(int);
 # endif /* SIGTSTP */
 #endif /* !STOP_SIGNAL */
 
@@ -221,37 +218,35 @@ static void stop_sig (int);
    If the UI fails to initialize and it wants GDB to continue
    using the default UI, then it should clear this hook before returning. */
 
-void (*deprecated_init_ui_hook) (char *argv0);
+void (*deprecated_init_ui_hook)(char *argv0);
 
 /* This hook is called from within gdb's many mini-event loops which could
    steal control from a real user interface's event loop. It returns
    non-zero if the user is requesting a detach, zero otherwise. */
 
-int (*deprecated_ui_loop_hook) (int);
+int (*deprecated_ui_loop_hook)(int);
 
 /* Called instead of command_loop at top level.  Can be invoked via
    throw_exception().  */
 
-void (*deprecated_command_loop_hook) (void);
+void (*deprecated_command_loop_hook)(void);
 
 
 /* Called from print_frame_info to list the line we stopped in.  */
 
-void (*deprecated_print_frame_info_listing_hook) (struct symtab * s, int line,
-						  int stopline, int noerror);
+void (*deprecated_print_frame_info_listing_hook)(struct symtab *, int, int,
+                                                 int);
 /* APPLE LOCAL begin hooks */
-void (*print_frame_more_info_hook) (struct ui_out *uiout,
-                                    struct symtab_and_line *sal,
-                                    struct frame_info *fi);
+void (*print_frame_more_info_hook)(struct ui_out *uiout,
+                                   struct symtab_and_line *sal,
+                                   struct frame_info *fi);
 /* APPLE LOCAL end hooks */
 
-/* Replaces most of query.  */
+/* Replaces most of query: */
+int (*deprecated_query_hook)(const char *, va_list);
 
-int (*deprecated_query_hook) (const char *, va_list);
-
-/* Replaces most of warning.  */
-
-void (*deprecated_warning_hook) (const char *, va_list);
+/* Replaces most of warning: */
+void (*deprecated_warning_hook)(const char *, va_list);
 
 /* These three functions support getting lines of text from the user.
    They are used in sequence.  First deprecated_readline_begin_hook is
@@ -265,101 +260,101 @@ void (*deprecated_warning_hook) (const char *, va_list);
    called to notify the GUI that we are done with the interaction
    window and it can close it.  */
 
-void (*deprecated_readline_begin_hook) (char *, ...);
-char *(*deprecated_readline_hook) (char *);
-void (*deprecated_readline_end_hook) (void);
+void (*deprecated_readline_begin_hook)(char *, ...);
+char *(*deprecated_readline_hook)(char *);
+void (*deprecated_readline_end_hook)(void);
 
 /* Called as appropriate to notify the interface of the specified breakpoint
    conditions.  */
 
-void (*deprecated_create_breakpoint_hook) (struct breakpoint * bpt);
-void (*deprecated_delete_breakpoint_hook) (struct breakpoint * bpt);
-void (*deprecated_modify_breakpoint_hook) (struct breakpoint * bpt);
+void (*deprecated_create_breakpoint_hook)(struct breakpoint *bpt);
+void (*deprecated_delete_breakpoint_hook)(struct breakpoint *bpt);
+void (*deprecated_modify_breakpoint_hook)(struct breakpoint *bpt);
 
 /* Called as appropriate to notify the interface that we have attached
    to or detached from an already running process. */
 
-void (*deprecated_attach_hook) (void);
-void (*deprecated_detach_hook) (void);
+void (*deprecated_attach_hook)(void);
+void (*deprecated_detach_hook)(void);
 
 /* Called during long calculations to allow GUI to repair window damage, and to
    check for stop buttons, etc... */
 
-void (*deprecated_interactive_hook) (void);
+void (*deprecated_interactive_hook)(void);
 
 /* Called when the registers have changed, as a hint to a GUI
    to minimize window update. */
 
-void (*deprecated_registers_changed_hook) (void);
+void (*deprecated_registers_changed_hook)(void);
 
 /* Tell the GUI someone changed the register REGNO. -1 means
    that the caller does not know which register changed or
    that several registers have changed (see value_assign). */
-void (*deprecated_register_changed_hook) (int regno);
+void (*deprecated_register_changed_hook)(int regno);
 
 /* Tell the GUI someone changed LEN bytes of memory at ADDR */
-void (*deprecated_memory_changed_hook) (CORE_ADDR addr, int len);
+void (*deprecated_memory_changed_hook)(CORE_ADDR addr, int len);
 
 /* Called when going to wait for the target.  Usually allows the GUI to run
    while waiting for target events.  */
 
-ptid_t (*deprecated_target_wait_hook) (ptid_t ptid,
-				       /* APPLE LOCAL target wait hook */
-				       struct target_waitstatus * status,
-				       gdb_client_data client_data);
+ptid_t (*deprecated_target_wait_hook)(ptid_t ptid,
+				      /* APPLE LOCAL target wait hook */
+				      struct target_waitstatus *status,
+				      gdb_client_data client_data);
 
 /* Used by UI as a wrapper around command execution.  May do various things
    like enabling/disabling buttons, etc...  */
 
-void (*deprecated_call_command_hook) (struct cmd_list_element * c, char *cmd,
-				      int from_tty);
+void (*deprecated_call_command_hook)(struct cmd_list_element *c, char *cmd,
+				     int from_tty);
 
 /* Called after a `set' command has finished.  Is only run if the
    `set' command succeeded.  */
 
-void (*deprecated_set_hook) (struct cmd_list_element * c);
+void (*deprecated_set_hook)(struct cmd_list_element * c);
 
 /* called in place of printing a source line */
 
-void (*print_source_lines_hook) (struct symtab * s, int line, int stopline);
+void (*print_source_lines_hook)(struct symtab * s, int line, int stopline);
 
 /* APPLE LOCAL: Called when the state of the debugger (i.e. gdb) changes */
 
-void (*state_change_hook) (Debugger_state new_state);
+void (*state_change_hook)(Debugger_state new_state);
 
 /* called when the frame changes (e.g. as the result of "up") */
 
-void (*frame_changed_hook) (int new_frame_number);
+void (*frame_changed_hook)(int new_frame_number);
 
 /* called when the stack changes (i.e. a new frame is added) */
 
-void (*stack_changed_hook) (void);
+void (*stack_changed_hook)(void);
 
 /* called when command line input is needed */
 
-char *(*command_line_input_hook) (char *, int, char *);
+char *(*command_line_input_hook)(char *, int, char *);
 
 /* Called when the current thread changes.  Argument is thread id.  */
 
-void (*deprecated_context_hook) (int id);
+void (*deprecated_context_hook)(int id);
 
-/* Takes control from error ().  Typically used to prevent longjmps out of the
+/* Takes control from error().  Typically used to prevent longjmps out of the
    middle of the GUI.  Usually used in conjunction with a catch routine.  */
 
-void (*deprecated_error_hook) (void);
+void (*deprecated_error_hook)(void);
 
 
 /* called when a stepping command (step, next, stepi, nexti) is issued */
-void (*stepping_command_hook) (void);
+void (*stepping_command_hook)(void);
 
 /* called when the continue command is issued */
-void (*continue_command_hook) (void);
+void (*continue_command_hook)(void);
 
 /* called when the run command is issued; return 1 means do the run; 0 means do not */
-int (*run_command_hook) (void);
+int (*run_command_hook)(void);
 
 /* called when we call a function by hand.  */
-void (*hand_call_function_hook) (void);
+void (*hand_call_function_hook)(void);
 
 /* Handler for SIGHUP.  */
 
@@ -368,11 +363,11 @@ void (*hand_call_function_hook) (void);
    gdb to use the event loop as the default command loop and we merge
    event-top.c into this file, top.c */
 /* static */ int
-quit_cover (void *s)
+quit_cover(void *s)
 {
-  caution = 0;			/* Throw caution to the wind -- we're exiting.
-				   This prevents asking the user dumb questions.  */
-  quit_command ((char *) 0, 0);
+  caution = 0;	/* Throw caution to the wind -- we're exiting.
+		   This prevents asking the user dumb questions.  */
+  quit_command((char *)0, 0);
   return 0;
 }
 #endif /* defined SIGHUP */
@@ -445,31 +440,40 @@ do_chdir_cleanup(void *old_dir)
  * to go with it: */
 extern void log_command(char *);
 
+/* FIXME: need to rename some struct fields that currently live in headers,
+ * and deal with all of the resulting fallout, before removing this: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* Execute the line P as a command.
  * Pass FROM_TTY as second argument to the defining function.  */
 void
-execute_command (char *p, int from_tty)
+execute_command(char *p, int from_tty)
 {
   struct cmd_list_element *c;
   enum language flang;
   static int warned = 0;
   char *tmp_line;
 
-  free_all_values ();
+  free_all_values();
   /* APPLE LOCAL begin subroutine inlining  */
   stepping_into_inlined_subroutine = 0;
   /* APPLE LOCAL end subroutine inlining  */
 
   /* Force cleanup of any alloca areas if using C alloca instead of
      a builtin alloca.  */
-  alloca (0);
+  alloca(0);
 
   /* This can happen when command_line_input hits end of file.  */
   if (p == NULL)
     return;
 
-  serial_log_command (p);
-  log_command (p);
+  serial_log_command(p);
+  log_command(p);
 
   while (*p == ' ' || *p == '\t')
     p++;
@@ -478,19 +482,19 @@ execute_command (char *p, int from_tty)
       char *arg;
       tmp_line = p;
 
-      c = lookup_cmd (&p, cmdlist, "", 0, 1);
+      c = lookup_cmd(&p, cmdlist, "", 0, 1);
 
       /* If the target is running, we allow only a limited set of
          commands. */
-      if (target_can_async_p () && target_executing)
-	if (strcmp (c->name, "help") != 0
-	    && strcmp (c->name, "pwd") != 0
-	    && strcmp (c->name, "show") != 0
-	    && strcmp (c->name, "stop") != 0)
-	  error (_("Cannot execute this command while the target is running."));
+      if (target_can_async_p() && target_executing)
+	if (strcmp(c->name, "help") != 0
+	    && strcmp(c->name, "pwd") != 0
+	    && strcmp(c->name, "show") != 0
+	    && strcmp(c->name, "stop") != 0)
+	  error(_("Cannot execute this command while the target is running."));
 
-      /* Pass null arg rather than an empty one.  */
-      arg = *p ? p : 0;
+      /* Pass null arg rather than an empty one: */
+      arg = (*p ? p : 0);
 
       /* FIXME: cagney/2002-02-02: The c->type test is pretty dodgy
          while the is_complete_command(cfunc) test is just plain
@@ -503,34 +507,34 @@ execute_command (char *p, int from_tty)
       /* Clear off trailing whitespace, except for set and complete
          command.  */
       if (arg
-	  && c->type != set_cmd
-	  && !is_complete_command (c))
+	  && (c->type != set_cmd)
+	  && !is_complete_command(c))
 	{
-	  p = arg + strlen (arg) - 1;
+	  p = (arg + strlen(arg) - 1);
 	  while (p >= arg && (*p == ' ' || *p == '\t'))
 	    p--;
 	  *(p + 1) = '\0';
 	}
 
       /* If this command has been pre-hooked, run the hook first. */
-      execute_cmd_pre_hook (c);
+      execute_cmd_pre_hook(c);
 
       if (c->flags & DEPRECATED_WARN_USER)
-	deprecated_cmd_warning (&tmp_line);
+	deprecated_cmd_warning(&tmp_line);
 
       if (c->class == class_user)
-	execute_user_command (c, arg);
+	execute_user_command(c, arg);
       else if (c->type == set_cmd || c->type == show_cmd)
-	do_setshow_command (arg, from_tty & caution, c);
-      else if (!cmd_func_p (c))
-	error (_("That is not a command, just a help topic."));
+	do_setshow_command(arg, from_tty & caution, c);
+      else if (!cmd_func_p(c))
+	error(_("That is not a command, just a help topic."));
       else if (deprecated_call_command_hook)
-	deprecated_call_command_hook (c, arg, from_tty & caution);
+	deprecated_call_command_hook(c, arg, from_tty & caution);
       else
-	cmd_func (c, arg, from_tty & caution);
+	cmd_func(c, arg, (from_tty & caution));
 
       /* If this command has been post-hooked, run the hook last. */
-      execute_cmd_post_hook (c);
+      execute_cmd_post_hook(c);
 
     }
 
@@ -539,7 +543,7 @@ execute_command (char *p, int from_tty)
     {
       if (language_mode == language_mode_auto)
 	{
-	  language_info (1);	/* Print what changed.  */
+	  language_info(1);	/* Print what changed.  */
 	}
       warned = 0;
     }
@@ -552,37 +556,44 @@ execute_command (char *p, int from_tty)
 
   if (target_has_stack)
     {
-      flang = get_frame_language ();
+      flang = get_frame_language();
       if (!warned
 	  && flang != language_unknown
 	  && flang != current_language->la_language)
 	{
-	  printf_filtered ("%s\n", lang_frame_mismatch_warn);
+	  printf_filtered("%s\n", lang_frame_mismatch_warn);
 	  warned = 1;
 	}
     }
 }
 
-/* Read commands from `instream' and execute them
-   until end of file or error reading instream.  */
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
+extern int display_time;
+extern int display_space;
+
+/* Read commands from `instream' and execute them until end of file,
+ * or error reading instream: */
 void
-command_loop (void)
+command_loop(void)
 {
   struct cleanup *old_chain;
   char *command;
-  int stdin_is_tty = ISATTY (stdin);
+  int stdin_is_tty = ISATTY(stdin);
   long time_at_cmd_start;
 #ifdef HAVE_SBRK
-  long space_at_cmd_start = 0;
-#endif
-  extern int display_time;
-  extern int display_space;
+  long space_at_cmd_start = 0L;
+#endif /* HAVE_SBRK */
 
-  while (instream && !feof (instream))
+  while (instream && !feof(instream))
     {
       if (window_hook && instream == stdin)
-	(*window_hook) (instream, get_prompt ());
+	(*window_hook)(instream, get_prompt());
 
       quit_flag = 0;
       if (instream == stdin && stdin_is_tty)
@@ -664,16 +675,15 @@ simplified_command_loop (char *(*read_input_func) (char *),
       (*execute_command_func) (command, instream == stdin);
 
       /* Do any commands attached to breakpoint we stopped at.  */
-      bpstat_do_actions (&stop_bpstat);
+      bpstat_do_actions(&stop_bpstat);
 
-      do_cleanups (old_chain);
+      do_cleanups(old_chain);
     }
 }
 
-/* Commands call this if they do not want to be repeated by null lines.  */
-
+/* Commands call this if they do not want to be repeated by null lines: */
 void
-dont_repeat (void)
+dont_repeat(void)
 {
   if (server_command)
     return;
@@ -797,56 +807,56 @@ The filename in which to record the command history is \"%s\".\n"),
    situation, we have to switch the hooks around.  That is what
    gdb_readline_wrapper is for.  */
 char *
-gdb_readline_wrapper (char *prompt)
+gdb_readline_wrapper(char *prompt)
 {
-  /* Set the hook that works in this case.  */
+  /* Set the hook that works in this case: */
   if (after_char_processing_hook)
     {
-      rl_pre_input_hook = (Function *) after_char_processing_hook;
+      rl_pre_input_hook = (Function *)after_char_processing_hook;
       after_char_processing_hook = NULL;
     }
 
-  return readline (prompt);
+  return readline(prompt);
 }
 
 
 #ifdef STOP_SIGNAL
 static void
-stop_sig (int signo)
+stop_sig(int signo)
 {
-#if STOP_SIGNAL == SIGTSTP
-  signal (SIGTSTP, SIG_DFL);
-#if HAVE_SIGPROCMASK
+#if (STOP_SIGNAL == SIGTSTP)
+  signal(SIGTSTP, SIG_DFL);
+# if HAVE_SIGPROCMASK
   {
     sigset_t zero;
 
-    sigemptyset (&zero);
-    sigprocmask (SIG_SETMASK, &zero, 0);
+    sigemptyset(&zero);
+    sigprocmask(SIG_SETMASK, &zero, 0);
   }
-#elif HAVE_SIGSETMASK
-  sigsetmask (0);
-#endif
-  kill (getpid (), SIGTSTP);
-  signal (SIGTSTP, stop_sig);
+# elif HAVE_SIGSETMASK
+  sigsetmask(0);
+# endif /* HAVE_SIGPROCMASK || HAVE_SIGSETMASK */
+  kill(getpid(), SIGTSTP);
+  signal(SIGTSTP, stop_sig);
 #else
-  signal (STOP_SIGNAL, stop_sig);
-#endif
-  printf_unfiltered ("%s", get_prompt ());
-  gdb_flush (gdb_stdout);
+  signal(STOP_SIGNAL, stop_sig);
+#endif /* STOP_SIGNAL == SIGTSTP */
+  printf_unfiltered("%s", get_prompt());
+  gdb_flush(gdb_stdout);
 
-  /* Forget about any previous command -- null line now will do nothing.  */
-  dont_repeat ();
+  /* Forget about any previous command -- null line now will do nothing: */
+  dont_repeat();
 }
 #endif /* STOP_SIGNAL */
 
 /* Initialize signal handlers. */
-static void
-float_handler (int signo)
+static void ATTR_NORETURN
+float_handler(int signo)
 {
   /* This message is based on ANSI C, section 4.7.  Note that integer
      divide by zero causes this, so "float" is a misnomer.  */
-  signal (SIGFPE, float_handler);
-  error (_("Erroneous arithmetic operation."));
+  signal(SIGFPE, float_handler);
+  error(_("Erroneous arithmetic operation."));
 }
 
 static void
@@ -888,14 +898,14 @@ gdb_rl_operate_and_get_next_completion (void)
    appear on the command line when the prompt returns.
    We ignore the arguments.  */
 static int
-gdb_rl_operate_and_get_next (int count, int key)
+gdb_rl_operate_and_get_next(int count, int key)
 {
   int where;
 
-  /* Use the async hook.  */
+  /* Use the async hook: */
   after_char_processing_hook = gdb_rl_operate_and_get_next_completion;
 
-  /* Find the current line, and find the next line to use.  */
+  /* Find the current line, and find the next line to use: */
   where = where_history();
 
   /* FIXME: kettenis/20020817: max_input_history is renamed into
@@ -903,13 +913,13 @@ gdb_rl_operate_and_get_next (int count, int key)
      import, we should probably change it here too, even though
      readline maintains backwards compatibility for now by still
      defining max_input_history.  */
-  if ((history_is_stifled () && (history_length >= max_input_history)) ||
-      (where >= history_length - 1))
+  if ((history_is_stifled() && (history_length >= (size_t)max_input_history))
+      || ((size_t)where >= (history_length - 1UL)))
     operate_saved_history = where;
   else
-    operate_saved_history = where + 1;
+    operate_saved_history = (where + 1);
 
-  return rl_newline (1, key);
+  return rl_newline(1, key);
 }
 
 /* Read one line from the command input stream `instream'
@@ -928,7 +938,7 @@ gdb_rl_operate_and_get_next (int count, int key)
    simple input as the user has requested.  */
 
 char *
-command_line_input (char *prompt_arg, int repeat, char *annotation_suffix)
+command_line_input(char *prompt_arg, int repeat, char *annotation_suffix)
 {
   static char *linebuffer = 0;
   static unsigned linelength = 0;
@@ -971,7 +981,7 @@ command_line_input (char *prompt_arg, int repeat, char *annotation_suffix)
   if (linebuffer == 0)
     {
       linelength = 80;
-      linebuffer = (char *) xmalloc (linelength);
+      linebuffer = (char *)xmalloc(linelength);
     }
 
   p = linebuffer;
@@ -981,58 +991,58 @@ command_line_input (char *prompt_arg, int repeat, char *annotation_suffix)
   immediate_quit++;
 #ifdef STOP_SIGNAL
   if (job_control)
-    signal (STOP_SIGNAL, handle_stop_sig);
-#endif
+    signal(STOP_SIGNAL, handle_stop_sig);
+#endif /* STOP_SIGNAL */
 
   while (1)
     {
       /* Make sure that all output has been output.  Some machines may let
          you get away with leaving out some of the gdb_flush, but not all.  */
-      wrap_here ("");
-      gdb_flush (gdb_stdout);
-      gdb_flush (gdb_stderr);
+      wrap_here("");
+      gdb_flush(gdb_stdout);
+      gdb_flush(gdb_stderr);
 
       if (source_file_name != NULL)
 	++source_line_number;
 
       if (annotation_level > 1 && instream == stdin)
 	{
-	  puts_unfiltered ("\n\032\032pre-");
-	  puts_unfiltered (annotation_suffix);
-	  puts_unfiltered ("\n");
+	  puts_unfiltered("\n\032\032pre-");
+	  puts_unfiltered(annotation_suffix);
+	  puts_unfiltered("\n");
 	}
 
       /* Don't use fancy stuff if not talking to stdin.  */
       if (deprecated_readline_hook && instream == NULL)
 	{
-	  rl = (*deprecated_readline_hook) (local_prompt);
+	  rl = (*deprecated_readline_hook)(local_prompt);
 	}
-      else if (command_editing_p && instream == stdin && ISATTY (instream))
+      else if (command_editing_p && instream == stdin && ISATTY(instream))
 	{
-	  rl = gdb_readline_wrapper (local_prompt);
+	  rl = gdb_readline_wrapper(local_prompt);
 	}
       else
 	{
-	  rl = gdb_readline (local_prompt);
+	  rl = gdb_readline(local_prompt);
 	}
 
       if (annotation_level > 1 && instream == stdin)
 	{
-	  puts_unfiltered ("\n\032\032post-");
-	  puts_unfiltered (annotation_suffix);
-	  puts_unfiltered ("\n");
+	  puts_unfiltered("\n\032\032post-");
+	  puts_unfiltered(annotation_suffix);
+	  puts_unfiltered("\n");
 	}
 
-      if (!rl || rl == (char *) EOF)
+      if (!rl || rl == (char *)EOF)
 	{
 	  got_eof = 1;
 	  break;
 	}
-      if (strlen (rl) + 1 + (p - linebuffer) > linelength)
+      if ((strlen(rl) + 1UL + (p - linebuffer)) > linelength)
 	{
-	  linelength = strlen (rl) + 1 + (p - linebuffer);
-	  nline = (char *) xrealloc (linebuffer, linelength);
-	  p += nline - linebuffer;
+	  linelength = (strlen(rl) + 1UL + (p - linebuffer));
+	  nline = (char *)xrealloc(linebuffer, linelength);
+	  p += (nline - linebuffer);
 	  linebuffer = nline;
 	}
       p1 = rl;
@@ -1041,9 +1051,9 @@ command_line_input (char *prompt_arg, int repeat, char *annotation_suffix)
       while (*p1)
 	*p++ = *p1++;
 
-      xfree (rl);		/* Allocated in readline.  */
+      xfree(rl);		/* Allocated in readline.  */
 
-      if (p == linebuffer || *(p - 1) != '\\')
+      if (p == linebuffer || (*(p - 1) != '\\'))
 	break;
 
       p--;			/* Put on top of '\'.  */
@@ -1069,37 +1079,37 @@ command_line_input (char *prompt_arg, int repeat, char *annotation_suffix)
          dont_repeat, this insures that repeating will still do the
          right thing.  */
       *p = '\0';
-      return linebuffer + SERVER_COMMAND_LENGTH;
+      return (linebuffer + SERVER_COMMAND_LENGTH);
     }
 
   /* Do history expansion if that is wished.  */
   if (history_expansion_p && instream == stdin
-      && ISATTY (instream))
+      && ISATTY(instream))
     {
       char *history_value;
       int expanded;
 
       *p = '\0';		/* Insert null now.  */
-      expanded = history_expand (linebuffer, &history_value);
+      expanded = history_expand(linebuffer, &history_value);
       if (expanded)
 	{
-	  /* Print the changes.  */
-	  printf_unfiltered ("%s\n", history_value);
+	  /* Print the changes: */
+	  printf_unfiltered("%s\n", history_value);
 
-	  /* If there was an error, call this function again.  */
+	  /* If there was an error, call this function again: */
 	  if (expanded < 0)
 	    {
-	      xfree (history_value);
-	      return command_line_input (prompt_arg, repeat, annotation_suffix);
+	      xfree(history_value);
+	      return command_line_input(prompt_arg, repeat, annotation_suffix);
 	    }
-	  if (strlen (history_value) > linelength)
+	  if (strlen(history_value) > linelength)
 	    {
-	      linelength = strlen (history_value) + 1;
-	      linebuffer = (char *) xrealloc (linebuffer, linelength);
+	      linelength = (strlen(history_value) + 1UL);
+	      linebuffer = (char *)xrealloc(linebuffer, linelength);
 	    }
-	  strcpy (linebuffer, history_value);
-	  p = linebuffer + strlen (linebuffer);
-	  xfree (history_value);
+	  strcpy(linebuffer, history_value);
+	  p = (linebuffer + strlen(linebuffer));
+	  xfree(history_value);
 	}
     }
 
@@ -1114,10 +1124,10 @@ command_line_input (char *prompt_arg, int repeat, char *annotation_suffix)
 
   *p = 0;
 
-  /* Add line to history if appropriate.  */
+  /* Add line to history if appropriate: */
   if (instream == stdin
-      && ISATTY (stdin) && *linebuffer)
-    add_history (linebuffer);
+      && ISATTY(stdin) && *linebuffer)
+    add_history(linebuffer);
 
   /* Note: lines consisting solely of comments are added to the command
      history.  This is useful when you type a command, and then
@@ -1136,7 +1146,7 @@ command_line_input (char *prompt_arg, int repeat, char *annotation_suffix)
 	  line = (char *)xrealloc(line, linelength);
 	  linesize = linelength;
 	}
-      strcpy (line, linebuffer);
+      strcpy(line, linebuffer);
       return line;
     }
 
@@ -1355,7 +1365,8 @@ show_commands (char *args, int from_tty)
 	;
       else
 	/* "info editing <exp>" should print around command number <exp>.  */
-	num = (parse_and_eval_long (args) - history_base) - Hist_print / 2;
+	num = (int)((parse_and_eval_long(args) - history_base)
+                    - (Hist_print / 2));
     }
   /* "show commands" means print the last Hist_print commands.  */
   else

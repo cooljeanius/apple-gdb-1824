@@ -47,7 +47,7 @@ internal happenings, gdb, Debugging with @var{GDBN}}).
 @value{GDBN} notifies all @code{normal_stop} observers when the
 inferior execution has just stopped, the associated messages and
 annotations have been printed, and the control is about to be returned
-to the user. 
+to the user.
 
 Note that the @code{normal_stop} notification is not emitted when
 the execution stops due to a breakpoint, and this breakpoint has
@@ -80,7 +80,7 @@ The inferior has stopped for real.
 @end deftypefun
 
 @deftypefun void target_changed (struct target_ops *@var{target})
-The target's register contents have changed.
+The contents of the target register have changed.
 @end deftypefun
 
 @deftypefun void executable_changed (void *@var{unused_args})
@@ -100,8 +100,8 @@ inferior, and before any information on the inferior has been printed.
 
 @deftypefun void solib_loaded (struct so_list *@var{solib})
 The shared library specified by @var{solib} has been loaded.  Note that
-when @value{GDBN} calls this observer, the library's symbols probably
-haven't been loaded yet.
+when @value{GDBN} calls this observer, the symbols of the library probably
+have NOT been loaded yet.
 @end deftypefun
 
 @deftypefun void solib_unloaded (struct so_list *@var{solib})

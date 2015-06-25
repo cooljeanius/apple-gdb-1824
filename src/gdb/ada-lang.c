@@ -1,8 +1,7 @@
-/* Ada language support routines for GDB, the GNU debugger.  Copyright
-
-   1992, 1993, 1994, 1997, 1998, 1999, 2000, 2003, 2004, 2005 Free
-   Software Foundation, Inc.
-
+/* ada-lang.c: Ada language support routines for GDB, the GNU debugger.
+ * Copyright 1992, 1993, 1994, 1997, 1998, 1999, 2000, 2003, 2004, 2005
+ * Free Software Foundation, Inc.  */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -46,24 +45,24 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "completer.h"
 #include "gdb_stat.h"
 #ifdef UI_OUT
-#include "ui-out.h"
-#endif
+# include "ui-out.h"
+#endif /* UI_OUT */
 #include "block.h"
 #include "infcall.h"
 #include "dictionary.h"
 #include "exceptions.h"
 
 #ifndef ADA_RETAIN_DOTS
-#define ADA_RETAIN_DOTS 0
-#endif
+# define ADA_RETAIN_DOTS 0
+#endif /* !ADA_RETAIN_DOTS */
 
 /* Define whether or not the C operator '/' truncates towards zero for
    differently signed operands (truncation direction is undefined in C).
    Copied from valarith.c.  */
 
 #ifndef TRUNCATION_TOWARDS_ZERO
-#define TRUNCATION_TOWARDS_ZERO ((-5 / 2) == -2)
-#endif
+# define TRUNCATION_TOWARDS_ZERO ((-5 / 2) == -2)
+#endif /* !TRUNCATION_TOWARDS_ZERO */
 
 
 static void extract_string (CORE_ADDR addr, char *buf);
@@ -300,7 +299,7 @@ static struct obstack symbol_list_obstack;
 
 
 static char *
-ada_get_gdb_completer_word_break_characters (void)
+ada_get_gdb_completer_word_break_characters(void)
 {
   return ada_completer_word_break_characters;
 }
@@ -671,28 +670,28 @@ ada_main_name (void)
    of NULLs.  */
 
 const struct ada_opname_map ada_opname_table[] = {
-  {"Oadd", "\"+\"", BINOP_ADD},
-  {"Osubtract", "\"-\"", BINOP_SUB},
-  {"Omultiply", "\"*\"", BINOP_MUL},
-  {"Odivide", "\"/\"", BINOP_DIV},
-  {"Omod", "\"mod\"", BINOP_MOD},
-  {"Orem", "\"rem\"", BINOP_REM},
-  {"Oexpon", "\"**\"", BINOP_EXP},
-  {"Olt", "\"<\"", BINOP_LESS},
-  {"Ole", "\"<=\"", BINOP_LEQ},
-  {"Ogt", "\">\"", BINOP_GTR},
-  {"Oge", "\">=\"", BINOP_GEQ},
-  {"Oeq", "\"=\"", BINOP_EQUAL},
-  {"One", "\"/=\"", BINOP_NOTEQUAL},
-  {"Oand", "\"and\"", BINOP_BITWISE_AND},
-  {"Oor", "\"or\"", BINOP_BITWISE_IOR},
-  {"Oxor", "\"xor\"", BINOP_BITWISE_XOR},
-  {"Oconcat", "\"&\"", BINOP_CONCAT},
-  {"Oabs", "\"abs\"", UNOP_ABS},
-  {"Onot", "\"not\"", UNOP_LOGICAL_NOT},
-  {"Oadd", "\"+\"", UNOP_PLUS},
-  {"Osubtract", "\"-\"", UNOP_NEG},
-  {NULL, NULL}
+  { "Oadd", "\"+\"", BINOP_ADD },
+  { "Osubtract", "\"-\"", BINOP_SUB },
+  { "Omultiply", "\"*\"", BINOP_MUL },
+  { "Odivide", "\"/\"", BINOP_DIV },
+  { "Omod", "\"mod\"", BINOP_MOD },
+  { "Orem", "\"rem\"", BINOP_REM },
+  { "Oexpon", "\"**\"", BINOP_EXP },
+  { "Olt", "\"<\"", BINOP_LESS },
+  { "Ole", "\"<=\"", BINOP_LEQ },
+  { "Ogt", "\">\"", BINOP_GTR },
+  { "Oge", "\">=\"", BINOP_GEQ },
+  { "Oeq", "\"=\"", BINOP_EQUAL },
+  { "One", "\"/=\"", BINOP_NOTEQUAL },
+  { "Oand", "\"and\"", BINOP_BITWISE_AND },
+  { "Oor", "\"or\"", BINOP_BITWISE_IOR },
+  { "Oxor", "\"xor\"", BINOP_BITWISE_XOR },
+  { "Oconcat", "\"&\"", BINOP_CONCAT },
+  { "Oabs", "\"abs\"", UNOP_ABS },
+  { "Onot", "\"not\"", UNOP_LOGICAL_NOT },
+  { "Oadd", "\"+\"", UNOP_PLUS },
+  { "Osubtract", "\"-\"", UNOP_NEG },
+  { NULL, NULL, OP_NULL }
 };
 
 /* Return non-zero if STR should be suppressed in info listings.  */
@@ -853,7 +852,7 @@ ada_decode(const char *encoded)
       i = (len0 - 2);
       while ((i > 0) && isdigit(encoded[i]))
         i--;
-      if ((i >= 0) && (encoded[i] == '.'))
+      if (((long)i >= 0L) && (encoded[i] == '.'))
         len0 = i;
       else if ((i >= 2) && (strncmp(encoded + i - 2, "___", 3) == 0))
         len0 = (i - 2);
@@ -885,7 +884,7 @@ ada_decode(const char *encoded)
   if ((len0 > 1) && isdigit(encoded[len0 - 1]))
     {
       i = (len0 - 2);
-      while (((i >= 0) && isdigit(encoded[i]))
+      while ((((long)i >= 0L) && isdigit(encoded[i]))
              || ((i >= 1) && (encoded[i] == '_') && isdigit(encoded[i - 1])))
         i -= 1;
       if ((i > 1) && (encoded[i] == '_') && (encoded[i - 1] == '_'))
@@ -1198,34 +1197,34 @@ desc_bounds_type (struct type *type)
    one, a pointer to its bounds data.   Otherwise NULL.  */
 
 static struct value *
-desc_bounds (struct value *arr)
+desc_bounds(struct value *arr)
 {
-  struct type *type = ada_check_typedef (value_type (arr));
-  if (is_thin_pntr (type))
+  struct type *type = ada_check_typedef(value_type(arr));
+  if (is_thin_pntr(type))
     {
       struct type *bounds_type =
-        desc_bounds_type (thin_descriptor_type (type));
+        desc_bounds_type(thin_descriptor_type(type));
       LONGEST addr;
 
-      if (desc_bounds_type == NULL)
-        error (_("Bad GNAT array descriptor"));
+      if (bounds_type == NULL)
+        error(_("Bad GNAT array descriptor"));
 
       /* NOTE: The following calculation is not really kosher, but
          since desc_type is an XVE-encoded type (and shouldn't be),
          the correct calculation is a real pain.  FIXME (and fix GCC).  */
-      if (TYPE_CODE (type) == TYPE_CODE_PTR)
-        addr = value_as_long (arr);
+      if (TYPE_CODE(type) == TYPE_CODE_PTR)
+        addr = value_as_long(arr);
       else
-        addr = VALUE_ADDRESS (arr) + value_offset (arr);
+        addr = (VALUE_ADDRESS(arr) + value_offset(arr));
 
       return
-        value_from_longest (lookup_pointer_type (bounds_type),
-                            addr - TYPE_LENGTH (bounds_type));
+        value_from_longest(lookup_pointer_type(bounds_type),
+                           (addr - TYPE_LENGTH(bounds_type)));
     }
 
-  else if (is_thick_pntr (type))
-    return value_struct_elt (&arr, NULL, "P_BOUNDS", NULL,
-                             _("Bad GNAT array descriptor"));
+  else if (is_thick_pntr(type))
+    return value_struct_elt(&arr, NULL, "P_BOUNDS", NULL,
+                            _("Bad GNAT array descriptor"));
   else
     return NULL;
 }
@@ -1892,30 +1891,30 @@ ada_value_primitive_packed_val (struct value *obj, const gdb_byte *valaddr,
       /* Mask for removing bits of the next source byte that are not
          part of the value.  */
       unsigned int unusedMSMask =
-        (1 << (srcBitsLeft >= HOST_CHAR_BIT ? HOST_CHAR_BIT : srcBitsLeft)) -
-        1;
-      /* Sign-extend bits for this byte.  */
-      unsigned int signMask = sign & ~unusedMSMask;
+        ((1U << ((srcBitsLeft >= HOST_CHAR_BIT)
+                 ? HOST_CHAR_BIT : srcBitsLeft)) - 1U);
+      /* Sign-extend bits for this byte: */
+      unsigned int signMask = (sign & ~unusedMSMask);
       accum |=
-        (((bytes[src] >> unusedLS) & unusedMSMask) | signMask) << accumSize;
-      accumSize += HOST_CHAR_BIT - unusedLS;
+        ((((bytes[src] >> unusedLS) & unusedMSMask) | signMask) << accumSize);
+      accumSize += (HOST_CHAR_BIT - unusedLS);
       if (accumSize >= HOST_CHAR_BIT)
         {
-          unpacked[targ] = accum & ~(~0L << HOST_CHAR_BIT);
+          unpacked[targ] = (accum & ~(~0L << HOST_CHAR_BIT));
           accumSize -= HOST_CHAR_BIT;
           accum >>= HOST_CHAR_BIT;
           ntarg -= 1;
           targ += delta;
         }
-      srcBitsLeft -= HOST_CHAR_BIT - unusedLS;
+      srcBitsLeft -= (HOST_CHAR_BIT - unusedLS);
       unusedLS = 0;
       nsrc -= 1;
       src += delta;
     }
   while (ntarg > 0)
     {
-      accum |= sign << accumSize;
-      unpacked[targ] = accum & ~(~0L << HOST_CHAR_BIT);
+      accum |= (sign << accumSize);
+      unpacked[targ] = (accum & ~(~0L << HOST_CHAR_BIT));
       accumSize -= HOST_CHAR_BIT;
       accum >>= HOST_CHAR_BIT;
       ntarg -= 1;
@@ -2423,7 +2422,8 @@ resolve_subexp (struct expression **expp, int *pos, int deprocedure_p,
   int pc = *pos;
   int i;
   struct expression *exp;       /* Convenience: == *expp.  */
-  enum exp_opcode op = (*expp)->elts[pc].opcode;
+  int opnum = (*expp)->elts[pc].opcode;
+  enum exp_opcode exp_opnum = (enum exp_opcode)opnum;
   struct value **argvec;        /* Vector of operand types (alloca'ed).  */
   int nargs;                    /* Number of operands.  */
 
@@ -2431,180 +2431,203 @@ resolve_subexp (struct expression **expp, int *pos, int deprocedure_p,
   nargs = 0;
   exp = *expp;
 
-  /* Pass one: resolve operands, saving their types and updating *pos.  */
-  switch (op)
+  /* need two separate switch statements because values could fall into
+   * one of two separate enums: */
+  if (opnum <= OP_EXTENDED0)
     {
-    case OP_FUNCALL:
-      if (exp->elts[pc + 3].opcode == OP_VAR_VALUE
-          && SYMBOL_DOMAIN (exp->elts[pc + 5].symbol) == UNDEF_DOMAIN)
-        *pos += 7;
-      else
+      enum exp_opcode op = (enum exp_opcode)opnum;
+      /* Pass 1: resolve operands, saving their types and updating *pos: */
+      switch (op)
         {
-          *pos += 3;
-          resolve_subexp (expp, pos, 0, NULL);
+          case OP_FUNCALL:
+            if ((exp->elts[pc + 3].opcode == OP_VAR_VALUE)
+                && SYMBOL_DOMAIN(exp->elts[pc + 5].symbol) == UNDEF_DOMAIN)
+              *pos += 7;
+            else
+              {
+                *pos += 3;
+                resolve_subexp(expp, pos, 0, NULL);
+              }
+            nargs = longest_to_int(exp->elts[pc + 1].longconst);
+            break;
+
+          case UNOP_ADDR:
+            *pos += 1;
+            resolve_subexp(expp, pos, 0, NULL);
+            break;
+
+          case BINOP_ASSIGN:
+            {
+              struct value *arg1;
+
+              *pos += 1;
+              arg1 = resolve_subexp(expp, pos, 0, NULL);
+              if (arg1 == NULL)
+                resolve_subexp(expp, pos, 1, NULL);
+              else
+                resolve_subexp(expp, pos, 1, value_type(arg1));
+              break;
+            }
+
+          case UNOP_CAST:
+            *pos += 3;
+            nargs = 1;
+            break;
+
+          case BINOP_ADD:
+          case BINOP_SUB:
+          case BINOP_MUL:
+          case BINOP_DIV:
+          case BINOP_REM:
+          case BINOP_MOD:
+          case BINOP_EXP:
+          case BINOP_CONCAT:
+          case BINOP_LOGICAL_AND:
+          case BINOP_LOGICAL_OR:
+          case BINOP_BITWISE_AND:
+          case BINOP_BITWISE_IOR:
+          case BINOP_BITWISE_XOR:
+
+          case BINOP_EQUAL:
+          case BINOP_NOTEQUAL:
+          case BINOP_LESS:
+          case BINOP_GTR:
+          case BINOP_LEQ:
+          case BINOP_GEQ:
+
+          case BINOP_REPEAT:
+          case BINOP_SUBSCRIPT:
+          case BINOP_COMMA:
+            *pos += 1;
+            nargs = 2;
+            break;
+
+          case UNOP_NEG:
+          case UNOP_PLUS:
+          case UNOP_LOGICAL_NOT:
+          case UNOP_ABS:
+          case UNOP_IND:
+            *pos += 1;
+            nargs = 1;
+            break;
+
+          case OP_LONG:
+          case OP_DOUBLE:
+          case OP_VAR_VALUE:
+            *pos += 4;
+            break;
+
+          case OP_TYPE:
+          case OP_BOOL:
+          case OP_LAST:
+          case OP_REGISTER:
+          case OP_INTERNALVAR:
+            *pos += 3;
+            break;
+
+          case UNOP_MEMVAL:
+            *pos += 3;
+            nargs = 1;
+            break;
+
+          case STRUCTOP_STRUCT:
+            *pos += 4 + BYTES_TO_EXP_ELEM(exp->elts[pc + 1].longconst + 1);
+            nargs = 1;
+            break;
+
+          case OP_STRING:
+            (*pos) += 3
+            + BYTES_TO_EXP_ELEM(longest_to_int(exp->elts[pc + 1].longconst)
+                                + 1);
+            break;
+
+          case TERNOP_SLICE:
+            *pos += 1;
+            nargs = 3;
+            break;
+
+          case BINOP_IN_BOUNDS:
+            *pos += 3;
+            nargs = 2;
+            break;
+
+          default:
+            error(_("Unexpected operator during name resolution"));
         }
-      nargs = longest_to_int (exp->elts[pc + 1].longconst);
-      break;
+    }
+  else if (opnum >= OP_EXTENDED0)
+    {
+      enum ada_operator op = (enum ada_operator)opnum;
+      switch (op)
+        {
+          case TERNOP_IN_RANGE: /* 98 */
+            *pos += 1;
+            nargs = 3;
+            break;
 
-    case UNOP_QUAL:
-      *pos += 3;
-      resolve_subexp (expp, pos, 1, exp->elts[pc + 1].type);
-      break;
+          case OP_ATR_MIN: /* 104 */
+          case OP_ATR_MAX: /* 103 */
+            *pos += 1;
+            nargs = 3;
+            break;
 
-    case UNOP_ADDR:
-      *pos += 1;
-      resolve_subexp (expp, pos, 0, NULL);
-      break;
+          case OP_ATR_MODULUS: /* 105 */
+            *pos += 4;
+            break;
 
-    case OP_ATR_MODULUS:
-      *pos += 4;
-      break;
+          case OP_ATR_SIZE: /* 107 */
+          case OP_ATR_TAG: /* 108 */
+            *pos += 1;
+            nargs = 1;
+            break;
 
-    case OP_ATR_SIZE:
-    case OP_ATR_TAG:
-      *pos += 1;
-      nargs = 1;
-      break;
+          case OP_ATR_FIRST: /* 99 */
+          case OP_ATR_LAST: /* 100 */
+          case OP_ATR_LENGTH: /* 101 */
+          case OP_ATR_POS: /* 106 */
+          case OP_ATR_VAL: /* 109 */
+            *pos += 1;
+            nargs = 2;
+            break;
 
-    case OP_ATR_FIRST:
-    case OP_ATR_LAST:
-    case OP_ATR_LENGTH:
-    case OP_ATR_POS:
-    case OP_ATR_VAL:
-      *pos += 1;
-      nargs = 2;
-      break;
+          case UNOP_QUAL: /* 110 */
+            *pos += 3;
+            resolve_subexp(expp, pos, 1, exp->elts[pc + 1].type);
+            break;
 
-    case OP_ATR_MIN:
-    case OP_ATR_MAX:
-      *pos += 1;
-      nargs = 3;
-      break;
+          case UNOP_IN_RANGE: /* 111 */
+            *pos += 3;
+            nargs = 1;
+            break;
 
-    case BINOP_ASSIGN:
-      {
-        struct value *arg1;
-
-        *pos += 1;
-        arg1 = resolve_subexp (expp, pos, 0, NULL);
-        if (arg1 == NULL)
-          resolve_subexp (expp, pos, 1, NULL);
-        else
-          resolve_subexp (expp, pos, 1, value_type (arg1));
-        break;
-      }
-
-    case UNOP_CAST:
-    case UNOP_IN_RANGE:
-      *pos += 3;
-      nargs = 1;
-      break;
-
-    case BINOP_ADD:
-    case BINOP_SUB:
-    case BINOP_MUL:
-    case BINOP_DIV:
-    case BINOP_REM:
-    case BINOP_MOD:
-    case BINOP_EXP:
-    case BINOP_CONCAT:
-    case BINOP_LOGICAL_AND:
-    case BINOP_LOGICAL_OR:
-    case BINOP_BITWISE_AND:
-    case BINOP_BITWISE_IOR:
-    case BINOP_BITWISE_XOR:
-
-    case BINOP_EQUAL:
-    case BINOP_NOTEQUAL:
-    case BINOP_LESS:
-    case BINOP_GTR:
-    case BINOP_LEQ:
-    case BINOP_GEQ:
-
-    case BINOP_REPEAT:
-    case BINOP_SUBSCRIPT:
-    case BINOP_COMMA:
-      *pos += 1;
-      nargs = 2;
-      break;
-
-    case UNOP_NEG:
-    case UNOP_PLUS:
-    case UNOP_LOGICAL_NOT:
-    case UNOP_ABS:
-    case UNOP_IND:
-      *pos += 1;
-      nargs = 1;
-      break;
-
-    case OP_LONG:
-    case OP_DOUBLE:
-    case OP_VAR_VALUE:
-      *pos += 4;
-      break;
-
-    case OP_TYPE:
-    case OP_BOOL:
-    case OP_LAST:
-    case OP_REGISTER:
-    case OP_INTERNALVAR:
-      *pos += 3;
-      break;
-
-    case UNOP_MEMVAL:
-      *pos += 3;
-      nargs = 1;
-      break;
-
-    case STRUCTOP_STRUCT:
-      *pos += 4 + BYTES_TO_EXP_ELEM (exp->elts[pc + 1].longconst + 1);
-      nargs = 1;
-      break;
-
-    case OP_STRING:
-      (*pos) += 3
-        + BYTES_TO_EXP_ELEM (longest_to_int (exp->elts[pc + 1].longconst)
-                             + 1);
-      break;
-
-    case TERNOP_SLICE:
-    case TERNOP_IN_RANGE:
-      *pos += 1;
-      nargs = 3;
-      break;
-
-    case BINOP_IN_BOUNDS:
-      *pos += 3;
-      nargs = 2;
-      break;
-
-    default:
-      error (_("Unexpected operator during name resolution"));
+          default:
+            error(_("Unexpected Ada operator during name resolution"));
+        }
     }
 
-  argvec = (struct value * *) alloca (sizeof (struct value *) * (nargs + 1));
+  argvec = (struct value **)alloca(sizeof(struct value *) * (nargs + 1));
   for (i = 0; i < nargs; i += 1)
-    argvec[i] = resolve_subexp (expp, pos, 1, NULL);
+    argvec[i] = resolve_subexp(expp, pos, 1, NULL);
   argvec[i] = NULL;
   exp = *expp;
 
-  /* Pass two: perform any resolution on principal operator.  */
-  switch (op)
+  /* Pass two: perform any resolution on principal operator: */
+  switch (exp_opnum)
     {
     default:
       break;
 
     case OP_VAR_VALUE:
-      if (SYMBOL_DOMAIN (exp->elts[pc + 2].symbol) == UNDEF_DOMAIN)
+      if (SYMBOL_DOMAIN(exp->elts[pc + 2].symbol) == UNDEF_DOMAIN)
         {
           struct ada_symbol_info *candidates;
           int n_candidates;
 
           n_candidates =
-            ada_lookup_symbol_list (SYMBOL_LINKAGE_NAME
-                                    (exp->elts[pc + 2].symbol),
-                                    exp->elts[pc + 1].block, VAR_DOMAIN,
-                                    &candidates);
+            ada_lookup_symbol_list(SYMBOL_LINKAGE_NAME
+                                   (exp->elts[pc + 2].symbol),
+                                   exp->elts[pc + 1].block, VAR_DOMAIN,
+                                   &candidates);
 
           if (n_candidates > 1)
             {
@@ -2613,7 +2636,7 @@ resolve_subexp (struct expression **expp, int *pos, int deprocedure_p,
                  out all types.  */
               int j;
               for (j = 0; j < n_candidates; j += 1)
-                switch (SYMBOL_CLASS (candidates[j].sym))
+                switch (SYMBOL_CLASS(candidates[j].sym))
                   {
                   case LOC_REGISTER:
                   case LOC_ARG:
@@ -2745,22 +2768,23 @@ resolve_subexp (struct expression **expp, int *pos, int deprocedure_p,
     case UNOP_PLUS:
     case UNOP_LOGICAL_NOT:
     case UNOP_ABS:
-      if (possible_user_operator_p (op, argvec))
+      if (possible_user_operator_p(exp_opnum, argvec))
         {
           struct ada_symbol_info *candidates;
           int n_candidates;
 
           n_candidates =
-            ada_lookup_symbol_list (ada_encode (ada_decoded_op_name (op)),
-                                    (struct block *) NULL, VAR_DOMAIN,
-                                    &candidates);
-          i = ada_resolve_function (candidates, n_candidates, argvec, nargs,
-                                    ada_decoded_op_name (op), NULL);
+            ada_lookup_symbol_list(ada_encode(ada_decoded_op_name(exp_opnum)),
+                                   (struct block *)NULL, VAR_DOMAIN,
+                                   &candidates);
+          i = ada_resolve_function(candidates, n_candidates, argvec, nargs,
+                                   ada_decoded_op_name(exp_opnum), NULL);
           if (i < 0)
             break;
 
-          replace_operator_with_call (expp, pc, nargs, 1,
-                                      candidates[i].sym, candidates[i].block);
+          replace_operator_with_call(expp, pc, nargs, 1,
+                                     candidates[i].sym,
+                                     candidates[i].block);
           exp = *expp;
         }
       break;
@@ -2770,7 +2794,7 @@ resolve_subexp (struct expression **expp, int *pos, int deprocedure_p,
     }
 
   *pos = pc;
-  return evaluate_subexp_type (exp, pos);
+  return evaluate_subexp_type(exp, pos);
 }
 
 /* Return non-zero if formal type FTYPE matches actual type ATYPE.  If
@@ -6746,22 +6770,22 @@ value_pos_atr (struct value *arg)
 /* Evaluate the TYPE'VAL attribute applied to ARG.  */
 
 static struct value *
-value_val_atr (struct type *type, struct value *arg)
+value_val_atr(struct type *type, struct value *arg)
 {
-  if (!discrete_type_p (type))
-    error (_("'VAL only defined on discrete types"));
-  if (!integer_type_p (value_type (arg)))
-    error (_("'VAL requires integral argument"));
+  if (!discrete_type_p(type))
+    error(_("'VAL only defined on discrete types"));
+  if (!integer_type_p(value_type(arg)))
+    error(_("'VAL requires integral argument"));
 
-  if (TYPE_CODE (type) == TYPE_CODE_ENUM)
+  if (TYPE_CODE(type) == TYPE_CODE_ENUM)
     {
-      long pos = value_as_long (arg);
-      if (pos < 0 || pos >= TYPE_NFIELDS (type))
-        error (_("argument to 'VAL out of range"));
-      return value_from_longest (type, TYPE_FIELD_BITPOS (type, pos));
+      long pos = (long)value_as_long(arg);
+      if ((pos < 0L) || (pos >= TYPE_NFIELDS(type)))
+        error(_("argument to 'VAL out of range"));
+      return value_from_longest(type, TYPE_FIELD_BITPOS(type, pos));
     }
   else
-    return value_from_longest (type, value_as_long (arg));
+    return value_from_longest(type, value_as_long(arg));
 }
 
 
@@ -7476,7 +7500,8 @@ ada_evaluate_subexp(struct type *expect_type, struct expression *exp,
 
           if ((noside == EVAL_AVOID_SIDE_EFFECTS)
               && ada_is_array_descriptor_type(ada_check_typedef(value_type(array))))
-            return empty_array(ada_type_of_array(array, 0), low_bound);
+            return empty_array(ada_type_of_array(array, 0),
+                               (int)low_bound);
 
           array = ada_coerce_to_simple_array_ptr(array);
 
@@ -7498,7 +7523,7 @@ ada_evaluate_subexp(struct type *expect_type, struct expression *exp,
             {
               if ((high_bound < low_bound) || (noside == EVAL_AVOID_SIDE_EFFECTS))
                 return empty_array(TYPE_TARGET_TYPE(value_type(array)),
-                                   low_bound);
+                                   (int)low_bound);
               else
                 {
                   struct type *arr_type0 =
@@ -7512,7 +7537,7 @@ ada_evaluate_subexp(struct type *expect_type, struct expression *exp,
           else if (noside == EVAL_AVOID_SIDE_EFFECTS)
             return array;
           else if (high_bound < low_bound)
-            return empty_array(value_type(array), low_bound);
+            return empty_array(value_type(array), (int)low_bound);
           else
             return ada_value_slice(array, (int)low_bound, (int)high_bound);
         }
@@ -8253,7 +8278,8 @@ to_fixed_range_type(char *name, struct value *dval, struct objfile *objfile)
 
       if (objfile == NULL)
         objfile = TYPE_OBJFILE(base_type);
-      type = create_range_type(alloc_type(objfile), base_type, L, U);
+      type = create_range_type(alloc_type(objfile), base_type,
+                               (int)L, (int)U);
       TYPE_NAME(type) = name;
       return type;
     }

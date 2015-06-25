@@ -493,32 +493,36 @@ find_linenos (bfd *abfd, struct bfd_section *asect, void *vpinfo)
 
 static bfd *symfile_bfd;
 
-/* Read a symbol file, after initialization by coff_symfile_init.  */
-
+/* Read a symbol file, after initialization by coff_symfile_init: */
 static void
-coff_symfile_read (struct objfile *objfile, int mainline)
+coff_symfile_read(struct objfile *objfile, int mainline)
 {
   struct coff_symfile_info *info;
   struct dbx_symfile_info *dbxinfo;
   bfd *abfd = objfile->obfd;
-  coff_data_type *cdata = coff_data (abfd);
-  char *name = bfd_get_filename (abfd);
+  coff_data_type *cdata = coff_data(abfd);
+  char *name = bfd_get_filename(abfd);
   int val;
   unsigned int num_symbols;
-  int symtab_offset;
-  int stringtab_offset;
+  off_t symtab_offset;
+  off_t stringtab_offset;
   struct cleanup *back_to, *cleanup_minimal_symbols;
-  int stabstrsize;
+  bfd_size_type stabstrsize;
 
-  info = (struct coff_symfile_info *) objfile->deprecated_sym_private;
+  info = (struct coff_symfile_info *)objfile->deprecated_sym_private;
   dbxinfo = objfile->deprecated_sym_stab_info;
+
+  if (dbxinfo == (struct dbx_symfile_info *)NULL) {
+    ; /* ??? */
+  }
+
   symfile_bfd = abfd;		/* Kludge for swap routines */
 
 /* WARNING WILL ROBINSON!  ACCESSING BFD-PRIVATE DATA HERE!  FIXME!  */
-  num_symbols = bfd_get_symcount (abfd);	/* How many syms */
+  num_symbols = bfd_get_symcount(abfd);	/* How many syms */
   symtab_offset = cdata->sym_filepos;	/* Symbol table file offset */
-  stringtab_offset = symtab_offset +	/* String table file offset */
-    num_symbols * cdata->local_symesz;
+  stringtab_offset = (symtab_offset	/* String table file offset */
+                      + (num_symbols * cdata->local_symesz));
 
   /* Set a few file-statics that give us specific information about
      the particular COFF file format we're reading.  */
@@ -532,10 +536,9 @@ coff_symfile_read (struct objfile *objfile, int mainline)
 
   /* Allocate space for raw symbol and aux entries, based on their
      space requirements as reported by BFD.  */
-  temp_sym = (char *) xmalloc
-    (cdata->local_symesz + cdata->local_auxesz);
-  temp_aux = temp_sym + cdata->local_symesz;
-  back_to = make_cleanup (free_current_contents, &temp_sym);
+  temp_sym = (char *)xmalloc(cdata->local_symesz + cdata->local_auxesz);
+  temp_aux = (temp_sym + cdata->local_symesz);
+  back_to = make_cleanup(free_current_contents, &temp_sym);
 
   /* We need to know whether this is a PE file, because in PE files,
      unlike standard COFF files, symbol values are stored as offsets
@@ -543,8 +546,8 @@ coff_symfile_read (struct objfile *objfile, int mainline)
      FIXME: We should use BFD to read the symbol table, and thus avoid
      this problem.  */
   pe_file =
-    strncmp (bfd_get_target (objfile->obfd), "pe", 2) == 0
-    || strncmp (bfd_get_target (objfile->obfd), "epoc-pe", 7) == 0;
+    (strncmp(bfd_get_target(objfile->obfd), "pe", 2) == 0
+     || strncmp(bfd_get_target(objfile->obfd), "epoc-pe", 7) == 0);
 
 /* End of warning */
 
@@ -567,80 +570,79 @@ coff_symfile_read (struct objfile *objfile, int mainline)
      symbols.  */
   if (num_symbols > 0)
     {
-      /* Read the line number table, all at once.  */
-      bfd_map_over_sections (abfd, find_linenos, (void *) info);
+      /* Read the line number table, all at once: */
+      bfd_map_over_sections(abfd, find_linenos, (void *)info);
 
-      make_cleanup (free_linetab_cleanup, 0 /*ignore*/);
-      val = init_lineno (abfd, info->min_lineno_offset,
-                         info->max_lineno_offset - info->min_lineno_offset);
+      make_cleanup(free_linetab_cleanup, 0 /*ignore*/);
+      val = init_lineno(abfd, (long)info->min_lineno_offset,
+                        (int)(info->max_lineno_offset
+                              - info->min_lineno_offset));
       if (val < 0)
-        error (_("\"%s\": error reading line numbers."), name);
+        error(_("\"%s\": error reading line numbers."), name);
     }
 
-  /* Now read the string table, all at once.  */
-
-  make_cleanup (free_stringtab_cleanup, 0 /*ignore*/);
-  val = init_stringtab (abfd, stringtab_offset);
+  /* Now read the string table, all at once: */
+  make_cleanup(free_stringtab_cleanup, 0 /*ignore*/);
+  val = init_stringtab(abfd, (long)stringtab_offset);
   if (val < 0)
-    error (_("\"%s\": can't get string table"), name);
+    error(_("\"%s\": cannot get string table"), name);
 
-  init_minimal_symbol_collection ();
-  cleanup_minimal_symbols = make_cleanup_discard_minimal_symbols ();
+  init_minimal_symbol_collection();
+  cleanup_minimal_symbols = make_cleanup_discard_minimal_symbols();
 
   /* Now that the executable file is positioned at symbol table,
      process it and define symbols accordingly.  */
 
-  coff_symtab_read ((long) symtab_offset, num_symbols, objfile);
+  coff_symtab_read((long)symtab_offset, num_symbols, objfile);
 
   /* Install any minimal symbols that have been collected as the current
      minimal symbols for this objfile.  */
 
-  install_minimal_symbols (objfile);
+  install_minimal_symbols(objfile);
 
-  /* Free the installed minimal symbol data.  */
-  do_cleanups (cleanup_minimal_symbols);
+  /* Free the installed minimal symbol data: */
+  do_cleanups(cleanup_minimal_symbols);
 
   /* If we are reinitializing, or if we have not loaded syms yet,
      empty the psymtab.  "mainline" is cleared so the *_read_psymtab
      functions do not all re-initialize it.  */
   if (mainline)
     {
-      init_psymbol_list (objfile, 0);
+      init_psymbol_list(objfile, 0);
       mainline = 0;
     }
 
-  bfd_map_over_sections (abfd, coff_locate_sections, (void *) info);
+  bfd_map_over_sections(abfd, coff_locate_sections, (void *)info);
 
   if (info->stabsects)
     {
       if (!info->stabstrsect)
 	{
-	  error (_("The debugging information in `%s' is corrupted.\n"
-		   "The file has a `.stabs' section, but no `.stabstr' section."),
-		 name);
+	  error(_("The debugging information in `%s' is corrupted.\n"
+                  "The file has a `.stabs' section, but no `.stabstr' section."),
+                name);
 	}
 
-      /* FIXME: dubious.  Why can't we use something normal like
+      /* FIXME: dubious.  Why can we not use something normal like
          bfd_get_section_contents?  */
-      bfd_seek (abfd, abfd->where, 0);
+      bfd_seek(abfd, abfd->where, 0);
 
-      stabstrsize = bfd_section_size (abfd, info->stabstrsect);
+      stabstrsize = bfd_section_size(abfd, info->stabstrsect);
 
-      coffstab_build_psymtabs (objfile,
-			       mainline,
-			       info->textaddr, info->textsize,
-			       info->stabsects,
-			       info->stabstrsect->filepos, stabstrsize);
+      coffstab_build_psymtabs(objfile, mainline, info->textaddr,
+                              info->textsize, info->stabsects,
+                              info->stabstrsect->filepos,
+                              (unsigned int)stabstrsize);
     }
-  if (dwarf2_has_info (objfile))
+  if (dwarf2_has_info(objfile))
     {
-      /* DWARF2 sections.  */
-      dwarf2_build_psymtabs (objfile, mainline);
+      /* DWARF2 sections: */
+      dwarf2_build_psymtabs(objfile, mainline);
     }
 
-  dwarf2_build_frame_info (objfile);
+  dwarf2_build_frame_info(objfile);
 
-  do_cleanups (back_to);
+  do_cleanups(back_to);
 }
 
 static void
@@ -691,10 +693,10 @@ coff_symtab_read(long symtab_offset, unsigned int nsyms,
   char *filestring = "";
   int depth = 0;
   int fcn_first_line = 0;
-  CORE_ADDR fcn_first_line_addr = 0;
+  CORE_ADDR fcn_first_line_addr = 0UL;
   int fcn_last_line = 0;
-  int fcn_start_addr = 0;
-  long fcn_line_ptr = 0;
+  CORE_ADDR fcn_start_addr = 0UL;
+  long fcn_line_ptr = 0L;
   int val;
   CORE_ADDR tmpaddr;
 
@@ -763,7 +765,7 @@ coff_symtab_read(long symtab_offset, unsigned int nsyms,
 	  tmpaddr = (cs->c_value + objfile_text_section_offset(objfile));
 	  record_minimal_symbol(cs->c_name, tmpaddr, mst_text, objfile);
 
-	  fcn_line_ptr = main_aux.x_sym.x_fcnary.x_fcn.x_lnnoptr;
+	  fcn_line_ptr = (long)main_aux.x_sym.x_fcnary.x_fcn.x_lnnoptr;
 	  fcn_start_addr = tmpaddr;
 	  fcn_cs_saved = *cs;
 	  fcn_sym_saved = main_sym;
@@ -924,17 +926,18 @@ coff_symtab_read(long symtab_offset, unsigned int nsyms,
 	    if (cs->c_name[0] != '@' /* Skip tdesc symbols */ )
 	      {
 		struct minimal_symbol *msym;
-		msym = prim_record_minimal_symbol_and_info
-		  (cs->c_name, tmpaddr, ms_type, NULL,
-		   sec, NULL, objfile);
+		msym =
+                  prim_record_minimal_symbol_and_info(cs->c_name, tmpaddr,
+                                                      ms_type, NULL, sec,
+                                                      NULL, objfile);
 		if (msym)
-		  COFF_MAKE_MSYMBOL_SPECIAL (cs->c_sclass, msym);
+		  COFF_MAKE_MSYMBOL_SPECIAL(cs->c_sclass, msym);
 	      }
-	    if (SDB_TYPE (cs->c_type))
+	    if (SDB_TYPE(cs->c_type))
 	      {
 		struct symbol *sym;
 		sym = process_coff_symbol(cs, &main_aux, objfile);
-		SYMBOL_VALUE(sym) = tmpaddr;
+		SYMBOL_VALUE(sym) = (int)tmpaddr;
 		SYMBOL_SECTION(sym) = sec;
 	      }
 	  }
@@ -1116,40 +1119,39 @@ coff_symtab_read(long symtab_offset, unsigned int nsyms,
    in internal_auxent form, and skip any other auxents.  */
 
 static void
-read_one_sym (struct coff_symbol *cs,
-	      struct internal_syment *sym,
-	      union internal_auxent *aux)
+read_one_sym(struct coff_symbol *cs, struct internal_syment *sym,
+	     union internal_auxent *aux)
 {
   int i;
 
   cs->c_symnum = symnum;
-  bfd_bread (temp_sym, local_symesz, nlist_bfd_global);
-  bfd_coff_swap_sym_in (symfile_bfd, temp_sym, (char *) sym);
+  bfd_bread(temp_sym, local_symesz, nlist_bfd_global);
+  bfd_coff_swap_sym_in(symfile_bfd, temp_sym, (char *)sym);
   cs->c_naux = sym->n_numaux & 0xff;
   if (cs->c_naux >= 1)
     {
-      bfd_bread (temp_aux, local_auxesz, nlist_bfd_global);
-      bfd_coff_swap_aux_in (symfile_bfd, temp_aux, sym->n_type, sym->n_sclass,
-			    0, cs->c_naux, (char *) aux);
+      bfd_bread(temp_aux, local_auxesz, nlist_bfd_global);
+      bfd_coff_swap_aux_in(symfile_bfd, temp_aux, sym->n_type,
+                           sym->n_sclass, 0, cs->c_naux, (char *)aux);
       /* If more than one aux entry, read past it (only the first aux
          is important). */
       for (i = 1; i < cs->c_naux; i++)
-	bfd_bread (temp_aux, local_auxesz, nlist_bfd_global);
+	bfd_bread(temp_aux, local_auxesz, nlist_bfd_global);
     }
-  cs->c_name = getsymname (sym);
-  cs->c_value = sym->n_value;
+  cs->c_name = getsymname(sym);
+  cs->c_value = (long)sym->n_value;
   cs->c_sclass = (sym->n_sclass & 0xff);
   cs->c_secnum = sym->n_scnum;
-  cs->c_type = (unsigned) sym->n_type;
-  if (!SDB_TYPE (cs->c_type))
+  cs->c_type = (unsigned int)sym->n_type;
+  if (!SDB_TYPE(cs->c_type))
     cs->c_type = 0;
 
-#if 0
+#if (defined(DEBUG) || defined(_DEBUG)) && (defined(TARGET_ARM) || defined(TARGET_THUMB))
   if (cs->c_sclass & 128)
-    printf (_("thumb symbol %s, class 0x%x\n"), cs->c_name, cs->c_sclass);
-#endif
+    printf(_("thumb symbol %s, class 0x%x\n"), cs->c_name, cs->c_sclass);
+#endif /* (DEBUG || _DEBUG) && (TARGET_ARM || TARGET_THUMB) */
 
-  symnum += 1 + cs->c_naux;
+  symnum += (1 + cs->c_naux);
 
   /* The PE file format stores symbol values as offsets within the
      section, rather than as absolute addresses.  We correct that
@@ -1174,7 +1176,7 @@ read_one_sym (struct coff_symbol *cs,
 	case C_FCN:
 	case C_EFCN:
 	  if (cs->c_secnum != 0)
-	    cs->c_value += cs_section_address (cs, symfile_bfd);
+	    cs->c_value += cs_section_address(cs, symfile_bfd);
 	  break;
 	}
     }
@@ -1201,7 +1203,7 @@ init_stringtab(bfd *abfd, long offset)
     return -1;
 
   val = bfd_bread((char *)lengthbuf, sizeof(lengthbuf), abfd);
-  length = bfd_h_get_32(symfile_bfd, lengthbuf);
+  length = (size_t)bfd_h_get_32(symfile_bfd, lengthbuf);
 
   /* If no string table is needed, then the file may end immediately
      after the symbols.  Just return with `stringtab' set to null. */
@@ -1298,51 +1300,51 @@ static unsigned long linetab_size;
    them into GDB's data structures.  */
 
 static int
-init_lineno (bfd *abfd, long offset, int size)
+init_lineno(bfd *abfd, long offset, int size)
 {
-  int val;
+  long val;
 
   linetab_offset = offset;
   linetab_size = size;
 
-  free_linetab ();
+  free_linetab();
 
   if (size == 0)
     return 0;
 
-  if (bfd_seek (abfd, offset, 0) < 0)
+  if (bfd_seek(abfd, offset, 0) < 0)
     return -1;
 
-  /* Allocate the desired table, plus a sentinel */
-  linetab = (char *) xmalloc (size + local_linesz);
+  /* Allocate the desired table, plus a sentinel: */
+  linetab = (char *)xmalloc(size + local_linesz);
 
-  val = bfd_bread (linetab, size, abfd);
+  val = (long)bfd_bread(linetab, size, abfd);
   if (val != size)
     return -1;
 
-  /* Terminate it with an all-zero sentinel record */
-  memset (linetab + size, 0, local_linesz);
+  /* Terminate it with an all-zero sentinel record: */
+  memset((linetab + size), 0, local_linesz);
 
   return 0;
 }
 
 static void
-free_linetab (void)
+free_linetab(void)
 {
   if (linetab)
-    xfree (linetab);
+    xfree(linetab);
   linetab = NULL;
 }
 
 static void
-free_linetab_cleanup (void *ignore)
+free_linetab_cleanup(void *ignore ATTRIBUTE_UNUSED)
 {
-  free_linetab ();
+  free_linetab();
 }
 
-#if !defined (L_LNNO32)
-#define L_LNNO32(lp) ((lp)->l_lnno)
-#endif
+#if !defined(L_LNNO32)
+# define L_LNNO32(lp) ((lp)->l_lnno)
+#endif /* !L_LNNO32 */
 
 static void
 enter_linenos(long file_offset, int first_line,

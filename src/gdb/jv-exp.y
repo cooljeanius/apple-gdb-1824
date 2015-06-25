@@ -302,7 +302,7 @@ ReferenceType:
 
 ClassOrInterfaceType:
 	Name
-		{ $$ = java_type_from_name ($1); }
+		{ $$ = java_type_from_name($1); }
 ;
 
 ClassType:
@@ -311,9 +311,9 @@ ClassType:
 
 ArrayType:
 	PrimitiveType Dims
-		{ $$ = java_array_type ($1, $2); }
+		{ $$ = java_array_type($1, (int)$2); }
 |	Name Dims
-		{ $$ = java_array_type (java_type_from_name ($1), $2); }
+		{ $$ = java_array_type(java_type_from_name($1), (int)$2); }
 ;
 
 Name:
@@ -391,8 +391,8 @@ rcurly:
 
 ClassInstanceCreationExpression:
 	NEW ClassType '(' ArgumentList_opt ')'
-		{ internal_error (__FILE__, __LINE__,
-				  _("FIXME - ClassInstanceCreationExpression")); }
+		{ internal_error(__FILE__, __LINE__,
+				 _("FIXME - ClassInstanceCreationExpression")); }
 ;
 
 ArgumentList:
@@ -410,11 +410,11 @@ ArgumentList_opt:
 
 ArrayCreationExpression:
 	NEW PrimitiveType DimExprs Dims_opt
-		{ internal_error (__FILE__, __LINE__,
-				  _("FIXME - ArrayCreationExpression")); }
+		{ internal_error(__FILE__, __LINE__,
+				 _("FIXME - ArrayCreationExpression")); }
 |	NEW ClassOrInterfaceType DimExprs Dims_opt
-		{ internal_error (__FILE__, __LINE__,
-				  _("FIXME - ArrayCreationExpression")); }
+		{ internal_error(__FILE__, __LINE__,
+				 _("FIXME - ArrayCreationExpression")); }
 ;
 
 DimExprs:
@@ -444,7 +444,9 @@ FieldAccess:
 		{ push_fieldnames ($3); }
 |	VARIABLE '.' SimpleName
 		{ push_fieldnames ($3); }
-/*|	SUPER '.' SimpleName { FIXME } */
+|	SUPER '.' SimpleName
+                { internal_error(__FILE__, __LINE__,
+                                 _("FIXME - ???")); }
 ;
 
 FuncStart:
@@ -541,33 +543,33 @@ UnaryExpressionNotPlusMinus:
 
 CastExpression:
 	'(' PrimitiveType Dims_opt ')' UnaryExpression
-		{ write_exp_elt_opcode (UNOP_CAST);
-		  write_exp_elt_type (java_array_type ($2, $3));
-		  write_exp_elt_opcode (UNOP_CAST); }
+		{ write_exp_elt_opcode(UNOP_CAST);
+		  write_exp_elt_type(java_array_type($2, (int)$3));
+		  write_exp_elt_opcode(UNOP_CAST); }
 |	'(' Expression ')' UnaryExpressionNotPlusMinus
 		{
 		  int last_exp_size = length_of_subexp(expout, expout_ptr);
 		  struct type *type;
 		  int i;
-		  int base = expout_ptr - last_exp_size - 3;
+		  int base = (expout_ptr - last_exp_size - 3);
 		  if (base < 0 || expout->elts[base+2].opcode != OP_TYPE)
 		    error (_("Invalid cast expression"));
-		  type = expout->elts[base+1].type;
+		  type = expout->elts[base + 1].type;
 		  /* Remove the 'Expression' and slide the
 		     UnaryExpressionNotPlusMinus down to replace it. */
-		  for (i = 0;  i < last_exp_size;  i++)
+		  for (i = 0; i < last_exp_size;  i++)
 		    expout->elts[base + i] = expout->elts[base + i + 3];
 		  expout_ptr -= 3;
-		  if (TYPE_CODE (type) == TYPE_CODE_STRUCT)
-		    type = lookup_pointer_type (type);
-		  write_exp_elt_opcode (UNOP_CAST);
-		  write_exp_elt_type (type);
-		  write_exp_elt_opcode (UNOP_CAST);
+		  if (TYPE_CODE(type) == TYPE_CODE_STRUCT)
+		    type = lookup_pointer_type(type);
+		  write_exp_elt_opcode(UNOP_CAST);
+		  write_exp_elt_type(type);
+		  write_exp_elt_opcode(UNOP_CAST);
 		}
 |	'(' Name Dims ')' UnaryExpressionNotPlusMinus
-		{ write_exp_elt_opcode (UNOP_CAST);
-		  write_exp_elt_type (java_array_type (java_type_from_name ($2), $3));
-		  write_exp_elt_opcode (UNOP_CAST); }
+		{ write_exp_elt_opcode(UNOP_CAST);
+		  write_exp_elt_type(java_array_type(java_type_from_name($2), (int)$3));
+		  write_exp_elt_opcode(UNOP_CAST); }
 ;
 
 

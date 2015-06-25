@@ -820,7 +820,7 @@ AC_REQUIRE([AC_PROG_SED])
 # NOTE: If you add to this list, remember to update
 # gdb/doc/gdbint.texinfo.
 build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
--Wformat -Wparentheses -Wpointer-arith"
+-Wformat -Wparentheses -Wpointer-arith -Wmisleading-indentation"
 # GCC supports -Wuninitialized only with -O or -On, n != 0.
 if test x${CFLAGS+set} = xset; then
   case "${CFLAGS}" in

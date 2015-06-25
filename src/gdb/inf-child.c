@@ -68,18 +68,19 @@ inf_child_post_attach (int pid)
    program being debugged.  */
 
 static void
-inf_child_prepare_to_store (void)
+inf_child_prepare_to_store(void)
 {
+  return;
+}
+
+static void ATTR_NORETURN
+inf_child_open(char *arg, int from_tty)
+{
+  error(_("Use the \"run\" command to start a Unix child process."));
 }
 
 static void
-inf_child_open (char *arg, int from_tty)
-{
-  error (_("Use the \"run\" command to start a Unix child process."));
-}
-
-static void
-inf_child_post_startup_inferior (ptid_t ptid)
+inf_child_post_startup_inferior(ptid_t ptid)
 {
   /* This version of Unix doesn't require a meaningful "post startup
      inferior" operation by a debugger.  */

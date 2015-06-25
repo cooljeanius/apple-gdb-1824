@@ -107,33 +107,38 @@ struct dwarf2_fde
   struct dwarf2_fde *next;
 };
 
-static struct dwarf2_fde *dwarf2_frame_find_fde (CORE_ADDR *pc);
-
+static struct dwarf2_fde *dwarf2_frame_find_fde(CORE_ADDR *pc);
 
 
-/* Structure describing a frame state.  */
+/* These are un-nested from the struct following them to silence
+ * '-Wc++-compat': */
+struct dwarf2_frame_state_reg_info
+{
+  struct dwarf2_frame_state_reg *reg;
+  int num_regs;
 
+  /* Used to implement DW_CFA_remember_state.  */
+  struct dwarf2_frame_state_reg_info *prev;
+};
+
+enum cfa_ways
+{
+  CFA_UNSET,
+  CFA_REG_OFFSET,
+  CFA_EXP
+};
+
+/* Structure describing a frame state: */
 struct dwarf2_frame_state
 {
   /* Each register save state can be described in terms of a CFA slot,
      another register, or a location expression.  */
-  struct dwarf2_frame_state_reg_info
-  {
-    struct dwarf2_frame_state_reg *reg;
-    int num_regs;
-
-    /* Used to implement DW_CFA_remember_state.  */
-    struct dwarf2_frame_state_reg_info *prev;
-  } regs;
+  struct dwarf2_frame_state_reg_info regs;
 
   LONGEST cfa_offset;
   ULONGEST cfa_reg;
   gdb_byte *cfa_exp;
-  enum {
-    CFA_UNSET,
-    CFA_REG_OFFSET,
-    CFA_EXP
-  } cfa_how;
+  enum cfa_ways cfa_how;
 
   /* The PC described by the current frame state.  */
   CORE_ADDR pc;
@@ -1190,15 +1195,16 @@ dwarf2_frame_prev_register (struct frame_info *next_frame, void **this_cache,
         {
           CORE_ADDR pc = cache->reg[regnum].loc.offset;
 
-          regnum = gdbarch_dwarf2_reg_to_regnum
-		     (current_gdbarch, cache->retaddr_reg.loc.reg);
-          pc += frame_unwind_register_unsigned (next_frame, regnum);
-          pack_long (valuep, register_type (gdbarch, regnum), pc);
+          regnum =
+            gdbarch_dwarf2_reg_to_regnum(current_gdbarch,
+                                         cache->retaddr_reg.loc.reg);
+          pc += frame_unwind_register_unsigned(next_frame, regnum);
+          pack_long(valuep, register_type(gdbarch, regnum), pc);
         }
       break;
 
     default:
-      internal_error (__FILE__, __LINE__, _("Unknown register rule."));
+      internal_error(__FILE__, __LINE__, _("Unknown register rule."));
     }
 }
 
@@ -1206,18 +1212,24 @@ static const struct frame_unwind dwarf2_frame_unwind =
 {
   NORMAL_FRAME,
   dwarf2_frame_this_id,
-  dwarf2_frame_prev_register
+  dwarf2_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind dwarf2_signal_frame_unwind =
 {
   SIGTRAMP_FRAME,
   dwarf2_signal_frame_this_id,
-  dwarf2_frame_prev_register
+  dwarf2_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 const struct frame_unwind *
-dwarf2_frame_sniffer (struct frame_info *next_frame)
+dwarf2_frame_sniffer(struct frame_info *next_frame)
 {
   /* Grab an address that is guarenteed to reside somewhere within the
      function.  frame_pc_unwind(), for a no-return next function, can

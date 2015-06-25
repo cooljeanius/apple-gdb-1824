@@ -304,6 +304,7 @@ uninstall: uninstall-syscalls uninstall-python uninstall-guile \
 
 .PHONY: clean
 clean: clean-syscalls clean-python clean-guile clean-system-gdbinit
+	-rm -f .DS_Store
 
 .PHONY: maintainer-clean realclean distclean
 maintainer-clean realclean distclean: clean

@@ -208,6 +208,7 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
+LD_ARCHFLAGS = @LD_ARCHFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = -L../../libiberty @MAINT@ -liberty $(WIN32LIBS) $(MULTI_ICE_LIBS)
 LN_S = @LN_S@
@@ -247,6 +248,7 @@ abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
+acl_cv_wl = @acl_cv_wl@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
@@ -324,7 +326,7 @@ multi_ice_gdb_server_LDFLAGS = $(WIN32LDAPP)
 multi_ice_gdb_server_DEPENDENCIES = $(WIN32RES)
 multi_ice_gdb_server_LDADD = $(WIN32RES)
 MOSTLYCLEANFILES = config.h.in~
-DISTCLEANFILES = *~ autoscan.log
+DISTCLEANFILES = *~ autoscan.log .DS_Store
 MAINTAINERCLEANFILES = configure.scan missing_symbols.txt
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am

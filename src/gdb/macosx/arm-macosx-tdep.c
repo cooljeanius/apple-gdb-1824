@@ -358,25 +358,26 @@ const uint32_t g_reginfo_arm_vfpv3_count = (sizeof(g_reginfo_arm_vfpv3)
 /* Add PSR and FPSCR built in types for displaying register contents as
    bitfields.  */
 static struct type *
-build_builtin_type_arm_psr_mode_enum (void)
+build_builtin_type_arm_psr_mode_enum(void)
 {
   static struct gdbtypes_enum_info mode_enums[] = {
-    {"usr",	0x10 },
-    {"fiq",	0x11 },
-    {"irq",	0x12 },
-    {"svc",	0x13 },
-    {"dbg",	0x15 },	/* XScale debug mode.  */
-    {"abt",	0x17 },
-    {"und",	0x1d },
-    {"sys",	0x1f }
+    { "usr",	0x10 },
+    { "fiq",	0x11 },
+    { "irq",	0x12 },
+    { "svc",	0x13 },
+    { "dbg",	0x15 },	/* XScale debug mode.  */
+    { "abt",	0x17 },
+    { "und",	0x1d },
+    { "sys",	0x1f }
   };
-  uint32_t num_mode_enums = sizeof (mode_enums)/sizeof (mode_enums[0]);
-  return build_builtin_enum ("_arm_ext_psr_mode_enum", 4,
-			     TYPE_FLAG_UNSIGNED, mode_enums, num_mode_enums);
+  uint32_t num_mode_enums = (sizeof(mode_enums) / sizeof(mode_enums[0]));
+  return build_builtin_enum("_arm_ext_psr_mode_enum", 4,
+			    TYPE_FLAG_UNSIGNED, mode_enums,
+                            num_mode_enums);
 }
 
 static struct type *
-build_builtin_type_arm_psr (void)
+build_builtin_type_arm_psr(void)
 {
   struct gdbtypes_bitfield_info psr_bitfields[] = {
     /* Print entire value first and use the void data pointer
@@ -817,14 +818,14 @@ arm_macosx_print_float_info_vfp(struct gdbarch *gdbarch,
                                 struct ui_file *file,
                                 struct frame_info *frame, const char *args)
 {
-  static const char* enabled_strings[2] = {"disabled", "enabled"};
-  static const char* Rmode_strings[4] = {
+  static const char *enabled_strings[2] = {"disabled", "enabled"};
+  static const char *Rmode_strings[4] = {
     "Round to nearest (RN) mode",
     "Round towards plus infinity (RP) mode",
     "Round towards minus infinity (RM) mode",
     "Round towards zero (RZ) mode"
   };
-  uint32_t fpscr = read_register(ARM_VFP_REGNUM_FPSCR);
+  uint32_t fpscr = (uint32_t)read_register(ARM_VFP_REGNUM_FPSCR);
   uint32_t b;
   printf(_("VFP fpscr = 0x%8.8x\n"), fpscr);
   printf(_("     N = %u  Set if comparison produces a less than result\n"),
@@ -859,14 +860,15 @@ arm_macosx_print_float_info_vfp(struct gdbarch *gdbarch,
 }
 
 static void
-arm_macosx_pseudo_register_read_vfpv1 (struct gdbarch *gdbarch,
-				       struct regcache *regcache, int reg,
-				       gdb_byte *buf)
+arm_macosx_pseudo_register_read_vfpv1(struct gdbarch *gdbarch,
+				      struct regcache *regcache, int reg,
+				      gdb_byte *buf)
 {
-  int s_reg_lsw = 2 * (reg - ARM_VFPV1_PSEUDO_REGNUM_D0) + ARM_VFP_REGNUM_S0;
-  int s_reg_msw = s_reg_lsw + 1;
-  regcache_cooked_read (regcache, s_reg_lsw, buf);
-  regcache_cooked_read (regcache, s_reg_msw, buf + 4);
+  int s_reg_lsw = ((2 * (reg - ARM_VFPV1_PSEUDO_REGNUM_D0))
+                   + ARM_VFP_REGNUM_S0);
+  int s_reg_msw = (s_reg_lsw + 1);
+  regcache_cooked_read(regcache, s_reg_lsw, buf);
+  regcache_cooked_read(regcache, s_reg_msw, (buf + 4));
 }
 
 static void
@@ -874,7 +876,8 @@ arm_macosx_pseudo_register_write_vfpv1(struct gdbarch *gdbarch,
 				       struct regcache *regcache, int reg,
                                        const gdb_byte *buf)
 {
-  int s_reg_lsw = (2 * (reg - ARM_VFPV1_PSEUDO_REGNUM_D0) + ARM_VFP_REGNUM_S0);
+  int s_reg_lsw = ((2 * (reg - ARM_VFPV1_PSEUDO_REGNUM_D0))
+                   + ARM_VFP_REGNUM_S0);
   int s_reg_msw = (s_reg_lsw + 1);
   regcache_cooked_write(regcache, s_reg_lsw, buf);
   regcache_cooked_write(regcache, s_reg_msw, buf + 4);

@@ -2663,6 +2663,9 @@ slide_objfile (struct objfile *objfile, CORE_ADDR slide,
     }
 }
 
+/* For '-Wmissing-prototypes' or '-Wmissing-declarations': */
+extern initialize_file_ftype _initialize_objfiles;
+
 void
 _initialize_objfiles(void)
 {

@@ -199,10 +199,10 @@ print_i387_control_word (unsigned int control, struct ui_file *file)
    never saved on the stack.  */
 
 void
-i387_print_float_info (struct gdbarch *gdbarch, struct ui_file *file,
-		       struct frame_info *frame, const char *args)
+i387_print_float_info(struct gdbarch *gdbarch, struct ui_file *file,
+		      struct frame_info *frame, const char *args)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (get_frame_arch (frame));
+  struct gdbarch_tdep *tdep = gdbarch_tdep(get_frame_arch(frame));
   ULONGEST fctrl;
   ULONGEST fstat;
   ULONGEST ftag;
@@ -214,73 +214,75 @@ i387_print_float_info (struct gdbarch *gdbarch, struct ui_file *file,
   int fpreg;
   int top;
 
-  gdb_assert (gdbarch == get_frame_arch (frame));
+  gdb_assert(gdbarch == get_frame_arch(frame));
 
   /* Define I387_ST0_REGNUM such that we use the proper definitions
      for FRAME's architecture.  */
 #define I387_ST0_REGNUM tdep->st0_regnum
 
-  fctrl = get_frame_register_unsigned (frame, I387_FCTRL_REGNUM);
-  fstat = get_frame_register_unsigned (frame, I387_FSTAT_REGNUM);
-  ftag = get_frame_register_unsigned (frame, I387_FTAG_REGNUM);
-  fiseg = get_frame_register_unsigned (frame, I387_FISEG_REGNUM);
-  fioff = get_frame_register_unsigned (frame, I387_FIOFF_REGNUM);
-  foseg = get_frame_register_unsigned (frame, I387_FOSEG_REGNUM);
-  fooff = get_frame_register_unsigned (frame, I387_FOOFF_REGNUM);
-  fop = get_frame_register_unsigned (frame, I387_FOP_REGNUM);
+  fctrl = get_frame_register_unsigned(frame, I387_FCTRL_REGNUM);
+  fstat = get_frame_register_unsigned(frame, I387_FSTAT_REGNUM);
+  ftag = get_frame_register_unsigned(frame, I387_FTAG_REGNUM);
+  fiseg = get_frame_register_unsigned(frame, I387_FISEG_REGNUM);
+  fioff = get_frame_register_unsigned(frame, I387_FIOFF_REGNUM);
+  foseg = get_frame_register_unsigned(frame, I387_FOSEG_REGNUM);
+  fooff = get_frame_register_unsigned(frame, I387_FOOFF_REGNUM);
+  fop = get_frame_register_unsigned(frame, I387_FOP_REGNUM);
 
   top = ((fstat >> 11) & 7);
 
   for (fpreg = 7; fpreg >= 0; fpreg--)
     {
       gdb_byte raw[I386_MAX_REGISTER_SIZE];
-      int tag = (ftag >> (fpreg * 2)) & 3;
+      int tag = ((ftag >> (fpreg * 2)) & 3);
       int i;
 
-      fprintf_filtered (file, "%sR%d: ", fpreg == top ? "=>" : "  ", fpreg);
+      fprintf_filtered(file, "%sR%d: ",
+                       ((fpreg == top) ? "=>" : "  "), fpreg);
 
       switch (tag)
 	{
 	case 0:
-	  fputs_filtered ("Valid   ", file);
+	  fputs_filtered("Valid   ", file);
 	  break;
 	case 1:
-	  fputs_filtered ("Zero    ", file);
+	  fputs_filtered("Zero    ", file);
 	  break;
 	case 2:
-	  fputs_filtered ("Special ", file);
+	  fputs_filtered("Special ", file);
 	  break;
 	case 3:
-	  fputs_filtered ("Empty   ", file);
+	  fputs_filtered("Empty   ", file);
 	  break;
 	}
 
-      get_frame_register (frame, (fpreg + 8 - top) % 8 + I387_ST0_REGNUM, raw);
+      get_frame_register(frame, ((fpreg + 8 - top) % 8 + I387_ST0_REGNUM),
+                         raw);
 
-      fputs_filtered ("0x", file);
+      fputs_filtered("0x", file);
       for (i = 9; i >= 0; i--)
-	fprintf_filtered (file, "%02x", raw[i]);
+	fprintf_filtered(file, "%02x", raw[i]);
 
       if (tag != 3)
-	print_i387_ext (raw, file);
+	print_i387_ext(raw, file);
 
-      fputs_filtered ("\n", file);
+      fputs_filtered("\n", file);
     }
 
-  fputs_filtered ("\n", file);
+  fputs_filtered("\n", file);
 
-  print_i387_status_word (fstat, file);
-  print_i387_control_word (fctrl, file);
-  fprintf_filtered (file, "Tag Word:            %s\n",
-		    hex_string_custom (ftag, 4));
-  fprintf_filtered (file, "Instruction Pointer: %s:",
-		    hex_string_custom (fiseg, 2));
-  fprintf_filtered (file, "%s\n", hex_string_custom (fioff, 8));
-  fprintf_filtered (file, "Operand Pointer:     %s:",
-		    hex_string_custom (foseg, 2));
-  fprintf_filtered (file, "%s\n", hex_string_custom (fooff, 8));
-  fprintf_filtered (file, "Opcode:              %s\n",
-		    hex_string_custom (fop ? (fop | 0xd800) : 0, 4));
+  print_i387_status_word((unsigned int)fstat, file);
+  print_i387_control_word((unsigned int)fctrl, file);
+  fprintf_filtered(file, "Tag Word:            %s\n",
+		   hex_string_custom(ftag, 4));
+  fprintf_filtered(file, "Instruction Pointer: %s:",
+		   hex_string_custom(fiseg, 2));
+  fprintf_filtered(file, "%s\n", hex_string_custom(fioff, 8));
+  fprintf_filtered(file, "Operand Pointer:     %s:",
+		   hex_string_custom(foseg, 2));
+  fprintf_filtered(file, "%s\n", hex_string_custom(fooff, 8));
+  fprintf_filtered(file, "Opcode:              %s\n",
+		   hex_string_custom((fop ? (fop | 0xd800) : 0), 4));
 
 #undef I387_ST0_REGNUM
 }

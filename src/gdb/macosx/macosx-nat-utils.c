@@ -483,7 +483,7 @@ macosx_check_malloc_is_unsafe(void)
   int success;
 
   if (malloc_unsafe_flag != -1)
-      return malloc_unsafe_flag;
+    return malloc_unsafe_flag;
 
   if (malloc_check_fn == NULL)
     {
@@ -524,7 +524,7 @@ macosx_check_malloc_is_unsafe(void)
   if (e.reason != (int)NO_ERROR)
     return 1;
 
-  success = value_as_long(tmp_value);
+  success = (int)value_as_long(tmp_value);
   if ((success == 0) || (success == 1))
     {
       malloc_unsafe_flag = success;

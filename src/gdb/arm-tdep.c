@@ -4508,13 +4508,13 @@ thumb_get_next_pc(CORE_ADDR pc)
 		if_then_pc += 4;
 	      else
 		if_then_pc += 2;
-	      if_then_inst = read_memory_integer (if_then_pc, 2);
+	      if_then_inst = read_memory_integer(if_then_pc, 2);
 	    }
 	}
     }
   if (arm_debug)
-    fprintf_unfiltered (gdb_stdlog, "thumb_get_next_pc (%s):  next pc is %s\n",
-                        paddr (pc), paddr (nextpc));
+    fprintf_unfiltered(gdb_stdlog, "thumb_get_next_pc (%s):  next pc is %s\n",
+                       paddr(pc), paddr(nextpc));
   return nextpc;
 }
 

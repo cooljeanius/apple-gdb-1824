@@ -51,16 +51,16 @@ static int varobj_use_dynamic_type = 1;
 /* APPLE LOCAL end */
 
 /* APPLE LOCAL: We use this to lookup from fake child to type index.  */
-static int varobj_get_type_index_from_fake_child (struct varobj *parent, int index);
-static int varobj_value_struct_elt_by_index (struct varobj *parent, int index,
-					     struct value **ret_val);
-static struct type *varobj_lookup_struct_elt_type_by_index (struct varobj *parent, int index);
+static int varobj_get_type_index_from_fake_child(struct varobj *parent, int index);
+static int varobj_value_struct_elt_by_index(struct varobj *parent, int index,
+                                            struct value **ret_val);
+static struct type *varobj_lookup_struct_elt_type_by_index(struct varobj *parent, int index);
 
 static void
-show_varobjdebug (struct ui_file *file, int from_tty,
-		  struct cmd_list_element *c, const char *value)
+show_varobjdebug(struct ui_file *file, int from_tty,
+		 struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("Varobj debugging is %s.\n"), value);
+  fprintf_filtered(file, _("Varobj debugging is %s.\n"), value);
 }
 
 /* String representations of gdb's format codes */
@@ -77,14 +77,13 @@ char *varobj_language_string[] = { "unknown", "C", "C++", "Java" };
    varobj. Members which must be free'd are noted. */
 struct varobj_root
 {
-
-  /* Alloc'd expression for this parent. */
+  /* Alloc'd expression for this parent: */
   struct expression *exp;
 
-  /* Block for which this expression is valid */
+  /* Block for which this expression is valid: */
   struct block *valid_block;
 
-  /* The frame for this expression */
+  /* The frame for this expression: */
   struct frame_id frame;
 
   /* If 1, "update" always recomputes the frame & valid block
@@ -99,13 +98,13 @@ struct varobj_root
   int in_scope;
   /* APPLE LOCAL end */
 
-  /* Language info for this variable and its children */
+  /* Language info for this variable and its children: */
   struct language_specific *lang;
 
-  /* The varobj for this root node. */
+  /* The varobj for this root node: */
   struct varobj *rootvar;
 
-  /* Next root variable */
+  /* Next root variable: */
   struct varobj_root *next;
 };
 
@@ -129,7 +128,6 @@ enum varobj_join_type
    a particular object variable. Members which must be freed are noted. */
 struct varobj
 {
-
   /* Alloc'd name of the variable for this object.. If this variable is a
      child, then this name will be the child's source name.
      (bar, not foo.bar) */
@@ -235,21 +233,18 @@ struct varobj
 
 /* Every variable keeps a linked list of its children, described
    by the following structure. */
-/* FIXME: Deprecated.  All should use vlist instead */
-
+/* FIXME: Deprecated.  All should use vlist instead. */
 struct varobj_child
 {
-
-  /* Pointer to the child's data */
+  /* Pointer to the child's data: */
   struct varobj *child;
 
-  /* Pointer to the next child */
+  /* Pointer to the next child: */
   struct varobj_child *next;
 };
 
 /* A stack of varobjs */
-/* FIXME: Deprecated.  All should use vlist instead */
-
+/* FIXME: Deprecated.  All should use vlist instead. */
 struct vstack
 {
   struct varobj *var;
@@ -262,8 +257,7 @@ struct cpstack
   struct cpstack *next;
 };
 
-/* A list of varobjs */
-
+/* A list of varobjs: */
 struct vlist
 {
   struct varobj *var;
@@ -271,8 +265,7 @@ struct vlist
 };
 
 /* APPLE LOCAL begin */
-/* This is the list varobj_update builds up */
-
+/* This is the list varobj_update builds up: */
 struct varobj_changelist_elem {
   struct varobj *var;
   enum varobj_type_change type_changed;
@@ -289,234 +282,240 @@ struct varobj_changelist {
 
 /* Helper functions for the above subcommands. */
 
-static int delete_variable (struct cpstack **, struct varobj *, int);
+static int delete_variable(struct cpstack **, struct varobj *, int);
 
-static void delete_variable_1 (struct cpstack **, int *,
-			       struct varobj *, int, int);
+static void delete_variable_1(struct cpstack **, int *,
+			      struct varobj *, int, int);
 
-static int install_variable (struct varobj *);
+static int install_variable(struct varobj *);
 
-static void uninstall_variable (struct varobj *);
+static void uninstall_variable(struct varobj *);
 
 /* APPLE LOCAL */
-static struct varobj *child_exists (struct varobj *, int index);
+static struct varobj *child_exists(struct varobj *, int index);
 
-static struct varobj *create_child (struct varobj *, int, char *);
+static struct varobj *create_child(struct varobj *, int, char *);
 
-static void save_child_in_parent (struct varobj *, struct varobj *);
+static void save_child_in_parent(struct varobj *, struct varobj *);
 
-static void remove_child_from_parent (struct varobj *, struct varobj *);
+static void remove_child_from_parent(struct varobj *, struct varobj *);
 
 /* Utility routines */
 
-static struct varobj *new_variable (void);
+static struct varobj *new_variable(void);
 
-static struct varobj *new_root_variable (void);
+static struct varobj *new_root_variable(void);
 
-static void free_variable (struct varobj *var);
+static void free_variable(struct varobj *var);
 
-static struct cleanup *make_cleanup_free_variable (struct varobj *var);
+static struct cleanup *make_cleanup_free_variable(struct varobj *var);
 
-static struct type *get_type (struct varobj *var);
+static struct type *get_type(struct varobj *var);
 
-static struct type *get_type_deref (struct varobj *var, int *was_ptr);
+static struct type *get_type_deref(struct varobj *var, int *was_ptr);
 
-static struct type *get_target_type (struct type *);
+static struct type *get_target_type(struct type *);
 
-static enum varobj_display_formats variable_default_display (struct varobj *);
+static enum varobj_display_formats variable_default_display(struct varobj *);
 
-static int my_value_equal (struct value *, struct value *, int *);
+static int my_value_equal(struct value *, struct value *, int *);
 
-static struct varobj_changelist *varobj_changelist_init (void);
+static struct varobj_changelist *varobj_changelist_init(void);
 
 static void varobj_add_to_changelist(struct varobj_changelist *changelist,
-				   struct varobj *var,
-				   enum varobj_type_change type_changed);
+                                     struct varobj *var,
+                                     enum varobj_type_change type_changed);
 
-static void vpush (struct vstack **pstack, struct varobj *var);
+static void vpush(struct vstack **pstack, struct varobj *var);
 
-static struct varobj *vpop (struct vstack **pstack);
+static struct varobj *vpop(struct vstack **pstack);
 
-static void cppush (struct cpstack **pstack, char *name);
+static void cppush(struct cpstack **pstack, char *name);
 
-static char *cppop (struct cpstack **pstack);
+static char *cppop(struct cpstack **pstack);
 
 /* Language-specific routines. */
 
-static enum varobj_languages variable_language (struct varobj *var);
+static enum varobj_languages variable_language(struct varobj *var);
 
-static int number_of_children (struct varobj *);
+static int number_of_children(struct varobj *);
 
-static char *name_of_variable (struct varobj *);
+static char *name_of_variable(struct varobj *);
 
-static char *path_expr_of_variable (struct varobj *);
+static char *path_expr_of_variable(struct varobj *);
 
-static char *make_name_of_child (struct varobj *, int);
+static char *make_name_of_child(struct varobj *, int);
 
-static char *path_expr_of_child (struct varobj *, int);
+static char *path_expr_of_child(struct varobj *, int);
 
-static struct value *value_of_root (struct varobj **var_handle, enum varobj_type_change *);
+static struct value *value_of_root(struct varobj **var_handle,
+                                   enum varobj_type_change *);
 
-static struct value *value_of_child (struct varobj *parent, int index,
-				     enum varobj_type_change *);
+static struct value *value_of_child(struct varobj *parent, int index,
+				    enum varobj_type_change *);
 
-static struct type *type_of_child (struct varobj *var);
+static struct type *type_of_child(struct varobj *var);
 
-static int variable_editable (struct varobj *var);
+static int variable_editable(struct varobj *var);
 
-static char *my_value_of_variable (struct varobj *var);
+static char *my_value_of_variable(struct varobj *var);
 
 /* APPLE LOCAL rename type_changeable */
-static int varobj_value_is_changeable_p (struct varobj *var);
+static int varobj_value_is_changeable_p(struct varobj *var);
 
 /* APPLE LOCAL is_root_p */
-static int is_root_p (struct varobj *var);
+static int is_root_p(struct varobj *var);
 
 /* APPLE LOCAL set path expression junk.  */
-static enum varobj_join_type get_join_type (struct type *type);
+static enum varobj_join_type get_join_type(struct type *type);
 
 /* C implementation */
 
-static int c_number_of_children (struct varobj *var);
+static int c_number_of_children(struct varobj *var);
 
-static char *c_make_name_of_child (struct varobj *parent, int index);
+static char *c_make_name_of_child(struct varobj *parent, int index);
 
-static char *c_path_expr_of_child (struct varobj *parent, int index);
+static char *c_path_expr_of_child(struct varobj *parent, int index);
 
-static struct value *c_value_of_root (struct varobj **var_handle, enum varobj_type_change *type_changed);
+static struct value *c_value_of_root(struct varobj **var_handle, enum varobj_type_change *type_changed);
 
-static struct value *c_value_of_child (struct varobj *parent, int index, int *lookup_dynamic_type);
+static struct value *c_value_of_child(struct varobj *parent, int index, int *lookup_dynamic_type);
 
-static struct type *c_type_of_child (struct varobj *parent, int index);
+static struct type *c_type_of_child(struct varobj *parent, int index);
 
-static int c_variable_editable (struct varobj *var);
+static int c_variable_editable(struct varobj *var);
 
-static char *c_value_of_variable (struct varobj *var);
+static char *c_value_of_variable(struct varobj *var);
 
 /* C++ implementation */
 
-static int cplus_number_of_children (struct varobj *var);
+static int cplus_number_of_children(struct varobj *var);
 
-static void cplus_class_num_children (struct type *type, int children[3]);
+static void cplus_class_num_children(struct type *type, int children[3]);
 
-static char *cplus_make_name_of_child (struct varobj *parent, int index);
+static char *cplus_make_name_of_child(struct varobj *parent, int index);
 
-static char *cplus_path_expr_of_child (struct varobj *parent, int index);
+static char *cplus_path_expr_of_child(struct varobj *parent, int index);
 
-static struct value *cplus_value_of_root (struct varobj **var_handle, enum varobj_type_change *type_changed);
+static struct value *cplus_value_of_root(struct varobj **var_handle, enum varobj_type_change *type_changed);
 
-static struct value *cplus_value_of_child (struct varobj *parent, int index, int *lookup_dynamic_type);
+static struct value *cplus_value_of_child(struct varobj *parent, int index, int *lookup_dynamic_type);
 
-static struct type *cplus_type_of_child (struct varobj *parent, int index);
+static struct type *cplus_type_of_child(struct varobj *parent, int index);
 
-static int cplus_variable_editable (struct varobj *var);
+static int cplus_variable_editable(struct varobj *var);
 
-static char *cplus_value_of_variable (struct varobj *var);
+static char *cplus_value_of_variable(struct varobj *var);
 
 /* Java implementation */
 
-static int java_number_of_children (struct varobj *var);
+static int java_number_of_children(struct varobj *var);
 
-static char *java_make_name_of_child (struct varobj *parent, int index);
+static char *java_make_name_of_child(struct varobj *parent, int index);
 
-static char *java_path_expr_of_child (struct varobj *parent, int index);
+static char *java_path_expr_of_child(struct varobj *parent, int index);
 
-static struct value *java_value_of_root (struct varobj **var_handle, enum varobj_type_change *type_changed);
+static struct value *java_value_of_root(struct varobj **var_handle, enum varobj_type_change *type_changed);
 
-static struct value *java_value_of_child (struct varobj *parent, int index, int *lookup_dynamic_type);
+static struct value *java_value_of_child(struct varobj *parent, int index, int *lookup_dynamic_type);
 
-static struct type *java_type_of_child (struct varobj *parent, int index);
+static struct type *java_type_of_child(struct varobj *parent, int index);
 
-static int java_variable_editable (struct varobj *var);
+static int java_variable_editable(struct varobj *var);
 
-static char *java_value_of_variable (struct varobj *var);
+static char *java_value_of_variable(struct varobj *var);
 
-/* The language specific vector */
+/* FIXME: move these elsewhere: */
+extern int varobj_parse_exp_1(char **, struct block *, int,
+                              struct expression **);
+extern int varobj_evaluate_type(struct expression *, struct value **);
+extern char *varobj_get_type_internal(struct varobj *, int);
+extern int varobj_type_is_equal_p(struct varobj *, struct varobj *);
 
+/* The language specific vector: */
 struct language_specific
 {
-
-  /* The language of this variable */
+  /* The language of this variable: */
   enum varobj_languages language;
 
-  /* The number of children of PARENT. */
-  int (*number_of_children) (struct varobj * parent);
+  /* The number of children of PARENT: */
+  int (*number_of_children)(struct varobj * parent);
 
   /* The makes & returns the name of the INDEX'th child of PARENT. */
-  char *(*make_name_of_child) (struct varobj * parent, int index);
+  char *(*make_name_of_child)(struct varobj *parent, int index);
 
-  /* Returns the rooted expression of the INDEX'th child of PARENT. */
-  char *(*path_expr_of_child) (struct varobj * parent, int index);
+  /* Returns the rooted expression of the INDEX'th child of PARENT: */
+  char *(*path_expr_of_child)(struct varobj *parent, int index);
 
-  /* The ``struct value *'' of the root variable ROOT. */
-  struct value *(*value_of_root) (struct varobj ** root_handle,
-				  enum varobj_type_change *type_changed);
+  /* The ``struct value *'' of the root variable ROOT: */
+  struct value *(*value_of_root)(struct varobj **root_handle,
+				 enum varobj_type_change *type_changed);
 
   /* The ``struct value *'' of the INDEX'th child of PARENT. If LOOKUP_DYNAMIC_TYPE
       comes back true, then we should look up the dynamic type of the variable.  */
-  struct value *(*value_of_child) (struct varobj * parent, int index, int *lookup_dynamic_type);
+  struct value *(*value_of_child)(struct varobj *parent, int index, int *lookup_dynamic_type);
 
-  /* The type of the INDEX'th child of PARENT. */
-  struct type *(*type_of_child) (struct varobj * parent, int index);
+  /* The type of the INDEX'th child of PARENT: */
+  struct type *(*type_of_child)(struct varobj *parent, int index);
 
   /* Is VAR editable? */
-  int (*variable_editable) (struct varobj * var);
+  int (*variable_editable)(struct varobj *var);
 
-  /* The current value of VAR. */
-  char *(*value_of_variable) (struct varobj * var);
+  /* The current value of VAR: */
+  char *(*value_of_variable)(struct varobj *var);
 };
 
 /* Array of known source language routines. */
 static struct language_specific
   languages[vlang_end][sizeof(struct language_specific)] = {
   /* Unknown (try treating as C): */
-  {
-   vlang_unknown,
-   c_number_of_children,
-   c_make_name_of_child,
-   c_path_expr_of_child,
-   c_value_of_root,
-   c_value_of_child,
-   c_type_of_child,
-   c_variable_editable,
-   c_value_of_variable
-  },
+    { {
+      vlang_unknown,
+      c_number_of_children,
+      c_make_name_of_child,
+      c_path_expr_of_child,
+      c_value_of_root,
+      c_value_of_child,
+      c_type_of_child,
+      c_variable_editable,
+      c_value_of_variable
+    } },
   /* C */
-  {
-   vlang_c,
-   c_number_of_children,
-   c_make_name_of_child,
-   c_path_expr_of_child,
-   c_value_of_root,
-   c_value_of_child,
-   c_type_of_child,
-   c_variable_editable,
-   c_value_of_variable
-  },
+    { {
+      vlang_c,
+      c_number_of_children,
+      c_make_name_of_child,
+      c_path_expr_of_child,
+      c_value_of_root,
+      c_value_of_child,
+      c_type_of_child,
+      c_variable_editable,
+      c_value_of_variable
+    } },
   /* C++ */
-  {
-   vlang_cplus,
-   cplus_number_of_children,
-   cplus_make_name_of_child,
-   cplus_path_expr_of_child,
-   cplus_value_of_root,
-   cplus_value_of_child,
-   cplus_type_of_child,
-   cplus_variable_editable,
-   cplus_value_of_variable
-  },
+    { {
+      vlang_cplus,
+      cplus_number_of_children,
+      cplus_make_name_of_child,
+      cplus_path_expr_of_child,
+      cplus_value_of_root,
+      cplus_value_of_child,
+      cplus_type_of_child,
+      cplus_variable_editable,
+      cplus_value_of_variable
+    } },
   /* Java */
-  {
-   vlang_java,
-   java_number_of_children,
-   java_make_name_of_child,
-   java_path_expr_of_child,
-   java_value_of_root,
-   java_value_of_child,
-   java_type_of_child,
-   java_variable_editable,
-   java_value_of_variable
-  }
+    { {
+      vlang_java,
+      java_number_of_children,
+      java_make_name_of_child,
+      java_path_expr_of_child,
+      java_value_of_root,
+      java_value_of_child,
+      java_type_of_child,
+      java_variable_editable,
+      java_value_of_variable
+    } }
 };
 
 /* A little convenience enum for dealing with C++/Java */
@@ -565,47 +564,47 @@ int varobj_runs_all_threads = 0;
    up as a "dynamic" type, and we won't notice they have changed.  */
 
 int
-varobj_parse_exp_1 (char **stringptr, struct block *block, int comma,
-		 struct expression **expression)
+varobj_parse_exp_1(char **stringptr, struct block *block, int comma,
+                   struct expression **expression)
 {
   struct cleanup *print_closure_cleanup;
   int ret_val;
 
-  print_closure_cleanup = make_cleanup_set_restore_print_closure (0);
+  print_closure_cleanup = make_cleanup_set_restore_print_closure(0);
 
-  ret_val = gdb_parse_exp_1 (stringptr, block, comma, expression);
+  ret_val = gdb_parse_exp_1(stringptr, block, comma, expression);
 
-  do_cleanups (print_closure_cleanup);
+  do_cleanups(print_closure_cleanup);
 
   return ret_val;
 }
 
 static int
-varobj_evaluate_expression (struct expression *exp, struct value **value)
+varobj_evaluate_expression(struct expression *exp, struct value **value)
 {
   struct cleanup *print_closure_cleanup;
   int ret_val;
 
-  print_closure_cleanup = make_cleanup_set_restore_print_closure (0);
+  print_closure_cleanup = make_cleanup_set_restore_print_closure(0);
 
-  ret_val = gdb_evaluate_expression (exp, value);
+  ret_val = gdb_evaluate_expression(exp, value);
 
-  do_cleanups (print_closure_cleanup);
+  do_cleanups(print_closure_cleanup);
 
   return ret_val;
 }
 
 int
-varobj_evaluate_type (struct expression *exp, struct value **value)
+varobj_evaluate_type(struct expression *exp, struct value **value)
 {
   struct cleanup *print_closure_cleanup;
   int ret_val;
 
-  print_closure_cleanup = make_cleanup_set_restore_print_closure (0);
+  print_closure_cleanup = make_cleanup_set_restore_print_closure(0);
 
-  ret_val = gdb_evaluate_type (exp, value);
+  ret_val = gdb_evaluate_type(exp, value);
 
-  do_cleanups (print_closure_cleanup);
+  do_cleanups(print_closure_cleanup);
 
   return ret_val;
 }
@@ -614,7 +613,7 @@ varobj_evaluate_type (struct expression *exp, struct value **value)
 
 /* APPLE LOCAL begin is_root_p */
 static int
-is_root_p (struct varobj *var)
+is_root_p(struct varobj *var)
 {
   return (var->root->rootvar == var);
 }
@@ -624,13 +623,14 @@ is_root_p (struct varobj *var)
    a varobj of type TYPE to the varobj's path expression.  */
 
 static enum varobj_join_type
-get_join_type (struct type *in_type)
+get_join_type(struct type *in_type)
 {
+  struct type *type;
   if (in_type == NULL) {
     return VAROBJ_AS_DUNNO;
   }
 
-  struct type *type = check_typedef(in_type);
+  type = check_typedef(in_type);
 
   switch (TYPE_CODE(type))
     {
@@ -662,23 +662,23 @@ get_join_type (struct type *in_type)
 
 
 static struct type *
-safe_value_rtti_target_type (struct value *val, int *full, int *top, int *using_enc)
+safe_value_rtti_target_type(struct value *val, int *full, int *top, int *using_enc)
 {
   volatile struct gdb_exception except;
   struct ui_file *saved_gdb_stderr;
   static struct ui_file *null_stderr = NULL;
   struct type *dynamic_type = NULL;
 
-  /* suppress error messages */
+  /* suppress error messages: */
   if (null_stderr == NULL)
-    null_stderr = ui_file_new ();
+    null_stderr = ui_file_new();
 
   saved_gdb_stderr = gdb_stderr;
   gdb_stderr = null_stderr;
 
-  TRY_CATCH (except, RETURN_MASK_ALL)
+  TRY_CATCH(except, RETURN_MASK_ALL)
     {
-      dynamic_type = value_rtti_target_type (val, full, top, using_enc);
+      dynamic_type = value_rtti_target_type(val, full, top, using_enc);
     }
 
   gdb_stderr = saved_gdb_stderr;
@@ -701,11 +701,9 @@ safe_value_rtti_target_type (struct value *val, int *full, int *top, int *using_
      DYNAMIC_TYPE_NAME.  */
 
 static struct value *
-varobj_fixup_value (struct value *in_value,
-		    int use_dynamic_type,
-		    struct block *block,
-		    struct type **dynamic_type_handle,
-		    char **dynamic_type_name)
+varobj_fixup_value(struct value *in_value, int use_dynamic_type,
+                   struct block *block, struct type **dynamic_type_handle,
+		   char **dynamic_type_name)
 {
   struct value *full_value = in_value;
   struct type *dynamic_type;
@@ -715,17 +713,17 @@ varobj_fixup_value (struct value *in_value,
   if (dynamic_type_name != NULL)
     *dynamic_type_name = NULL;
 
-  base_type = check_typedef (value_type (in_value));
+  base_type = check_typedef(value_type(in_value));
   if (TYPE_CODE(base_type) == TYPE_CODE_PTR)
     {
       int top, full, using_enc;
 
-      dynamic_type = safe_value_rtti_target_type (in_value, &full, &top,
-						  &using_enc);
+      dynamic_type = safe_value_rtti_target_type(in_value, &full, &top,
+						 &using_enc);
 
       if (dynamic_type)
 	{
-	  dynamic_type = lookup_pointer_type (dynamic_type);
+	  dynamic_type = lookup_pointer_type(dynamic_type);
 	}
       else
 	{
@@ -734,7 +732,7 @@ varobj_fixup_value (struct value *in_value,
 	     because ObjC closures also masquerade as ObjC objects, so
 	     they WILL have an ObjC class type, just not a useful one.  */
 
-	  dynamic_type = get_closure_dynamic_type (in_value);
+	  dynamic_type = get_closure_dynamic_type(in_value);
 	  if (dynamic_type == NULL)
 	    {
 	      /* If it hasn't got a C++ or closure dynamic type,
@@ -742,7 +740,9 @@ varobj_fixup_value (struct value *in_value,
 	      int ret_val;
 	      char *dynamic_class_name;
 
-	      ret_val = safe_value_objc_target_type (in_value, block, &dynamic_type, &dynamic_class_name);
+	      ret_val = safe_value_objc_target_type(in_value, block,
+                                                    &dynamic_type,
+                                                    &dynamic_class_name);
 	      if (!ret_val
 		  || dynamic_type == 0)
 		{
@@ -751,26 +751,26 @@ varobj_fixup_value (struct value *in_value,
 		}
 
 	      if (dynamic_type)
-		dynamic_type = lookup_pointer_type (dynamic_type);
+		dynamic_type = lookup_pointer_type(dynamic_type);
 	      else if (dynamic_class_name != NULL)
 		{
 		  if (dynamic_type_name == NULL)
-		    xfree (dynamic_class_name);
+		    xfree(dynamic_class_name);
 		  else
 		    {
-		      int namelen = strlen (dynamic_class_name);
+		      size_t namelen = strlen(dynamic_class_name);
 		      char *typestr;
-		      typestr = xmalloc (namelen + 3);
-		      memmove (typestr, dynamic_class_name, namelen);
-		      xfree (dynamic_class_name);
-		      strcpy (typestr + namelen, " *");
+		      typestr = (char *)xmalloc(namelen + 3UL);
+		      memmove(typestr, dynamic_class_name, namelen);
+		      xfree(dynamic_class_name);
+		      strcpy((typestr + namelen), " *");
 		      *dynamic_type_name = typestr;
 		    }
 		}
 	    }
 	}
     }
-  else if (TYPE_CODE (base_type) == TYPE_CODE_REF)
+  else if (TYPE_CODE(base_type) == TYPE_CODE_REF)
     {
       /* Need to create a pointer type for this value so
 	 value_rtti_target_type will be happy.  This is also done
@@ -779,42 +779,44 @@ varobj_fixup_value (struct value *in_value,
       struct value *temp_val;
       struct type *target_type;
 
-      temp_val = value_copy (in_value);
-      target_type = get_target_type (base_type);
+      temp_val = value_copy(in_value);
+      target_type = get_target_type(base_type);
       if (target_type != NULL)
 	{
 	  int full, top, using_enc;
 
-	  deprecated_set_value_type (temp_val, lookup_pointer_type (target_type));
-	  dynamic_type = safe_value_rtti_target_type (temp_val,
-						      &full, &top,
-						      &using_enc);
+	  deprecated_set_value_type(temp_val, lookup_pointer_type(target_type));
+	  dynamic_type = safe_value_rtti_target_type(temp_val,
+						     &full, &top,
+						     &using_enc);
 	  if (dynamic_type)
-	    dynamic_type = lookup_reference_type (dynamic_type);
+	    dynamic_type = lookup_reference_type(dynamic_type);
 	  else
 	    {
-	      /* If we didn't find a C++ class, let's see if we can find
-		 an ObjC class. */
+	      /* If we failed to find a C++ class, let us see if we can
+               * find an ObjC class: */
 	      int ret_val;
 	      char *dynamic_class_name;
 
-	      ret_val = safe_value_objc_target_type (in_value, block, &dynamic_type, &dynamic_class_name);
+	      ret_val = safe_value_objc_target_type(in_value, block,
+                                                    &dynamic_type,
+                                                    &dynamic_class_name);
 	      if (!ret_val)
 		dynamic_type = NULL;
 	      else if (dynamic_type)
-		dynamic_type = lookup_reference_type (dynamic_type);
+		dynamic_type = lookup_reference_type(dynamic_type);
 	      else if (dynamic_class_name != NULL)
 		{
 		  if (dynamic_type_name == NULL)
-		    xfree (dynamic_class_name);
+		    xfree(dynamic_class_name);
 		  else
 		    {
-		      int namelen = strlen (dynamic_class_name);
+		      size_t namelen = strlen(dynamic_class_name);
 		      char *typestr;
-		      typestr = xmalloc (namelen + 3);
-		      memmove (typestr, dynamic_class_name, namelen);
-		      xfree (dynamic_class_name);
-		      strcpy (typestr + namelen, " &");
+		      typestr = (char *)xmalloc(namelen + 3UL);
+		      memmove(typestr, dynamic_class_name, namelen);
+		      xfree(dynamic_class_name);
+		      strcpy((typestr + namelen), " &");
 		      *dynamic_type_name = typestr;
 		    }
 		}
@@ -1222,31 +1224,31 @@ varobj_get_expression (struct varobj *var)
    (malloc'ed) names of the variables that have been deleted (NULL terminated) */
 
 int
-varobj_delete (struct varobj *var, char ***dellist, int only_children)
+varobj_delete(struct varobj *var, char ***dellist, int only_children)
 {
   int delcount;
   int mycount;
   struct cpstack *result = NULL;
   char **cp;
 
-  /* Initialize a stack for temporary results */
-  cppush (&result, NULL);
+  /* Initialize a stack for temporary results: */
+  cppush(&result, NULL);
 
   if (only_children)
-    /* Delete only the variable children */
-    delcount = delete_variable (&result, var, 1 /* only the children */ );
+    /* Delete only the variable children: */
+    delcount = delete_variable(&result, var, 1 /* only the children */ );
   else
-    /* Delete the variable and all its children */
-    delcount = delete_variable (&result, var, 0 /* parent+children */ );
+    /* Delete the variable and all its children: */
+    delcount = delete_variable(&result, var, 0 /* parent+children */ );
 
-  /* We may have been asked to return a list of what has been deleted */
+  /* We may have been asked to return a list of what has been deleted: */
   if (dellist != NULL)
     {
-      *dellist = xmalloc ((delcount + 1) * sizeof (char *));
+      *dellist = (char **)xmalloc((delcount + 1) * sizeof(char *));
 
       cp = *dellist;
       mycount = delcount;
-      *cp = cppop (&result);
+      *cp = cppop(&result);
       while ((*cp != NULL) && (mycount > 0))
 	{
 	  mycount--;
@@ -1326,85 +1328,86 @@ varobj_list_children (struct varobj *var, struct varobj ***childlist)
   *childlist = NULL;
 
   if (var->num_children == -1)
-    var->num_children = number_of_children (var);
+    var->num_children = number_of_children(var);
 
-  /* List of children */
-  *childlist = xmalloc ((var->num_children + 1) * sizeof (struct varobj *));
+  /* List of children: */
+  *childlist = ((struct varobj **)
+                xmalloc((size_t)(var->num_children + 1)
+                        * sizeof(struct varobj *)));
 
   for (i = 0; i < var->num_children; i++)
     {
-      /* Mark as the end in case we bail out */
+      /* Mark as the end in case we bail out: */
       *((*childlist) + i) = NULL;
 
-      /* check if child exists, if not create */
-      child = child_exists (var, i);
+      /* check if child exists, if not create: */
+      child = child_exists(var, i);
       if (child == NULL)
 	{
-	  name = make_name_of_child (var, i);
-	  child = create_child (var, i, name);
+	  name = make_name_of_child(var, i);
+	  child = create_child(var, i, name);
 	}
 
       *((*childlist) + i) = child;
     }
 
-  /* End of list is marked by a NULL pointer */
+  /* End of list is marked by a NULL pointer: */
   *((*childlist) + i) = NULL;
 
   return var->num_children;
 }
 
 int
-varobj_is_fake_child (struct varobj *var)
+varobj_is_fake_child(struct varobj *var)
 {
-  return CPLUS_FAKE_CHILD (var);
+  return CPLUS_FAKE_CHILD(var);
 }
 
 /* APPLE LOCAL: Factored out common code so we can either return
    the specific type, or the type stripped of typedef's.  */
-
 char *
-varobj_get_type_internal (struct varobj *var, int check_typedef_p)
+varobj_get_type_internal(struct varobj *var, int check_typedef_p)
 {
   struct value *val;
 
-  /* For the "fake" variables, do not return a type. (It's type is
-     NULL, too.) */
-  if (CPLUS_FAKE_CHILD (var))
+  /* For the "fake" variables, do not return a type.
+   * (Its type is NULL, too.) */
+  if (CPLUS_FAKE_CHILD(var))
     return NULL;
 
   if (var->type == NULL)
-    return savestring ("<error getting type>", strlen ("<error getting type>"));
+    return savestring("<error getting type>", strlen("<error getting type>"));
 
   /* To print the type, we simply create a zero ``struct value *'' and
      cast it to our type. We then typeprint this variable. */
   if (check_typedef_p)
-    val = value_zero (remove_all_typedefs (var->type), not_lval);
+    val = value_zero(remove_all_typedefs(var->type), not_lval);
   else
-    val = value_zero (var->type, not_lval);
+    val = value_zero(var->type, not_lval);
 
-  return (type_sprint (value_type (val), "", -1));
+  return (type_sprint(value_type(val), "", -1));
 }
 
 /* Obtain the type of an object Variable as a string similar to the one gdb
    prints on the console */
 char *
-varobj_get_type (struct varobj *var)
+varobj_get_type(struct varobj *var)
 {
-  return varobj_get_type_internal (var, 0);
+  return varobj_get_type_internal(var, 0);
 }
 
-/* Obtain the type of object VAR stripped of all typedef's.  */
+/* Obtain the type of object VAR stripped of all typedef's: */
 char *
-varobj_get_resolved_type (struct varobj *var)
+varobj_get_resolved_type(struct varobj *var)
 {
-  return varobj_get_type_internal (var, 1);
+  return varobj_get_type_internal(var, 1);
 }
 
 /* Obtain the full (most specific class) type of an object Variable as
    a string similar to the one gdb prints on the console */
 
 char *
-varobj_get_dynamic_type (struct varobj *var)
+varobj_get_dynamic_type(struct varobj *var)
 {
   struct value *val;
 
@@ -1412,40 +1415,39 @@ varobj_get_dynamic_type (struct varobj *var)
     {
       /* To print the type, we simply create a zero ``struct value *'' and
 	 cast it to our type. We then typeprint this variable. */
-      val = value_zero (var->dynamic_type, not_lval);
+      val = value_zero(var->dynamic_type, not_lval);
 
-      return (type_sprint (value_type (val), "", -1));
+      return (type_sprint(value_type(val), "", -1));
     }
   else if (var->dynamic_type_name != NULL)
-    return xstrdup (var->dynamic_type_name);
+    return xstrdup(var->dynamic_type_name);
   else
-    return xstrdup ("");
+    return xstrdup("");
 }
 
 struct type *
-varobj_get_type_struct (struct varobj *var)
+varobj_get_type_struct(struct varobj *var)
 {
-  return get_type (var);
+  return get_type(var);
 }
 
 char *
-varobj_get_path_expr (struct varobj *var)
+varobj_get_path_expr(struct varobj *var)
 {
-  return path_expr_of_variable (var);
+  return path_expr_of_variable(var);
 }
 
-/* Obtain the type of an object variable.  */
-
+/* Obtain the type of an object variable: */
 struct type *
-varobj_get_gdb_type (struct varobj *var)
+varobj_get_gdb_type(struct varobj *var)
 {
   return var->type;
 }
 
 enum varobj_languages
-varobj_get_language (struct varobj *var)
+varobj_get_language(struct varobj *var)
 {
-  return variable_language (var);
+  return variable_language(var);
 }
 
 /*
@@ -1453,19 +1455,18 @@ varobj_get_language (struct varobj *var)
  * just checks the flag in the varobj root var, so you are
  * responsible for calling update before you call this.
  */
-
 int
-varobj_in_scope_p (struct varobj *var)
+varobj_in_scope_p(struct varobj *var)
 {
   return var->root->in_scope;
 }
 
 int
-varobj_get_attributes (struct varobj *var)
+varobj_get_attributes(struct varobj *var)
 {
   int attributes = 0;
 
-  if (variable_editable (var))
+  if (variable_editable(var))
     /* FIXME: define masks for attributes */
     attributes |= 0x00000001;	/* Editable */
 
@@ -1473,8 +1474,8 @@ varobj_get_attributes (struct varobj *var)
 }
 
 void
-varobj_get_valid_block (struct varobj *var, CORE_ADDR *start,
-				    CORE_ADDR *end)
+varobj_get_valid_block(struct varobj *var, CORE_ADDR *start,
+                       CORE_ADDR *end)
 {
   if (var->root->valid_block == NULL)
     {
@@ -1488,14 +1489,14 @@ varobj_get_valid_block (struct varobj *var, CORE_ADDR *start,
 }
 
 char *
-varobj_get_value (struct varobj *var)
+varobj_get_value(struct varobj *var)
 {
   if (var->root->exp == NULL)
     return NULL;
   else if (var->value == NULL)
     return NULL;
   else
-    return my_value_of_variable (var);
+    return my_value_of_variable(var);
 }
 
 /* Set the value of an object variable (if it is editable) to the
@@ -1517,58 +1518,59 @@ varobj_set_value (struct varobj *var, char *expression)
   int ret_val = 1;
   struct cleanup *schedlock_chain;
 
-  schedlock_chain = make_cleanup_set_restore_scheduler_locking_mode (scheduler_locking_on);
+  schedlock_chain = make_cleanup_set_restore_scheduler_locking_mode(scheduler_locking_on);
 
-  if (var->value != NULL && variable_editable (var) && !var->error)
+  if (var->value != NULL && variable_editable(var) && !var->error)
     {
       char *s = expression;
 
       input_radix = 10;		/* ALWAYS reset to decimal temporarily */
 
-      if (!varobj_parse_exp_1 (&s, 0, 0, &exp))
+      if (!varobj_parse_exp_1(&s, 0, 0, &exp))
 	{
-	  /* We cannot proceed without a well-formed expression. */
+	  /* We cannot proceed without a well-formed expression: */
 	  ret_val = 0;
 	  goto cleanup;
 	}
-      if (!varobj_evaluate_expression (exp, &value))
+      if (!varobj_evaluate_expression(exp, &value))
 	{
-	  /* We cannot proceed without a valid expression. */
-	  xfree (exp);
+	  /* We cannot proceed without a valid expression: */
+	  xfree(exp);
 	  ret_val = 0;
 	  goto cleanup;
 	}
 
-      if (!my_value_equal (var->value, value, &error))
+      if (!my_value_equal(var->value, value, &error))
 	var->updated = 1;
-      if (!gdb_value_assign (var->value, value, &val))
+      if (!gdb_value_assign(var->value, value, &val))
 	{
 	  ret_val = 0;
 	  goto cleanup;
 	}
-      value_free (var->value);
-      release_value (val);
+      value_free(var->value);
+      release_value(val);
       var->value = val;
       input_radix = saved_input_radix;
       ret_val = 1;
     }
 
  cleanup:
-  do_cleanups (schedlock_chain);
+  do_cleanups(schedlock_chain);
   return ret_val;
 
 }
 
-/* Returns a malloc'ed list with all root variable objects */
+/* Returns a malloc'ed list with all root variable objects: */
 int
-varobj_list (struct varobj ***varlist)
+varobj_list(struct varobj ***varlist)
 {
   struct varobj **cv;
   struct varobj_root *croot;
   int mycount = rootcount;
 
   /* Alloc (rootcount + 1) entries for the result */
-  *varlist = xmalloc ((rootcount + 1) * sizeof (struct varobj *));
+  *varlist = ((struct varobj **)
+              xmalloc((rootcount + 1) * sizeof(struct varobj *)));
 
   cv = *varlist;
   croot = rootlist;
@@ -1616,7 +1618,7 @@ varobj_update (struct varobj **varp, struct varobj_changelist **changelist)
   int error = 0;
   enum varobj_type_change type_changed;
   struct varobj *v;
-  struct value *new;
+  struct value *newval;
   struct vstack *stack = NULL;
   struct varobj_changelist *result = NULL;
   struct frame_id old_fid;
@@ -1634,10 +1636,11 @@ varobj_update (struct varobj **varp, struct varobj_changelist **changelist)
 
   /* Save the selected stack frame, since we will need to change it
      in order to evaluate expressions. */
-  old_fid = get_frame_id (deprecated_selected_frame);
+  old_fid = get_frame_id(deprecated_selected_frame);
 
   if (varobjdebug)
-    fprintf_unfiltered (gdb_stdlog, "Updating variable: %s (%s).\n", (*varp)->name, (*varp)->obj_name);
+    fprintf_unfiltered(gdb_stdlog, "Updating variable: %s (%s).\n",
+                       (*varp)->name, (*varp)->obj_name);
 
   /* Update the root variable. value_of_root can return NULL
      if the variable is no longer around, i.e. we stepped out of
@@ -1645,23 +1648,27 @@ varobj_update (struct varobj **varp, struct varobj_changelist **changelist)
      value_of_root variable dispose of the varobj if the type
      has changed. */
   type_changed = VAROBJ_TYPE_CHANGED;
-  new = value_of_root (varp, &type_changed);
+  newval = value_of_root(varp, &type_changed);
 
   if (varobjdebug)
     {
-      if (new != NULL)
-        fprintf_unfiltered (gdb_stdlog, "Updating variable: %s (%s) got new value.\n", (*varp)->name, (*varp)->obj_name);
+      if (newval != NULL)
+        fprintf_unfiltered(gdb_stdlog,
+                           "Updating variable: %s (%s) got new value.\n",
+                           (*varp)->name, (*varp)->obj_name);
       else
-        fprintf_unfiltered (gdb_stdlog, "Updating variable: %s (%s) got new value.\n", (*varp)->name, (*varp)->obj_name);
+        fprintf_unfiltered(gdb_stdlog,
+                           "Updating variable: %s (%s) got new value.\n",
+                           (*varp)->name, (*varp)->obj_name);
     }
 
-  if (new != NULL && value_lazy (new))
+  if (newval != NULL && value_lazy(newval))
     {
-      if (!gdb_value_fetch_lazy (new))
-      new = NULL;
+      if (!gdb_value_fetch_lazy(newval))
+      newval = NULL;
     }
 
-  if (new == NULL)
+  if (newval == NULL)
     {
       int retval;
       (*varp)->error = 1;
@@ -1695,16 +1702,15 @@ varobj_update (struct varobj **varp, struct varobj_changelist **changelist)
       (*varp)->root->in_scope = 1;
     }
 
-  /* Now make up the change list */
-
-  result = varobj_changelist_init ();
+  /* Now make up the change list: */
+  result = varobj_changelist_init();
 
   /* If the type has changed, then value_of_root will have killed all
      the children, so all we have to do is note that it has changed,
      and we are done... */
   if (type_changed != VAROBJ_TYPE_UNCHANGED)
     {
-      varobj_add_to_changelist (result, *varp, type_changed);
+      varobj_add_to_changelist(result, *varp, type_changed);
       changed++;
     }
 
@@ -1714,37 +1720,40 @@ varobj_update (struct varobj **varp, struct varobj_changelist **changelist)
      There a couple of exceptions here, though.
      We don't want some types to be reported as "changed". */
   else if (came_in_scope
-           || (varobj_value_is_changeable_p (*varp)
-	       && ((*varp)->updated || !my_value_equal ((*varp)->value, new, &error2))))
+           || (varobj_value_is_changeable_p(*varp)
+	       && ((*varp)->updated || !my_value_equal((*varp)->value,
+                                                       newval, &error2))))
     {
       if (varobjdebug)
-        fprintf_unfiltered (gdb_stdlog, "Updating variable: %s (%s) has changed.\n", (*varp)->name, (*varp)->obj_name);
+        fprintf_unfiltered(gdb_stdlog,
+                           "Updating variable: %s (%s) has changed.\n",
+                           (*varp)->name, (*varp)->obj_name);
 
-      varobj_add_to_changelist (result, *varp, type_changed);
+      varobj_add_to_changelist(result, *varp, type_changed);
       (*varp)->updated = 0;
       changed++;
-      /* Its value is going to be updated to NEW.  */
+      /* Its value is going to be updated to NEW: */
       (*varp)->error = error;
     }
 
   /* We must always keep around the new value for this root
      variable expression, or we lose the updated children! */
-  value_free ((*varp)->value);
-  (*varp)->value = new;
+  value_free((*varp)->value);
+  (*varp)->value = newval;
 
-  /* Initialize a stack */
-  vpush (&stack, NULL);
+  /* Initialize a stack: */
+  vpush(&stack, NULL);
 
-  /* Push the root's children */
+  /* Push the root's children: */
   if ((*varp)->children != NULL)
     {
       struct varobj_child *c;
       for (c = (*varp)->children; c != NULL; c = c->next)
-	vpush (&stack, c->child);
+	vpush(&stack, c->child);
     }
 
-  /* Walk through the children, reconstructing them all. */
-  v = vpop (&stack);
+  /* Walk through the children, reconstructing them all: */
+  v = vpop(&stack);
   while (v != NULL)
     {
       /* First update the child.  Since the dynamic type
@@ -1752,35 +1761,42 @@ varobj_update (struct varobj **varp, struct varobj_changelist **changelist)
 	 the children on the stack, since we might need to
 	 delete them.  */
 
-      /* Update this variable */
-      new = value_of_child (v->parent, v->index, &child_type_changed);
+      /* Update this variable: */
+      newval = value_of_child(v->parent, v->index, &child_type_changed);
       if (varobjdebug)
         {
-          if (new != NULL)
-            fprintf_unfiltered (gdb_stdlog, "Updating child variable: %s (%s) found a value.\n", v->name, v->obj_name);
+          if (newval != NULL)
+            fprintf_unfiltered(gdb_stdlog,
+                               "Updating child variable: %s (%s) found a value.\n",
+                               v->name, v->obj_name);
           else
-            fprintf_unfiltered (gdb_stdlog, "Updating child variable: %s (%s) could not get a value.\n", v->name, v->obj_name);
+            fprintf_unfiltered(gdb_stdlog,
+                               "Updating child variable: %s (%s) could not get a value.\n",
+                               v->name, v->obj_name);
         }
 
       if ((child_type_changed != VAROBJ_TYPE_UNCHANGED)
 	  || came_in_scope
-          || (varobj_value_is_changeable_p (v)
-	      && (v->updated || !my_value_equal (v->value, new, &error2))))
+          || (varobj_value_is_changeable_p(v)
+	      && (v->updated || !my_value_equal(v->value, newval,
+                                                &error2))))
 	{
-	  /* Note that it's changed */
+	  /* Note that it has changed: */
           if (varobjdebug)
-            fprintf_unfiltered (gdb_stdlog, "Updating variable: %s (%s) has changed.\n", v->name, v->obj_name);
-	  varobj_add_to_changelist (result, v, child_type_changed);
+            fprintf_unfiltered(gdb_stdlog,
+                               "Updating variable: %s (%s) has changed.\n",
+                               v->name, v->obj_name);
+	  varobj_add_to_changelist(result, v, child_type_changed);
 	  v->updated = 0;
 	  changed++;
 	}
-      /* Its value is going to be updated to NEW.  */
+      /* Its value is going to be updated to NEW: */
       v->error = error;
 
-      /* We must always keep new values, since children depend on it. */
+      /* We must always keep new values, since children depend on it: */
       if (v->value != NULL)
-	value_free (v->value);
-      v->value = new;
+	value_free(v->value);
+      v->value = newval;
 
       /* If the type has changed, delete the children,
 	 otherwise push any children */
@@ -1790,23 +1806,23 @@ varobj_update (struct varobj **varp, struct varobj_changelist **changelist)
 	    {
 	      struct varobj_child *c;
 	      for (c = v->children; c != NULL; c = c->next)
-		vpush (&stack, c->child);
+		vpush(&stack, c->child);
 	    }
 	}
       else
 	{
-	  varobj_delete (v, NULL, 1);
+	  varobj_delete(v, NULL, 1);
 	}
 
 
-      /* Get next child */
-      v = vpop (&stack);
+      /* Get next child: */
+      v = vpop(&stack);
     }
 
-  /* Restore selected frame */
-  fi = frame_find_by_id (old_fid);
+  /* Restore selected frame: */
+  fi = frame_find_by_id(old_fid);
   if (fi)
-    select_frame (fi);
+    select_frame(fi);
 
   *changelist = result;
 
@@ -1906,14 +1922,14 @@ install_variable (struct varobj *var)
     }
 
   cv = *(varobj_table + index);
-  while ((cv != NULL) && (strcmp (cv->var->obj_name, var->obj_name) != 0))
+  while ((cv != NULL) && (strcmp(cv->var->obj_name, var->obj_name) != 0))
     cv = cv->next;
 
   if (cv != NULL)
-    error (_("Duplicate variable object name"));
+    error(_("Duplicate variable object name"));
 
   /* Add varobj to hash table */
-  newvl = xmalloc (sizeof (struct vlist));
+  newvl = (struct vlist *)xmalloc(sizeof(struct vlist));
   newvl->next = *(varobj_table + index);
   newvl->var = var;
   *(varobj_table + index) = newvl;
@@ -2178,11 +2194,11 @@ remove_child_from_parent (struct varobj *parent, struct varobj *child)
 
 /* Allocate memory and initialize a new variable */
 static struct varobj *
-new_variable (void)
+new_variable(void)
 {
   struct varobj *var;
 
-  var = (struct varobj *) xmalloc (sizeof (struct varobj));
+  var = (struct varobj *)xmalloc(sizeof(struct varobj));
   var->name = NULL;
   var->obj_name = NULL;
   var->index = -1;
@@ -2199,7 +2215,7 @@ new_variable (void)
   var->parent = NULL;
   var->children = NULL;
   var->fake_child = 0;
-  var->format = 0;
+  var->format = (enum varobj_display_formats)0;
   var->root = NULL;
   var->updated = 0;
   var->hitlist = NULL;
@@ -2226,38 +2242,38 @@ new_root_variable (void)
 
 /* Free any allocated memory associated with VAR. */
 static void
-free_variable (struct varobj *var)
+free_variable(struct varobj *var)
 {
   /* Free the expression if this is a root variable. */
   /* APPLE LOCAL is_root_p */
-  if (is_root_p (var))
+  if (is_root_p(var))
     {
       if (var->root->exp != NULL)
-	free_current_contents ((char **) &var->root->exp);
-      xfree (var->root);
+	free_current_contents((char **)&var->root->exp);
+      xfree(var->root);
     }
 
-  xfree (var->name);
-  xfree (var->path_expr);
-  xfree (var->obj_name);
-  xfree (var->dynamic_type_name);
+  xfree(var->name);
+  xfree(var->path_expr);
+  xfree(var->obj_name);
+  xfree(var->dynamic_type_name);
   if (var->value != NULL)
-    value_free (var->value);
+    value_free(var->value);
   if (var->hitlist != NULL)
-    xfree (var->hitlist);
-  xfree (var);
+    xfree(var->hitlist);
+  xfree(var);
 }
 
 static void
-do_free_variable_cleanup (void *var)
+do_free_variable_cleanup(void *var)
 {
-  free_variable (var);
+  free_variable((struct varobj *)var);
 }
 
 static struct cleanup *
-make_cleanup_free_variable (struct varobj *var)
+make_cleanup_free_variable(struct varobj *var)
 {
-  return make_cleanup (do_free_variable_cleanup, var);
+  return make_cleanup(do_free_variable_cleanup, var);
 }
 
 void
@@ -2677,10 +2693,10 @@ path_expr_of_root (struct varobj *var)
 	      dynamic_expr_len = strlen (dynamic_expr);
 	      if (dynamic_expr_len > 0)
 		{
-		  root_name_len = strlen (var->name);
-		  path_expr = (char *) xmalloc (dynamic_expr_len + root_name_len +
-						strlen (format) - 3);
-		  sprintf (path_expr, format, dynamic_expr, var->name);
+		  root_name_len = strlen(var->name);
+		  path_expr = (char *)xmalloc(dynamic_expr_len + root_name_len +
+                                              strlen(format) - 3);
+		  sprintf(path_expr, format, dynamic_expr, var->name);
 		}
 	    }
 	}
@@ -2695,50 +2711,50 @@ path_expr_of_root (struct varobj *var)
    If it has not been computed yet, this will compute it */
 
 static char *
-path_expr_of_variable (struct varobj *var)
+path_expr_of_variable(struct varobj *var)
 {
-  /* APPLE LOCAL begin cast varobj root to dynamic type, if appropriate.  */
-  if (var->path_expr != NULL
-      && (! is_root_p (var)))
+  /* APPLE LOCAL begin cast varobj root to dynamic type, if appropriate: */
+  if ((var->path_expr != NULL)
+      && (! is_root_p(var)))
     return var->path_expr;
   /* APPLE LOCAL is_root_p */
-  else if (is_root_p (var))
-    return path_expr_of_root (var);
-  /* APPLE LOCAL end cast varobj root to dynamic type, if appropriate.  */
+  else if (is_root_p(var))
+    return path_expr_of_root(var);
+  /* APPLE LOCAL end cast varobj root to dynamic type, if appropriate: */
   else if (var->elide_in_expr)
     {
-      if (CPLUS_FAKE_CHILD (var->parent))
+      if (CPLUS_FAKE_CHILD(var->parent))
 	/* FIXME: Note we won't get here for now, since I don't set
 	   the elide_in_expr for fake children.  But this is how it
 	   really should work...  */
-	var->path_expr = xstrdup (path_expr_of_variable (var->parent->parent));
+	var->path_expr = xstrdup(path_expr_of_variable(var->parent->parent));
       else
-	var->path_expr = xstrdup (path_expr_of_variable (var->parent));
+	var->path_expr = xstrdup(path_expr_of_variable(var->parent));
       return var->path_expr;
     }
   else
-    return path_expr_of_child (var->parent, var->index);
+    return path_expr_of_child(var->parent, var->index);
 }
 /* APPLE LOCAL end */
 
 /* What is the name of the INDEX'th child of VAR? Returns a malloc'd string. */
 static char *
-make_name_of_child (struct varobj *var, int index)
+make_name_of_child(struct varobj *var, int index)
 {
-  return (*var->root->lang->make_name_of_child) (var, index);
+  return (*var->root->lang->make_name_of_child)(var, index);
 }
 
 /* APPLE LOCAL begin */
 /* What is the rooted expression of the INDEX'th child of VAR? Returns
    a malloc'd string. */
 static char *
-path_expr_of_child (struct varobj *var, int index)
+path_expr_of_child(struct varobj *var, int index)
 {
-  return (*var->root->lang->path_expr_of_child) (var, index);
+  return (*var->root->lang->path_expr_of_child)(var, index);
 }
 
 int
-varobj_type_is_equal_p (struct varobj *old_var, struct varobj *new_var)
+varobj_type_is_equal_p(struct varobj *old_var, struct varobj *new_var)
 {
   char *old_type, *new_type;
   int result;
@@ -2751,13 +2767,13 @@ varobj_type_is_equal_p (struct varobj *old_var, struct varobj *new_var)
      the same children as well, or we could end up casting the variable to
      another of the same name but different layout behind the user's back.  */
 
-  old_type = varobj_get_type (old_var);
-  new_type = varobj_get_type (new_var);
+  old_type = varobj_get_type(old_var);
+  new_type = varobj_get_type(new_var);
 
-  result = (strcmp (old_type, new_type) == 0);
+  result = (strcmp(old_type, new_type) == 0);
 
-  xfree (old_type);
-  xfree (new_type);
+  xfree(old_type);
+  xfree(new_type);
 
   return result;
 }
@@ -3522,27 +3538,27 @@ varobj_value_struct_elt_by_index (struct varobj *parent, int index, struct value
      properly find the indexed field. */
 
 static int
-varobj_get_type_index_from_fake_child (struct varobj *parent, int index)
+varobj_get_type_index_from_fake_child(struct varobj *parent, int index)
 {
   struct type* type;
   int type_index = -1;
 
-  if (!CPLUS_FAKE_CHILD (parent))
+  if (!CPLUS_FAKE_CHILD(parent))
     {
       return index;
     }
   else
     {
       /* Looking for children of public, private, or protected. */
-      type = get_type_deref (parent->parent, NULL);
+      type = get_type_deref(parent->parent, NULL);
     }
 
-  if (TYPE_CODE (type) != TYPE_CODE_STRUCT
-      && TYPE_CODE_UNION)
+  if ((TYPE_CODE(type) != TYPE_CODE_STRUCT)
+      && (TYPE_CODE(type) != TYPE_CODE_UNION))
     return index;
 
-  type_index = TYPE_N_BASECLASSES (type);
-  if (strcmp (parent->name, "private") == 0)
+  type_index = TYPE_N_BASECLASSES(type);
+  if (strcmp(parent->name, "private") == 0)
     {
       while (index >= 0)
 	{
@@ -3623,15 +3639,19 @@ c_value_of_child (struct varobj *parent, int index, int *lookup_dynamic_type)
     }
 
 
-  type = get_type (parent);
-  target = get_target_type (type);
+  type = get_type(parent);
+  target = get_target_type(type);
 
-  child = child_exists (parent, index);
+  child = child_exists(parent, index);
 
   if (child == NULL)
-    error ("c_value_of_child: called with NULL child");
+    error("c_value_of_child: called with NULL child");
 
-  name = name_of_variable (child);
+  name = name_of_variable(child);
+
+  if (name == NULL) {
+    ; /* ??? */
+  }
 
   temp = parent->value;
   value = NULL;
@@ -3712,22 +3732,26 @@ c_value_of_child (struct varobj *parent, int index, int *lookup_dynamic_type)
 }
 
 static struct type *
-c_type_of_child (struct varobj *parent, int index)
+c_type_of_child(struct varobj *parent, int index)
 {
   struct type *type;
   struct varobj *child;
-  struct type *parent_type = get_type (parent);
+  struct type *parent_type = get_type(parent);
   struct type *target_type;
 
   char *name;
 
-  child = child_exists (parent, index);
+  child = child_exists(parent, index);
   if (child == NULL)
-    error ("c_type_of_child: called with a NULL child.");
+    error("c_type_of_child: called with a NULL child.");
 
-  name = name_of_variable (child);
+  name = name_of_variable(child);
 
-  switch (TYPE_CODE (parent_type))
+  if (name == NULL) {
+    ; /* ??? */
+  }
+
+  switch (TYPE_CODE(parent_type))
     {
     case TYPE_CODE_ARRAY:
       /* APPLE LOCAL: Don't call get_target_type here, that
@@ -3839,20 +3863,21 @@ c_value_of_variable (struct varobj *var)
 	else
 	  {
 	    long dummy;
-	    struct ui_file *stb = mem_fileopen ();
-	    struct cleanup *old_chain = make_cleanup_ui_file_delete (stb);
+	    struct ui_file *stb = mem_fileopen();
+	    struct cleanup *old_chain = make_cleanup_ui_file_delete(stb);
 	    char *thevalue;
 
-	    if (value_lazy (var->value))
-	      gdb_value_fetch_lazy (var->value);
+	    if (value_lazy(var->value))
+	      gdb_value_fetch_lazy(var->value);
 	    /* APPLE LOCAL: It looks ugly to have reference values contain
 	       the contents of the reference.  Just print them like pointers.  */
-	    common_val_print (var->value, stb,
-			      format_code[(int) var->format], 0, 0, 0);
-	    thevalue = ui_file_xstrdup (stb, &dummy);
-	    do_cleanups (old_chain);
-	return thevalue;
-      }
+	    common_val_print(var->value, stb,
+                             format_code[(int)var->format], 0, 0,
+                             (enum val_prettyprint)0);
+	    thevalue = ui_file_xstrdup(stb, &dummy);
+	    do_cleanups(old_chain);
+            return thevalue;
+          }
       }
     }
 }
@@ -4224,13 +4249,13 @@ cplus_path_expr_of_child (struct varobj *parent, int index)
 	      && child->dynamic_type != child->type)
 	    {
 	      struct type *child_type = NULL;
-	      child_type = get_type_deref (child, &child_is_ptr);
+	      child_type = get_type_deref(child, &child_is_ptr);
 	      if (!child_is_ptr)
 		dynamic_expr_len = 0;
 	      else
 		{
-		  dynamic_expr = TYPE_NAME (child_type);
-		  dynamic_expr_len = strlen (dynamic_expr);
+		  dynamic_expr = TYPE_NAME(child_type);
+		  dynamic_expr_len = strlen(dynamic_expr);
 		}
 	    }
 	  else
@@ -4251,16 +4276,17 @@ cplus_path_expr_of_child (struct varobj *parent, int index)
 	  if (dynamic_expr_len > 0)
 		{
 		  const char *format = "(('%s' *) ((%s)%s%s))";
-		  path_expr = (char *) xmalloc (dynamic_expr_len + parent_len
-						+ join_expr_len + child_len + strlen (format) - 6 + 1);
-		  sprintf (path_expr, format, dynamic_expr, parent_expr, join_expr, child_name);
+		  path_expr = (char *)xmalloc(dynamic_expr_len + parent_len
+                                              + join_expr_len + child_len + strlen(format) - 6 + 1);
+		  sprintf(path_expr, format, dynamic_expr, parent_expr,
+                          join_expr, child_name);
 		}
 	  else
 	    {
 	      const char *format = "((%s)%s%s)";
-	      path_expr = (char *) xmalloc (parent_len + join_expr_len
-					    + child_len + strlen (format) - 4 + 1);
-	      sprintf (path_expr, format, parent_expr, join_expr, child_name);
+	      path_expr = (char *)xmalloc(parent_len + join_expr_len
+                                          + child_len + strlen(format) - 4 + 1);
+	      sprintf(path_expr, format, parent_expr, join_expr, child_name);
 	    }
 	}
       else if (index < TYPE_N_BASECLASSES (type))
@@ -4350,7 +4376,7 @@ cplus_value_of_child (struct varobj *parent, int index, int *lookup_dynamic_type
   if (((TYPE_CODE (type)) == TYPE_CODE_STRUCT) ||
       ((TYPE_CODE (type)) == TYPE_CODE_UNION))
     {
-      if (CPLUS_FAKE_CHILD (parent))
+      if (CPLUS_FAKE_CHILD(parent))
 	{
 	  enum gdb_rc ret_val;
 	  struct varobj *child;
@@ -4359,22 +4385,24 @@ cplus_value_of_child (struct varobj *parent, int index, int *lookup_dynamic_type
 	  if (temp == NULL)
 	    return NULL;
 
-	  child = child_exists (parent, index);
+	  child = child_exists(parent, index);
           if (!child)
-            error ("cplus_value_of_child: "
-                   "Tried to get the value of a null child.");
+            error("cplus_value_of_child: "
+                  "Tried to get the value of a null child.");
 	  /* APPLE LOCAL: Can't use the value_struct_elt, since that
 	     looks up by name which doesn't work for anonymous unions
 	     & structures.  */
-	  ret_val = varobj_value_struct_elt_by_index (parent, index, &value);
+	  ret_val = (enum gdb_rc)varobj_value_struct_elt_by_index(parent,
+                                                                  index,
+                                                                  &value);
 	  if (!ret_val)
 	    return NULL;
 
 	  if (value != NULL)
-	    release_value (value);
+	    release_value(value);
 	  /* END APPLE LOCAL */
 	}
-      else if (index >= TYPE_N_BASECLASSES (type))
+      else if (index >= TYPE_N_BASECLASSES(type))
 	{
 	  /* public, private, or protected */
 	  if (lookup_dynamic_type != NULL)
@@ -4590,14 +4618,14 @@ java_path_expr_of_child (struct varobj *parent, int index)
   return cplus_path_expr_of_child (parent, index);
 }
 
-extern void _initialize_varobj (void);
+extern void _initialize_varobj(void);
 void
-_initialize_varobj (void)
+_initialize_varobj(void)
 {
-  int sizeof_table = sizeof (struct vlist *) * VAROBJ_TABLE_SIZE;
+  int sizeof_table = (sizeof(struct vlist *) * VAROBJ_TABLE_SIZE);
 
-  varobj_table = xmalloc (sizeof_table);
-  memset (varobj_table, 0, sizeof_table);
+  varobj_table = (struct vlist **)xmalloc(sizeof_table);
+  memset(varobj_table, 0, sizeof_table);
 
   /* APPLE LOCAL begin varobj */
   add_setshow_boolean_cmd ("varobj-print-object", class_obscure,

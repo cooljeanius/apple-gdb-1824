@@ -1056,8 +1056,8 @@ find_orig_static_symbols (struct fixinfo *cur,
    file's symbol/msymbol.  */
 
 static void
-redirect_statics (struct file_static_fixups *indirect_entries,
-                  int indirect_entry_count)
+redirect_statics(struct file_static_fixups *indirect_entries,
+                 int indirect_entry_count)
 {
   int i;
   gdb_byte buf[TARGET_ADDRESS_BYTES];
@@ -1066,24 +1066,18 @@ redirect_statics (struct file_static_fixups *indirect_entries,
     {
       if (fix_and_continue_debug_flag)
         {
-          if (indirect_entries[i].addr == (CORE_ADDR) NULL)
-            printf_filtered
-               ("DEBUG: Static entry addr for file static #%d was zero.\n", i);
-          if (indirect_entries[i].value == (CORE_ADDR) NULL)
-            printf_filtered
-                ("DEBUG: Destination addr for file static #%d was zero.\n", i);
+          if (indirect_entries[i].addr == (CORE_ADDR)(uintptr_t)NULL)
+            printf_filtered("DEBUG: Static entry addr for file static #%d was zero.\n", i);
+          if (indirect_entries[i].value == (CORE_ADDR)(uintptr_t)NULL)
+            printf_filtered("DEBUG: Destination addr for file static #%d was zero.\n", i);
           if (indirect_entries[i].new_sym == NULL)
-            printf_filtered
-                   ("DEBUG: Could not find new symbol for static #%d\n", i);
+            printf_filtered("DEBUG: Could not find new symbol for static #%d\n", i);
           if (indirect_entries[i].new_msym == NULL)
-            printf_filtered
-                 ("DEBUG: Could not find new msymbol for static #%d\n", i);
+            printf_filtered("DEBUG: Could not find new msymbol for static #%d\n", i);
           if (indirect_entries[i].original_sym == NULL)
-            printf_filtered
-                 ("DEBUG: Could not find original symbol for static #%d\n", i);
+            printf_filtered("DEBUG: Could not find original symbol for static #%d\n", i);
           if (indirect_entries[i].original_msym == NULL)
-            printf_filtered
-                 ("DEBUG: Could not find original msymbol for static #%d\n", i);
+            printf_filtered("DEBUG: Could not find original msymbol for static #%d\n", i);
         }
 
       if (indirect_entries[i].new_sym == NULL ||
@@ -1091,28 +1085,28 @@ redirect_statics (struct file_static_fixups *indirect_entries,
           indirect_entries[i].new_msym == NULL ||
           indirect_entries[i].original_msym == NULL)
         continue;
-      if (indirect_entries[i].value == (CORE_ADDR) NULL ||
-          indirect_entries[i].addr == (CORE_ADDR) NULL)
+      if (indirect_entries[i].value == (CORE_ADDR)(uintptr_t)NULL
+          || indirect_entries[i].addr == (CORE_ADDR)(uintptr_t)NULL)
         continue;
 
-      if (SYMBOL_VALUE_ADDRESS (indirect_entries[i].original_msym) == 0
-          || SYMBOL_VALUE_ADDRESS (indirect_entries[i].new_msym) == 0)
+      if (SYMBOL_VALUE_ADDRESS(indirect_entries[i].original_msym) == 0
+          || SYMBOL_VALUE_ADDRESS(indirect_entries[i].new_msym) == 0)
         continue;
 
-      store_unsigned_integer (buf, TARGET_ADDRESS_BYTES,
-                        SYMBOL_VALUE_ADDRESS (indirect_entries[i].original_msym));
-      write_memory (indirect_entries[i].addr, buf, TARGET_ADDRESS_BYTES);
+      store_unsigned_integer(buf, TARGET_ADDRESS_BYTES,
+                        SYMBOL_VALUE_ADDRESS(indirect_entries[i].original_msym));
+      write_memory(indirect_entries[i].addr, buf, TARGET_ADDRESS_BYTES);
 
-      SYMBOL_OBSOLETED (indirect_entries[i].original_sym) = 0;
-      MSYMBOL_OBSOLETED (indirect_entries[i].original_msym) = 0;
-      SYMBOL_OBSOLETED (indirect_entries[i].new_sym) = 1;
-      MSYMBOL_OBSOLETED (indirect_entries[i].new_msym) = 1;
+      SYMBOL_OBSOLETED(indirect_entries[i].original_sym) = 0;
+      MSYMBOL_OBSOLETED(indirect_entries[i].original_msym) = 0;
+      SYMBOL_OBSOLETED(indirect_entries[i].new_sym) = 1;
+      MSYMBOL_OBSOLETED(indirect_entries[i].new_msym) = 1;
 
       if (fix_and_continue_debug_flag)
-        printf_filtered ("DEBUG: Redirected file static %s from 0x%s to 0x%s\n",
-          SYMBOL_PRINT_NAME (indirect_entries[i].original_sym),
-          paddr_nz (SYMBOL_VALUE_ADDRESS (indirect_entries[i].new_msym)),
-          paddr_nz (SYMBOL_VALUE_ADDRESS (indirect_entries[i].original_msym)));
+        printf_filtered("DEBUG: Redirected file static %s from 0x%s to 0x%s\n",
+          SYMBOL_PRINT_NAME(indirect_entries[i].original_sym),
+          paddr_nz(SYMBOL_VALUE_ADDRESS(indirect_entries[i].new_msym)),
+          paddr_nz(SYMBOL_VALUE_ADDRESS(indirect_entries[i].original_msym)));
     }
 }
 
@@ -1168,7 +1162,8 @@ find_and_parse_nonlazy_ptr_sect(struct fixinfo *cur,
   if (indirect_ptr_section_size % TARGET_ADDRESS_BYTES != 0)
     error("Incorrect non-lazy symbol pointer section size!");
 
-  nl_symbol_ptr_count = (indirect_ptr_section_size / TARGET_ADDRESS_BYTES);
+  nl_symbol_ptr_count = (int)(indirect_ptr_section_size
+                              / TARGET_ADDRESS_BYTES);
   *indirect_entries = ((struct file_static_fixups *)
                        xmalloc(sizeof(struct file_static_fixups)
                                * nl_symbol_ptr_count));
@@ -1416,16 +1411,17 @@ free_objfile_cleanup(void *obj)
    a good bit of the fixinfo structure as we do our job. */
 
 static void
-pre_load_and_check_file (struct fixinfo *cur)
+pre_load_and_check_file(struct fixinfo *cur)
 {
   bfd *object_bfd;
   struct objfile *new_objfile;
   struct cleanup *cleanups;
 
-  object_bfd = symfile_bfd_open_safe (cur->bundle_filename, 0, GDB_OSABI_UNKNOWN);
-  new_objfile = symbol_file_add_bfd_safe (object_bfd, 0, 0, 0, 0, 0,
-                                          OBJF_SYM_ALL, (CORE_ADDR) NULL, NULL,
-                                          NULL);
+  object_bfd = symfile_bfd_open_safe(cur->bundle_filename, 0, GDB_OSABI_UNKNOWN);
+  new_objfile = symbol_file_add_bfd_safe(object_bfd, 0, 0, 0, 0, 0,
+                                         OBJF_SYM_ALL,
+                                         (CORE_ADDR)(uintptr_t)NULL, NULL,
+                                         NULL);
 
   /* We need all of the debug symbols for the pre-loaded objfile;
      override any load-rules that might have affected it.  */
@@ -2135,8 +2131,8 @@ in_active_func (const char *name, struct active_threads *threads)
    of the code we're overwriting.  */
 
 static void
-redirect_old_function (struct fixinfo *fixinfo, struct symbol *new_sym,
-                       struct symbol *old_sym, int active)
+redirect_old_function(struct fixinfo *fixinfo, struct symbol *new_sym,
+                      struct symbol *old_sym, int active)
 {
   CORE_ADDR oldfuncstart, oldfuncend, newfuncstart, fixup_addr;
   struct minimal_symbol *msym;
@@ -2167,7 +2163,8 @@ redirect_old_function (struct fixinfo *fixinfo, struct symbol *new_sym,
 
     buf[0] = 0xe9;  /* jmp <imm32-relative-addr> */
     buf[5] = 0xcc;  /* int 3 */
-    relative_offset = ((uint32_t)newfuncstart - (oldfuncstart + 5U));
+    relative_offset = (uint32_t)((uint32_t)newfuncstart
+                                 - (oldfuncstart + 5U));
     /* Use '4' instead of TARGET_ADDRESS_BYTES because 0xe9 is a 32-bit
      * eip/rip relative displacement, not an address.  */
     store_unsigned_integer(buf + 1, 4, relative_offset);
@@ -2191,23 +2188,26 @@ redirect_old_function (struct fixinfo *fixinfo, struct symbol *new_sym,
   else
     obsoletedsym->next = fixinfo->most_recent_fix->obsoletedsym;
   fixinfo->most_recent_fix->obsoletedsym = obsoletedsym;
+
+  /* Use some unused variables: */
+  if (oldfuncend == fixup_addr) {
+    return; /* else fall off the end; matters little either way... */
+  }
 }
 
 
-  /* Detect a Fix and Continue trampoline.
-     Returns 0 if this is not a F&C trampoline; returns the
-     destination address if it is.  */
+/* Detect a Fix and Continue trampoline.
+   Returns 0 if this is not a F&C trampoline; returns the
+   destination address if it is.  */
 
 CORE_ADDR
-decode_fix_and_continue_trampoline (CORE_ADDR pc)
+decode_fix_and_continue_trampoline(CORE_ADDR pc)
 {
-#if defined (TARGET_I386)
-
-  /* Detect the x86 F&C trampoline sequence.  */
-
+#if defined(TARGET_I386)
+  /* Detect the x86 F&C trampoline sequence: */
   unsigned char buf[6];
   uint32_t relative_offset;
-  target_read_memory (pc, buf, 6);
+  target_read_memory(pc, buf, 6);
 
   /* jmp <32-bit-relative-addr> */
   if (buf[0] != 0xe9)
@@ -2217,12 +2217,12 @@ decode_fix_and_continue_trampoline (CORE_ADDR pc)
   if (buf[5] != 0xcc)
     return 0;
 
-  relative_offset = extract_unsigned_integer (buf + 1, 4);
+  relative_offset = (uint32_t)extract_unsigned_integer(buf + 1, 4);
   pc += 5;  /* the relative offset is computed from next instruction */
-  return pc + relative_offset;
+  return (pc + relative_offset);
 #else
   return 0;
-#endif
+#endif /* TARGET_I386 */
 }
 
 /* Print all of the functions that are currently on the stack which

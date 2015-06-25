@@ -1261,16 +1261,18 @@ extern struct symbol_search *lookup_block_symbol_all (const struct block *,
 
 /* lookup a [struct, union, enum] by name, within a specified block */
 
-extern struct type *lookup_struct (char *, struct block *);
+extern struct type *lookup_struct(char *, struct block *);
 
-extern struct type *lookup_union (char *, struct block *);
+extern struct type *lookup_struct_no_error(char *, struct block *);
 
-extern struct type *lookup_enum (char *, struct block *);
+extern struct type *lookup_union(char *, struct block *);
+
+extern struct type *lookup_enum(char *, struct block *);
 
 /* from blockframe.c: */
 
 /* APPLE LOCAL */
-int addr_inside_main_func (CORE_ADDR pc);
+int addr_inside_main_func(CORE_ADDR pc);
 
 /* lookup the function symbol corresponding to the address */
 

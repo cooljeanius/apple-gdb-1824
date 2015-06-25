@@ -52,14 +52,20 @@ free_environ(struct gdb_environ *e)
   xfree(e);
 }
 
-/* Copy the environment given to this process into E.
-   Also copies all the strings in it, so we can be sure
-   that all strings in these environments are safe to free.  */
 
+#if defined(__APPLE__) && defined(NM_NEXTSTEP) && defined(HAVE_CRT_EXTERNS_H)
+# include <crt_externs.h>
+# define environ (*_NSGetEnviron())
+#else
+extern char **environ;
+#endif /* __APPLE__ && NM_NEXTSTEP && HAVE_CRT_EXTERNS_H */
+
+/* Copy the environment given to this process into E.
+ * Also copies all the strings in it, so we can be sure that all strings
+ * in these environments are safe to free.  */
 void
 init_environ(struct gdb_environ *e)
 {
-  extern char **environ;
   int i;
 
   if (environ == NULL)
@@ -79,9 +85,9 @@ init_environ(struct gdb_environ *e)
   while (--i >= 0)
     {
       size_t len = strlen(e->vector[i]);
-      char *new = (char *)xmalloc(len + 1UL);
-      memcpy(new, e->vector[i], (len + 1UL));
-      e->vector[i] = new;
+      char *newstr = (char *)xmalloc(len + 1UL);
+      memcpy(newstr, e->vector[i], (len + 1UL));
+      e->vector[i] = newstr;
     }
 }
 

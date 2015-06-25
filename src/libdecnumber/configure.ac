@@ -43,8 +43,9 @@ dnl# '-W' is redundant with '-Wextra'
 ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wno-unused-value -Wwrite-strings \
 -Wstrict-prototypes -Wmissing-prototypes -Wmissing-parameter-type \
 -Wmissing-declarations -Wnested-externs -Wundef -Wshadow -Wformat=2 \
--Wold-style-definition -Wold-style-declaration -Wc++-compat \
--Wmissing-format-attribute -Wcast-qual -Wout-of-line-declaration])
+-Wold-style-definition -Wold-style-declaration -Wc++-compat -Wodr -Wabi \
+-Wmissing-format-attribute -Wcast-qual -Wout-of-line-declaration \
+-Wmisleading-indentation])
 ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-Wno-long-long])dnl
 
 # Only enable with --enable-werror-always until existing warnings are

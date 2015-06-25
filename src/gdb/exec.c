@@ -176,12 +176,12 @@ exec_close(int quitting)
 
       if (vp->objfile)
 	{
-	  free_objfile (vp->objfile);
+	  free_objfile(vp->objfile);
 	  need_symtab_cleanup = 1;
 	}
       else if (vp->bfd != exec_bfd)
 	/* FIXME-leak: We should be freeing vp->name too, I think.  */
-	if (!bfd_close (vp->bfd))
+	if (!bfd_close(vp->bfd))
 	  warning(_("cannot close \"%s\": %s"),
 		  vp->name, bfd_errmsg(bfd_get_error()));
 
@@ -212,13 +212,18 @@ exec_close(int quitting)
       target_resize_to_sections(&exec_ops,
                                 (exec_ops.to_sections_end - exec_ops.to_sections));
     }
+
+  /* use an unused variable: */
+  if (need_symtab_cleanup > 0) {
+    return; /* else fall off the end; it matters little either way */
+  }
 }
 
 void
-exec_file_clear (int from_tty)
+exec_file_clear(int from_tty)
 {
-  /* Remove exec file.  */
-  unpush_target (&exec_ops);
+  /* Remove exec file: */
+  unpush_target(&exec_ops);
 
   if (from_tty)
     printf_unfiltered (_("No executable file now.\n"));
@@ -585,8 +590,8 @@ map_vmap (bfd *abfd, bfd *arch)
    we just tail-call it with more arguments to select between them.  */
 
 static int
-xfer_memory_1 (CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
-	     struct mem_attrib *attrib, struct target_ops *target)
+xfer_memory_1(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
+              struct mem_attrib *attrib, struct target_ops *target)
 {
   int res;
   struct section_table *p;
@@ -594,13 +599,13 @@ xfer_memory_1 (CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
   asection *section = NULL;
 
   if (len <= 0)
-    internal_error (__FILE__, __LINE__, _("failed internal consistency check"));
+    internal_error(__FILE__, __LINE__, _("failed internal consistency check"));
 
   if (overlay_debugging)
     {
-      section = find_pc_overlay (memaddr);
-      if (pc_in_unmapped_range (memaddr, section))
-	memaddr = overlay_mapped_address (memaddr, section);
+      section = find_pc_overlay(memaddr);
+      if (pc_in_unmapped_range(memaddr, section))
+	memaddr = overlay_mapped_address(memaddr, section);
     }
 
   memend = memaddr + len;
@@ -609,22 +614,22 @@ xfer_memory_1 (CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
   for (p = target->to_sections; p < target->to_sections_end; p++)
     {
       if (overlay_debugging && section && p->the_bfd_section &&
-	  strcmp (section->name, p->the_bfd_section->name) != 0)
+	  (strcmp(section->name, p->the_bfd_section->name) != 0))
 	continue;		/* not the section we need */
       if (memaddr >= p->addr)
         {
 	  if (memend <= p->endaddr)
 	    {
-	      /* Entire transfer is within this section.  */
+	      /* Entire transfer is within this section: */
 	      if (write)
-		res = bfd_set_section_contents (p->bfd, p->the_bfd_section,
-						myaddr, memaddr - p->addr,
-						len);
+		res = bfd_set_section_contents(p->bfd, p->the_bfd_section,
+                                               myaddr, (memaddr - p->addr),
+                                               (bfd_size_type)len);
 	      else
-		res = bfd_get_section_contents (p->bfd, p->the_bfd_section,
-						myaddr, memaddr - p->addr,
-						len);
-	      return (res != 0) ? len : 0;
+		res = bfd_get_section_contents(p->bfd, p->the_bfd_section,
+                                               myaddr, (memaddr - p->addr),
+                                               (bfd_size_type)len);
+	      return ((res != 0) ? len : 0);
 	    }
 	  else if (memaddr >= p->endaddr)
 	    {
@@ -633,27 +638,27 @@ xfer_memory_1 (CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
 	    }
 	  else
 	    {
-	      /* This section overlaps the transfer.  Just do half.  */
-	      len = p->endaddr - memaddr;
+	      /* This section overlaps the transfer.  Just do half: */
+	      len = (int)(p->endaddr - memaddr);
 	      if (write)
-		res = bfd_set_section_contents (p->bfd, p->the_bfd_section,
-						myaddr, memaddr - p->addr,
-						len);
+		res = bfd_set_section_contents(p->bfd, p->the_bfd_section,
+                                               myaddr, (memaddr - p->addr),
+                                               (bfd_size_type)len);
 	      else
-		res = bfd_get_section_contents (p->bfd, p->the_bfd_section,
-						myaddr, memaddr - p->addr,
-						len);
-	      return (res != 0) ? len : 0;
+		res = bfd_get_section_contents(p->bfd, p->the_bfd_section,
+                                               myaddr, (memaddr - p->addr),
+                                               (bfd_size_type)len);
+	      return ((res != 0) ? len : 0);
 	    }
         }
       else
-	nextsectaddr = min (nextsectaddr, p->addr);
+	nextsectaddr = min(nextsectaddr, p->addr);
     }
 
   if (nextsectaddr >= memend)
-    return 0;			/* We can't help */
+    return 0;			/* We cannot help */
   else
-    return -(nextsectaddr - memaddr);	/* Next boundary where we can help */
+    return (int)(-(nextsectaddr - memaddr)); /* Next boundary where we can help */
 }
 
 int
@@ -829,43 +834,44 @@ exec_set_section_offsets (bfd_signed_vma text_off, bfd_signed_vma data_off,
 }
 
 static void
-set_section_command (char *args, int from_tty)
+set_section_command(char *args, int from_tty)
 {
   struct section_table *p;
   char *secname;
   unsigned seclen;
-  unsigned long secaddr;
+  CORE_ADDR secaddr;
   char secprint[100];
-  long offset;
+  off_t offset;
 
   if (args == 0)
-    error (_("Must specify section name and its virtual address"));
+    error(_("Must specify section name and its virtual address"));
 
-  /* Parse out section name */
-  for (secname = args; !isspace (*args); args++);
-  seclen = args - secname;
+  /* Parse out section name: */
+  for (secname = args; !isspace(*args); args++);
+  seclen = (args - secname);
 
-  /* Parse out new virtual address */
-  secaddr = parse_and_eval_address (args);
+  /* Parse out new virtual address: */
+  secaddr = parse_and_eval_address(args);
 
   for (p = exec_ops.to_sections; p < exec_ops.to_sections_end; p++)
     {
-      if (!strncmp (secname, bfd_section_name (exec_bfd, p->the_bfd_section), seclen)
-	  && bfd_section_name (exec_bfd, p->the_bfd_section)[seclen] == '\0')
+      if (!strncmp(secname, bfd_section_name(exec_bfd, p->the_bfd_section),
+                   seclen)
+	  && (bfd_section_name(exec_bfd, p->the_bfd_section)[seclen] == '\0'))
 	{
-	  offset = secaddr - p->addr;
+	  offset = (secaddr - p->addr);
 	  p->addr += offset;
 	  p->endaddr += offset;
 	  if (from_tty)
-	    exec_files_info (&exec_ops);
+	    exec_files_info(&exec_ops);
 	  return;
 	}
     }
-  if (seclen >= sizeof (secprint))
-    seclen = sizeof (secprint) - 1;
-  strncpy (secprint, secname, seclen);
+  if (seclen >= sizeof(secprint))
+    seclen = (sizeof(secprint) - 1UL);
+  strncpy(secprint, secname, seclen);
   secprint[seclen] = '\0';
-  error (_("Section %s not found"), secprint);
+  error(_("Section %s not found"), secprint);
 }
 
 /* If we can find a section in FILENAME with BFD index INDEX, and the

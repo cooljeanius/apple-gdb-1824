@@ -50,6 +50,8 @@
 # include "i386-tdep.h"
 #elif defined(TARGET_ARM)
 # include "arm-tdep.h"
+#elif defined(TARGET_AARCH64)
+# include "aarch64-tdep.h"
 #else
 # error "Unrecognized target architecture."
 #endif /* TARGET_foo */
@@ -1816,7 +1818,8 @@ gc_print_references(volatile CORE_ADDR list_addr, int wordsize)
 
       ui_out_text(uiout, " Kind: ");
 
-      if ((kind >= AUTO_BLOCK_GLOBAL) && (kind <= AUTO_BLOCK_ASSOCIATION))
+      if (((LONGEST)kind >= AUTO_BLOCK_GLOBAL)
+          && (kind <= AUTO_BLOCK_ASSOCIATION))
 	{
 	  ui_out_field_string(uiout, "kind", auto_kind_strings[kind]);
 	  ui_out_text(uiout, auto_kind_spacer[kind]);

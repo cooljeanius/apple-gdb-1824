@@ -635,6 +635,7 @@ ALLOCA
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
+GCC
 EGREP
 GREP
 ac_ct_CXX
@@ -4008,6 +4009,7 @@ fi
 
   test -n "$AWK" && break
 done
+
 
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'

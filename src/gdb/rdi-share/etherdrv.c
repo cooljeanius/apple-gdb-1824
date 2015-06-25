@@ -566,7 +566,11 @@ static int EthernetMatch(const char *name, const char *arg)
 {
     /* IGNORE arg */
     if (0) {
+#ifdef __clang__
+        (void)arg;
+#else
         arg = arg;
+#endif /* __clang__ */
     }
 
     if (name == NULL) {

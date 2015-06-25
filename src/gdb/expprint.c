@@ -40,7 +40,7 @@ void
 print_expression(struct expression *exp, struct ui_file *stream)
 {
   int pc = 0;
-  print_subexp (exp, &pc, stream, PREC_NULL);
+  print_subexp(exp, &pc, stream, PREC_NULL);
 }
 
 /* Print the subexpression of EXP that starts in position POS, on STREAM.
@@ -172,54 +172,56 @@ print_subexp_standard (struct expression *exp, int *pos,
       return;
 
     case OP_STRING:
-      nargs = longest_to_int (exp->elts[pc + 1].longconst);
-      (*pos) += 3 + BYTES_TO_EXP_ELEM (nargs + 1);
+      nargs = longest_to_int(exp->elts[pc + 1].longconst);
+      (*pos) += 3 + BYTES_TO_EXP_ELEM(nargs + 1);
       /* LA_PRINT_STRING will print using the current repeat count threshold.
          If necessary, we can temporarily set it to zero, or pass it as an
          additional parameter to LA_PRINT_STRING.  -fnf */
-      LA_PRINT_STRING (stream, &exp->elts[pc + 2].string, nargs, 1, 0);
+      LA_PRINT_STRING(stream, (const gdb_byte *)&exp->elts[pc + 2].string,
+                      nargs, 1, 0);
       return;
 
     case OP_BITSTRING:
-      nargs = longest_to_int (exp->elts[pc + 1].longconst);
-      (*pos)
-	+= 3 + BYTES_TO_EXP_ELEM ((nargs + HOST_CHAR_BIT - 1) / HOST_CHAR_BIT);
-      fprintf_unfiltered (stream, "B'<unimplemented>'");
+      nargs = longest_to_int(exp->elts[pc + 1].longconst);
+      (*pos) +=
+        3 + BYTES_TO_EXP_ELEM((nargs + HOST_CHAR_BIT - 1) / HOST_CHAR_BIT);
+      fprintf_unfiltered(stream, "B'<unimplemented>'");
       return;
 
     case OP_OBJC_NSSTRING:	/* Objective-C Foundation Class NSString constant.  */
-      nargs = longest_to_int (exp->elts[pc + 1].longconst);
-      (*pos) += 3 + BYTES_TO_EXP_ELEM (nargs + 1);
-      fputs_filtered ("@\"", stream);
-      LA_PRINT_STRING (stream, &exp->elts[pc + 2].string, nargs, 1, 0);
-      fputs_filtered ("\"", stream);
+      nargs = longest_to_int(exp->elts[pc + 1].longconst);
+      (*pos) += (3 + BYTES_TO_EXP_ELEM(nargs + 1));
+      fputs_filtered("@\"", stream);
+      LA_PRINT_STRING(stream, (const gdb_byte *)&exp->elts[pc + 2].string,
+                      nargs, 1, 0);
+      fputs_filtered("\"", stream);
       return;
 
     case OP_OBJC_MSGCALL:
       {			/* Objective C message (method) call.  */
 	char *selector;
 	(*pos) += 3;
-	nargs = longest_to_int (exp->elts[pc + 2].longconst);
-	fprintf_unfiltered (stream, "[");
-	print_subexp (exp, pos, stream, PREC_SUFFIX);
-	if (0 == target_read_string (exp->elts[pc + 1].longconst,
-				     &selector, 1024, NULL))
+	nargs = longest_to_int(exp->elts[pc + 2].longconst);
+	fprintf_unfiltered(stream, "[");
+	print_subexp(exp, pos, stream, PREC_SUFFIX);
+	if (0 == target_read_string(exp->elts[pc + 1].longconst,
+				    &selector, 1024, NULL))
 	  {
-	    error (_("bad selector"));
+	    error(_("bad selector"));
 	    return;
 	  }
 	if (nargs)
 	  {
 	    char *s, *nextS;
-	    s = alloca (strlen (selector) + 1);
-	    strcpy (s, selector);
+	    s = (char *)alloca(strlen(selector) + 1UL);
+	    strcpy(s, selector);
 	    for (tem = 0; tem < nargs; tem++)
 	      {
-		nextS = strchr (s, ':');
+		nextS = strchr(s, ':');
 		*nextS = '\0';
-		fprintf_unfiltered (stream, " %s: ", s);
-		s = nextS + 1;
-		print_subexp (exp, pos, stream, PREC_ABOVE_COMMA);
+		fprintf_unfiltered(stream, " %s: ", s);
+		s = (nextS + 1);
+		print_subexp(exp, pos, stream, PREC_ABOVE_COMMA);
 	      }
 	  }
 	else
@@ -249,7 +251,7 @@ print_subexp_standard (struct expression *exp, int *pos,
 	     a simple string, revert back to array printing.  Note that
 	     the last expression element is an explicit null terminator
 	     byte, which doesn't get printed. */
-	  tempstr = alloca (nargs);
+	  tempstr = (char *)alloca(nargs);
 	  pc += 4;
 	  while (tem < nargs)
 	    {
@@ -263,14 +265,15 @@ print_subexp_standard (struct expression *exp, int *pos,
 	      else
 		{
 		  tempstr[tem++] =
-		    longest_to_int (exp->elts[pc + 2].longconst);
+		    longest_to_int(exp->elts[pc + 2].longconst);
 		  pc += 4;
 		}
 	    }
 	}
       if (tem > 0)
 	{
-	  LA_PRINT_STRING (stream, tempstr, nargs - 1, 1, 0);
+	  LA_PRINT_STRING(stream, (const gdb_byte *)tempstr, (nargs - 1),
+                          1, 0);
 	  (*pos) = pc;
 	}
       else

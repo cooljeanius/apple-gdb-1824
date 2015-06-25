@@ -222,12 +222,13 @@ static void darwin_kernel_kill(void)
   darwin_kernel_detach("", 0);
 }
 
-static void darwin_kernel_load(char *args, int from_tty)
+static void ATTR_NORETURN
+darwin_kernel_load(char *args, int from_tty)
 {
   error("Unsupported operation darwin_kernel_load\n");
 }
 
-static void
+static void ATTR_NORETURN
 darwin_kernel_create_inferior(char *execfile, char *args, char **env,
                               int fromtty)
 {

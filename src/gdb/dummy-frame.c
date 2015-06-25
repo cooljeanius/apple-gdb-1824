@@ -72,7 +72,7 @@ static struct dummy_frame *dummy_frame_stack = NULL;
    NOTE: cagney/2004-08-02: Code should not need to call this.  */
 
 int
-deprecated_pc_in_call_dummy (CORE_ADDR pc)
+deprecated_pc_in_call_dummy(CORE_ADDR pc)
 {
   struct dummy_frame *dummyframe;
   for (dummyframe = dummy_frame_stack;
@@ -90,8 +90,8 @@ deprecated_pc_in_call_dummy (CORE_ADDR pc)
    dummy-frame stack.  */
 
 void
-dummy_frame_push (struct regcache *caller_regcache,
-		  const struct frame_id *dummy_id)
+dummy_frame_push(struct regcache *caller_regcache,
+		 const struct frame_id *dummy_id)
 {
   struct dummy_frame *dummy_frame;
 
@@ -102,7 +102,7 @@ dummy_frame_push (struct regcache *caller_regcache,
   while (dummy_frame)
     /* FIXME: cagney/2004-08-02: Should just test IDs.  */
     /* APPLE LOCAL: Check the ptid as well as the frame.  */
-    if (ptid_equal (dummy_frame->ptid, inferior_ptid) 
+    if (ptid_equal (dummy_frame->ptid, inferior_ptid)
 	&& frame_id_inner (dummy_frame->id, (*dummy_id)))
       /* Stale -- destroy!  */
       {
@@ -113,7 +113,7 @@ dummy_frame_push (struct regcache *caller_regcache,
       }
     else
       dummy_frame = dummy_frame->next;
-  
+
   /* APPLE LOCAL begin subroutine inlining  */
   inlined_subroutine_save_before_dummy_call ();
   /* APPLE LOCAL end subroutine inlining  */
@@ -136,9 +136,9 @@ struct dummy_frame_cache
 };
 
 int
-dummy_frame_sniffer (const struct frame_unwind *self,
-		     struct frame_info *next_frame,
-		     void **this_prologue_cache)
+dummy_frame_sniffer(const struct frame_unwind *self,
+		    struct frame_info *next_frame,
+		    void **this_prologue_cache)
 {
   struct dummy_frame *dummyframe;
   struct frame_id this_id;
@@ -150,7 +150,7 @@ dummy_frame_sniffer (const struct frame_unwind *self,
      entry point, or some random address on the stack.  Trying to use
      that PC to apply standard frame ID unwind techniques is just
      asking for trouble.  */
-  
+
   /* Don't bother unles there is at least one dummy frame.  */
   if (dummy_frame_stack != NULL)
     {
@@ -158,7 +158,7 @@ dummy_frame_sniffer (const struct frame_unwind *self,
 	 dummy ID from the next frame.  Note that this method uses
 	 frame_register_unwind to obtain the register values needed to
 	 determine the dummy frame's ID.  */
-      this_id = gdbarch_unwind_dummy_id (get_frame_arch (next_frame), 
+      this_id = gdbarch_unwind_dummy_id (get_frame_arch (next_frame),
 					 next_frame);
 
       /* Use that ID to find the corresponding cache entry.  */
@@ -184,19 +184,20 @@ dummy_frame_sniffer (const struct frame_unwind *self,
    register value is taken from the local copy of the register buffer.  */
 
 static void
-dummy_frame_prev_register (struct frame_info *next_frame,
-			   void **this_prologue_cache,
-			   int regnum, enum opt_state *optimized,
-			   enum lval_type *lvalp, CORE_ADDR *addrp,
-			   int *realnum, gdb_byte *bufferp)
+dummy_frame_prev_register(struct frame_info *next_frame,
+			  void **this_prologue_cache,
+			  int regnum, enum opt_state *optimized,
+			  enum lval_type *lvalp, CORE_ADDR *addrp,
+			  int *realnum, gdb_byte *bufferp)
 {
-  /* The dummy-frame sniffer always fills in the cache.  */
-  struct dummy_frame_cache *cache = (*this_prologue_cache);
-  gdb_assert (cache != NULL);
+  /* The dummy-frame sniffer always fills in the cache: */
+  struct dummy_frame_cache *cache;
+  cache = (struct dummy_frame_cache *)(*this_prologue_cache);
+  gdb_assert(cache != NULL);
 
   /* Describe the register's location.  Generic dummy frames always
      have the register value in an ``expression''.  */
-  *optimized = 0;
+  *optimized = (enum opt_state)0;
   *lvalp = not_lval;
   *addrp = 0;
   *realnum = -1;
@@ -219,13 +220,14 @@ dummy_frame_prev_register (struct frame_info *next_frame,
    dummy cache is located and and saved in THIS_PROLOGUE_CACHE.  */
 
 static void
-dummy_frame_this_id (struct frame_info *next_frame,
-		     void **this_prologue_cache,
-		     struct frame_id *this_id)
+dummy_frame_this_id(struct frame_info *next_frame,
+		    void **this_prologue_cache,
+		    struct frame_id *this_id)
 {
-  /* The dummy-frame sniffer always fills in the cache.  */
-  struct dummy_frame_cache *cache = (*this_prologue_cache);
-  gdb_assert (cache != NULL);
+  /* The dummy-frame sniffer always fills in the cache: */
+  struct dummy_frame_cache *cache;
+  cache = (struct dummy_frame_cache *)(*this_prologue_cache);
+  gdb_assert(cache != NULL);
   (*this_id) = cache->this_id;
 }
 
@@ -236,6 +238,7 @@ static const struct frame_unwind dummy_frame_unwinder =
   dummy_frame_prev_register,
   NULL,
   dummy_frame_sniffer,
+  (frame_prev_pc_ftype *)NULL
 };
 
 const struct frame_unwind *const dummy_frame_unwind = &dummy_frame_unwinder;
@@ -264,7 +267,7 @@ maintenance_print_dummy_frames (char *args, int from_tty)
       struct ui_file *file = gdb_fopen (args, "w");
       if (file == NULL)
 	perror_with_name (_("maintenance print dummy-frames"));
-      fprint_dummy_frames (file);    
+      fprint_dummy_frames (file);
       ui_file_delete (file);
     }
 }

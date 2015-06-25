@@ -266,7 +266,7 @@ dcache_write_line (DCACHE *dcache, struct dcache_block *db)
   gdb_byte *myaddr;
   int len;
   int res;
-  int reg_len;
+  long reg_len;
   struct mem_region *region;
 
   if (!db->anydirty)
@@ -274,7 +274,7 @@ dcache_write_line (DCACHE *dcache, struct dcache_block *db)
 
   len = g_line_size;
   memaddr = db->addr;
-  myaddr  = db->data;
+  myaddr = db->data;
 
   while (len > 0)
     {
@@ -283,16 +283,16 @@ dcache_write_line (DCACHE *dcache, struct dcache_block *db)
       int dirty_len;
 
       region = lookup_mem_region(memaddr);
-      if (memaddr + len < region->hi)
+      if ((memaddr + len) < region->hi)
 	reg_len = len;
       else
-	reg_len = region->hi - memaddr;
+	reg_len = (long)(region->hi - memaddr);
 
       if (!(region->attrib.cache == 1) || region->attrib.mode == MEM_RO)
 	{
 	  memaddr += reg_len;
-	  myaddr  += reg_len;
-	  len     -= reg_len;
+	  myaddr += reg_len;
+	  len -= reg_len;
 	  continue;
 	}
 
@@ -318,13 +318,14 @@ dcache_write_line (DCACHE *dcache, struct dcache_block *db)
 	    reg_len--;
 	  }
 
-	  dirty_len = e - s;
-	  res = target_write (&current_target, TARGET_OBJECT_RAW_MEMORY,
-			      NULL, myaddr, memaddr, dirty_len);
+	  dirty_len = (e - s);
+	  res = (int)target_write(&current_target,
+                                  TARGET_OBJECT_RAW_MEMORY, NULL, myaddr,
+                                  memaddr, dirty_len);
 	  if (res < dirty_len)
 	    return 0;
 
-	  memset (&db->state[XFORM(memaddr)], ENTRY_OK, res);
+	  memset(&db->state[XFORM(memaddr)], ENTRY_OK, res);
 	  memaddr += res;
 	  myaddr += res;
 	  len -= res;
@@ -337,46 +338,46 @@ dcache_write_line (DCACHE *dcache, struct dcache_block *db)
 
 /* Read cache line */
 static int
-dcache_read_line (DCACHE *dcache, struct dcache_block *db)
+dcache_read_line(DCACHE *dcache, struct dcache_block *db)
 {
   CORE_ADDR memaddr;
   gdb_byte *myaddr;
   int len;
   int res;
-  int reg_len;
+  size_t reg_len;
   struct mem_region *region;
 
   /* If there are any dirty bytes in the line, it must be written
      before a new line can be read */
   if (db->anydirty)
     {
-      if (!dcache_write_line (dcache, db))
+      if (!dcache_write_line(dcache, db))
 	return 0;
     }
 
   len = g_line_size;
   memaddr = db->addr;
-  myaddr  = db->data;
+  myaddr = db->data;
 
   while (len > 0)
     {
       region = lookup_mem_region(memaddr);
-      if (memaddr + len < region->hi)
+      if ((memaddr + len) < region->hi)
 	reg_len = len;
       else
-	reg_len = region->hi - memaddr;
+	reg_len = (size_t)(region->hi - memaddr);
 
       if (!(region->attrib.cache == 1) || region->attrib.mode == MEM_WO)
 	{
 	  memaddr += reg_len;
-	  myaddr  += reg_len;
-	  len     -= reg_len;
+	  myaddr += reg_len;
+	  len -= reg_len;
 	  continue;
 	}
 
-      res = target_read (&current_target, TARGET_OBJECT_RAW_MEMORY,
-			 NULL, myaddr, memaddr, reg_len);
-      if (res < reg_len)
+      res = (int)target_read(&current_target, TARGET_OBJECT_RAW_MEMORY,
+                             NULL, myaddr, memaddr, reg_len);
+      if ((size_t)res < reg_len)
 	return 0;
 
       memaddr += res;
@@ -384,7 +385,7 @@ dcache_read_line (DCACHE *dcache, struct dcache_block *db)
       len -= res;
     }
 
-  memset (db->state, ENTRY_OK, g_line_size * sizeof (unsigned char));
+  memset(db->state, ENTRY_OK, (g_line_size * sizeof(unsigned char)));
   db->anydirty = 0;
 
   return 1;

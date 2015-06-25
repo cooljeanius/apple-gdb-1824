@@ -55,7 +55,9 @@
 # include "i386-tdep.h"
 #elif defined(TARGET_ARM)
 # include "arm-tdep.h"
-#endif /* TARGET_POWERPC || TARGET_I386 || TARGET_ARM */
+#elif defined(TARGET_AARCH64)
+# include "aarch64-tdep.h"
+#endif /* TARGET_POWERPC || TARGET_I386 || TARGET_ARM || TARGET_AARCH64 */
 
 #include <sys/mman.h>
 #include <string.h>
@@ -95,6 +97,8 @@ static int dyld_check_uuids_flag = 0;
 # include "i386-tdep.h"
 #elif defined(TARGET_ARM)
 # include "arm-tdep.h"
+#elif defined(TARGET_AARCH64)
+# include "aarch64-tdep.h"
 #else
 # error "Unrecognized target architecture."
 #endif /* TARGET */
@@ -405,8 +409,8 @@ dyld_resolve_filename_image(const struct macosx_dyld_thread_status *s,
       return;
     }
 
-  target_read_memory (e->dyld_addr, (gdb_byte *) &header,
-                      sizeof (struct mach_header));
+  target_read_memory(e->dyld_addr, (gdb_byte *)&header,
+                     sizeof(struct mach_header));
 
   switch (header.filetype)
     {
@@ -419,16 +423,17 @@ dyld_resolve_filename_image(const struct macosx_dyld_thread_status *s,
     default:
       return;
     }
-  e->image_name = dyld_find_dylib_name (header.ncmds, header.cputype, e->dyld_addr);
+  e->image_name = dyld_find_dylib_name(header.ncmds, header.cputype,
+                                       (int)e->dyld_addr);
 
   if (e->image_name == NULL)
     {
-      dyld_debug ("Unable to determine filename for loaded object "
-                  "(no LC_ID load command)\n");
+      dyld_debug("Unable to determine filename for loaded object "
+                 "(no LC_ID load command)\n");
     }
   else
     {
-      dyld_debug ("Determined filename for loaded object from image\n");
+      dyld_debug("Determined filename for loaded object from image\n");
       e->image_name_valid = 1;
     }
 }
@@ -737,16 +742,17 @@ dyld_default_load_flag (const struct dyld_path_info *d,
    xfreed by the caller.  */
 
 static struct bfd_memory_footprint *
-scan_bfd_for_memory_groups (struct bfd *abfd, struct pre_run_memory_map *map)
+scan_bfd_for_memory_groups(struct bfd *abfd, struct pre_run_memory_map *map)
 {
   asection *asect;
   int seg1addr_set = 0;
-  CORE_ADDR current_bucket_start_addr = (CORE_ADDR)-1;
-  CORE_ADDR current_bucket_end_addr = (CORE_ADDR)-1;
-  struct bfd_memory_footprint *fp = (struct bfd_memory_footprint *)
-                               xmalloc (sizeof (struct bfd_memory_footprint));
-  fp->groups = (struct bfd_memory_footprint_group *)
-                     xmalloc (sizeof (struct bfd_memory_footprint_group) * 2);
+  CORE_ADDR current_bucket_start_addr = (CORE_ADDR)(-1L);
+  CORE_ADDR current_bucket_end_addr = (CORE_ADDR)(-1L);
+  struct bfd_memory_footprint *fp;
+  fp = ((struct bfd_memory_footprint *)
+        xmalloc(sizeof(struct bfd_memory_footprint)));
+  fp->groups = ((struct bfd_memory_footprint_group *)
+                xmalloc(sizeof(struct bfd_memory_footprint_group) * 2UL));
   fp->num = 0;
   fp->num_allocated = 2;
   fp->filename = abfd->filename;
@@ -759,15 +765,15 @@ scan_bfd_for_memory_groups (struct bfd *abfd, struct pre_run_memory_map *map)
       if (asect->segment_mark == 0)
         continue;
 
-      /* PAGEZERO does NOT interest me.  */
-		if (strcmp (asect->name, "LC_SEGMENT.__PAGEZERO") == 0) {
-			continue;
-		}
+      /* PAGEZERO does NOT interest me: */
+      if (strcmp(asect->name, "LC_SEGMENT.__PAGEZERO") == 0) {
+        continue;
+      }
 
-      this_seg_start = bfd_section_vma (abfd, asect);
-      this_seg_len = bfd_section_size (abfd, asect);
-      this_seg_end = this_seg_start + this_seg_len;
-      this_seg_end = ALIGN_TO_4096 (this_seg_end);
+      this_seg_start = bfd_section_vma(abfd, asect);
+      this_seg_len = bfd_section_size(abfd, asect);
+      this_seg_end = (this_seg_start + this_seg_len);
+      this_seg_end = ALIGN_TO_4096(this_seg_end);
 
       /* Do NOT record a segment (or a load command) which does NOT load
          into the address space at all.  */
@@ -781,17 +787,18 @@ scan_bfd_for_memory_groups (struct bfd *abfd, struct pre_run_memory_map *map)
           fp->groups[0].offset = 0;
           /* New bucket so update these two:  */
           current_bucket_start_addr = this_seg_start;
-          current_bucket_end_addr = current_bucket_start_addr +
-                     ((this_seg_len / map->bucket_size) + 1) * map->bucket_size;
+          current_bucket_end_addr =
+            (current_bucket_start_addr +
+             (((this_seg_len / map->bucket_size) + 1) * map->bucket_size));
           /* Did we overflow?  We do NOT round current_bucket_start_addr down
              to a bucket boundary so if it is right near the top of memory,
              current_bucket_start_addr + bucket_size may overflow.  */
           if (current_bucket_end_addr < current_bucket_start_addr)
-            current_bucket_end_addr = (CORE_ADDR) -1;
+            current_bucket_end_addr = (CORE_ADDR)(-1L);
           continue;
         }
 
-      /* This segment fits within the current bucket.  */
+      /* This segment fits within the current bucket: */
       if (this_seg_end < current_bucket_end_addr)
         {
           continue;
@@ -803,19 +810,19 @@ scan_bfd_for_memory_groups (struct bfd *abfd, struct pre_run_memory_map *map)
        * after one another - which is pointless. So if it is within a single
        * bucket length of the current group's end address, combine it with this
        * one. */
-      if (this_seg_start <= current_bucket_end_addr + map->bucket_size
-          && this_seg_end > current_bucket_end_addr)
+      if ((this_seg_start <= (current_bucket_end_addr + map->bucket_size))
+          && (this_seg_end > current_bucket_end_addr))
         {
           /* Expand current_bucket_end_addr by bucket_size increments.  */
-          current_bucket_end_addr = current_bucket_start_addr +
-                     (((this_seg_end - current_bucket_start_addr) /
-                        map->bucket_size) + 1)
-                     * map->bucket_size;
+          current_bucket_end_addr =
+            (current_bucket_start_addr +
+             ((((this_seg_end - current_bucket_start_addr)
+                / map->bucket_size) + 1) * map->bucket_size));
           /* Did we overflow?  We do NOT round current_bucket_start_addr down
              to a bucket boundary so if it is right near the top of memory,
              current_bucket_start_addr + bucket_size may overflow.  */
           if (current_bucket_end_addr < current_bucket_start_addr)
-            current_bucket_end_addr = (CORE_ADDR) -1;
+            current_bucket_end_addr = (CORE_ADDR)(-1L);
           continue;
         }
 
@@ -826,31 +833,34 @@ scan_bfd_for_memory_groups (struct bfd *abfd, struct pre_run_memory_map *map)
          boundaries so it is evenly divisible by bucket_size and will be at
          least bucket_size in size.  */
       fp->groups[fp->num].length =
-                   (current_bucket_end_addr - current_bucket_start_addr) /
-                    map->bucket_size;
+        (int)((current_bucket_end_addr - current_bucket_start_addr)
+              / map->bucket_size);
 
       fp->num++;
 
       if (fp->num == fp->num_allocated)
         {
           fp->num_allocated *= 2;
-          fp->groups = (struct bfd_memory_footprint_group *)
-              xrealloc (fp->groups,
-                sizeof (struct bfd_memory_footprint_group) * fp->num_allocated);
+          fp->groups =
+            ((struct bfd_memory_footprint_group *)
+             xrealloc(fp->groups,
+                      (sizeof(struct bfd_memory_footprint_group)
+                       * fp->num_allocated)));
         }
 
       /* How many buckets between the last memory grouping and this one?  */
-      fp->groups[fp->num].offset = ((this_seg_start - current_bucket_end_addr)
-                                    / map->bucket_size) + 1
-                                    + fp->groups[fp->num - 1].length;
+      fp->groups[fp->num].offset =
+        (int)((((this_seg_start - current_bucket_end_addr)
+                / map->bucket_size) + 1) + fp->groups[fp->num - 1].length);
       current_bucket_start_addr = this_seg_start;
-      current_bucket_end_addr = current_bucket_start_addr +
-                 ((this_seg_len / map->bucket_size) + 1) * map->bucket_size;
+      current_bucket_end_addr = (current_bucket_start_addr +
+                                 ((this_seg_len / map->bucket_size) + 1)
+                                 * map->bucket_size);
       /* Did we overflow?  We do NOT round current_bucket_start_addr down
          to a bucket boundary so if it is right near the top of memory,
          current_bucket_start_addr + bucket_size may overflow.  */
       if (current_bucket_end_addr < current_bucket_start_addr)
-        current_bucket_end_addr = (CORE_ADDR) -1;
+        current_bucket_end_addr = (CORE_ADDR)(-1L);
     }
 
   /* Update the number of buckets used by the last memory group we saw.  */
@@ -861,8 +871,8 @@ scan_bfd_for_memory_groups (struct bfd *abfd, struct pre_run_memory_map *map)
     {
       CORE_ADDR recalculated_endaddr;
       fp->groups[fp->num].length =
-        ((current_bucket_end_addr - current_bucket_start_addr)
-         / map->bucket_size);
+        (int)((current_bucket_end_addr - current_bucket_start_addr)
+              / map->bucket_size);
 
       /* Does this grouping overflow?  We do NOT round current_bucket_start_addr
          down  to a bucket boundary so if it is right near the top of memory,
@@ -891,33 +901,34 @@ scan_bfd_for_memory_groups (struct bfd *abfd, struct pre_run_memory_map *map)
    The allocated & initialized pre-run memory map is returned.  */
 
 struct pre_run_memory_map *
-create_pre_run_memory_map (struct bfd *abfd)
+create_pre_run_memory_map(struct bfd *abfd)
 {
   struct bfd_memory_footprint *fp;
   int i;
-  struct pre_run_memory_map *map = (struct pre_run_memory_map *)
-                                   xmalloc (sizeof (struct pre_run_memory_map));
-  if (gdbarch_tdep (current_gdbarch)->wordsize == 4)
+  struct pre_run_memory_map *map;
+  map = ((struct pre_run_memory_map *)
+         xmalloc(sizeof(struct pre_run_memory_map)));
+  if (gdbarch_tdep(current_gdbarch)->wordsize == 4)
     {
       map->number_of_buckets = 400;
-      map->bucket_size = UINT_MAX / map->number_of_buckets;
+      map->bucket_size = (UINT_MAX / map->number_of_buckets);
       map->bucket_size &= ~(4096 - 1);
     }
   else
     {
       map->number_of_buckets = 4000;
-      map->bucket_size = ULLONG_MAX / map->number_of_buckets;
+      map->bucket_size = (ULLONG_MAX / map->number_of_buckets);
       map->bucket_size &= ~(4096 - 1);
     }
 
-  map->buckets = (int *) xmalloc (sizeof (int) * map->number_of_buckets);
-  memset (map->buckets, 0, map->number_of_buckets * sizeof (int));
+  map->buckets = (int *)xmalloc(sizeof(int) * map->number_of_buckets);
+  memset(map->buckets, 0, (map->number_of_buckets * sizeof(int)));
 
   /* Figure out which bucket this executable will start loading at;
      mark its memory areas as used.  */
-  fp = scan_bfd_for_memory_groups (abfd, map);
-  i = fp->seg1addr / map->bucket_size;
-  mark_buckets_as_used (map, i, fp);
+  fp = scan_bfd_for_memory_groups(abfd, map);
+  i = (int)(fp->seg1addr / map->bucket_size);
+  mark_buckets_as_used(map, i, fp);
 
   return map;
 }
@@ -1027,19 +1038,19 @@ mark_buckets_as_used (struct pre_run_memory_map *map, int startingbucket,
 }
 
 void
-free_pre_run_memory_map (struct pre_run_memory_map *map)
+free_pre_run_memory_map(struct pre_run_memory_map *map)
 {
   if (map)
-    xfree (map->buckets);
-  xfree (map);
+    xfree(map->buckets);
+  xfree(map);
 }
 
 static void
-free_memory_footprint (struct bfd_memory_footprint *fp)
+free_memory_footprint(struct bfd_memory_footprint *fp)
 {
   if (fp)
-    xfree (fp->groups);
-  xfree (fp);
+    xfree(fp->groups);
+  xfree(fp);
 }
 
 /* Given an ABFD and a representation of the inferior's pre-run address space
@@ -1058,15 +1069,14 @@ slide_bfd_in_pre_run_memory_map (struct bfd *abfd,
   CORE_ADDR intended_loadaddr;
   int can_load_at_preferred_addr;
 
-  fp = scan_bfd_for_memory_groups (abfd, map);
+  fp = scan_bfd_for_memory_groups(abfd, map);
   intended_loadaddr = fp->seg1addr;
 
-  /* See if we can load the dylib at its preferred address. */
-
-  intended_loadaddr_bucket = fp->seg1addr / map->bucket_size;
+  /* See if we can load the dylib at its preferred address: */
+  intended_loadaddr_bucket = (int)(fp->seg1addr / map->bucket_size);
   can_load_at_preferred_addr = 1;
   for (k = 0; k < fp->num; k++)
-    if (!hole_at_p (map, intended_loadaddr_bucket, fp->groups[k].length))
+    if (!hole_at_p(map, intended_loadaddr_bucket, fp->groups[k].length))
       {
         can_load_at_preferred_addr = 0;
         break;
@@ -1244,17 +1254,17 @@ dyld_load_library_from_memory(const struct dyld_path_info *d,
   if (e->dyld_length == 0)
     {
       /* If the length is zero, do not try and limit what can be read from
-	   * memory. Entries in the shared cache can have mach headers that
-	   * contain segment load commands whose data is scattered over quite a
-	   * large area of memory and we do NOT alway know the bounds.  */
+       * memory. Entries in the shared cache can have mach headers that
+       * contain segment load commands whose data is scattered over quite a
+       * large area of memory and we do NOT alway know the bounds.  */
       length = INVALID_ADDRESS;
     }
-  e->abfd = inferior_bfd (name, e->dyld_addr, slide, length);
+  e->abfd = inferior_bfd(name, e->dyld_addr, slide, length);
   if (e->abfd == NULL)
     {
-      warning ("Could not read dyld entry: %s from inferior memory at 0x%s "
-	       "with slide 0x%s and length %lu.", name, paddr_nz (e->dyld_addr),
-	       paddr_nz (slide), length);
+      warning("Could not read dyld entry: %s from inferior memory at 0x%s "
+	      "with slide 0x%s and length %lu.", name, paddr_nz(e->dyld_addr),
+	      paddr_nz(slide), (unsigned long)length);
       return;
     }
 
@@ -1720,7 +1730,7 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
           char *bfdname;
 
           len = bfd_section_size(e->objfile->obfd, commsec);
-          buf = (char *)xmalloc(len * sizeof (char));
+          buf = (char *)xmalloc((size_t)len * sizeof(char));
           bfdname = (char *)xmalloc(strlen(e->objfile->obfd->filename)
                                     + 128UL);
 

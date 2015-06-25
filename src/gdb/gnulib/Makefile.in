@@ -28,6 +28,7 @@
 
 
 
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -104,7 +105,8 @@ host_triplet = @host@
 target_triplet = @target@
 subdir = gnulib
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ax_check_compile_flag.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/absolute-header.m4 \
+	$(top_srcdir)/m4/ax_check_compile_flag.m4 \
 	$(top_srcdir)/m4/ax_check_gnu_make.m4 \
 	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
 	$(top_srcdir)/m4/ax_prog_bison.m4 \
@@ -120,7 +122,8 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_check_compile_flag.m4 \
 	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/ptrace.m4 \
 	$(top_srcdir)/m4/setpgrp.m4 $(top_srcdir)/m4/wait3.m4 \
-	$(top_srcdir)/acinclude.m4 $(top_srcdir)/../bfd/bfd.m4 \
+	$(top_srcdir)/m4/warn-on-use.m4 $(top_srcdir)/acinclude.m4 \
+	$(top_srcdir)/../bfd/bfd.m4 \
 	$(top_srcdir)/../config/acinclude.m4 \
 	$(top_srcdir)/../config/acx.m4 $(top_srcdir)/../config/zlib.m4 \
 	$(top_srcdir)/../libiberty/m4/libiberty.m4 \
@@ -198,6 +201,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+DATA = $(nodist_noinst_DATA)
 HEADERS = $(noinst_HEADERS)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
@@ -314,6 +318,8 @@ GDB_SIM = @GDB_SIM@
 GDB_TRANSFORM_NAME = @GDB_TRANSFORM_NAME@
 GMOFILES = @GMOFILES@
 GMSGFMT = @GMSGFMT@
+GNULIB_FFSL = @GNULIB_FFSL@
+GNULIB_FFSLL = @GNULIB_FFSLL@
 GNULIB_MBSCASECMP = @GNULIB_MBSCASECMP@
 GNULIB_MBSCASESTR = @GNULIB_MBSCASESTR@
 GNULIB_MBSCHR = @GNULIB_MBSCHR@
@@ -328,9 +334,11 @@ GNULIB_MBSSEP = @GNULIB_MBSSEP@
 GNULIB_MBSSPN = @GNULIB_MBSSPN@
 GNULIB_MBSSTR = @GNULIB_MBSSTR@
 GNULIB_MBSTOK_R = @GNULIB_MBSTOK_R@
+GNULIB_MEMCHR = @GNULIB_MEMCHR@
 GNULIB_MEMMEM = @GNULIB_MEMMEM@
 GNULIB_MEMPCPY = @GNULIB_MEMPCPY@
 GNULIB_MEMRCHR = @GNULIB_MEMRCHR@
+GNULIB_RAWMEMCHR = @GNULIB_RAWMEMCHR@
 GNULIB_STDINT_H = @GNULIB_STDINT_H@
 GNULIB_STPCPY = @GNULIB_STPCPY@
 GNULIB_STPNCPY = @GNULIB_STPNCPY@
@@ -338,6 +346,8 @@ GNULIB_STRCASESTR = @GNULIB_STRCASESTR@
 GNULIB_STRCHRNUL = @GNULIB_STRCHRNUL@
 GNULIB_STRDUP = @GNULIB_STRDUP@
 GNULIB_STRERROR = @GNULIB_STRERROR@
+GNULIB_STRERROR_R = @GNULIB_STRERROR_R@
+GNULIB_STRNCAT = @GNULIB_STRNCAT@
 GNULIB_STRNDUP = @GNULIB_STRNDUP@
 GNULIB_STRNLEN = @GNULIB_STRNLEN@
 GNULIB_STRPBRK = @GNULIB_STRPBRK@
@@ -345,6 +355,7 @@ GNULIB_STRSEP = @GNULIB_STRSEP@
 GNULIB_STRSIGNAL = @GNULIB_STRSIGNAL@
 GNULIB_STRSTR = @GNULIB_STRSTR@
 GNULIB_STRTOK_R = @GNULIB_STRTOK_R@
+GNULIB_STRVERSCMP = @GNULIB_STRVERSCMP@
 GOC = @GOC@
 GREP = @GREP@
 GT_NO = @GT_NO@
@@ -353,16 +364,21 @@ GUI_CFLAGS_X = @GUI_CFLAGS_X@
 HAVE_DECL_MEMMEM = @HAVE_DECL_MEMMEM@
 HAVE_DECL_MEMRCHR = @HAVE_DECL_MEMRCHR@
 HAVE_DECL_STRDUP = @HAVE_DECL_STRDUP@
-HAVE_DECL_STRERROR = @HAVE_DECL_STRERROR@
+HAVE_DECL_STRERROR_R = @HAVE_DECL_STRERROR_R@
 HAVE_DECL_STRNDUP = @HAVE_DECL_STRNDUP@
 HAVE_DECL_STRNLEN = @HAVE_DECL_STRNLEN@
 HAVE_DECL_STRSIGNAL = @HAVE_DECL_STRSIGNAL@
 HAVE_DECL_STRTOK_R = @HAVE_DECL_STRTOK_R@
+HAVE_FFSL = @HAVE_FFSL@
+HAVE_FFSLL = @HAVE_FFSLL@
 HAVE_INTTYPES_H = @HAVE_INTTYPES_H@
 HAVE_LIBBABELTRACE = @HAVE_LIBBABELTRACE@
 HAVE_LIBLZMA = @HAVE_LIBLZMA@
 HAVE_LONG_LONG_INT = @HAVE_LONG_LONG_INT@
+HAVE_MBSLEN = @HAVE_MBSLEN@
+HAVE_MEMCHR = @HAVE_MEMCHR@
 HAVE_MEMPCPY = @HAVE_MEMPCPY@
+HAVE_RAWMEMCHR = @HAVE_RAWMEMCHR@
 HAVE_SIGNED_SIG_ATOMIC_T = @HAVE_SIGNED_SIG_ATOMIC_T@
 HAVE_SIGNED_WCHAR_T = @HAVE_SIGNED_WCHAR_T@
 HAVE_SIGNED_WINT_T = @HAVE_SIGNED_WINT_T@
@@ -371,9 +387,9 @@ HAVE_STPCPY = @HAVE_STPCPY@
 HAVE_STPNCPY = @HAVE_STPNCPY@
 HAVE_STRCASESTR = @HAVE_STRCASESTR@
 HAVE_STRCHRNUL = @HAVE_STRCHRNUL@
-HAVE_STRNDUP = @HAVE_STRNDUP@
 HAVE_STRPBRK = @HAVE_STRPBRK@
 HAVE_STRSEP = @HAVE_STRSEP@
+HAVE_STRVERSCMP = @HAVE_STRVERSCMP@
 HAVE_SYS_BITYPES_H = @HAVE_SYS_BITYPES_H@
 HAVE_SYS_INTTYPES_H = @HAVE_SYS_INTTYPES_H@
 HAVE_SYS_TYPES_H = @HAVE_SYS_TYPES_H@
@@ -384,6 +400,7 @@ IGNORE_SIM = @IGNORE_SIM@
 IGNORE_SIM_OBS = @IGNORE_SIM_OBS@
 INCLUDE_LOCALE_H = @INCLUDE_LOCALE_H@
 INCLUDE_NEXT = @INCLUDE_NEXT@
+INCLUDE_NEXT_AS_FIRST_DIRECTIVE = @INCLUDE_NEXT_AS_FIRST_DIRECTIVE@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -453,6 +470,8 @@ MKINSTALLDIRS = @MKINSTALLDIRS@
 MMALLOC = @MMALLOC@
 MMALLOC_CFLAGS = @MMALLOC_CFLAGS@
 MSGFMT = @MSGFMT@
+NEXT_AS_FIRST_DIRECTIVE_STDINT_H = @NEXT_AS_FIRST_DIRECTIVE_STDINT_H@
+NEXT_AS_FIRST_DIRECTIVE_STRING_H = @NEXT_AS_FIRST_DIRECTIVE_STRING_H@
 NEXT_STDINT_H = @NEXT_STDINT_H@
 NEXT_STRING_H = @NEXT_STRING_H@
 NM = @NM@
@@ -482,6 +501,8 @@ PKGVERSION = @PKGVERSION@
 POFILES = @POFILES@
 POSUB = @POSUB@
 POW_LIB = @POW_LIB@
+PRAGMA_COLUMNS = @PRAGMA_COLUMNS@
+PRAGMA_SYSTEM_HEADER = @PRAGMA_SYSTEM_HEADER@
 PROFILE_CFLAGS = @PROFILE_CFLAGS@
 PTRDIFF_T_SUFFIX = @PTRDIFF_T_SUFFIX@
 PYTHON = @PYTHON@
@@ -492,11 +513,20 @@ PYTHON_VERSION = @PYTHON_VERSION@
 RANLIB = @RANLIB@
 RC = @RC@
 RDYNAMIC = @RDYNAMIC@
+REPLACE_MEMCHR = @REPLACE_MEMCHR@
 REPLACE_MEMMEM = @REPLACE_MEMMEM@
+REPLACE_STPNCPY = @REPLACE_STPNCPY@
 REPLACE_STRCASESTR = @REPLACE_STRCASESTR@
+REPLACE_STRCHRNUL = @REPLACE_STRCHRNUL@
+REPLACE_STRDUP = @REPLACE_STRDUP@
 REPLACE_STRERROR = @REPLACE_STRERROR@
+REPLACE_STRERROR_R = @REPLACE_STRERROR_R@
+REPLACE_STRNCAT = @REPLACE_STRNCAT@
+REPLACE_STRNDUP = @REPLACE_STRNDUP@
+REPLACE_STRNLEN = @REPLACE_STRNLEN@
 REPLACE_STRSIGNAL = @REPLACE_STRSIGNAL@
 REPLACE_STRSTR = @REPLACE_STRSTR@
+REPLACE_STRTOK_R = @REPLACE_STRTOK_R@
 REPORT_BUGS_TEXI = @REPORT_BUGS_TEXI@
 REPORT_BUGS_TO = @REPORT_BUGS_TO@
 RESMERGER = @RESMERGER@
@@ -545,6 +575,7 @@ TK_LIB_SPEC = @TK_LIB_SPEC@
 TK_VERSION = @TK_VERSION@
 TK_XINCLUDES = @TK_XINCLUDES@
 TK_XLIBSW = @TK_XLIBSW@
+UNDEFINE_STRTOK_R = @UNDEFINE_STRTOK_R@
 UNIX03_UGH_CFLAGS = @UNIX03_UGH_CFLAGS@
 USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
 USE_NLS = @USE_NLS@
@@ -663,6 +694,7 @@ noinst_HEADERS = str-two-way.h
 noinst_LIBRARIES = libgnu.a
 noinst_LTLIBRARIES = 
 noinst_SCRIPTS = update-gnulib.sh gnulib-tool
+noinst_TEXINFOS = doc/gpl-2.0.texi doc/regexprops-generic.texi
 EXTRA_DIST = update-gnulib.sh gnulib-tool \
 	$(top_srcdir)/gnulib/extra/link-warning.h memchr.c memcmp.c \
 	memmem.c str-two-way.h stdint.in.h string.in.h wchar.in.h
@@ -686,8 +718,12 @@ MOSTLYCLEANFILES = core *.stackdump link-warning.h link-warning.h-t \
 	stdint.h stdint.h-t string.h string.h-t wchar.h wchar.h-t
 MOSTLYCLEANDIRS = 
 CLEANFILES = 
-DISTCLEANFILES = .DS_Store *~ m4/*~
-MAINTAINERCLEANFILES = 
+DISTCLEANFILES = .DS_Store *~ import/.DS_Store import/*~ m4/.DS_Store \
+	m4/*~ import/extra/.DS_Store import/extra/*~ import/m4/*~ \
+	Makefile*orig libgnu.log libgnu.sum config.log config.h \
+	config.status stamp-h1
+MAINTAINERCLEANFILES = autoscan*.log configure.scan
+nodist_noinst_DATA = @MAINT@ configure.scan
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_CFLAGS = $(C_ARCHFLAGS)
 AM_CPPFLAGS = -Iimport -I$(top_srcdir)/import
@@ -695,6 +731,7 @@ libgnu_a_SOURCES = str-two-way.h dummy.c
 libgnu_a_LIBADD = $(gl_LIBOBJS)
 libgnu_a_DEPENDENCIES = $(gl_LIBOBJS) $(LIBOBJS)
 EXTRA_libgnu_a_SOURCES = dummy.c memchr.c memcmp.c memmem.c
+@ifGNUmake@gl_include_guard_prefix = GL
 LINK_WARNING_H = $(top_srcdir)/gnulib/extra/link-warning.h
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -934,7 +971,8 @@ check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU
 check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-recursive
-all-am: Makefile $(LIBRARIES) $(LTLIBRARIES) $(SCRIPTS) $(HEADERS)
+all-am: Makefile $(LIBRARIES) $(LTLIBRARIES) $(SCRIPTS) $(DATA) \
+		$(HEADERS)
 installdirs: installdirs-recursive
 installdirs-am:
 install: $(BUILT_SOURCES)
@@ -1066,6 +1104,9 @@ uninstall-am:
 
 .PRECIOUS: Makefile
 
+
+@ifGNUmake@ifndef gl_include_guard_prefix
+@ifGNUmake@endif
 # The link-warning.h that gets inserted into generated .h files is the same
 # as build-aux/snippet/link-warning.h, except that it has the copyright
 # header cut off.
@@ -1473,6 +1514,9 @@ am--refresh:
 	  echo "making '$@'"; \
 	fi
 .PHONY: am--refresh
+
+configure.scan:
+	autoscan || touch $@
 
 # end of the gnulib Makefile
 

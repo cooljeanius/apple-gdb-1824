@@ -229,7 +229,7 @@ hpacc_value_rtti_type (struct value *v, int *full, int *top, int *using_enc)
   /* FIXME possible 32x64 problem with pointer size & arithmetic */
   vp = value_at (builtin_type_int,
                  coreptr + 4 * HP_ACC_TOP_OFFSET_OFFSET);
-  top_offset = value_as_long (vp);
+  top_offset = (long)value_as_long(vp);
   if (top)
     *top = top_offset;
 

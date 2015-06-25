@@ -119,6 +119,11 @@ case "`${MAKE} --version 2>&1 | sed 1q`" in
 esac
 AC_SUBST([MAKE_IS_GNU])dnl
 
+AM_CONDITIONAL([GMAKE],[test "x${MAKE_IS_GNU}" = "xyes"])dnl
+
+# Do the same thing another way:
+AX_CHECK_GNU_MAKE
+
 # ---------------------- #
 # Checks for libraries.  #
 # ---------------------- #
@@ -151,16 +156,30 @@ if test "x${ac_cv_header_stdbool_h}" = "x"; then
   test -z "${ac_cv_header_stdbool_h}"
   AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 fi
-AC_HEADER_SYS_WAIT
+if test "x${ac_cv_header_sys_wait_h}" = "x"; then
+  test -z "${ac_cv_header_sys_wait_h}"
+  AC_HEADER_SYS_WAIT
+fi
 if test "x${ac_cv_header_time}" = "x"; then
   test -z "${ac_cv_header_time}"
   AC_HEADER_TIME
 fi
-AC_CHECK_HEADERS([OS.h crtdefs.h ctype.h errno.h fcntl.h float.h \
-                  langinfo.h libintl.h limits.h locale.h \
-                  malloc.h malloc/malloc.h netdb.h nl_types.h \
-                  shlib-compat.h stddef.h stdio.h time.h])dnl
+AC_CHECK_HEADERS([OS.h crtdefs.h ctype.h errno.h fcntl.h float.h limits.h \
+                  locale.h malloc/malloc.h netdb.h nl_types.h \
+                  shlib-compat.h stddef.h stdio.h time.h _wctype.h])dnl
   ## dummies to keep autoscan happy:
+if test "x${ac_cv_header_langinfo_h}" = "x"; then
+  test -z "${ac_cv_header_langinfo_h}"
+  AC_CHECK_HEADERS([langinfo.h])
+fi
+if test "x${ac_cv_header_libintl_h}" = "x"; then
+  test -z "${ac_cv_header_libintl_h}"
+  AC_CHECK_HEADERS([libintl.h])
+fi
+if test "x${ac_cv_header_malloc_h}" = "x"; then
+  test -z "${ac_cv_header_malloc_h}"
+  AC_CHECK_HEADERS([malloc.h])
+fi
 if test "x${ac_cv_header_sys_param_h}" = "x"; then
   test -z "${ac_cv_header_sys_param_h}"
   AC_CHECK_HEADERS([sys/param.h])
@@ -168,6 +187,10 @@ fi
 if test "x${ac_cv_header_sys_time_h}" = "x"; then
   test -z "${ac_cv_header_sys_time_h}"
   AC_CHECK_HEADERS([sys/time.h])
+fi
+if test "x${ac_cv_header_sys_vfs_h}" = "x"; then
+  test -z "${ac_cv_header_sys_vfs_h}"
+  AC_CHECK_HEADERS([sys/vfs.h])
 fi
 if test "x${ac_cv_header_wchar_h}" = "x"; then
   test -z "${ac_cv_header_wchar_h}"
@@ -204,15 +227,70 @@ fi
 AC_C_PROTOTYPES
 AC_C_VOLATILE
 AC_TYPE_INT32_T
+if test "x${ac_cv_type_mbstate_t}" = "x"; then
+  test -z "${ac_cv_type_mbstate_t}"
+  AC_TYPE_MBSTATE_T
+fi
+AC_CHECK_TYPES([__darwin_mbstate_t])
 if test "x${ac_cv_type_mode_t}" = "x"; then
   test -z "${ac_cv_type_mode_t}"
   AC_TYPE_MODE_T
 fi
 AC_TYPE_OFF_T
+if test "x${ac_cv_type_pid_t}" = "x"; then
+  test -z "${ac_cv_type_pid_t}"
+  AC_TYPE_PID_T
+fi
 AC_CHECK_TYPES([ptrdiff_t])dnl
 AC_TYPE_SSIZE_T
-AC_TYPE_UID_T
+if test "x${ac_cv_type_uid_t}" = "x"; then
+  test -z "${ac_cv_type_uid_t}"
+  AC_TYPE_UID_T
+fi
+AC_TYPE_UINT8_T
+AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
+AC_CHECK_TYPES([wctype_t],[
+export HAVE_WCTYPE_T=1
+export DEFS="${DEFS} -DGNULIB_defined_wctype_t=1"
+export EXTRA_DEFS="${EXTRA_DEFS} -DGNULIB_defined_wctype_t=1"
+],[
+export HAVE_WCTYPE_T=0
+],[
+#ifdef HAVE_WCTYPE_H
+# include <wctype.h>
+#else
+# ifdef HAVE__WCTYPE_H
+#  include <_wctype.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "This conftest for wctype_t wants to include a header for it."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE__WCTYPE_H */
+#endif /* HAVE_WCTYPE_H */
+])dnl
+AC_CHECK_TYPES([__darwin_wctype_t])dnl
+AC_CHECK_TYPES([wctrans_t],[
+export HAVE_WCTRANS_T=1
+export DEFS="${DEFS} -DGNULIB_defined_wctrans_t=1"
+export EXTRA_DEFS="${EXTRA_DEFS} -DGNULIB_defined_wctrans_t=1"
+],[
+export HAVE_WCTRANS_T=0
+],[
+#ifdef HAVE_WCTYPE_H
+# include <wctype.h>
+#else
+# ifdef HAVE__WCTYPE_H
+#  include <_wctype.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "This conftest for wctrans_t wants to include a header for it."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE__WCTYPE_H */
+#endif /* HAVE_WCTYPE_H */
+])dnl
+AC_CHECK_TYPES([__darwin_wctrans_t])dnl
 AC_CHECK_MEMBERS([struct stat.st_blksize])dnl
  ## check cache value for this:
 if test "x${ac_cv_member_struct_stat_st_blocks}" = "x"; then
@@ -262,27 +340,87 @@ if test "x${ac_cv_func_strerror_r}" = "x" && test "x${ac_cv_func_strerror_r_char
 fi
 AC_FUNC_STRNLEN dnl# (might create libobj)
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([getpagesize memset nl_langinfo setlocale stpcpy strchr \
-                strcmp strcspn strerror strndup strpbrk strrchr strspn \
-                strstr tzset wcwidth])dnl
+AC_CHECK_FUNCS([getcwd isascii iswprint localeconv memset putenv re_comp \
+                regcomp rmdir setlocale stpcpy strchr strcmp strcspn \
+                strerror strndup strpbrk strrchr strspn strstr tzset])dnl
   ## dummies to keep autoscan happy:
+if test "x${ac_cv_func_atexit}" = "x"; then
+  test -z "${ac_cv_func_atexit}"
+  AC_CHECK_FUNCS([atexit])
+fi
+if test "x${ac_cv_func_btowc}" = "x"; then
+  test -z "${ac_cv_func_btowc}"
+  AC_CHECK_FUNCS([btowc])
+fi
+if test "x${ac_cv_func_dup2}" = "x"; then
+  test -z "${ac_cv_func_dup2}"
+  AC_CHECK_FUNCS([dup2])
+fi
+if test "x${ac_cv_func_fchdir}" = "x"; then
+  test -z "${ac_cv_func_fchdir}"
+  AC_CHECK_FUNCS([fchdir])
+fi
+if test "x${ac_cv_func_getpagesize}" = "x"; then
+  test -z "${ac_cv_func_getpagesize}"
+  AC_CHECK_FUNCS([getpagesize])
+fi
 if test "x${ac_cv_func_gettimeofday}" = "x"; then
-  test -z "${gettimeofday}"
+  test -z "${ac_cv_func_gettimeofday}"
   AC_CHECK_FUNCS([gettimeofday])
 fi
 if test "x${ac_cv_func_memchr}" = "x"; then
   test -z "${ac_cv_func_memchr}"
   AC_CHECK_FUNCS([memchr])
 fi
+if test "x${ac_cv_func_memmove}" = "x"; then
+  test -z "${ac_cv_func_memmove}"
+  AC_CHECK_FUNCS([memmove])
+fi
 if test "x${ac_cv_func_mempcpy}" = "x"; then
   test -z "${ac_cv_func_mempcpy}"
   AC_CHECK_FUNCS([mempcpy])
+fi
+if test "x${ac_cv_func_memrchr}" = "x"; then
+  test -z "${ac_cv_func_memrchr}"
+  AC_CHECK_FUNCS([memrchr])
+fi
+if test "x${ac_cv_func_nl_langinfo}" = "x"; then
+  test -z "${ac_cv_func_nl_langinfo}"
+  AC_CHECK_FUNCS([nl_langinfo])
 fi
 if test "x${ac_cv_func_strdup}" = "x"; then
   test -z "${ac_cv_func_strdup}"
   AC_CHECK_FUNCS([strdup])
 fi
+if test "x${ac_cv_func_wcwidth}" = "x"; then
+  test -z "${ac_cv_func_wcwidth}"
+  AC_CHECK_FUNCS([wcwidth])
+fi
 AC_CHECK_DECLS_ONCE([strerror])dnl
+  ## force this check to be done again:
+unset ac_cv_have_decl_wctype
+AC_CHECK_DECLS([wctype],[
+export HAVE_DECL_WCTYPE=1
+export GNULIB_WCTYPE=0
+],[
+export HAVE_DECL_WCTYPE=0
+],[
+#ifdef HAVE_WCTYPE_H
+# include <wctype.h>
+#else
+# ifdef HAVE__WCTYPE_H
+#  include <_wctype.h>
+# else
+#  ifdef HAVE_WCHAR_H
+#   include <wchar.h>
+#  else
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "This conftest for wctype wants to include a header for it."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
+#  endif /* HAVE_WCHAR_H */
+# endif /* HAVE__WCTYPE_H */
+#endif /* HAVE_WCTYPE_H */
+])dnl
 
 # One last header thing:
 if test "x${NEXT_STRING_H}" = "x"; then

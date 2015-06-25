@@ -872,21 +872,21 @@ syms_from_objfile(struct objfile *objfile, struct section_addr_info *addrs,
 	  /* APPLE LOCAL: Look for the text segment ("__TEXT"), not the section
 	     ("__TEXT.__text") because what we are really looking for is the load
 	     address of the image, and the section address is offset a bit. */
-	  lower_sect = bfd_get_section_by_name (objfile->obfd, TEXT_SEGMENT_NAME);
+	  lower_sect = bfd_get_section_by_name(objfile->obfd, TEXT_SEGMENT_NAME);
 	  if (lower_sect == NULL)
-	    bfd_map_over_sections (objfile->obfd, find_lowest_section,
-				   &lower_sect);
+	    bfd_map_over_sections(objfile->obfd, find_lowest_section,
+				  &lower_sect);
 	  if (lower_sect == NULL)
-	    warning (_("no loadable sections found in added symbol-file %s"),
-		     objfile->name);
+	    warning(_("no loadable sections found in added symbol-file %s"),
+		    objfile->name);
 	  else
-	    if ((bfd_get_section_flags (objfile->obfd, lower_sect) & SEC_CODE) == 0)
-	      warning (_("Lowest section in %s is %s at %s"),
-		       objfile->name,
-		       bfd_section_name (objfile->obfd, lower_sect),
-		       paddr (bfd_section_vma (objfile->obfd, lower_sect)));
+	    if ((bfd_get_section_flags(objfile->obfd, lower_sect) & SEC_CODE) == 0)
+	      warning(_("Lowest section in %s is %s at %s"),
+		      objfile->name,
+		      bfd_section_name(objfile->obfd, lower_sect),
+		      paddr(bfd_section_vma(objfile->obfd, lower_sect)));
 	  if (lower_sect != NULL)
-	    lower_offset = bfd_section_vma (objfile->obfd, lower_sect);
+	    lower_offset = bfd_section_vma(objfile->obfd, lower_sect);
 	  else
 	    lower_offset = 0;
 
@@ -908,17 +908,16 @@ syms_from_objfile(struct objfile *objfile, struct section_addr_info *addrs,
 						  addrs->other[i].name);
 		  if (sect)
 		    {
-		      addrs->other[i].addr
-			-= bfd_section_vma (objfile->obfd, sect);
+		      addrs->other[i].addr -=
+                        bfd_section_vma(objfile->obfd, sect);
 		      lower_offset = addrs->other[i].addr;
-		      /* This is the index used by BFD. */
-		      addrs->other[i].sectindex = sect->index ;
+		      /* This is the index used by BFD: */
+		      addrs->other[i].sectindex = sect->index;
 		    }
 		  else
 		    {
-		      warning (_("section %s not found in %s"),
-			       addrs->other[i].name,
-			       objfile->name);
+		      warning(_("section %s not found in %s"),
+			      addrs->other[i].name, objfile->name);
 		      addrs->other[i].addr = 0;
 		    }
 		}
@@ -1110,20 +1109,20 @@ check_bfd_for_matching_uuid(bfd *exe_bfd, bfd *dbg_bfd)
      and that they exist properly. If they do match correctly, then return
      without removing the new debug file, else remove the separate debug
      file because it does NOT match.  */
-  if (bfd_mach_o_get_uuid (exe_bfd, exe_uuid, sizeof (exe_uuid)) &&
-      bfd_mach_o_get_uuid (dbg_bfd, dbg_uuid, sizeof (dbg_uuid)) &&
-      (memcmp (exe_uuid, dbg_uuid, sizeof (exe_uuid)) == 0))
+  if (bfd_mach_o_get_uuid(exe_bfd, exe_uuid, sizeof(exe_uuid))
+      && bfd_mach_o_get_uuid(dbg_bfd, dbg_uuid, sizeof(dbg_uuid))
+      && (memcmp(exe_uuid, dbg_uuid, sizeof(exe_uuid)) == 0))
     return 1; /* The UUIDs match, nothing needs to be done.  */
 
-  warning (_("UUID mismatch detected between:\n\t%s\n\t%s..."),
-	   exe_bfd->filename, dbg_bfd->filename);
-  if (ui_out_is_mi_like_p (uiout))
+  warning(_("UUID mismatch detected between:\n\t%s\n\t%s..."),
+	  exe_bfd->filename, dbg_bfd->filename);
+  if (ui_out_is_mi_like_p(uiout))
     {
       struct cleanup *notify_cleanup =
-	make_cleanup_ui_out_notify_begin_end (uiout, "uuid-mismatch");
-      ui_out_field_string (uiout, "file", exe_bfd->filename);
-      ui_out_field_string (uiout, "debug-file",
-			   dbg_bfd->filename);
+	make_cleanup_ui_out_notify_begin_end(uiout, "uuid-mismatch");
+      ui_out_field_string(uiout, "file", exe_bfd->filename);
+      ui_out_field_string(uiout, "debug-file",
+			  dbg_bfd->filename);
       do_cleanups(notify_cleanup);
     }
   return 0;
@@ -1577,12 +1576,12 @@ symbol_file_add_with_addrs_or_offsets_using_objfile (struct objfile *in_objfile,
 
 	  /* APPLE LOCAL: Add OBJF_SEPARATE_DEBUG_FILE */
 #ifdef MACOSX_DYLD
- 	  objfile_osabi = macosx_get_osabi_from_dyld_entry (objfile->obfd);
+ 	  objfile_osabi = macosx_get_osabi_from_dyld_entry(objfile->obfd);
 #endif /* MACOSX_DYLD */
-          debug_bfd = symfile_bfd_open_safe (debugfile, mainline, objfile_osabi);
+          debug_bfd = symfile_bfd_open_safe(debugfile, mainline, objfile_osabi);
           if (debug_bfd == NULL)
             {
-              warning ("Unable to open dSYM file '%s'", debugfile);
+              warning("Unable to open dSYM file '%s'", debugfile);
             }
           else
             {
@@ -1663,9 +1662,9 @@ symbol_file_add_with_addrs_or_offsets_using_objfile (struct objfile *in_objfile,
 	}
 
       /* APPLE LOCAL ALL_OBJFILE_PSYMTABS */
-      ALL_OBJFILE_PSYMTABS (objfile, psymtab)
+      ALL_OBJFILE_PSYMTABS(objfile, psymtab)
 	{
-	  psymtab_to_symtab (psymtab);
+	  psymtab_to_symtab(psymtab);
 	}
     }
 
@@ -1675,10 +1674,10 @@ symbol_file_add_with_addrs_or_offsets_using_objfile (struct objfile *in_objfile,
   if (from_tty || info_verbose)
     {
       if (deprecated_post_add_symbol_hook)
-	deprecated_post_add_symbol_hook ();
+	deprecated_post_add_symbol_hook();
       else
 	{
-	  printf_unfiltered (_("done.\n"));
+	  printf_unfiltered(_("done.\n"));
 	}
     }
 
@@ -1725,15 +1724,16 @@ symbol_file_add_with_addrs_or_offsets_using_objfile (struct objfile *in_objfile,
      of right now.  */
 #if defined(TARGET_ARM)
   if (mainline && objfile->obfd &&
-      (gdbarch_osabi (current_gdbarch) == GDB_OSABI_UNKNOWN || gdbarch_osabi (current_gdbarch) == GDB_OSABI_DARWIN))
+      ((gdbarch_osabi(current_gdbarch) == GDB_OSABI_UNKNOWN)
+       || (gdbarch_osabi(current_gdbarch) == GDB_OSABI_DARWIN)))
     {
-      const char *osabi_name = gdbarch_osabi_name (gdbarch_lookup_osabi_from_bfd (objfile->obfd));
-      if (osabi_name && strcasecmp (osabi_name, "unknown") != 0)
-        set_osabi_from_string (osabi_name);
+      const char *osabi_name = gdbarch_osabi_name(gdbarch_lookup_osabi_from_bfd(objfile->obfd));
+      if (osabi_name && (strcasecmp(osabi_name, "unknown") != 0))
+        set_osabi_from_string((char *)osabi_name);
     }
 #endif /* TARGET_ARM */
 
-  bfd_cache_close_all ();
+  bfd_cache_close_all();
   return (objfile);
 }
 
@@ -2818,8 +2818,8 @@ add_symbol_file_command(char *args, int from_tty)
         }
       else
         {
-          warning ("add-symbol-file does NOT work on dSYM files, use "
-                   "\"add-dsym\" instead.");
+          warning("add-symbol-file does NOT work on dSYM files, use "
+                  "\"add-dsym\" instead.");
         }
     }
 
@@ -3432,24 +3432,24 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
   if (new_modtime == 0 && objfile->obfd != NULL)
     {
       struct stat buf;
-      if (stat (objfile->obfd->filename, &buf) != 0)
+      if (stat(objfile->obfd->filename, &buf) != 0)
 	{
 	  /* Check for NULL iostream. If that is/was NULL, then
 	     bfd_get_mtime is just going to abort, which is not
 	     very friendly. Instead, use new_modtime of -1 to
 	     indicate we cannot find the file right now.  */
 	  if (objfile->obfd->iostream != NULL)
-	    new_modtime = bfd_get_mtime (objfile->obfd);
+	    new_modtime = bfd_get_mtime(objfile->obfd);
 	  else
-	    warning ("Cannot find backing file for \"%s\".",
-		     objfile->obfd->filename);
+	    warning("Cannot find backing file for \"%s\".",
+		    objfile->obfd->filename);
 	}
       else
 	new_modtime = buf.st_mtime;
     }
 
-  printf_unfiltered (_("`%s' has changed; re-reading symbols.\n"),
-		   objfile->name);
+  printf_unfiltered(_("`%s' has changed; re-reading symbols.\n"),
+                    objfile->name);
 
   /* There are various functions like symbol_file_add,
      symfile_bfd_open, syms_from_objfile, etc., which might
@@ -3519,14 +3519,14 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
      leave the exec_bfd pointing to the old file */
   if (update_exec_bfd)
     {
-      /* if exec_bfd == objfile->obfd, it has already been closed.  */
+      /* if exec_bfd == objfile->obfd, then it has already been closed: */
       if (exec_bfd != objfile->obfd)
         {
-          char *name = xstrdup (bfd_get_filename (exec_bfd));
-          if (!bfd_close (exec_bfd))
-            warning (_("cannot close \"%s\": %s"),
-                     name, bfd_errmsg (bfd_get_error ()));
-          xfree (name);
+          char *name = xstrdup(bfd_get_filename(exec_bfd));
+          if (!bfd_close(exec_bfd))
+            warning(_("cannot close \"%s\": %s"),
+                    name, bfd_errmsg(bfd_get_error()));
+          xfree(name);
         }
 
       /* Question: Should exec_bfd be its own standalone copy of the
@@ -3673,22 +3673,22 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
      in this way seems rather dubious.  */
   if (objfile == symfile_objfile)
     {
-      (*objfile->sf->sym_new_init) (objfile);
+      (*objfile->sf->sym_new_init)(objfile);
     }
 
-  (*objfile->sf->sym_init) (objfile);
-  clear_complaints (&symfile_complaints, 1, 1);
+  (*objfile->sf->sym_init)(objfile);
+  clear_complaints(&symfile_complaints, 1, 1);
 
   /* APPLE LOCAL: Re-read the separate symbols before we read in the symbols
      so we do NOT get spurious warnings about N_OSO objects not being
      available.  */
-  reread_separate_symbols (objfile);
+  reread_separate_symbols(objfile);
 
   /* The "mainline" parameter is a hideous hack; I think leaving it
      zero is OK since dbxread.c also does what it needs to do if
      objfile->global_psymbols.size is 0.  */
   if ((objfile->symflags & ~OBJF_SYM_CONTAINER) & OBJF_SYM_LEVELS_MASK)
-    (*objfile->sf->sym_read) (objfile, 0);
+    (*objfile->sf->sym_read)(objfile, 0);
   /* APPLE LOCAL don't complain about lack of symbols */
   objfile->flags |= OBJF_SYMS;
 
@@ -3784,8 +3784,8 @@ reread_symbols(void)
 	       * cannot tell the shared library system that this objfile is
 	       * gone. So just continue on here, and hope that next time we
 	       * run, an extant file will show up.  */
-	      warning ("Cannot find backing file for \"%s\".",
-		     objfile->obfd->filename);
+	      warning("Cannot find backing file for \"%s\".",
+                      objfile->obfd->filename);
 	    }
 	  else if (new_modtime != objfile->mtime)
 	    {
@@ -3834,7 +3834,8 @@ find_objfile(const char *name)
 	  }
 	else
 	  {
-	    warning("Multiple object files exist with name \"%s\": choosing first", o->name);
+	    warning("Multiple object files exist with name \"%s\": choosing first",
+                    o->name);
 	  }
       }
   }
@@ -5424,26 +5425,29 @@ static int
 simple_overlay_update_1(struct obj_section *osect)
 {
   unsigned int i;
-  int size;
+  size_t size;
   asection *bsect = osect->the_bfd_section;
 
   size = bfd_get_section_size(osect->the_bfd_section);
   for (i = 0U; i < cache_novlys; i++)
     if ((cache_ovly_table[i][VMA] == bfd_section_vma(obfd, bsect))
 	&& (cache_ovly_table[i][LMA] == bfd_section_lma(obfd, bsect))
-	/* && cache_ovly_table[i][SIZE] == size */ )
+	&& (cache_ovly_table[i][SIZE] == size))
       {
 	read_target_long_array((cache_ovly_table_base + i * TARGET_LONG_BYTES),
                                (unsigned int *)cache_ovly_table[i], 4);
 	if ((cache_ovly_table[i][VMA] == bfd_section_vma(obfd, bsect))
 	    && (cache_ovly_table[i][LMA] == bfd_section_lma(obfd, bsect))
-	    /* && (cache_ovly_table[i][SIZE] == size) */ )
+	    && (cache_ovly_table[i][SIZE] == size))
 	  {
 	    osect->ovly_mapped = cache_ovly_table[i][MAPPED];
 	    return 1;
 	  }
 	else	/* Warning! Warning! Target's ovly table has changed! */
-	  return 0;
+          {
+            warning("The ovly table for the target has changed!");
+            return 0;
+          }
       }
   return 0;
 }
@@ -5457,7 +5461,7 @@ simple_overlay_update_1(struct obj_section *osect)
    re-read the entire cache, and go ahead and update all sections.  */
 
 static void
-simple_overlay_update (struct obj_section *osect)
+simple_overlay_update(struct obj_section *osect)
 {
   struct objfile *objfile;
 
@@ -5467,9 +5471,9 @@ simple_overlay_update (struct obj_section *osect)
     if (cache_ovly_table != NULL)
       /* Does its cached location match what is currently in the symtab? */
       if (cache_ovly_table_base ==
-	  SYMBOL_VALUE_ADDRESS (lookup_minimal_symbol ("_ovly_table", NULL, NULL)))
+	  SYMBOL_VALUE_ADDRESS(lookup_minimal_symbol("_ovly_table", NULL, NULL)))
 	/* Then go ahead and try to look up this single section in the cache */
-	if (simple_overlay_update_1 (osect))
+	if (simple_overlay_update_1(osect))
 	  /* Found it! We are done. */
 	  return;
 
@@ -5481,22 +5485,24 @@ simple_overlay_update (struct obj_section *osect)
     return;
 
   /* Now may as well update all sections, even if only 1 was requested: */
-  ALL_OBJSECTIONS (objfile, osect)
+  ALL_OBJSECTIONS(objfile, osect)
     if (section_is_overlay(osect->the_bfd_section))
-    {
-      unsigned int i;
-      int size;
-      asection *bsect = osect->the_bfd_section;
+      {
+        unsigned int i;
+        size_t size;
+        asection *bsect = osect->the_bfd_section;
 
-      size = bfd_get_section_size (bsect);
-      for (i = 0U; i < cache_novlys; i++)
-	if ((cache_ovly_table[i][VMA] == bfd_section_vma(obfd, bsect))
-	    && (cache_ovly_table[i][LMA] == bfd_section_lma(obfd, bsect))
-	    /* && (cache_ovly_table[i][SIZE] == size) */ )
-	  { /* obj_section matches i'th entry in ovly_table */
-	    osect->ovly_mapped = cache_ovly_table[i][MAPPED];
-	    break;	/* finished with inner for loop: break out */
-	  }
+        size = bfd_get_section_size(bsect);
+        for (i = 0U; i < cache_novlys; i++)
+          {
+            if ((cache_ovly_table[i][VMA] == bfd_section_vma(obfd, bsect))
+                && (cache_ovly_table[i][LMA] == bfd_section_lma(obfd, bsect))
+                && (cache_ovly_table[i][SIZE] == size))
+              { /* obj_section matches i'th entry in ovly_table: */
+                osect->ovly_mapped = cache_ovly_table[i][MAPPED];
+                break;	/* finished with inner for loop: break out */
+              }
+          }
     }
 }
 
@@ -5631,6 +5637,10 @@ symbol_file_add_bfd_safe(bfd *abfd, int from_tty,
   ret = catch_errors(symbol_file_add_bfd_helper, &s,
                      "unable to load symbol file: ", RETURN_MASK_ALL);
 
+  if (ret != 0) {
+    ; /* ??? */
+  }
+
   return s.result;
 }
 
@@ -5660,8 +5670,12 @@ symfile_bfd_open_safe(const char *filename, int mainline, enum gdb_osabi osabi)
   s.osabi = osabi;
   s.result = NULL;
 
-  ret = catch_errors
-    (symfile_bfd_open_helper, &s, "unable to open symbol file: ", RETURN_MASK_ALL);
+  ret = catch_errors(symfile_bfd_open_helper, &s,
+                     "unable to open symbol file: ", RETURN_MASK_ALL);
+
+  if (ret != 0) {
+    ; /* ??? */
+  }
 
   return s.result;
 }

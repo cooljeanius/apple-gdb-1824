@@ -1032,49 +1032,66 @@ make_command(char *arg, int from_tty)
   shell_escape(p, from_tty);
 }
 
+/* just declare this once, up here: */
+extern struct cmd_list_element *cmdlist; /*This is the main command list*/
+
+/* FIXME: need to rename some struct fields that currently live in headers,
+ * and deal with all of the resulting fallout, before removing this: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 static void
 show_user(char *args, int from_tty)
 {
   struct cmd_list_element *c;
-  extern struct cmd_list_element *cmdlist;
 
   if (args)
     {
-      c = lookup_cmd (&args, cmdlist, "", 0, 1);
+      c = lookup_cmd(&args, cmdlist, "", 0, 1);
       if (c->class != class_user)
-	error (_("Not a user command."));
-      show_user_1 (c, gdb_stdout);
+	error(_("Not a user command."));
+      show_user_1(c, gdb_stdout);
     }
   else
     {
       for (c = cmdlist; c; c = c->next)
 	{
 	  if (c->class == class_user)
-	    show_user_1 (c, gdb_stdout);
+	    show_user_1(c, gdb_stdout);
 	}
     }
 }
 
-/* Search through names of commands and documentations for a certain
-   regular expression.
-*/
-void
-apropos_command (char *searchstr, int from_tty)
-{
-  extern struct cmd_list_element *cmdlist; /*This is the main command list*/
-  regex_t pattern;
-  char errorbuffer[512];
-  if (searchstr == NULL)
-      error (_("REGEXP string is empty"));
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
-  if (regcomp(&pattern,searchstr,REG_ICASE) == 0)
+/* Search through names of commands and documentations for a certain
+ * regular expression: */
+void
+apropos_command(char *searchstr, int from_tty)
+{
+  regex_t pattern;
+  char errorbuffer[512UL];
+  if (searchstr == NULL)
+      error(_("REGEXP string is empty"));
+
+  if (regcomp(&pattern, searchstr, REG_ICASE) == 0)
     {
-      apropos_cmd (gdb_stdout,cmdlist,&pattern,"");
+      apropos_cmd(gdb_stdout, cmdlist, &pattern, "");
     }
   else
     {
-      regerror(regcomp(&pattern,searchstr,REG_ICASE),NULL,errorbuffer,512);
-      error (_("Error in regular expression:%s"),errorbuffer);
+      regerror(regcomp(&pattern, searchstr, REG_ICASE), NULL, errorbuffer,
+               (size_t)512UL);
+      error(_("Error in regular expression:%s"), errorbuffer);
     }
 }
 

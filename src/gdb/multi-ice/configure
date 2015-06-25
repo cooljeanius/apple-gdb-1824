@@ -631,6 +631,8 @@ POW_LIB
 LIBOBJS
 ALLOCA
 EXTRA_DEFS
+LD_ARCHFLAGS
+acl_cv_wl
 RANLIB
 LN_S
 am__fastdepCXX_FALSE
@@ -4596,7 +4598,7 @@ fi
 # This is the location of the ARM Multi-Ice header files,
 # and the toolconf library file (for Jim Ingham at least).
 MULTI_ICE_INCLUDES="-I/home/jingham/arm/multi-ice"
-MULTI_ICE_LIBS="-L/home/jingham/arm/multi-ice -ltoolconf"
+MULTI_ICE_LIBS="-L/home/jingham/arm/multi-ice -L. -ltoolconf"
 
 # This is where I am putting them:
 M_I_INCLUDE_DIR="${srcdir}/include/arm/multi-ice"
@@ -5146,8 +5148,89 @@ else
 fi
 
 
-# FIXME: Replace `main' with a function in `-liberty':
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -liberty" >&5
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for linker flag to verify linked libraries have the correct architecture" >&5
+$as_echo_n "checking for linker flag to verify linked libraries have the correct architecture... " >&6; }
+pre_saved_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-arch_errors_fatal"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  LD_ARCHFLAGS="${acl_cv_wl}-arch_errors_fatal"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LDFLAGS="${pre_saved_LDFLAGS}"
+if test "x${LD_ARCHFLAGS}" != "x"; then
+  test -n "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${LD_ARCHFLAGS}" >&5
+$as_echo "${LD_ARCHFLAGS}" >&6; }
+    ## that should be all we need to do with them for now...
+else
+  test -z "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: none" >&5
+$as_echo "none" >&6; }
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for xmalloc in -liberty" >&5
+$as_echo_n "checking for xmalloc in -liberty... " >&6; }
+if ${ac_cv_lib_iberty_xmalloc+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-liberty  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char xmalloc ();
+int
+main ()
+{
+return xmalloc ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_iberty_xmalloc=yes
+else
+  ac_cv_lib_iberty_xmalloc=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_iberty_xmalloc" >&5
+$as_echo "$ac_cv_lib_iberty_xmalloc" >&6; }
+if test "x$ac_cv_lib_iberty_xmalloc" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBIBERTY 1
+_ACEOF
+
+  LIBS="-liberty $LIBS"
+
+else
+
+  PRE_LIBERTY_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -liberty" >&5
 $as_echo_n "checking for main in -liberty... " >&6; }
 if ${ac_cv_lib_iberty_main+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -5183,6 +5266,10 @@ if test "x$ac_cv_lib_iberty_main" = xyes; then :
 _ACEOF
 
   LIBS="-liberty $LIBS"
+
+fi
+  ## reset:
+  LDFLAGS="${PRE_LIBERTY_LDFLAGS}"
 
 fi
 
@@ -5537,7 +5624,7 @@ $as_echo "$ac_cv_sys_posix_termios" >&6; }
 
 unset ac_cv_header_sys_types_h
 for ac_header in arpa/inet.h basetsd.h errno.h fcntl.h getopt.h \
-                  intsafe.h limits.h locale.h \
+                  intsafe.h limits.h locale.h mach/kmod.h \
                   netdb.h netinet/in.h netinet/tcp.h \
                   signal.h stdarg.h stddef.h stdio.h \
                   sys/file.h sys/ioctl.h sys/signal.h sys/time.h \
@@ -6896,14 +6983,15 @@ build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
 -Wmissing-include-dirs -Woverflow -Woverlength-strings -Woverride-init \
 -Wpragmas -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
--Wtrampolines -Wunknown-pragmas -Wnormalized=nfc \
+-Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc \
 -Wunsuffixed-float-constants -Wstrict-overflow -Wjump-misses-init \
--Wno-format-security -Wno-format"
+-Wmisleading-indentation -Wno-format-security -Wno-format"
 
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
     # APPLE_LOCAL
-    build_warnings="${build_warnings} -Wextra-tokens -Wnewline-eof"
+    build_warnings="${build_warnings} -Wextra-tokens -Wnewline-eof \
+-Wshorten-64-to-32 -std=gnu89"
   ;;
 esac
 
@@ -6921,6 +7009,7 @@ else
 fi
 
 WARN_CFLAGS=""
+BAD_WARN_CFLAGS=""
 WERROR_CFLAGS=""
 if test "x${build_warnings}" != "x" -a "x${GCC}" = "xyes"
 then
@@ -6946,6 +7035,8 @@ main ()
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
   WARN_CFLAGS="${WARN_CFLAGS} ${w}"
+else
+  BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 	    CFLAGS="${saved_CFLAGS}"
@@ -6953,6 +7044,11 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
     done
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: using: ${WARN_CFLAGS}${WERROR_CFLAGS}" >&5
 $as_echo "using: ${WARN_CFLAGS}${WERROR_CFLAGS}" >&6; }
+    if test "x${BAD_WARN_CFLAGS}" != "x"; then
+      test -n "${BAD_WARN_CFLAGS}"
+      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: compiler failed to accept: ${BAD_WARN_CFLAGS}" >&5
+$as_echo "$as_me: WARNING: compiler failed to accept: ${BAD_WARN_CFLAGS}" >&2;}
+    fi
 fi
 
 ac_config_files="$ac_config_files Makefile"

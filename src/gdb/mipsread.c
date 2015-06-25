@@ -191,15 +191,15 @@ read_alphacoff_dynamic_symtab(struct section_offsets *section_offsets,
   bfd_size_type str_secsize;
   bfd_size_type dyninfo_secsize;
   bfd_size_type got_secsize;
-  int sym_count;
+  long sym_count;
   int i;
   int stripped;
   Elfalpha_External_Sym *x_symp;
   char *dyninfo_p;
   char *dyninfo_end;
   int got_entry_size = 8;
-  int dt_mips_local_gotno = -1;
-  int dt_mips_gotsym = -1;
+  int32_t dt_mips_local_gotno = -1;
+  int32_t dt_mips_gotsym = -1;
   struct cleanup *cleanups;
 
   /* We currently only know how to handle alpha dynamic symbols.  */
@@ -217,13 +217,13 @@ read_alphacoff_dynamic_symtab(struct section_offsets *section_offsets,
   str_secsize = bfd_get_section_size(si.str_sect);
   dyninfo_secsize = bfd_get_section_size(si.dyninfo_sect);
   got_secsize = bfd_get_section_size(si.got_sect);
-  sym_secptr = (char *)xmalloc(sym_secsize);
+  sym_secptr = (char *)xmalloc((size_t)sym_secsize);
   cleanups = make_cleanup(free, sym_secptr);
-  str_secptr = (char *)xmalloc(str_secsize);
+  str_secptr = (char *)xmalloc((size_t)str_secsize);
   make_cleanup(free, str_secptr);
-  dyninfo_secptr = (char *)xmalloc(dyninfo_secsize);
+  dyninfo_secptr = (char *)xmalloc((size_t)dyninfo_secsize);
   make_cleanup(free, dyninfo_secptr);
-  got_secptr = (char *)xmalloc(got_secsize);
+  got_secptr = (char *)xmalloc((size_t)got_secsize);
   make_cleanup(free, got_secptr);
 
   if (!bfd_get_section_contents(abfd, si.sym_sect, sym_secptr,
@@ -248,20 +248,20 @@ read_alphacoff_dynamic_symtab(struct section_offsets *section_offsets,
       Elfalpha_External_Dyn *x_dynp = (Elfalpha_External_Dyn *)dyninfo_p;
       long dyn_tag;
 
-      dyn_tag = bfd_h_get_32(abfd, (bfd_byte *)x_dynp->d_tag);
+      dyn_tag = (long)bfd_h_get_32(abfd, (bfd_byte *)x_dynp->d_tag);
       if (dyn_tag == DT_NULL)
 	break;
       else if (dyn_tag == DT_MIPS_LOCAL_GOTNO)
 	{
 	  if (dt_mips_local_gotno < 0)
-	    dt_mips_local_gotno
-	      = bfd_h_get_32(abfd, (bfd_byte *)x_dynp->d_un.d_val);
+	    dt_mips_local_gotno =
+              (int32_t)bfd_h_get_32(abfd, (bfd_byte *)x_dynp->d_un.d_val);
 	}
       else if (dyn_tag == DT_MIPS_GOTSYM)
 	{
 	  if (dt_mips_gotsym < 0)
-	    dt_mips_gotsym
-	      = bfd_h_get_32(abfd, (bfd_byte *)x_dynp->d_un.d_val);
+	    dt_mips_gotsym =
+              (int32_t)bfd_h_get_32(abfd, (bfd_byte *)x_dynp->d_un.d_val);
 	}
     }
   if ((dt_mips_local_gotno < 0) || (dt_mips_gotsym < 0))
@@ -269,7 +269,7 @@ read_alphacoff_dynamic_symtab(struct section_offsets *section_offsets,
 
   /* Scan all dynamic symbols and enter them into the minimal symbol
      table if appropriate.  */
-  sym_count = (sym_secsize / sizeof(Elfalpha_External_Sym));
+  sym_count = (long)(sym_secsize / sizeof(Elfalpha_External_Sym));
   stripped = (bfd_get_symcount(abfd) == 0);
 
   /* Skip first symbol, which is a null dummy: */
@@ -281,14 +281,15 @@ read_alphacoff_dynamic_symtab(struct section_offsets *section_offsets,
       char *name;
       bfd_vma sym_value;
       unsigned char sym_info;
-      unsigned int sym_shndx;
+      uint16_t sym_shndx;
       int isglobal;
       enum minimal_symbol_type ms_type;
 
-      strx = bfd_h_get_32(abfd, (bfd_byte *)x_symp->st_name);
+      strx = (unsigned long)bfd_h_get_32(abfd,
+                                         (bfd_byte *)x_symp->st_name);
       if (strx >= str_secsize)
 	continue;
-      name = str_secptr + strx;
+      name = (str_secptr + strx);
       if ((*name == '\0') || (*name == '.'))
 	continue;
 
@@ -327,7 +328,7 @@ read_alphacoff_dynamic_symtab(struct section_offsets *section_offsets,
 	      bfd_size_type got_entry_offset =
 		((i - dt_mips_gotsym + dt_mips_local_gotno) * got_entry_size);
 
-	      if ((got_entry_offset < 0UL)
+	      if (((off_t)got_entry_offset < 0L)
                   || (got_entry_offset >= got_secsize))
 		continue;
 	      sym_value =

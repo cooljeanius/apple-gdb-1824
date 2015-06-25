@@ -791,7 +791,13 @@ macosx_fetch_event(struct macosx_process_info *inferior,
   int bypass_select = 0;
   int select_errno = 0;
   unsigned char check_for_exc_signal = 0;
-  static macosx_exception_thread_message saved_msg = { 0 };
+  static macosx_exception_thread_message saved_msg = {
+    (task_t)0,
+    (thread_t)0,
+    (exception_type_t)0,
+    (exception_data_t)0,
+    (mach_msg_type_number_t)0
+  };
   *retval = 0;
   macosx_low_debug(6, "macosx_fetch_event called with timeout %d.\n",
                    timeout);
@@ -1323,23 +1329,24 @@ static int gdbserver_has_a_terminal(void)
          a tty at all!).  We need to do this before the inferior is
 	 launched or attached to. */
       we_have_a_terminal = no;
-      if (isatty (STDIN_FILENO))
+      if (isatty(STDIN_FILENO))
 	{
-	  our_tflags = fcntl (STDIN_FILENO, F_GETFL, 0);
-	  our_ttystate_err = tcgetattr (STDIN_FILENO, &our_ttystate);
+	  our_tflags = fcntl(STDIN_FILENO, F_GETFL, 0);
+	  our_ttystate_err = tcgetattr(STDIN_FILENO, &our_ttystate);
 
 	  if (our_ttystate_err == 0)
 	    {
 	      we_have_a_terminal = yes;
-	      our_process_group = tcgetpgrp (0);
+	      our_process_group = tcgetpgrp(0);
 	    }
 	}
-      macosx_low_debug(6, "%s () => %d\n", __extension__ __FUNCTION__,
+      macosx_low_debug(6, "%s() => %d\n", __extension__ __FUNCTION__,
                        (we_have_a_terminal == yes));
       return we_have_a_terminal == yes;
 
     default:
-      /* "Cannot happen".  */
+      /* "Cannot happen": */
+      macosx_low_debug(6, "Unhandled case: this cannot happen.\n");
       break;
     }
   return 0;

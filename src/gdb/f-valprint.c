@@ -63,21 +63,21 @@ int f77_array_offset_tbl[MAX_FORTRAN_DIMS + 1][2];
 #define F77_DIM_OFFSET(n) (f77_array_offset_tbl[n][0])
 
 int
-f77_get_dynamic_lowerbound (struct type *type, int *lower_bound)
+f77_get_dynamic_lowerbound(struct type *type, int *lower_bound)
 {
   CORE_ADDR current_frame_addr;
   CORE_ADDR ptr_to_lower_bound;
 
-  switch (TYPE_ARRAY_LOWER_BOUND_TYPE (type))
+  switch (TYPE_ARRAY_LOWER_BOUND_TYPE(type))
     {
     case BOUND_BY_VALUE_ON_STACK:
-      current_frame_addr = get_frame_base (deprecated_selected_frame);
+      current_frame_addr = get_frame_base(deprecated_selected_frame);
       if (current_frame_addr > 0)
 	{
 	  *lower_bound =
-	    read_memory_integer (current_frame_addr +
-				 TYPE_ARRAY_LOWER_BOUND_VALUE (type),
-				 4);
+	    (int)read_memory_integer((current_frame_addr +
+                                      TYPE_ARRAY_LOWER_BOUND_VALUE(type)),
+                                     4);
 	}
       else
 	{
@@ -87,22 +87,22 @@ f77_get_dynamic_lowerbound (struct type *type, int *lower_bound)
       break;
 
     case BOUND_SIMPLE:
-      *lower_bound = TYPE_ARRAY_LOWER_BOUND_VALUE (type);
+      *lower_bound = TYPE_ARRAY_LOWER_BOUND_VALUE(type);
       break;
 
     case BOUND_CANNOT_BE_DETERMINED:
-      error (_("Lower bound may not be '*' in F77"));
+      error(_("Lower bound may not be '*' in F77"));
       break;
 
     case BOUND_BY_REF_ON_STACK:
-      current_frame_addr = get_frame_base (deprecated_selected_frame);
+      current_frame_addr = get_frame_base(deprecated_selected_frame);
       if (current_frame_addr > 0)
 	{
 	  ptr_to_lower_bound =
-	    read_memory_typed_address (current_frame_addr +
-				       TYPE_ARRAY_LOWER_BOUND_VALUE (type),
-				       builtin_type_void_data_ptr);
-	  *lower_bound = read_memory_integer (ptr_to_lower_bound, 4);
+	    read_memory_typed_address((current_frame_addr +
+                                       TYPE_ARRAY_LOWER_BOUND_VALUE(type)),
+				      builtin_type_void_data_ptr);
+	  *lower_bound = (int)read_memory_integer(ptr_to_lower_bound, 4);
 	}
       else
 	{
@@ -114,28 +114,28 @@ f77_get_dynamic_lowerbound (struct type *type, int *lower_bound)
     case BOUND_BY_REF_IN_REG:
     case BOUND_BY_VALUE_IN_REG:
     default:
-      error (_("??? unhandled dynamic array bound type ???"));
+      error(_("??? unhandled dynamic array bound type ???"));
       break;
     }
   return BOUND_FETCH_OK;
 }
 
 int
-f77_get_dynamic_upperbound (struct type *type, int *upper_bound)
+f77_get_dynamic_upperbound(struct type *type, int *upper_bound)
 {
-  CORE_ADDR current_frame_addr = 0;
+  CORE_ADDR current_frame_addr = 0UL;
   CORE_ADDR ptr_to_upper_bound;
 
-  switch (TYPE_ARRAY_UPPER_BOUND_TYPE (type))
+  switch (TYPE_ARRAY_UPPER_BOUND_TYPE(type))
     {
     case BOUND_BY_VALUE_ON_STACK:
-      current_frame_addr = get_frame_base (deprecated_selected_frame);
+      current_frame_addr = get_frame_base(deprecated_selected_frame);
       if (current_frame_addr > 0)
 	{
 	  *upper_bound =
-	    read_memory_integer (current_frame_addr +
-				 TYPE_ARRAY_UPPER_BOUND_VALUE (type),
-				 4);
+	    (int)read_memory_integer((current_frame_addr +
+                                      TYPE_ARRAY_UPPER_BOUND_VALUE(type)),
+                                     4);
 	}
       else
 	{
@@ -145,7 +145,7 @@ f77_get_dynamic_upperbound (struct type *type, int *upper_bound)
       break;
 
     case BOUND_SIMPLE:
-      *upper_bound = TYPE_ARRAY_UPPER_BOUND_VALUE (type);
+      *upper_bound = TYPE_ARRAY_UPPER_BOUND_VALUE(type);
       break;
 
     case BOUND_CANNOT_BE_DETERMINED:
@@ -154,18 +154,18 @@ f77_get_dynamic_upperbound (struct type *type, int *upper_bound)
          1 element.If the user wants to see more elements, let
          him manually ask for 'em and we'll subscript the
          array and show him */
-      f77_get_dynamic_lowerbound (type, upper_bound);
+      f77_get_dynamic_lowerbound(type, upper_bound);
       break;
 
     case BOUND_BY_REF_ON_STACK:
-      current_frame_addr = get_frame_base (deprecated_selected_frame);
+      current_frame_addr = get_frame_base(deprecated_selected_frame);
       if (current_frame_addr > 0)
 	{
 	  ptr_to_upper_bound =
-	    read_memory_typed_address (current_frame_addr +
-				       TYPE_ARRAY_UPPER_BOUND_VALUE (type),
-				       builtin_type_void_data_ptr);
-	  *upper_bound = read_memory_integer (ptr_to_upper_bound, 4);
+	    read_memory_typed_address((current_frame_addr +
+                                       TYPE_ARRAY_UPPER_BOUND_VALUE(type)),
+				      builtin_type_void_data_ptr);
+	  *upper_bound = (int)read_memory_integer(ptr_to_upper_bound, 4);
 	}
       else
 	{
@@ -177,7 +177,7 @@ f77_get_dynamic_upperbound (struct type *type, int *upper_bound)
     case BOUND_BY_REF_IN_REG:
     case BOUND_BY_VALUE_IN_REG:
     default:
-      error (_("??? unhandled dynamic array bound type ???"));
+      error(_("??? unhandled dynamic array bound type ???"));
       break;
     }
   return BOUND_FETCH_OK;
@@ -233,22 +233,22 @@ f77_create_arrayprint_offset_tbl (struct type *type, struct ui_file *stream)
 
   tmp_type = type;
 
-  while ((TYPE_CODE (tmp_type) == TYPE_CODE_ARRAY))
+  while (TYPE_CODE(tmp_type) == TYPE_CODE_ARRAY)
     {
-      if (TYPE_ARRAY_UPPER_BOUND_TYPE (tmp_type) == BOUND_CANNOT_BE_DETERMINED)
-	fprintf_filtered (stream, "<assumed size array> ");
+      if (TYPE_ARRAY_UPPER_BOUND_TYPE(tmp_type) == BOUND_CANNOT_BE_DETERMINED)
+	fprintf_filtered(stream, "<assumed size array> ");
 
-      retcode = f77_get_dynamic_upperbound (tmp_type, &upper);
+      retcode = f77_get_dynamic_upperbound(tmp_type, &upper);
       if (retcode == BOUND_FETCH_ERROR)
-	error (_("Cannot obtain dynamic upper bound"));
+	error(_("Cannot obtain dynamic upper bound"));
 
-      retcode = f77_get_dynamic_lowerbound (tmp_type, &lower);
+      retcode = f77_get_dynamic_lowerbound(tmp_type, &lower);
       if (retcode == BOUND_FETCH_ERROR)
-	error (_("Cannot obtain dynamic lower bound"));
+	error(_("Cannot obtain dynamic lower bound"));
 
-      F77_DIM_SIZE (ndimen) = upper - lower + 1;
+      F77_DIM_SIZE(ndimen) = (upper - lower + 1);
 
-      tmp_type = TYPE_TARGET_TYPE (tmp_type);
+      tmp_type = TYPE_TARGET_TYPE(tmp_type);
       ndimen++;
     }
 
@@ -283,21 +283,24 @@ f77_print_array_1(int nss, int ndimensions, struct type *type,
 
   if (nss != ndimensions)
     {
-      for (i = 0; (i < F77_DIM_SIZE(nss)) && ((*elts) < print_max); i++)
+      for (i = 0;
+           (i < F77_DIM_SIZE(nss)) && ((unsigned int)(*elts) < print_max);
+           i++)
 	{
 	  fprintf_filtered(stream, "( ");
 	  f77_print_array_1((nss + 1), ndimensions, TYPE_TARGET_TYPE(type),
-			    (valaddr + i * F77_DIM_OFFSET(nss)),
-			    (address + i * F77_DIM_OFFSET(nss)),
+			    (valaddr + (i * F77_DIM_OFFSET(nss))),
+			    (address + (i * F77_DIM_OFFSET(nss))),
 			    stream, format, deref_ref, recurse, pretty, elts);
 	  fprintf_filtered(stream, ") ");
 	}
-      if ((*elts >= print_max) && (i < F77_DIM_SIZE(nss)))
+      if (((unsigned int)(*elts) >= print_max) && (i < F77_DIM_SIZE(nss)))
 	fprintf_filtered(stream, "...");
     }
   else
     {
-      for (i = 0; (i < F77_DIM_SIZE(nss)) && ((*elts) < print_max);
+      for (i = 0;
+           (i < F77_DIM_SIZE(nss)) && ((unsigned int)(*elts) < print_max);
 	   i++, (*elts)++)
 	{
 	  val_print(TYPE_TARGET_TYPE(type),
@@ -308,7 +311,8 @@ f77_print_array_1(int nss, int ndimensions, struct type *type,
 	  if (i != (F77_DIM_SIZE(nss) - 1))
 	    fprintf_filtered(stream, ", ");
 
-	  if ((*elts == print_max - 1) && (i != (F77_DIM_SIZE(nss) - 1)))
+	  if (((unsigned int)(*elts) == (print_max - 1U))
+              && (i != (F77_DIM_SIZE(nss) - 1)))
 	    fprintf_filtered(stream, "...");
 	}
     }

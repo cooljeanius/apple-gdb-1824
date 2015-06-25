@@ -142,10 +142,10 @@ pipe_close(struct serial *scb)
     }
 }
 
-static struct serial_ops pipe_ops;
+static struct serial_ops pipe_ops; /* FIXME: use? */
 
 void
-_initialize_ser_pipe (void)
+_initialize_ser_pipe(void)
 {
   struct serial_ops *ops = XMALLOC(struct serial_ops);
   memset(ops, 0, sizeof(struct serial_ops));

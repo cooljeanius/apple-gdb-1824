@@ -20,8 +20,8 @@ clean mostlyclean:
 	-rm -fv $(EXECUTABLES) $(SPU_EXECUTABLES)
 
 distclean maintainer-clean realclean: clean
-	-rm -fv *~ core
-	-rm -f Makefile config.status config.log
+	-rm -fv *~ core .DS_Store
+	-rm -f Makefile config.status config.log autoscan.log
 	-rm -fv *-init.exp
 	-rm -frv *.log summary detail *.plog *.sum *.psum site.*
 	-rm -frv autom4te.cache || rmdir autom4te.cache

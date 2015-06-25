@@ -375,7 +375,7 @@ macosx_handle_exception(macosx_exception_thread_message *msg,
     case EXC_BAD_ACCESS:
       status->value.sig = TARGET_EXC_BAD_ACCESS;
       /* Preserve the exception data so we can print it later.  */
-      status->code = msg->exception_data[0];
+      status->code = (int)msg->exception_data[0];
       /* When gcc casts a signed int to an unsigned long long, it first
          casts it to a long long (sign extending it in the process) then
          it uselessly casts it to unsigned. So we first have to cast it
@@ -873,6 +873,15 @@ macosx_backup_before_break(int ignore)
 /* Un-nested from the following function for both
  * '-Wdeclaration-after-statement' and '-Wnested-externs': */
 extern ptid_t get_hand_call_ptid(void);
+
+/* FIXME: need to rename some struct fields that currently live in headers,
+ * and deal with all of the resulting fallout, before removing this: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* This drains the event sources.  The first event found is directly
    handled.  The rest are "pushed back" to the target as best we can.
@@ -2315,24 +2324,24 @@ macosx_ptrace_him(int pid)
      semaphore. I do it in a cleanup so I will NOT leave the fork
      side hanging if I run into an error here.  */
 
-  sem_cleanup = make_cleanup (post_to_semaphore, (void *) pid);
+  sem_cleanup = make_cleanup(post_to_semaphore, (void *)pid);
 
-  kret = task_for_pid (mach_task_self (), pid, &itask);
+  kret = task_for_pid(mach_task_self(), pid, &itask);
   if (kret != KERN_SUCCESS)
     {
-      if (macosx_get_task_for_pid_rights () == 1)
-	kret = task_for_pid (mach_task_self (), pid, &itask);
+      if (macosx_get_task_for_pid_rights() == 1)
+	kret = task_for_pid(mach_task_self(), pid, &itask);
     }
 
   {
     char buf[64];
-    sprintf (buf, "%s=%d", "TASK", itask);
-    putenv (buf);
+    sprintf(buf, "%s=%d", "TASK", itask);
+    putenv(buf);
   }
   if (kret != KERN_SUCCESS)
     {
-      error ("Unable to find Mach task port for process-id %d: %s (0x%lx).",
-             pid, MACH_ERROR_STRING (kret), (unsigned long) kret);
+      error("Unable to find Mach task port for process-id %d: %s (0x%lx).",
+            pid, MACH_ERROR_STRING(kret), (unsigned long)kret);
     }
 
   inferior_debug (2, "inferior task: 0x%08x, pid: %d\n", itask, pid);
@@ -2790,6 +2799,13 @@ macosx_get_thread_id_str(ptid_t ptid)
 
   return buf;
 }
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 static int
 macosx_child_thread_alive(ptid_t ptid)

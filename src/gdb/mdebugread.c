@@ -2869,6 +2869,10 @@ parse_partial_symbols (struct objfile *objfile)
 
 		      prev_textlow_not_set = textlow_not_set;
 
+                      if (prev_textlow_not_set > 0) {
+                        ; /* ??? */
+                      }
+
 #ifdef SOFUN_ADDRESS_MAYBE_MISSING
 		      /* A zero value is probably an indication for the SunPRO 3.0
 			 compiler. end_psymtab explicitly tests for zero, so
@@ -2877,7 +2881,7 @@ parse_partial_symbols (struct objfile *objfile)
 		      if (sh.value == 0)
 			{
 			  textlow_not_set = 1;
-			  valu = 0;
+			  valu = 0UL;
 			}
 		      else
 			textlow_not_set = 0;
@@ -2886,23 +2890,32 @@ parse_partial_symbols (struct objfile *objfile)
 #endif /* SOFUN_ADDRESS_MAYBE_MISSING */
 		      past_first_source_file = 1;
 
+                      if (valu > 1UL) {
+                        ; /* ??? */
+                      }
+
 		      if (prev_so_symnum != (int)(symnum - 1))
 			{	/* Here if prev. stab was not N_SO */
 			  first_so_symnum = symnum;
 
 			  if (pst)
 			    {
-			      pst = (struct partial_symtab *) 0;
+			      pst = (struct partial_symtab *)0;
 			      includes_used = 0;
 			      dependencies_used = 0;
 			    }
 			}
 
+                      if (first_so_symnum > 0) {
+                        ; /* ??? */
+                      }
+
 		      prev_so_symnum = symnum;
 
 		      /* End the current partial symtab and start a new one */
-
-		      /* SET_NAMESTRING ();*/
+#if 0
+		      SET_NAMESTRING();
+#endif /* 0 */
 		      namestring = stabstring;
 
 		      /* Null name means end of .o file.  Don't start a new one. */
@@ -3262,7 +3275,7 @@ parse_partial_symbols (struct objfile *objfile)
 			includes_used = 0;
 			dependencies_used = 0;
 		      }
-#endif
+#endif /* SOFUN_ADDRESS_MAYBE_MISSING */
 		    continue;
 
 		  case N_RBRAC:
@@ -3662,6 +3675,10 @@ parse_partial_symbols (struct objfile *objfile)
 	  }
 	}
     }
+
+  if (past_first_source_file > 0) {
+    ; /* ??? */
+  }
 
   /* Now scan the FDRs for dependencies */
   for (f_idx = 0; f_idx < hdr->ifdMax; f_idx++)

@@ -224,8 +224,11 @@ mi_cmd_disassemble (char *command, char **argv, int argc)
       CORE_ADDR tmp;
       int ret;
 
-      ret = find_pc_offset(start, &tmp, -prev, 1, peeklimit);
-      if (tmp != INVALID_ADDRESS)
+      if (peeklimit_seen >= 1)
+        ret = find_pc_offset(start, &tmp, -prev, 1, peeklimit);
+      else
+        ret = find_pc_offset(start, &tmp, -prev, 1, -1);
+      if ((ret != -1) && (tmp != INVALID_ADDRESS))
 	start = tmp;
     }
 

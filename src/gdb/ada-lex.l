@@ -408,19 +408,23 @@ strtoulst(const char *num, const char **trailer, int base)
   int i;
   unsigned char lim;
 
-  if (base < 2 || base > 16)
+  if ((base < 2) || (base > 16))
     {
       errno = EINVAL;
       return 0;
     }
-  lim = base - 1 + '0';
+  lim = (base - 1 + '0');
+
+  if (lim > 0) {
+    ; /* ??? */
+  }
 
   result = high_part = 0;
-  for (i = 0; is_digit_in_base (num[i], base); i += 1)
+  for (i = 0; is_digit_in_base(num[i], base); i += 1)
     {
-      result = result*base + digit_to_int (num[i]);
-      high_part = high_part*base + (unsigned int) (result >> HIGH_BYTE_POSN);
-      result &= ((ULONGEST) 1 << HIGH_BYTE_POSN) - 1;
+      result = ((result * base) + digit_to_int(num[i]));
+      high_part = ((high_part * base) + (unsigned int)(result >> HIGH_BYTE_POSN));
+      result &= (((ULONGEST)1UL << HIGH_BYTE_POSN) - 1);
       if (high_part > 0xff)
 	{
 	  errno = ERANGE;
@@ -432,7 +436,7 @@ strtoulst(const char *num, const char **trailer, int base)
   if (trailer != NULL)
     *trailer = &num[i];
 
-  return result + ((ULONGEST) high_part << HIGH_BYTE_POSN);
+  return (result + ((ULONGEST)high_part << HIGH_BYTE_POSN));
 }
 
 

@@ -106,8 +106,9 @@ inferior_read_memory_partial(CORE_ADDR addr, int nbytes, gdb_byte *mbuf)
   TRY_CATCH(except, RETURN_MASK_ERROR)
     {
       /* Read as much memory as we can: */
-      nbytes_read = target_read(&current_target, TARGET_OBJECT_MEMORY,
-                                NULL, mbuf, addr, nbytes);
+      nbytes_read = (size_t)target_read(&current_target,
+                                        TARGET_OBJECT_MEMORY, NULL, mbuf,
+                                        addr, nbytes);
     }
   set_trust_readonly(old_trust_readonly);
 
@@ -147,7 +148,7 @@ inferior_read_generic(bfd *abfd ATTRIBUTE_UNUSED, void *stream, void *data,
       return 0;
     }
 
-  return inferior_read_memory_partial((iptr->addr + offset), nbytes,
+  return inferior_read_memory_partial((iptr->addr + offset), (int)nbytes,
                                       (gdb_byte *)data);
 }
 
@@ -295,7 +296,7 @@ inferior_read_mach_o(bfd *abfd, void *stream, void *data, file_ptr nbytes,
 		    infaddr = (infaddr + iptr->offset + process_shared_cache_slide);
 		  }
 
-		return inferior_read_memory_partial(infaddr, nbytes,
+		return inferior_read_memory_partial(infaddr, (int)nbytes,
                                                     (gdb_byte *)data);
               }
           }

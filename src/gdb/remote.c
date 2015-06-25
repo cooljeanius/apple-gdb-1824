@@ -6240,6 +6240,8 @@ end_remote_timer(void)
 #if defined(TARGET_ARM)
 # include "arm-macosx-tdep.h"
 # include "arm-tdep.h"
+#elif defined(TARGET_AARCH64)
+# include "aarch64-tdep.h"
 #endif /* TARGET_ARM */
 
 static struct target_ops remote_macosx_ops;

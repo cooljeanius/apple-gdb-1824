@@ -41,11 +41,13 @@
 /* For the gdbarch_tdep structure so we can get the wordsize. */
 #if defined(TARGET_POWERPC)
 # include "ppc-tdep.h"
-#elif defined (TARGET_I386)
+#elif defined(TARGET_I386)
 # include "amd64-tdep.h"
 # include "i386-tdep.h"
-#elif defined (TARGET_ARM)
+#elif defined(TARGET_ARM)
 # include "arm-tdep.h"
+#elif defined(TARGET_AARCH64)
+# include "aarch64-tdep.h"
 #else
 # error "Unrecognized target architecture."
 #endif /* TARGET_foo */
@@ -148,28 +150,28 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
   int bfd_in_memory;
 
 #if 0
-  init_minimal_symbol_collection ();
-  make_cleanup (discard_minimal_symbols, 0);
+  init_minimal_symbol_collection();
+  make_cleanup(discard_minimal_symbols, 0);
 #endif /* 0 */
 
-  stabsect = bfd_get_section_by_name (sym_bfd, stab_name);
-  stabstrsect = bfd_get_section_by_name (sym_bfd, stabstr_name);
+  stabsect = bfd_get_section_by_name(sym_bfd, stab_name);
+  stabstrsect = bfd_get_section_by_name(sym_bfd, stabstr_name);
 
-  bfd_in_memory = macosx_bfd_is_in_memory (sym_bfd);
+  bfd_in_memory = macosx_bfd_is_in_memory(sym_bfd);
   if (!stabsect)
     return;
 
   if (!stabstrsect)
-    error
-      ("macho_build_psymtabs:  Found stabs (%s), but not string section (%s)",
-       stab_name, stabstr_name);
+    error("macho_build_psymtabs:  Found stabs (%s), but not string section (%s)",
+          stab_name, stabstr_name);
 
-  objfile->deprecated_sym_stab_info = (struct dbx_symfile_info *)
-    xmmalloc (objfile->md, sizeof (struct dbx_symfile_info));
-  memset (objfile->deprecated_sym_stab_info, 0, sizeof (struct dbx_symfile_info));
+  objfile->deprecated_sym_stab_info =
+    ((struct dbx_symfile_info *)
+     xmmalloc(objfile->md, sizeof(struct dbx_symfile_info)));
+  memset(objfile->deprecated_sym_stab_info, 0, sizeof(struct dbx_symfile_info));
 
-  gdb_assert (text_name != NULL);
-  gdb_assert (data_name != NULL);
+  gdb_assert(text_name != NULL);
+  gdb_assert(data_name != NULL);
 
   /* For text, data, coalesced text and bss we want to get the
      struct obj_section's instead of BFD asections. The asection will have
@@ -177,61 +179,61 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
      addresses will not be reliable. For other sections, e.g. DBX_STRINGTAB,
      it is fine to refer to the file's asection.  */
 
-  DBX_TEXT_SECTION (objfile) = NULL;
-  ALL_OBJFILE_OSECTIONS (objfile, os)
+  DBX_TEXT_SECTION(objfile) = NULL;
+  ALL_OBJFILE_OSECTIONS(objfile, os)
     if (os->the_bfd_section && os->the_bfd_section->name
-        && strcmp (os->the_bfd_section->name, text_name) == 0)
+        && (strcmp(os->the_bfd_section->name, text_name) == 0))
       {
-        DBX_TEXT_SECTION (objfile) = os;
+        DBX_TEXT_SECTION(objfile) = os;
         break;
       }
 
-  DBX_DATA_SECTION (objfile) = NULL;
-  ALL_OBJFILE_OSECTIONS (objfile, os)
+  DBX_DATA_SECTION(objfile) = NULL;
+  ALL_OBJFILE_OSECTIONS(objfile, os)
     if (os->the_bfd_section && os->the_bfd_section->name
-        && strcmp (os->the_bfd_section->name, data_name) == 0)
+        && (strcmp(os->the_bfd_section->name, data_name) == 0))
       {
-        DBX_DATA_SECTION (objfile) = os;
+        DBX_DATA_SECTION(objfile) = os;
         break;
       }
 
   /* If there is no __DATA, __data section we still need to come up
      with something for any symbols in the __DATA segment (e.g. something
      in __DATA, __common) so let us point to the segment itself.  */
-  if (DBX_DATA_SECTION (objfile) == NULL)
-    ALL_OBJFILE_OSECTIONS (objfile, os)
+  if (DBX_DATA_SECTION(objfile) == NULL)
+    ALL_OBJFILE_OSECTIONS(objfile, os)
       if (os->the_bfd_section && os->the_bfd_section->name
-          && strcmp (os->the_bfd_section->name, "LC_SEGMENT.__DATA") == 0)
+          && (strcmp(os->the_bfd_section->name, "LC_SEGMENT.__DATA") == 0))
         {
           DBX_DATA_SECTION (objfile) = os;
           break;
         }
 
-  DBX_COALESCED_TEXT_SECTION (objfile) = NULL;
+  DBX_COALESCED_TEXT_SECTION(objfile) = NULL;
   if (coalesced_text_name != NULL)
-    ALL_OBJFILE_OSECTIONS (objfile, os)
+    ALL_OBJFILE_OSECTIONS(objfile, os)
       if (os->the_bfd_section && os->the_bfd_section->name
-          && strcmp (os->the_bfd_section->name, coalesced_text_name) == 0)
+          && (strcmp(os->the_bfd_section->name, coalesced_text_name) == 0))
         {
-          DBX_COALESCED_TEXT_SECTION (objfile) = os;
+          DBX_COALESCED_TEXT_SECTION(objfile) = os;
           break;
         }
 
-  DBX_BSS_SECTION (objfile) = NULL;
+  DBX_BSS_SECTION(objfile) = NULL;
   if (bss_name != NULL)
-    ALL_OBJFILE_OSECTIONS (objfile, os)
+    ALL_OBJFILE_OSECTIONS(objfile, os)
       if (os->the_bfd_section && os->the_bfd_section->name
-          && strcmp (os->the_bfd_section->name, bss_name) == 0)
+          && (strcmp(os->the_bfd_section->name, bss_name) == 0))
         {
-          DBX_BSS_SECTION (objfile) = os;
+          DBX_BSS_SECTION(objfile) = os;
           break;
         }
 
   /* Zero length sections will have a BFD asection but not a struct
      obj_section.  */
-  if (!DBX_TEXT_SECTION (objfile))
+  if (!DBX_TEXT_SECTION(objfile))
     {
-      asection *text_sect = bfd_get_section_by_name (sym_bfd, text_name);
+      asection *text_sect = bfd_get_section_by_name(sym_bfd, text_name);
       if (text_sect)
         {
           DBX_TEXT_SECTION (objfile) = (struct obj_section *)
@@ -337,49 +339,49 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
 	}
     }
 
-  if (DBX_TEXT_SECTION (objfile))
+  if (DBX_TEXT_SECTION(objfile))
     {
-      DBX_TEXT_ADDR (objfile) = DBX_TEXT_SECTION (objfile)->addr;
-      DBX_TEXT_SIZE (objfile) = DBX_TEXT_SECTION (objfile)->endaddr -
-                                DBX_TEXT_SECTION (objfile)->addr;
+      DBX_TEXT_ADDR(objfile) = DBX_TEXT_SECTION(objfile)->addr;
+      DBX_TEXT_SIZE(objfile) = (int)(DBX_TEXT_SECTION(objfile)->endaddr
+                                     - DBX_TEXT_SECTION(objfile)->addr);
     }
   else
     {
-      DBX_TEXT_ADDR (objfile) = 0;
-      DBX_TEXT_SIZE (objfile) = 0;
+      DBX_TEXT_ADDR(objfile) = 0;
+      DBX_TEXT_SIZE(objfile) = 0;
     }
 
   /* APPLE LOCAL: Pre-fetch the addresses for the coalesced section as well.
      Note: It is not an error not to have a coalesced section...  */
 
-  if (DBX_COALESCED_TEXT_SECTION (objfile))
+  if (DBX_COALESCED_TEXT_SECTION(objfile))
     {
-      DBX_COALESCED_TEXT_ADDR (objfile) =
-                                DBX_COALESCED_TEXT_SECTION (objfile)->addr;
-      DBX_COALESCED_TEXT_SIZE (objfile) =
-                                DBX_COALESCED_TEXT_SECTION (objfile)->endaddr -
-                                DBX_COALESCED_TEXT_SECTION (objfile)->addr;
+      DBX_COALESCED_TEXT_ADDR(objfile) =
+                                DBX_COALESCED_TEXT_SECTION(objfile)->addr;
+      DBX_COALESCED_TEXT_SIZE(objfile) =
+                      (int)(DBX_COALESCED_TEXT_SECTION(objfile)->endaddr
+                            - DBX_COALESCED_TEXT_SECTION(objfile)->addr);
     }
   else
     {
-      DBX_COALESCED_TEXT_ADDR (objfile) = 0;
-      DBX_COALESCED_TEXT_SIZE (objfile) = 0;
+      DBX_COALESCED_TEXT_ADDR(objfile) = 0;
+      DBX_COALESCED_TEXT_SIZE(objfile) = 0;
     }
   /* END APPLE LOCAL */
 
-  DBX_SYMBOL_SIZE (objfile) =
-    (bfd_mach_o_version (objfile->obfd) > 1) ? 16 : 12;
-  DBX_SYMCOUNT (objfile) =
-    bfd_section_size (sym_bfd, stabsect) / DBX_SYMBOL_SIZE (objfile);
-  DBX_STRINGTAB_SIZE (objfile) = bfd_section_size (sym_bfd, stabstrsect);
+  DBX_SYMBOL_SIZE(objfile) =
+    ((bfd_mach_o_version(objfile->obfd) > 1) ? 16 : 12);
+  DBX_SYMCOUNT(objfile) =
+    ((int)bfd_section_size(sym_bfd, stabsect) / DBX_SYMBOL_SIZE(objfile));
+  DBX_STRINGTAB_SIZE(objfile) = (int)bfd_section_size(sym_bfd,
+                                                      stabstrsect);
 
   /* XXX - FIXME: POKING INSIDE BFD DATA STRUCTURES */
-  DBX_SYMTAB_OFFSET (objfile) = stabsect->filepos;
+  DBX_SYMTAB_OFFSET(objfile) = stabsect->filepos;
 
 #if HAVE_MMAP
   if (mmap_strtabflag && (bfd_in_memory == 0))
     {
-
       /* currently breaks mapped symbol files (string table does NOT end up in objfile) */
 
       bfd_window w;
@@ -388,8 +390,9 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
       /* APPLE LOCAL: Open the string table read only if possible. Should
          be more efficient.  */
 
-      val = bfd_get_section_contents_in_window_with_mode
-        (sym_bfd, stabstrsect, &w, 0, DBX_STRINGTAB_SIZE(objfile), 0);
+      val =
+        bfd_get_section_contents_in_window_with_mode(sym_bfd, stabstrsect, &w, 0,
+                                                     DBX_STRINGTAB_SIZE(objfile), 0);
 
       if (!val)
         perror_with_name(name);
@@ -400,49 +403,56 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
     {
 #endif /* HAVE_MMAP */
 #if defined(TARGET_ARM) && defined(NM_NEXTSTEP)
-      get_dyld_shared_cache_local_syms ();
+      get_dyld_shared_cache_local_syms();
       /* Hack for ARM native MacOSX targets where we can rely on anything
        * in the shared cache being mapped in our process at the same
        * address. This can save us 10MB - 11MB which is a about a tenth
        * of our available memory.   */
-      if (bfd_mach_o_in_shared_cached_memory (sym_bfd))
+      if (bfd_mach_o_in_shared_cached_memory(sym_bfd))
 	{
           static char *g_shared_cache_stringtab = NULL;
 
-	  /* Map a single copy of the string table and cache the result.  */
+	  /* Map a single copy of the string table and cache the result: */
 	  if (g_shared_cache_stringtab == NULL)
 	    {
-              g_shared_cache_stringtab = xmalloc (DBX_STRINGTAB_SIZE (objfile) + 1);
-	      OBJSTAT (objfile, sz_strtab += DBX_STRINGTAB_SIZE (objfile) + 1);
+              g_shared_cache_stringtab = xmalloc(DBX_STRINGTAB_SIZE(objfile) + 1);
+	      OBJSTAT(objfile, sz_strtab += (DBX_STRINGTAB_SIZE(objfile) + 1));
 
-	      /* Now read in the string table in one big gulp.  */
-	      val = bfd_get_section_contents (sym_bfd, stabstrsect,
-					      g_shared_cache_stringtab, 0,
-	         			      DBX_STRINGTAB_SIZE (objfile));
+	      /* Now read in the string table in one big gulp: */
+	      val = bfd_get_section_contents(sym_bfd, stabstrsect,
+					     g_shared_cache_stringtab, 0,
+	         			     DBX_STRINGTAB_SIZE(objfile));
 	      if (!val)
-	        perror_with_name (name);
+	        perror_with_name(name);
 	    }
-	  DBX_STRINGTAB (objfile) = g_shared_cache_stringtab;
+	  DBX_STRINGTAB(objfile) = g_shared_cache_stringtab;
 
           /* Pre-seed the minsyms for this objfile with the nlist records in
              the separate dyld_shared_cache file on iOS devices -- the in-memory
              copy will NOT have the symbols.  */
           struct gdb_copy_dyld_cache_local_symbols_entry *dsc_locsyms_entry = NULL;
-          CORE_ADDR slide = 0;
-          if (objfile->sections && objfile->sections[objfile->sect_index_text].the_bfd_section)
+          CORE_ADDR slide = 0UL;
+          if (objfile->sections &&
+              objfile->sections[objfile->sect_index_text].the_bfd_section)
             {
-              dsc_locsyms_entry = get_dyld_shared_cache_entry (objfile->sections[objfile->sect_index_text].the_bfd_section->lma);
-              slide = objfile->sections[objfile->sect_index_text].addr - objfile->sections[objfile->sect_index_text].the_bfd_section->lma;
+              dsc_locsyms_entry =
+                get_dyld_shared_cache_entry(objfile->sections[objfile->sect_index_text].the_bfd_section->lma);
+              slide = (objfile->sections[objfile->sect_index_text].addr
+                       - objfile->sections[objfile->sect_index_text].the_bfd_section->lma);
             }
           if (dsc_locsyms_entry && dsc_locsyms_entry->nlistCount > 0)
             {
               int nlist_size;
+              uint8_t *base;
               if (gdbarch_tdep (current_gdbarch)->wordsize == 4)
                 nlist_size = 12;
               else
                 nlist_size = 16;
-              uint8_t *base = dyld_shared_cache_local_nlists + (dsc_locsyms_entry->nlistStartIndex * nlist_size);
-              add_dyld_shared_cache_local_symbols (objfile, base, dsc_locsyms_entry->nlistCount, nlist_size, dyld_shared_cache_strings, slide, mainline);
+              base = (dyld_shared_cache_local_nlists
+                      + (dsc_locsyms_entry->nlistStartIndex * nlist_size));
+              add_dyld_shared_cache_local_symbols(objfile, base, dsc_locsyms_entry->nlistCount,
+                                                  nlist_size, dyld_shared_cache_strings,
+                                                  slide, mainline);
             }
 	}
       else
@@ -455,24 +465,23 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
        * lower address than our mach header.  */
       if (bfd_in_memory == 0)
 	{
-	  if (DBX_STRINGTAB_SIZE (objfile) > bfd_get_size (sym_bfd))
-	    error
-	      ("error parsing symbol file: invalid string table size (%d bytes)",
-	       DBX_STRINGTAB_SIZE (objfile));
+	  if (DBX_STRINGTAB_SIZE(objfile) > bfd_get_size(sym_bfd))
+	    error("error parsing symbol file: invalid string table size (%d bytes)",
+                  DBX_STRINGTAB_SIZE(objfile));
 	}
-      DBX_STRINGTAB (objfile) =
-        (char *) obstack_alloc (&objfile->objfile_obstack,
-                                DBX_STRINGTAB_SIZE (objfile) + 1);
-      OBJSTAT (objfile, sz_strtab += DBX_STRINGTAB_SIZE (objfile) + 1);
+      DBX_STRINGTAB(objfile) =
+        (char *)obstack_alloc(&objfile->objfile_obstack,
+                              (DBX_STRINGTAB_SIZE(objfile) + 1));
+      OBJSTAT(objfile, sz_strtab += (DBX_STRINGTAB_SIZE(objfile) + 1));
 
-      /* Now read in the string table in one big gulp.  */
-
-      val = bfd_get_section_contents
-        (sym_bfd, stabstrsect, DBX_STRINGTAB (objfile), 0,
-         DBX_STRINGTAB_SIZE (objfile));
+      /* Now read in the string table in one big gulp: */
+      val =
+        bfd_get_section_contents(sym_bfd, stabstrsect,
+                                 DBX_STRINGTAB(objfile), 0,
+                                 DBX_STRINGTAB_SIZE(objfile));
 
       if (!val)
-        perror_with_name (name);
+        perror_with_name(name);
 #if defined(TARGET_ARM) && defined(NM_NEXTSTEP)
 	}
 #endif /* TARGET_ARM && NM_NEXTSTEP */
@@ -482,8 +491,8 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
 
   /* APPLE LOCAL: Get the "local" vs "nonlocal" nlist record locations
      from the LC_DYSYMTAB load command if it was provided. */
-  local_stabsect = bfd_get_section_by_name (sym_bfd, local_stab_name);
-  nonlocal_stabsect = bfd_get_section_by_name (sym_bfd, nonlocal_stab_name);
+  local_stabsect = bfd_get_section_by_name(sym_bfd, local_stab_name);
+  nonlocal_stabsect = bfd_get_section_by_name(sym_bfd, nonlocal_stab_name);
   if (local_stabsect == NULL || nonlocal_stabsect == NULL)
     local_stabsect = nonlocal_stabsect = NULL;
 
@@ -493,40 +502,40 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
      DBX_SYMTAB_OFFSET et al values for all stab records. */
   if (local_stabsect == NULL)
     {
-      DBX_LOCAL_STAB_OFFSET (objfile) = 0;
-      DBX_LOCAL_STAB_COUNT (objfile) = 0;
-      DBX_NONLOCAL_STAB_OFFSET (objfile) = 0;
-      DBX_NONLOCAL_STAB_COUNT (objfile) = 0;
+      DBX_LOCAL_STAB_OFFSET(objfile) = 0;
+      DBX_LOCAL_STAB_COUNT(objfile) = 0;
+      DBX_NONLOCAL_STAB_OFFSET(objfile) = 0;
+      DBX_NONLOCAL_STAB_COUNT(objfile) = 0;
     }
   else
     {
       /* XXX - FIXME: POKING INSIDE BFD DATA STRUCTURES */
-      DBX_LOCAL_STAB_OFFSET (objfile) = local_stabsect->filepos;
-      DBX_LOCAL_STAB_COUNT (objfile) = bfd_section_size (sym_bfd,
-                                                         local_stabsect) /
-        DBX_SYMBOL_SIZE (objfile);
+      DBX_LOCAL_STAB_OFFSET(objfile) = local_stabsect->filepos;
+      DBX_LOCAL_STAB_COUNT(objfile) =
+        ((int)bfd_section_size(sym_bfd, local_stabsect)
+         / DBX_SYMBOL_SIZE(objfile));
       /* XXX - FIXME: POKING INSIDE BFD DATA STRUCTURES */
-      DBX_NONLOCAL_STAB_OFFSET (objfile) = nonlocal_stabsect->filepos;
-      DBX_NONLOCAL_STAB_COUNT (objfile) = bfd_section_size (sym_bfd,
-                                                            nonlocal_stabsect)
-        / DBX_SYMBOL_SIZE (objfile);
+      DBX_NONLOCAL_STAB_OFFSET(objfile) = nonlocal_stabsect->filepos;
+      DBX_NONLOCAL_STAB_COUNT(objfile) =
+        ((int)bfd_section_size(sym_bfd, nonlocal_stabsect)
+         / DBX_SYMBOL_SIZE(objfile));
     }
 
-  stabsread_new_init ();
-  buildsym_new_init ();
-  free_header_files ();
-  init_header_files ();
+  stabsread_new_init();
+  buildsym_new_init();
+  free_header_files();
+  init_header_files();
 
 #if 0
-  install_minimal_symbols (objfile);
+  install_minimal_symbols(objfile);
 #endif /* 0 */
 
   processing_acc_compilation = 1;
-  dbx_symfile_read (objfile, mainline);
+  dbx_symfile_read(objfile, mainline);
 }
 
 static void
-macho_symfile_read (struct objfile *objfile, int mainline)
+macho_symfile_read(struct objfile *objfile, int mainline)
 {
   bfd *abfd = objfile->obfd;
   struct cleanup *minsym_cleanup;
@@ -538,129 +547,132 @@ macho_symfile_read (struct objfile *objfile, int mainline)
 
   int ret;
 
-  CHECK_FATAL (objfile != NULL);
-  CHECK_FATAL (abfd != NULL);
-  CHECK_FATAL (abfd->filename != NULL);
+  CHECK_FATAL(objfile != NULL);
+  CHECK_FATAL(abfd != NULL);
+  CHECK_FATAL(abfd->filename != NULL);
 
   /* If this objfile is pointing to a stub library -- a library whose text
      and data have been stripped -- stop processing right now. gdb will
      try to examine the text or data and does not handle it gracefully when
      they are not present.  */
-  if (bfd_mach_o_stub_library (abfd))
+  if (bfd_mach_o_stub_library(abfd))
     return;
 
   /* Also, if the binary is encrypted, then it will only confuse us. We will
      skip reading this in, and gdb will read it from memory later on.  */
-  if (bfd_mach_o_encrypted_binary (abfd))
+  if (bfd_mach_o_encrypted_binary(abfd))
     return;
 
-  init_minimal_symbol_collection ();
-  minsym_cleanup = make_cleanup_discard_minimal_symbols ();
+  init_minimal_symbol_collection();
+  minsym_cleanup = make_cleanup_discard_minimal_symbols();
 
   /* If we are reinitializing, or if we have never loaded syms yet,
      set table to empty. MAINLINE is cleared so that *_read_psymtab
      functions do not all also re-initialize the psymbol table. */
   if (mainline)
     {
-      init_psymbol_list (objfile, 0);
+      init_psymbol_list(objfile, 0);
       mainline = 0;
     }
 
   if (info_verbose
-      && macosx_bfd_is_in_memory (abfd)
-      && target_is_remote ()
-      && !target_is_kdp_remote ())
+      && macosx_bfd_is_in_memory(abfd)
+      && target_is_remote()
+      && !target_is_kdp_remote())
     {
-      warning ("Copying %s from device memory...", abfd->filename);
+      warning("Copying %s from device memory...", abfd->filename);
     }
-  macho_build_psymtabs (objfile, mainline,
-                        "LC_SYMTAB.stabs", "LC_SYMTAB.stabstr",
-                        "LC_SEGMENT.__TEXT.__text",
-                        "LC_DYSYMTAB.localstabs",
-                        "LC_DYSYMTAB.nonlocalstabs",
-                        "LC_SEGMENT.__TEXT.__textcoal_nt",
-                        "LC_SEGMENT.__DATA.__data",
-                        "LC_SEGMENT.__DATA.__bss");
+  macho_build_psymtabs(objfile, mainline,
+                       "LC_SYMTAB.stabs", "LC_SYMTAB.stabstr",
+                       "LC_SEGMENT.__TEXT.__text",
+                       "LC_DYSYMTAB.localstabs",
+                       "LC_DYSYMTAB.nonlocalstabs",
+                       "LC_SEGMENT.__TEXT.__textcoal_nt",
+                       "LC_SEGMENT.__DATA.__data",
+                       "LC_SEGMENT.__DATA.__bss");
 
-  if (dwarf2_has_info (objfile))
+  if (dwarf2_has_info(objfile))
     {
-      dwarf2_build_psymtabs (objfile, mainline);
+      dwarf2_build_psymtabs(objfile, mainline);
       if (use_eh_frames_info)
-        dwarf2_build_frame_info (objfile);
+        dwarf2_build_frame_info(objfile);
     }
-  else if (dwarf_eh_frame_section != NULL && use_eh_frames_info)
+  else if ((dwarf_eh_frame_section != NULL) && use_eh_frames_info)
     {
-      dwarf2_build_frame_info (objfile);
+      dwarf2_build_frame_info(objfile);
     }
 
   if (mach_o_process_exports_flag)
     {
-
-      ret = bfd_mach_o_lookup_command (abfd, BFD_MACH_O_LC_SYMTAB, &gsymtab);
+      ret = bfd_mach_o_lookup_command(abfd, BFD_MACH_O_LC_SYMTAB, &gsymtab);
       if (ret != 1)
         {
-          /* warning ("Error fetching LC_SYMTAB load command from object file \"%s\"",
-             abfd->filename); */
-          install_minimal_symbols (objfile);
+#if (defined(DEBUG) || defined(_DEBUG)) && defined(LC_SYMTAB)
+          warning("Error fetching LC_SYMTAB load command from object file \"%s\"",
+                  abfd->filename);
+#endif /* (DEBUG || _DEBUG) && LC_SYMTAB */
+          install_minimal_symbols(objfile);
           return;
         }
 
       ret =
-        bfd_mach_o_lookup_command (abfd, BFD_MACH_O_LC_DYSYMTAB, &gdysymtab);
+        bfd_mach_o_lookup_command(abfd, BFD_MACH_O_LC_DYSYMTAB,
+                                  &gdysymtab);
       if (ret != 1)
         {
-          /* warning ("Error fetching LC_DYSYMTAB load command from object file \"%s\"",
-             abfd->filename); */
-          install_minimal_symbols (objfile);
+#if (defined(DEBUG) || defined(_DEBUG)) && defined(LC_DYSYMTAB)
+          warning("Error fetching LC_DYSYMTAB load command from object file \"%s\"",
+                  abfd->filename);
+#endif /* (DEBUG || _DEBUG) && LC_DYSYMTAB */
+          install_minimal_symbols(objfile);
           return;
         }
 
-      CHECK_FATAL (gsymtab->type == BFD_MACH_O_LC_SYMTAB);
-      CHECK_FATAL (gdysymtab->type == BFD_MACH_O_LC_DYSYMTAB);
+      CHECK_FATAL(gsymtab->type == BFD_MACH_O_LC_SYMTAB);
+      CHECK_FATAL(gdysymtab->type == BFD_MACH_O_LC_DYSYMTAB);
 
       symtab = &gsymtab->command.symtab;
       dysymtab = &gdysymtab->command.dysymtab;
 
       if (symtab->strtab == NULL)
         {
-          symtab->strtab = DBX_STRINGTAB (objfile);
+          symtab->strtab = DBX_STRINGTAB(objfile);
         }
 
       if (symtab->strtab == NULL)
         {
-          ret = bfd_mach_o_scan_read_symtab_strtab (abfd, symtab);
+          ret = bfd_mach_o_scan_read_symtab_strtab(abfd, symtab);
           if (ret != 0)
             {
-              warning ("Unable to read symbol table for \"%s\": %s",
-                       abfd->filename, bfd_errmsg (bfd_get_error ()));
-              install_minimal_symbols (objfile);
+              warning("Unable to read symbol table for \"%s\": %s",
+                      abfd->filename, bfd_errmsg(bfd_get_error()));
+              install_minimal_symbols(objfile);
               return;
             }
         }
 
-      if (!macho_read_indirect_symbols (abfd, dysymtab, symtab, objfile))
+      if (!macho_read_indirect_symbols(abfd, dysymtab, symtab, objfile))
         {
-          install_minimal_symbols (objfile);
+          install_minimal_symbols(objfile);
           return;
         }
     }
 
-  install_minimal_symbols (objfile);
-  do_cleanups (minsym_cleanup);
+  install_minimal_symbols(objfile);
+  do_cleanups(minsym_cleanup);
 }
 
 /* Record minsyms for the dyld stub trampolines; prefix them with "dyld_stub_".  */
 
 int
-macho_read_indirect_symbols (bfd *abfd,
-                             struct bfd_mach_o_dysymtab_command *dysymtab,
-                             struct bfd_mach_o_symtab_command *symtab,
-                             struct objfile *objfile)
+macho_read_indirect_symbols(bfd *abfd,
+                            struct bfd_mach_o_dysymtab_command *dysymtab,
+                            struct bfd_mach_o_symtab_command *symtab,
+                            struct objfile *objfile)
 {
-
   unsigned int i, nsyms, ret;
   asymbol sym;
-  asection *bfdsec = NULL;
+  asection *bfdsec = (asection *)NULL;
   int section_count;
   struct bfd_mach_o_section *section = NULL;
   struct bfd_mach_o_load_command *lcommand = NULL;
@@ -672,22 +684,24 @@ macho_read_indirect_symbols (bfd *abfd,
       int osect_idx;
       int found_it;
 
-      ret = bfd_mach_o_lookup_section (abfd, bfdsec, &lcommand, &section);
+      ret = bfd_mach_o_lookup_section(abfd, bfdsec, &lcommand, &section);
       if (ret != 1)
         {
-          /* warning ("error fetching section %s from object file", bfd_section_name (abfd, bfdsec)); */
+#if (defined(DEBUG) || defined(_DEBUG)) && defined(bfd_section_name)
+          warning("error fetching section %s from object file",
+                  bfd_section_name(abfd, bfdsec));
+#endif /* (DEBUG || _DEBUG) && bfd_section_name */
           continue;
         }
       if (section == NULL)
         continue;
-      if ((section->flags & BFD_MACH_O_SECTION_TYPE_MASK) !=
-          BFD_MACH_O_S_SYMBOL_STUBS)
+      if ((section->flags & BFD_MACH_O_SECTION_TYPE_MASK)
+          != BFD_MACH_O_S_SYMBOL_STUBS)
         continue;
       if (section->reserved2 == 0)
         {
-          warning
-            ("section %s has S_SYMBOL_STUBS flag set, but not reserved2",
-             bfd_section_name (abfd, bfdsec));
+          warning("section %s has S_SYMBOL_STUBS flag set, but not reserved2",
+                  bfd_section_name(abfd, bfdsec));
           continue;
         }
 
@@ -702,7 +716,7 @@ macho_read_indirect_symbols (bfd *abfd,
       osect_idx = 0;
       found_it = 0;
 
-      ALL_OBJFILE_OSECTIONS (objfile, osect)
+      ALL_OBJFILE_OSECTIONS(objfile, osect)
 	{
 	  if (osect->the_bfd_section == bfdsec)
 	    {
@@ -713,49 +727,48 @@ macho_read_indirect_symbols (bfd *abfd,
 	    osect_idx++;
 	}
       if (!found_it)
-	osect_idx = SECT_OFF_TEXT (objfile);
+	osect_idx = SECT_OFF_TEXT(objfile);
 
 
-      nsyms = section->size / section->reserved2;
+      nsyms = (unsigned int)(section->size / section->reserved2);
 
       for (i = 0; i < nsyms; i++)
         {
-
-          CORE_ADDR cursym = section->reserved1 + i;
-          CORE_ADDR stubaddr = section->addr + (i * section->reserved2);
+          CORE_ADDR cursym = (section->reserved1 + i);
+          CORE_ADDR stubaddr = (section->addr + (i * section->reserved2));
           const char *sname = NULL;
           char nname[4096];
 
           if (cursym >= dysymtab->nindirectsyms)
             {
-              warning ("Indirect symbol entry out of range in \"%s\" (0x%s >= 0x%s)",
-                       abfd->filename, paddr_nz (cursym),
-                       paddr_nz (dysymtab->nindirectsyms));
+              warning("Indirect symbol entry out of range in \"%s\" (0x%s >= 0x%s)",
+                      abfd->filename, paddr_nz(cursym),
+                      paddr_nz(dysymtab->nindirectsyms));
               return 0;
             }
           ret =
-            bfd_mach_o_scan_read_dysymtab_symbol (abfd, dysymtab, symtab,
-                                                  &sym, cursym);
+            bfd_mach_o_scan_read_dysymtab_symbol(abfd, dysymtab, symtab,
+                                                 &sym, (unsigned long)cursym);
           if (ret != 0)
             {
               return 0;
             }
 
           sname = sym.name;
-          CHECK_FATAL (sname != NULL);
-          if (sname[0] == bfd_get_symbol_leading_char (abfd))
+          CHECK_FATAL(sname != NULL);
+          if (sname[0] == bfd_get_symbol_leading_char(abfd))
             {
               sname++;
             }
 
-          CHECK_FATAL ((strlen (sname) + sizeof ("dyld_stub_") + 1) < 4096);
-          sprintf (nname, "dyld_stub_%s", sname);
+          CHECK_FATAL((strlen(sname) + sizeof("dyld_stub_") + 1UL) < 4096);
+          sprintf(nname, "dyld_stub_%s", sname);
 
-          stubaddr += objfile_section_offset (objfile, osect_idx);
-          prim_record_minimal_symbol_and_info (nname, stubaddr,
-                                               mst_solib_trampoline, NULL,
-                                               osect_idx,
-                                               bfdsec, objfile);
+          stubaddr += objfile_section_offset(objfile, osect_idx);
+          prim_record_minimal_symbol_and_info(nname, stubaddr,
+                                              mst_solib_trampoline, NULL,
+                                              osect_idx,
+                                              bfdsec, objfile);
         }
     }
 

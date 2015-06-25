@@ -203,11 +203,11 @@ close_exec_file (void)
 }
 
 void
-reopen_exec_file (void)
+reopen_exec_file(void)
 {
 #if 0				/* FIXME */
   if (exec_bfd)
-    bfd_reopen (exec_bfd);
+    bfd_reopen(exec_bfd);
 #else
   char *filename;
   int res;
@@ -221,25 +221,30 @@ reopen_exec_file (void)
   /* APPLE LOCAL end gdb_quitting */
 
   /* Do NOT do anything if the current target is NOT exec. */
-  if (exec_bfd == NULL || strcmp (target_shortname, "exec") != 0)
+  if (exec_bfd == NULL || (strcmp(target_shortname, "exec") != 0))
     return;
 
   /* If the timestamp of the exec file has changed, reopen it. */
   /* APPLE LOCAL comment */
   /* The whole world may have changed, so just unset all breakpoints: */
-  filename = xstrdup (bfd_get_filename (exec_bfd));
-  make_cleanup (xfree, filename);
-  mtime = bfd_get_mtime (exec_bfd);
-  res = stat (filename, &st);
+  filename = xstrdup(bfd_get_filename(exec_bfd));
+  make_cleanup(xfree, filename);
+  mtime = bfd_get_mtime(exec_bfd);
+  res = stat(filename, &st);
 
-  if (mtime && mtime != st.st_mtime)
+  if (res == -1) {
+    warning("stat failed with errno %d (i.e. \"%s\").\n", errno,
+            strerror(errno));
+  }
+
+  if (mtime && (mtime != st.st_mtime))
     {
-      exec_open (filename, 0);
+      exec_open(filename, 0);
       /* APPLE LOCAL begin hooks */
-      tell_breakpoints_objfile_changed (NULL);
+      tell_breakpoints_objfile_changed(NULL);
       /* APPLE LOOCAL cache lookup values for improved performance  */
-      symtab_clear_cached_lookup_values ();
-      tell_objc_msgsend_cacher_objfile_changed (NULL);
+      symtab_clear_cached_lookup_values();
+      tell_objc_msgsend_cacher_objfile_changed(NULL);
       /* APPLE LOCAL end hooks */
     }
 #endif /* 0 */
@@ -249,14 +254,14 @@ reopen_exec_file (void)
    print a warning if they don't go together.  */
 
 void
-validate_files (void)
+validate_files(void)
 {
   if (exec_bfd && core_bfd)
     {
-      if (!core_file_matches_executable_p (core_bfd, exec_bfd))
-	warning (_("core file may not match specified executable file."));
-      else if (bfd_get_mtime (exec_bfd) > bfd_get_mtime (core_bfd))
-	warning (_("exec file is newer than core file."));
+      if (!core_file_matches_executable_p(core_bfd, exec_bfd))
+	warning(_("core file may not match specified executable file."));
+      else if (bfd_get_mtime(exec_bfd) > bfd_get_mtime(core_bfd))
+	warning(_("exec file is newer than core file."));
     }
 }
 
@@ -265,14 +270,14 @@ validate_files (void)
    otherwise return 0 in that case.  */
 
 char *
-get_exec_file (int err)
+get_exec_file(int err)
 {
   if (exec_bfd)
-    return bfd_get_filename (exec_bfd);
+    return bfd_get_filename(exec_bfd);
   if (!err)
     return NULL;
 
-  error (_("No executable file specified.\n\
+  error(_("No executable file specified.\n\
 Use the \"file\" or \"exec-file\" command."));
   return NULL;
 }

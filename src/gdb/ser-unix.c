@@ -234,11 +234,11 @@ hardwire_print_tty_state (struct serial *scb,
   fprintf_filtered (stream, "c_cflag = 0x%x, c_lflag = 0x%x\n",
 		    (int) state->termios.c_cflag,
 		    (int) state->termios.c_lflag);
-#if 0
+# if 0
   /* This not in POSIX, and is not really documented by those systems
      which have it (at least not Sun).  */
   fprintf_filtered (stream, "c_line = 0x%x.\n", state->termios.c_line);
-#endif
+# endif /* 0 */
   fprintf_filtered (stream, "c_cc: ");
   for (i = 0; i < NCCS; i += 1)
     fprintf_filtered (stream, "0x%x ", state->termios.c_cc[i]);
@@ -492,7 +492,7 @@ wait_for (struct serial *scb, int timeout)
 	if (state.termios.c_cc[VTIME] != timeout * 10)
 	  {
 
-	    /* If c_cc is an 8-bit signed character, we can't go 
+	    /* If c_cc is an 8-bit signed character, we can't go
 	       bigger than this.  If it is always unsigned, we could use
 	       25.  */
 
@@ -516,7 +516,7 @@ wait_for (struct serial *scb, int timeout)
 	state.termio.c_cc[VTIME] = timeout * 10;
 	if (state.termio.c_cc[VTIME] != timeout * 10)
 	  {
-	    /* If c_cc is an 8-bit signed character, we can't go 
+	    /* If c_cc is an 8-bit signed character, we can't go
 	       bigger than this.  If it is always unsigned, we could use
 	       25.  */
 
@@ -764,7 +764,7 @@ rate_to_code (int rate)
 	    }
         }
     }
- 
+
   /* The requested speed was too large. */
   warning (_("Invalid baud rate %d.  Maximum value is %d."),
             rate, baudtab[i - 1].rate);
@@ -772,11 +772,11 @@ rate_to_code (int rate)
 }
 
 static int
-hardwire_setbaudrate (struct serial *scb, int rate)
+hardwire_setbaudrate(struct serial *scb, int rate)
 {
   struct hardwire_ttystate state;
-  int baud_code = rate_to_code (rate);
-  
+  int baud_code = rate_to_code(rate);
+
   if (baud_code < 0)
     {
       /* The baud rate was not valid.
@@ -785,38 +785,38 @@ hardwire_setbaudrate (struct serial *scb, int rate)
       return -1;
     }
 
-  if (get_tty_state (scb, &state))
+  if (get_tty_state(scb, &state))
     return -1;
 
 #ifdef HAVE_TERMIOS
-  cfsetospeed (&state.termios, baud_code);
-  cfsetispeed (&state.termios, baud_code);
-#endif
+  cfsetospeed(&state.termios, baud_code);
+  cfsetispeed(&state.termios, baud_code);
+#endif /* HAVE_TERMIOS */
 
 #ifdef HAVE_TERMIO
-#ifndef CIBAUD
-#define CIBAUD CBAUD
-#endif
+# ifndef CIBAUD
+#  define CIBAUD CBAUD
+# endif /* !CIBAUD */
 
   state.termio.c_cflag &= ~(CBAUD | CIBAUD);
   state.termio.c_cflag |= baud_code;
-#endif
+#endif /* HAVE_TERMIO */
 
 #ifdef HAVE_SGTTY
   state.sgttyb.sg_ispeed = baud_code;
   state.sgttyb.sg_ospeed = baud_code;
-#endif
+#endif /* HAVE_SGTTY */
 
-  return set_tty_state (scb, &state);
+  return set_tty_state(scb, &state);
 }
 
 static int
-hardwire_setstopbits (struct serial *scb, int num)
+hardwire_setstopbits(struct serial *scb, int num)
 {
   struct hardwire_ttystate state;
   int newbit;
 
-  if (get_tty_state (scb, &state))
+  if (get_tty_state(scb, &state))
     return -1;
 
   switch (num)
@@ -837,29 +837,32 @@ hardwire_setstopbits (struct serial *scb, int num)
     state.termios.c_cflag &= ~CSTOPB;
   else
     state.termios.c_cflag |= CSTOPB;	/* two bits */
-#endif
+#endif /* HAVE_TERMIOS */
 
 #ifdef HAVE_TERMIO
   if (!newbit)
     state.termio.c_cflag &= ~CSTOPB;
   else
     state.termio.c_cflag |= CSTOPB;	/* two bits */
-#endif
+#endif /* HAVE_TERMIO */
 
 #ifdef HAVE_SGTTY
-  return 0;			/* sgtty doesn't support this */
-#endif
+  if (!newbit)
+    return 0;			/* sgtty does NOT support this */
+  else
+    return 0;
+#endif /* HAVE_SGTTY */
 
-  return set_tty_state (scb, &state);
+  return set_tty_state(scb, &state);
 }
 
 static void
-hardwire_close (struct serial *scb)
+hardwire_close(struct serial *scb)
 {
   if (scb->fd < 0)
     return;
 
-  close (scb->fd);
+  close(scb->fd);
   scb->fd = -1;
 }
 
@@ -916,3 +919,5 @@ ser_unix_write_prim (struct serial *scb, const void *buf, size_t len)
      result in EINTR.  */
   return write (scb->fd, buf, len);
 }
+
+/* EOF */

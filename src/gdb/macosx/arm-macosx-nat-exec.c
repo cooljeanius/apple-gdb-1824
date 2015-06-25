@@ -49,7 +49,7 @@ static inline uint32_t collect_uint32(int regnum)
 {
   gdb_byte buf[sizeof(uint32_t)];
   regcache_raw_collect(current_regcache, regnum, buf);
-  return extract_unsigned_integer(buf, sizeof(uint32_t));
+  return (uint32_t)extract_unsigned_integer(buf, sizeof(uint32_t));
 }
 
 static inline uint64_t collect_uint64(int regnum)
@@ -300,6 +300,10 @@ void fetch_inferior_registers(int regno)
 	    break;
 #endif /* !__clang__ */
       }
+
+      if (fp_byte_size >= 0) {
+        ; /* ??? */
+      }
   }
 }
 
@@ -370,6 +374,10 @@ void store_inferior_registers(int regno)
 #ifndef __clang__
 	    break;
 #endif /* !__clang__ */
+      }
+
+      if (fp_byte_size >= 0) {
+        ; /* ??? */
       }
   }
 }

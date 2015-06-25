@@ -733,9 +733,9 @@ cp_print_class_member (const gdb_byte *valaddr, struct type *domain,
 	break;
       if (val < bitpos && i != 0)
 	{
-	  /* Somehow pointing into a field.  */
+	  /* Somehow pointing into a field: */
 	  i -= 1;
-	  extra = (val - TYPE_FIELD_BITPOS (domain, i));
+	  extra = (int)(val - TYPE_FIELD_BITPOS(domain, i));
 	  if (extra & 0x7)
 	    bits = 1;
 	  else

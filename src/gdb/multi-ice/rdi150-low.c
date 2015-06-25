@@ -233,7 +233,7 @@ char *target_driver_name = "ARM7TDMI";  /* Default driver */
 
 /* Define the registers array here. */
 char *aregisters;
-char hold_registers[REGISTER_BYTES]; /* Used while running thread code on target */
+char hold_registers[REGISTER_BYTES + 1]; /* Used while running thread code on target */
 
 int registers_up_to_date = 0;
 int registers_are_dirty = 0;
@@ -1034,36 +1034,37 @@ low_write_memory(char *data, CORE_ADDR start_addr, unsigned int nbytes)
   int result, i;
   char buff[1024];
 
-  result = rdi_proc_vec->write (target_arm_module, data, start_addr,
-		       &nbytes, RDIAccess_Data);
+  result = rdi_proc_vec->write(target_arm_module, data,
+                               (ARMword)start_addr, &nbytes,
+                               RDIAccess_Data);
 
   /* This is stupid, but let's see whether we got back what we
    * put in...
    */
 
-  rdi_proc_vec->read (target_arm_module, start_addr, buff, &nbytes,
-			RDIAccess_Data);
+  rdi_proc_vec->read(target_arm_module, (ARMword)start_addr, buff, &nbytes,
+                     RDIAccess_Data);
 
   for (i = 0; i < nbytes; i++)
     {
       if (data[i] != buff[i])
 	{
-	  output_error ("Readback did not match original data\n");
+	  output_error("Readback did not match original data\n");
 	}
     }
 
   switch (result)
     {
     case RDIError_BigEndian:
-      output ("Processor has switched endianness - now BIG ENDIAN\n");
+      output("Processor has switched endianness - now BIG ENDIAN\n");
       break;
     case RDIError_LittleEndian:
-      output ("Processor has switched endianness - now LITTLE ENDIAN\n");
+      output("Processor has switched endianness - now LITTLE ENDIAN\n");
       break;
     case RDIError_NoError:
       break;
     default:
-      output_error ("RDI_Read error: %s\n", rdi_error_message (result));
+      output_error("RDI_Read error: %s\n", rdi_error_message(result));
       return 0;
     }
   return nbytes;
@@ -1071,12 +1072,12 @@ low_write_memory(char *data, CORE_ADDR start_addr, unsigned int nbytes)
 }
 
 int
-low_set_breakpoint (CORE_ADDR bp_addr, int size)
+low_set_breakpoint(CORE_ADDR bp_addr, int size)
 {
   struct rdi_points *new_point;
   int result, type;
 
-  new_point = (struct rdi_points *) malloc (sizeof(struct rdi_points));
+  new_point = (struct rdi_points *)malloc(sizeof(struct rdi_points));
 
   new_point->addr = bp_addr;
   new_point->handle = RDI_NoPointHandle;
@@ -1089,12 +1090,12 @@ low_set_breakpoint (CORE_ADDR bp_addr, int size)
 
   if (debug_on)
     {
-      output ("Adding breakpoint at 0x%x, size: %d\n", bp_addr, size);
+      output("Adding breakpoint at 0x%x, size: %d\n", bp_addr, size);
     }
 
-  result = rdi_proc_vec->setbreak (target_arm_module, bp_addr,
-				   type,
-				   0, RDI_NoHandle, &new_point->handle);
+  result = rdi_proc_vec->setbreak(target_arm_module, (ARMword)bp_addr,
+				  type,
+				  0, RDI_NoHandle, &new_point->handle);
   switch (result)
     {
     case RDIError_NoMorePoints:
@@ -1217,12 +1218,12 @@ low_delete_breakpoint (CORE_ADDR bp_addr, int size)
 }
 
 int
-low_set_watchpoint (CORE_ADDR watch_addr, int size, enum watch_type mode)
+low_set_watchpoint(CORE_ADDR watch_addr, int size, enum watch_type mode)
 {
   struct rdi_points *new_point;
   int result, type, watch_mode;
 
-  new_point = (struct rdi_points *) malloc (sizeof(struct rdi_points));
+  new_point = (struct rdi_points *)malloc(sizeof(struct rdi_points));
 
   new_point->addr = watch_addr;
   new_point->handle = RDI_NoPointHandle;
@@ -1231,24 +1232,25 @@ low_set_watchpoint (CORE_ADDR watch_addr, int size, enum watch_type mode)
 
   watch_mode = 0;
   if ((mode == WATCHPOINT_WRITE) || (mode == WATCHPOINT_ACCESS)) {
-      watch_mode |= size*RDIWatch_ByteWrite;
+      watch_mode |= (size * RDIWatch_ByteWrite);
   }
   if ((mode == WATCHPOINT_READ) || (mode == WATCHPOINT_ACCESS)) {
-      watch_mode |= size*RDIWatch_ByteRead;
+      watch_mode |= (size * RDIWatch_ByteRead);
   }
 
   if (debug_on)
     {
-      output ("Adding watchpoint at 0x%x, size: %d, mode: %x\n", watch_addr, size, watch_mode);
+      output("Adding watchpoint at 0x%x, size: %d, mode: %x\n", watch_addr,
+             size, watch_mode);
     }
 
-  result = rdi_proc_vec->setwatch (target_arm_module, watch_addr,
-				   type, watch_mode,
-				   0, RDI_NoHandle, &new_point->handle);
+  result = rdi_proc_vec->setwatch(target_arm_module, (ARMword)watch_addr,
+				  type, watch_mode,
+				  0, RDI_NoHandle, &new_point->handle);
   switch (result)
     {
     case RDIError_NoMorePoints:
-      output ("This watchpoint exhausted the available points.\n");
+      output("This watchpoint exhausted the available points.\n");
     case RDIError_NoError:
       break; /* Success branches break here */
     case RDIError_ConflictingPoint:
@@ -1419,9 +1421,9 @@ low_resume (enum resume_mode mode, int signo)
 	    {
 	      type |= RDIPoint_16Bit;
 	    }
-	  result = rdi_proc_vec->setbreak (target_arm_module, next_pc,
-					   type, 0, RDI_NoHandle,
-					   &temp_point);
+	  result = rdi_proc_vec->setbreak(target_arm_module,
+                                          (ARMword)next_pc, type, 0,
+                                          RDI_NoHandle, &temp_point);
 	  /*
 	   * If there is already a breakpoint here, then don't remove
 	   * it.  The RDI only allows one Breakpoint at an address.
@@ -1657,6 +1659,12 @@ char *rdi_error_message(int err)
 # endif /* DEPRECATED_REGISTER_BYTE */
 #endif /* !REGISTER_BYTE */
 
+#if !defined(REGISTER_RAW_SIZE)
+# if defined(DEPRECATED_REGISTER_RAW_SIZE)
+#  define REGISTER_RAW_SIZE(reg_nr) DEPRECATED_REGISTER_RAW_SIZE(reg_nr)
+# endif /* DEPRECATED_REGISTER_RAW_SIZE */
+#endif /* !REGISTER_RAW_SIZE */
+
 /*
  * record_register
  *
@@ -1686,7 +1694,7 @@ ARMword restore_register(int regno)
   retval = 0;
   retval = extract_unsigned_integer(addr, len);
 
-  return retval;
+  return (ARMword)retval;
 }
 
 int low_test(char *buffer)
@@ -1776,7 +1784,7 @@ static int _low_thread_op(char *input_buffer, char *result, int result_len)
     low_write_memory(result, (int)handler.outbuf, 1);
     /* Save current registers */
     low_update_registers();
-    memcpy(hold_registers, aregisters, (sizeof(aregisters) + 1));
+    memcpy(hold_registers, aregisters, (sizeof(aregisters) + 1UL));
     /* Set up to call the thread support function: */
     record_register(SP_REGNUM, ((int)handler.stack + handler.stack_size));
 #ifdef LR_REGNUM

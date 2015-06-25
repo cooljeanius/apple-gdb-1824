@@ -104,7 +104,7 @@ gdb_kod_query(char *arg, char *result, int *maxsiz)
   /* Check if *we* were called just for getting the buffer size.  */
   if (*maxsiz == 0)
     {
-      *maxsiz = bufsiz;
+      *maxsiz = (int)bufsiz;
       strcpy(result, "OK");
       return;
     }

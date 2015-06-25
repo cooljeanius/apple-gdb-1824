@@ -359,18 +359,18 @@ exp	: 	'[' TYPENAME
 			  start_msglist();
 			}
 		msglist ']'
-			{ write_exp_elt_opcode (OP_OBJC_MSGCALL);
+			{ write_exp_elt_opcode(OP_OBJC_MSGCALL);
 			  end_msglist();
-			  write_exp_elt_opcode (OP_OBJC_MSGCALL);
+			  write_exp_elt_opcode(OP_OBJC_MSGCALL);
 			}
 	;
 
 exp	:	'[' OBJC_CLASSNAME
 			{
-			  write_exp_elt_opcode (OP_LONG);
-			  write_exp_elt_type (builtin_type_void_data_ptr);
-			  write_exp_elt_longcst ((LONGEST) $2.class);
-			  write_exp_elt_opcode (OP_LONG);
+			  write_exp_elt_opcode(OP_LONG);
+			  write_exp_elt_type(builtin_type_void_data_ptr);
+			  write_exp_elt_longcst((LONGEST)$2.class);
+			  write_exp_elt_opcode(OP_LONG);
 			  start_msglist();
 			}
 		msglist ']'
@@ -866,13 +866,13 @@ direct_abs_decl: '(' abs_decl ')'
 			{ $$ = $2; }
 	|	direct_abs_decl array_mod
 			{
-			  push_type_int ($2);
-			  push_type (tp_array);
+			  push_type_int((int)$2);
+			  push_type(tp_array);
 			}
 	|	array_mod
 			{
-			  push_type_int ($1);
-			  push_type (tp_array);
+			  push_type_int((int)$1);
+			  push_type(tp_array);
 			  $$ = 0;
 			}
 
@@ -1062,17 +1062,17 @@ qualified_type: typebase COLONCOLON name
 		  memcpy (ncopy, $3.ptr, $3.length);
 		  ncopy[$3.length] = '\0';
 
-		  if (TYPE_CODE (type) != TYPE_CODE_STRUCT
-		      && TYPE_CODE (type) != TYPE_CODE_UNION
-		      && TYPE_CODE (type) != TYPE_CODE_NAMESPACE)
-		    error ("`%s' is not defined as an aggregate type.",
-			   TYPE_NAME (type));
+		  if (TYPE_CODE(type) != TYPE_CODE_STRUCT
+		      && TYPE_CODE(type) != TYPE_CODE_UNION
+		      && TYPE_CODE(type) != TYPE_CODE_NAMESPACE)
+		    error("`%s' is not defined as an aggregate type.",
+			  TYPE_NAME(type));
 
-		  new_type = cp_lookup_nested_type (type, ncopy,
-						    expression_context_block);
+		  new_type = cp_lookup_nested_type(type, ncopy,
+						   expression_context_block);
 		  if (new_type == NULL)
-		    error ("No type \"%s\" within class or namespace \"%s\".",
-			   ncopy, TYPE_NAME (type));
+		    error("No type \"%s\" within class or namespace \"%s\".",
+			  ncopy, TYPE_NAME(type));
 
 		  $$ = new_type;
 		}
@@ -1442,8 +1442,8 @@ yylex(void)
   int tempbufindex;
   static char *tempbuf;
   static int tempbufsize;
-  struct symbol * sym_class = NULL;
-  char * token_string = NULL;
+  struct symbol *sym_class = (struct symbol *)NULL;
+  char *token_string = NULL;
   int class_prefix = 0;
   int unquoted_expr;
 
@@ -1680,11 +1680,11 @@ yylex(void)
 
     /* APPLE LOCAL end  avoid calling lookup_objc_class unnecessarily.  */
     case '@':
-      if (strncmp (tokstart, "@selector", 9) == 0)
+      if (strncmp(tokstart, "@selector", 9) == 0)
 	{
-	  tokptr = strchr (tokstart, '(');
+	  tokptr = strchr(tokstart, '(');
 	  if (tokptr == NULL)
-	    error ("Missing '(' in @selector(...)");
+	    error("Missing '(' in @selector(...)");
 	  tempbufindex = 0;
 	  /* skip the '(' */
 	  tokptr++;
@@ -1850,32 +1850,32 @@ yylex(void)
       if (current_language->la_language == language_cplus
 	   || current_language->la_language == language_objcplus)
         {
-          if (strncmp (tokstart, "false", 5) == 0)
+          if (strncmp(tokstart, "false", 5) == 0)
             return FALSEKEYWORD;
-          if (strncmp (tokstart, "class", 5) == 0)
+          if (strncmp(tokstart, "class", 5) == 0)
             return CLASS;
         }
-      if (strncmp (tokstart, "union", 5) == 0)
+      if (strncmp(tokstart, "union", 5) == 0)
 	return UNION;
-      if (strncmp (tokstart, "short", 5) == 0)
+      if (strncmp(tokstart, "short", 5) == 0)
 	return SHORT;
-      if (strncmp (tokstart, "const", 5) == 0)
+      if (strncmp(tokstart, "const", 5) == 0)
 	return CONST_KEYWORD;
       break;
     case 4:
-      if (strncmp (tokstart, "enum", 4) == 0)
+      if (strncmp(tokstart, "enum", 4) == 0)
 	return ENUM;
-      if (strncmp (tokstart, "long", 4) == 0)
+      if (strncmp(tokstart, "long", 4) == 0)
 	return LONG;
       if (current_language->la_language == language_cplus
 	  || current_language->la_language == language_objcplus)
           {
-            if (strncmp (tokstart, "true", 4) == 0)
+            if (strncmp(tokstart, "true", 4) == 0)
               return TRUEKEYWORD;
           }
       break;
     case 3:
-      if (strncmp (tokstart, "int", 3) == 0)
+      if (strncmp(tokstart, "int", 3) == 0)
 	return INT_KEYWORD;
       break;
     default:
@@ -1904,9 +1904,9 @@ yylex(void)
      description above.  */
   if (unquoted_expr)
     {
-      /* Only do it if not inside single quotes */
-      sym_class = parse_nested_classes_for_hpacc (yylval.sval.ptr, yylval.sval.length,
-                                                  &token_string, &class_prefix, &lexptr);
+      /* Only do it if not inside single quotes: */
+      sym_class = parse_nested_classes_for_hpacc(yylval.sval.ptr, yylval.sval.length,
+                                                 &token_string, &class_prefix, &lexptr);
       if (sym_class)
         {
           /* Replace the current token with the bigger one we found */
@@ -1988,9 +1988,9 @@ yylex(void)
 	/* APPLE LOCAL end avoid calling lookup_objc_class unnecessarily. */
         if (Class)
 	  {
-	    sym = lookup_struct_typedef (tmp, expression_context_block, 1);
+	    sym = lookup_struct_typedef(tmp, expression_context_block, 1);
 	    if (sym)
-	      yylval.class.type = SYMBOL_TYPE (sym);
+	      yylval.class.type = SYMBOL_TYPE(sym);
 	    else
 	      yylval.class.type = NULL;
 

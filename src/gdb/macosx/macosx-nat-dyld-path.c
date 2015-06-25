@@ -616,7 +616,7 @@ dyld_resolve_image (const struct dyld_path_info *d, const char *dylib_name)
    garbage sitting in memory. */
 
 void
-dyld_zero_path_info (dyld_path_info *d)
+dyld_zero_path_info(dyld_path_info *d)
 {
   d->framework_path = NULL;
   d->library_path = NULL;
@@ -627,7 +627,7 @@ dyld_zero_path_info (dyld_path_info *d)
 }
 
 void
-dyld_init_paths (dyld_path_info * d)
+dyld_init_paths(dyld_path_info * d)
 {
   char *home;
 
@@ -644,53 +644,53 @@ dyld_init_paths (dyld_path_info * d)
     "/usr/lib";
 
   if (d->framework_path != NULL)
-    xfree (d->framework_path);
+    xfree(d->framework_path);
   if (d->library_path != NULL)
-    xfree (d->library_path);
+    xfree(d->library_path);
   if (d->fallback_framework_path != NULL)
-    xfree (d->fallback_framework_path);
+    xfree(d->fallback_framework_path);
   if (d->fallback_library_path != NULL)
-    xfree (d->fallback_library_path);
+    xfree(d->fallback_library_path);
   if (d->image_suffix != NULL)
-    xfree (d->image_suffix);
+    xfree(d->image_suffix);
   if (d->insert_libraries != NULL)
-    xfree (d->insert_libraries);
+    xfree(d->insert_libraries);
 
   d->framework_path =
-    get_in_environ (inferior_environ, "DYLD_FRAMEWORK_PATH");
+    get_in_environ(inferior_environ, "DYLD_FRAMEWORK_PATH");
   if (d->framework_path != NULL)
-    d->framework_path = xstrdup (d->framework_path);
+    d->framework_path = xstrdup(d->framework_path);
 
   d->library_path =
-    get_in_environ (inferior_environ, "DYLD_LIBRARY_PATH");
+    get_in_environ(inferior_environ, "DYLD_LIBRARY_PATH");
   if (d->library_path != NULL)
-    d->library_path = xstrdup (d->library_path);
+    d->library_path = xstrdup(d->library_path);
 
   d->fallback_framework_path =
-    get_in_environ (inferior_environ, "DYLD_FALLBACK_FRAMEWORK_PATH");
+    get_in_environ(inferior_environ, "DYLD_FALLBACK_FRAMEWORK_PATH");
   if (d->fallback_framework_path != NULL)
-    d->fallback_framework_path = xstrdup (d->fallback_framework_path);
+    d->fallback_framework_path = xstrdup(d->fallback_framework_path);
 
   d->fallback_library_path =
-    get_in_environ (inferior_environ, "DYLD_FALLBACK_LIBRARY_PATH");
+    get_in_environ(inferior_environ, "DYLD_FALLBACK_LIBRARY_PATH");
   if (d->fallback_library_path != NULL)
-    d->fallback_library_path = xstrdup (d->fallback_library_path);
+    d->fallback_library_path = xstrdup(d->fallback_library_path);
 
   d->image_suffix =
-    get_in_environ (inferior_environ, "DYLD_IMAGE_SUFFIX");
+    get_in_environ(inferior_environ, "DYLD_IMAGE_SUFFIX");
   if (d->image_suffix != NULL)
-    d->image_suffix = xstrdup (d->image_suffix);
+    d->image_suffix = xstrdup(d->image_suffix);
 
   d->insert_libraries =
-    get_in_environ (inferior_environ, "DYLD_INSERT_LIBRARIES");
+    get_in_environ(inferior_environ, "DYLD_INSERT_LIBRARIES");
   if (d->insert_libraries != NULL)
-    d->insert_libraries = xstrdup (d->insert_libraries);
+    d->insert_libraries = xstrdup(d->insert_libraries);
 
-  home = get_in_environ (inferior_environ, "HOME");
+  home = get_in_environ(inferior_environ, "HOME");
   if (home != NULL)
-    home = xstrdup (home);
+    home = xstrdup(home);
   if (home == NULL)
-    home = xstrdup ("/");
+    home = xstrdup("/");
 
   if (d->fallback_framework_path == NULL)
     {

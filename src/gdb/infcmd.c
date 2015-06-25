@@ -703,26 +703,25 @@ continue_command (char *proc_count_exp, int from_tty)
   if (proc_count_exp != NULL)
     {
       bpstat bs = stop_bpstat;
-      int num = bpstat_num (&bs);
+      int num = bpstat_num(&bs);
       /* APPLE LOCAL: Used to be "num == 0", but bpstat_num returns -1
 	 if the breakpoint_at for the bpstat is NULL.  We should
 	 ignore that as well.  */
 
-      if (num <= 0 && from_tty)
+      if ((num <= 0) && from_tty)
 	{
-	  printf_filtered
-	    ("Not stopped at any breakpoint; argument ignored.\n");
+	  printf_filtered("Not stopped at any breakpoint; argument ignored.\n");
 	}
       while (num != 0)
 	{
-	  set_ignore_count (num,
-			    parse_and_eval_long (proc_count_exp) - 1,
-			    from_tty);
+	  set_ignore_count(num,
+			   (int)(parse_and_eval_long(proc_count_exp) - 1L),
+			   from_tty);
 	  /* set_ignore_count prints a message ending with a period.
 	     So print two spaces before "Continuing.".  */
 	  if (from_tty)
-	    printf_filtered ("  ");
-	  num = bpstat_num (&bs);
+	    printf_filtered("  ");
+	  num = bpstat_num(&bs);
 	}
     }
 
@@ -800,10 +799,10 @@ step_1 (int skip_subroutines, int single_inst, char *count_string)
    inlined-stepping option is turned off.  */
 
 static void
-step_1_no_inlining (int skip_subroutines, int single_inst, char *count_string)
+step_1_no_inlining(int skip_subroutines, int single_inst, char *count_string)
 /* APPLE LOCAL end stepping through inlined subroutines  */
 {
-  int count = 1;
+  long count = 1L;
   struct frame_info *frame;
   struct cleanup *cleanups = 0;
   int async_exec = 0;
@@ -816,35 +815,37 @@ step_1_no_inlining (int skip_subroutines, int single_inst, char *count_string)
   ERROR_NO_INFERIOR;
 
   if (count_string)
-    async_exec = strip_bg_char (&count_string);
+    async_exec = strip_bg_char(&count_string);
 
   /* If we get a request for running in the bg but the target
      doesn't support it, error out. */
-  if (async_exec && !target_can_async_p ())
-    error (_("Asynchronous execution not supported on this target."));
+  if (async_exec && !target_can_async_p())
+    error(_("Asynchronous execution not supported on this target."));
 
   /* If we don't get a request of running in the bg, then we need
      to simulate synchronous (fg) execution. */
   /* APPLE LOCAL begin subroutine inlining  */
-  if (!async_exec && target_can_async_p ()
+  if (!async_exec && target_can_async_p()
       && !single_inst
       && (skip_subroutines
-	  || !at_inlined_call_site_p (&file_name, &line_num, &column)))
+	  || !at_inlined_call_site_p(&file_name, &line_num, &column)))
   /* APPLE LOCAL end subroutine inlining  */
     {
       /* Simulate synchronous execution */
-      async_disable_stdin ();
+      async_disable_stdin();
     }
 
-  count = count_string ? parse_and_eval_long (count_string) : 1;
+  count = (count_string ? (long)parse_and_eval_long(count_string) : 1L);
 
   if (!single_inst || skip_subroutines)		/* leave si command alone */
     {
-      enable_longjmp_breakpoint ();
-      if (!target_can_async_p ())
-	cleanups = make_cleanup (disable_longjmp_breakpoint_cleanup, 0 /*ignore*/);
+      enable_longjmp_breakpoint();
+      if (!target_can_async_p())
+	cleanups = make_cleanup(disable_longjmp_breakpoint_cleanup,
+                                0/*ignore*/);
       else
-        make_exec_cleanup (disable_longjmp_breakpoint_cleanup, 0 /*ignore*/);
+        make_exec_cleanup(disable_longjmp_breakpoint_cleanup,
+                          0 /*ignore*/);
     }
 
   /* In synchronous case, all is well, just use the regular for loop. */
@@ -930,9 +931,9 @@ which has no line number information.\n"), name);
    step_once.  */
 
 static void
-step_1_inlining (int skip_subroutines, int single_inst, char *count_string)
+step_1_inlining(int skip_subroutines, int single_inst, char *count_string)
 {
-  int count = 1;
+  long count = 1L;
   struct frame_info *frame;
   struct cleanup *cleanups = 0;
   int async_exec = 0;
@@ -942,35 +943,35 @@ step_1_inlining (int skip_subroutines, int single_inst, char *count_string)
   int column = 0;
   int stack_pos = 0;
   int do_proceed = 1;
-  CORE_ADDR end_of_line = (CORE_ADDR) 0;
-  CORE_ADDR inline_start_pc = (CORE_ADDR) 0;
-  CORE_ADDR tmp_end = (CORE_ADDR) 0;
+  CORE_ADDR end_of_line = (CORE_ADDR)0UL;
+  CORE_ADDR inline_start_pc = (CORE_ADDR)0UL;
+  CORE_ADDR tmp_end = (CORE_ADDR)0UL;
   /* APPLE LOCAL end subroutine inlining  */
 
   ERROR_NO_INFERIOR;
 
   if (count_string)
-    async_exec = strip_bg_char (&count_string);
+    async_exec = strip_bg_char(&count_string);
 
   /* If we get a request for running in the bg but the target
      doesn't support it, error out. */
-  if (async_exec && !target_can_async_p ())
-    error (_("Asynchronous execution not supported on this target."));
+  if (async_exec && !target_can_async_p())
+    error(_("Asynchronous execution not supported on this target."));
 
   /* If we don't get a request of running in the bg, then we need
      to simulate synchronous (fg) execution. */
   /* APPLE LOCAL begin subroutine inlining  */
-  if (!async_exec && target_can_async_p ()
+  if (!async_exec && target_can_async_p()
       && !single_inst
       && (skip_subroutines
-	  || !at_inlined_call_site_p (&file_name, &line_num, &column)))
+	  || !at_inlined_call_site_p(&file_name, &line_num, &column)))
   /* APPLE LOCAL end subroutine inlining  */
     {
       /* Simulate synchronous execution */
-      async_disable_stdin ();
+      async_disable_stdin();
     }
 
-  count = count_string ? parse_and_eval_long (count_string) : 1;
+  count = (count_string ? (long)parse_and_eval_long(count_string) : 1L);
 
   if (!single_inst || skip_subroutines)		/* leave si command alone */
     {
@@ -1376,9 +1377,9 @@ step_once (int skip_subroutines, int single_inst, int count)
   int line_num = 0;
   int column = 0;
   int stack_pos;
-  CORE_ADDR end_of_line = (CORE_ADDR) 0;
-  CORE_ADDR inline_start_pc = (CORE_ADDR) 0;
-  CORE_ADDR tmp_end = (CORE_ADDR) 0;
+  CORE_ADDR end_of_line = (CORE_ADDR)0UL;
+  CORE_ADDR inline_start_pc = (CORE_ADDR)0UL;
+  CORE_ADDR tmp_end = (CORE_ADDR)0UL;
 
   if (!single_inst
       && (stack_pos = at_inlined_call_site_p (&file_name, &line_num, &column)
@@ -1725,7 +1726,7 @@ int magic_flag = 0;
 void
 re_execute_command(char *args, int from_tty)
 {
-  int cpn = (args ? parse_and_eval_long(args) : 1);
+  long cpn = (args ? (long)parse_and_eval_long(args) : 1L);
 
   rx_cp = find_checkpoint(cpn);
 
@@ -2000,13 +2001,13 @@ signal_command (char *signum_exp, int from_tty)
 
   if (oursig == TARGET_SIGNAL_UNKNOWN)
     {
-      /* No, try numeric.  */
-      int num = parse_and_eval_long (signum_exp);
+      /* No, try numeric: */
+      long num = (long)parse_and_eval_long(signum_exp);
 
-      if (num == 0)
+      if (num == 0L)
 	oursig = TARGET_SIGNAL_0;
       else
-	oursig = target_signal_from_command (num);
+	oursig = target_signal_from_command(num);
     }
 
   if (from_tty)
@@ -2310,7 +2311,7 @@ finish_inlined_subroutine_command_continuation (struct continuation_arg *arg)
    to make sure return values are printed out, etc.  */
 
 static void
-finish_inlined_subroutine_command (CORE_ADDR inline_end_pc)
+finish_inlined_subroutine_command(CORE_ADDR inline_end_pc)
 {
   int i;  /* Position, in inlined call stack, of subroutine to be
 	     'finish'ed  */
@@ -2329,28 +2330,30 @@ finish_inlined_subroutine_command (CORE_ADDR inline_end_pc)
   /* Find the record corresponding to the inlined subroutine we wish
      to 'finish'.  */
 
-  i = current_inlined_subroutine_stack_position ();
-  if (i > 0
+  i = current_inlined_subroutine_stack_position();
+  if ((i > 0)
       && !global_inlined_call_stack.records[i].stepped_into)
     i--;
 
   /* If we aren't at an active record on the inlining stack, then we
      have gotten here by mistake.  */
 
-  gdb_assert (i >= 1);
-  gdb_assert (global_inlined_call_stack.records[i].stepped_into);
+  gdb_assert(i >= 1);
+  gdb_assert(global_inlined_call_stack.records[i].stepped_into);
 
-  /* Collect the call site information.  */
-
+  /* Collect the call site information: */
   file_name = global_inlined_call_stack.records[i].call_site_filename;
-  line_num  = global_inlined_call_stack.records[i].call_site_line;
-  column    = global_inlined_call_stack.records[i].call_site_column;
+  line_num = global_inlined_call_stack.records[i].call_site_line;
+  column = global_inlined_call_stack.records[i].call_site_column;
   start_pc = global_inlined_call_stack.records[i].start_pc;
 
-  /* Get the correct sal.  */
+  if ((file_name == NULL) || (column == 0)) {
+    ; /* ??? */
+  }
 
-  frame = get_current_frame ();
-  sal = find_pc_line (start_pc, 0);
+  /* Get the correct sal: */
+  frame = get_current_frame();
+  sal = find_pc_line(start_pc, 0);
   while (sal.entry_type != INLINED_CALL_SITE_LT_ENTRY
 	 || sal.line != line_num)
     {
@@ -2367,10 +2370,10 @@ finish_inlined_subroutine_command (CORE_ADDR inline_end_pc)
   /* Proceed as if we are doing 'next' over the inlined subroutine, but
      make sure to use prev_frame.  */
 
-  clear_proceed_status ();
+  clear_proceed_status();
   if (!frame)
-    error (_("No current frame"));
-  step_frame_id = get_frame_id (get_prev_frame (frame));
+    error(_("No current frame"));
+  step_frame_id = get_frame_id(get_prev_frame(frame));
   step_range_start = start_pc;
   step_range_end = sal.pc;
   step_over_calls = STEP_OVER_ALL;
@@ -2381,33 +2384,33 @@ finish_inlined_subroutine_command (CORE_ADDR inline_end_pc)
      the subroutien.  */
 
   global_inlined_call_stack.records[i].stepped_into = 0;
-  adjust_current_inlined_subroutine_stack_position (-1);
+  adjust_current_inlined_subroutine_stack_position(-1);
 
-  frame = get_prev_frame (deprecated_selected_frame);
+  frame = get_prev_frame(deprecated_selected_frame);
 
-  function = find_pc_function (get_frame_pc (frame));
+  function = find_pc_function(get_frame_pc(frame));
 
   /* Take care of printing out the return value, if any, of the function
      we are finishing.  */
 
-  if (target_can_async_p ())
+  if (target_can_async_p())
     {
       arg1 =
-	(struct continuation_arg *) xmalloc (sizeof (struct continuation_arg));
+	(struct continuation_arg*)xmalloc(sizeof(struct continuation_arg));
       arg2 =
-	(struct continuation_arg *) xmalloc (sizeof (struct continuation_arg));
+	(struct continuation_arg*)xmalloc(sizeof(struct continuation_arg));
       arg1->next = arg2;
       arg2->next = NULL;
       arg1->data.pointer = function;
       arg2->data.pointer = old_chain;
-      add_continuation (finish_inlined_subroutine_command_continuation, arg1);
+      add_continuation(finish_inlined_subroutine_command_continuation, arg1);
     }
 
   finishing_inlined_subroutine = 1;
   proceed_to_finish = 1;
-  proceed ((CORE_ADDR) -1, TARGET_SIGNAL_DEFAULT, 1);
+  proceed((CORE_ADDR)-1L, TARGET_SIGNAL_DEFAULT, 1);
 
-  if (!target_can_async_p ())
+  if (!target_can_async_p())
     {
       if (function != NULL)
 	{
@@ -2415,25 +2418,25 @@ finish_inlined_subroutine_command (CORE_ADDR inline_end_pc)
 	  int struct_return;
 	  int gcc_compiled;
 
-	  value_type = TYPE_TARGET_TYPE (SYMBOL_TYPE (function));
+	  value_type = TYPE_TARGET_TYPE(SYMBOL_TYPE(function));
 	  if (!value_type)
-	    internal_error (__FILE__, __LINE__,
+	    internal_error(__FILE__, __LINE__,
 	  _("finish_inlined_subroutine_command: function has no target type"));
 
-	  if (TYPE_CODE (value_type) == TYPE_CODE_VOID)
+	  if (TYPE_CODE(value_type) == TYPE_CODE_VOID)
 	    {
-	      do_exec_cleanups (old_chain);
+	      do_exec_cleanups(old_chain);
 	      return;
 	    }
 
-	  CHECK_TYPEDEF (value_type);
-	  gcc_compiled = BLOCK_GCC_COMPILED (SYMBOL_BLOCK_VALUE (function));
-	  struct_return = using_struct_return (value_type, gcc_compiled);
+	  CHECK_TYPEDEF(value_type);
+	  gcc_compiled = BLOCK_GCC_COMPILED(SYMBOL_BLOCK_VALUE(function));
+	  struct_return = using_struct_return(value_type, gcc_compiled);
 
-	  print_return_value (struct_return, value_type);
+	  print_return_value(struct_return, value_type);
 	}
 
-      do_exec_cleanups (old_chain);
+      do_exec_cleanups(old_chain);
     }
 }
 /* APPLE LOCAL end subroutine inlining  */

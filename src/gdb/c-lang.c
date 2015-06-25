@@ -136,17 +136,18 @@ c_printstr(struct ui_file *stream, const gdb_byte *string,
 
       if (need_comma)
 	{
-	  fputs_filtered (", ", stream);
+	  fputs_filtered(", ", stream);
 	  need_comma = 0;
 	}
 
-      current_char = extract_unsigned_integer (string + i * width, width);
+      current_char =
+        (unsigned long)extract_unsigned_integer(string + i * width, width);
 
       rep1 = i + 1;
       reps = 1;
-      while (rep1 < length
-	     && extract_unsigned_integer (string + rep1 * width, width)
-	     == current_char)
+      while ((rep1 < length)
+	     && (extract_unsigned_integer(string + rep1 * width, width)
+                 == current_char))
 	{
 	  ++rep1;
 	  ++reps;

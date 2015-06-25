@@ -71,7 +71,7 @@ sentinel_frame_prev_register (struct frame_info *next_frame,
     }
 }
 
-static void
+static void ATTR_NORETURN
 sentinel_frame_this_id(struct frame_info *next_frame,
                        void **this_prologue_cache,
                        struct frame_id *this_id)

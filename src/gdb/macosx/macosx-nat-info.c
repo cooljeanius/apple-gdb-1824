@@ -346,11 +346,11 @@ info_mach_region_command(char *exp, int from_tty)
   if ((TYPE_CODE(value_type(val)) == TYPE_CODE_FUNC)
       && (VALUE_LVAL(val) == lval_memory))
     {
-      address = VALUE_ADDRESS(val);
+      address = (vm_address_t)VALUE_ADDRESS(val);
     }
   else
     {
-      address = value_as_address(val);
+      address = (vm_address_t)value_as_address(val);
     }
 
   if ((!macosx_status) || (macosx_status->task == TASK_NULL))

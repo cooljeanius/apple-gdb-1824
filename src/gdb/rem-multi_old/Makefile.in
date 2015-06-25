@@ -331,7 +331,7 @@ SERVER = remote_server.o \
 	 remote_utils.o \
 	 remote_gutils.o
 
-DISTCLEANFILES = autoscan.log @MAINT@ *~
+DISTCLEANFILES = autoscan.log @MAINT@ .DS_Store *~
 EXTRA_DIST = Remote_Makefile
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -708,6 +708,8 @@ clean-local:
 
 distclean-local: clean-local
 	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
+	-rm -rf $(AM_V_v) *.dSYM || rmdir *.dSYM
+	-rm -f config.h.in~
 .PHONY: distclean-local
 
 dist-hook:

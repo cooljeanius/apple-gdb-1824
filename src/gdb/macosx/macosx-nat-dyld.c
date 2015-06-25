@@ -86,6 +86,8 @@
 # include "i386-tdep.h"
 #elif defined(TARGET_ARM)
 # include "arm-tdep.h"
+#elif defined(TARGET_AARCH64)
+# include "aarch64-tdep.h"
 #else
 # error "Unrecognized target architecture."
 #endif /* TARGET_foo */
@@ -410,17 +412,17 @@ macosx_init_addresses(macosx_dyld_thread_status *s)
 }
 
 
-#define EXTRACT_INT_MEMBER(type, struct_ptr, member) \
+#define EXTRACT_INT_MEMBER(type, struct_ptr, member, member_type) \
   struct_ptr->member = \
-    extract_unsigned_integer(((gdb_byte *)struct_ptr \
-                              + offsetof(type, member)), \
-                             sizeof(struct_ptr->member))
+    (member_type)extract_unsigned_integer(((gdb_byte *)struct_ptr \
+                                           + offsetof(type, member)), \
+                                          sizeof(struct_ptr->member))
 
-#define EXTRACT_INT_MEMBER_FROM_BUF(buf, type, struct_ptr, member) \
+#define EXTRACT_INT_MEMBER_FROM_BUF(buf, type, struct_ptr, member, member_type) \
   struct_ptr->member = \
-    extract_unsigned_integer(((gdb_byte *)buf \
-                              + offsetof(type, member)), \
-                             sizeof(struct_ptr->member))
+    (member_type)extract_unsigned_integer(((gdb_byte *)buf \
+                                           + offsetof(type, member)), \
+                                          sizeof(struct_ptr->member))
 
 /* This is a little confusing.  We only use target_read_mach_header
    when we are reading from memory, and need to figure out how big the
@@ -447,13 +449,13 @@ target_read_mach_header(CORE_ADDR addr, struct mach_header *s)
 
   if (error == 0)
     {
-      EXTRACT_INT_MEMBER(struct mach_header, s, magic);
-      EXTRACT_INT_MEMBER(struct mach_header, s, cputype);
-      EXTRACT_INT_MEMBER(struct mach_header, s, cpusubtype);
-      EXTRACT_INT_MEMBER(struct mach_header, s, filetype);
-      EXTRACT_INT_MEMBER(struct mach_header, s, ncmds);
-      EXTRACT_INT_MEMBER(struct mach_header, s, sizeofcmds);
-      EXTRACT_INT_MEMBER(struct mach_header, s, flags);
+      EXTRACT_INT_MEMBER(struct mach_header, s, magic, uint32_t);
+      EXTRACT_INT_MEMBER(struct mach_header, s, cputype, cpu_type_t);
+      EXTRACT_INT_MEMBER(struct mach_header, s, cpusubtype, cpu_subtype_t);
+      EXTRACT_INT_MEMBER(struct mach_header, s, filetype, uint32_t);
+      EXTRACT_INT_MEMBER(struct mach_header, s, ncmds, uint32_t);
+      EXTRACT_INT_MEMBER(struct mach_header, s, sizeofcmds, uint32_t);
+      EXTRACT_INT_MEMBER(struct mach_header, s, flags, uint32_t);
     }
   return error;
 }
@@ -471,10 +473,10 @@ target_read_minimal_segment_32(CORE_ADDR addr, struct segment_command *s)
 
   if (error == 0)
     {
-      EXTRACT_INT_MEMBER(struct segment_command, s, cmd);
-      EXTRACT_INT_MEMBER(struct segment_command, s, cmdsize);
-      EXTRACT_INT_MEMBER(struct segment_command, s, vmaddr);
-      EXTRACT_INT_MEMBER(struct segment_command, s, vmsize);
+      EXTRACT_INT_MEMBER(struct segment_command, s, cmd, uint32_t);
+      EXTRACT_INT_MEMBER(struct segment_command, s, cmdsize, uint32_t);
+      EXTRACT_INT_MEMBER(struct segment_command, s, vmaddr, uint32_t);
+      EXTRACT_INT_MEMBER(struct segment_command, s, vmsize, uint32_t);
     }
   return error;
 }
@@ -492,10 +494,10 @@ target_read_minimal_segment_64(CORE_ADDR addr, struct segment_command_64 *s)
 
   if (error == 0)
     {
-      EXTRACT_INT_MEMBER(struct segment_command_64, s, cmd);
-      EXTRACT_INT_MEMBER(struct segment_command_64, s, cmdsize);
-      EXTRACT_INT_MEMBER(struct segment_command_64, s, vmaddr);
-      EXTRACT_INT_MEMBER(struct segment_command_64, s, vmsize);
+      EXTRACT_INT_MEMBER(struct segment_command_64, s, cmd, uint32_t);
+      EXTRACT_INT_MEMBER(struct segment_command_64, s, cmdsize, uint32_t);
+      EXTRACT_INT_MEMBER(struct segment_command_64, s, vmaddr, uint64_t);
+      EXTRACT_INT_MEMBER(struct segment_command_64, s, vmsize, uint64_t);
     }
   return error;
 }
@@ -518,8 +520,8 @@ target_read_load_command(CORE_ADDR addr, struct load_command *s)
 
   if (error == 0)
     {
-      EXTRACT_INT_MEMBER(struct load_command, s, cmd);
-      EXTRACT_INT_MEMBER(struct load_command, s, cmdsize);
+      EXTRACT_INT_MEMBER(struct load_command, s, cmd, uint32_t);
+      EXTRACT_INT_MEMBER(struct load_command, s, cmdsize, uint32_t);
     }
   return error;
 }
@@ -548,12 +550,16 @@ target_read_dylib_command(CORE_ADDR addr, struct dylib_command *s)
 
   if (error == 0)
     {
-      EXTRACT_INT_MEMBER(struct dylib_command, s, cmd);
-      EXTRACT_INT_MEMBER(struct dylib_command, s, cmdsize);
-      EXTRACT_INT_MEMBER(struct dylib_command, s, dylib.name.offset);
-      EXTRACT_INT_MEMBER(struct dylib_command, s, dylib.timestamp);
-      EXTRACT_INT_MEMBER(struct dylib_command, s, dylib.current_version);
-      EXTRACT_INT_MEMBER(struct dylib_command, s, dylib.compatibility_version);
+      EXTRACT_INT_MEMBER(struct dylib_command, s, cmd, uint32_t);
+      EXTRACT_INT_MEMBER(struct dylib_command, s, cmdsize, uint32_t);
+      EXTRACT_INT_MEMBER(struct dylib_command, s, dylib.name.offset,
+                         uint32_t);
+      EXTRACT_INT_MEMBER(struct dylib_command, s, dylib.timestamp,
+                         uint32_t);
+      EXTRACT_INT_MEMBER(struct dylib_command, s, dylib.current_version,
+                         uint32_t);
+      EXTRACT_INT_MEMBER(struct dylib_command, s,
+                         dylib.compatibility_version, uint32_t);
     }
   return error;
 }
@@ -840,10 +846,9 @@ macosx_locate_dyld_via_taskinfo(macosx_dyld_thread_status *s)
 
 #if defined(TARGET_ARM)
       /* Old debugserver implementations do NOT support the qShlibInfoAddr
-       * packet -- try the old fixed load address of dyld
-	   */
-      if (target_is_remote () && all_image_info_addr == INVALID_ADDRESS
-          && dyld_starts_here_p (0x2fe00000))
+       * packet -- try the old fixed load address of dyld: */
+      if (target_is_remote() && (all_image_info_addr == INVALID_ADDRESS)
+          && dyld_starts_here_p(0x2fe00000))
         {
           s->dyld_addr = 0x2fe00000;
           s->dyld_slide = 0;
@@ -1656,8 +1661,8 @@ macosx_solib_add(const char *filename, int from_tty,
       unsigned int i;
       unsigned int j;
 
-      int mode = FETCH_ARGUMENT(0);             /* Adding or removing */
-      int count = FETCH_ARGUMENT(1);            /* How many */
+      int mode = (int)FETCH_ARGUMENT(0);           /* Adding or removing */
+      int count = (int)FETCH_ARGUMENT(1);          /* How many */
       CORE_ADDR addr = FETCH_ARGUMENT(2);     /* ptr to array of structs */
       static int breakpoint_timer = -1;
       struct cleanup *timer_cleanup = NULL;
@@ -2524,6 +2529,12 @@ dyld_read_raw_infos(CORE_ADDR addr, struct dyld_raw_infos *info)
   /* ignore '-Wdeclaration-after-statement' here, because trying to hack
    * around the use of the C99 designated initializers is more trouble
    * than it seems like it would be worth... */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wdeclaration-after-statement"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
   struct dyld_all_image_infos_offsets offsets =
     { .version                         = 0,
       .infoArrayCount                  = i,
@@ -2549,9 +2560,15 @@ dyld_read_raw_infos(CORE_ADDR addr, struct dyld_raw_infos *info)
       .errorSymbol                     = i + i + p + p + b + b + (p - 2 * b) + p + p + p + p + p + p + p + p + p + p + p + p + p + p,
       .sharedCacheSlide                = i + i + p + p + b + b + (p - 2 * b) + p + p + p + p + p + p + p + p + p + p + p + p + p + p + p,
     };
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
   target_read_memory(addr, version_buf, 4);
-  version = extract_unsigned_integer(version_buf, 4);
+  version = (int)extract_unsigned_integer(version_buf, 4);
 
   /* we are only interested in a v9 version of the struct
      or a version 2 copy of the struct.  */
@@ -2565,10 +2582,13 @@ dyld_read_raw_infos(CORE_ADDR addr, struct dyld_raw_infos *info)
   buf = (gdb_byte *)alloca(image_infos_size);
   target_read_memory(addr, buf, image_infos_size);
 
-  info->version = extract_unsigned_integer(buf, 4);
-  info->num_info = extract_unsigned_integer(buf + offsets.infoArrayCount, 4);
-  info->info_array = extract_unsigned_integer(buf + offsets.infoArray, wordsize);
-  info->dyld_notify = extract_unsigned_integer(buf + offsets.notification, wordsize);
+  info->version = (uint32_t)extract_unsigned_integer(buf, 4);
+  info->num_info =
+    (uint32_t)extract_unsigned_integer((buf + offsets.infoArrayCount), 4);
+  info->info_array =
+    extract_unsigned_integer((buf + offsets.infoArray), wordsize);
+  info->dyld_notify =
+    extract_unsigned_integer((buf + offsets.notification), wordsize);
 
 #if defined(TARGET_ARM)
   /* Clear bit zero of for ARM in case the dyld_notify routine is in Thumb.  */
@@ -2576,12 +2596,13 @@ dyld_read_raw_infos(CORE_ADDR addr, struct dyld_raw_infos *info)
 #endif /* TARGET_ARM */
 
   info->process_detached_from_shared_region =
-    extract_unsigned_integer(buf + offsets.processDetachedFromSharedRegion, 1);
+    (int)extract_unsigned_integer((buf + offsets.processDetachedFromSharedRegion), 1);
 
   info->libsystem_initialized =
-    extract_unsigned_integer(buf + offsets.libSystemInitialized, 1);
+    (int)extract_unsigned_integer((buf + offsets.libSystemInitialized), 1);
   info->dyld_actual_load_address =
-    extract_unsigned_integer(buf + offsets.dyldImageLoadAddress, wordsize);
+    extract_unsigned_integer((buf + offsets.dyldImageLoadAddress),
+                             wordsize);
 
   /* If we are attaching to a process very early in its startup -- before
    * dyld has had a chance to update the addresses of these fields -- we
@@ -3024,8 +3045,19 @@ map_shlib_numbers(char *args,
 
       /* FIXME: Silencing '-Wsign-compare' is impossible here, because
        * the usual cast would cause 'n' to cease being an lvalue: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wsign-compare"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
       DYLD_ALL_OBJFILE_INFO_ENTRIES(info, e, n)
         (*function)(d, e, e->objfile, (n + 1U), val);
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
       do_cleanups(cleanups);
       return;
@@ -3574,13 +3606,13 @@ dyld_lookup_and_bind_function(char *name)
   return 1;
 }
 
-static void
+static void ATTR_NORETURN
 dyld_cache_symfiles_command(char *args, int from_tty)
 {
   error("Cached symfiles are not supported on this configuration of GDB.");
 }
 
-static void
+static void ATTR_NORETURN
 dyld_cache_symfile_command(char *args, int from_tty)
 {
   error("Cached symfiles are not supported on this configuration of GDB.");

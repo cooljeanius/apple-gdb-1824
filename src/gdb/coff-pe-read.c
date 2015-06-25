@@ -285,6 +285,10 @@ read_pe_exported_syms(struct objfile *objfile)
   ordbase = pe_as32(expdata + 16);
   exp_funcbase = pe_as32(expdata + 28);
 
+  if (ordinals == ordbase) {
+    ; /* ??? */
+  }
+
   /* Use internal dll name instead of full pathname: */
   dll_name = (char *)(pe_as32(expdata + 12) + erva);
 

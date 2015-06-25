@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif /* !BELIEVE_PCC_PROMOTION */
 
 #define INTERNALIZE_SYMBOL(intern, sect_p, extern, abfd) \
-macosx_internalize_symbol (&intern, &sect_p, extern, abfd)
+  macosx_internalize_symbol(&intern, &sect_p, extern, abfd)
 
 #define SOFUN_ADDRESS_MAYBE_MISSING
 #define TEXT_SEGMENT_NAME "LC_SEGMENT.__TEXT"
@@ -49,7 +49,7 @@ macosx_internalize_symbol (&intern, &sect_p, extern, abfd)
 #define ATTACH_NO_WAIT
 
 #define SOLIB_ADD(filename, from_tty, targ, loadsyms) \
-  macosx_solib_add (filename, from_tty, targ, loadsyms)
+  macosx_solib_add(filename, from_tty, targ, loadsyms)
 
 #define SOLIB_IN_DYNAMIC_LINKER(pid,pc) 0
 
@@ -68,11 +68,11 @@ extern void macosx_add_shared_symbol_files(void);
   macosx_add_shared_symbol_files(args, from_tty)
 
 /* Dummy definition */
-const char *macosx_pc_solib (CORE_ADDR addr);
-#define PC_SOLIB(addr) ((char *) macosx_pc_solib (addr))
+const char *macosx_pc_solib(CORE_ADDR addr);
+#define PC_SOLIB(addr) ((char *)macosx_pc_solib(addr))
 
 #define target_pid_or_tid_to_str(PTID) \
-  macosx_pid_or_tid_to_str (PTID)
+  macosx_pid_or_tid_to_str(PTID)
 
 #endif /* _TM_NEXTSTEP_H_ */
 

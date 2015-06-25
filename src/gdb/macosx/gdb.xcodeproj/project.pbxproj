@@ -2578,6 +2578,87 @@
 		A50DD84E1B30D2AC00F50318 /* tcl_regexp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tcl_regexp.h; path = "/Users/ericgallager/apple-gdb-1824/src/expect/tcl_regexp.h"; sourceTree = "<absolute>"; };
 		A50DD84F1B30D2AC00F50318 /* tclParse-compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "tclParse-compat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/expect/tclParse-compat.c"; sourceTree = "<absolute>"; };
 		A50DD8691B30D2AC00F50318 /* exp_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp_test.c; path = "/Users/ericgallager/apple-gdb-1824/src/expect/testsuite/exp_test.c"; sourceTree = "<absolute>"; };
+		A50DDC2E1B33272700F50318 /* bfin-linux-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "bfin-linux-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/bfin-linux-tdep.c"; sourceTree = "<absolute>"; };
+		A50DDC2F1B33272700F50318 /* bfin-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "bfin-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/bfin-tdep.c"; sourceTree = "<absolute>"; };
+		A50DDC301B33272700F50318 /* bfin-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "bfin-tdep.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/bfin-tdep.h"; sourceTree = "<absolute>"; };
+		A50DDC311B33273700F50318 /* break-catch-sig.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "break-catch-sig.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/break-catch-sig.c"; sourceTree = "<absolute>"; };
+		A50DDC321B33273700F50318 /* break-catch-throw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "break-catch-throw.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/break-catch-throw.c"; sourceTree = "<absolute>"; };
+		A50DDC331B33274E00F50318 /* btrace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = btrace.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/btrace.c"; sourceTree = "<absolute>"; };
+		A50DDC341B33274E00F50318 /* btrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = btrace.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/btrace.h"; sourceTree = "<absolute>"; };
+		A50DDC351B33274E00F50318 /* build-id.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "build-id.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/build-id.c"; sourceTree = "<absolute>"; };
+		A50DDC361B33274E00F50318 /* build-id.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "build-id.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/build-id.h"; sourceTree = "<absolute>"; };
+		A50DDC371B33275D00F50318 /* c-varobj.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "c-varobj.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/c-varobj.c"; sourceTree = "<absolute>"; };
+		A50DDC381B33276600F50318 /* charset-list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "charset-list.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/charset-list.h"; sourceTree = "<absolute>"; };
+		A50DDC391B33278E00F50318 /* continuations.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = continuations.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/continuations.c"; sourceTree = "<absolute>"; };
+		A50DDC3A1B33278E00F50318 /* continuations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = continuations.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/continuations.h"; sourceTree = "<absolute>"; };
+		A50DDC3C1B3327CF00F50318 /* cris-linux-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "cris-linux-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/cris-linux-tdep.c"; sourceTree = "<absolute>"; };
+		A50DDC3D1B3327F800F50318 /* ctf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ctf.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/ctf.c"; sourceTree = "<absolute>"; };
+		A50DDC3E1B3327F800F50318 /* ctf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ctf.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/ctf.h"; sourceTree = "<absolute>"; };
+		A50DDC3F1B3327F800F50318 /* cxux-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "cxux-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/cxux-nat.c"; sourceTree = "<absolute>"; };
+		A50DDC401B3327F800F50318 /* d-lang.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "d-lang.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/d-lang.c"; sourceTree = "<absolute>"; };
+		A50DDC411B3327F800F50318 /* d-lang.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "d-lang.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/d-lang.h"; sourceTree = "<absolute>"; };
+		A50DDC421B3327F800F50318 /* d-support.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "d-support.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/d-support.c"; sourceTree = "<absolute>"; };
+		A50DDC431B3327F800F50318 /* d-valprint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "d-valprint.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/d-valprint.c"; sourceTree = "<absolute>"; };
+		A50DDC441B33280D00F50318 /* dec-thread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "dec-thread.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/dec-thread.c"; sourceTree = "<absolute>"; };
+		A50DDC451B33281C00F50318 /* delta68-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "delta68-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/delta68-nat.c"; sourceTree = "<absolute>"; };
+		A50DDC461B33282E00F50318 /* dpx2-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "dpx2-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/dpx2-nat.c"; sourceTree = "<absolute>"; };
+		A50DDC471B33284200F50318 /* dwarf2-frame-tailcall.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "dwarf2-frame-tailcall.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/dwarf2-frame-tailcall.c"; sourceTree = "<absolute>"; };
+		A50DDC481B33284200F50318 /* dwarf2-frame-tailcall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "dwarf2-frame-tailcall.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/dwarf2-frame-tailcall.h"; sourceTree = "<absolute>"; };
+		A50DDC491B33286900F50318 /* extension-priv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "extension-priv.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/extension-priv.h"; sourceTree = "<absolute>"; };
+		A50DDC4A1B33286A00F50318 /* extension.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = extension.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/extension.c"; sourceTree = "<absolute>"; };
+		A50DDC4B1B33286A00F50318 /* extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = extension.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/extension.h"; sourceTree = "<absolute>"; };
+		A50DDC4C1B3328A500F50318 /* createtags */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = createtags; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/createtags"; sourceTree = "<absolute>"; };
+		A50DDC4D1B332CC300F50318 /* h8500-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "h8500-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/h8500-tdep.c"; sourceTree = "<absolute>"; };
+		A50DDC4E1B332CD500F50318 /* hp-psymtab-read.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "hp-psymtab-read.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/hp-psymtab-read.c"; sourceTree = "<absolute>"; };
+		A50DDC4F1B332CD500F50318 /* hp-symtab-read.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "hp-symtab-read.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/hp-symtab-read.c"; sourceTree = "<absolute>"; };
+		A50DDC501B332CD500F50318 /* hp300ux-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "hp300ux-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/hp300ux-nat.c"; sourceTree = "<absolute>"; };
+		A50DDC511B332CE400F50318 /* hppa-linux-offsets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "hppa-linux-offsets.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/hppa-linux-offsets.h"; sourceTree = "<absolute>"; };
+		A50DDC521B332CF000F50318 /* hppab-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "hppab-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/hppab-nat.c"; sourceTree = "<absolute>"; };
+		A50DDC531B332D1000F50318 /* hppabsd-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "hppabsd-tdep.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/hppabsd-tdep.h"; sourceTree = "<absolute>"; };
+		A50DDC541B332D1000F50318 /* hppah-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "hppah-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/hppah-nat.c"; sourceTree = "<absolute>"; };
+		A50DDC551B332D1000F50318 /* hppam3-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "hppam3-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/hppam3-nat.c"; sourceTree = "<absolute>"; };
+		A50DDC561B332D1000F50318 /* hppanbsd-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "hppanbsd-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/hppanbsd-nat.c"; sourceTree = "<absolute>"; };
+		A50DDC571B332D1000F50318 /* hppanbsd-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "hppanbsd-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/hppanbsd-tdep.c"; sourceTree = "<absolute>"; };
+		A50DDC581B332D1000F50318 /* hppaobsd-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "hppaobsd-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/hppaobsd-tdep.c"; sourceTree = "<absolute>"; };
+		A50DDC591B332D1700F50318 /* hpread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hpread.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/hpread.h"; sourceTree = "<absolute>"; };
+		A50DDC5A1B332D4100F50318 /* i386-windows-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "i386-windows-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/i386-windows-nat.c"; sourceTree = "<absolute>"; };
+		A50DDC5B1B332D4B00F50318 /* i386aix-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "i386aix-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/i386aix-nat.c"; sourceTree = "<absolute>"; };
+		A50DDC5C1B332D6900F50318 /* i386ly-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "i386ly-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/i386ly-tdep.c"; sourceTree = "<absolute>"; };
+		A50DDC5D1B332D6900F50318 /* i386m3-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "i386m3-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/i386m3-nat.c"; sourceTree = "<absolute>"; };
+		A50DDC5E1B332D6900F50318 /* i386mach-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "i386mach-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/i386mach-nat.c"; sourceTree = "<absolute>"; };
+		A50DDC5F1B332D7C00F50318 /* i387-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "i387-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/i387-nat.c"; sourceTree = "<absolute>"; };
+		A50DDC601B332D7C00F50318 /* i387-nat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "i387-nat.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/i387-nat.h"; sourceTree = "<absolute>"; };
+		A50DDC611B332D9800F50318 /* ia64-hpux-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "ia64-hpux-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/ia64-hpux-nat.c"; sourceTree = "<absolute>"; };
+		A50DDC621B332D9800F50318 /* ia64-hpux-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "ia64-hpux-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/ia64-hpux-tdep.c"; sourceTree = "<absolute>"; };
+		A50DDC631B332D9800F50318 /* ia64-hpux-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ia64-hpux-tdep.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/ia64-hpux-tdep.h"; sourceTree = "<absolute>"; };
+		A50DDC641B332D9800F50318 /* ia64-libunwind-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "ia64-libunwind-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/ia64-libunwind-tdep.c"; sourceTree = "<absolute>"; };
+		A50DDC651B332D9800F50318 /* ia64-libunwind-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ia64-libunwind-tdep.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/ia64-libunwind-tdep.h"; sourceTree = "<absolute>"; };
+		A50DDC661B332DA900F50318 /* ia64-vms-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "ia64-vms-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/ia64-vms-tdep.c"; sourceTree = "<absolute>"; };
+		A50DDC671B332DBA00F50318 /* inferior.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = inferior.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/inferior.c"; sourceTree = "<absolute>"; };
+		A50DDC681B332DD700F50318 /* infttrace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = infttrace.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/infttrace.c"; sourceTree = "<absolute>"; };
+		A50DDC691B332DEB00F50318 /* inline-frame.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "inline-frame.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/inline-frame.c"; sourceTree = "<absolute>"; };
+		A50DDC6A1B332DEB00F50318 /* inline-frame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "inline-frame.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/inline-frame.h"; sourceTree = "<absolute>"; };
+		A50DDC6B1B332E0000F50318 /* interpreter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = interpreter.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/interpreter.c"; sourceTree = "<absolute>"; };
+		A50DDC6C1B332E0000F50318 /* interpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = interpreter.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/interpreter.h"; sourceTree = "<absolute>"; };
+		A50DDC6D1B332E0A00F50318 /* irix4-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "irix4-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/irix4-nat.c"; sourceTree = "<absolute>"; };
+		A50DDC6E1B332E3200F50318 /* jit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = jit.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/jit.c"; sourceTree = "<absolute>"; };
+		A50DDC6F1B332E3200F50318 /* jit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = jit.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/jit.h"; sourceTree = "<absolute>"; };
+		A50DDC701B332E3E00F50318 /* jv-varobj.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "jv-varobj.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/jv-varobj.c"; sourceTree = "<absolute>"; };
+		A50DDC711B332E5A00F50318 /* lin-lwp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "lin-lwp.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/lin-lwp.c"; sourceTree = "<absolute>"; };
+		A50DDC721B332E5A00F50318 /* lin-thread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "lin-thread.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/lin-thread.c"; sourceTree = "<absolute>"; };
+		A50DDC731B332EEB00F50318 /* linux-fork.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "linux-fork.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/linux-fork.c"; sourceTree = "<absolute>"; };
+		A50DDC741B332EEB00F50318 /* linux-fork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "linux-fork.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/linux-fork.h"; sourceTree = "<absolute>"; };
+		A50DDC751B332EF800F50318 /* linux-proc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "linux-proc.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/linux-proc.c"; sourceTree = "<absolute>"; };
+		A50DDC761B332EF800F50318 /* linux-record.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "linux-record.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/linux-record.c"; sourceTree = "<absolute>"; };
+		A50DDC771B332EF800F50318 /* linux-record.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "linux-record.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/linux-record.h"; sourceTree = "<absolute>"; };
+		A50DDC781B332EF800F50318 /* linux-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "linux-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/linux-tdep.c"; sourceTree = "<absolute>"; };
+		A50DDC791B332EF800F50318 /* linux-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "linux-tdep.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/linux-tdep.h"; sourceTree = "<absolute>"; };
+		A50DDC7A1B332F0900F50318 /* linux-thread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "linux-thread.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/linux-thread.c"; sourceTree = "<absolute>"; };
+		A50DDC7B1B332F0900F50318 /* lm32-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "lm32-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/lm32-tdep.c"; sourceTree = "<absolute>"; };
+		A50DDC7C1B332F2100F50318 /* m3-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "m3-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/m3-nat.c"; sourceTree = "<absolute>"; };
+		A50DDC7D1B332F4200F50318 /* m32c-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "m32c-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/m32c-tdep.c"; sourceTree = "<absolute>"; };
+		A50DDC7E1B332F6200F50318 /* m68knbsd-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "m68knbsd-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/m68knbsd-nat.c"; sourceTree = "<absolute>"; };
+		A50DDC7F1B332F6200F50318 /* m68knbsd-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "m68knbsd-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/m68knbsd-tdep.c"; sourceTree = "<absolute>"; };
 		A515998019870F0A0079DD4F /* arm-singlestep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "arm-singlestep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/multi-ice/arm-singlestep.c"; sourceTree = "<absolute>"; };
 		A515998119870F0A0079DD4F /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/multi-ice/ChangeLog"; sourceTree = "<absolute>"; };
 		A515999019870F0A0079DD4F /* Using_The_ARM_Multi-ICE_with_GDB.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = "Using_The_ARM_Multi-ICE_with_GDB.html"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/multi-ice/doc/Using_The_ARM_Multi-ICE_with_GDB.html"; sourceTree = "<absolute>"; };
@@ -6063,15 +6144,24 @@
 				2609D2E30E82C40A008125DE /* bcache.h */,
 				2609D2E40E82C40A008125DE /* bfd-target.c */,
 				2609D2E50E82C40A008125DE /* bfd-target.h */,
+				A50DDC2E1B33272700F50318 /* bfin-linux-tdep.c */,
+				A50DDC2F1B33272700F50318 /* bfin-tdep.c */,
+				A50DDC301B33272700F50318 /* bfin-tdep.h */,
 				2609D2E60E82C40A008125DE /* block.c */,
 				2609D2E70E82C40A008125DE /* block.h */,
 				2609D2E80E82C40A008125DE /* blockframe.c */,
+				A50DDC311B33273700F50318 /* break-catch-sig.c */,
+				A50DDC321B33273700F50318 /* break-catch-throw.c */,
 				2609D2E90E82C40A008125DE /* breakpoint.c */,
 				2609D2EA0E82C40A008125DE /* breakpoint.h */,
 				2609D2EB0E82C40A008125DE /* bsd-kvm.c */,
 				2609D2EC0E82C40A008125DE /* bsd-kvm.h */,
 				2609D2ED0E82C40A008125DE /* bsd-uthread.c */,
 				2609D2EE0E82C40A008125DE /* bsd-uthread.h */,
+				A50DDC331B33274E00F50318 /* btrace.c */,
+				A50DDC341B33274E00F50318 /* btrace.h */,
+				A50DDC351B33274E00F50318 /* build-id.c */,
+				A50DDC361B33274E00F50318 /* build-id.h */,
 				2609D2EF0E82C40A008125DE /* buildsym.c */,
 				2609D2F00E82C40A008125DE /* buildsym.h */,
 				A5AFD2061A58B6F1006C21FE /* c-exp.y */,
@@ -6079,7 +6169,9 @@
 				2609D2F30E82C40A008125DE /* c-lang.h */,
 				2609D2F40E82C40A008125DE /* c-typeprint.c */,
 				2609D2F50E82C40A008125DE /* c-valprint.c */,
+				A50DDC371B33275D00F50318 /* c-varobj.c */,
 				2609D2F60E82C40A008125DE /* call-cmds.h */,
+				A50DDC381B33276600F50318 /* charset-list.h */,
 				2609D3090E82C40A008125DE /* charset.c */,
 				2609D30A0E82C40A008125DE /* charset.h */,
 				2609D30B0E82C40A008125DE /* checkpoint.c */,
@@ -6099,6 +6191,8 @@
 				2609D3250E82C40A008125DE /* complaints.h */,
 				2609D3260E82C40A008125DE /* completer.c */,
 				2609D3270E82C40A008125DE /* completer.h */,
+				A50DDC391B33278E00F50318 /* continuations.c */,
+				A50DDC3A1B33278E00F50318 /* continuations.h */,
 				2609D44A0E82C40A008125DE /* copying.c */,
 				A5AFD2031A58B6B1006C21FE /* copyright.py */,
 				A5AFD2041A58B6B1006C21FE /* copyright.sh */,
@@ -6114,7 +6208,16 @@
 				2609D4540E82C40A008125DE /* cp-support.h */,
 				2609D4550E82C40A008125DE /* cp-valprint.c */,
 				2609D4560E82C40A008125DE /* cpu32bug-rom.c */,
+				A50DDC4C1B3328A500F50318 /* createtags */,
+				A50DDC3C1B3327CF00F50318 /* cris-linux-tdep.c */,
 				2609D4570E82C40A008125DE /* cris-tdep.c */,
+				A50DDC3D1B3327F800F50318 /* ctf.c */,
+				A50DDC3E1B3327F800F50318 /* ctf.h */,
+				A50DDC3F1B3327F800F50318 /* cxux-nat.c */,
+				A50DDC401B3327F800F50318 /* d-lang.c */,
+				A50DDC411B3327F800F50318 /* d-lang.h */,
+				A50DDC421B3327F800F50318 /* d-support.c */,
+				A50DDC431B3327F800F50318 /* d-valprint.c */,
 				2609D4580E82C40A008125DE /* d10v-tdep.c */,
 				A5AFD1FF1A58B690006C21FE /* darwin-nat-info.c */,
 				A5AFD2001A58B690006C21FE /* darwin-nat.c */,
@@ -6124,7 +6227,9 @@
 				2609D45B0E82C40A008125DE /* dbxread.c */,
 				2609D45C0E82C40A008125DE /* dcache.c */,
 				2609D45D0E82C40A008125DE /* dcache.h */,
+				A50DDC441B33280D00F50318 /* dec-thread.c */,
 				2609D45E0E82C40A008125DE /* defs.h */,
+				A50DDC451B33281C00F50318 /* delta68-nat.c */,
 				2609D45F0E82C40A008125DE /* demangle.c */,
 				A5AFD1FA1A58B674006C21FE /* development.sh */,
 				A5AFD1FB1A58B674006C21FE /* dfp.c */,
@@ -6138,10 +6243,13 @@
 				2609D4640E82C40A008125DE /* disasm.h */,
 				2609D4790E82C40A008125DE /* doublest.c */,
 				2609D47A0E82C40A008125DE /* doublest.h */,
+				A50DDC461B33282E00F50318 /* dpx2-nat.c */,
 				2609D47B0E82C40A008125DE /* dsrec.c */,
 				2609D47C0E82C40A008125DE /* dummy-frame.c */,
 				2609D47D0E82C40A008125DE /* dummy-frame.h */,
 				2609D47E0E82C40A008125DE /* dve3900-rom.c */,
+				A50DDC471B33284200F50318 /* dwarf2-frame-tailcall.c */,
+				A50DDC481B33284200F50318 /* dwarf2-frame-tailcall.h */,
 				2609D47F0E82C40A008125DE /* dwarf2-frame.c */,
 				2609D4800E82C40A008125DE /* dwarf2-frame.h */,
 				2609D4810E82C40A008125DE /* dwarf2expr.c */,
@@ -6165,6 +6273,9 @@
 				2609D4940E82C40A008125DE /* exec.h */,
 				2609D4950E82C40A008125DE /* expprint.c */,
 				2609D4960E82C40A008125DE /* expression.h */,
+				A50DDC491B33286900F50318 /* extension-priv.h */,
+				A50DDC4A1B33286A00F50318 /* extension.c */,
+				A50DDC4B1B33286A00F50318 /* extension.h */,
 				A5AFD1F91A58B656006C21FE /* f-exp.y */,
 				2609D4980E82C40A008125DE /* f-lang.c */,
 				2609D4990E82C40A008125DE /* f-lang.h */,
@@ -6252,16 +6363,29 @@
 				2609D6270E82C40B008125DE /* go32-nat.c */,
 				2609D6280E82C40B008125DE /* gregset.h */,
 				2609D6290E82C40B008125DE /* h8300-tdep.c */,
+				A50DDC4D1B332CC300F50318 /* h8500-tdep.c */,
+				A50DDC4E1B332CD500F50318 /* hp-psymtab-read.c */,
+				A50DDC4F1B332CD500F50318 /* hp-symtab-read.c */,
+				A50DDC501B332CD500F50318 /* hp300ux-nat.c */,
 				2609D62A0E82C40B008125DE /* hpacc-abi.c */,
 				2609D62B0E82C40B008125DE /* hppa-hpux-nat.c */,
 				2609D62C0E82C40B008125DE /* hppa-hpux-tdep.c */,
 				2609D62D0E82C40B008125DE /* hppa-linux-nat.c */,
+				A50DDC511B332CE400F50318 /* hppa-linux-offsets.h */,
 				2609D62E0E82C40B008125DE /* hppa-linux-tdep.c */,
 				2609D62F0E82C40B008125DE /* hppa-tdep.c */,
 				2609D6300E82C40B008125DE /* hppa-tdep.h */,
+				A50DDC521B332CF000F50318 /* hppab-nat.c */,
 				2609D6310E82C40B008125DE /* hppabsd-nat.c */,
 				2609D6320E82C40B008125DE /* hppabsd-tdep.c */,
+				A50DDC531B332D1000F50318 /* hppabsd-tdep.h */,
+				A50DDC541B332D1000F50318 /* hppah-nat.c */,
+				A50DDC551B332D1000F50318 /* hppam3-nat.c */,
+				A50DDC561B332D1000F50318 /* hppanbsd-nat.c */,
+				A50DDC571B332D1000F50318 /* hppanbsd-tdep.c */,
+				A50DDC581B332D1000F50318 /* hppaobsd-tdep.c */,
 				2609D6330E82C40B008125DE /* hpread.c */,
+				A50DDC591B332D1700F50318 /* hpread.h */,
 				2609D6340E82C40B008125DE /* hpux-thread.c */,
 				2609D6350E82C40B008125DE /* i386-amd64-shared-tdep.c */,
 				2609D6360E82C40B008125DE /* i386-amd64-shared-tdep.h */,
@@ -6280,6 +6404,8 @@
 				2609D63F0E82C40B008125DE /* i386-stub.c */,
 				2609D6400E82C40B008125DE /* i386-tdep.c */,
 				2609D6410E82C40B008125DE /* i386-tdep.h */,
+				A50DDC5A1B332D4100F50318 /* i386-windows-nat.c */,
+				A50DDC5B1B332D4B00F50318 /* i386aix-nat.c */,
 				2609D6420E82C40B008125DE /* i386bsd-nat.c */,
 				2609D6430E82C40B008125DE /* i386bsd-nat.h */,
 				2609D6440E82C40B008125DE /* i386bsd-tdep.c */,
@@ -6287,18 +6413,29 @@
 				2609D6460E82C40B008125DE /* i386fbsd-tdep.c */,
 				2609D6470E82C40B008125DE /* i386gnu-nat.c */,
 				2609D6480E82C40B008125DE /* i386gnu-tdep.c */,
+				A50DDC5C1B332D6900F50318 /* i386ly-tdep.c */,
+				A50DDC5D1B332D6900F50318 /* i386m3-nat.c */,
+				A50DDC5E1B332D6900F50318 /* i386mach-nat.c */,
 				2609D6490E82C40B008125DE /* i386nbsd-nat.c */,
 				2609D64A0E82C40B008125DE /* i386nbsd-tdep.c */,
 				2609D64B0E82C40B008125DE /* i386obsd-nat.c */,
 				2609D64C0E82C40B008125DE /* i386obsd-tdep.c */,
 				2609D64D0E82C40B008125DE /* i386v-nat.c */,
 				2609D64E0E82C40B008125DE /* i386v4-nat.c */,
+				A50DDC5F1B332D7C00F50318 /* i387-nat.c */,
+				A50DDC601B332D7C00F50318 /* i387-nat.h */,
 				2609D64F0E82C40B008125DE /* i387-tdep.c */,
 				2609D6500E82C40B008125DE /* i387-tdep.h */,
+				A50DDC611B332D9800F50318 /* ia64-hpux-nat.c */,
+				A50DDC621B332D9800F50318 /* ia64-hpux-tdep.c */,
+				A50DDC631B332D9800F50318 /* ia64-hpux-tdep.h */,
+				A50DDC641B332D9800F50318 /* ia64-libunwind-tdep.c */,
+				A50DDC651B332D9800F50318 /* ia64-libunwind-tdep.h */,
 				2609D6510E82C40B008125DE /* ia64-linux-nat.c */,
 				2609D6520E82C40B008125DE /* ia64-linux-tdep.c */,
 				2609D6530E82C40B008125DE /* ia64-tdep.c */,
 				2609D6540E82C40B008125DE /* ia64-tdep.h */,
+				A50DDC661B332DA900F50318 /* ia64-vms-tdep.c */,
 				2609D6550E82C40B008125DE /* inf-child.c */,
 				2609D6560E82C40B008125DE /* inf-child.h */,
 				2609D6570E82C40B008125DE /* inf-loop.c */,
@@ -6311,6 +6448,7 @@
 				2609D65E0E82C40B008125DE /* infcall.h */,
 				2609D65F0E82C40B008125DE /* infcmd.c */,
 				A5CA6CA71AC449EE00716574 /* infcmd.h */,
+				A50DDC671B332DBA00F50318 /* inferior.c */,
 				2609D6600E82C40B008125DE /* inferior.h */,
 				2609D6610E82C40B008125DE /* inflow.c */,
 				2609D6620E82C40B008125DE /* inflow.h */,
@@ -6318,17 +6456,26 @@
 				2609D6640E82C40B008125DE /* infptrace.c */,
 				2609D6650E82C40B008125DE /* infrun.c */,
 				2609D6660E82C40B008125DE /* inftarg.c */,
+				A50DDC681B332DD700F50318 /* infttrace.c */,
+				A50DDC691B332DEB00F50318 /* inline-frame.c */,
+				A50DDC6A1B332DEB00F50318 /* inline-frame.h */,
 				2609D6670E82C40B008125DE /* inlining.c */,
 				2609D6680E82C40B008125DE /* inlining.h */,
+				A50DDC6B1B332E0000F50318 /* interpreter.c */,
+				A50DDC6C1B332E0000F50318 /* interpreter.h */,
 				2609D6690E82C40B008125DE /* interps.c */,
 				2609D66A0E82C40B008125DE /* interps.h */,
 				2609D66B0E82C40B008125DE /* iq2000-tdep.c */,
+				A50DDC6D1B332E0A00F50318 /* irix4-nat.c */,
 				2609D66C0E82C40B008125DE /* irix5-nat.c */,
+				A50DDC6E1B332E3200F50318 /* jit.c */,
+				A50DDC6F1B332E3200F50318 /* jit.h */,
 				A5AFD1D61A58B2DE006C21FE /* jv-exp.y */,
 				2609D66E0E82C40B008125DE /* jv-lang.c */,
 				2609D66F0E82C40B008125DE /* jv-lang.h */,
 				2609D6700E82C40B008125DE /* jv-typeprint.c */,
 				2609D6710E82C40B008125DE /* jv-valprint.c */,
+				A50DDC701B332E3E00F50318 /* jv-varobj.c */,
 				2609D6720E82C40B008125DE /* kod-cisco.c */,
 				2609D6730E82C40B008125DE /* kod.c */,
 				2609D6740E82C40B008125DE /* kod.h */,
@@ -6336,17 +6483,30 @@
 				2609D6760E82C40B008125DE /* language.h */,
 				2609D6770E82C40B008125DE /* libunwind-frame.c */,
 				2609D6780E82C40B008125DE /* libunwind-frame.h */,
+				A50DDC711B332E5A00F50318 /* lin-lwp.c */,
+				A50DDC721B332E5A00F50318 /* lin-thread.c */,
 				2609D6790E82C40B008125DE /* linespec.c */,
 				2609D67A0E82C40B008125DE /* linespec.h */,
+				A50DDC731B332EEB00F50318 /* linux-fork.c */,
+				A50DDC741B332EEB00F50318 /* linux-fork.h */,
 				2609D67B0E82C40B008125DE /* linux-nat.c */,
 				2609D67C0E82C40B008125DE /* linux-nat.h */,
+				A50DDC751B332EF800F50318 /* linux-proc.c */,
+				A50DDC761B332EF800F50318 /* linux-record.c */,
+				A50DDC771B332EF800F50318 /* linux-record.h */,
+				A50DDC781B332EF800F50318 /* linux-tdep.c */,
+				A50DDC791B332EF800F50318 /* linux-tdep.h */,
 				2609D67D0E82C40B008125DE /* linux-thread-db.c */,
+				A50DDC7A1B332F0900F50318 /* linux-thread.c */,
+				A50DDC7B1B332F0900F50318 /* lm32-tdep.c */,
 				2609D67E0E82C40B008125DE /* lynx-nat.c */,
 				A5AFD1D51A58B2D5006C21FE /* m2-exp.y */,
 				2609D6800E82C40B008125DE /* m2-lang.c */,
 				2609D6810E82C40B008125DE /* m2-lang.h */,
 				2609D6820E82C40B008125DE /* m2-typeprint.c */,
 				2609D6830E82C40B008125DE /* m2-valprint.c */,
+				A50DDC7C1B332F2100F50318 /* m3-nat.c */,
+				A50DDC7D1B332F4200F50318 /* m32c-tdep.c */,
 				2609D6840E82C40B008125DE /* m32r-linux-nat.c */,
 				2609D6850E82C40B008125DE /* m32r-linux-tdep.c */,
 				2609D6860E82C40B008125DE /* m32r-rom.c */,
@@ -6361,6 +6521,8 @@
 				2609D68F0E82C40B008125DE /* m68kbsd-tdep.c */,
 				2609D6900E82C40B008125DE /* m68klinux-nat.c */,
 				2609D6910E82C40B008125DE /* m68klinux-tdep.c */,
+				A50DDC7E1B332F6200F50318 /* m68knbsd-nat.c */,
+				A50DDC7F1B332F6200F50318 /* m68knbsd-tdep.c */,
 				2609D6920E82C40B008125DE /* m88k-tdep.c */,
 				2609D6930E82C40B008125DE /* m88k-tdep.h */,
 				2609D6940E82C40B008125DE /* m88kbsd-nat.c */,

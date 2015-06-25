@@ -177,38 +177,38 @@ an integer nor a pointer of the same type."));
    verbosity is set, warn about invalid indices (but still use them). */
 
 struct value *
-value_subscript (struct value *array, struct value *idx)
+value_subscript(struct value *array, struct value *idx)
 {
   struct value *bound;
   int c_style = current_language->c_style_arrays;
   struct type *tarray;
 
-  array = coerce_ref (array);
-  tarray = check_typedef (value_type (array));
+  array = coerce_ref(array);
+  tarray = check_typedef(value_type(array));
 
-  if (TYPE_CODE (tarray) == TYPE_CODE_ARRAY
-      || TYPE_CODE (tarray) == TYPE_CODE_STRING)
+  if (TYPE_CODE(tarray) == TYPE_CODE_ARRAY
+      || TYPE_CODE(tarray) == TYPE_CODE_STRING)
     {
       LONGEST lowerbound, upperbound, stride;
-      get_array_bounds (tarray, &lowerbound, &upperbound, &stride);
+      get_array_bounds(tarray, &lowerbound, &upperbound, &stride);
 
-      if (VALUE_LVAL (array) != lval_memory)
-	return value_subscripted_rvalue (array, idx);
+      if (VALUE_LVAL(array) != lval_memory)
+	return value_subscripted_rvalue(array, idx);
 
       if (c_style == 0)
 	{
-	  LONGEST index = value_as_long (idx);
-	  if (index >= lowerbound && index <= upperbound)
-	    return value_subscripted_rvalue (array, idx);
+	  LONGEST index = value_as_long(idx);
+	  if ((index >= lowerbound) && (index <= upperbound))
+	    return value_subscripted_rvalue(array, idx);
   	  /* Emit warning unless we have an array of unknown size.
   	     An array of unknown size has lowerbound 0 and upperbound -1.  */
  	  if ((upperbound != -1) || (lowerbound != 0))
-	    warning ("array or string index out of range");
+	    warning("array or string index out of range");
 	  /* fall doing C stuff */
 	  c_style = 1;
 	}
 
-       array = value_coerce_array (array);
+       array = value_coerce_array(array);
 
        /* APPLE LOCAL: Support reverse-indexing of arrays using the
 	  'stride' attribute off of the range type of the array. */
@@ -217,55 +217,57 @@ value_subscript (struct value *array, struct value *idx)
 	 {
 	   if (lowerbound != 0)
 	     {
-	       bound = value_from_longest (builtin_type_int, (LONGEST) lowerbound);
-	       idx = value_sub (idx, bound);
+	       bound = value_from_longest(builtin_type_int, (LONGEST)lowerbound);
+	       idx = value_sub(idx, bound);
 	     }
 	 }
        else if (stride == -1)
 	 {
 	   if (upperbound != 0)
 	     {
-	       bound = value_from_longest (builtin_type_int, (LONGEST) upperbound);
-	       idx = value_sub (bound, idx);
+	       bound = value_from_longest(builtin_type_int, (LONGEST)upperbound);
+	       idx = value_sub(bound, idx);
 	     }
 	 }
        else
-	 internal_error (__FILE__, __LINE__, _("unsupported stride %ld"), stride);
+	 internal_error(__FILE__, __LINE__, _("unsupported stride %ld"),
+                        (long)stride);
 
-       return value_ind (value_add (array, idx));
+       return value_ind(value_add(array, idx));
     }
 
-  if (TYPE_CODE (tarray) == TYPE_CODE_BITSTRING)
+  if (TYPE_CODE(tarray) == TYPE_CODE_BITSTRING)
     {
-      struct type *range_type = TYPE_INDEX_TYPE (tarray);
-      LONGEST index = value_as_long (idx);
+      struct type *range_type = TYPE_INDEX_TYPE(tarray);
+      LONGEST index = value_as_long(idx);
       struct value *v;
-      int offset, byte, bit_index;
+      off_t offset;
+      int byte, bit_index;
       LONGEST lowerbound, upperbound;
-      get_discrete_bounds (range_type, &lowerbound, &upperbound);
-      if (index < lowerbound || index > upperbound)
-	error (_("bitstring index out of range"));
+      get_discrete_bounds(range_type, &lowerbound, &upperbound);
+      if ((index < lowerbound) || (index > upperbound))
+	error(_("bitstring index out of range"));
       index -= lowerbound;
-      offset = index / TARGET_CHAR_BIT;
-      byte = *((char *) value_contents (array) + offset);
-      bit_index = index % TARGET_CHAR_BIT;
-      byte >>= (BITS_BIG_ENDIAN ? TARGET_CHAR_BIT - 1 - bit_index : bit_index);
-      v = value_from_longest (LA_BOOL_TYPE, byte & 1);
-      set_value_bitpos (v, bit_index);
-      set_value_bitsize (v, 1);
-      VALUE_LVAL (v) = VALUE_LVAL (array);
-      if (VALUE_LVAL (array) == lval_internalvar)
-	VALUE_LVAL (v) = lval_internalvar_component;
-      VALUE_ADDRESS (v) = VALUE_ADDRESS (array);
-      VALUE_FRAME_ID (v) = VALUE_FRAME_ID (array);
-      set_value_offset (v, offset + value_offset (array));
+      offset = (index / TARGET_CHAR_BIT);
+      byte = *((char *)value_contents(array) + offset);
+      bit_index = (index % TARGET_CHAR_BIT);
+      byte >>= (BITS_BIG_ENDIAN ? (TARGET_CHAR_BIT - 1 - bit_index) : bit_index);
+      v = value_from_longest(LA_BOOL_TYPE, byte & 1);
+      set_value_bitpos(v, bit_index);
+      set_value_bitsize(v, 1);
+      VALUE_LVAL(v) = VALUE_LVAL(array);
+      if (VALUE_LVAL(array) == lval_internalvar)
+	VALUE_LVAL(v) = lval_internalvar_component;
+      VALUE_ADDRESS(v) = VALUE_ADDRESS(array);
+      VALUE_FRAME_ID(v) = VALUE_FRAME_ID(array);
+      set_value_offset(v, (int)(offset + value_offset(array)));
       return v;
     }
 
   if (c_style)
-    return value_ind (value_add (array, idx));
+    return value_ind(value_add(array, idx));
   else
-    error (_("not an array or string"));
+    error(_("not an array or string"));
 }
 
 /* Return the value of EXPR[IDX], expr an aggregate rvalue
@@ -278,47 +280,48 @@ value_subscript (struct value *array, struct value *idx)
    we could need either the lower or the upper bound of the array). */
 
 static struct value *
-value_subscripted_rvalue (struct value *array, struct value *idx)
+value_subscripted_rvalue(struct value *array, struct value *idx)
 {
-  struct type *array_type = check_typedef (value_type (array));
-  struct type *elt_type = check_typedef (TYPE_TARGET_TYPE (array_type));
-  unsigned int elt_size = TYPE_LENGTH (elt_type);
+  struct type *array_type = check_typedef(value_type(array));
+  struct type *elt_type = check_typedef(TYPE_TARGET_TYPE(array_type));
+  unsigned int elt_size = TYPE_LENGTH(elt_type);
   LONGEST lowerbound, upperbound, stride;
   LONGEST index;
   unsigned int elt_offs;
   struct value *v;
 
-  index = value_as_long (idx);
-  get_array_bounds (array_type, &lowerbound, &upperbound, &stride);
+  index = value_as_long(idx);
+  get_array_bounds(array_type, &lowerbound, &upperbound, &stride);
 
   if ((index < lowerbound) || (index > upperbound))
-    error (_("no such vector element"));
+    error(_("no such vector element"));
 
   if (stride == 1)
-    elt_offs = elt_size * longest_to_int (index - lowerbound);
+    elt_offs = (elt_size * longest_to_int(index - lowerbound));
   else if (stride == -1)
-    elt_offs = elt_size * longest_to_int (upperbound - index);
+    elt_offs = (elt_size * longest_to_int(upperbound - index));
   else
-    internal_error (__FILE__, __LINE__, _("unsupported vector stride %ld"), stride);
+    internal_error(__FILE__, __LINE__, _("unsupported vector stride %ld"),
+                   (long)stride);
 
-  if (elt_offs >= TYPE_LENGTH (array_type))
-    error (_("invalid array offset"));
+  if (elt_offs >= (size_t)TYPE_LENGTH(array_type))
+    error(_("invalid array offset"));
 
-  v = allocate_value (elt_type);
-  if (value_lazy (array))
-    set_value_lazy (v, 1);
+  v = allocate_value(elt_type);
+  if (value_lazy(array))
+    set_value_lazy(v, 1);
   else
-    memcpy (value_contents_writeable (v),
-	    value_contents (array) + elt_offs, elt_size);
+    memcpy(value_contents_writeable(v),
+	   (value_contents(array) + elt_offs), elt_size);
 
-  if (VALUE_LVAL (array) == lval_internalvar)
-    VALUE_LVAL (v) = lval_internalvar_component;
+  if (VALUE_LVAL(array) == lval_internalvar)
+    VALUE_LVAL(v) = lval_internalvar_component;
   else
-    VALUE_LVAL (v) = VALUE_LVAL (array);
-  VALUE_ADDRESS (v) = VALUE_ADDRESS (array);
-  VALUE_REGNUM (v) = VALUE_REGNUM (array);
-  VALUE_FRAME_ID (v) = VALUE_FRAME_ID (array);
-  set_value_offset (v, value_offset (array) + elt_offs);
+    VALUE_LVAL(v) = VALUE_LVAL(array);
+  VALUE_ADDRESS(v) = VALUE_ADDRESS(array);
+  VALUE_REGNUM(v) = VALUE_REGNUM(array);
+  VALUE_FRAME_ID(v) = VALUE_FRAME_ID(array);
+  set_value_offset(v, (value_offset(array) + elt_offs));
   return v;
 }
 
@@ -541,73 +544,79 @@ value_x_binop (struct value *arg1, struct value *arg2, enum exp_opcode op,
    is legal for GNU C++).  */
 
 struct value *
-value_x_unop (struct value *arg1, enum exp_opcode op, enum noside noside)
+value_x_unop(struct value *arg1, enum exp_opcode op, enum noside noside)
 {
   struct value **argvec;
   char *ptr, *mangle_ptr;
   char tstr[13], mangle_tstr[13];
   int static_memfuncp, nargs;
 
-  arg1 = coerce_ref (arg1);
-  arg1 = coerce_enum (arg1);
+  arg1 = coerce_ref(arg1);
+  arg1 = coerce_enum(arg1);
 
   /* now we know that what we have to do is construct our
      arg vector and find the right function to call it with.  */
 
-  if (TYPE_CODE (check_typedef (value_type (arg1))) != TYPE_CODE_STRUCT)
-    error (_("Can't do that unary op on that type"));	/* FIXME be explicit */
+  if (TYPE_CODE(check_typedef(value_type(arg1))) != TYPE_CODE_STRUCT)
+    error(_("Cannot do that unary op on that type")); /* FIXME: be explicit */
 
-  argvec = (struct value **) alloca (sizeof (struct value *) * 4);
-  argvec[1] = value_addr (arg1);
+  argvec = (struct value **)alloca(sizeof(struct value *) * 4UL);
+  argvec[1] = value_addr(arg1);
   argvec[2] = 0;
 
   nargs = 1;
 
-  /* make the right function name up */
-  strcpy (tstr, "operator__");
-  ptr = tstr + 8;
-  strcpy (mangle_tstr, "__");
-  mangle_ptr = mangle_tstr + 2;
+  /* make the right function name up: */
+  strcpy(tstr, "operator__");
+  ptr = (tstr + 8UL);
+  strcpy(mangle_tstr, "__");
+  mangle_ptr = (mangle_tstr + 2UL);
+
+  if (mangle_ptr == NULL) {
+    ; /* ??? */
+  }
+
   switch (op)
     {
     case UNOP_PREINCREMENT:
-      strcpy (ptr, "++");
+      strcpy(ptr, "++");
       break;
     case UNOP_PREDECREMENT:
-      strcpy (ptr, "--");
+      strcpy(ptr, "--");
       break;
     case UNOP_POSTINCREMENT:
-      strcpy (ptr, "++");
-      argvec[2] = value_from_longest (builtin_type_int, 0);
+      strcpy(ptr, "++");
+      argvec[2] = value_from_longest(builtin_type_int, 0);
       argvec[3] = 0;
       nargs ++;
       break;
     case UNOP_POSTDECREMENT:
-      strcpy (ptr, "--");
-      argvec[2] = value_from_longest (builtin_type_int, 0);
+      strcpy(ptr, "--");
+      argvec[2] = value_from_longest(builtin_type_int, 0);
       argvec[3] = 0;
       nargs ++;
       break;
     case UNOP_LOGICAL_NOT:
-      strcpy (ptr, "!");
+      strcpy(ptr, "!");
       break;
     case UNOP_COMPLEMENT:
-      strcpy (ptr, "~");
+      strcpy(ptr, "~");
       break;
     case UNOP_NEG:
-      strcpy (ptr, "-");
+      strcpy(ptr, "-");
       break;
     case UNOP_PLUS:
-      strcpy (ptr, "+");
+      strcpy(ptr, "+");
       break;
     case UNOP_IND:
-      strcpy (ptr, "*");
+      strcpy(ptr, "*");
       break;
     default:
-      error (_("Invalid unary operation specified."));
+      error(_("Invalid unary operation specified."));
     }
 
-  argvec[0] = value_struct_elt (&arg1, argvec + 1, tstr, &static_memfuncp, "structure");
+  argvec[0] = value_struct_elt(&arg1, (argvec + 1), tstr, &static_memfuncp,
+                               "structure");
 
   if (argvec[0])
     {
@@ -621,12 +630,12 @@ value_x_unop (struct value *arg1, enum exp_opcode op, enum noside noside)
 	{
 	  struct type *return_type;
 	  return_type
-	    = TYPE_TARGET_TYPE (check_typedef (value_type (argvec[0])));
-	  return value_zero (return_type, VALUE_LVAL (arg1));
+	    = TYPE_TARGET_TYPE(check_typedef(value_type(argvec[0])));
+	  return value_zero(return_type, VALUE_LVAL(arg1));
 	}
-      return call_function_by_hand (argvec[0], nargs, argvec + 1);
+      return call_function_by_hand(argvec[0], nargs, (argvec + 1));
     }
-  error (_("member function %s not found"), tstr);
+  error(_("member function %s not found"), tstr);
   return 0;			/* For lint -- never reached */
 }
 
@@ -795,44 +804,44 @@ value_binop(struct value *arg1, struct value *arg2, enum exp_opcode op)
   type1 = check_typedef(value_type(arg1));
   type2 = check_typedef(value_type(arg2));
 
-  if ((TYPE_CODE (type1) != TYPE_CODE_FLT && !is_integral_type (type1))
+  if (((TYPE_CODE(type1) != TYPE_CODE_FLT) && !is_integral_type(type1))
       ||
-      (TYPE_CODE (type2) != TYPE_CODE_FLT && !is_integral_type (type2)))
-    error (_("Argument to arithmetic operation not a number or boolean."));
+      ((TYPE_CODE(type2) != TYPE_CODE_FLT) && !is_integral_type(type2)))
+    error(_("Argument to arithmetic operation not a number or boolean."));
 
-  if (TYPE_CODE (type1) == TYPE_CODE_FLT
-      ||
-      TYPE_CODE (type2) == TYPE_CODE_FLT)
+  if ((TYPE_CODE(type1) == TYPE_CODE_FLT)
+      || (TYPE_CODE(type2) == TYPE_CODE_FLT))
     {
       /* FIXME-if-picky-about-floating-accuracy: Should be doing this
          in target format.  real.c in GCC probably has the necessary
          code.  */
       DOUBLEST v1, v2, v = 0;
-      v1 = value_as_double (arg1);
-      v2 = value_as_double (arg2);
+      v1 = value_as_double(arg1);
+      v2 = value_as_double(arg2);
       switch (op)
 	{
 	case BINOP_ADD:
-	  v = v1 + v2;
+	  v = (v1 + v2);
 	  break;
 
 	case BINOP_SUB:
-	  v = v1 - v2;
+	  v = (v1 - v2);
 	  break;
 
 	case BINOP_MUL:
-	  v = v1 * v2;
+	  v = (v1 * v2);
 	  break;
 
 	case BINOP_DIV:
-	  v = v1 / v2;
+	  v = (v1 / v2);
 	  break;
 
 	case BINOP_EXP:
 	  errno = 0;
-	  v = pow (v1, v2);
+	  v = pow((double)v1, (double)v2);
 	  if (errno)
-	    error (_("Cannot perform exponentiation: %s"), safe_strerror (errno));
+	    error(_("Cannot perform exponentiation: %s"),
+                  safe_strerror(errno));
 	  break;
 
 	default:
@@ -842,52 +851,49 @@ value_binop(struct value *arg1, struct value *arg2, enum exp_opcode op)
       /* If either arg was long double, make sure that value is also long
          double.  */
 
-      if (TYPE_LENGTH (type1) * 8 > TARGET_DOUBLE_BIT
-	  || TYPE_LENGTH (type2) * 8 > TARGET_DOUBLE_BIT)
-	val = allocate_value (builtin_type_long_double);
+      if (((TYPE_LENGTH(type1) * 8) > TARGET_DOUBLE_BIT)
+	  || ((TYPE_LENGTH(type2) * 8) > TARGET_DOUBLE_BIT))
+	val = allocate_value(builtin_type_long_double);
       else
-	val = allocate_value (builtin_type_double);
+	val = allocate_value(builtin_type_double);
 
-      store_typed_floating (value_contents_raw (val), value_type (val), v);
+      store_typed_floating(value_contents_raw(val), value_type(val), v);
     }
-  else if (TYPE_CODE (type1) == TYPE_CODE_BOOL
-	   &&
-	   TYPE_CODE (type2) == TYPE_CODE_BOOL)
+  else if ((TYPE_CODE(type1) == TYPE_CODE_BOOL)
+	   && (TYPE_CODE(type2) == TYPE_CODE_BOOL))
     {
-      LONGEST v1, v2, v = 0;
-      v1 = value_as_long (arg1);
-      v2 = value_as_long (arg2);
+      LONGEST v1, v2, v = 0L;
+      v1 = value_as_long(arg1);
+      v2 = value_as_long(arg2);
 
       switch (op)
 	{
 	case BINOP_BITWISE_AND:
-	  v = v1 & v2;
+	  v = (v1 & v2);
 	  break;
 
 	case BINOP_BITWISE_IOR:
-	  v = v1 | v2;
+	  v = (v1 | v2);
 	  break;
 
 	case BINOP_BITWISE_XOR:
-	  v = v1 ^ v2;
+	  v = (v1 ^ v2);
           break;
 
         case BINOP_EQUAL:
-          v = v1 == v2;
+          v = (v1 == v2);
           break;
 
         case BINOP_NOTEQUAL:
-          v = v1 != v2;
+          v = (v1 != v2);
 	  break;
 
 	default:
-	  error (_("Invalid operation on booleans."));
+	  error(_("Invalid operation on booleans."));
 	}
 
-      val = allocate_value (type1);
-      store_signed_integer (value_contents_raw (val),
-			    TYPE_LENGTH (type1),
-			    v);
+      val = allocate_value(type1);
+      store_signed_integer(value_contents_raw(val), TYPE_LENGTH(type1), v);
     }
   else
     /* Integral operations here.  */
@@ -904,15 +910,15 @@ value_binop(struct value *arg1, struct value *arg2, enum exp_opcode op)
 
       /* Determine type length and signedness after promotion for
          both operands.  */
-      if (promoted_len1 < TYPE_LENGTH (builtin_type_int))
+      if (promoted_len1 < (size_t)TYPE_LENGTH(builtin_type_int))
 	{
 	  is_unsigned1 = 0;
-	  promoted_len1 = TYPE_LENGTH (builtin_type_int);
+	  promoted_len1 = (unsigned int)TYPE_LENGTH(builtin_type_int);
 	}
-      if (promoted_len2 < TYPE_LENGTH (builtin_type_int))
+      if (promoted_len2 < (size_t)TYPE_LENGTH(builtin_type_int))
 	{
 	  is_unsigned2 = 0;
-	  promoted_len2 = TYPE_LENGTH (builtin_type_int);
+	  promoted_len2 = (unsigned int)TYPE_LENGTH(builtin_type_int);
 	}
 
       /* Determine type length of the result, and if the operation should
@@ -939,27 +945,27 @@ value_binop(struct value *arg1, struct value *arg2, enum exp_opcode op)
 	}
       else
 	{
-	  unsigned_operation = is_unsigned1 || is_unsigned2;
+	  unsigned_operation = (is_unsigned1 || is_unsigned2);
 	  result_len = promoted_len1;
 	}
 
       /* APPLE LOCAL BEGIN - large integer support.
          Adding support for integers with sizes greater than ULONGEST.  */
-      if (result_len > sizeof (ULONGEST))
+      if (result_len > sizeof(ULONGEST))
 	{
-	  if (result_len != TYPE_LENGTH (builtin_type_uint128))
+	  if (result_len != (size_t)TYPE_LENGTH(builtin_type_uint128))
 	    {
-	      error (_("value_binop(v1, v2, %s) not supported for %u byte integers"),
-		     op_name_standard (op),
-		     result_len);
+	      error(_("value_binop(v1, v2, %s) not supported for %lu byte integers"),
+		    op_name_standard(op),
+		    result_len);
 	    }
 	  else
 	    {
 	      int i;
-	      const gdb_byte *arg1_bytes = value_contents (arg1);
-	      const gdb_byte *arg2_bytes = value_contents (arg2);
-	      int arg1_len = TYPE_LENGTH (value_type (arg1));
-	      int arg2_len = TYPE_LENGTH (value_type (arg2));
+	      const gdb_byte *arg1_bytes = value_contents(arg1);
+	      const gdb_byte *arg2_bytes = value_contents(arg2);
+	      int arg1_len = TYPE_LENGTH(value_type(arg1));
+	      int arg2_len = TYPE_LENGTH(value_type(arg2));
 
 	      switch (op)
 		{
@@ -975,180 +981,202 @@ value_binop(struct value *arg1, struct value *arg2, enum exp_opcode op)
 		case BINOP_MIN:
 		case BINOP_MAX:
 		case BINOP_LESS:
-		  error (_("value_binop(v1, v2, %s) not supported for %u byte integers"),
-			 op_name_standard (op),
-			 result_len);
+		  error(_("value_binop(v1, v2, %s) not supported for %lu byte integers"),
+                        op_name_standard(op), result_len);
 		  break;
 
 		case BINOP_BITWISE_AND:
 		  {
-		    val = allocate_value (unsigned_operation ?
-					  builtin_type_uint128 :
-					  builtin_type_int128);
+                    gdb_byte *val_bytes;
+		    val = allocate_value(unsigned_operation
+                                         ? builtin_type_uint128
+                                         : builtin_type_int128);
 
-		    gdb_byte *val_bytes = value_contents_writeable (val);
-		    const int val_len = TYPE_LENGTH (value_type(val));
+		    val_bytes = value_contents_writeable(val);
 
-		    for (i=0; i<val_len; i++)
-		      {
-			if (i < arg1_len && i < arg2_len)
-			  val_bytes[i] = arg1_bytes[i] & arg2_bytes[i];
-			else
-			  val_bytes[i] = 0;
-		      }
+                    /* const means that declaration cannot be separated
+                     * from the assignment, so put brackets here instead
+                     * to silence '-Wdeclaration-after-statement': */
+                    {
+                      const int val_len = TYPE_LENGTH(value_type(val));
+
+                      for (i = 0; i < val_len; i++)
+                        {
+                          if ((i < arg1_len) && (i < arg2_len))
+                            val_bytes[i] = (arg1_bytes[i] & arg2_bytes[i]);
+                          else
+                            val_bytes[i] = 0;
+                        }
+                    }
 		  }
 		  break;
 
 		case BINOP_BITWISE_IOR:
 		  {
-		    val = allocate_value (unsigned_operation ?
-					  builtin_type_uint128 :
-					  builtin_type_int128);
+                    gdb_byte *val_bytes;
+		    val = allocate_value(unsigned_operation
+                                         ? builtin_type_uint128
+                                         : builtin_type_int128);
 
-		    gdb_byte *val_bytes = value_contents_writeable (val);
-		    const int val_len = TYPE_LENGTH (value_type(val));
+		    val_bytes = value_contents_writeable(val);
 
-		    for (i=0; i<val_len; i++)
-		      {
-			if (i < arg1_len && i < arg2_len)
-			  val_bytes[i] = arg1_bytes[i] | arg2_bytes[i];
-			else if (i < arg1_len)
-			  val_bytes[i] = arg1_bytes[i];
-			else if (i < arg2_len)
-			  val_bytes[i] = arg2_bytes[i];
-			else
-			  val_bytes[i] = 0;
-		      }
+                    /* const means that declaration cannot be separated
+                     * from the assignment, so put brackets here instead
+                     * to silence '-Wdeclaration-after-statement': */
+                    {
+                      const int val_len = TYPE_LENGTH(value_type(val));
+
+                      for (i = 0; i < val_len; i++)
+                        {
+                          if ((i < arg1_len) && (i < arg2_len))
+                            val_bytes[i] = (arg1_bytes[i] | arg2_bytes[i]);
+                          else if (i < arg1_len)
+                            val_bytes[i] = arg1_bytes[i];
+                          else if (i < arg2_len)
+                            val_bytes[i] = arg2_bytes[i];
+                          else
+                            val_bytes[i] = 0;
+                        }
+                    }
 		  }
 		  break;
 
 		case BINOP_BITWISE_XOR:
 		  {
-		    val = allocate_value (unsigned_operation ?
-					  builtin_type_uint128 :
-					  builtin_type_int128);
+                    gdb_byte *val_bytes;
+		    val = allocate_value(unsigned_operation
+                                         ? builtin_type_uint128
+                                         : builtin_type_int128);
 
-		    gdb_byte *val_bytes = value_contents_writeable (val);
-		    const int val_len = TYPE_LENGTH (value_type(val));
+		    val_bytes = value_contents_writeable(val);
 
-		    for (i=0; i<val_len; i++)
-		      {
-			if (i < arg1_len && i < arg2_len)
-			  val_bytes[i] = arg1_bytes[i] ^ arg2_bytes[i];
-			else if (i < arg1_len)
-			  val_bytes[i] = arg1_bytes[i];
-			else if (i < arg2_len)
-			  val_bytes[i] = arg2_bytes[i];
-			else
-			  val_bytes[i] = 0;
-		      }
+                    /* const means that declaration cannot be separated
+                     * from the assignment, so put brackets here instead
+                     * to silence '-Wdeclaration-after-statement': */
+                    {
+                      const int val_len = TYPE_LENGTH(value_type(val));
+
+                      for (i = 0; i < val_len; i++)
+                        {
+                          if ((i < arg1_len) && (i < arg2_len))
+                            val_bytes[i] = (arg1_bytes[i] ^ arg2_bytes[i]);
+                          else if (i < arg1_len)
+                            val_bytes[i] = arg1_bytes[i];
+                          else if (i < arg2_len)
+                            val_bytes[i] = arg2_bytes[i];
+                          else
+                            val_bytes[i] = 0;
+                        }
+                    }
 		  }
 		  break;
 
 		case BINOP_LOGICAL_AND:
 		  {
-		    ULONGEST arg1_not_zero = 0;
-		    ULONGEST arg2_not_zero = 0;
-		    for (i=0; i<arg1_len && !arg1_not_zero; i++)
-		      arg1_not_zero = arg1_bytes[i] != 0;
+		    ULONGEST arg1_not_zero = 0UL;
+		    ULONGEST arg2_not_zero = 0UL;
+		    for (i = 0; (i < arg1_len) && !arg1_not_zero; i++)
+		      arg1_not_zero = (arg1_bytes[i] != 0);
 
-		    for (i=0; i<arg2_len && !arg2_not_zero; i++)
-		      arg2_not_zero = arg2_bytes[i] != 0;
+		    for (i = 0; (i < arg2_len) && !arg2_not_zero; i++)
+		      arg2_not_zero = (arg2_bytes[i] != 0);
 
-		    val = allocate_value (builtin_type_unsigned_long);
-		    store_unsigned_integer (value_contents_raw (val),
-					    TYPE_LENGTH (value_type (val)),
-					    arg1_not_zero && arg2_not_zero);
+		    val = allocate_value(builtin_type_unsigned_long);
+		    store_unsigned_integer(value_contents_raw(val),
+					   TYPE_LENGTH(value_type(val)),
+					   arg1_not_zero && arg2_not_zero);
 		  }
 		  break;
 
 		case BINOP_LOGICAL_OR:
 		  {
-		    ULONGEST arg1_not_zero = 0;
-		    ULONGEST arg2_not_zero = 0;
-		    for (i=0; i<arg1_len && !arg1_not_zero; i++)
-		      arg1_not_zero = arg1_bytes[i] != 0;
+		    ULONGEST arg1_not_zero = 0UL;
+		    ULONGEST arg2_not_zero = 0UL;
+		    for (i = 0; (i < arg1_len) && !arg1_not_zero; i++)
+		      arg1_not_zero = (arg1_bytes[i] != 0);
 
 		    if (arg1_not_zero == 0)
-		      for (i=0; i<arg2_len && !arg2_not_zero; i++)
-			arg2_not_zero = arg2_bytes[i] != 0;
+		      for (i = 0; (i < arg2_len) && !arg2_not_zero; i++)
+			arg2_not_zero = (arg2_bytes[i] != 0);
 
-		    val = allocate_value (builtin_type_unsigned_long);
-		    store_unsigned_integer (value_contents_raw (val),
-					    TYPE_LENGTH (value_type (val)),
-					    arg1_not_zero || arg2_not_zero);
+		    val = allocate_value(builtin_type_unsigned_long);
+		    store_unsigned_integer(value_contents_raw(val),
+					   TYPE_LENGTH(value_type(val)),
+					   arg1_not_zero || arg2_not_zero);
 		  }
 		  break;
 
 		case BINOP_EQUAL:
 		case BINOP_NOTEQUAL:
 		  {
-		    ULONGEST equal = 1;
-		    const int max_len = arg1_len > arg2_len ? arg1_len : arg2_len;
-		    for (i=0; i<max_len && equal; i++)
+		    ULONGEST equal = 1UL;
+		    const int max_len = ((arg1_len > arg2_len)
+                                         ? arg1_len : arg2_len);
+		    for (i = 0; (i < max_len) && equal; i++)
 		      {
-			if (i < arg1_len && i < arg2_len)
-			  equal = arg1_bytes[i] == arg2_bytes[i];
+			if ((i < arg1_len) && (i < arg2_len))
+			  equal = (arg1_bytes[i] == arg2_bytes[i]);
 			else if (i < arg1_len)
-			  equal = arg1_bytes[i] == 0;
-		      else if (i < arg2_len)
-			  equal = arg2_bytes[i] == 0;
-		    }
-		    val = allocate_value (builtin_type_unsigned_long);
-		    store_unsigned_integer (value_contents_raw (val),
-					    TYPE_LENGTH (value_type (val)),
-					    op == BINOP_EQUAL ? equal : !equal);
+			  equal = (arg1_bytes[i] == 0);
+                        else if (i < arg2_len)
+			  equal = (arg2_bytes[i] == 0);
+                      }
+		    val = allocate_value(builtin_type_unsigned_long);
+		    store_unsigned_integer(value_contents_raw(val),
+					   TYPE_LENGTH(value_type(val)),
+					   ((op == BINOP_EQUAL)
+                                            ? equal : !equal));
 		  }
 		  break;
 
 		default:
-		  error (_("Invalid binary operation on numbers."));
+		  error(_("Invalid binary operation on numbers."));
 		}
 	    }
 	}
       else
-      /* APPLE LOCAL END - large integer support.  */
+      /* APPLE LOCAL END - large integer support: */
       if (unsigned_operation)
 	{
-	  ULONGEST v1, v2, v = 0;
-	  v1 = (ULONGEST) value_as_long (arg1);
-	  v2 = (ULONGEST) value_as_long (arg2);
+	  ULONGEST v1, v2, v = 0UL;
+	  v1 = (ULONGEST)value_as_long(arg1);
+	  v2 = (ULONGEST)value_as_long(arg2);
 
-	  /* Truncate values to the type length of the result.  */
-	  if (result_len < sizeof (ULONGEST))
+	  /* Truncate values to the type length of the result: */
+	  if (result_len < sizeof(ULONGEST))
 	    {
-	      v1 &= ((LONGEST) 1 << HOST_CHAR_BIT * result_len) - 1;
-	      v2 &= ((LONGEST) 1 << HOST_CHAR_BIT * result_len) - 1;
+	      v1 &= (((LONGEST)1L << HOST_CHAR_BIT * result_len) - 1UL);
+	      v2 &= (((LONGEST)1L << HOST_CHAR_BIT * result_len) - 1UL);
 	    }
 
 	  switch (op)
 	    {
 	    case BINOP_ADD:
-	      v = v1 + v2;
+	      v = (v1 + v2);
 	      break;
 
 	    case BINOP_SUB:
-	      v = v1 - v2;
+	      v = (v1 - v2);
 	      break;
 
 	    case BINOP_MUL:
-	      v = v1 * v2;
+	      v = (v1 * v2);
 	      break;
 
 	    case BINOP_DIV:
-	      v = v1 / v2;
+	      v = (v1 / v2);
 	      break;
 
 	    case BINOP_EXP:
 	      errno = 0;
-	      v = pow((double)v1, (double)v2);
+	      v = (ULONGEST)pow((double)v1, (double)v2);
 	      if (errno)
 		error(_("Cannot perform exponentiation: %s"),
                       safe_strerror(errno));
 	      break;
 
 	    case BINOP_REM:
-	      v = v1 % v2;
+	      v = (v1 % v2);
 	      break;
 
 	    case BINOP_MOD:
@@ -1160,62 +1188,62 @@ value_binop(struct value *arg1, struct value *arg2, enum exp_opcode op)
 		}
 	      else
 		{
-		  v = v1 / v2;
+		  v = (v1 / v2);
 		  /* Note floor(v1/v2) == v1/v2 for unsigned. */
-		  v = v1 - (v2 * v);
+		  v = (v1 - (v2 * v));
 		}
 	      break;
 
 	    case BINOP_LSH:
-	      v = v1 << v2;
+	      v = (v1 << v2);
 	      break;
 
 	    case BINOP_RSH:
-	      v = v1 >> v2;
+	      v = (v1 >> v2);
 	      break;
 
 	    case BINOP_BITWISE_AND:
-	      v = v1 & v2;
+	      v = (v1 & v2);
 	      break;
 
 	    case BINOP_BITWISE_IOR:
-	      v = v1 | v2;
+	      v = (v1 | v2);
 	      break;
 
 	    case BINOP_BITWISE_XOR:
-	      v = v1 ^ v2;
+	      v = (v1 ^ v2);
 	      break;
 
 	    case BINOP_LOGICAL_AND:
-	      v = v1 && v2;
+	      v = (v1 && v2);
 	      break;
 
 	    case BINOP_LOGICAL_OR:
-	      v = v1 || v2;
+	      v = (v1 || v2);
 	      break;
 
 	    case BINOP_MIN:
-	      v = v1 < v2 ? v1 : v2;
+	      v = ((v1 < v2) ? v1 : v2);
 	      break;
 
 	    case BINOP_MAX:
-	      v = v1 > v2 ? v1 : v2;
+	      v = ((v1 > v2) ? v1 : v2);
 	      break;
 
 	    case BINOP_EQUAL:
-	      v = v1 == v2;
+	      v = (v1 == v2);
 	      break;
 
             case BINOP_NOTEQUAL:
-              v = v1 != v2;
+              v = (v1 != v2);
               break;
 
 	    case BINOP_LESS:
-	      v = v1 < v2;
+	      v = (v1 < v2);
 	      break;
 
 	    default:
-	      error (_("Invalid binary operation on numbers."));
+	      error(_("Invalid binary operation on numbers."));
 	    }
 
 	  /* This is a kludge to get around the fact that we do NOT
@@ -1227,8 +1255,8 @@ value_binop(struct value *arg1, struct value *arg2, enum exp_opcode op)
 
 	  /* Cannot just call init_type because we would NOT know what
 	     name to give the type.  */
-	  val = allocate_value((result_len > (TARGET_LONG_BIT
-                                              / HOST_CHAR_BIT))
+	  val = allocate_value((result_len > (size_t)(TARGET_LONG_BIT
+                                                      / HOST_CHAR_BIT))
                                ? builtin_type_unsigned_long_long
                                : builtin_type_unsigned_long);
 	  store_unsigned_integer(value_contents_raw(val),
@@ -1263,7 +1291,7 @@ value_binop(struct value *arg1, struct value *arg2, enum exp_opcode op)
 
 	    case BINOP_EXP:
 	      errno = 0;
-	      v = pow((double)v1, (double)v2);
+	      v = (LONGEST)pow((double)v1, (double)v2);
 	      if (errno)
 		error(_("Cannot perform exponentiation: %s"),
                       safe_strerror(errno));
@@ -1618,23 +1646,23 @@ value_complement (struct value *arg1)
    Return -1 if out of range, -2 other error. */
 
 int
-value_bit_index (struct type *type, const gdb_byte *valaddr, int index)
+value_bit_index(struct type *type, const gdb_byte *valaddr, int index)
 {
   LONGEST low_bound, high_bound;
   LONGEST word;
-  unsigned rel_index;
-  struct type *range = TYPE_FIELD_TYPE (type, 0);
-  if (get_discrete_bounds (range, &low_bound, &high_bound) < 0)
+  unsigned long rel_index;
+  struct type *range = TYPE_FIELD_TYPE(type, 0);
+  if (get_discrete_bounds(range, &low_bound, &high_bound) < 0)
     return -2;
-  if (index < low_bound || index > high_bound)
+  if ((index < low_bound) || (index > high_bound))
     return -1;
-  rel_index = index - low_bound;
-  word = unpack_long (builtin_type_unsigned_char,
-		      valaddr + (rel_index / TARGET_CHAR_BIT));
+  rel_index = (unsigned long)(index - low_bound);
+  word = unpack_long(builtin_type_unsigned_char,
+		     (valaddr + (rel_index / TARGET_CHAR_BIT)));
   rel_index %= TARGET_CHAR_BIT;
   if (BITS_BIG_ENDIAN)
-    rel_index = TARGET_CHAR_BIT - 1 - rel_index;
-  return (word >> rel_index) & 1;
+    rel_index = (TARGET_CHAR_BIT - 1UL - rel_index);
+  return ((word >> rel_index) & 1);
 }
 
 struct value *
@@ -1653,7 +1681,7 @@ value_in (struct value *element, struct value *set)
       && TYPE_CODE (eltype) != TYPE_CODE_BOOL)
     error(_("First argument of 'IN' has wrong type"));
   member = value_bit_index(settype, value_contents(set),
-			   value_as_long(element));
+			   (int)value_as_long(element));
   if (member < 0)
     error(_("First argument of 'IN' not in range"));
   return value_from_longest(LA_BOOL_TYPE, member);

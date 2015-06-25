@@ -22,7 +22,11 @@
 #define __A_OUT_64_H__
 
 #ifndef BYTES_IN_WORD
-# define BYTES_IN_WORD 4
+# if defined(__LP64__) && __LP64__
+#  define BYTES_IN_WORD 8
+# else
+#  define BYTES_IN_WORD 4
+# endif /* __LP64__ */
 #endif /* !BYTES_IN_WORD */
 
 /* This is the layout on disk of the 32-bit or 64-bit exec header.  */
@@ -40,7 +44,7 @@ struct external_exec
   bfd_byte e_drsize[BYTES_IN_WORD]; /* Length of data relocation info.  */
 };
 
-#define	EXEC_BYTES_SIZE	(4 + BYTES_IN_WORD * 7)
+#define	EXEC_BYTES_SIZE	(4 + (BYTES_IN_WORD * 7))
 
 #ifndef ARCH_SIZE
 # if defined(__LP64__) && __LP64__
@@ -273,8 +277,8 @@ struct external_nlist
   bfd_byte e_desc[2];			/* Description field.  */
   bfd_byte e_value[BYTES_IN_WORD];	/* Value of symbol.  */
 };
-#define EXTERNAL_NLIST_SIZE (BYTES_IN_WORD+4+BYTES_IN_WORD)
-#endif
+# define EXTERNAL_NLIST_SIZE (BYTES_IN_WORD + 4 + BYTES_IN_WORD)
+#endif /* !external_nlist */
 
 struct internal_nlist
 {

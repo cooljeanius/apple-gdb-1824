@@ -764,11 +764,11 @@ _bfd_merge_sections(bfd *abfd, struct bfd_link_info *info ATTRIBUTE_UNUSED,
 	  secinfo->sec->size = size;
 	}
 
-	/* Finally remove all input sections which have not made it into
-	 * the hash table at all: */
-	for (secinfo = sinfo->chain; secinfo; secinfo = secinfo->next)
-	  if (secinfo->first_str == NULL)
-	    secinfo->sec->flags |= SEC_EXCLUDE;
+      /* Finally remove all input sections which have not made it into
+       * the hash table at all: */
+      for (secinfo = sinfo->chain; secinfo; secinfo = secinfo->next)
+        if (secinfo->first_str == NULL)
+          secinfo->sec->flags |= SEC_EXCLUDE;
     }
 
   return TRUE;

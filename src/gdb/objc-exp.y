@@ -104,20 +104,20 @@
 #define yycheck		objc_yycheck
 
 #ifndef YYDEBUG
-#define	YYDEBUG	0		/* Default to no yydebug support.  */
-#endif
+# define YYDEBUG 0		/* Default to no yydebug support.  */
+#endif /* !YYDEBUG */
 
 /* APPLE LOCAL - Avoid calling lookup_objc_class unnecessarily.  */
 static int square_bracket_seen = 0;
 
 int
-yyparse PARAMS ((void));
+yyparse PARAMS((void));
 
 static int
-yylex PARAMS ((void));
+yylex PARAMS((void));
 
 void
-yyerror PARAMS ((char *));
+yyerror PARAMS((char *));
 
 %}
 
@@ -145,7 +145,7 @@ yyerror PARAMS ((char *));
     struct block *bval;
     enum exp_opcode opcode;
     struct internalvar *ivar;
-    struct objc_class_str class;
+    struct objc_class_str class; /* FIXME: rename, if possible */
 
     struct type **tvec;
     int *ivec;
@@ -154,7 +154,7 @@ yyerror PARAMS ((char *));
 %{
 /* YYSTYPE gets defined by %union.  */
 static int
-parse_number PARAMS ((char *, int, int, YYSTYPE *));
+parse_number PARAMS((char *, int, int, YYSTYPE *));
 %}
 
 %type <voidval> exp exp1 type_exp start variable qualified_name lcurly
@@ -241,51 +241,51 @@ type_exp:	type
 			  write_exp_elt_opcode(OP_TYPE);}
 	;
 
-/* Expressions, including the comma operator.  */
+/* Expressions, including the comma operator: */
 exp1	:	exp
 	|	exp1 ',' exp
-			{ write_exp_elt_opcode (BINOP_COMMA); }
+			{ write_exp_elt_opcode(BINOP_COMMA); }
 	;
 
-/* Expressions, not including the comma operator.  */
+/* Expressions, not including the comma operator: */
 exp	:	'*' exp    %prec UNARY
-			{ write_exp_elt_opcode (UNOP_IND); }
+			{ write_exp_elt_opcode(UNOP_IND); }
 	;
 
 exp	:	'&' exp    %prec UNARY
-			{ write_exp_elt_opcode (UNOP_ADDR); }
+			{ write_exp_elt_opcode(UNOP_ADDR); }
 	;
 
 exp	:	'-' exp    %prec UNARY
-			{ write_exp_elt_opcode (UNOP_NEG); }
+			{ write_exp_elt_opcode(UNOP_NEG); }
 	;
 
 exp	:	'!' exp    %prec UNARY
-			{ write_exp_elt_opcode (UNOP_LOGICAL_NOT); }
+			{ write_exp_elt_opcode(UNOP_LOGICAL_NOT); }
 	;
 
 exp	:	'~' exp    %prec UNARY
-			{ write_exp_elt_opcode (UNOP_COMPLEMENT); }
+			{ write_exp_elt_opcode(UNOP_COMPLEMENT); }
 	;
 
 exp	:	INCREMENT exp    %prec UNARY
-			{ write_exp_elt_opcode (UNOP_PREINCREMENT); }
+			{ write_exp_elt_opcode(UNOP_PREINCREMENT); }
 	;
 
 exp	:	DECREMENT exp    %prec UNARY
-			{ write_exp_elt_opcode (UNOP_PREDECREMENT); }
+			{ write_exp_elt_opcode(UNOP_PREDECREMENT); }
 	;
 
 exp	:	exp INCREMENT    %prec UNARY
-			{ write_exp_elt_opcode (UNOP_POSTINCREMENT); }
+			{ write_exp_elt_opcode(UNOP_POSTINCREMENT); }
 	;
 
 exp	:	exp DECREMENT    %prec UNARY
-			{ write_exp_elt_opcode (UNOP_POSTDECREMENT); }
+			{ write_exp_elt_opcode(UNOP_POSTDECREMENT); }
 	;
 
 exp	:	SIZEOF exp       %prec UNARY
-			{ write_exp_elt_opcode (UNOP_SIZEOF); }
+			{ write_exp_elt_opcode(UNOP_SIZEOF); }
 	;
 
 exp	:	exp ARROW name
@@ -334,46 +334,46 @@ exp	:	exp '[' exp1 ']'
 
 exp	: 	'[' TYPENAME
 			{
-			  CORE_ADDR class;
+			  CORE_ADDR objc_class;
 
-			  class = lookup_objc_class (copy_name ($2.stoken));
-			  if (class == 0)
-			    error ("%s is not an ObjC Class",
-				   copy_name ($2.stoken));
-			  write_exp_elt_opcode (OP_LONG);
-			  write_exp_elt_type (builtin_type_void_data_ptr);
-			  write_exp_elt_longcst ((LONGEST) class);
-			  write_exp_elt_opcode (OP_LONG);
+			  objc_class = lookup_objc_class(copy_name($2.stoken));
+			  if (objc_class == 0)
+			    error("%s is not an ObjC Class",
+				  copy_name($2.stoken));
+			  write_exp_elt_opcode(OP_LONG);
+			  write_exp_elt_type(builtin_type_void_data_ptr);
+			  write_exp_elt_longcst((LONGEST)objc_class);
+			  write_exp_elt_opcode(OP_LONG);
 			  start_msglist();
 			}
 		msglist ']'
-			{ write_exp_elt_opcode (OP_OBJC_MSGCALL);
+			{ write_exp_elt_opcode(OP_OBJC_MSGCALL);
 			  end_msglist();
-			  write_exp_elt_opcode (OP_OBJC_MSGCALL);
+			  write_exp_elt_opcode(OP_OBJC_MSGCALL);
 			}
 	;
 
 exp	:	'[' CLASSNAME
 			{
-			  write_exp_elt_opcode (OP_LONG);
-			  write_exp_elt_type (builtin_type_void_data_ptr);
-			  write_exp_elt_longcst ((LONGEST) $2.class);
-			  write_exp_elt_opcode (OP_LONG);
+			  write_exp_elt_opcode(OP_LONG);
+			  write_exp_elt_type(builtin_type_void_data_ptr);
+			  write_exp_elt_longcst((LONGEST)$2.class);
+			  write_exp_elt_opcode(OP_LONG);
 			  start_msglist();
 			}
 		msglist ']'
-			{ write_exp_elt_opcode (OP_OBJC_MSGCALL);
+			{ write_exp_elt_opcode(OP_OBJC_MSGCALL);
 			  end_msglist();
-			  write_exp_elt_opcode (OP_OBJC_MSGCALL);
+			  write_exp_elt_opcode(OP_OBJC_MSGCALL);
 			}
 	;
 
 exp	:	'[' exp
 			{ start_msglist(); }
 		msglist ']'
-			{ write_exp_elt_opcode (OP_OBJC_MSGCALL);
+			{ write_exp_elt_opcode(OP_OBJC_MSGCALL);
 			  end_msglist();
-			  write_exp_elt_opcode (OP_OBJC_MSGCALL);
+			  write_exp_elt_opcode(OP_OBJC_MSGCALL);
 			}
 	;
 
@@ -702,35 +702,35 @@ qualified_name:	typebase COLONCOLON name
 variable:	qualified_name
 	|	COLONCOLON name
 			{
-			  char *name = copy_name ($2);
+			  char *name = copy_name($2);
 			  struct symbol *sym;
 			  struct minimal_symbol *msymbol;
 
 			  sym =
-			    lookup_symbol (name, (const struct block *) NULL,
-					   VAR_DOMAIN, (int *) NULL,
-					   (struct symtab **) NULL);
+			    lookup_symbol(name, (const struct block *)NULL,
+					  VAR_DOMAIN, (int *)NULL,
+					  (struct symtab **)NULL);
 			  if (sym)
 			    {
-			      write_exp_elt_opcode (OP_VAR_VALUE);
-			      write_exp_elt_block (NULL);
-			      write_exp_elt_sym (sym);
-			      write_exp_elt_opcode (OP_VAR_VALUE);
+			      write_exp_elt_opcode(OP_VAR_VALUE);
+			      write_exp_elt_block(NULL);
+			      write_exp_elt_sym(sym);
+			      write_exp_elt_opcode(OP_VAR_VALUE);
 			      break;
 			    }
 
-			  msymbol = lookup_minimal_symbol (name, NULL, NULL);
+			  msymbol = lookup_minimal_symbol(name, NULL, NULL);
 			  if (msymbol != NULL)
 			    {
-			      write_exp_msymbol (msymbol,
-						 lookup_function_type (builtin_type_int),
-						 builtin_type_int);
+			      write_exp_msymbol(msymbol,
+                                                lookup_function_type(builtin_type_int),
+                                                builtin_type_int);
 			    }
 			  else
-			    if (!have_full_symbols () && !have_partial_symbols ())
-			      error ("No symbol table is loaded.  Use the \"file\" command.");
+			    if (!have_full_symbols() && !have_partial_symbols())
+			      error("No symbol table is loaded.  Use the \"file\" command.");
 			    else
-			      error ("No symbol \"%s\" in current context.", name);
+			      error("No symbol \"%s\" in current context.", name);
 			}
 	;
 
@@ -739,11 +739,11 @@ variable:	name_not_typename
 
 			  if (sym)
 			    {
-			      if (symbol_read_needs_frame (sym))
+			      if (symbol_read_needs_frame(sym))
 				{
 				  if (innermost_block == 0 ||
-				      contained_in (block_found,
-						    innermost_block))
+				      contained_in(block_found,
+						   innermost_block))
 				    innermost_block = block_found;
 				}
 
@@ -883,13 +883,13 @@ direct_abs_decl: '(' abs_decl ')'
 			{ $$ = $2; }
 	|	direct_abs_decl array_mod
 			{
-			  push_type_int ($2);
-			  push_type (tp_array);
+			  push_type_int((int)$2);
+			  push_type(tp_array);
 			}
 	|	array_mod
 			{
-			  push_type_int ($1);
-			  push_type (tp_array);
+			  push_type_int((int)$1);
+			  push_type(tp_array);
 			  $$ = 0;
 			}
 
@@ -921,7 +921,7 @@ func_mod:	'(' ')'
 
 type	:	ptype
 	|	typebase COLONCOLON '*'
-			{ $$ = lookup_member_type (builtin_type_int, $1); }
+			{ $$ = lookup_member_type(builtin_type_int, $1); }
 	;
 
 typebase  /* Implements (approximately): (type-qualifier)* type-specifier.  */
@@ -930,8 +930,8 @@ typebase  /* Implements (approximately): (type-qualifier)* type-specifier.  */
 	|	CLASSNAME
 			{
 			  if ($1.type == NULL)
-			    error ("No symbol \"%s\" in current context.",
-				   copy_name($1.stoken));
+			    error("No symbol \"%s\" in current context.",
+				  copy_name($1.stoken));
 			  else
 			    $$ = $1.type;
 			}
@@ -1524,7 +1524,7 @@ yylex(void)
     case '!':
 #if 0
     case '@':		/* Moved out below.  */
-#endif
+#endif /* 0 */
     case '<':
     case '>':
       /* APPLE LOCAL begin avoid calling lookup_objc_class unnecessarily  */
@@ -1558,7 +1558,7 @@ yylex(void)
 	  tokptr = strchr(tokstart, '(');
 	  if (tokptr == NULL)
 	    {
-	      error ("Missing '(' in @selector(...)");
+	      error("Missing '(' in @selector(...)");
 	    }
 	  tempbufindex = 0;
 	  tokptr++;	/* Skip the '('.  */
@@ -1712,23 +1712,23 @@ yylex(void)
     case 5:
       if ((current_language->la_language == language_cplus
 	   || current_language->la_language == language_objcplus)
-	  && strncmp (tokstart, "class", 5) == 0)
+	  && strncmp(tokstart, "class", 5) == 0)
 	return CLASS;
-      if (DEPRECATED_STREQN (tokstart, "union", 5))
+      if (DEPRECATED_STREQN(tokstart, "union", 5))
 	return UNION;
-      if (DEPRECATED_STREQN (tokstart, "short", 5))
+      if (DEPRECATED_STREQN(tokstart, "short", 5))
 	return SHORT;
-      if (DEPRECATED_STREQN (tokstart, "const", 5))
+      if (DEPRECATED_STREQN(tokstart, "const", 5))
 	return CONST_KEYWORD;
       break;
     case 4:
-      if (DEPRECATED_STREQN (tokstart, "enum", 4))
+      if (DEPRECATED_STREQN(tokstart, "enum", 4))
 	return ENUM;
-      if (DEPRECATED_STREQN (tokstart, "long", 4))
+      if (DEPRECATED_STREQN(tokstart, "long", 4))
 	return LONG;
       break;
     case 3:
-      if (DEPRECATED_STREQN (tokstart, "int", 3))
+      if (DEPRECATED_STREQN(tokstart, "int", 3))
 	return INT_KEYWORD;
       break;
     default:
@@ -1871,15 +1871,15 @@ yylex(void)
 	  return TYPENAME;
         }
     yylval.tsym.type
-      = language_lookup_primitive_type_by_name (current_language,
-						current_gdbarch, tmp);
+      = language_lookup_primitive_type_by_name(current_language,
+                                               current_gdbarch, tmp);
     if (yylval.tsym.type != NULL)
       return TYPENAME;
 
     /* See if it is an ObjC classname: */
     if (!sym)
       {
-        sym = lookup_struct_typedef (tmp, expression_context_block, 1);
+        sym = lookup_struct_typedef(tmp, expression_context_block, 1);
 	/* APPLE LOCAL begin avoid calling lookup_objc_class unnecessarily  */
         if (sym && square_bracket_seen)
           {
@@ -1889,10 +1889,10 @@ yylex(void)
 	    if (Class)
 	      {
 	        yylval.class.class = Class;
-	        if ((sym = lookup_struct_typedef (tmp,
-					          expression_context_block,
-					          1)))
-	          yylval.class.type = SYMBOL_TYPE (sym);
+	        if ((sym = lookup_struct_typedef(tmp,
+					         expression_context_block,
+					         1)))
+	          yylval.class.type = SYMBOL_TYPE(sym);
 	        return CLASSNAME;
 	      }
           }

@@ -350,7 +350,8 @@ i386_find_picbase_setup(CORE_ADDR pc, CORE_ADDR *picbase_addr,
          picbase setup call.  */
       if (length == 5)
         {
-          uint32_t buf = read_memory_unsigned_integer(pc + skip, 1);
+          uint32_t buf;
+          buf = (uint32_t)read_memory_unsigned_integer((pc + skip), 1);
           if (buf == 0xe8)  /* 0xe8 == CALL disp32 */
             {
               found_call_insn = 1;
@@ -367,8 +368,8 @@ i386_find_picbase_setup(CORE_ADDR pc, CORE_ADDR *picbase_addr,
 
   /* pc + skip is now pointing at the start of a `call rel32' instruction
    * which may be setting up the picbase: */
-  rel32 = read_memory_unsigned_integer(pc + skip + 1, 4);
-  offset_from = (pc + skip + 5);
+  rel32 = (uint32_t)read_memory_unsigned_integer((pc + skip + 1), 4);
+  offset_from = (uint32_t)(pc + skip + 5U);
 
   /* Old-style picbase setup, jumping to the next instruction and popping
      the value into the picbase reg.  */
@@ -664,10 +665,10 @@ i386_get_longjmp_target (CORE_ADDR *pc)
 
 
 static CORE_ADDR
-i386_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
-		      struct regcache *regcache, CORE_ADDR bp_addr, int nargs,
-		      struct value **args, CORE_ADDR sp, int struct_return,
-		      CORE_ADDR struct_addr)
+i386_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
+		     struct regcache *regcache, CORE_ADDR bp_addr,
+                     int nargs, struct value **args, CORE_ADDR sp,
+                     int struct_return, CORE_ADDR struct_addr)
 {
   gdb_byte buf[4];
   int i;
@@ -682,15 +683,16 @@ i386_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
      return will take once we push them, then we move the stack
      pointer before we start pushing args.  */
 
-  for (i = nargs - 1; i >= 0; i--)
+  for (i = (nargs - 1); i >= 0; i--)
     {
-      int len = TYPE_LENGTH (value_enclosing_type (args[i]));
-      argument_bytes += (len + 3) & ~3;
+      int len = TYPE_LENGTH(value_enclosing_type(args[i]));
+      argument_bytes += ((len + 3) & ~3);
     }
   if (struct_return)
     argument_bytes += 4;
 
-  alignment_pad_bytes = (sp - argument_bytes) - ((sp - argument_bytes) & ~15);
+  alignment_pad_bytes = (int)((sp - argument_bytes)
+                              - ((sp - argument_bytes) & ~15));
   sp -= alignment_pad_bytes;
   /* APPLE LOCAL end */
 

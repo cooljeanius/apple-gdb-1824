@@ -55,67 +55,65 @@
 
 /* Prototypes for exported functions. */
 
-void args_info (char *, int);
+void args_info(char *, int);
 
-void locals_info (char *, int);
+void locals_info(char *, int);
 
-void (*deprecated_selected_frame_level_changed_hook) (int);
+void (*deprecated_selected_frame_level_changed_hook)(int);
 
-void _initialize_stack (void);
+void _initialize_stack(void);
 
 /* Prototypes for local functions. */
 
-static struct frame_info *parse_frame_specification (char *frame_exp);
+static struct frame_info *parse_frame_specification(char *frame_exp);
 
-static void down_command (char *, int);
+static void down_command(char *, int);
 
-static void down_silently_base (char *);
+static void down_silently_base(char *);
 
-static void down_silently_command (char *, int);
+static void down_silently_command(char *, int);
 
-static void up_command (char *, int);
+static void up_command(char *, int);
 
-static void up_silently_base (char *);
+static void up_silently_base(char *);
 
-static void up_silently_command (char *, int);
+static void up_silently_command(char *, int);
 
-void frame_command (char *, int);
+void frame_command(char *, int);
 
-static void current_frame_command (char *, int);
+static void current_frame_command(char *, int);
 
-static void print_frame_arg_vars (struct frame_info *, struct ui_file *);
+static void print_frame_arg_vars(struct frame_info *, struct ui_file *);
 
-static void catch_info (char *, int);
+static void catch_info(char *, int);
 
-static void args_plus_locals_info (char *, int);
+static void args_plus_locals_info(char *, int);
 
-static void print_frame_label_vars (struct frame_info *, int,
+static void print_frame_label_vars(struct frame_info *, int,
+				   struct ui_file *);
+
+static void print_frame_local_vars(struct frame_info *, int,
+				   struct ui_file *);
+
+static int print_block_frame_labels(struct block *, int *,
 				    struct ui_file *);
 
-static void print_frame_local_vars (struct frame_info *, int,
-				    struct ui_file *);
+static int print_block_frame_locals(struct block *, struct frame_info *,
+				    int, struct ui_file *);
 
-static int print_block_frame_labels (struct block *, int *,
-				     struct ui_file *);
+static void print_frame(struct frame_info *, int, enum print_what, int,
+                        struct symtab_and_line);
 
-static int print_block_frame_locals (struct block *,
-				     struct frame_info *,
-				     int,
-				     struct ui_file *);
+extern struct frame_info *parse_frame_specification_1(const char *,
+                                                      const char *, int *);
 
-static void print_frame (struct frame_info *fi,
-			 int print_level,
-			 enum print_what print_what,
-			 int print_args,
-			 struct symtab_and_line sal);
+static void set_current_sal_from_frame(struct frame_info *, int);
 
-static void set_current_sal_from_frame (struct frame_info *, int);
+static void backtrace_command(char *, int);
 
-static void backtrace_command (char *, int);
+static void frame_info(char *, int);
 
-static void frame_info (char *, int);
-
-extern int addressprint;	/* Print addresses, or stay symbolic only? */
+extern int addressprint; /* Print addresses, or stay symbolic only? */
 
 /* Zero means do things normally; we are interacting directly with the
    user.  One means print the full filename and linenumber when a
@@ -155,8 +153,8 @@ print_stack_frame_stub(void *args)
    source line, the actual PC is printed at the beginning.  */
 
 void
-print_stack_frame (struct frame_info *fi, int print_level,
-		   enum print_what print_what)
+print_stack_frame(struct frame_info *fi, int print_level,
+		  enum print_what print_what)
 {
   struct print_stack_frame_args args;
 
@@ -165,7 +163,7 @@ print_stack_frame (struct frame_info *fi, int print_level,
   args.print_what = print_what;
   args.print_args = 1;
 
-  catch_errors (print_stack_frame_stub, (char *) &args, "", RETURN_MASK_ALL);
+  catch_errors(print_stack_frame_stub, (char *)&args, "", RETURN_MASK_ALL);
 }
 
 struct print_args_args
@@ -184,8 +182,8 @@ static int print_args_stub (void *);
    the first nameless arg).  */
 
 static void
-print_frame_nameless_args (struct frame_info *fi, long start, int num,
-			   int first, struct ui_file *stream)
+print_frame_nameless_args(struct frame_info *fi, long start, int num,
+                          int first, struct ui_file *stream)
 {
   int i;
   CORE_ADDR argsaddr;
@@ -194,15 +192,16 @@ print_frame_nameless_args (struct frame_info *fi, long start, int num,
   for (i = 0; i < num; i++)
     {
       QUIT;
-      argsaddr = get_frame_args_address (fi);
+      argsaddr = get_frame_args_address(fi);
       if (!argsaddr)
 	return;
-      arg_value = read_memory_integer (argsaddr + start, sizeof (int));
+      arg_value = (long)read_memory_integer((argsaddr + start),
+                                            sizeof(int));
       if (!first)
-	fprintf_filtered (stream, ", ");
-      fprintf_filtered (stream, "%ld", arg_value);
+	fprintf_filtered(stream, ", ");
+      fprintf_filtered(stream, "%ld", arg_value);
       first = 0;
-      start += sizeof (int);
+      start += sizeof(int);
     }
 }
 
@@ -384,14 +383,14 @@ print_frame_args (struct symbol *func, struct frame_info *fi, int num,
       long start;
 
       if (highest_offset == -1)
-	start = FRAME_ARGS_SKIP;
+	start = (long)FRAME_ARGS_SKIP;
       else
 	start = highest_offset;
 
-      print_frame_nameless_args (fi, start, num - args_printed,
-				 first, stream);
+      print_frame_nameless_args(fi, start, (num - args_printed),
+                                first, stream);
     }
-  do_cleanups (old_chain);
+  do_cleanups(old_chain);
 }
 
 /* Pass the args the way catch_errors wants them.  */
@@ -914,8 +913,9 @@ print_frame (struct frame_info *fi,
 /* Show the frame info.  If this is the tui, it will be shown in
    the source display otherwise, nothing is done */
 void
-show_stack_frame (struct frame_info *fi)
+show_stack_frame(struct frame_info *fi ATTRIBUTE_UNUSED)
 {
+  return;
 }
 
 
@@ -988,9 +988,9 @@ parse_frame_specification_1(const char *frame_exp, const char *message,
   if (numargs == 1)
     {
       struct frame_info *fid;
-      int level = value_as_long (args[0]);
-      fid = find_relative_frame (get_current_frame (), &level);
-      if (level == 0)
+      long level = (long)value_as_long(args[0]);
+      fid = find_relative_frame(get_current_frame(), (int *)&level);
+      if (level == 0L)
 	/* find_relative_frame was successful */
 	return fid;
     }
@@ -1326,8 +1326,9 @@ frame_info (char *addr_exp, int from_tty)
   I didn't want to think about it too much longer than I had already. */
 
 #ifdef PRINT_EXTRA_FRAME_INFO
-  PRINT_EXTRA_FRAME_INFO (frame_next_hack (fi), frame_cache_hack (fi));
-#endif
+  PRINT_EXTRA_FRAME_INFO(frame_next_hack(fi),
+                         (void **)frame_cache_hack(fi));
+#endif /* PRINT_EXTRA_FRAME_INFO */
   /* APPLE LOCAL end extra frame info */
 }
 
@@ -1355,29 +1356,29 @@ backtrace_command_1 (char *count_exp, int show_locals, int from_tty)
   struct symtab_and_line original_sal;
 
   if (!target_has_stack)
-    error (_("No stack."));
+    error(_("No stack."));
 
   /* APPLE LOCAL subroutine inlining  */
-  inlined_function_reset_frame_stack ();
+  inlined_function_reset_frame_stack();
 
   /* The following code must do two things.  First, it must
      set the variable TRAILING to the frame from which we should start
      printing.  Second, it must set the variable count to the number
      of frames which we should print, or -1 if all of them.  */
-  trailing = get_current_frame ();
+  trailing = get_current_frame();
 
   /* APPLE LOCAL: Save/restore current source line around the frame printing */
-  original_sal = get_current_source_symtab_and_line ();
+  original_sal = get_current_source_symtab_and_line();
 
   /* The target can be in a state where there is no valid frames
      (e.g., just connected). */
   if (trailing == NULL)
-    error (_("No stack."));
+    error(_("No stack."));
 
   trailing_level = 0;
   if (count_exp)
     {
-      count = parse_and_eval_long (count_exp);
+      count = (int)parse_and_eval_long(count_exp);
       if (count < 0)
 	{
 	  struct frame_info *current;
@@ -1993,9 +1994,9 @@ find_relative_frame (struct frame_info *frame,
    frame expressions. */
 
 void
-select_frame_command (char *level_exp, int from_tty)
+select_frame_command(char *level_exp, int from_tty)
 {
-  select_frame (parse_frame_specification_1 (level_exp, "No stack.", NULL));
+  select_frame(parse_frame_specification_1(level_exp, "No stack.", NULL));
 }
 
 /* The "frame" command.  With no arg, print selected frame briefly.
@@ -2003,12 +2004,12 @@ select_frame_command (char *level_exp, int from_tty)
    frame.  */
 
 void
-frame_command (char *level_exp, int from_tty)
+frame_command(char *level_exp, int from_tty)
 {
-  select_frame_command (level_exp, from_tty);
-  print_stack_frame (get_selected_frame (NULL), 1, SRC_AND_LOC);
+  select_frame_command(level_exp, from_tty);
+  print_stack_frame(get_selected_frame(NULL), 1, SRC_AND_LOC);
   /* APPLE LOCAL begin subroutine inlining  */
-  clear_inlined_subroutine_print_frames ();
+  clear_inlined_subroutine_print_frames();
   /* APPLE LOCAL end subroutine inlining  */
 }
 
@@ -2027,33 +2028,33 @@ current_frame_command (char *level_exp, int from_tty)
    from the previously selected frame, and print it briefly.  */
 
 static void
-up_silently_base (char *count_exp)
+up_silently_base(char *count_exp)
 {
   struct frame_info *fi;
   int count = 1, count1;
   if (count_exp)
-    count = parse_and_eval_long (count_exp);
+    count = (int)parse_and_eval_long(count_exp);
   count1 = count;
 
-  fi = find_relative_frame (get_selected_frame ("No stack."), &count1);
+  fi = find_relative_frame(get_selected_frame("No stack."), &count1);
   if (count1 != 0 && count_exp == 0)
-    error (_("Initial frame selected; you cannot go up."));
-  select_frame (fi);
+    error(_("Initial frame selected; you cannot go up."));
+  select_frame(fi);
 }
 
 static void
-up_silently_command (char *count_exp, int from_tty)
+up_silently_command(char *count_exp, int from_tty)
 {
-  up_silently_base (count_exp);
+  up_silently_base(count_exp);
 }
 
 static void
-up_command (char *count_exp, int from_tty)
+up_command(char *count_exp, int from_tty)
 {
-  up_silently_base (count_exp);
-  print_stack_frame (get_selected_frame (NULL), 1, SRC_AND_LOC);
+  up_silently_base(count_exp);
+  print_stack_frame(get_selected_frame(NULL), 1, SRC_AND_LOC);
   /* APPLE LOCAL begin subroutine inlining  */
-  clear_inlined_subroutine_print_frames ();
+  clear_inlined_subroutine_print_frames();
   /* APPLE LOCAL end subroutine inlining  */
 }
 
@@ -2061,15 +2062,15 @@ up_command (char *count_exp, int from_tty)
    from the previously selected frame, and print it briefly.  */
 
 static void
-down_silently_base (char *count_exp)
+down_silently_base(char *count_exp)
 {
   struct frame_info *frame;
   int count = -1, count1;
   if (count_exp)
-    count = -parse_and_eval_long (count_exp);
+    count = (int)(-parse_and_eval_long(count_exp));
   count1 = count;
 
-  frame = find_relative_frame (get_selected_frame ("No stack."), &count1);
+  frame = find_relative_frame(get_selected_frame("No stack."), &count1);
   if (count1 != 0 && count_exp == 0)
     {
 
@@ -2275,63 +2276,60 @@ struct function_bounds
   CORE_ADDR low, high;
 };
 
-static void func_command (char *arg, int from_tty);
+static void func_command(char *arg, int from_tty);
 static void
-func_command (char *arg, int from_tty)
+func_command(char *arg, int from_tty)
 {
   struct frame_info *fp;
   int found = 0;
   struct symtabs_and_lines sals;
   int i;
   int level = 1;
-  struct function_bounds *func_bounds = (struct function_bounds *) NULL;
+  struct function_bounds *func_bounds = (struct function_bounds *)NULL;
 
-  if (arg != (char *) NULL)
+  if (arg != (char *)NULL)
     return;
 
-  fp = parse_frame_specification ("0");
-  sals = decode_line_spec (arg, 1);
-  func_bounds = (struct function_bounds *) xmalloc (
-			      sizeof (struct function_bounds) * sals.nelts);
+  fp = parse_frame_specification("0");
+  sals = decode_line_spec(arg, 1);
+  func_bounds = ((struct function_bounds *)
+                 xmalloc(sizeof(struct function_bounds) * sals.nelts));
   for (i = 0; (i < sals.nelts && !found); i++)
     {
-      if (sals.sals[i].pc == (CORE_ADDR) 0 ||
-	  find_pc_partial_function (sals.sals[i].pc,
-				    (char **) NULL,
-				    &func_bounds[i].low,
-				    &func_bounds[i].high) == 0)
+      if (sals.sals[i].pc == (CORE_ADDR)0UL ||
+	  find_pc_partial_function(sals.sals[i].pc,
+				   (char **)NULL,
+				   &func_bounds[i].low,
+				   &func_bounds[i].high) == 0)
 	{
 	  func_bounds[i].low =
-	    func_bounds[i].high = (CORE_ADDR) NULL;
+	    func_bounds[i].high = (CORE_ADDR)(uintptr_t)NULL;
 	}
     }
 
-  do
-    {
-      for (i = 0; (i < sals.nelts && !found); i++)
-	found = (get_frame_pc (fp) >= func_bounds[i].low &&
-		 get_frame_pc (fp) < func_bounds[i].high);
-      if (!found)
-	{
-	  level = 1;
-	  fp = find_relative_frame (fp, &level);
-	}
-    }
-  while (!found && level == 0);
+  do {
+    for (i = 0; (i < sals.nelts && !found); i++)
+      found = ((get_frame_pc(fp) >= func_bounds[i].low)
+               && (get_frame_pc(fp) < func_bounds[i].high));
+    if (!found)
+      {
+        level = 1;
+        fp = find_relative_frame(fp, &level);
+      }
+  } while (!found && level == 0);
 
   if (func_bounds)
-    xfree (func_bounds);
+    xfree(func_bounds);
 
   if (!found)
-    printf_filtered (_("'%s' not within current stack frame.\n"), arg);
+    printf_filtered(_("'%s' not within current stack frame.\n"), arg);
   else if (fp != deprecated_selected_frame)
-    select_and_print_frame (fp);
+    select_and_print_frame(fp);
 }
 
-/* Gets the language of the current frame.  */
-
+/* Gets the language of the current frame: */
 enum language
-get_frame_language (void)
+get_frame_language(void)
 {
   struct symtab *s;
   enum language flang;		/* The language of the current frame */

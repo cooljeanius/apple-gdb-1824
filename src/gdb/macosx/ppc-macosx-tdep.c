@@ -157,41 +157,42 @@ ppc_print_extra_frame_info(struct frame_info *next_frame, void **this_cache)
   struct ppc_function_boundaries *bounds;
   struct ppc_function_properties *props;
 
-  if (get_frame_type (get_prev_frame (next_frame)) == DUMMY_FRAME)
+  if (get_frame_type(get_prev_frame(next_frame)) == DUMMY_FRAME)
     return;
 
-  cache = ppc_frame_cache (next_frame, this_cache);
+  cache = ppc_frame_cache(next_frame, this_cache);
 
-  if (get_frame_type (next_frame) == SIGTRAMP_FRAME)
+  if (cache == NULL) {
+    ; /* ??? */
+  }
+
+  if (get_frame_type(next_frame) == SIGTRAMP_FRAME)
     {
-      printf_filtered (" This function was called from a signal handler.\n");
+      printf_filtered(" This function was called from a signal handler.\n");
     }
   else
     {
-      printf_filtered
-        (" This function was not called from a signal handler.\n");
+      printf_filtered(" This function was not called from a signal handler.\n");
     }
 
-  bounds = ppc_frame_function_boundaries (next_frame, this_cache);
+  bounds = ppc_frame_function_boundaries(next_frame, this_cache);
   if (bounds != NULL)
     {
-      ppc_print_boundaries (bounds);
+      ppc_print_boundaries(bounds);
     }
   else
     {
-      printf_filtered
-        (" Unable to determine function boundary information.\n");
+      printf_filtered(" Unable to determine function boundary information.\n");
     }
 
-  props = ppc_frame_function_properties (next_frame, this_cache);
+  props = ppc_frame_function_properties(next_frame, this_cache);
   if (props != NULL)
     {
-      ppc_print_properties (props);
+      ppc_print_properties(props);
     }
   else
     {
-      printf_filtered
-        (" Unable to determine function property information.\n");
+      printf_filtered(" Unable to determine function property information.\n");
     }
 }
 
@@ -282,20 +283,24 @@ ppc_frame_cache(struct frame_info *next_frame, void **this_cache)
    return the value of prev's pc.  */
 
 CORE_ADDR
-ppc_frame_find_prev_pc (struct frame_info *next_frame, void **this_cache)
+ppc_frame_find_prev_pc(struct frame_info *next_frame, void **this_cache)
 {
   struct ppc_frame_cache *cache;
   ppc_function_properties *props = NULL;
   CORE_ADDR prev_sp, this_pc;
 
-  cache = ppc_frame_cache (next_frame, this_cache);
+  cache = ppc_frame_cache(next_frame, this_cache);
 
-  props = ppc_frame_function_properties (next_frame, this_cache);
+  if (cache == NULL) {
+    ; /* ??? */
+  }
+
+  props = ppc_frame_function_properties(next_frame, this_cache);
   if (props == NULL)
     return 0;
 
-  prev_sp = ppc_frame_find_prev_sp (next_frame, this_cache);
-  this_pc = frame_pc_unwind (next_frame);
+  prev_sp = ppc_frame_find_prev_sp(next_frame, this_cache);
+  this_pc = frame_pc_unwind(next_frame);
 
   /* Has the return address (link register) been saved to memory already?  */
   if (props->lr_saved && props->lr_saved < this_pc)
@@ -324,20 +329,24 @@ ppc_frame_find_prev_pc (struct frame_info *next_frame, void **this_cache)
    the stored memory at the fp and get the caller's fp.  */
 
 CORE_ADDR
-ppc_frame_unwind_fp (struct frame_info *next_frame, void **this_cache)
+ppc_frame_unwind_fp(struct frame_info *next_frame, void **this_cache)
 {
   struct ppc_frame_cache *cache;
   ppc_function_properties *props;
   CORE_ADDR this_fp, this_pc, this_func, next_sp;
 
-  cache = ppc_frame_cache (next_frame, this_cache);
+  cache = ppc_frame_cache(next_frame, this_cache);
 
-  props = ppc_frame_function_properties (next_frame, this_cache);
+  if (cache == NULL) {
+    ; /* ??? */
+  }
+
+  props = ppc_frame_function_properties(next_frame, this_cache);
   if (props == NULL)
-    return frame_unwind_register_unsigned (next_frame, SP_REGNUM);
+    return frame_unwind_register_unsigned(next_frame, SP_REGNUM);
 
   if (props->frameless)
-    return frame_unwind_register_unsigned (next_frame, SP_REGNUM);
+    return frame_unwind_register_unsigned(next_frame, SP_REGNUM);
 
   this_pc = frame_pc_unwind (next_frame);
   this_func = frame_func_unwind (next_frame);
@@ -416,27 +425,31 @@ ppc_frame_unwind_fp (struct frame_info *next_frame, void **this_cache)
   */
 
 CORE_ADDR
-ppc_frame_unwind_sp_for_dereferencing (struct frame_info *next_frame,
-                                       void **this_cache)
+ppc_frame_unwind_sp_for_dereferencing(struct frame_info *next_frame,
+                                      void **this_cache)
 {
   /* We always just assume that this is in the STACK POINTER... */
-  return frame_unwind_register_unsigned (next_frame, SP_REGNUM);
+  return frame_unwind_register_unsigned(next_frame, SP_REGNUM);
 }
 
 CORE_ADDR
-ppc_frame_unwind_sp (struct frame_info *next_frame, void **this_cache)
+ppc_frame_unwind_sp(struct frame_info *next_frame, void **this_cache)
 {
   struct ppc_frame_cache *cache;
   ppc_function_properties *props;
   CORE_ADDR this_pc;
 
-  cache = ppc_frame_cache (next_frame, this_cache);
+  cache = ppc_frame_cache(next_frame, this_cache);
 
-  props = ppc_frame_function_properties (next_frame, this_cache);
+  if (cache == NULL) {
+    ; /* ??? */
+  }
+
+  props = ppc_frame_function_properties(next_frame, this_cache);
   if (props == NULL)
-    return frame_unwind_register_unsigned (next_frame, SP_REGNUM);
+    return frame_unwind_register_unsigned(next_frame, SP_REGNUM);
 
-  this_pc = frame_pc_unwind (next_frame);
+  this_pc = frame_pc_unwind(next_frame);
 
   /* When we're early in the prologue neither the stack pointer nor
      the frame pointer have been set yet - they still have the
@@ -632,16 +645,20 @@ ppc_unwind_pc (struct gdbarch *gdbarch, struct frame_info *next_frame)
 }
 
 static void
-ppc_frame_prev_register (struct frame_info *next_frame, void **this_cache,
-			 /* APPLE LOCAL variable opt states.  */
-                         int regnum, enum opt_state *optimizedp,
-                         enum lval_type *lvalp, CORE_ADDR *addrp,
-                         int *realnump, gdb_byte *valuep)
+ppc_frame_prev_register(struct frame_info *next_frame, void **this_cache,
+                        /* APPLE LOCAL variable opt states.  */
+                        int regnum, enum opt_state *optimizedp,
+                        enum lval_type *lvalp, CORE_ADDR *addrp,
+                        int *realnump, gdb_byte *valuep)
 {
-  struct ppc_frame_cache *cache = ppc_frame_cache (next_frame, this_cache);
-  CORE_ADDR *saved_regs = NULL;
+  struct ppc_frame_cache *cache = ppc_frame_cache(next_frame, this_cache);
+  CORE_ADDR *saved_regs = (CORE_ADDR *)NULL;
   ppc_function_properties *props;
-  props = ppc_frame_function_properties (next_frame, this_cache);
+  props = ppc_frame_function_properties(next_frame, this_cache);
+
+  if (props == NULL) {
+    ; /* ??? */
+  }
 
   if (regnum == SP_REGNUM)
     {

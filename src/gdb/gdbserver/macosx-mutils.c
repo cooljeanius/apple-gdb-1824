@@ -608,13 +608,10 @@ macosx_vm_protect_range (task_t task,
 }
 
 static kern_return_t
-macosx_vm_protect_region (task_t task,
-			  mach_vm_address_t region_start,
-			  mach_vm_size_t region_size,
-			  mach_vm_address_t addr,
-			  mach_vm_size_t size,
-			  vm_prot_t prot,
-			  boolean_t set_max)
+macosx_vm_protect_region(task_t task, mach_vm_address_t region_start,
+			 mach_vm_size_t region_size,
+			 mach_vm_address_t addr, mach_vm_size_t size,
+			 vm_prot_t prot, boolean_t set_max)
 {
   kern_return_t kret;
   mach_vm_address_t protect_addr;
@@ -624,29 +621,26 @@ macosx_vm_protect_region (task_t task,
   protect_addr = region_start;
   protect_size = region_size;
 
-  kret = mach_vm_protect (task, protect_addr, protect_size, set_max, prot);
+  kret = mach_vm_protect(task, protect_addr, protect_size, set_max, prot);
 
 #ifdef DEBUG_MACOSX_MUTILS
-  mutils_debug ("macosx_vm_protect_region ( 0x%8.8llx ):  [ 0x%8.8llx - 0x%8.8llx ) %s = %c%c%s => %s\n",
-		(uint64_t) addr,
-		(uint64_t) protect_addr,
-		(uint64_t) (protect_addr + protect_size),
-		set_max ? "max_prot" : "prot",
-		prot & VM_PROT_COPY ? 'c' : '-',
-		prot & VM_PROT_NO_CHANGE ? '!' : '-',
-		g_macosx_protection_strs[prot & 7],
-		kret ? MACH_ERROR_STRING (kret) : "0");
+  mutils_debug("macosx_vm_protect_region ( 0x%8.8llx ):  [ 0x%8.8llx - 0x%8.8llx ) %s = %c%c%s => %s\n",
+               (uint64_t)addr, (uint64_t)protect_addr,
+               (uint64_t)(protect_addr + protect_size),
+               (set_max ? "max_prot" : "prot"),
+               ((prot & VM_PROT_COPY) ? 'c' : '-'),
+               ((prot & VM_PROT_NO_CHANGE) ? '!' : '-'),
+               g_macosx_protection_strs[prot & 7],
+               ((kret ? MACH_ERROR_STRING(kret)) : "0"));
 #endif /* DEBUG_MACOSX_MUTILS */
   return kret;
 }
 
 static kern_return_t
-macosx_get_region_info_both (task_t task,
-			     mach_vm_address_t addr,
-			     mach_vm_address_t *r_start,
-			     mach_vm_size_t *r_size,
-			     vm_prot_t *prot,
-			     vm_prot_t *max_prot)
+macosx_get_region_info_both(task_t task, mach_vm_address_t addr,
+			    mach_vm_address_t *r_start,
+                            mach_vm_size_t *r_size, vm_prot_t *prot,
+			    vm_prot_t *max_prot)
 {
   static int use_short_info = 1;
 
@@ -729,11 +723,10 @@ mach_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
         if ((r_start - memaddr) <= MINUS_INT_MIN)
           {
 #ifdef DEBUG_MACOSX_MUTILS
-            mutils_debug
-              ("First available address near 0x%8.8llx is at 0x%8.8llx; returning\n",
-               (uint64_t)memaddr, (uint64_t)r_start);
+            mutils_debug("First available address near 0x%8.8llx is at 0x%8.8llx; returning\n",
+                         (uint64_t)memaddr, (uint64_t)r_start);
 #endif /* DEBUG_MACOSX_MUTILS */
-            return -(r_start - memaddr);
+            return (int)(-(r_start - memaddr));
           }
         else
           {
@@ -843,15 +836,15 @@ mach_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
         }
       else if (cur_len >= (int)pagesize)
         {
-          int max_len = (r_end - cur_memaddr);
-          int op_len = cur_len;
+          size_t max_len = (size_t)(r_end - cur_memaddr);
+          size_t op_len = cur_len;
           if (op_len > max_len)
             {
               op_len = max_len;
             }
           op_len -= (op_len % pagesize);
           ret = mach_xfer_memory_block(cur_memaddr, cur_myaddr, op_len,
-                                        write, task);
+                                       write, task);
         }
       else
         {

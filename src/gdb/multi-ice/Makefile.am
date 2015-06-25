@@ -2,7 +2,7 @@
 ## Process this file with automake to produce Makefile.in
 
 AUTOMAKE_OPTIONS = 1.11.6 foreign dejagnu no-dist
-## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
+## "cygnus" == "foreign no-dist"
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 ACLOCAL_AMFLAGS = -I../m4 --install
 MULTI_ICE_INCLUDES = @MULTI_ICE_INCLUDES@
@@ -46,7 +46,7 @@ MICE-gdbserverres.o: MICE-gdbserver.rc
 
 MOSTLYCLEANFILES = config.h.in~
 
-DISTCLEANFILES = *~ autoscan.log
+DISTCLEANFILES = *~ autoscan.log .DS_Store
 
 distclean-local:
 	rm -rfv autom4te.cache || rmdir autom4te.cache

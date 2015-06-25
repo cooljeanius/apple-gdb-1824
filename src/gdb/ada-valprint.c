@@ -135,28 +135,28 @@ val_print_packed_array_elements (struct type *type, const gdb_byte *valaddr,
 				 enum val_prettyprint pretty)
 {
   unsigned int i;
-  unsigned int things_printed = 0;
-  unsigned len;
+  unsigned int things_printed = 0U;
+  unsigned long len;
   struct type *elttype;
-  unsigned eltlen;
-  unsigned long bitsize = TYPE_FIELD_BITSIZE (type, 0);
-  struct value *mark = value_mark ();
+  unsigned long eltlen;
+  unsigned long bitsize = TYPE_FIELD_BITSIZE(type, 0);
+  struct value *mark = value_mark();
 
-  elttype = TYPE_TARGET_TYPE (type);
-  eltlen = TYPE_LENGTH (check_typedef (elttype));
+  elttype = TYPE_TARGET_TYPE(type);
+  eltlen = TYPE_LENGTH(check_typedef(elttype));
 
   {
     LONGEST low, high;
-    if (get_discrete_bounds (TYPE_FIELD_TYPE (type, 0), &low, &high) < 0)
-      len = 1;
+    if (get_discrete_bounds(TYPE_FIELD_TYPE(type, 0), &low, &high) < 0)
+      len = 1UL;
     else
-      len = high - low + 1;
+      len = (unsigned long)((high - low) + 1UL);
   }
 
   i = 0;
-  annotate_array_section_begin (i, elttype);
+  annotate_array_section_begin(i, elttype);
 
-  while (i < len && things_printed < print_max)
+  while ((i < len) && (things_printed < print_max))
     {
       struct value *v0, *v1;
       unsigned int i0;
@@ -290,39 +290,39 @@ ui_memcpy (void *dest, const char *buffer, long len)
    a decimal point, and at least one digit before and after the
    point.  We use GNAT format for NaNs and infinities.  */
 static void
-ada_print_floating (const gdb_byte *valaddr, struct type *type,
-		    struct ui_file *stream)
+ada_print_floating(const gdb_byte *valaddr, struct type *type,
+		   struct ui_file *stream)
 {
   char buffer[64];
   char *s, *result;
-  int len;
-  struct ui_file *tmp_stream = mem_fileopen ();
-  struct cleanup *cleanups = make_cleanup_ui_file_delete (tmp_stream);
+  size_t len;
+  struct ui_file *tmp_stream = mem_fileopen();
+  struct cleanup *cleanups = make_cleanup_ui_file_delete(tmp_stream);
 
-  print_floating (valaddr, type, tmp_stream);
-  ui_file_put (tmp_stream, ui_memcpy, buffer);
-  do_cleanups (cleanups);
+  print_floating(valaddr, type, tmp_stream);
+  ui_file_put(tmp_stream, ui_memcpy, buffer);
+  do_cleanups(cleanups);
 
   result = buffer;
-  len = strlen (result);
+  len = strlen(result);
 
   /* Modify for Ada rules.  */
 
-  s = strstr (result, "inf");
+  s = strstr(result, "inf");
   if (s == NULL)
-    s = strstr (result, "Inf");
+    s = strstr(result, "Inf");
   if (s == NULL)
-    s = strstr (result, "INF");
+    s = strstr(result, "INF");
   if (s != NULL)
-    strcpy (s, "Inf");
+    strncpy(s, "Inf", (len + 4UL));
 
   if (s == NULL)
     {
-      s = strstr (result, "nan");
+      s = strstr(result, "nan");
       if (s == NULL)
-	s = strstr (result, "NaN");
+	s = strstr(result, "NaN");
       if (s == NULL)
-	s = strstr (result, "Nan");
+	s = strstr(result, "Nan");
       if (s != NULL)
 	{
 	  s[0] = s[2] = 'N';
@@ -331,16 +331,16 @@ ada_print_floating (const gdb_byte *valaddr, struct type *type,
 	}
     }
 
-  if (s == NULL && strchr (result, '.') == NULL)
+  if (s == NULL && strchr(result, '.') == NULL)
     {
-      s = strchr (result, 'e');
+      s = strchr(result, 'e');
       if (s == NULL)
-	fprintf_filtered (stream, "%s.0", result);
+	fprintf_filtered(stream, "%s.0", result);
       else
-	fprintf_filtered (stream, "%.*s.0%s", (int) (s-result), result, s);
+	fprintf_filtered(stream, "%.*s.0%s", (int)(s-result), result, s);
       return;
     }
-  fprintf_filtered (stream, "%s", result);
+  fprintf_filtered(stream, "%s", result);
 }
 
 void

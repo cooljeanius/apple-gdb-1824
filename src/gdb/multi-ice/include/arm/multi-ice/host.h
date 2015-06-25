@@ -14,8 +14,12 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#include "nm.h"
-#include "xm.h"
+#ifdef GDB_NM_FILE
+# include "nm.h"
+#endif /* GDB_NM_FILE */
+#ifdef GDB_XM_FILE
+# include "xm.h"
+#endif /* GDB_XM_FILE */
 
 #ifndef SEEK_SET
 #  define SEEK_SET  0

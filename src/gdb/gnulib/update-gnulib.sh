@@ -30,38 +30,43 @@
 
 # The list of gnulib modules we are importing in GDB.
 IMPORTED_GNULIB_MODULES="\
-    absolute-header alignof alloca alloca-opt ansi-c++-opt assure autobuild \
-    configmake closedir \
-    dirent dirfd dosname double-slash-root \
+    absolute-header alignof alloca alloca-opt ansi-c++-opt assert assert-h \
+    assure autobuild \
+    chdir-long configmake closedir \
+    dirent dirent-safer dirfd dosname double-slash-root \
     errno error exitfail extensions extern-inline \
-    fileblocks float fnmatch fnmatch-gnu fpieee fpucw frexp frexpl fts \
-    gettext-h gettimeofday git-version-gen gitlog-to-changelog gnu-make \
+    fcntl fcntl-h fcntl-safer fileblocks flexmember float fnmatch fnmatch-gnu \
+    fpieee fpucw frexp frexpl fstatat fts \
+    getpagesize gettext-h gettimeofday git-version-gen gitlog-to-changelog \
+    gnu-make gpl-2.0 \
     havelib host-cpu-c-abi host-os \
-    include_next inline intprops inttypes inttypes-incomplete \
+    ignore-value include_next inline intprops inttypes inttypes-incomplete \
     isnand-nolibm isnanl-nolibm iswctype \
-    largefile ldd localcharset lstat \
+    largefile ldd localcharset locale lstat \
     malloc-gnu malloc-posix manywarnings math mbrtowc mbsinit mbsrtowcs \
     memchr memcmp memmem memmem-simple \
     mempcpy memrchr mkdtemp multiarch \
     nextafter no-c++ nocrash \
     obstack openmp \
-    pathmax pclose popen \
-    readdir readlink realloc-gnu realloc-posix rmdir \
+    pathmax pclose popen putenv \
+    readdir readlink realloc-gnu realloc-posix regex regex-quote \
+    regexprops-generic rmdir \
+    sigaction signal signal-h sigpipe sigpipe-die sigprocmask \
     snippet/_Noreturn snippet/arg-nonnull snippet/c++defs snippet/link-warning \
     snippet/warn-on-use \
     ssize_t stat stat-macros stat-size stat-time stdbool stddef stdint stdlib \
     streq strerror strerror_r-posix strerror-override string strnlen strnlen1 \
-    strstr strstr-simple sys_stat sys_time sys_types \
+    strstr strstr-simple sys_select sys_stat sys_time sys_types sys_wait \
     tempname time \
-    unistd unlink unlink-busy update-copyright \
+    unistd unlink unlink-busy update-copyright usleep \
     vc-list-files verify \
-    warnings wchar wcsncasecmp wctype-h \
+    warnings wchar wcsncasecmp wctype-h winsz-ioctl winsz-termios \
     xalloc xalloc-die xalloc-oversized"
 # (might want to check to see if any of the libiberty/gettext duplicates cause
 # any conflicts...)
 
 # The gnulib commit ID to use for the update.
-GNULIB_COMMIT_SHA1="0f4fa16dfd89eece82848858e327d6320c27e4bf"
+GNULIB_COMMIT_SHA1="b287b621969d5a3f56058ff01e554839814da4e1"
 # (feel free to update if you know that your version works and is newer)
 
 # The expected version number for the various auto tools we will

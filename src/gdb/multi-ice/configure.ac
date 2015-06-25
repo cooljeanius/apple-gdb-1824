@@ -105,7 +105,7 @@ AC_SUBST([MULTI_ICE_PLATFORM_SOURCE])dnl
 # This is the location of the ARM Multi-Ice header files, 
 # and the toolconf library file (for Jim Ingham at least).
 MULTI_ICE_INCLUDES="-I/home/jingham/arm/multi-ice"
-MULTI_ICE_LIBS="-L/home/jingham/arm/multi-ice -ltoolconf"
+MULTI_ICE_LIBS="-L/home/jingham/arm/multi-ice -L. -ltoolconf"
 AC_SUBST([MULTI_ICE_INCLUDES])dnl
 AC_SUBST([MULTI_ICE_LIBS])dnl
 
@@ -129,8 +129,33 @@ AC_PROG_LN_S
 AC_PROG_RANLIB
 
 dnl# Checks for libraries.
-# FIXME: Replace `main' with a function in `-liberty':
-AC_CHECK_LIB([iberty],[main])dnl
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+AC_SUBST([acl_cv_wl])dnl
+
+AC_MSG_CHECKING([for linker flag to verify linked libraries have the correct architecture])
+pre_saved_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-arch_errors_fatal"
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+               [LD_ARCHFLAGS="${acl_cv_wl}-arch_errors_fatal"],[])
+LDFLAGS="${pre_saved_LDFLAGS}"
+if test "x${LD_ARCHFLAGS}" != "x"; then
+  test -n "${LD_ARCHFLAGS}"
+  AC_MSG_RESULT([${LD_ARCHFLAGS}])
+  AC_SUBST([LD_ARCHFLAGS])dnl
+  ## that should be all we need to do with them for now...
+else
+  test -z "${LD_ARCHFLAGS}"
+  AC_MSG_RESULT([none])
+fi
+AC_CHECK_LIB([iberty],[xmalloc],[],[
+  PRE_LIBERTY_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+  AC_CHECK_LIB([iberty],[main])dnl
+  ## reset:
+  LDFLAGS="${PRE_LIBERTY_LDFLAGS}"
+])dnl
 
 dnl# Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
@@ -143,7 +168,7 @@ AC_HEADER_TIOCGWINSZ
 AC_SYS_POSIX_TERMIOS
 unset ac_cv_header_sys_types_h
 AC_CHECK_HEADERS([arpa/inet.h basetsd.h errno.h fcntl.h getopt.h \
-                  intsafe.h limits.h locale.h \
+                  intsafe.h limits.h locale.h mach/kmod.h \
                   netdb.h netinet/in.h netinet/tcp.h \
                   signal.h stdarg.h stddef.h stdio.h \
                   sys/file.h sys/ioctl.h sys/signal.h sys/time.h \
@@ -225,14 +250,15 @@ build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
 -Wmissing-include-dirs -Woverflow -Woverlength-strings -Woverride-init \
 -Wpragmas -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
--Wtrampolines -Wunknown-pragmas -Wnormalized=nfc \
+-Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc \
 -Wunsuffixed-float-constants -Wstrict-overflow -Wjump-misses-init \
--Wno-format-security -Wno-format"
+-Wmisleading-indentation -Wno-format-security -Wno-format"
 
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
     # APPLE_LOCAL
-    build_warnings="${build_warnings} -Wextra-tokens -Wnewline-eof"
+    build_warnings="${build_warnings} -Wextra-tokens -Wnewline-eof \
+-Wshorten-64-to-32 -std=gnu89"
   ;;
 esac
 
@@ -250,6 +276,7 @@ else
 fi
 
 WARN_CFLAGS=""
+BAD_WARN_CFLAGS=""
 WERROR_CFLAGS=""
 if test "x${build_warnings}" != "x" -a "x${GCC}" = "xyes"
 then
@@ -262,11 +289,16 @@ then
 	    saved_CFLAGS="${CFLAGS}"
 	    CFLAGS="${CFLAGS} ${w}"
 	    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
-                              [WARN_CFLAGS="${WARN_CFLAGS} ${w}"],[])
+                              [WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
+                              [BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
 	    CFLAGS="${saved_CFLAGS}"
 	esac
     done
     AC_MSG_RESULT([using: ${WARN_CFLAGS}${WERROR_CFLAGS}])
+    if test "x${BAD_WARN_CFLAGS}" != "x"; then
+      test -n "${BAD_WARN_CFLAGS}"
+      AC_MSG_WARN([compiler failed to accept: ${BAD_WARN_CFLAGS}])
+    fi
 fi
 AC_SUBST([WARN_CFLAGS])dnl
 AC_SUBST([WERROR_CFLAGS])dnl

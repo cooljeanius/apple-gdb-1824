@@ -545,10 +545,10 @@ child_xfer_partial(struct target_ops *ops, enum target_object object,
     {
     case TARGET_OBJECT_MEMORY:
       if (readbuf)
-	return child_xfer_memory(offset, readbuf, len, 0/*write*/,
+	return child_xfer_memory(offset, readbuf, (int)len, 0/*write*/,
 				 NULL, ops);
       if (writebuf)
-	return child_xfer_memory(offset, (gdb_byte *)writebuf, len,
+	return child_xfer_memory(offset, (gdb_byte *)writebuf, (int)len,
                                  1/*write*/, NULL, ops);
       return -1;
 

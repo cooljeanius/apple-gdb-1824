@@ -690,7 +690,8 @@ remote_fileio_func_read(char *buf)
   long target_fd, num;
   LONGEST lnum;
   CORE_ADDR ptrval;
-  int fd, ret, retlength;
+  int fd;
+  long ret, retlength;
   char *buffer;
   size_t length;
   off_t old_offset, new_offset;
@@ -730,9 +731,9 @@ remote_fileio_func_read(char *buf)
       case FIO_FD_CONSOLE_IN:
 	{
 	  static char *remaining_buf = NULL;
-	  static size_t remaining_length = 0;
+	  static size_t remaining_length = 0UL;
 
-	  buffer = (char *)xmalloc(32768);
+	  buffer = (char *)xmalloc(32768UL);
 	  if (remaining_buf)
 	    {
 	      remote_fio_no_longjmp = 1;
@@ -754,52 +755,53 @@ remote_fileio_func_read(char *buf)
 	    }
 	  else
 	    {
-	      ret = ui_file_read (gdb_stdtargin, buffer, 32767);
+	      ret = ui_file_read(gdb_stdtargin, buffer, 32767);
 	      remote_fio_no_longjmp = 1;
-	      if (ret > 0 && (size_t)ret > length)
+	      if ((ret > 0L) && ((size_t)ret > length))
 		{
-		  remaining_buf = (char *) xmalloc (ret - length);
-		  remaining_length = ret - length;
-		  memcpy (remaining_buf, buffer + length, remaining_length);
+		  remaining_buf = (char *)xmalloc(ret - length);
+		  remaining_length = (ret - length);
+		  memcpy(remaining_buf, (buffer + length),
+                         remaining_length);
 		  ret = length;
 		}
 	    }
 	}
 	break;
       default:
-	buffer = (char *) xmalloc (length);
+	buffer = (char *)xmalloc(length);
 	/* POSIX defines EINTR behaviour of read in a weird way.  It's allowed
 	   for read() to return -1 even if "some" bytes have been read.  It
 	   has been corrected in SUSv2 but that doesn't help us much...
 	   Therefore a complete solution must check how many bytes have been
 	   read on EINTR to return a more reliable value to the target */
-	old_offset = lseek (fd, 0, SEEK_CUR);
+	old_offset = lseek(fd, 0L, SEEK_CUR);
 	remote_fio_no_longjmp = 1;
-	ret = read (fd, buffer, length);
-	if (ret < 0 && errno == EINTR)
+	ret = read(fd, buffer, length);
+	if ((ret < 0) && errno == EINTR)
 	  {
-	    new_offset = lseek (fd, 0, SEEK_CUR);
+	    new_offset = lseek(fd, 0L, SEEK_CUR);
 	    /* If some data has been read, return the number of bytes read.
 	       The Ctrl-C flag is set in remote_fileio_reply() anyway */
 	    if (old_offset != new_offset)
-	      ret = new_offset - old_offset;
+	      ret = (long)(new_offset - old_offset);
 	  }
 	break;
     }
 
   if (ret > 0)
     {
-      retlength = remote_fileio_write_bytes (ptrval, buffer, ret);
+      retlength = remote_fileio_write_bytes(ptrval, buffer, ret);
       if (retlength != ret)
 	ret = -1; /* errno has been set to EIO in remote_fileio_write_bytes() */
     }
 
-  if (ret < 0)
-    remote_fileio_return_errno (-1);
+  if (ret < 0L)
+    remote_fileio_return_errno(-1);
   else
-    remote_fileio_return_success (ret);
+    remote_fileio_return_success(ret);
 
-  xfree (buffer);
+  xfree(buffer);
 }
 
 static void
@@ -876,7 +878,7 @@ remote_fileio_func_write(char *buf)
 }
 
 static void
-remote_fileio_func_lseek (char *buf)
+remote_fileio_func_lseek(char *buf)
 {
   long num;
   LONGEST lnum;
@@ -884,49 +886,49 @@ remote_fileio_func_lseek (char *buf)
   off_t offset, ret;
 
   /* 1. Parameter: file descriptor */
-  if (remote_fileio_extract_int (&buf, &num))
+  if (remote_fileio_extract_int(&buf, &num))
     {
-      remote_fileio_ioerror ();
+      remote_fileio_ioerror();
       return;
     }
-  fd = remote_fileio_map_fd ((int) num);
+  fd = remote_fileio_map_fd((int)num);
   if (fd == FIO_FD_INVALID)
     {
-      remote_fileio_badfd ();
+      remote_fileio_badfd();
       return;
     }
   else if (fd == FIO_FD_CONSOLE_IN || fd == FIO_FD_CONSOLE_OUT)
     {
-      remote_fileio_reply (-1, FILEIO_ESPIPE);
+      remote_fileio_reply(-1, FILEIO_ESPIPE);
       return;
     }
 
   /* 2. Parameter: offset */
-  if (remote_fileio_extract_long (&buf, &lnum))
+  if (remote_fileio_extract_long(&buf, &lnum))
     {
-      remote_fileio_ioerror ();
+      remote_fileio_ioerror();
       return;
     }
-  offset = (off_t) lnum;
+  offset = (off_t)lnum;
   /* 3. Parameter: flag */
-  if (remote_fileio_extract_int (&buf, &num))
+  if (remote_fileio_extract_int(&buf, &num))
     {
-      remote_fileio_ioerror ();
+      remote_fileio_ioerror();
       return;
     }
-  if (remote_fileio_seek_flag_to_host (num, &flag))
+  if (remote_fileio_seek_flag_to_host(num, &flag))
     {
-      remote_fileio_reply (-1, FILEIO_EINVAL);
+      remote_fileio_reply(-1, FILEIO_EINVAL);
       return;
     }
 
   remote_fio_no_longjmp = 1;
-  ret = lseek (fd, offset, flag);
+  ret = lseek(fd, offset, flag);
 
-  if (ret == (off_t) -1)
-    remote_fileio_return_errno (-1);
+  if (ret == (off_t)-1L)
+    remote_fileio_return_errno(-1);
   else
-    remote_fileio_return_success (ret);
+    remote_fileio_return_success((int)ret);
 }
 
 static void

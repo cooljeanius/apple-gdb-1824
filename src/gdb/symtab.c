@@ -311,15 +311,16 @@ got_symtab:
 /* APPLE LOCAL begin */
 
 static struct symtab **
-add_symtab_to_array (struct symtab **arr, void *sym,
-		     int *num_elem, int *max_num)
+add_symtab_to_array(struct symtab **arr, void *sym,
+		    int *num_elem, int *max_num)
 {
-  if (*num_elem == *max_num - 1)
+  if (*num_elem == (*max_num - 1))
     {
-      *max_num = (*max_num) * 2;
-      arr = xrealloc (arr, (*max_num) * sizeof (struct symtab *));
+      *max_num = ((*max_num) * 2);
+      arr = ((struct symtab **)
+             xrealloc(arr, ((*max_num) * sizeof(struct symtab *))));
     }
-  arr[(*num_elem)++] = sym;
+  arr[(*num_elem)++] = (struct symtab *)sym;
   arr[(*num_elem)] = NULL;
   return arr;
 }
@@ -531,15 +532,16 @@ lookup_partial_symtab (const char *name)
    match NAME.  */
 
 static struct partial_symtab **
-add_partial_symtab_to_array (struct partial_symtab **arr, void *sym,
-		     int *num_elem, int *max_num)
+add_partial_symtab_to_array(struct partial_symtab **arr, void *sym,
+                            int *num_elem, int *max_num)
 {
-  if (*num_elem == *max_num - 1)
+  if (*num_elem == (*max_num - 1))
     {
-      *max_num = (*max_num) * 2;
-      arr = xrealloc (arr, (*max_num) * sizeof (struct partial_symtab *));
+      *max_num = ((*max_num) * 2);
+      arr = ((struct partial_symtab **)
+             xrealloc(arr, (*max_num) * sizeof(struct partial_symtab *)));
     }
-  arr[(*num_elem)++] = sym;
+  arr[(*num_elem)++] = (struct partial_symtab *)sym;
   arr[(*num_elem)] = NULL;
   return arr;
 }
@@ -775,16 +777,17 @@ symbol_init_language_specific (struct general_symbol_info *gsymbol,
    name.  The entry is hashed via just the mangled name.  */
 
 static void
-create_demangled_names_hash (struct objfile *objfile)
+create_demangled_names_hash(struct objfile *objfile)
 {
   /* Choose 256 as the starting size of the hash table, somewhat arbitrarily.
      The hash table code will round this up to the next prime number.
      Choosing a much larger table size wastes memory, and saves only about
      1% in symbol reading.  */
 
-  objfile->demangled_names_hash = htab_create_alloc
-    (256, htab_hash_string, (int (*) (const void *, const void *)) streq,
-     NULL, xcalloc, xfree);
+  objfile->demangled_names_hash =
+    htab_create_alloc(256, htab_hash_string,
+                      (int (*)(const void *, const void *))streq,
+                      NULL, xcalloc, xfree);
 }
 
 /* Try to determine the demangled name for a symbol, based on the
@@ -794,8 +797,8 @@ create_demangled_names_hash (struct objfile *objfile)
    by the demangler and should be xfree'd.  */
 
 static char *
-symbol_find_demangled_name (struct general_symbol_info *gsymbol,
-			    const char *mangled)
+symbol_find_demangled_name(struct general_symbol_info *gsymbol,
+			   const char *mangled)
 {
   char *demangled = NULL;
 
@@ -807,8 +810,7 @@ symbol_find_demangled_name (struct general_symbol_info *gsymbol,
       || gsymbol->language == language_objcplus
       || gsymbol->language == language_auto)
     {
-      demangled =
-	objc_demangle (mangled, 0);
+      demangled = objc_demangle(mangled, 0);
       if (demangled != NULL)
 	{
 	  gsymbol->language = language_objc;
@@ -820,8 +822,7 @@ symbol_find_demangled_name (struct general_symbol_info *gsymbol,
       || gsymbol->language == language_objcplus
       || gsymbol->language == language_auto)
     {
-      demangled =
-        cplus_demangle (mangled, DMGL_PARAMS | DMGL_ANSI);
+      demangled = cplus_demangle(mangled, (DMGL_PARAMS | DMGL_ANSI));
 
       /* APPLE LOCAL: N.B. We are forcing the language to
 	 C++ even for ObjC++ here.  This is so we will know
@@ -833,11 +834,21 @@ symbol_find_demangled_name (struct general_symbol_info *gsymbol,
 	  return demangled;
 	}
     }
+  if (gsymbol->language == language_objcplus
+      || gsymbol->language == language_auto)
+    {
+      demangled = objcplus_demangle(mangled, (DMGL_PARAMS | DMGL_ANSI));
+
+      if (demangled != NULL)
+        {
+          gsymbol->language = language_objcplus;
+          return demangled;
+        }
+    }
   if (gsymbol->language == language_java)
     {
-      demangled =
-        cplus_demangle (mangled,
-                        DMGL_PARAMS | DMGL_ANSI | DMGL_JAVA);
+      demangled = cplus_demangle(mangled,
+                                 (DMGL_PARAMS | DMGL_ANSI | DMGL_JAVA));
       if (demangled != NULL)
 	{
 	  gsymbol->language = language_java;
@@ -873,20 +884,21 @@ symbol_find_demangled_name (struct general_symbol_info *gsymbol,
 #define JAVA_PREFIX_LEN 8
 
 void
-symbol_set_names (struct general_symbol_info *gsymbol,
-		  const char *linkage_name, int len, struct objfile *objfile)
+symbol_set_names(struct general_symbol_info *gsymbol,
+		 const char *linkage_name, int len,
+                 struct objfile *objfile)
 {
   char **slot;
-  /* A 0-terminated copy of the linkage name.  */
+  /* A 0-terminated copy of the linkage name: */
   const char *linkage_name_copy;
   /* A copy of the linkage name that might have a special Java prefix
      added to it, for use when looking names up in the hash table.  */
   const char *lookup_name;
-  /* The length of lookup_name.  */
-  int lookup_len;
+  /* The length of lookup_name: */
+  size_t lookup_len;
 
   if (objfile->demangled_names_hash == NULL)
-    create_demangled_names_hash (objfile);
+    create_demangled_names_hash(objfile);
 
   /* The stabs reader generally provides names that are not
      NUL-terminated; most of the other readers don't do this, so we
@@ -894,23 +906,23 @@ symbol_set_names (struct general_symbol_info *gsymbol,
   if (gsymbol->language == language_java)
     {
       char *alloc_name;
-      lookup_len = len + JAVA_PREFIX_LEN;
+      lookup_len = (len + JAVA_PREFIX_LEN);
 
-      alloc_name = alloca (lookup_len + 1);
-      memcpy (alloc_name, JAVA_PREFIX, JAVA_PREFIX_LEN);
-      memcpy (alloc_name + JAVA_PREFIX_LEN, linkage_name, len);
+      alloc_name = (char *)alloca(lookup_len + 1UL);
+      memcpy(alloc_name, JAVA_PREFIX, JAVA_PREFIX_LEN);
+      memcpy((alloc_name + JAVA_PREFIX_LEN), linkage_name, len);
       alloc_name[lookup_len] = '\0';
 
       lookup_name = alloc_name;
-      linkage_name_copy = alloc_name + JAVA_PREFIX_LEN;
+      linkage_name_copy = (alloc_name + JAVA_PREFIX_LEN);
     }
   else if (linkage_name[len] != '\0')
     {
       char *alloc_name;
       lookup_len = len;
 
-      alloc_name = alloca (lookup_len + 1);
-      memcpy (alloc_name, linkage_name, len);
+      alloc_name = (char *)alloca(lookup_len + 1UL);
+      memcpy(alloc_name, linkage_name, len);
       alloc_name[lookup_len] = '\0';
 
       lookup_name = alloc_name;
@@ -923,41 +935,42 @@ symbol_set_names (struct general_symbol_info *gsymbol,
       linkage_name_copy = linkage_name;
     }
 
-  slot = (char **) htab_find_slot (objfile->demangled_names_hash,
-				   lookup_name, INSERT);
+  slot = (char **)htab_find_slot(objfile->demangled_names_hash,
+                                 lookup_name, INSERT);
 
-  /* If this name is not in the hash table, add it.  */
+  /* If this name is not in the hash table, then add it: */
   if (*slot == NULL)
     {
-      char *demangled_name = symbol_find_demangled_name (gsymbol,
-							 linkage_name_copy);
-      int demangled_len = demangled_name ? strlen (demangled_name) : 0;
+      char *demangled_name = symbol_find_demangled_name(gsymbol,
+                                                        linkage_name_copy);
+      size_t demangled_len = (demangled_name ? strlen(demangled_name) : 0);
 
       /* If there is a demangled name, place it right after the mangled name.
 	 Otherwise, just place a second zero byte after the end of the mangled
 	 name.  */
-      *slot = obstack_alloc (&objfile->objfile_obstack,
-			     lookup_len + demangled_len + 2);
-      memcpy (*slot, lookup_name, lookup_len + 1);
+      *slot = (char *)obstack_alloc(&objfile->objfile_obstack,
+                                    (lookup_len + demangled_len + 2UL));
+      memcpy(*slot, lookup_name, (lookup_len + 1UL));
       if (demangled_name != NULL)
 	{
-	  memcpy (*slot + lookup_len + 1, demangled_name, demangled_len + 1);
-	  xfree (demangled_name);
+	  memcpy((*slot + lookup_len + 1UL), demangled_name,
+                 (demangled_len + 1UL));
+	  xfree(demangled_name);
 	}
       else
-	(*slot)[lookup_len + 1] = '\0';
+	(*slot)[lookup_len + 1UL] = '\0';
     }
   else
     {
       /* APPLE LOCAL: We already have this name in the demangled name hash
          but we still need to set the language in the minsym.  */
-      xfree (symbol_find_demangled_name (gsymbol, linkage_name_copy));
+      xfree(symbol_find_demangled_name(gsymbol, linkage_name_copy));
     }
 
-  gsymbol->name = *slot + lookup_len - len;
-  if ((*slot)[lookup_len + 1] != '\0')
-    gsymbol->language_specific.cplus_specific.demangled_name
-      = &(*slot)[lookup_len + 1];
+  gsymbol->name = (*slot + lookup_len - len);
+  if ((*slot)[lookup_len + 1UL] != '\0')
+    gsymbol->language_specific.cplus_specific.demangled_name =
+      &(*slot)[lookup_len + 1UL];
   else
     gsymbol->language_specific.cplus_specific.demangled_name = NULL;
 }
@@ -1066,9 +1079,9 @@ symbol_search_name (const struct general_symbol_info *gsymbol)
     return symbol_natural_name (gsymbol);
 }
 
-/* Initialize the structure fields to zero values.  */
+/* Initialize the structure fields to zero values: */
 void
-init_sal (struct symtab_and_line *sal)
+init_sal(struct symtab_and_line *sal)
 {
   sal->symtab = 0;
   sal->section = 0;
@@ -1076,7 +1089,7 @@ init_sal (struct symtab_and_line *sal)
   sal->pc = 0;
   sal->end = 0;
   /* APPLE LOCAL begin subroutine inlining  */
-  sal->entry_type = 0;
+  sal->entry_type = (enum line_table_entry_type)0;
   sal->next = 0;
   /* APPLE LOCAL end subroutine inlinine  */
 }
@@ -1474,23 +1487,23 @@ fixup_psymbol_section (struct partial_symbol *psym, struct objfile *objfile)
    which need to be xfree()'d individually by the caller.  */
 
 int
-lookup_symbol_all (const char *name, const struct block *block,
-		   const domain_enum domain, int *is_a_field_of_this,
-		   struct symtab **symtab, struct symbol_search **sym_list)
+lookup_symbol_all(const char *name, const struct block *block,
+		  const domain_enum domain, int *is_a_field_of_this,
+		  struct symtab **symtab, struct symbol_search **sym_list)
 {
   char *demangled_name = NULL;
   const char *modified_name = NULL;
   const char *mangled_name = NULL;
-  struct symbol *returnval = NULL;
+  struct symbol *returnval = (struct symbol *)NULL;
 
   modified_name = name;
 
-  /* If we are using C++ or Java, demangle the name before doing a lookup, so
-     we can always binary search. */
+  /* If we are using C++ or Java, demangle the name before doing a lookup,
+   * so that we can always binary search: */
   if (current_language->la_language == language_cplus ||
       current_language->la_language == language_objcplus)
     {
-      demangled_name = cplus_demangle (name, DMGL_ANSI | DMGL_PARAMS);
+      demangled_name = cplus_demangle(name, (DMGL_ANSI | DMGL_PARAMS));
       if (demangled_name)
 	{
 	  mangled_name = name;
@@ -1499,8 +1512,8 @@ lookup_symbol_all (const char *name, const struct block *block,
     }
   else if (current_language->la_language == language_java)
     {
-      demangled_name = cplus_demangle (name,
-		      		       DMGL_ANSI | DMGL_PARAMS | DMGL_JAVA);
+      demangled_name = cplus_demangle(name,
+		      		      DMGL_ANSI | DMGL_PARAMS | DMGL_JAVA);
       if (demangled_name)
 	{
 	  mangled_name = name;
@@ -1511,12 +1524,13 @@ lookup_symbol_all (const char *name, const struct block *block,
   if (case_sensitivity == case_sensitive_off)
     {
       char *copy;
-      int len, i;
+      size_t len;
+      int i;
 
-      len = strlen (name);
-      copy = (char *) alloca (len + 1);
-      for (i= 0; i < len; i++)
-        copy[i] = tolower (name[i]);
+      len = strlen(name);
+      copy = (char *)alloca(len + 1UL);
+      for (i = 0; i < (int)len; i++)
+        copy[i] = tolower(name[i]);
       copy[len] = 0;
       modified_name = copy;
     }
@@ -1524,39 +1538,43 @@ lookup_symbol_all (const char *name, const struct block *block,
   if (current_language->la_language == language_c
       || current_language->la_language == language_objc)
     {
-      const struct block *static_block = block_static_block (block);
+      const struct block *static_block = block_static_block(block);
       if (static_block != NULL)
 	{
-	  *sym_list = lookup_block_symbol_all (static_block, modified_name,
-                                               mangled_name, domain);
-	  if (*sym_list != NULL
-	      && *symtab == NULL)
+	  *sym_list = lookup_block_symbol_all(static_block, modified_name,
+                                              mangled_name, domain);
+	  if ((*sym_list != NULL) && *symtab == NULL)
 	    *symtab = (*sym_list)->symtab;
 	  if (*sym_list)
-	    returnval = (*sym_list)->symbol;
+            {
+              returnval = (*sym_list)->symbol;
+              if (returnval == (struct symbol *)NULL) {
+                ; /* ??? */
+              }
+            }
 	}
     }
 
-  /* APPLE LOCAL begin radar 6366048 search *ALL* symbols  bp matches.  */
-  lookup_symbol_aux_symtabs (GLOBAL_BLOCK, modified_name,
+  /* APPLE LOCAL begin radar 6366048 search *ALL* symbols  bp matches: */
+  lookup_symbol_aux_symtabs(GLOBAL_BLOCK, modified_name,
+			    mangled_name, domain, symtab,
+			    sym_list, 1);
+
+  lookup_symbol_aux_symtabs(STATIC_BLOCK, modified_name,
+			    mangled_name, domain, symtab,
+			    sym_list, 1);
+
+  lookup_symbol_aux_psymtabs(GLOBAL_BLOCK, modified_name,
 			     mangled_name, domain, symtab,
 			     sym_list, 1);
 
-  lookup_symbol_aux_symtabs (STATIC_BLOCK, modified_name,
+  lookup_symbol_aux_psymtabs(STATIC_BLOCK, modified_name,
 			     mangled_name, domain, symtab,
 			     sym_list, 1);
-
-  lookup_symbol_aux_psymtabs (GLOBAL_BLOCK, modified_name,
-			      mangled_name, domain, symtab,
-			      sym_list, 1);
-
-  lookup_symbol_aux_psymtabs (STATIC_BLOCK, modified_name,
-			      mangled_name, domain, symtab,
-			      sym_list, 1);
   /* APPLE LOCAL end radar 6366048 search *ALL* symbols  bp matches.  */
 
   if (demangled_name)
-    xfree (demangled_name);
+    xfree(demangled_name);
 
   if (*sym_list)
     {
@@ -2596,10 +2614,10 @@ lookup_transparent_type (const char *name)
    global blocks.  */
 
 struct type *
-basic_lookup_transparent_type (const char *name)
+basic_lookup_transparent_type(const char *name)
 {
   struct symbol *sym;
-  struct symtab *s = NULL;
+  struct symtab *s = (struct symtab *)NULL;
   struct partial_symtab *ps;
   struct blockvector *bv;
   struct objfile *objfile;
@@ -2610,112 +2628,125 @@ basic_lookup_transparent_type (const char *name)
      of the desired name as a global, then do psymtab-to-symtab
      conversion on the fly and return the found symbol.  */
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Waddress"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
   /* APPLE LOCAL fix-and-continue */
-  ALL_SYMTABS_INCL_OBSOLETED (objfile, s)
+  ALL_SYMTABS_INCL_OBSOLETED(objfile, s)
   {
-    bv = BLOCKVECTOR (s);
-    block = BLOCKVECTOR_BLOCK (bv, GLOBAL_BLOCK);
-    sym = lookup_block_symbol (block, name, NULL, STRUCT_DOMAIN);
+    bv = BLOCKVECTOR(s);
+    block = BLOCKVECTOR_BLOCK(bv, GLOBAL_BLOCK);
+    sym = lookup_block_symbol(block, name, NULL, STRUCT_DOMAIN);
     /* APPLE LOCAL fix-and-continue */
-    if (sym && !TYPE_IS_OPAQUE (SYMBOL_TYPE (sym)) && !SYMBOL_OBSOLETED (sym))
+    if (sym && !TYPE_IS_OPAQUE(SYMBOL_TYPE(sym)) && !SYMBOL_OBSOLETED(sym))
       {
-	return SYMBOL_TYPE (sym);
+	return SYMBOL_TYPE(sym);
       }
   }
 
-  ALL_PSYMTABS (objfile, ps)
+  ALL_PSYMTABS(objfile, ps)
   {
-    if (!ps->readin && lookup_partial_symbol (ps, name, NULL,
-					      1, STRUCT_DOMAIN))
+    if (!ps->readin && lookup_partial_symbol(ps, name, NULL, 1,
+                                             STRUCT_DOMAIN))
       {
         if (info_verbose)
-          printf_filtered ("Looking for type '%s': ", name);
-	s = PSYMTAB_TO_SYMTAB (ps);
-	bv = BLOCKVECTOR (s);
-	block = BLOCKVECTOR_BLOCK (bv, GLOBAL_BLOCK);
-	sym = lookup_block_symbol (block, name, NULL, STRUCT_DOMAIN);
+          printf_filtered("Looking for type '%s': ", name);
+	s = PSYMTAB_TO_SYMTAB(ps);
+	bv = BLOCKVECTOR(s);
+	block = BLOCKVECTOR_BLOCK(bv, GLOBAL_BLOCK);
+	sym = lookup_block_symbol(block, name, NULL, STRUCT_DOMAIN);
         /* APPLE LOCAL fix-and-continue */
-	if (!sym || SYMBOL_OBSOLETED (sym))
+	if (!sym || SYMBOL_OBSOLETED(sym))
 	  {
-	    /* This shouldn't be necessary, but as a last resort
+	    /* This should NOT be necessary, but as a last resort
 	     * try looking in the statics even though the psymtab
-	     * claimed the symbol was global. It's possible that
-	     * the psymtab gets it wrong in some cases.
-	     */
-	    block = BLOCKVECTOR_BLOCK (bv, STATIC_BLOCK);
-	    sym = lookup_block_symbol (block, name, NULL, STRUCT_DOMAIN);
+	     * claimed the symbol was global.  It is possible that
+	     * the psymtab gets it wrong in some cases: */
+	    block = BLOCKVECTOR_BLOCK(bv, STATIC_BLOCK);
+	    sym = lookup_block_symbol(block, name, NULL, STRUCT_DOMAIN);
             /* APPLE LOCAL fix-and-continue */
-	    if (!sym || SYMBOL_OBSOLETED (sym))
+	    if (!sym || SYMBOL_OBSOLETED(sym))
 	      {
-		complaint (&symfile_complaints,
-			   "Internal: global symbol `%s' found in %s psymtab but not in symtab.\n\
+		complaint(&symfile_complaints, ("\
+Internal: global symbol `%s' found in %s psymtab but not in symtab.\n\
 %s may be an inlined function, or may be a template function\n\
-(if a template, try specifying an instantiation: %s<type>).",
-		           name, ps->filename, name, name);
+(if a template, try specifying an instantiation: %s<type>)."),
+                          name, ps->filename, name, name);
 		continue;
 	      }
 	  }
-	if (!TYPE_IS_OPAQUE (SYMBOL_TYPE (sym)))
-	  return SYMBOL_TYPE (sym);
+	if (!TYPE_IS_OPAQUE(SYMBOL_TYPE(sym)))
+	  return SYMBOL_TYPE(sym);
       }
   }
 
   /* Now search the static file-level symbols.
-     Not strictly correct, but more useful than an error.
-     Do the symtab's first, then
-     check the psymtab's. If a psymtab indicates the existence
-     of the desired name as a file-level static, then do psymtab-to-symtab
-     conversion on the fly and return the found symbol.
-   */
+   * Not strictly correct, but more useful than an error.
+   * Do the symtab's first, then check the psymtab's.  If a psymtab
+   * indicates the existence of the desired name as a file-level static,
+   * then do psymtab-to-symtab conversion on the fly, and return the found
+   * symbol.  */
 
   /* APPLE LOCAL fix-and-continue */
-  ALL_SYMTABS_INCL_OBSOLETED (objfile, s)
+  ALL_SYMTABS_INCL_OBSOLETED(objfile, s)
   {
-    bv = BLOCKVECTOR (s);
-    block = BLOCKVECTOR_BLOCK (bv, STATIC_BLOCK);
-    sym = lookup_block_symbol (block, name, NULL, STRUCT_DOMAIN);
+    bv = BLOCKVECTOR(s);
+    block = BLOCKVECTOR_BLOCK(bv, STATIC_BLOCK);
+    sym = lookup_block_symbol(block, name, NULL, STRUCT_DOMAIN);
     /* APPLE LOCAL fix-and-continue */
-    if (sym && !TYPE_IS_OPAQUE (SYMBOL_TYPE (sym)) && !SYMBOL_OBSOLETED (sym))
+    if (sym && !TYPE_IS_OPAQUE(SYMBOL_TYPE(sym)) && !SYMBOL_OBSOLETED(sym))
       {
-	return SYMBOL_TYPE (sym);
+	return SYMBOL_TYPE(sym);
       }
   }
 
-  ALL_PSYMTABS (objfile, ps)
+  ALL_PSYMTABS(objfile, ps)
   {
-    if (!ps->readin && lookup_partial_symbol (ps, name, NULL, 0, STRUCT_DOMAIN))
+    if (!ps->readin && lookup_partial_symbol(ps, name, NULL, 0, STRUCT_DOMAIN))
       {
         if (info_verbose)
-          printf_filtered ("Looking for type '%s': ", name);
-	s = PSYMTAB_TO_SYMTAB (ps);
-	bv = BLOCKVECTOR (s);
-	block = BLOCKVECTOR_BLOCK (bv, STATIC_BLOCK);
-	sym = lookup_block_symbol (block, name, NULL, STRUCT_DOMAIN);
+          printf_filtered("Looking for type '%s': ", name);
+	s = PSYMTAB_TO_SYMTAB(ps);
+	bv = BLOCKVECTOR(s);
+	block = BLOCKVECTOR_BLOCK(bv, STATIC_BLOCK);
+	sym = lookup_block_symbol(block, name, NULL, STRUCT_DOMAIN);
         /* APPLE LOCAL fix-and-continue */
-	if (!sym || SYMBOL_OBSOLETED (sym))
+	if (!sym || SYMBOL_OBSOLETED(sym))
 	  {
-	    /* This shouldn't be necessary, but as a last resort
+	    /* This should NOT be necessary, but as a last resort,
 	     * try looking in the globals even though the psymtab
-	     * claimed the symbol was static. It's possible that
-	     * the psymtab gets it wrong in some cases.
-	     */
-	    block = BLOCKVECTOR_BLOCK (bv, GLOBAL_BLOCK);
-	    sym = lookup_block_symbol (block, name, NULL, STRUCT_DOMAIN);
+	     * claimed the symbol was static.  It is possible that
+	     * the psymtab gets it wrong in some cases: */
+	    block = BLOCKVECTOR_BLOCK(bv, GLOBAL_BLOCK);
+	    sym = lookup_block_symbol(block, name, NULL, STRUCT_DOMAIN);
             /* APPLE LOCAL fix-and-continue */
-	    if (!sym || SYMBOL_OBSOLETED (sym))
+	    if (!sym || SYMBOL_OBSOLETED(sym))
 	      {
-		complaint (&symfile_complaints, "Internal: static symbol `%s' found in %s psymtab but not in symtab.\n\
+		complaint(&symfile_complaints, ("\
+Internal: static symbol `%s' found in %s psymtab but not in symtab.\n\
 %s may be an inlined function, or may be a template function\n\
-(if a template, try specifying an instantiation: %s<type>).",
-		     name, ps->filename, name, name);
+(if a template, try specifying an instantiation: %s<type>)."),
+                          name, ps->filename, name, name);
 		continue;
 	      }
 	  }
-	if (!TYPE_IS_OPAQUE (SYMBOL_TYPE (sym)))
-	  return SYMBOL_TYPE (sym);
+	if (!TYPE_IS_OPAQUE(SYMBOL_TYPE(sym)))
+	  return SYMBOL_TYPE(sym);
       }
   }
-  return (struct type *) 0;
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
+  return (struct type *)0;
 }
 
 
@@ -4964,7 +4995,7 @@ rbreak_command(char *regexp, int from_tty)
       if (p->msymbol == NULL)
 	{
 	  char *shlib_ptr = NULL;
-	  int shlib_len = 0;
+	  size_t shlib_len = 0UL;
 
 	  if ((p->symtab->objfile != NULL) && (p->symtab->objfile->name != NULL))
 	    {
@@ -4989,7 +5020,9 @@ rbreak_command(char *regexp, int from_tty)
 	  if (shlib_ptr != NULL)
 	    {
 	      strcpy(string, "-shlib \"");
-	      strlcat(string, p->symtab->objfile->name, 4096);
+              /* FIXME: not sure if min or max is better for len here: */
+	      strlcat(string, p->symtab->objfile->name,
+                      max(shlib_len, 4096UL));
 	      strcat(string, "\" \"");
 	    }
 	  else
@@ -4999,7 +5032,9 @@ rbreak_command(char *regexp, int from_tty)
 
 	  strcat(string, p->symtab->filename);
 	  strcat(string, ":");
-	  strlcat(string, SYMBOL_LINKAGE_NAME (p->symbol), 4096);
+          /* FIXME: not sure if min or max is better for len here: */
+	  strlcat(string, SYMBOL_LINKAGE_NAME(p->symbol),
+                  max(shlib_len, 4096UL));
 	  strcat(string, "\"");
 	  /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps.  */
 	  rbr_break_command(string, from_tty, 0);
@@ -5014,8 +5049,8 @@ rbreak_command(char *regexp, int from_tty)
              some random ObjC selectors.
 	     Also add -shlib so we do NOT move all the breakpoints to the
 	     same symbol...  */
-	  const char *shlib_ptr = NULL;
-	  int shlib_len = 0;
+	  const char *shlib_ptr = (const char *)NULL;
+	  size_t shlib_len = 0UL;
 
 	  if ((p->msymbol->ginfo.bfd_section != NULL)
 	      && (p->msymbol->ginfo.bfd_section->owner != NULL)
@@ -5039,13 +5074,18 @@ rbreak_command(char *regexp, int from_tty)
 	      strcpy(string, "'");
 	    }
 
-	  strlcat(string, SYMBOL_LINKAGE_NAME(p->msymbol), 4096);
+          /* FIXME: not sure if min or max is better for len here: */
+	  strlcat(string, SYMBOL_LINKAGE_NAME(p->msymbol),
+                  max(shlib_len, 4096UL));
 	  strcat(string, "'");
 
           allow_objc_selectors_flag = 0;
           objc_selectors_cleanup =
-              make_cleanup(reset_allow_objc_selectors_flag, 0);
+            make_cleanup(reset_allow_objc_selectors_flag, 0);
 
+          if (objc_selectors_cleanup == (struct cleanup *)NULL) {
+            ; /* ??? */
+          }
 
 	  /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps.  */
 	  rbr_break_command(string, from_tty, 1);
@@ -5974,44 +6014,48 @@ All global and static variable names, or those matching REGEXP."));
 
 /* APPLE LOCAL begin address ranges  */
 void
-update_inlined_function_line_table_entry (CORE_ADDR start_pc,
-					  CORE_ADDR current_end_pc,
-					  CORE_ADDR proper_end_pc)
+update_inlined_function_line_table_entry(CORE_ADDR start_pc,
+					 CORE_ADDR current_end_pc,
+					 CORE_ADDR proper_end_pc)
 {
   asection *section;
   struct symtab *s;
   struct linetable *l;
-  int len;
+  size_t len;
   int i;
   int done;
   struct linetable_entry *item;
+#ifdef ALLOW_UNUSED_VARIABLES
   struct linetablke_entry *prev;
+#endif /* ALLOW_UNUSED_VARIABLES */
   struct blockvector *bv;
 
-  section = find_pc_overlay (start_pc);
-  if (pc_in_unmapped_range (start_pc, section))
-    start_pc = overlay_mapped_address (start_pc, section);
+  section = find_pc_overlay(start_pc);
+  if (pc_in_unmapped_range(start_pc, section))
+    start_pc = overlay_mapped_address(start_pc, section);
 
-  s = find_pc_sect_symtab (start_pc, section);
+  s = find_pc_sect_symtab(start_pc, section);
 
-  gdb_assert (s != NULL);
+  gdb_assert(s != NULL);
 
-  bv = BLOCKVECTOR (s);
+  bv = BLOCKVECTOR(s);
   done = 0;
 
-  for (; s && BLOCKVECTOR (s) == bv && !done; s = s->next)
+  for (; s && BLOCKVECTOR(s) == bv && !done; s = s->next)
     {
-      l = LINETABLE (s);
+      l = LINETABLE(s);
       if (!l)
 	continue;
       len = l->nitems;
       if (len <= 0)
 	continue;
 
-      prev = NULL;
+#ifdef ALLOW_UNUSED_VARIABLES
+      prev = (struct linetablke_entry *)NULL;
+#endif /* ALLOW_UNUSED_VARIABLES */
       item = l->item;
 
-      for (i = 0; i < len && !done; i++, item++)
+      for (i = 0; (i < (int)len) && !done; i++, item++)
 	{
 	  if (item->pc > start_pc)
 	    break;
@@ -6026,7 +6070,7 @@ update_inlined_function_line_table_entry (CORE_ADDR start_pc,
 	}
     }
 
-  gdb_assert (done == 1);
+  gdb_assert(done == 1);
 }
 /* APPLE LOCAL end address ranges  */
 

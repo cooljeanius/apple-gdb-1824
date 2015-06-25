@@ -34,8 +34,10 @@
 # include "config/i386/nm-i386.h"
 #endif /* __i386__ */
 
+/* forward declarations of structs, so we can use them in prototypes: */
 struct value;
 struct block;
+struct so_list; /* from "solist.h" */
 
 /* This is the maximum number of bytes a breakpoint instruction can take.
    Feel free to increase it.  It's just used in a few places to size
@@ -740,21 +742,22 @@ extern void break_command (char *, int);
 
 /* APPLE LOCAL: for rbreak_command's setting of breakpoints */
 /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps.  */
-extern void rbr_break_command (char *, int, int);
+extern void rbr_break_command(char *, int, int);
 
-extern void hbreak_command_wrapper (char *, int);
-extern void thbreak_command_wrapper (char *, int);
-extern void rbreak_command_wrapper (char *, int);
+extern void hbreak_command_wrapper(char *, int);
+extern void thbreak_command_wrapper(char *, int);
+extern void rbreak_command_wrapper(char *, int);
 /* APPLE LOCAL: Added by_location argument.  */
-extern void watch_command_wrapper (char *, int, int);
-extern void awatch_command_wrapper (char *, int, int);
-extern void rwatch_command_wrapper (char *, int, int);
+extern void watch_command_wrapper(char *, int, int);
+extern void awatch_command_wrapper(char *, int, int);
+extern void rwatch_command_wrapper(char *, int, int);
+extern int detect_location_arg(char **);
 /* END APPLE LOCAL */
-extern void tbreak_command (char *, int);
+extern void tbreak_command(char *, int);
 
-extern int insert_breakpoints (void);
+extern int insert_breakpoints(void);
 
-extern int remove_breakpoints (void);
+extern int remove_breakpoints(void);
 
 /* This function can be used to physically insert eventpoints from the
    specified traced inferior process, without modifying the breakpoint
@@ -854,55 +857,62 @@ extern void remove_solib_event_breakpoints (void);
 
 extern void remove_thread_event_breakpoints (void);
 
-/* APPLE LOCAL: ObjC hand-call fail point breakpoint.  */
-extern struct breakpoint *create_objc_hook_breakpoint (char *hookname);
+/* APPLE LOCAL: ObjC hand-call fail point breakpoint: */
+extern struct breakpoint *create_objc_hook_breakpoint(char *);
 
 /* APPLE LOCAL breakpoints */
-extern void disable_breakpoints_in_shlibs (int silent);
+extern void disable_breakpoints_in_shlibs(int silent);
 
 /* APPLE LOCAL breakpoints */
-extern void re_enable_breakpoints_in_shlibs (int silent);
+extern void disable_breakpoints_in_unloaded_shlib(struct so_list *);
 
-extern void create_solib_load_event_breakpoint (char *, int, char *, char *);
+/* APPLE LOCAL breakpoints */
+extern void re_enable_breakpoints_in_shlibs(int silent);
 
-extern void create_solib_unload_event_breakpoint (char *, int,
-						  char *, char *);
+extern void create_solib_load_event_breakpoint(char *, int, char *, char *);
 
-extern void create_fork_event_catchpoint (int, char *);
+extern void create_solib_unload_event_breakpoint(char *, int,
+						 char *, char *);
 
-extern void create_vfork_event_catchpoint (int, char *);
+extern void create_fork_event_catchpoint(int, char *);
 
-extern void create_exec_event_catchpoint (int, char *);
+extern void create_vfork_event_catchpoint(int, char *);
 
-/* This function returns TRUE if ep is a catchpoint. */
-extern int ep_is_catchpoint (struct breakpoint *);
+extern void create_exec_event_catchpoint(int, char *);
+
+/* This function returns TRUE if ep is a catchpoint: */
+extern int ep_is_catchpoint(struct breakpoint *);
 
 /* This function returns TRUE if ep is a catchpoint of a
    shared library (aka dynamically-linked library) event,
    such as a library load or unload. */
-extern int ep_is_shlib_catchpoint (struct breakpoint *);
+extern int ep_is_shlib_catchpoint(struct breakpoint *);
 
-extern struct breakpoint *set_breakpoint_sal (struct symtab_and_line);
+extern struct breakpoint *set_breakpoint_sal(struct symtab_and_line);
 
 /* Enable breakpoints and delete when hit.  Called with ARG == NULL
    deletes all breakpoints. */
-extern void delete_command (char *arg, int from_tty);
+extern void delete_command(char *arg, int from_tty);
 
 /* Pull all H/W watchpoints from the target. Return non-zero if the
    remove fails. */
-extern int remove_hw_watchpoints (void);
+extern int remove_hw_watchpoints(void);
 
 /* APPLE LOCAL begin breakpoints */
-extern struct breakpoint *find_finish_breakpoint (void);
+extern struct breakpoint *find_finish_breakpoint(void);
 
-extern int exception_catchpoints_enabled (enum exception_event_kind ex_event);
-extern void disable_exception_catch (enum exception_event_kind ex_event);
-void gnu_v3_update_exception_catchpoints (enum exception_event_kind ex_event,
-				     int tempflag, char *cond_string);
-int handle_gnu_v3_exceptions (enum exception_event_kind ex_event);
+extern int exception_catchpoints_enabled(enum exception_event_kind);
+extern void disable_exception_catch(enum exception_event_kind);
+void gnu_v3_update_exception_catchpoints(enum exception_event_kind,
+                                         int, char *);
+int update_exception_catchpoints(enum exception_event_kind, int, char *,
+                                 int, struct objfile *);
+int handle_gnu_v3_exceptions(enum exception_event_kind);
 
-void tell_breakpoints_objfile_changed (struct objfile *objfile);
-void tell_breakpoints_objfile_removed (struct objfile *objfile);
+void future_break_command(char *, int);
+
+void tell_breakpoints_objfile_changed(struct objfile *);
+void tell_breakpoints_objfile_removed(struct objfile *);
 /* APPLE LOCAL end breakpoints */
 
 /* Indicator of whether exception catchpoints should be nuked between
@@ -924,6 +934,9 @@ extern void breakpoints_relocate(struct objfile *, struct section_offsets *);
 
 /* APPLE LOCAL Disable breakpoints while updating data formatters: */
 extern struct cleanup *make_cleanup_enable_disable_bpts_during_operation(void);
+
+/* Helper function for the previous: */
+extern void enable_user_breakpoints_after_operation(void *);
 
 #endif /* !defined(BREAKPOINT_H) */
 

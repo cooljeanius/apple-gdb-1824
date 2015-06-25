@@ -19,8 +19,10 @@
 #ifndef XCOFF_READ_H
 #define XCOFF_READ_H
 
-extern CORE_ADDR xcoff_get_toc_offset (struct objfile *);
+extern CORE_ADDR xcoff_get_toc_offset(struct objfile *);
 
-extern int xcoff_get_n_import_files (bfd *abfd);
+extern int xcoff_get_n_import_files(bfd *abfd);
 
 #endif /* xcoffread.h */
+
+/* EOF */

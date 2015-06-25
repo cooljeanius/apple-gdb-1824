@@ -111,7 +111,8 @@ cli_interpreter_exec (void *data, const char *command_str)
 
   /* FIXME: cagney/2003-02-01: Need to const char *propogate
      safe_execute_command.  */
-  char *str = strcpy (alloca (strlen (command_str) + 1), command_str);
+  char *str = strcpy((char *)alloca(strlen(command_str) + 1UL),
+                     command_str);
 
   /* APPLE_LOCAL begin cli */
   /* We don't need old_stream because we actually change the

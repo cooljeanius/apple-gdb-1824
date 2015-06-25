@@ -53,7 +53,7 @@
 
 #define collect_unsigned_int(regnum, addr)\
   regcache_raw_collect(current_regcache, regnum, buf); \
-  (*(addr)) = extract_unsigned_integer(buf, 4);
+  (*(addr)) = (unsigned int)extract_unsigned_integer(buf, 4);
 
 #define supply_unsigned_int64(regnum, val)\
   store_unsigned_integer(buf, 8, val); \
@@ -372,16 +372,16 @@ i386_macosx_thread_state_addr (struct frame_info *frame)
 }
 
 static CORE_ADDR
-i386_macosx_thread_state_addr_1 (CORE_ADDR start_of_func, CORE_ADDR pc,
-                                 CORE_ADDR ebp, CORE_ADDR esp)
+i386_macosx_thread_state_addr_1(CORE_ADDR start_of_func, CORE_ADDR pc,
+                                CORE_ADDR ebp, CORE_ADDR esp)
 {
   int offset = 0;
-  CORE_ADDR push_ebp_addr = 0;
-  CORE_ADDR mov_esp_ebp_addr = 0;
+  CORE_ADDR push_ebp_addr = 0UL;
+  CORE_ADDR mov_esp_ebp_addr = 0UL;
   CORE_ADDR address_of_struct_sigframe;
   CORE_ADDR address_of_struct_ucontext;
   CORE_ADDR address_of_struct_mcontext;
-  int limit;
+  long limit;
 
   /* We begin our function with a fun little hand-rolled prologue parser.
      These sorts of things NEVER come back to bite us years down the road,
@@ -390,15 +390,15 @@ i386_macosx_thread_state_addr_1 (CORE_ADDR start_of_func, CORE_ADDR pc,
      signal backtraces should break outright and we get nice little testsuite
      failures. */
 
-  limit = min (pc - start_of_func + 1, 16);
+  limit = (long)min(((pc - start_of_func) + 1UL), 16UL);
   while (offset < limit)
     {
       if (!push_ebp_addr)
         {
           /* push   %ebp   [ 0x55 ] */
-          if (read_memory_unsigned_integer (start_of_func + offset, 1) == 0x55)
+          if (read_memory_unsigned_integer(start_of_func + offset, 1) == 0x55)
             {
-              push_ebp_addr = start_of_func + offset;
+              push_ebp_addr = (start_of_func + offset);
               offset++;
             }
           else

@@ -205,7 +205,10 @@ extern void fprint_frame_id (struct ui_file *file, struct frame_id id);
 /* On demand, create the inner most frame using information found in
    the inferior.  If the inner most frame can't be created, throw an
    error.  */
-extern struct frame_info *get_current_frame (void);
+extern struct frame_info *get_current_frame(void);
+
+/* Goes with the ones that follow this: */
+extern void frame_observer_target_changed(struct target_ops *);
 
 /* Invalidates the frame cache (this function should have been called
    invalidate_cached_frames).
@@ -220,8 +223,8 @@ extern struct frame_info *get_current_frame (void);
    selected frame back to current frame (for when the inferior
    resumes) and one that does not (for when the user modifies the
    target invalidating the frame cache).  */
-extern void flush_cached_frames (void);
-extern void reinit_frame_cache (void);
+extern void flush_cached_frames(void);
+extern void reinit_frame_cache(void);
 
 /* On demand, create the selected frame and then return it.  If the
    selected frame can not be created, this function prints then throws

@@ -262,6 +262,7 @@ do_restore_user_call_depth(void *call_depth)
   (*depth) = 0;
 }
 
+extern int max_user_call_depth;
 
 void
 execute_user_command(struct cmd_list_element *c, char *args)
@@ -270,7 +271,6 @@ execute_user_command(struct cmd_list_element *c, char *args)
   struct cleanup *old_chain;
   enum command_control_type ret;
   static int user_call_depth = 0;
-  extern int max_user_call_depth;
 
   old_chain = setup_user_args(args);
 
@@ -280,54 +280,54 @@ execute_user_command(struct cmd_list_element *c, char *args)
     return;
 
   if (++user_call_depth > max_user_call_depth)
-    error (_("Max user call depth exceeded -- command aborted."));
+    error(_("Max user call depth exceeded -- command aborted."));
 
-  old_chain = make_cleanup (do_restore_user_call_depth, &user_call_depth);
+  old_chain = make_cleanup(do_restore_user_call_depth, &user_call_depth);
 
   /* Set the instream to 0, indicating execution of a
      user-defined function.  */
-  old_chain = make_cleanup (do_restore_instream_cleanup, instream);
-  instream = (FILE *) 0;
+  old_chain = make_cleanup(do_restore_instream_cleanup, instream);
+  instream = (FILE *)0;
 
   /* We have to turn off async behavior for user defined commands,
      otherwise the execution of synchronous commands will get out of
      step with the asynchronous ones. */
 
-  if (target_can_async_p ())
+  if (target_can_async_p())
     {
-      gdb_set_async_override ((void *) 1);
-      make_cleanup (gdb_set_async_override, (void *) 0);
+      gdb_set_async_override((void *)1);
+      make_cleanup(gdb_set_async_override, (void *)0);
     }
 
   while (cmdlines)
     {
-      ret = execute_control_command (cmdlines);
+      ret = execute_control_command(cmdlines);
       if (ret != simple_control && ret != break_control)
 	{
-	  warning (_("Error in control structure."));
+	  warning(_("Error in control structure."));
 	  break;
 	}
       cmdlines = cmdlines->next;
     }
-  do_cleanups (old_chain);
+  do_cleanups(old_chain);
 
   user_call_depth--;
 }
 
+/* APPLE LOCAL sigint_taken_p */
+extern int sigint_taken_p(void);
+
 enum command_control_type
-execute_control_command (struct command_line *cmd)
+execute_control_command(struct command_line *cmd)
 {
   struct expression *expr;
   struct command_line *current;
-  struct cleanup *old_chain = make_cleanup (null_cleanup, 0);
+  struct cleanup *old_chain = make_cleanup(null_cleanup, 0);
   struct value *val;
   struct value *val_mark;
   int loop;
   enum command_control_type ret;
   char *new_line;
-
-  /* APPLE LOCAL sigint_taken_p */
-  extern int sigint_taken_p (void);
 
   /* Start by assuming failure, if a problem is detected, the code
      below will simply "break" out of the switch.  */
@@ -1172,6 +1172,15 @@ user_defined_command(char *ignore, int from_tty)
   return;
 }
 
+/* FIXME: need to rename some struct fields that currently live in headers,
+ * and deal with all of the resulting fallout, before removing this: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 void
 define_command(char *comname, int from_tty)
 {
@@ -1194,7 +1203,7 @@ define_command(char *comname, int from_tty)
 #define HOOK_POST_STRING "hookpost-"
 #define HOOK_POST_LEN    9
 
-  validate_comname (comname);
+  validate_comname(comname);
 
   /* Look it up, and verify that we got an exact match: */
   c = lookup_cmd(&tem, cmdlist, "", -1, 1);
@@ -1324,6 +1333,13 @@ document_command(char *comname, int from_tty)
 
   free_command_lines(&doclines);
 }
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 struct source_cleanup_lines_args
 {

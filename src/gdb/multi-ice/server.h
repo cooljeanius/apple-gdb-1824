@@ -43,7 +43,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #if !defined(REGISTER_BYTES) && (!defined(HAVE_DECL_REGISTER_BYTES) || !HAVE_DECL_REGISTER_BYTES)
 /* arbitrarily made-up default: */
-# define REGISTER_BYTES 0
+# define REGISTER_BYTES 4
 #endif /* !REGISTER_BYTES && !HAVE_DECL_REGISTER_BYTES */
 
 /* If DEBUG_ON is 1, then emit debugging infomation: */

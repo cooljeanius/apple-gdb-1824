@@ -92,7 +92,6 @@ struct address_range_list
 
 struct block
 {
-
   /* Addresses in the executable code that are in this block.  */
 
   CORE_ADDR startaddr;
@@ -124,8 +123,7 @@ struct block
 
   struct dictionary *dict;
 
-  /* Used for language-specific info.  */
-
+  /* Used for language-specific info: */
   union
   {
     struct

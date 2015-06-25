@@ -74,7 +74,7 @@ macosx_setup_registers_before_hand_call(void)
   thread_abort_safely(current_thread);
 }
 
-#if defined (TARGET_I386)
+#if defined(TARGET_I386)
 
 /* Set/clear bit 8 (Trap Flag) of the EFLAGS processor control
  * register to enable/disable single-step mode.  Handle new-style
@@ -295,14 +295,23 @@ modify_trace_bit(thread_t thread, int value)
 		     thread, value, thread, GDB_ARM_THREAD_DEBUG_STATE,
 		     state_count, kret, hw_idx, dbg.bvr[hw_idx],
 		     dbg.bcr[hw_idx]);
-      MACH_PROPAGATE_ERROR (kret);
+      MACH_PROPAGATE_ERROR(kret);
   }
 
   return KERN_SUCCESS;
 }
 #else
-# error "unknown architecture"
+# error "unknown target architecture"
 #endif /* TARGET */
+
+/* FIXME: need to rename some struct fields that currently live in headers,
+ * and deal with all of the resulting fallout, before removing this: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 void
 prepare_threads_after_stop(struct macosx_inferior_status *inferior)
@@ -743,9 +752,10 @@ get_dispatch_queue_flags(CORE_ADDR dispatch_qaddr, uint32_t *flags)
                                             &queue) != 0)
       && (queue != 0)
       && (safe_read_memory_unsigned_integer((queue + dispatch_offsets->flags_offset),
-                                            dispatch_offsets->flags_size, &buf) != 0))
+                                            (int)dispatch_offsets->flags_size,
+                                            &buf) != 0))
     {
-      *flags = buf;
+      *flags = (uint32_t)buf;
       return 1;
     }
 
@@ -1122,7 +1132,7 @@ macosx_prune_threads(thread_array_t thread_list, unsigned int nthreads)
   if (dealloc_thread_list) {
       kret =
 	vm_deallocate(mach_task_self(), (vm_address_t)thread_list,
-                      (nthreads * sizeof (int)));
+                      (nthreads * sizeof(int)));
       MACH_CHECK_ERROR(kret);
   }
 
@@ -1187,6 +1197,13 @@ macosx_print_thread_details(struct ui_out *uiout, ptid_t ptid)
     }
 }
 
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 
 void
 _initialize_threads(void)
@@ -1196,17 +1213,18 @@ _initialize_threads(void)
 #endif /* TARGET_ARM */
 
   add_cmd("suspend", class_run, thread_suspend_command,
-		  "Increment the suspend count of a thread.", &thread_cmd_list);
+          "Increment the suspend count of a thread.", &thread_cmd_list);
 
   add_cmd("resume", class_run, thread_resume_command,
-		  "Decrement the suspend count of a thread.", &thread_cmd_list);
+          "Decrement the suspend count of a thread.", &thread_cmd_list);
 
-  add_cmd("dont-suspend-while-stepping", class_run, thread_dont_suspend_while_stepping_command,
-	   "Usage: on|off <THREAD ID>|-port <EXPR>\
+  add_cmd("dont-suspend-while-stepping", class_run,
+          thread_dont_suspend_while_stepping_command,
+          "Usage: on|off <THREAD ID>|-port <EXPR>\
 Toggle whether to not suspend this thread while single stepping the target on or off.\
 With the -port option, EXPR is evaluated as an expression in the target, which should \
 resolve to the Mach port number of the thread port for a thread in the target program.",
-	   &thread_cmd_list);
+          &thread_cmd_list);
 
   add_info("thread", info_thread_command, "Get information on thread.");
 

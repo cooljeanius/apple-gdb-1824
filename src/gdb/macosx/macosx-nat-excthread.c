@@ -184,7 +184,8 @@ excthread_debug_message(int level, macosx_exception_thread_message *msg)
       && (msg->exception_data[0] == EXC_SOFT_SIGNAL))
     {
       const char *signame;
-      signame = target_signal_to_name(target_signal_from_host(msg->exception_data[1]));
+      signame =
+        target_signal_to_name(target_signal_from_host((int)msg->exception_data[1]));
 
 #ifdef HAVE_64_BIT_MACH_EXCEPTIONS
       fprintf(excthread_stderr_re, ", subtype: EXC_SOFT_SIGNAL, signal: %s (%lld)",
@@ -349,7 +350,7 @@ macosx_exception_thread_init(macosx_exception_thread_status *s)
   memset(&s->saved_exceptions_step, 0, sizeof(s->saved_exceptions_step));
 
   s->saved_exceptions_stepping = 0;
-  s->exception_thread = THREAD_NULL;
+  s->exception_thread = (gdb_thread_t)THREAD_NULL;
   s->shutting_down = 0;
 }
 

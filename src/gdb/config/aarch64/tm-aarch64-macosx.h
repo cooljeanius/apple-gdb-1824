@@ -42,12 +42,12 @@ int aarch64_macosx_fast_show_stack(unsigned int count_limit,
                                                     CORE_ADDR fp));
 
 #define FAST_COUNT_STACK_DEPTH(count_limit, print_start, print_end, count, print_fun) \
-  (aarch64_macosx_fast_show_stack (count_limit, print_start, print_end, count, print_fun))
+  (aarch64_macosx_fast_show_stack(count_limit, print_start, print_end, count, print_fun))
 
 char *aarch64_throw_catch_find_typeinfo(struct frame_info *curr_frame,
                                         int exception_type);
 #define THROW_CATCH_FIND_TYPEINFO(curr_frame, exception_type) \
-  (aarch64_throw_catch_find_typeinfo (curr_frame, exception_type))
+  (aarch64_throw_catch_find_typeinfo(curr_frame, exception_type))
 
 #endif /* _TM_AARCH64_MACOSX_H_ */
 

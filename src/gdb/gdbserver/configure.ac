@@ -800,7 +800,7 @@ AC_SUBST([CPPFLAGS])dnl
 
 dnl# warning flags get set at the bottom, to try to prevent them from
 dnl# messing with the other conftets:
-build_warnings="-Wmain -Wpointer-arith -Wformat-nonliteral \
+build_warnings="-Wmain -Wpointer-arith -Wformat-security \
 -Wno-char-subscripts -Wempty-body -Wnested-externs -Wno-unused-parameter \
 -Wundef -Wswitch -Wparentheses -Winline -Wvolatile-register-var \
 -Warray-bounds -Wdiv-by-zero -Wdouble-promotion -Wfree-nonheap-object \
@@ -808,7 +808,7 @@ build_warnings="-Wmain -Wpointer-arith -Wformat-nonliteral \
 -Woverflow -Woverlength-strings -Woverride-init -Wreturn-local-addr \
 -Wsequence-point -Wsizeof-pointer-memaccess -Wunsuffixed-float-constants \
 -Wstrict-overflow -Wtrampolines -Wjump-misses-init -Wcoverage-mismatch \
--Wno-strict-aliasing"
+-Wmisleading-indentation -Wno-strict-aliasing -Wno-unused-function"
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
   cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo \
@@ -830,7 +830,14 @@ fi
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
     # -Wmost is APPLE_LOCAL, as are -Wextra-tokens and -Wnewline-eof
-    build_warnings="${build_warnings} -Wmost -Wextra-tokens -Wnewline-eof"
+    # (-Wmost might have to be removed for the same reason as -Wall)
+    build_warnings="${build_warnings} -Wmost -Wextra-tokens -Wnewline-eof \
+-Wendif-labels -Wno-unused -Wformat"
+    case "${host}" in
+      *64*-apple-darwin9* | *64*-apple-darwin1[[0123456789]].*.*)
+        build_warnings="${build_warnings} -Wshorten-64-to-32"
+      ;;
+    esac
   ;;
 esac
 

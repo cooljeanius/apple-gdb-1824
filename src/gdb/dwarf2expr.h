@@ -1,4 +1,4 @@
-/* DWARF 2 Expression Evaluator.
+/* dwarf2expr.h: DWARF 2 Expression Evaluator.
 
    Copyright 2001, 2002, 2003, 2005 Free Software Foundation, Inc.
 
@@ -67,7 +67,7 @@ struct dwarf_expr_context
 
   /* Return the `object address' for DW_OP_push_object_address.  */
   CORE_ADDR (*get_object_address) (void *baton);
-#endif
+#endif /* 0 */
 
   /* The current depth of dwarf expression recursion, via DW_OP_call*,
      DW_OP_fbreg, DW_OP_push_object_address, etc., and the maximum
@@ -127,26 +127,27 @@ struct dwarf_expr_piece
   ULONGEST size;
 };
 
-struct dwarf_expr_context *new_dwarf_expr_context (void);
-void free_dwarf_expr_context (struct dwarf_expr_context *ctx);
+struct dwarf_expr_context *new_dwarf_expr_context(void);
+void free_dwarf_expr_context(struct dwarf_expr_context *ctx);
 
-void dwarf_expr_push (struct dwarf_expr_context *ctx, CORE_ADDR value);
-void dwarf_expr_pop (struct dwarf_expr_context *ctx);
-void dwarf_expr_eval (struct dwarf_expr_context *ctx, unsigned char *addr,
-		      size_t len, int eh_frame_p, struct dwarf2_address_translation *);
-CORE_ADDR dwarf_expr_fetch (struct dwarf_expr_context *ctx, int n);
+void dwarf_expr_push(struct dwarf_expr_context *, CORE_ADDR);
+void dwarf_expr_pop(struct dwarf_expr_context *);
+void dwarf_expr_eval(struct dwarf_expr_context *, unsigned char *, size_t,
+                     int, struct dwarf2_address_translation *);
+CORE_ADDR dwarf_expr_fetch(struct dwarf_expr_context *, int);
 
 
-gdb_byte *read_uleb128 (gdb_byte *buf, gdb_byte *buf_end, ULONGEST * r);
-gdb_byte *read_sleb128 (gdb_byte *buf, gdb_byte *buf_end, LONGEST * r);
-CORE_ADDR dwarf2_read_address (gdb_byte *buf, gdb_byte *buf_end,
-			       int *bytes_read);
+gdb_byte *read_uleb128(gdb_byte *, gdb_byte *, ULONGEST *);
+gdb_byte *read_sleb128(gdb_byte *, gdb_byte *, LONGEST *);
+CORE_ADDR dwarf2_read_address(gdb_byte *, gdb_byte *, int *);
 
 /* APPLE LOCAL begin variable initialized status  */
 
-extern struct type *unsigned_address_type (void);
-extern struct type *signed_address_type (void);
-extern void add_piece (struct dwarf_expr_context *, int, CORE_ADDR, ULONGEST);
+extern struct type *unsigned_address_type(void);
+extern struct type *signed_address_type(void);
+extern void add_piece(struct dwarf_expr_context *, int, CORE_ADDR, ULONGEST);
+extern void add_bits_piece(struct dwarf_expr_context *, int, CORE_ADDR,
+                           uint64_t, int, ULONGEST);
 
 /* APPLE LOCAL end variable initialized status  */
 #endif /* dwarf2expr.h */

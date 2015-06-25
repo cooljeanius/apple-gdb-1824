@@ -31,7 +31,7 @@ extern int gdb_prompt_is_optimized;
 
 /* From top.c.  */
 extern char *line;
-extern int linesize;
+extern size_t linesize;
 extern FILE *instream;
 extern char gdb_dirbuf[1024];
 extern int inhibit_gdbinit;
@@ -40,38 +40,38 @@ extern char gdbinit[];
 /* APPLE LOCAL global gdbinit */
 extern char gdbinit_global[];
 
-extern void print_gdb_version (struct ui_file *);
+extern void print_gdb_version(struct ui_file *);
 
-extern void source_command (char *, int);
+extern void source_command(char *, int);
 /* APPLE LOCAL cf cli/cli-cmds.c */
-extern void source_file (char *, int);
+extern void source_file(char *, int);
 
-extern void cd_command (char *, int);
-extern void read_command_file (FILE *);
-extern void init_history (void);
-extern void command_loop (void);
-extern void simplified_command_loop (char *(*read_input_func) (char *),
-				     void (*execute_command_func) (char *,
-								   int));
-extern int quit_confirm (void);
-extern NORETURN void quit_force (char *, int);
-extern void quit_command (char *, int);
-extern int quit_cover (void *);
-extern void execute_command (char *, int);
+extern void cd_command(char *, int);
+extern void read_command_file(FILE *);
+extern void init_history(void);
+extern void command_loop(void);
+extern void simplified_command_loop(char *(*read_input_func)(char *),
+				    void (*execute_command_func)(char *,
+                                                                 int));
+extern int quit_confirm(void);
+extern NORETURN void quit_force(char *, int);
+extern void quit_command(char *, int);
+extern int quit_cover(void *);
+extern void execute_command(char *, int);
 
 /* This function returns a pointer to the string that is used
    by gdb for its command prompt. */
-extern char *get_prompt (void);
+extern char *get_prompt(void);
 
 /* This function copies the specified string into the string that
    is used by gdb for its command prompt. */
-extern void set_prompt (char *);
+extern void set_prompt(char *);
 
-/* From random places.  */
+/* From random places: */
 extern int readnow_symbol_files;
 
 /* Perform _initialize initialization */
-extern void gdb_init (char *);
+extern void gdb_init(char *);
 
 /* For use by event-top.c */
 /* Variables from top.c. */
@@ -81,14 +81,16 @@ extern int history_expansion_p;
 extern int server_command;
 extern char *lim_at_start;
 
-extern void show_commands (char *args, int from_tty);
+extern void show_commands(char *args, int from_tty);
 
-extern void set_history (char *, int);
+extern void set_history(char *, int);
 
-extern void show_history (char *, int);
+extern void show_history(char *, int);
 
-extern void set_verbose (char *, int, struct cmd_list_element *);
+extern void set_verbose(char *, int, struct cmd_list_element *);
 
-extern void do_restore_instream_cleanup (void *stream);
+extern void do_restore_instream_cleanup(void *stream);
 
 #endif /* !TOP_H */
+
+/* EOF */

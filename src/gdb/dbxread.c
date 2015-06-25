@@ -3392,13 +3392,13 @@ add_to_containing_archive_cache (bfd *containing_archive)
 }
 
 void
-clear_containing_archive_cache ()
+clear_containing_archive_cache(void)
 {
   while (num_archives_for_pubtypes > 0)
     {
       struct bfd *archive = pubtype_bfd_array[--num_archives_for_pubtypes];
       pubtype_bfd_array[num_archives_for_pubtypes] = NULL;
-      close_containing_archive_and_contents (archive);
+      close_containing_archive_and_contents(archive);
     }
 }
 

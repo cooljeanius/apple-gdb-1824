@@ -111,7 +111,16 @@ dnl# configure.ac when using autoheader 2.62.
   AC_DEFINE([_POSIX_PTHREAD_SEMANTICS])
   AC_DEFINE([_TANDEM_SOURCE])
   AC_CHECK_HEADERS_ONCE([wchar.h])
-  AC_CHECK_TYPES([mbstate_t])
+  test -z "${ac_cv_type_mbstate_t}"
+  AC_CHECK_TYPES([mbstate_t],[],[],[
+#ifdef HAVE_WCHAR_H
+# include <wchar.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "this conftest for mbstate_t expects <wchar.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_WCHAR_H */
+  ])
   AC_CACHE_CHECK([whether _XOPEN_SOURCE should be defined],
     [ac_cv_should_define__xopen_source],
     [ac_cv_should_define__xopen_source=no

@@ -311,11 +311,11 @@ static int
 nomemory(CORE_ADDR memaddr, char *myaddr, int len, int write,
 	 struct target_ops *t)
 {
-  errno = EIO;			/* Can't read/write this location */
+  errno = EIO;			/* Cannot read/write this location */
   return 0;			/* No bytes handled */
 }
 
-static void
+static void ATTR_NORETURN
 tcomplain(void)
 {
   error(_("You cannot do that when your target is `%s'"),
@@ -334,7 +334,7 @@ nosymbol(char *name, CORE_ADDR *addrp)
   return 1;			/* Symbol does not exist in target env */
 }
 
-static void
+static void ATTR_NORETURN
 nosupport_runtime(void)
 {
   if (ptid_equal(inferior_ptid, null_ptid))
@@ -803,7 +803,7 @@ target_read_string(CORE_ADDR memaddr, char **string, int len, int *errnop)
   char *buffer;
   int buffer_allocated;
   char *bufptr;
-  unsigned int nbytes_read = 0;
+  unsigned int nbytes_read = 0U;
 
   /* Small for testing: */
   buffer_allocated = 4;
@@ -811,6 +811,10 @@ target_read_string(CORE_ADDR memaddr, char **string, int len, int *errnop)
   bufptr = buffer;
 
   origlen = len;
+
+  if (!(origlen > 0)) {
+    ; /* ??? */
+  }
 
   while (len > 0)
     {
@@ -844,7 +848,7 @@ target_read_string(CORE_ADDR memaddr, char **string, int len, int *errnop)
 	  *bufptr++ = buf[i + offset];
 	  if (buf[i + offset] == '\000')
 	    {
-	      nbytes_read += i + 1;
+	      nbytes_read += (i + 1);
 	      goto done;
 	    }
 	}
@@ -884,11 +888,11 @@ memory_xfer_partial(struct target_ops *ops, void *readbuf,
                     const void *writebuf, ULONGEST memaddr, LONGEST len)
 {
   LONGEST res;
-  int reg_len;
+  size_t reg_len;
   struct mem_region *region;
 
   /* Zero length requests are ok and require no work: */
-  if (len == 0)
+  if (len == 0L)
     return 0;
 
   /* Try the executable file, if "trust-readonly-sections" is set: */
@@ -911,7 +915,7 @@ memory_xfer_partial(struct target_ops *ops, void *readbuf,
                                     osect->the_bfd_section)
 	      & SEC_READONLY))
 	{
-	  retval = xfer_memory(memaddr, (gdb_byte *)readbuf, len, 0,
+	  retval = xfer_memory(memaddr, (gdb_byte *)readbuf, (int)len, 0,
                                (struct mem_attrib *)NULL, ops);
 	  if (retval > 0)
 	    return retval;
@@ -921,9 +925,9 @@ memory_xfer_partial(struct target_ops *ops, void *readbuf,
   /* Try GDB's internal data cache: */
   region = lookup_mem_region(memaddr);
   if ((memaddr + len) < region->hi)
-    reg_len = len;
+    reg_len = (size_t)len;
   else
-    reg_len = (region->hi - memaddr);
+    reg_len = (size_t)(region->hi - memaddr);
 
   switch (region->attrib.mode)
     {
@@ -1152,16 +1156,17 @@ default_xfer_partial (struct target_ops *ops, enum target_object object,
       errno = 0;
       if (writebuf != NULL)
 	{
-	  void *buffer = xmalloc(len);
+	  void *buffer = xmalloc((size_t)len);
 	  struct cleanup *cleanup = make_cleanup(xfree, buffer);
 	  memcpy(buffer, writebuf, len);
 	  xfered = ops->deprecated_xfer_memory(offset, (gdb_byte *)buffer,
-                                               len, 1/*write*/, NULL, ops);
-	  do_cleanups (cleanup);
+                                               (int)len, 1/*write*/, NULL,
+                                               ops);
+	  do_cleanups(cleanup);
 	}
       if (readbuf != NULL)
-	xfered = ops->deprecated_xfer_memory(offset, readbuf, len, 0/*read*/,
-					     NULL, ops);
+	xfered = ops->deprecated_xfer_memory(offset, readbuf, (int)len,
+                                             0/*read*/, NULL, ops);
       if (xfered > 0)
 	return xfered;
       else if ((xfered == 0) && (errno == 0))
@@ -1638,35 +1643,35 @@ find_target_beneath (struct target_ops *t)
 }
 
 
+
+extern int show_breakpoint_hit_counts;
+
 /* The inferior process has died.  Long live the inferior!  */
-
 void
-generic_mourn_inferior (void)
+generic_mourn_inferior(void)
 {
-  extern int show_breakpoint_hit_counts;
-
   inferior_ptid = null_ptid;
   attach_flag = 0;
-  breakpoint_init_inferior (inf_exited);
-  registers_changed ();
+  breakpoint_init_inferior(inf_exited);
+  registers_changed();
 
-  value_clear_inferior_string_pool ();
-  checkpoint_clear_inferior ();
+  value_clear_inferior_string_pool();
+  checkpoint_clear_inferior();
 
-  reopen_exec_file ();
-  reinit_frame_cache ();
+  reopen_exec_file();
+  reinit_frame_cache();
 
   /* It is confusing to the user for ignore counts to stick around
      from previous runs of the inferior.  So clear them.  */
   /* However, it is more confusing for the ignore counts to disappear when
      using hit counts.  So don't clear them if we're counting hits.  */
   if (!show_breakpoint_hit_counts)
-    breakpoint_clear_ignore_counts ();
+    breakpoint_clear_ignore_counts();
 
-  reinitialize_objc ();
+  reinitialize_objc();
 
   if (deprecated_detach_hook)
-    deprecated_detach_hook ();
+    deprecated_detach_hook();
 }
 
 /* Helper function for child_wait and the Lynx derivatives of child_wait.
@@ -2099,7 +2104,7 @@ debug_to_region_size_ok_for_hw_watchpoint(int byte_count)
 		     "TARGET_REGION_SIZE_OK_FOR_HW_WATCHPOINT (%ld) = 0x%lx\n",
 		     (unsigned long)byte_count,
 		     (unsigned long)retval);
-  return retval;
+  return (int)retval;
 }
 
 static int

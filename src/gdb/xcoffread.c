@@ -144,6 +144,10 @@ struct coff_symfile_info
     CORE_ADDR toc_offset;
   };
 
+extern void aix_process_linenos(void);
+
+extern CORE_ADDR get_toc_offset(struct objfile *);
+
 extern void _initialize_xcoffread(void);
 
 static void
@@ -217,8 +221,8 @@ static void process_linenos(CORE_ADDR, CORE_ADDR);
 
 /* Translate from a COFF section number (target_index) to a SECT_OFF_*
    code.  */
-static int secnum_to_section (int, struct objfile *);
-static asection *secnum_to_bfd_section (int, struct objfile *);
+static int secnum_to_section(int, struct objfile *);
+static asection *secnum_to_bfd_section(int, struct objfile *);
 
 struct find_targ_sec_arg
   {
@@ -228,12 +232,12 @@ struct find_targ_sec_arg
     struct objfile *objfile;
   };
 
-static void find_targ_sec (bfd *, asection *, void *);
+static void find_targ_sec(bfd *, asection *, void *);
 
 static void
-find_targ_sec (bfd *abfd, asection *sect, void *obj)
+find_targ_sec(bfd *abfd, asection *sect, void *obj)
 {
-  struct find_targ_sec_arg *args = (struct find_targ_sec_arg *) obj;
+  struct find_targ_sec_arg *args = (struct find_targ_sec_arg *)obj;
   struct objfile *objfile = args->objfile;
   if (sect->target_index == args->targ_index)
     {
@@ -279,11 +283,9 @@ secnum_to_bfd_section (int secnum, struct objfile *objfile)
 }
 
 /* add a given stab string into given stab vector. */
-
 #if 0
-
 static void
-add_stab_to_list (char *stabname, struct pending_stabs **stabvector)
+add_stab_to_list(char *stabname, struct pending_stabs **stabvector)
 {
   if (*stabvector == NULL)
     {
@@ -302,8 +304,7 @@ add_stab_to_list (char *stabname, struct pending_stabs **stabvector)
     }
   (*stabvector)->stab[(*stabvector)->count++] = stabname;
 }
-
-#endif
+#endif /* 0 */
 /* *INDENT-OFF* */
 /* Linenos are processed on a file-by-file basis.
 
@@ -785,7 +786,7 @@ enter_line_range (struct subfile *subfile, unsigned beginoffset, unsigned endoff
 
       /* Find the address this line represents: */
       addr = (int_lnno.l_lnno
-	      ? int_lnno.l_addr.l_paddr
+	      ? (CORE_ADDR)int_lnno.l_addr.l_paddr
 	      : read_symbol_nvalue(int_lnno.l_addr.l_symndx));
       addr += ANOFFSET(this_symtab_psymtab->objfile->section_offsets,
                        SECT_OFF_TEXT(this_symtab_psymtab->objfile));
@@ -950,7 +951,7 @@ read_xcoff_symtab (struct partial_symtab *pst)
 
   last_source_file = NULL;
   last_csect_name = 0;
-  last_csect_val = 0;
+  last_csect_val = 0UL;
 
   start_stabs();
   start_symtab(filestring, (char *)NULL, file_start_addr);
@@ -1412,6 +1413,10 @@ read_xcoff_symtab (struct partial_symtab *pst)
 	}
     }
 
+  if ((last_csect_val == INVALID_ADDRESS) || (last_csect_sec == 0)) {
+    ; /* ??? */
+  }
+
   if (last_source_file)
     {
       struct symtab *s;
@@ -1796,28 +1801,31 @@ xcoff_psymtab_to_symtab (struct partial_symtab *pst)
 
   if (pst->readin)
     {
-      fprintf_unfiltered
-	(gdb_stderr, "Psymtab for %s already read in.  Shouldn't happen.\n",
-	 pst->filename);
+      fprintf_unfiltered(gdb_stderr, "Psymtab for %s already read in; "
+                         "this should NOT happen.\n", pst->filename);
       return;
     }
 
-  if (((struct symloc *) pst->read_symtab_private)->numsyms != 0
+  if (((struct symloc *)pst->read_symtab_private)->numsyms != 0
       || pst->number_of_dependencies)
     {
       /* Print the message now, before reading the string table,
          to avoid disconcerting pauses.  */
       if (info_verbose)
 	{
-	  printf_filtered ("Reading in symbols for %s...", pst->filename);
-	  gdb_flush (gdb_stdout);
+	  printf_filtered("Reading in symbols for %s...", pst->filename);
+	  gdb_flush(gdb_stdout);
 	}
 
       sym_bfd = pst->objfile->obfd;
 
+      if (sym_bfd == NULL) {
+        ; /* ??? */
+      }
+
       next_symbol_text_func = xcoff_next_symbol_text;
 
-      xcoff_psymtab_to_symtab_1 (pst);
+      xcoff_psymtab_to_symtab_1(pst);
 
       /* Match with global symbols.  This only needs to be done once,
          after all of the symtabs and dependencies have been read in.   */
@@ -1899,7 +1907,7 @@ init_stringtab(bfd *abfd, file_ptr offset, struct objfile *objfile)
   /* If no string table is needed, then the file may end immediately
      after the symbols.  Just return with `strtbl' set to NULL.  */
 
-  if ((val != sizeof(lengthbuf)) || (length < sizeof(lengthbuf)))
+  if ((val != sizeof(lengthbuf)) || ((size_t)length < sizeof(lengthbuf)))
     return;
 
   /* Allocate string table from objfile_obstack. We will need this table
@@ -1911,13 +1919,13 @@ init_stringtab(bfd *abfd, file_ptr offset, struct objfile *objfile)
   /* Copy length buffer, the first byte is usually zero and is
      used for stabs with a name length of zero.  */
   memcpy(strtbl, lengthbuf, sizeof(lengthbuf));
-  if (length == sizeof lengthbuf)
+  if (length == sizeof(lengthbuf))
     return;
 
   val = bfd_bread((strtbl + sizeof(lengthbuf)),
-                  (length - sizeof(lengthbuf)), abfd);
+                  ((size_t)length - sizeof(lengthbuf)), abfd);
 
-  if (val != (length - sizeof(lengthbuf)))
+  if ((size_t)val != ((size_t)length - sizeof(lengthbuf)))
     error(_("cannot read string table from %s: %s"),
 	  bfd_get_filename(abfd), bfd_errmsg(bfd_get_error()));
   if (strtbl[length - 1] != '\0')
@@ -2124,21 +2132,23 @@ swap_sym (struct internal_syment *symbol, union internal_auxent *aux,
 }
 
 static void
-function_outside_compilation_unit_complaint (const char *arg1)
+function_outside_compilation_unit_complaint(const char *arg1)
 {
-  complaint (&symfile_complaints,
-	     _("function `%s' appears to be defined outside of all compilation units"),
-	     arg1);
+  complaint(&symfile_complaints,
+	    _("function `%s' appears to be defined outside of all compilation units"),
+	    arg1);
 }
 
 static void
-scan_xcoff_symtab (struct objfile *objfile)
+scan_xcoff_symtab(struct objfile *objfile)
 {
   CORE_ADDR toc_offset = 0;	/* toc offset value in data section. */
   char *filestring = NULL;
 
   char *namestring;
+#ifdef ALLOW_UNUSED_VARIABLES
   int past_first_source_file = 0;
+#endif /* ALLOW_UNUSED_VARIABLES */
   bfd *abfd;
   asection *bfd_sect;
   unsigned int nsyms;
@@ -2161,7 +2171,7 @@ scan_xcoff_symtab (struct objfile *objfile)
   unsigned int ssymnum;
 
   char *last_csect_name = NULL;	/* last seen csect's name and value */
-  CORE_ADDR last_csect_val = 0;
+  CORE_ADDR last_csect_val = 0UL;
   int last_csect_sec = 0;
   int misc_func_recorded = 0;	/* true if any misc. function */
   int textlow_not_set = 1;
@@ -2598,7 +2608,7 @@ scan_xcoff_symtab (struct objfile *objfile)
 		symbol.n_value += ANOFFSET (objfile->section_offsets, SECT_OFF_DATA (objfile));
 #ifdef STATIC_TRANSFORM_NAME
 		namestring = STATIC_TRANSFORM_NAME (namestring);
-#endif
+#endif /* STATIC_TRANSFORM_NAME */
 		add_psymbol_to_list (namestring, p - namestring,
 				     VAR_DOMAIN, LOC_STATIC,
 				     &objfile->static_psymbols,
@@ -2835,7 +2845,7 @@ scan_xcoff_symtab (struct objfile *objfile)
      If no XMC_TC0 is found, toc_offset should be zero. Another place to obtain
      this information would be file auxiliary header. */
 
-  ((struct coff_symfile_info *) objfile->deprecated_sym_private)->toc_offset = toc_offset;
+  ((struct coff_symfile_info *)objfile->deprecated_sym_private)->toc_offset = toc_offset;
 }
 
 /* Return the toc offset value for a given objfile: */
@@ -2868,7 +2878,7 @@ xcoff_initial_scan(struct objfile *objfile, int mainline)
   file_ptr stringtab_offset;	/* string table file offsets */
   struct coff_symfile_info *info;
   char *name;
-  unsigned int size;
+  size_t size;
 
   info = (struct coff_symfile_info *)objfile->deprecated_sym_private;
   symfile_bfd = abfd = objfile->obfd;
@@ -2930,7 +2940,7 @@ xcoff_initial_scan(struct objfile *objfile, int mainline)
 
   val = bfd_bread(((struct coff_symfile_info *)objfile->deprecated_sym_private)->symtbl,
 		  size, abfd);
-  if (val != size)
+  if ((size_t)val != size)
     perror_with_name(_("reading symbol table"));
 
   /* If we are reinitializing, or if we have never loaded syms yet, init */

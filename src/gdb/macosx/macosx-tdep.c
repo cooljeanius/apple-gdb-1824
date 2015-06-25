@@ -106,6 +106,8 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
      !defined(THROW_CATCH_FIND_TYPEINFO)
 #  include "macosx/tm-i386-macosx.h"
 # endif /* (HOST_I386 || __i386__) && !THROW_CATCH_FIND_TYPEINFO */
+#elif defined(TARGET_AARCH64)
+# include "aarch64-tdep.h"
 #else
 # error "Unrecognized target architecture."
 #endif /* TARGET_foo */
@@ -172,10 +174,16 @@ struct deprecated_complaint unsupported_indirect_symtype_complaint =
 
 #define BFD_GETB16(addr) ((addr[0] << 8) | addr[1])
 #define BFD_GETB32(addr) ((((((uint32_t)addr[0] << 8) | addr[1]) << 8) | addr[2]) << 8 | addr[3])
-#define BFD_GETB64(addr) ((((((((((uint64_t)addr[0] << 8) | addr[1]) << 8) | addr[2]) << 8 | addr[3]) << 8 | addr[4]) << 8 | addr[5]) << 8 | addr[6]) << 8 | addr[7])
 #define BFD_GETL16(addr) ((addr[1] << 8) | addr[0])
 #define BFD_GETL32(addr) ((((((uint32_t)addr[3] << 8) | addr[2]) << 8) | addr[1]) << 8 | addr[0])
-#define BFD_GETL64(addr) ((((((((((uint64_t)addr[7] << 8) | addr[6]) << 8) | addr[5]) << 8 | addr[4]) << 8 | addr[3]) << 8 | addr[2]) << 8 | addr[1]) << 8 | addr[0])
+#if defined(BYTES_IN_WORD) && (BYTES_IN_WORD == 8)
+# define BFD_GETB64(addr) ((((((((((uint64_t)addr[0] << 8) | addr[1]) << 8) | addr[2]) << 8 | addr[3]) << 8 | addr[4]) << 8 | addr[5]) << 8 | addr[6]) << 8 | addr[7])
+# define BFD_GETL64(addr) ((((((((((uint64_t)addr[7] << 8) | addr[6]) << 8) | addr[5]) << 8 | addr[4]) << 8 | addr[3]) << 8 | addr[2]) << 8 | addr[1]) << 8 | addr[0])
+#else
+/* FIXME: come up with a better replacement: */
+# define BFD_GETB64(addr) BFD_GETB32(addr)
+# define BFD_GETL64(addr) BFD_GETL32(addr)
+#endif /* (BYTES_IN_WORD == 8) */
 
 unsigned char macosx_symbol_types[256];
 
@@ -270,6 +278,7 @@ macosx_symbol_type(unsigned char macho_type, unsigned char macho_sect,
         {
           const bfd_mach_o_section *sect =
             abfd->tdata.mach_o_data->sections[macho_sect - 1];
+          char *sect_segname;
 
           if (sect == NULL)
             {
@@ -277,17 +286,23 @@ macosx_symbol_type(unsigned char macho_type, unsigned char macho_sect,
               complain(&unknown_macho_section_complaint,
                        hex_string(macho_sect));
 #endif /* 0 */
+              sect_segname = NULL;
             }
-          else if ((sect->segname != NULL)
-                   && (strcmp(sect->segname, "__DATA") == 0))
+          else
             {
-              if ((sect->sectname != NULL)
+              sect_segname = (char *)sect->segname;
+            }
+
+          if ((sect_segname != NULL)
+              && (strcmp(sect->segname, "__DATA") == 0))
+            {
+              if ((sect_segname != NULL)
                   && (strcmp(sect->sectname, "__bss") == 0))
                 ntype |= N_BSS;
               else
                 ntype |= N_DATA;
             }
-          else if ((sect->segname != NULL)
+          else if ((sect_segname != NULL)
                    && (strcmp(sect->segname, "__TEXT") == 0))
             {
               ntype |= N_TEXT;
@@ -723,7 +738,6 @@ open_command(char *args, int from_tty ATTRIBUTE_UNUSED)
       filename = NULL;
       line_no = 0;
     }
-
   else
     {
       char *colon_pos = strrchr(args, ':');
@@ -765,11 +779,18 @@ open_command(char *args, int from_tty ATTRIBUTE_UNUSED)
     }
 
   /* Prefer the fully qualified FULLNAME over whatever FILENAME might have: */
-  if (stat(fullname, &sb) == 0)
+  if (stat(fullname, &sb) == 0) {
     filename = fullname;
-  else
-    if (stat(filename, &sb) != 0)
+  } else {
+    if (stat(filename, &sb) != 0) {
       error("File '%s' not found.", filename);
+    }
+  }
+
+  /* use an unused variable: */
+  if (line_no > 0) {
+    return; /* else fall off the end, it makes no difference... */
+  }
 }
 
 
@@ -1685,7 +1706,9 @@ locate_kext_executable_by_dsym_plist(CFDictionaryRef dsym_info,
   CFDictionaryRef uuid_info = NULL;
   CFStringRef kext_path = NULL;
   CFStringRef uuid_string = NULL;
+#ifdef ALLOW_UNUSED_VARIABLES
   CFStringRef alt_exe_path = NULL;
+#endif /* ALLOW_UNUSED_VARIABLES */
   char *path = NULL;
   char temp_pathbuf[PATH_MAX];
 
@@ -3261,8 +3284,10 @@ add_all_kexts_command(char *args ATTRIBUTE_UNUSED, int from_tty)
  * targets -- reading these out of kernel memory over a USB cable would be
  * slow.
  */
-# if 0
+# ifdef HAVE_STRUCT_LOADED_KEXT_INFO_SIZE
           uint8_t *buf = (uint8_t *)xmalloc(lks->kexts[i].size);
+          const char *bfd_target_name;
+          bfd *abfd;
           if (buf == NULL)
             {
               free_section_addr_info(sect_addrs);
@@ -3273,27 +3298,28 @@ add_all_kexts_command(char *args ATTRIBUTE_UNUSED, int from_tty)
               free_section_addr_info(sect_addrs);
               continue;
             }
-          const char *bfd_target_name = NULL;
+          bfd_target_name = (const char *)NULL;
           if (gdbarch_byte_order(current_gdbarch) == BFD_ENDIAN_LITTLE)
             bfd_target_name = "mach-o-le";
           if (gdbarch_byte_order(current_gdbarch) == BFD_ENDIAN_BIG)
             bfd_target_name = "mach-o-be";
 
           /* note that we never free the kext memory we just transferred... */
-          bfd *abfd = bfd_memopenr(lks->kexts[i].name, bfd_target_name,
-                                   buf, lks->kexts[i].size);
+          abfd = bfd_memopenr(lks->kexts[i].name, bfd_target_name, buf,
+                              lks->kexts[i].size);
           if ((abfd == NULL) || !bfd_check_format(abfd, bfd_object))
             {
               free_section_addr_info(sect_addrs);
               xfree(buf);
               continue;
             }
-          symbol_file_add_bfd_safe(abfd, 0,
-                                   0, NULL, 0,
-                                   OBJF_USERLOADED,
-                                   OBJF_SYM_ALL,
-                                   0, NULL, NULL);
-# endif /* 0 */
+          symbol_file_add_bfd_safe(abfd, 0, 0, NULL, 0, OBJF_USERLOADED,
+                                   OBJF_SYM_ALL, 0, NULL, NULL);
+# else
+          if (have_dsym_path) {
+            ; /* ??? */
+          }
+# endif /* HAVE_STRUCT_LOADED_KEXT_INFO_SIZE */
         }
       free_section_addr_info(sect_addrs);
     }
@@ -3968,7 +3994,6 @@ void
 get_dyld_shared_cache_local_syms(void)
 {
 #if defined(TARGET_ARM) && defined(NM_NEXTSTEP)
-
   if (dyld_shared_cache_raw != NULL)
     return;
 

@@ -283,7 +283,7 @@ type_from_class(struct value *clas)
       struct value *sig;
       temp = clas;
       sig = value_struct_elt(&temp, NULL, "method_count", NULL, "structure");
-      return java_primitive_type(value_as_long(sig));
+      return java_primitive_type((int)value_as_long(sig));
     }
 
   /* Get Class name. */
@@ -322,6 +322,10 @@ type_from_class(struct value *clas)
       TYPE_TARGET_TYPE(type) = type_from_class(temp);
     }
 
+  if (is_array > 0) {
+    ; /* ??? */
+  }
+
   ALLOCATE_CPLUS_STRUCT_TYPE(type);
   TYPE_TAG_NAME(type) = name;
 
@@ -336,7 +340,8 @@ java_link_class_type(struct type *type, struct value *clas)
   struct value *temp;
   char *unqualified_name;
   char *name = TYPE_TAG_NAME(type);
-  int ninterfaces, nfields, nmethods;
+  int ninterfaces;
+  long nfields, nmethods;
   int type_is_object = 0;
   struct fn_field *fn_fields;
   struct fn_fieldlist *fn_fieldlists;
@@ -345,154 +350,163 @@ java_link_class_type(struct type *type, struct value *clas)
   struct value *method = NULL;
   struct value *field = NULL;
   int i, j;
-  struct objfile *objfile = get_dynamics_objfile ();
+  struct objfile *objfile = get_dynamics_objfile();
   struct type *tsuper;
 
-  unqualified_name = strrchr (name, '.');
+  unqualified_name = strrchr(name, '.');
   if (unqualified_name == NULL)
     unqualified_name = name;
 
   temp = clas;
-  temp = value_struct_elt (&temp, NULL, "superclass", NULL, "structure");
-  if (name != NULL && strcmp (name, "java.lang.Object") == 0)
+  temp = value_struct_elt(&temp, NULL, "superclass", NULL, "structure");
+  if (name != NULL && strcmp(name, "java.lang.Object") == 0)
     {
-      tsuper = get_java_object_type ();
-      if (tsuper && TYPE_CODE (tsuper) == TYPE_CODE_PTR)
-	tsuper = TYPE_TARGET_TYPE (tsuper);
+      tsuper = get_java_object_type();
+      if (tsuper && TYPE_CODE(tsuper) == TYPE_CODE_PTR)
+	tsuper = TYPE_TARGET_TYPE(tsuper);
       type_is_object = 1;
     }
   else
-    tsuper = type_from_class (temp);
+    tsuper = type_from_class(temp);
 
 #if 1
   ninterfaces = 0;
 #else
   temp = clas;
-  ninterfaces = value_as_long (value_struct_elt (&temp, NULL, "interface_len", NULL, "structure"));
-#endif
-  TYPE_N_BASECLASSES (type) = (tsuper == NULL ? 0 : 1) + ninterfaces;
+  ninterfaces = value_as_long(value_struct_elt(&temp, NULL,
+                                               "interface_len", NULL,
+                                               "structure"));
+#endif /* 1 */
+  TYPE_N_BASECLASSES(type) = (tsuper == NULL ? 0 : 1) + ninterfaces;
   temp = clas;
-  nfields = value_as_long (value_struct_elt (&temp, NULL, "field_count", NULL, "structure"));
-  nfields += TYPE_N_BASECLASSES (type);
+  nfields = (long)value_as_long(value_struct_elt(&temp, NULL,
+                                                 "field_count", NULL,
+                                                 "structure"));
+  nfields += TYPE_N_BASECLASSES(type);
   nfields++;			/* Add one for dummy "class" field. */
-  TYPE_NFIELDS (type) = nfields;
-  TYPE_FIELDS (type) = (struct field *)
-    TYPE_ALLOC (type, sizeof (struct field) * nfields);
+  TYPE_NFIELDS(type) = nfields;
+  TYPE_FIELDS(type) = ((struct field *)
+                       TYPE_ALLOC(type, (sizeof(struct field) * nfields)));
 
-  memset (TYPE_FIELDS (type), 0, sizeof (struct field) * nfields);
+  memset(TYPE_FIELDS(type), 0, (sizeof(struct field) * nfields));
 
-  TYPE_FIELD_PRIVATE_BITS (type) =
-    (B_TYPE *) TYPE_ALLOC (type, B_BYTES (nfields));
-  B_CLRALL (TYPE_FIELD_PRIVATE_BITS (type), nfields);
+  TYPE_FIELD_PRIVATE_BITS(type) =
+    (B_TYPE *)TYPE_ALLOC(type, B_BYTES(nfields));
+  B_CLRALL(TYPE_FIELD_PRIVATE_BITS(type), nfields);
 
-  TYPE_FIELD_PROTECTED_BITS (type) =
-    (B_TYPE *) TYPE_ALLOC (type, B_BYTES (nfields));
-  B_CLRALL (TYPE_FIELD_PROTECTED_BITS (type), nfields);
+  TYPE_FIELD_PROTECTED_BITS(type) =
+    (B_TYPE *)TYPE_ALLOC(type, B_BYTES(nfields));
+  B_CLRALL(TYPE_FIELD_PROTECTED_BITS(type), nfields);
 
-  TYPE_FIELD_IGNORE_BITS (type) =
-    (B_TYPE *) TYPE_ALLOC (type, B_BYTES (nfields));
-  B_CLRALL (TYPE_FIELD_IGNORE_BITS (type), nfields);
+  TYPE_FIELD_IGNORE_BITS(type) =
+    (B_TYPE *)TYPE_ALLOC(type, B_BYTES(nfields));
+  B_CLRALL(TYPE_FIELD_IGNORE_BITS(type), nfields);
 
-  TYPE_FIELD_VIRTUAL_BITS (type) = (B_TYPE *)
-    TYPE_ALLOC (type, B_BYTES (TYPE_N_BASECLASSES (type)));
-  B_CLRALL (TYPE_FIELD_VIRTUAL_BITS (type), TYPE_N_BASECLASSES (type));
+  TYPE_FIELD_VIRTUAL_BITS(type) =
+    (B_TYPE *)TYPE_ALLOC(type, B_BYTES(TYPE_N_BASECLASSES(type)));
+  B_CLRALL(TYPE_FIELD_VIRTUAL_BITS(type), TYPE_N_BASECLASSES(type));
 
   if (tsuper != NULL)
     {
-      TYPE_BASECLASS (type, 0) = tsuper;
+      TYPE_BASECLASS(type, 0) = tsuper;
       if (type_is_object)
-	SET_TYPE_FIELD_PRIVATE (type, 0);
+	SET_TYPE_FIELD_PRIVATE(type, 0);
     }
 
-  i = strlen (name);
-  if (i > 2 && name[i - 1] == ']' && tsuper != NULL)
+  i = strlen(name);
+  if ((i > 2) && (name[i - 1] == ']') && (tsuper != NULL))
     {
-      /* FIXME */
-      TYPE_LENGTH_ASSIGN (type) = TYPE_LENGTH (tsuper) + 4;	/* size with "length" */
+      /* FIXME: ??? */
+      TYPE_LENGTH_ASSIGN(type) = (TYPE_LENGTH(tsuper) + 4); /* size with "length" */
     }
   else
     {
       temp = clas;
-      temp = value_struct_elt (&temp, NULL, "size_in_bytes", NULL, "structure");
-      TYPE_LENGTH_ASSIGN (type) = value_as_long (temp);
+      temp = value_struct_elt(&temp, NULL, "size_in_bytes", NULL,
+                              "structure");
+      TYPE_LENGTH_ASSIGN(type) = (int)value_as_long(temp);
     }
 
   fields = NULL;
   nfields--;			/* First set up dummy "class" field. */
-  SET_FIELD_PHYSADDR (TYPE_FIELD (type, nfields),
-		      VALUE_ADDRESS (clas) + value_offset (clas));
-  TYPE_FIELD_NAME (type, nfields) = "class";
-  TYPE_FIELD_TYPE (type, nfields) = value_type (clas);
-  SET_TYPE_FIELD_PRIVATE (type, nfields);
+  SET_FIELD_PHYSADDR(TYPE_FIELD(type, nfields),
+		     (VALUE_ADDRESS(clas) + value_offset(clas)));
+  TYPE_FIELD_NAME(type, nfields) = "class";
+  TYPE_FIELD_TYPE(type, nfields) = value_type(clas);
+  SET_TYPE_FIELD_PRIVATE(type, nfields);
 
-  for (i = TYPE_N_BASECLASSES (type); i < nfields; i++)
+  for (i = TYPE_N_BASECLASSES(type); i < nfields; i++)
     {
-      int accflags;
-      int boffset;
+      long accflags;
+      long boffset;
       if (fields == NULL)
 	{
 	  temp = clas;
-	  fields = value_struct_elt (&temp, NULL, "fields", NULL, "structure");
-	  field = value_ind (fields);
+	  fields = value_struct_elt(&temp, NULL, "fields", NULL,
+                                    "structure");
+	  field = value_ind(fields);
 	}
       else
 	{			/* Re-use field value for next field. */
-	  VALUE_ADDRESS (field) += TYPE_LENGTH (value_type (field));
-	  set_value_lazy (field, 1);
+	  VALUE_ADDRESS(field) += TYPE_LENGTH(value_type(field));
+	  set_value_lazy(field, 1);
 	}
       temp = field;
-      temp = value_struct_elt (&temp, NULL, "name", NULL, "structure");
-      TYPE_FIELD_NAME (type, i) =
-	get_java_utf8_name (&objfile->objfile_obstack, temp);
+      temp = value_struct_elt(&temp, NULL, "name", NULL, "structure");
+      TYPE_FIELD_NAME(type, i) =
+	get_java_utf8_name(&objfile->objfile_obstack, temp);
       temp = field;
-      accflags = value_as_long (value_struct_elt (&temp, NULL, "accflags",
-						  NULL, "structure"));
+      accflags = (long)value_as_long(value_struct_elt(&temp, NULL,
+                                                      "accflags", NULL,
+                                                      "structure"));
       temp = field;
-      temp = value_struct_elt (&temp, NULL, "info", NULL, "structure");
-      boffset = value_as_long (value_struct_elt (&temp, NULL, "boffset",
-						 NULL, "structure"));
+      temp = value_struct_elt(&temp, NULL, "info", NULL, "structure");
+      boffset = (long)value_as_long(value_struct_elt(&temp, NULL,
+                                                     "boffset", NULL,
+                                                     "structure"));
       if (accflags & 0x0001)	/* public access */
 	{
-	  /* ??? */
+	  ; /* ??? */
 	}
       if (accflags & 0x0002)	/* private access */
 	{
-	  SET_TYPE_FIELD_PRIVATE (type, i);
+	  SET_TYPE_FIELD_PRIVATE(type, i);
 	}
       if (accflags & 0x0004)	/* protected access */
 	{
-	  SET_TYPE_FIELD_PROTECTED (type, i);
+	  SET_TYPE_FIELD_PROTECTED(type, i);
 	}
       if (accflags & 0x0008)	/* ACC_STATIC */
-	SET_FIELD_PHYSADDR (TYPE_FIELD (type, i), boffset);
+	SET_FIELD_PHYSADDR(TYPE_FIELD(type, i), boffset);
       else
-	TYPE_FIELD_BITPOS_ASSIGN (type, i) = 8 * boffset;
+	TYPE_FIELD_BITPOS_ASSIGN(type, i) = (8 * boffset);
       if (accflags & 0x8000)	/* FIELD_UNRESOLVED_FLAG */
 	{
-	  TYPE_FIELD_TYPE (type, i) = get_java_object_type ();	/* FIXME */
+	  TYPE_FIELD_TYPE(type, i) = get_java_object_type(); /* FIXME: ? */
 	}
       else
 	{
 	  struct type *ftype;
 	  temp = field;
-	  temp = value_struct_elt (&temp, NULL, "type", NULL, "structure");
-	  ftype = type_from_class (temp);
-	  if (TYPE_CODE (ftype) == TYPE_CODE_STRUCT)
-	    ftype = lookup_pointer_type (ftype);
-	  TYPE_FIELD_TYPE (type, i) = ftype;
+	  temp = value_struct_elt(&temp, NULL, "type", NULL, "structure");
+	  ftype = type_from_class(temp);
+	  if (TYPE_CODE(ftype) == TYPE_CODE_STRUCT)
+	    ftype = lookup_pointer_type(ftype);
+	  TYPE_FIELD_TYPE(type, i) = ftype;
 	}
     }
 
   temp = clas;
-  nmethods = value_as_long (value_struct_elt (&temp, NULL, "method_count",
-					      NULL, "structure"));
-  TYPE_NFN_FIELDS_TOTAL (type) = nmethods;
-  j = nmethods * sizeof (struct fn_field);
-  fn_fields = (struct fn_field *)
-    obstack_alloc (&dynamics_objfile->objfile_obstack, j);
-  memset (fn_fields, 0, j);
-  fn_fieldlists = (struct fn_fieldlist *)
-    alloca (nmethods * sizeof (struct fn_fieldlist));
+  nmethods = (long)value_as_long(value_struct_elt(&temp, NULL,
+                                                  "method_count", NULL,
+                                                  "structure"));
+  TYPE_NFN_FIELDS_TOTAL(type) = nmethods;
+  j = (nmethods * sizeof(struct fn_field));
+  fn_fields = ((struct fn_field *)
+               obstack_alloc(&dynamics_objfile->objfile_obstack, j));
+  memset(fn_fields, 0, j);
+  fn_fieldlists = ((struct fn_fieldlist *)
+                   alloca(nmethods * sizeof(struct fn_fieldlist)));
 
   methods = NULL;
   for (i = 0; i < nmethods; i++)
@@ -555,14 +569,14 @@ java_link_class_type(struct type *type, struct value *clas)
       fn_fields[k].physname = "";
       fn_fields[k].is_stub = 1;
       /* APPLE LOCAL - Inform users about debugging optimized code  */
-      fn_fields[k].type = make_function_type (java_void_type, NULL, 0);	/* FIXME */
-      TYPE_CODE (fn_fields[k].type) = TYPE_CODE_METHOD;
+      fn_fields[k].type = make_function_type(java_void_type, NULL, 0); /* FIXME */
+      TYPE_CODE(fn_fields[k].type) = TYPE_CODE_METHOD;
     }
 
-  j = TYPE_NFN_FIELDS (type) * sizeof (struct fn_fieldlist);
-  TYPE_FN_FIELDLISTS (type) = (struct fn_fieldlist *)
-    obstack_alloc (&dynamics_objfile->objfile_obstack, j);
-  memcpy (TYPE_FN_FIELDLISTS (type), fn_fieldlists, j);
+  j = TYPE_NFN_FIELDS(type) * sizeof(struct fn_fieldlist);
+  TYPE_FN_FIELDLISTS(type) = (struct fn_fieldlist *)
+    obstack_alloc(&dynamics_objfile->objfile_obstack, j);
+  memcpy(TYPE_FN_FIELDLISTS(type), fn_fieldlists, j);
 
   return type;
 }
@@ -769,26 +783,25 @@ java_demangle_type_signature (char *signature)
    If DIMS == 0, TYPE is returned. */
 
 struct type *
-java_array_type (struct type *type, int dims)
+java_array_type(struct type *type, int dims)
 {
   struct type *range_type;
 
   while (dims-- > 0)
     {
-      range_type = create_range_type (NULL, builtin_type_int, 0, 0);
-      /* FIXME  This is bogus!  Java arrays are not gdb arrays! */
-      type = create_array_type (NULL, type, range_type);
+      range_type = create_range_type(NULL, builtin_type_int, 0, 0);
+      /* FIXME: This is bogus!  Java arrays are not gdb arrays! */
+      type = create_array_type(NULL, type, range_type);
     }
 
   return type;
 }
 
-/* Create a Java string in the inferior from a (Utf8) literal. */
-
+/* Create a Java string in the inferior from a (Utf8) literal: */
 static struct value *
-java_value_string (char *ptr, int len)
+java_value_string(char *ptr, int len)
 {
-  error (_("not implemented - java_value_string"));	/* FIXME */
+  error(_("not implemented - java_value_string")); /* FIXME: implement */
 }
 
 /* Print the character C on STREAM as part of the contents of a literal

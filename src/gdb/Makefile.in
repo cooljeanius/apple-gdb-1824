@@ -1688,8 +1688,12 @@ distclean: clean clean-tui clean-gdbtk @MAINT@ clean-po
 	rm -f y.output yacc.acts yacc.tmp y.tab.h
 	rm -f config.log config.cache
 	rm -f Makefile
-	-rm -f .DS_Store autoscan.log
+	-rm -f .DS_Store config/.DS_Store m4/.DS_Store macosx/.DS_Store
+	-rm -f macosx/gdb-ng_patches/.DS_Store XcodePlugins/.DS_Store
+	-rm -f autoscan.log macosx/gdb.log
+	-rm -rf .libs || rmdir .libs
 	-rm -rf autom4te.cache || rmdir autom4te.cache
+	-find . -name .DS_Store -delete
 
 maintainer-clean: local-maintainer-clean do-maintainer-clean distclean
 realclean: maintainer-clean
@@ -3066,7 +3070,7 @@ solib.o: solib.c $(defs_h) $(gdb_string_h) $(symtab_h) $(bfd_h) \
   $(symfile_h) $(objfiles_h) $(exceptions_h) $(gdbcore_h) $(command_h) \
   $(target_h) $(frame_h) $(gdb_regex_h) $(inferior_h) $(environ_h) \
   $(language_h) $(gdbcmd_h) $(completer_h) $(filenames_h) $(exec_h) \
-  $(solist_h) $(observer_h) $(readline_h)
+  $(solist_h) $(observer_h) $(readline_h) $(solib_h)
 solib-frv.o: solib-frv.c $(defs_h) $(gdb_string_h) $(inferior_h) \
   $(gdbcore_h) $(solist_h) $(frv_tdep_h) $(objfiles_h) $(symtab_h) \
   $(language_h) $(command_h) $(gdbcmd_h) $(elf_frv_h)

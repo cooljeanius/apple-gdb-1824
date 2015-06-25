@@ -87,16 +87,16 @@ do_restore_print_closure(void *in_oldval)
 }
 
 struct cleanup *
-make_cleanup_set_restore_print_closure (int newval)
+make_cleanup_set_restore_print_closure(int newval)
 {
   int oldval = print_closure;
   print_closure = newval;
-  return make_cleanup (do_restore_print_closure, (void *) oldval);
+  return make_cleanup(do_restore_print_closure, (void *)oldval);
 }
 
 static struct value *
-evaluate_subexp (struct type *expect_type, struct expression *exp,
-		 int *pos, enum noside noside)
+evaluate_subexp(struct type *expect_type, struct expression *exp,
+                int *pos, enum noside noside)
 {
   return (*exp->language_defn->la_exp_desc->evaluate_exp)
     (expect_type, exp, pos, noside);
@@ -137,15 +137,15 @@ parse_and_eval_address_1 (char **expptr)
   expr = parse_exp_1 (expptr, (struct block *) 0, 0);
   old_chain = make_cleanup (free_current_contents, &expr);
   /* APPLE LOCAL end initialize innermost_block  */
-  addr = value_as_address (evaluate_expression (expr));
-  do_cleanups (old_chain);
+  addr = value_as_address(evaluate_expression(expr));
+  do_cleanups(old_chain);
   return addr;
 }
 
 /* Like parse_and_eval_address, but treats the value of the expression
    as an integer, not an address, returns a LONGEST, not a CORE_ADDR */
 LONGEST
-parse_and_eval_long (char *exp)
+parse_and_eval_long(char *exp)
 {
   /* APPLE LOCAL begin initialize innermost_block  */
   struct expression *expr;
@@ -153,8 +153,8 @@ parse_and_eval_long (char *exp)
   struct cleanup *old_chain;
 
   innermost_block = NULL;
-  expr = parse_expression (exp);
-  old_chain = make_cleanup (free_current_contents, &expr);
+  expr = parse_expression(exp);
+  old_chain = make_cleanup(free_current_contents, &expr);
   /* APPLE LOCAL end initialize innermost_block  */
   retval = value_as_long (evaluate_expression (expr));
   do_cleanups (old_chain);
@@ -768,22 +768,22 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
     case TERNOP_SLICE:
       {
 	struct value *array = evaluate_subexp(NULL_TYPE, exp, pos, noside);
-	int lowbound
-          = value_as_long(evaluate_subexp(NULL_TYPE, exp, pos, noside));
-	int upper
-          = value_as_long(evaluate_subexp(NULL_TYPE, exp, pos, noside));
+	int lowbound =
+          (int)value_as_long(evaluate_subexp(NULL_TYPE, exp, pos, noside));
+	int upper =
+          (int)value_as_long(evaluate_subexp(NULL_TYPE, exp, pos, noside));
 	if (noside == EVAL_SKIP) {
 	  goto nosideret;
         }
-	return value_slice(array, lowbound, (upper - lowbound + 1));
+	return value_slice(array, lowbound, ((upper - lowbound) + 1));
       }
     case TERNOP_SLICE_COUNT:
       {
 	struct value *array = evaluate_subexp(NULL_TYPE, exp, pos, noside);
-	int lowbound
-          = value_as_long(evaluate_subexp(NULL_TYPE, exp, pos, noside));
-	int length
-          = value_as_long(evaluate_subexp(NULL_TYPE, exp, pos, noside));
+	int lowbound =
+          (int)value_as_long(evaluate_subexp(NULL_TYPE, exp, pos, noside));
+	int length =
+          (int)value_as_long(evaluate_subexp(NULL_TYPE, exp, pos, noside));
 	return value_slice(array, lowbound, length);
       }
     case TERNOP_COND:
@@ -819,7 +819,7 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
       }
     case OP_OBJC_MSGCALL:
       {				/* Objective C message (method) call: */
-	CORE_ADDR selector = 0;
+	CORE_ADDR selector = 0UL;
 
 	int using_gcc = 0;
 	int struct_return = 0;
@@ -837,7 +837,7 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 	struct type *selector_type = NULL;
 
 	struct value *ret = NULL;
-	CORE_ADDR addr = 0;
+	CORE_ADDR addr = 0UL;
 
         /* APPLE LOCAL: SELECTOR can be sign-extended because .longconst
          * is signed; mask off the upper 32 bits if we are not a 64 bit
@@ -847,9 +847,9 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
         } else {
 	  selector = (exp->elts[pc + 1].longconst & 0xffffffff);
         }
-	nargs = exp->elts[pc + 2].longconst;
+	nargs = (int)exp->elts[pc + 2].longconst;
 	argvec = (struct value **)alloca(sizeof(struct value *)
-                                         * (nargs + 5));
+                                         * (nargs + 5UL));
 
 	(*pos) += 3;
 
@@ -860,7 +860,8 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 	  sub_no_side = noside;
         }
 
-	target = evaluate_subexp(selector_type, exp, pos, sub_no_side);
+	target = evaluate_subexp(selector_type, exp, pos,
+                                 (enum noside)sub_no_side);
 
 	/* APPLE LOCAL: If we go on from here we are going to try to look
 	 * up TARGET as an objc class.  But getting the target (OP_VAR_VALUE)
@@ -1483,10 +1484,10 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 	goto nosideret;
       }
 
-      tem2 = value_as_long(arg2);
-      tem3 = value_as_long(arg3);
+      tem2 = (int)value_as_long(arg2);
+      tem3 = (int)value_as_long(arg3);
 
-      return value_slice(arg1, tem2, tem3 - tem2 + 1);
+      return value_slice(arg1, tem2, ((tem3 - tem2) + 1));
     } /* end brackets for case OP_F77_UNDETERMINED_ARGLIST */
     case OP_COMPLEX:
       /* We have a complex number; there should be 2 floating point numbers
@@ -1497,27 +1498,27 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
       return value_literal_complex(arg1, arg2, builtin_type_f_complex_s16);
 
     case STRUCTOP_STRUCT:
-      tem = longest_to_int (exp->elts[pc + 1].longconst);
-      (*pos) += 3 + BYTES_TO_EXP_ELEM (tem + 1);
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      tem = longest_to_int(exp->elts[pc + 1].longconst);
+      (*pos) += (3 + BYTES_TO_EXP_ELEM(tem + 1));
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
       if (noside == EVAL_AVOID_SIDE_EFFECTS)
-	return value_zero (lookup_struct_elt_type (value_type (arg1),
-						   &exp->elts[pc + 2].string,
-						   0),
-			   lval_memory);
+	return value_zero(lookup_struct_elt_type(value_type(arg1),
+                                                 &exp->elts[pc + 2].string,
+                                                 0),
+			  lval_memory);
       else
 	{
 	  struct value *temp = arg1;
-	  return value_struct_elt (&temp, NULL, &exp->elts[pc + 2].string,
-				   NULL, "structure");
+	  return value_struct_elt(&temp, NULL, &exp->elts[pc + 2].string,
+				  NULL, "structure");
 	}
 
     case STRUCTOP_PTR:
-      tem = longest_to_int (exp->elts[pc + 1].longconst);
-      (*pos) += 3 + BYTES_TO_EXP_ELEM (tem + 1);
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      tem = longest_to_int(exp->elts[pc + 1].longconst);
+      (*pos) += (3 + BYTES_TO_EXP_ELEM(tem + 1));
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
 
@@ -1525,68 +1526,68 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 	 with rtti type in order to continue on with successful
 	 lookup of member / method only available in the rtti type. */
       {
-        struct type *type = value_type (arg1);
+        struct type *type = value_type(arg1);
         struct type *real_type = NULL;
         int full, top, using_enc;
 
         if (objectprint && TYPE_TARGET_TYPE(type) &&
-            (TYPE_CODE (TYPE_TARGET_TYPE (type)) == TYPE_CODE_CLASS))
+            (TYPE_CODE(TYPE_TARGET_TYPE(type)) == TYPE_CODE_CLASS))
           {
-            real_type = value_rtti_target_type (arg1, &full, &top, &using_enc);
+            real_type = value_rtti_target_type(arg1, &full, &top, &using_enc);
             if (real_type)
               {
-                if (TYPE_CODE (type) == TYPE_CODE_PTR)
-                  real_type = lookup_pointer_type (real_type);
+                if (TYPE_CODE(type) == TYPE_CODE_PTR)
+                  real_type = lookup_pointer_type(real_type);
                 else
-                  real_type = lookup_reference_type (real_type);
+                  real_type = lookup_reference_type(real_type);
 
-                arg1 = value_cast (real_type, arg1);
+                arg1 = value_cast(real_type, arg1);
               }
           }
 	if (!real_type && print_closure)
 	  {
-	    real_type = get_closure_dynamic_type (arg1);
+	    real_type = get_closure_dynamic_type(arg1);
 	    if (real_type)
-	      arg1 = value_cast (real_type, arg1);
+	      arg1 = value_cast(real_type, arg1);
 	  }
       }
 
       if (noside == EVAL_AVOID_SIDE_EFFECTS)
-	return value_zero (lookup_struct_elt_type (value_type (arg1),
-						   &exp->elts[pc + 2].string,
-						   0),
-			   lval_memory);
+	return value_zero(lookup_struct_elt_type(value_type(arg1),
+                                                 &exp->elts[pc + 2].string,
+                                                 0),
+			  lval_memory);
       else
 	{
 	  struct value *temp = arg1;
-	  return value_struct_elt (&temp, NULL, &exp->elts[pc + 2].string,
-				   NULL, "structure pointer");
+	  return value_struct_elt(&temp, NULL, &exp->elts[pc + 2].string,
+				  NULL, "structure pointer");
 	}
 
     case STRUCTOP_MEMBER:
-      arg1 = evaluate_subexp_for_address (exp, pos, noside);
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      arg1 = evaluate_subexp_for_address(exp, pos, noside);
+      arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
 
       /* With HP aCC, pointers to methods do not point to the function code */
       if (deprecated_hp_som_som_object_present &&
-	  (TYPE_CODE (value_type (arg2)) == TYPE_CODE_PTR) &&
-      (TYPE_CODE (TYPE_TARGET_TYPE (value_type (arg2))) == TYPE_CODE_METHOD))
-	error (_("Pointers to methods not supported with HP aCC"));	/* 1997-08-19 */
+	  (TYPE_CODE(value_type(arg2)) == TYPE_CODE_PTR) &&
+      (TYPE_CODE(TYPE_TARGET_TYPE(value_type(arg2))) == TYPE_CODE_METHOD))
+	error(_("Pointers to methods not supported with HP aCC")); /* 1997-08-19 */
 
-      mem_offset = value_as_long (arg2);
+      mem_offset = (long)value_as_long(arg2);
       goto handle_pointer_to_member;
 
     case STRUCTOP_MPTR:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
 
       /* With HP aCC, pointers to methods do not point to the function code */
       if (deprecated_hp_som_som_object_present &&
-	  (TYPE_CODE (value_type (arg2)) == TYPE_CODE_PTR) &&
-      (TYPE_CODE (TYPE_TARGET_TYPE (value_type (arg2))) == TYPE_CODE_METHOD))
-	error (_("Pointers to methods not supported with HP aCC"));	/* 1997-08-19 */
+	  (TYPE_CODE(value_type(arg2)) == TYPE_CODE_PTR) &&
+      (TYPE_CODE(TYPE_TARGET_TYPE(value_type(arg2))) == TYPE_CODE_METHOD))
+	error(_("Pointers to methods not supported with HP aCC")); /* 1997-08-19 */
 
-      mem_offset = value_as_long (arg2);
+      mem_offset = (long)value_as_long(arg2);
 
     handle_pointer_to_member:
       /* HP aCC generates offsets that have bit #29 set; turn it off to get
@@ -1594,41 +1595,41 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
       if (deprecated_hp_som_som_object_present)
 	{
 	  if (!mem_offset)	/* no bias -> really null */
-	    error (_("Attempted dereference of null pointer-to-member"));
+	    error(_("Attempted dereference of null pointer-to-member"));
 	  mem_offset &= ~0x20000000;
 	}
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      type = check_typedef (value_type (arg2));
-      if (TYPE_CODE (type) != TYPE_CODE_PTR)
+      type = check_typedef(value_type(arg2));
+      if (TYPE_CODE(type) != TYPE_CODE_PTR)
 	goto bad_pointer_to_member;
-      type = check_typedef (TYPE_TARGET_TYPE (type));
-      if (TYPE_CODE (type) == TYPE_CODE_METHOD)
-	error (_("not implemented: pointer-to-method in pointer-to-member construct"));
-      if (TYPE_CODE (type) != TYPE_CODE_MEMBER)
+      type = check_typedef(TYPE_TARGET_TYPE(type));
+      if (TYPE_CODE(type) == TYPE_CODE_METHOD)
+	error(_("not implemented: pointer-to-method in pointer-to-member construct"));
+      if (TYPE_CODE(type) != TYPE_CODE_MEMBER)
 	goto bad_pointer_to_member;
-      /* Now, convert these values to an address.  */
-      arg1 = value_cast (lookup_pointer_type (TYPE_DOMAIN_TYPE (type)),
-			 arg1);
-      arg3 = value_from_pointer (lookup_pointer_type (TYPE_TARGET_TYPE (type)),
-				 value_as_long (arg1) + mem_offset);
-      return value_ind (arg3);
+      /* Now, convert these values to an address: */
+      arg1 = value_cast(lookup_pointer_type(TYPE_DOMAIN_TYPE(type)),
+                        arg1);
+      arg3 = value_from_pointer(lookup_pointer_type(TYPE_TARGET_TYPE(type)),
+                                value_as_long(arg1) + mem_offset);
+      return value_ind(arg3);
     bad_pointer_to_member:
-      error (_("non-pointer-to-member value used in pointer-to-member construct"));
+      error(_("non-pointer-to-member value used in pointer-to-member construct"));
 
     case BINOP_CONCAT:
-      arg1 = evaluate_subexp_with_coercion (exp, pos, noside);
-      arg2 = evaluate_subexp_with_coercion (exp, pos, noside);
+      arg1 = evaluate_subexp_with_coercion(exp, pos, noside);
+      arg2 = evaluate_subexp_with_coercion(exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (binop_user_defined_p (op, arg1, arg2))
-	return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+      if (binop_user_defined_p(op, arg1, arg2))
+	return value_x_binop(arg1, arg2, op, OP_NULL, noside);
       else
-	return value_concat (arg1, arg2);
+	return value_concat(arg1, arg2);
 
     case BINOP_ASSIGN:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (value_type (arg1), exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      arg2 = evaluate_subexp(value_type(arg1), exp, pos, noside);
 
       /* Do special stuff for HP aCC pointers to members: */
       if (deprecated_hp_som_som_object_present)
@@ -1665,35 +1666,35 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
       if (noside == EVAL_SKIP || noside == EVAL_AVOID_SIDE_EFFECTS)
 	return arg1;
       op = exp->elts[pc + 1].opcode;
-      if (binop_user_defined_p (op, arg1, arg2))
-	return value_x_binop (arg1, arg2, BINOP_ASSIGN_MODIFY, op, noside);
+      if (binop_user_defined_p(op, arg1, arg2))
+	return value_x_binop(arg1, arg2, BINOP_ASSIGN_MODIFY, op, noside);
       else if (op == BINOP_ADD)
-	arg2 = value_add (arg1, arg2);
+	arg2 = value_add(arg1, arg2);
       else if (op == BINOP_SUB)
-	arg2 = value_sub (arg1, arg2);
+	arg2 = value_sub(arg1, arg2);
       else
-	arg2 = value_binop (arg1, arg2, op);
-      return value_assign (arg1, arg2);
+	arg2 = value_binop(arg1, arg2, op);
+      return value_assign(arg1, arg2);
 
     case BINOP_ADD:
-      arg1 = evaluate_subexp_with_coercion (exp, pos, noside);
-      arg2 = evaluate_subexp_with_coercion (exp, pos, noside);
+      arg1 = evaluate_subexp_with_coercion(exp, pos, noside);
+      arg2 = evaluate_subexp_with_coercion(exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (binop_user_defined_p (op, arg1, arg2))
-	return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+      if (binop_user_defined_p(op, arg1, arg2))
+	return value_x_binop(arg1, arg2, op, OP_NULL, noside);
       else
-	return value_add (arg1, arg2);
+	return value_add(arg1, arg2);
 
     case BINOP_SUB:
-      arg1 = evaluate_subexp_with_coercion (exp, pos, noside);
-      arg2 = evaluate_subexp_with_coercion (exp, pos, noside);
+      arg1 = evaluate_subexp_with_coercion(exp, pos, noside);
+      arg2 = evaluate_subexp_with_coercion(exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (binop_user_defined_p (op, arg1, arg2))
-	return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+      if (binop_user_defined_p(op, arg1, arg2))
+	return value_x_binop(arg1, arg2, op, OP_NULL, noside);
       else
-	return value_sub (arg1, arg2);
+	return value_sub(arg1, arg2);
 
     case BINOP_EXP:
     case BINOP_MUL:
@@ -1705,54 +1706,54 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
     case BINOP_BITWISE_AND:
     case BINOP_BITWISE_IOR:
     case BINOP_BITWISE_XOR:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (binop_user_defined_p (op, arg1, arg2))
-	return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+      if (binop_user_defined_p(op, arg1, arg2))
+	return value_x_binop(arg1, arg2, op, OP_NULL, noside);
       else if (noside == EVAL_AVOID_SIDE_EFFECTS
 	       && (op == BINOP_DIV || op == BINOP_REM || op == BINOP_MOD))
-	return value_zero (value_type (arg1), not_lval);
+	return value_zero(value_type(arg1), not_lval);
       else
-	return value_binop (arg1, arg2, op);
+	return value_binop(arg1, arg2, op);
 
     case BINOP_RANGE:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      error (_("':' operator used in invalid context"));
+      error(_("':' operator used in invalid context"));
 
     case BINOP_SUBSCRIPT:
-      arg1 = evaluate_subexp_with_coercion (exp, pos, noside);
-      arg2 = evaluate_subexp_with_coercion (exp, pos, noside);
+      arg1 = evaluate_subexp_with_coercion(exp, pos, noside);
+      arg2 = evaluate_subexp_with_coercion(exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (binop_user_defined_p (op, arg1, arg2))
-	return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+      if (binop_user_defined_p(op, arg1, arg2))
+	return value_x_binop(arg1, arg2, op, OP_NULL, noside);
       else
 	{
 	  /* If the user attempts to subscript something that is not an
 	     array or pointer type (like a plain int variable for example),
 	     then report this as an error. */
 
-	  arg1 = coerce_ref (arg1);
-	  type = check_typedef (value_type (arg1));
-	  if (TYPE_CODE (type) != TYPE_CODE_ARRAY
-	      && TYPE_CODE (type) != TYPE_CODE_PTR)
+	  arg1 = coerce_ref(arg1);
+	  type = check_typedef(value_type(arg1));
+	  if ((TYPE_CODE(type) != TYPE_CODE_ARRAY)
+	      && (TYPE_CODE(type) != TYPE_CODE_PTR))
 	    {
-	      if (TYPE_NAME (type))
-		error (_("cannot subscript something of type `%s'"),
-		       TYPE_NAME (type));
+	      if (TYPE_NAME(type))
+		error(_("cannot subscript something of type `%s'"),
+		      TYPE_NAME(type));
 	      else
-		error (_("cannot subscript requested type"));
+		error(_("cannot subscript requested type"));
 	    }
 
 	  if (noside == EVAL_AVOID_SIDE_EFFECTS)
-	    return value_zero (TYPE_TARGET_TYPE (type), VALUE_LVAL (arg1));
+	    return value_zero(TYPE_TARGET_TYPE(type), VALUE_LVAL(arg1));
 	  else
-	    return value_subscript (arg1, arg2);
+	    return value_subscript(arg1, arg2);
 	}
 
     case BINOP_IN:
@@ -1798,8 +1799,8 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 		}
 	      else
 		{
-		  error (_("cannot subscript something of type `%s'"),
-			 TYPE_NAME (value_type (arg1)));
+		  error(_("cannot subscript something of type `%s'"),
+                        TYPE_NAME(value_type(arg1)));
 		}
 	    }
 
@@ -1846,7 +1847,7 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 	    arg2 = evaluate_subexp_with_coercion(exp, pos, noside);
 
 	    /* Fill in the subscript and array size arrays: */
-	    subscript_array[i] = value_as_long(arg2);
+	    subscript_array[i] = (int)value_as_long(arg2);
 	  }
 
 	/* Internal type of array is arranged right to left: */
@@ -2190,33 +2191,33 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
                              value_as_address(arg1));
 
     case UNOP_PREINCREMENT:
-      arg1 = evaluate_subexp (expect_type, exp, pos, noside);
+      arg1 = evaluate_subexp(expect_type, exp, pos, noside);
       if (noside == EVAL_SKIP || noside == EVAL_AVOID_SIDE_EFFECTS)
 	return arg1;
-      else if (unop_user_defined_p (op, arg1))
+      else if (unop_user_defined_p(op, arg1))
 	{
-	  return value_x_unop (arg1, op, noside);
+	  return value_x_unop(arg1, op, noside);
 	}
       else
 	{
-	  arg2 = value_add (arg1, value_from_longest (builtin_type_char,
-						      (LONGEST) 1));
-	  return value_assign (arg1, arg2);
+	  arg2 = value_add(arg1, value_from_longest(builtin_type_char,
+                                                    (LONGEST)1L));
+	  return value_assign(arg1, arg2);
 	}
 
     case UNOP_PREDECREMENT:
-      arg1 = evaluate_subexp (expect_type, exp, pos, noside);
+      arg1 = evaluate_subexp(expect_type, exp, pos, noside);
       if (noside == EVAL_SKIP || noside == EVAL_AVOID_SIDE_EFFECTS)
 	return arg1;
-      else if (unop_user_defined_p (op, arg1))
+      else if (unop_user_defined_p(op, arg1))
 	{
-	  return value_x_unop (arg1, op, noside);
+	  return value_x_unop(arg1, op, noside);
 	}
       else
 	{
-	  arg2 = value_sub (arg1, value_from_longest (builtin_type_char,
-						      (LONGEST) 1));
-	  return value_assign (arg1, arg2);
+	  arg2 = value_sub(arg1, value_from_longest(builtin_type_char,
+                                                    (LONGEST)1L));
+	  return value_assign(arg1, arg2);
 	}
 
     case UNOP_POSTINCREMENT:
@@ -2230,7 +2231,7 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
       else
 	{
 	  arg2 = value_add(arg1, value_from_longest(builtin_type_char,
-                                                    (LONGEST)1));
+                                                    (LONGEST)1L));
 	  value_assign(arg1, arg2);
 	  return arg1;
 	}
@@ -2239,14 +2240,14 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
       arg1 = evaluate_subexp(expect_type, exp, pos, noside);
       if ((noside == EVAL_SKIP) || (noside == EVAL_AVOID_SIDE_EFFECTS))
 	return arg1;
-      else if (unop_user_defined_p (op, arg1))
+      else if (unop_user_defined_p(op, arg1))
 	{
 	  return value_x_unop(arg1, op, noside);
 	}
       else
 	{
 	  arg2 = value_sub(arg1, value_from_longest(builtin_type_char,
-                                                    (LONGEST)1));
+                                                    (LONGEST)1L));
 	  value_assign(arg1, arg2);
 	  return arg1;
 	}
@@ -2389,9 +2390,11 @@ evaluate_subexp_with_coercion (struct expression *exp,
       var = exp->elts[pc + 2].symbol;
       if ((TYPE_CODE(check_typedef(SYMBOL_TYPE(var))) == TYPE_CODE_ARRAY)
 	  /* APPLE LOCAL: Do NOT coerce to pointer if it is a vector type: */
-	  && (! TYPE_FLAGS(check_typedef(SYMBOL_TYPE(var))) & TYPE_FLAG_VECTOR)
+	  && (!(TYPE_FLAGS(check_typedef(SYMBOL_TYPE(var))) & TYPE_FLAG_VECTOR))
 	  && CAST_IS_CONVERSION)
 	{
+          /* FIXME: my solution towards silencing '-Wparentheses' warning
+           * above was just a guess... */
 	  (*pos) += 4;
 	  val =
 	    locate_var_value(var, block_innermost_frame(exp->elts[pc + 1].block));

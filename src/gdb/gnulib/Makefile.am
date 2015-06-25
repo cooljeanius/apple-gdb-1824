@@ -21,6 +21,7 @@ noinst_HEADERS = str-two-way.h
 noinst_LIBRARIES =
 noinst_LTLIBRARIES =
 noinst_SCRIPTS = update-gnulib.sh gnulib-tool
+noinst_TEXINFOS = doc/gpl-2.0.texi doc/regexprops-generic.texi
 EXTRA_DIST = update-gnulib.sh gnulib-tool
 DISTCHECK_CONFIGURE_FLAGS = --enable-silent-rules
 BUILT_SOURCES =
@@ -28,8 +29,12 @@ SUFFIXES =
 MOSTLYCLEANFILES = core *.stackdump
 MOSTLYCLEANDIRS =
 CLEANFILES =
-DISTCLEANFILES = .DS_Store *~ m4/*~
-MAINTAINERCLEANFILES =
+DISTCLEANFILES = .DS_Store *~ import/.DS_Store import/*~ m4/.DS_Store m4/*~
+DISTCLEANFILES += import/extra/.DS_Store import/extra/*~ import/m4/*~
+DISTCLEANFILES += Makefile*orig libgnu.log libgnu.sum config.log
+DISTCLEANFILES += config.h config.status stamp-h1
+MAINTAINERCLEANFILES = autoscan*.log configure.scan
+nodist_noinst_DATA = @MAINT@ configure.scan
 
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_CFLAGS = $(C_ARCHFLAGS)
@@ -41,6 +46,10 @@ libgnu_a_SOURCES = str-two-way.h
 libgnu_a_LIBADD = $(gl_LIBOBJS)
 libgnu_a_DEPENDENCIES = $(gl_LIBOBJS) $(LIBOBJS)
 EXTRA_libgnu_a_SOURCES = dummy.c
+
+@ifGNUmake@ifndef gl_include_guard_prefix
+@ifGNUmake@gl_include_guard_prefix = GL
+@ifGNUmake@endif
 
 ## begin gnulib module link-warning:
 
@@ -571,5 +580,8 @@ am--refresh:
 	fi
 .PHONY: am--refresh
 ## (a case study in "recursive automake considered harmful")
+
+configure.scan:
+	autoscan || touch $@
 
 # end of the gnulib Makefile

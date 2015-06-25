@@ -42,36 +42,34 @@
    for a native target that uses inftarg.c's child_xfer_partial hook.  */
 
 LONGEST
-procfs_xfer_auxv (struct target_ops *ops,
-		  int /* enum target_object */ object,
-		  const char *annex,
-		  gdb_byte *readbuf,
-		  const gdb_byte *writebuf,
-		  ULONGEST offset,
-		  LONGEST len)
+procfs_xfer_auxv(struct target_ops *ops,
+                 int /* enum target_object */ object,
+		 const char *annex, gdb_byte *readbuf,
+		 const gdb_byte *writebuf,
+		 ULONGEST offset, LONGEST len)
 {
   char *pathname;
   int fd;
   LONGEST n;
 
-  gdb_assert (object == TARGET_OBJECT_AUXV);
-  gdb_assert (readbuf || writebuf);
+  gdb_assert(object == TARGET_OBJECT_AUXV);
+  gdb_assert(readbuf || writebuf);
 
-  pathname = xstrprintf ("/proc/%d/auxv", PIDGET (inferior_ptid));
-  fd = open (pathname, writebuf != NULL ? O_WRONLY : O_RDONLY);
+  pathname = xstrprintf("/proc/%d/auxv", PIDGET(inferior_ptid));
+  fd = open(pathname, ((writebuf != NULL) ? O_WRONLY : O_RDONLY));
   xfree (pathname);
   if (fd < 0)
     return -1;
 
-  if (offset != (ULONGEST) 0
-      && lseek (fd, (off_t) offset, SEEK_SET) != (off_t) offset)
+  if ((offset != (ULONGEST)0UL)
+      && (lseek(fd, (off_t)offset, SEEK_SET) != (off_t)offset))
     n = -1;
   else if (readbuf != NULL)
-    n = read (fd, readbuf, len);
+    n = read(fd, readbuf, (size_t)len);
   else
-    n = write (fd, writebuf, len);
+    n = write(fd, writebuf, (size_t)len);
 
-  (void) close (fd);
+  (void)close(fd);
 
   return n;
 }
@@ -81,30 +79,30 @@ procfs_xfer_auxv (struct target_ops *ops,
    If zero, there is no data and *DATA is null.
    if < 0, there was an error and *DATA is null.  */
 LONGEST
-target_auxv_read (struct target_ops *ops, gdb_byte **data)
+target_auxv_read(struct target_ops *ops, gdb_byte **data)
 {
-  size_t auxv_alloc = 512, auxv_pos = 0;
+  size_t auxv_alloc = 512UL, auxv_pos = 0UL;
   gdb_byte *auxv = (gdb_byte *)xmalloc(auxv_alloc);
-  int n;
+  long n;
 
   while (1)
     {
-      n = target_read_partial (ops, TARGET_OBJECT_AUXV,
-			       NULL, &auxv[auxv_pos], 0,
-			       auxv_alloc - auxv_pos);
-      if (n <= 0)
+      n = (long)target_read_partial(ops, TARGET_OBJECT_AUXV,
+                                    NULL, &auxv[auxv_pos], 0,
+                                    (auxv_alloc - auxv_pos));
+      if (n <= 0L)
 	break;
       auxv_pos += n;
       if (auxv_pos < auxv_alloc) /* Read all there was.  */
 	break;
-      gdb_assert (auxv_pos == auxv_alloc);
+      gdb_assert(auxv_pos == auxv_alloc);
       auxv_alloc *= 2;
       auxv = (gdb_byte *)xrealloc(auxv, auxv_alloc);
     }
 
   if (auxv_pos == 0)
     {
-      xfree (auxv);
+      xfree(auxv);
       *data = NULL;
       return n;
     }
@@ -144,32 +142,32 @@ target_auxv_parse (struct target_ops *ops, gdb_byte **readptr,
    an error getting the information.  On success, return 1 after
    storing the entry's value field in *VALP.  */
 int
-target_auxv_search (struct target_ops *ops, CORE_ADDR match, CORE_ADDR *valp)
+target_auxv_search(struct target_ops *ops, CORE_ADDR match, CORE_ADDR *valp)
 {
   CORE_ADDR type, val;
   gdb_byte *data;
-  int n = target_auxv_read (ops, &data);
+  long n = (long)target_auxv_read(ops, &data);
   gdb_byte *ptr = data;
 
   if (n <= 0)
     return n;
 
   while (1)
-    switch (target_auxv_parse (ops, &ptr, data + n, &type, &val))
+    switch (target_auxv_parse(ops, &ptr, (data + n), &type, &val))
       {
       case 1:			/* Here's an entry, check it.  */
 	if (type == match)
 	  {
-	    xfree (data);
+	    xfree(data);
 	    *valp = val;
 	    return 1;
 	  }
 	break;
       case 0:			/* End of the vector.  */
-	xfree (data);
+	xfree(data);
 	return 0;
       default:			/* Bogosity.  */
-	xfree (data);
+	xfree(data);
 	return -1;
       }
 
@@ -186,14 +184,14 @@ fprint_target_auxv(struct ui_file *file, struct target_ops *ops)
 {
   CORE_ADDR type, val;
   gdb_byte *data;
-  int len = target_auxv_read(ops, &data);
+  long len = (long)target_auxv_read(ops, &data);
   gdb_byte *ptr = data;
   int ents = 0;
 
-  if (len <= 0)
+  if (len <= 0L)
     return len;
 
-  while (target_auxv_parse(ops, &ptr, data + len, &type, &val) > 0)
+  while (target_auxv_parse(ops, &ptr, (data + len), &type, &val) > 0)
     {
       const char *name = "???";
       const char *description = "";
@@ -203,73 +201,73 @@ fprint_target_auxv(struct ui_file *file, struct target_ops *ops)
 	{
 #define TAG(tag, text, kind) \
 	case tag: name = #tag; description = text; flavor = kind; break
-	  TAG (AT_NULL, _("End of vector"), hex);
-	  TAG (AT_IGNORE, _("Entry should be ignored"), hex);
-	  TAG (AT_EXECFD, _("File descriptor of program"), dec);
-	  TAG (AT_PHDR, _("Program headers for program"), hex);
-	  TAG (AT_PHENT, _("Size of program header entry"), dec);
-	  TAG (AT_PHNUM, _("Number of program headers"), dec);
-	  TAG (AT_PAGESZ, _("System page size"), dec);
-	  TAG (AT_BASE, _("Base address of interpreter"), hex);
-	  TAG (AT_FLAGS, _("Flags"), hex);
-	  TAG (AT_ENTRY, _("Entry point of program"), hex);
-	  TAG (AT_NOTELF, _("Program is not ELF"), dec);
-	  TAG (AT_UID, _("Real user ID"), dec);
-	  TAG (AT_EUID, _("Effective user ID"), dec);
-	  TAG (AT_GID, _("Real group ID"), dec);
-	  TAG (AT_EGID, _("Effective group ID"), dec);
-	  TAG (AT_CLKTCK, _("Frequency of times()"), dec);
-	  TAG (AT_PLATFORM, _("String identifying platform"), str);
-	  TAG (AT_HWCAP, _("Machine-dependent CPU capability hints"), hex);
-	  TAG (AT_FPUCW, _("Used FPU control word"), dec);
-	  TAG (AT_DCACHEBSIZE, _("Data cache block size"), dec);
-	  TAG (AT_ICACHEBSIZE, _("Instruction cache block size"), dec);
-	  TAG (AT_UCACHEBSIZE, _("Unified cache block size"), dec);
-	  TAG (AT_IGNOREPPC, _("Entry should be ignored"), dec);
-	  TAG (AT_SYSINFO, _("Special system info/entry points"), hex);
-	  TAG (AT_SYSINFO_EHDR, _("System-supplied DSO's ELF header"), hex);
-	  TAG (AT_SECURE, _("Boolean, was exec setuid-like?"), dec);
-	  TAG (AT_SUN_UID, _("Effective user ID"), dec);
-	  TAG (AT_SUN_RUID, _("Real user ID"), dec);
-	  TAG (AT_SUN_GID, _("Effective group ID"), dec);
-	  TAG (AT_SUN_RGID, _("Real group ID"), dec);
-	  TAG (AT_SUN_LDELF, _("Dynamic linker's ELF header"), hex);
-	  TAG (AT_SUN_LDSHDR, _("Dynamic linker's section headers"), hex);
-	  TAG (AT_SUN_LDNAME, _("String giving name of dynamic linker"), str);
-	  TAG (AT_SUN_LPAGESZ, _("Large pagesize"), dec);
-	  TAG (AT_SUN_PLATFORM, _("Platform name string"), str);
-	  TAG (AT_SUN_HWCAP, _("Machine-dependent CPU capability hints"), hex);
-	  TAG (AT_SUN_IFLUSH, _("Should flush icache?"), dec);
-	  TAG (AT_SUN_CPU, _("CPU name string"), str);
-	  TAG (AT_SUN_EMUL_ENTRY, _("COFF entry point address"), hex);
-	  TAG (AT_SUN_EMUL_EXECFD, _("COFF executable file descriptor"), dec);
-	  TAG (AT_SUN_EXECNAME,
-	       _("Canonicalized file name given to execve"), str);
-	  TAG (AT_SUN_MMU, _("String for name of MMU module"), str);
-	  TAG (AT_SUN_LDDATA, _("Dynamic linker's data segment address"), hex);
+	  TAG(AT_NULL, _("End of vector"), hex);
+	  TAG(AT_IGNORE, _("Entry should be ignored"), hex);
+	  TAG(AT_EXECFD, _("File descriptor of program"), dec);
+	  TAG(AT_PHDR, _("Program headers for program"), hex);
+	  TAG(AT_PHENT, _("Size of program header entry"), dec);
+	  TAG(AT_PHNUM, _("Number of program headers"), dec);
+	  TAG(AT_PAGESZ, _("System page size"), dec);
+	  TAG(AT_BASE, _("Base address of interpreter"), hex);
+	  TAG(AT_FLAGS, _("Flags"), hex);
+	  TAG(AT_ENTRY, _("Entry point of program"), hex);
+	  TAG(AT_NOTELF, _("Program is not ELF"), dec);
+	  TAG(AT_UID, _("Real user ID"), dec);
+	  TAG(AT_EUID, _("Effective user ID"), dec);
+	  TAG(AT_GID, _("Real group ID"), dec);
+	  TAG(AT_EGID, _("Effective group ID"), dec);
+	  TAG(AT_CLKTCK, _("Frequency of times()"), dec);
+	  TAG(AT_PLATFORM, _("String identifying platform"), str);
+	  TAG(AT_HWCAP, _("Machine-dependent CPU capability hints"), hex);
+	  TAG(AT_FPUCW, _("Used FPU control word"), dec);
+	  TAG(AT_DCACHEBSIZE, _("Data cache block size"), dec);
+	  TAG(AT_ICACHEBSIZE, _("Instruction cache block size"), dec);
+	  TAG(AT_UCACHEBSIZE, _("Unified cache block size"), dec);
+	  TAG(AT_IGNOREPPC, _("Entry should be ignored"), dec);
+	  TAG(AT_SYSINFO, _("Special system info/entry points"), hex);
+	  TAG(AT_SYSINFO_EHDR, _("System-supplied DSO's ELF header"), hex);
+	  TAG(AT_SECURE, _("Boolean, was exec setuid-like?"), dec);
+	  TAG(AT_SUN_UID, _("Effective user ID"), dec);
+	  TAG(AT_SUN_RUID, _("Real user ID"), dec);
+	  TAG(AT_SUN_GID, _("Effective group ID"), dec);
+	  TAG(AT_SUN_RGID, _("Real group ID"), dec);
+	  TAG(AT_SUN_LDELF, _("Dynamic linker's ELF header"), hex);
+	  TAG(AT_SUN_LDSHDR, _("Dynamic linker's section headers"), hex);
+	  TAG(AT_SUN_LDNAME, _("String giving name of dynamic linker"), str);
+	  TAG(AT_SUN_LPAGESZ, _("Large pagesize"), dec);
+	  TAG(AT_SUN_PLATFORM, _("Platform name string"), str);
+	  TAG(AT_SUN_HWCAP, _("Machine-dependent CPU capability hints"), hex);
+	  TAG(AT_SUN_IFLUSH, _("Should flush icache?"), dec);
+	  TAG(AT_SUN_CPU, _("CPU name string"), str);
+	  TAG(AT_SUN_EMUL_ENTRY, _("COFF entry point address"), hex);
+	  TAG(AT_SUN_EMUL_EXECFD, _("COFF executable file descriptor"), dec);
+	  TAG(AT_SUN_EXECNAME,
+	      _("Canonicalized file name given to execve"), str);
+	  TAG(AT_SUN_MMU, _("String for name of MMU module"), str);
+	  TAG(AT_SUN_LDDATA, _("Dynamic linker's data segment address"), hex);
 	}
 
-      fprintf_filtered (file, "%-4s %-20s %-30s ",
-			paddr_d (type), name, description);
+      fprintf_filtered(file, "%-4s %-20s %-30s ",
+                       paddr_d(type), name, description);
       switch (flavor)
 	{
 	case dec:
-	  fprintf_filtered (file, "%s\n", paddr_d (val));
+	  fprintf_filtered(file, "%s\n", paddr_d(val));
 	  break;
 	case hex:
-	  fprintf_filtered (file, "0x%s\n", paddr_nz (val));
+	  fprintf_filtered(file, "0x%s\n", paddr_nz(val));
 	  break;
 	case str:
 	  if (addressprint)
-	    fprintf_filtered (file, "0x%s", paddr_nz (val));
-	  val_print_string (val, -1, 1, file);
-	  fprintf_filtered (file, "\n");
+	    fprintf_filtered(file, "0x%s", paddr_nz(val));
+	  val_print_string(val, -1, 1, file);
+	  fprintf_filtered(file, "\n");
 	  break;
 	}
       ++ents;
     }
 
-  xfree (data);
+  xfree(data);
 
   return ents;
 }

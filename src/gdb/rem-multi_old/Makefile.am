@@ -71,10 +71,12 @@ clean-local:
 	rm -f $(AM_V_v) $(SERVER) serve prog
 .PHONY: clean-local
 
-DISTCLEANFILES = autoscan.log @MAINT@ *~
+DISTCLEANFILES = autoscan.log @MAINT@ .DS_Store *~
 
 distclean-local: clean-local
 	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
+	-rm -rf $(AM_V_v) *.dSYM || rmdir *.dSYM
+	-rm -f config.h.in~
 .PHONY: distclean-local
 
 EXTRA_DIST = Remote_Makefile

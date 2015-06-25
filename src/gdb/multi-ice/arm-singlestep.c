@@ -324,10 +324,10 @@ CORE_ADDR server_arm_get_next_pc(CORE_ADDR pc, unsigned short *is_thumb)
     return thumb_get_next_pc (pc, is_thumb);
 
   *is_thumb = 0;
-  pc_val = (unsigned long) pc;
-  this_instr = read_memory_integer (pc, 4);
-  status = read_aregister (PS_REGNUM);
-  nextpc = (CORE_ADDR) (pc_val + 4);  /* Default case */
+  pc_val = (unsigned long)pc;
+  this_instr = (unsigned long)read_memory_integer(pc, 4);
+  status = read_aregister(PS_REGNUM);
+  nextpc = (CORE_ADDR)(pc_val + 4);  /* Default case */
 
   if (condition_true (bits (this_instr, 28, 31), status))
     {

@@ -129,7 +129,7 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
   char *targname = NULL;
   unsigned long value = 0UL;
   int retval = 0;
-  int ret;
+  int ret = retval;
 
   if (offset >= len)
     {
@@ -306,7 +306,7 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
             break;
           }
 
-        type = alloc_type (objfile);
+        type = alloc_type(objfile);
 
         if ((typecode & 0x3f) == 7)
           {
@@ -464,7 +464,19 @@ end:
     {
       *vptr = value;
     }
-  return 0;
+  /* and finally: */
+  if (retval == 0)
+    {
+      return retval;
+    }
+  else if (ret == 0)
+    {
+      return ret;
+    }
+  else
+    {
+      return 0;
+    }
 }
 
 static void
@@ -472,8 +484,8 @@ sym_read_type(struct objfile *objfile, struct type **typevec,
               unsigned long ntypes, struct type *itype,
               struct symbol **psymbol, unsigned long i)
 {
-  bfd *abfd = NULL;
-  bfd_sym_data_struct *sdata = NULL;
+  bfd *abfd = (bfd *)NULL;
+  bfd_sym_data_struct *sdata = (bfd_sym_data_struct *)NULL;
 
   bfd_sym_type_table_entry index;
   bfd_sym_type_information_table_entry entry;
@@ -494,6 +506,8 @@ sym_read_type(struct objfile *objfile, struct type **typevec,
 
   CHECK_FATAL(bfd_sym_valid(abfd));
   sdata = abfd->tdata.sym_data;
+
+  CHECK_FATAL(sdata != NULL);
 
 #if 0
   *ptype = NULL;
@@ -899,9 +913,9 @@ sym_read_functions(struct objfile *objfile, struct type **typevec,
   unsigned long nfuncs = 0;
 
   unsigned long maxfuncs;
-  unsigned long i, j;
+  unsigned long i, j = 0UL;
   int ret;
-  CORE_ADDR text_section_offset = 0;
+  CORE_ADDR text_section_offset = 0UL;
 
   CHECK_FATAL(objfile != NULL);
   abfd = objfile->obfd;

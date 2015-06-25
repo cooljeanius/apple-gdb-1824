@@ -46,50 +46,50 @@ struct dis_line_entry
   CORE_ADDR end_pc;
 };
 
-/* Like target_read_memory, but slightly different parameters.  */
+/* Like target_read_memory, but slightly different parameters: */
 static int
-dis_asm_read_memory (bfd_vma memaddr, gdb_byte *myaddr, unsigned int len,
+dis_asm_read_memory(bfd_vma memaddr, gdb_byte *myaddr, unsigned int len,
+		    struct disassemble_info *info)
+{
+  return target_read_memory(memaddr, myaddr, len);
+}
+
+/* Like memory_error with slightly different parameters: */
+static void
+dis_asm_memory_error(int status, bfd_vma memaddr,
 		     struct disassemble_info *info)
 {
-  return target_read_memory (memaddr, myaddr, len);
+  memory_error(status, memaddr);
 }
 
-/* Like memory_error with slightly different parameters.  */
+/* Like print_address with slightly different parameters: */
 static void
-dis_asm_memory_error (int status, bfd_vma memaddr,
-		      struct disassemble_info *info)
+dis_asm_print_address(bfd_vma addr, struct disassemble_info *info)
 {
-  memory_error (status, memaddr);
-}
-
-/* Like print_address with slightly different parameters.  */
-static void
-dis_asm_print_address (bfd_vma addr, struct disassemble_info *info)
-{
-  print_address (addr, info->stream);
+  print_address(addr, (struct ui_file *)info->stream);
 }
 
 static int
-compare_lines (const void *mle1p, const void *mle2p)
+compare_lines(const void *mle1p, const void *mle2p)
 {
   struct dis_line_entry *mle1, *mle2;
   int val;
 
-  mle1 = (struct dis_line_entry *) mle1p;
-  mle2 = (struct dis_line_entry *) mle2p;
+  mle1 = (struct dis_line_entry *)mle1p;
+  mle2 = (struct dis_line_entry *)mle2p;
 
-  val = mle1->line - mle2->line;
+  val = (mle1->line - mle2->line);
 
   if (val != 0)
     return val;
 
-  return mle1->start_pc - mle2->start_pc;
+  return (int)(mle1->start_pc - mle2->start_pc);
 }
 
 static int
-dump_insns (struct ui_out *uiout, struct disassemble_info * di,
-	    CORE_ADDR low, CORE_ADDR high,
-	    int how_many, struct ui_stream *stb)
+dump_insns(struct ui_out *uiout, struct disassemble_info * di,
+	   CORE_ADDR low, CORE_ADDR high,
+	   int how_many, struct ui_stream *stb)
 {
   int num_displayed = 0;
   CORE_ADDR pc;
@@ -297,39 +297,43 @@ do_mixed_source_and_assembly (struct ui_out *uiout,
 
 
 static void
-do_assembly_only (struct ui_out *uiout, struct disassemble_info * di,
-		  CORE_ADDR low, CORE_ADDR high,
-		  int how_many, struct ui_stream *stb)
+do_assembly_only(struct ui_out *uiout, struct disassemble_info * di,
+		 CORE_ADDR low, CORE_ADDR high,
+		 int how_many, struct ui_stream *stb)
 {
   int num_displayed = 0;
   struct cleanup *ui_out_chain;
 
-  ui_out_chain = make_cleanup_ui_out_list_begin_end (uiout, "asm_insns");
+  ui_out_chain = make_cleanup_ui_out_list_begin_end(uiout, "asm_insns");
 
-  num_displayed = dump_insns (uiout, di, low, high, how_many, stb);
+  num_displayed = dump_insns(uiout, di, low, high, how_many, stb);
 
-  do_cleanups (ui_out_chain);
+  if (num_displayed == 0) {
+    ; /* ??? */
+  }
+
+  do_cleanups(ui_out_chain);
 }
 
 /* Initialize the disassemble info struct ready for the specified
    stream.  */
 
-static int ATTR_FORMAT (printf, 2, 3)
-fprintf_disasm (void *stream, const char *format, ...)
+static int ATTR_FORMAT(printf, 2, 3)
+fprintf_disasm(void *stream, const char *format, ...)
 {
   va_list args;
-  va_start (args, format);
-  vfprintf_filtered (stream, format, args);
-  va_end (args);
+  va_start(args, format);
+  vfprintf_filtered((struct ui_file *)stream, format, args);
+  va_end(args);
   /* Something non -ve.  */
   return 0;
 }
 
 static struct disassemble_info
-gdb_disassemble_info (struct gdbarch *gdbarch, struct ui_file *file)
+gdb_disassemble_info(struct gdbarch *gdbarch, struct ui_file *file)
 {
   struct disassemble_info di;
-  init_disassemble_info (&di, file, fprintf_disasm);
+  init_disassemble_info(&di, file, fprintf_disasm);
   di.flavour = bfd_target_unknown_flavour;
   di.memory_error_func = dis_asm_memory_error;
   di.print_address_func = dis_asm_print_address;
@@ -342,10 +346,10 @@ gdb_disassemble_info (struct gdbarch *gdbarch, struct ui_file *file)
      Further, it has been supperseeded by trust-read-only-sections
      (although that should be superseeded by target_trust..._p()).  */
   di.read_memory_func = dis_asm_read_memory;
-  di.arch = gdbarch_bfd_arch_info (gdbarch)->arch;
-  di.mach = gdbarch_bfd_arch_info (gdbarch)->mach;
-  di.endian = gdbarch_byte_order (gdbarch);
-  disassemble_init_for_target (&di);
+  di.arch = gdbarch_bfd_arch_info(gdbarch)->arch;
+  di.mach = gdbarch_bfd_arch_info(gdbarch)->mach;
+  di.endian = (enum bfd_endian)gdbarch_byte_order(gdbarch);
+  disassemble_init_for_target(&di);
   return di;
 }
 
@@ -445,8 +449,8 @@ int gdbarch_instruction_length (struct gdbarch *gdbarch)
 */
 
 int
-find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
-                int peeklimit)
+find_pc_offset(CORE_ADDR start, CORE_ADDR *result, int offset,
+               int funclimit, int peeklimit)
 {
   CORE_ADDR low = INVALID_ADDRESS;
   CORE_ADDR high = INVALID_ADDRESS;
@@ -455,7 +459,7 @@ find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
 
   int length;
 
-  struct disassemble_info di = gdb_disassemble_info_null (current_gdbarch);
+  struct disassemble_info di = gdb_disassemble_info_null(current_gdbarch);
   CORE_ADDR *addrs = NULL;
   unsigned int index;
   struct cleanup *cleanup = NULL;
@@ -468,7 +472,7 @@ find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
 
   if (funclimit)
     {
-      if (find_pc_partial_function_no_inlined (start, NULL, &low, &high) == 0)
+      if (find_pc_partial_function_no_inlined(start, NULL, &low, &high) == 0)
 	{
 	  /* We were unable to find the start of the function. */
 	  return -1;
@@ -478,10 +482,10 @@ find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
   /* If the architecture has fixed-sized instructions, just use simple
      arithmetic. */
 
-  length = gdbarch_instruction_length (current_gdbarch);
+  length = gdbarch_instruction_length(current_gdbarch);
   if (length > 0)
     {
-      cur = start + length * offset;
+      cur = (start + (length * offset));
 
       /* Constrain to be within the function limits if appropriate. */
       if (funclimit && (cur > high))
@@ -511,7 +515,7 @@ find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
   cur = start;
   while (offset > 0)
     {
-      cur += TARGET_PRINT_INSN (cur, &di);
+      cur += TARGET_PRINT_INSN(cur, &di);
       offset--;
 
       if (funclimit && (cur > high))
@@ -538,8 +542,8 @@ find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
 
   /* From here out we can assume we are doing a negative offset. */
 
-  gdb_assert (low <= start);
-  gdb_assert (offset < 0);
+  gdb_assert(low <= start);
+  gdb_assert(offset < 0);
 
   /* A sanity check:  If we've stepped into some area of memory where
      gdb doesn't have symbols and the GUI requests we disassemble from $pc,
@@ -548,8 +552,8 @@ find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
      the given $pc and we're in MI mode (so we have a GUI that may be
      requesting nonsensical things), shortcircuit this operation.  */
 
-  if (start - low > -offset && start - low > 16384
-      && ui_out_is_mi_like_p (uiout))
+  if (((off_t)(start - low) > -offset) && ((start - low) > 16384)
+      && ui_out_is_mi_like_p(uiout))
     {
       *result = start;
       return 1;
@@ -560,20 +564,20 @@ find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
      higher than we need, set it to the number of bytes from the start
      of the function. */
 
-  if (peeklimit < 0 || peeklimit > (start - low))
-    peeklimit = start - low;
+  if ((peeklimit < 0) || ((CORE_ADDR)peeklimit > (start - low)))
+    peeklimit = (int)(start - low);
 
   /* If PEEKLIMIT is less than (start - low), we can still attempt the
      search --- maybe enough of the instruction stream will be
      multi-byte that we'll find our address regardless. */
 
-  addrs = (CORE_ADDR *) xmalloc (peeklimit * sizeof (CORE_ADDR));
-  cleanup = make_cleanup (xfree, addrs);
+  addrs = (CORE_ADDR *)xmalloc(peeklimit * sizeof(CORE_ADDR));
+  cleanup = make_cleanup(xfree, addrs);
 
   /* We can assume that we are constrained to the current function at
      this point (see the comment above). */
 
-  gdb_assert (funclimit);
+  gdb_assert(funclimit);
 
   cur = low;
   index = 0;
@@ -585,33 +589,33 @@ find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
     {
       if (cur >= start)
 	break;
-      if (index >= peeklimit)
+      if (index >= (unsigned int)peeklimit)
 	break;
 
-      gdb_assert (index < peeklimit);
+      gdb_assert((int)index < peeklimit);
       addrs[index++] = cur;
-      cur += TARGET_PRINT_INSN (cur, &di);
+      cur += TARGET_PRINT_INSN(cur, &di);
     }
 
   if (cur == start)
     {
       /* We were able to seek all the way forward to the start address. */
 
-      gdb_assert (funclimit);
-      gdb_assert (offset < 0);
+      gdb_assert(funclimit);
+      gdb_assert(offset < 0);
 
-      if (index < -offset)
+      if ((off_t)index < -offset)
 	{
 	  /* We weren't able to go far enough back; return the earliest
              instruction of the function.  */
 	  *result = low;
-	  do_cleanups (cleanup);
+	  do_cleanups(cleanup);
 	  return 1;
 	}
       else
 	{
 	  *result = addrs[index + offset];
-	  do_cleanups (cleanup);
+	  do_cleanups(cleanup);
 	  return 0;
 	}
     }
@@ -620,11 +624,11 @@ find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit,
     {
       /* We seeked forward right past the start address, without ever
 	 hitting it. */
-      do_cleanups (cleanup);
+      do_cleanups(cleanup);
       return -1;
     }
 
-  if (index >= peeklimit)
+  if (index >= (unsigned int)peeklimit)
     {
       /* We went past PEEKLIMIT instructions, and hence, weren't able
 	 to complete the backwards seek.  */

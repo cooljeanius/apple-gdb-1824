@@ -145,10 +145,13 @@ int exceptions_state_mc_action_iter_1 (void);
 
 /* If E is an exception, print it's error message on the specified
    stream. for _fprintf, prefix the message with PREFIX...  */
-extern void exception_print (struct ui_file *file, struct gdb_exception e);
-extern void exception_fprintf (struct ui_file *file, struct gdb_exception e,
-			       const char *prefix,
-			       ...) ATTR_FORMAT (printf, 3, 4);
+extern void exception_print(struct ui_file *file, struct gdb_exception e);
+extern void exception_fprintf(struct ui_file *file, struct gdb_exception e,
+			      const char *prefix,
+			      ...) ATTR_FORMAT(printf, 3, 4);
+
+extern void print_any_exception(struct ui_file *file, const char *prefix,
+                                struct gdb_exception e);
 
 /* Throw an exception (as described by "struct gdb_exception").  Will
    execute a LONG JUMP to the inner most containing exception handler
@@ -161,13 +164,13 @@ extern void exception_fprintf (struct ui_file *file, struct gdb_exception e,
    be a good thing or a dangerous thing.'' -- the Existential
    Wombat.  */
 
-extern NORETURN void throw_exception (struct gdb_exception exception) ATTR_NORETURN;
-extern NORETURN void throw_verror (enum errors, const char *fmt, va_list ap)
-     ATTR_NORETURN ATTR_FORMAT (printf, 2, 0);
-extern NORETURN void throw_vfatal (const char *fmt, va_list ap)
-     ATTR_NORETURN ATTR_FORMAT (printf, 1, 0);
-extern NORETURN void throw_error (enum errors error, const char *fmt,
-				  ...) ATTR_NORETURN ATTR_FORMAT (printf, 2, 3);
+extern NORETURN void throw_exception(struct gdb_exception exception) ATTR_NORETURN;
+extern NORETURN void throw_verror(enum errors, const char *fmt, va_list ap)
+     ATTR_NORETURN ATTR_FORMAT(printf, 2, 0);
+extern NORETURN void throw_vfatal(const char *fmt, va_list ap)
+     ATTR_NORETURN ATTR_FORMAT(printf, 1, 0);
+extern NORETURN void throw_error(enum errors error, const char *fmt,
+				 ...) ATTR_NORETURN ATTR_FORMAT(printf, 2, 3);
 
 /* Instead of deprecated_throw_reason, code should use catch_exception
    and throw_exception.  */

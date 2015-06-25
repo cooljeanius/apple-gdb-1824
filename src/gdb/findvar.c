@@ -588,26 +588,29 @@ addresses have not been bound by the dynamic loader. Try again when executable i
 
 	if (frame == NULL)
 	  return 0;
-	b = get_frame_block (frame, 0);
+	b = get_frame_block(frame, 0);
 
-	if (SYMBOL_CLASS (var) == LOC_REGPARM_ADDR)
+        if (b == NULL) {
+          ; /* ??? */
+        }
+
+	if (SYMBOL_CLASS(var) == LOC_REGPARM_ADDR)
 	  {
-	    regval = value_from_register (lookup_pointer_type (type),
-					  regno,
-					  frame);
+	    regval = value_from_register(lookup_pointer_type(type),
+					 regno, frame);
 
 	    if (regval == NULL)
-	      error (_("Value of register variable not available."));
+	      error(_("Value of register variable not available."));
 
-	    addr = value_as_address (regval);
-	    VALUE_LVAL (v) = lval_memory;
+	    addr = value_as_address(regval);
+	    VALUE_LVAL(v) = lval_memory;
 	  }
 	else
 	  {
-	    regval = value_from_register (type, regno, frame);
+	    regval = value_from_register(type, regno, frame);
 
 	    if (regval == NULL)
-	      error (_("Value of register variable not available."));
+	      error(_("Value of register variable not available."));
 	    return regval;
 	  }
       }

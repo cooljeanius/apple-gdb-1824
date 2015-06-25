@@ -607,11 +607,11 @@ handle_thread (char *input_buffer, enum thread_mode mode)
  * the 'g' packet.  ** Only in non-thread mode
  */
 int
-handle_read_registers (char *input_buffer)
+handle_read_registers(char *input_buffer)
 {
   char *buffer = alloca((REGISTER_BYTES * 2) + 1);
 
-  if (!low_update_registers ())
+  if (!low_update_registers())
     {
         putpkt("ENN");
         return 0;
@@ -632,19 +632,18 @@ handle_read_registers (char *input_buffer)
 int
 handle_write_registers (char *input_buffer)
 {
-
   char *buffer = alloca(REGISTER_BYTES);
 
-  if (!low_update_registers ())
+  if (!low_update_registers())
     {
-      putpkt ("ENN");
+      putpkt("ENN");
       return 0;
     }
 
-  convert_ascii_to_bytes (input_buffer, buffer, REGISTER_BYTES, 0);
-  memcpy (&aregisters, (char *) buffer, REGISTER_BYTES);
+  convert_ascii_to_bytes(input_buffer, buffer, REGISTER_BYTES, 0);
+  memcpy(&aregisters, (char *)buffer, REGISTER_BYTES);
   registers_are_dirty = 1;
-  low_write_registers ();
+  low_write_registers();
   return 1;
 }
 

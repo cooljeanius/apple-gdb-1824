@@ -68,7 +68,7 @@ macosx_signal_thread_init(macosx_signal_thread_status *s)
   s->receive_fd = -1;
 
   s->inferior_pid = -1;
-  s->signal_thread = THREAD_NULL;
+  s->signal_thread = (gdb_thread_t)THREAD_NULL;
 }
 
 static pthread_cond_t sigthread_cond = PTHREAD_COND_INITIALIZER;
@@ -156,7 +156,7 @@ macosx_signal_thread_debug_status(FILE *f, WAITSTATUS status)
     }
 }
 
-static void
+static void ATTR_NORETURN
 macosx_signal_thread(void *arg)
 {
   int first_time = 1;

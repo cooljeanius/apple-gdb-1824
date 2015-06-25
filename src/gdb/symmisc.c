@@ -1425,7 +1425,7 @@ equivalence_table_add (struct objfile *ofile, const char *name,
      out to to test for equivalence.  Should clean this up if we ever want
      to submit this stuff back.  */
 void
-equivalence_table_build (struct objfile *ofile)
+equivalence_table_build(struct objfile *ofile)
 {
   struct equivalence_entry **table;
   struct minimal_symbol *msymbol;
@@ -1435,23 +1435,27 @@ equivalence_table_build (struct objfile *ofile)
      to merge the new elements into the current table, let's just
      delete it and then remake it afresh.  */
   if (ofile->equivalence_table != NULL)
-    equivalence_table_delete (ofile);
+    equivalence_table_delete(ofile);
 
   if (! ofile->check_for_equivalence)
     return;
 
-  equivalence_table_initialize (ofile);
+  equivalence_table_initialize(ofile);
 
-  table = (struct equivalence_entry **) ofile->equivalence_table;
+  table = (struct equivalence_entry **)ofile->equivalence_table;
 
-  ALL_OBJFILE_MSYMBOLS (ofile, msymbol)
+  if (table == (struct equivalence_entry **)NULL) {
+    ;
+  }
+
+  ALL_OBJFILE_MSYMBOLS(ofile, msymbol)
     {
-      name = SYMBOL_LINKAGE_NAME (msymbol);
+      name = SYMBOL_LINKAGE_NAME(msymbol);
 
       if (name[0] == '_')
 	continue;
 
-      name_end = strchr (name, '$');
+      name_end = strchr(name, '$');
       if (name_end == NULL || *name_end == '\0')
 	continue;
 

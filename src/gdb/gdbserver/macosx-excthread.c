@@ -160,38 +160,39 @@ static int msg_data_size = MACOSX_EXCEPTION_ARRAY_SIZE;
    in, or realloc's it to NUM_ELEM if not.  */
 
 static void
-alloc_msg_data (struct mach_msg_data **data_arr, int num_elem)
+alloc_msg_data(struct mach_msg_data **data_arr, int num_elem)
 {
   if (*data_arr == NULL)
-    *data_arr = (struct mach_msg_data *) malloc (num_elem * sizeof (struct mach_msg_data));
+    *data_arr = ((struct mach_msg_data *)
+                 malloc(num_elem * sizeof(struct mach_msg_data)));
   else
-    *data_arr = (struct mach_msg_data *) realloc (*data_arr,
-						   num_elem * sizeof (struct mach_msg_data));
+    *data_arr = ((struct mach_msg_data *)
+                 realloc(*data_arr,
+                         (num_elem * sizeof(struct mach_msg_data))));
 }
 
-/* A re-entrant version for use by the signal handling thread */
-
+/* A re-entrant version for use by the signal handling thread: */
 static void
-excthread_debug_re (int level, const char *fmt, ...)
+excthread_debug_re(int level, const char *fmt, ...)
 {
   va_list ap;
   if (excthread_debugflag >= level)
     {
-      va_start (ap, fmt);
-      fprintf (excthread_stderr_re, "[%d/%d macosx-excthread]: ", getpid (),
-	       mach_thread_self());
-      vfprintf (excthread_stderr_re, fmt, ap);
-      va_end (ap);
-      fflush (excthread_stderr_re);
+      va_start(ap, fmt);
+      fprintf(excthread_stderr_re, "[%d/%d macosx-excthread]: ", getpid(),
+	      mach_thread_self());
+      vfprintf(excthread_stderr_re, fmt, ap);
+      va_end(ap);
+      fflush(excthread_stderr_re);
     }
 }
 
-static void excthread_debug_re_endline (int level)
+static void excthread_debug_re_endline(int level)
 {
   if (excthread_debugflag >= level)
     {
-      fprintf (excthread_stderr_re, "\n");
-      fflush (excthread_stderr_re);
+      fprintf(excthread_stderr_re, "\n");
+      fflush(excthread_stderr_re);
     }
 }
 
@@ -313,7 +314,7 @@ kern_return_t
 }
 
 void
-macosx_exception_thread_init (macosx_exception_thread_status *s)
+macosx_exception_thread_init(macosx_exception_thread_status *s)
 {
   s->transmit_from_fd = -1;
   s->receive_from_fd = -1;
@@ -324,16 +325,15 @@ macosx_exception_thread_init (macosx_exception_thread_status *s)
 
   s->inferior_exception_port = MACH_PORT_NULL;
 
-  memset (&s->saved_exceptions, 0, sizeof (s->saved_exceptions));
-  memset (&s->saved_exceptions_step, 0, sizeof (s->saved_exceptions_step));
+  memset(&s->saved_exceptions, 0, sizeof(s->saved_exceptions));
+  memset(&s->saved_exceptions_step, 0, sizeof(s->saved_exceptions_step));
 
   s->stopped_in_softexc = 0;
   s->saved_exceptions_stepping = 0;
-  s->exception_thread = THREAD_NULL;
+  s->exception_thread = (gdb_thread_t)THREAD_NULL;
 
   if (excthread_stderr_re == NULL)
-      excthread_stderr_re = fdopen (fileno (stderr), "w");
-
+    excthread_stderr_re = fdopen(fileno(stderr), "w");
 }
 
 /* This creates the exception thread from the exception_thread_status.

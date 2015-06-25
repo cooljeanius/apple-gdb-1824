@@ -290,28 +290,27 @@ static int value_history_count;	/* Abs number of last entry stored */
 
 static struct value *all_values;
 
-/* Allocate a  value  that has the correct length for type TYPE.  */
-
+/* Allocate a  value  that has the correct length for type TYPE: */
 struct value *
-allocate_value (struct type *type)
+allocate_value(struct type *type)
 {
   struct value *val;
-  struct type *atype = check_typedef (type);
+  struct type *atype = check_typedef(type);
 
-  val = (struct value *) xzalloc (sizeof (struct value) + TYPE_LENGTH (atype));
+  val = (struct value *)xzalloc(sizeof(struct value) + TYPE_LENGTH(atype));
   val->next = all_values;
   all_values = val;
   val->type = type;
   val->enclosing_type = type;
-  VALUE_LVAL (val) = not_lval;
-  VALUE_ADDRESS (val) = 0;
-  VALUE_FRAME_ID (val) = null_frame_id;
+  VALUE_LVAL(val) = not_lval;
+  VALUE_ADDRESS(val) = 0;
+  VALUE_FRAME_ID(val) = null_frame_id;
   val->offset = 0;
   val->bitpos = 0;
   val->bitsize = 0;
-  VALUE_REGNUM (val) = -1;
+  VALUE_REGNUM(val) = -1;
   val->lazy = 0;
-  val->optimized_out = 0;
+  val->optimized_out = (enum opt_state)0;
   val->embedded_offset = 0;
   val->pointed_to_offset = 0;
   val->modifiable = 1;
@@ -688,20 +687,20 @@ record_latest_value (struct value *val)
      from.  This is a bit dubious, because then *&$1 does not just return $1
      but the current contents of that location.  c'est la vie...  */
   val->modifiable = 0;
-  release_value (val);
+  release_value(val);
 
   /* Here we treat value_history_count as origin-zero
      and applying to the value being stored now.  */
 
-  i = value_history_count % VALUE_HISTORY_CHUNK;
+  i = (value_history_count % VALUE_HISTORY_CHUNK);
   if (i == 0)
     {
-      struct value_history_chunk *new
-      = (struct value_history_chunk *)
-      xmalloc (sizeof (struct value_history_chunk));
-      memset (new->values, 0, sizeof new->values);
-      new->next = value_history_chain;
-      value_history_chain = new;
+      struct value_history_chunk *newchunk =
+        ((struct value_history_chunk *)
+         xmalloc(sizeof(struct value_history_chunk)));
+      memset(newchunk->values, 0, sizeof(newchunk->values));
+      newchunk->next = value_history_chain;
+      value_history_chain = newchunk;
     }
 
   value_history_chain->values[i] = val;
@@ -776,34 +775,34 @@ show_values (char *num_exp, int from_tty)
 {
   int i;
   struct value *val;
-  static int num = 1;
+  static long num = 1;
 
   if (num_exp)
     {
       /* "info history +" should print from the stored position.
          "info history <exp>" should print around value number <exp>.  */
-      if (num_exp[0] != '+' || num_exp[1] != '\0')
-	num = parse_and_eval_long (num_exp) - 5;
+      if ((num_exp[0] != '+') || (num_exp[1] != '\0'))
+	num = (long)(parse_and_eval_long(num_exp) - 5L);
     }
   else
     {
-      /* "info history" means print the last 10 values.  */
-      num = value_history_count - 9;
+      /* "info history" means print the last 10 values: */
+      num = (value_history_count - 9L);
     }
 
-  if (num <= 0)
-    num = 1;
+  if (num <= 0L)
+    num = 1L;
 
-  for (i = num; i < num + 10 && i <= value_history_count; i++)
+  for (i = num; (i < (num + 10L)) && (i <= value_history_count); i++)
     {
-      val = access_value_history (i);
-      printf_filtered (("$%d = "), i);
-      value_print (val, gdb_stdout, 0, Val_pretty_default);
-      printf_filtered (("\n"));
+      val = access_value_history(i);
+      printf_filtered(("$%d = "), i);
+      value_print(val, gdb_stdout, 0, Val_pretty_default);
+      printf_filtered(("\n"));
     }
 
-  /* The next "info history +" should start after what we just printed.  */
-  num += 10;
+  /* The next "info history +" should start after what we just printed: */
+  num += 10L;
 
   /* Hitting just return after this command should do the same thing as
      "info history +".  If num_exp is null, this is unnecessary, since
@@ -1143,14 +1142,17 @@ DOUBLEST
 unpack_double (struct type *type, const gdb_byte *valaddr, int *invp)
 {
   enum type_code code;
-  int len;
+  size_t len;
   int nosign;
 
   *invp = 0;			/* Assume valid.   */
-  CHECK_TYPEDEF (type);
-  code = TYPE_CODE (type);
-  len = TYPE_LENGTH (type);
-  nosign = TYPE_UNSIGNED (type);
+  CHECK_TYPEDEF(type);
+  code = TYPE_CODE(type);
+  len = TYPE_LENGTH(type);
+  if (!(len > 0UL)) {
+    ; /* ??? */
+  }
+  nosign = TYPE_UNSIGNED(type);
   if (code == TYPE_CODE_FLT)
     {
       /* NOTE: cagney/2002-02-19: There was a test here to see if the

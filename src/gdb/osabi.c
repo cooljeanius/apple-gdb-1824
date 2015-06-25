@@ -430,7 +430,7 @@ generic_elf_osabi_sniff_abi_tag_sections(bfd *abfd, asection *sect, void *obj)
 {
   enum gdb_osabi *osabi = (enum gdb_osabi *)obj;
   const char *name;
-  unsigned int sectsize;
+  bfd_size_type sectsize;
   char *note;
 
   name = bfd_get_section_name(abfd, sect);
@@ -449,7 +449,7 @@ generic_elf_osabi_sniff_abi_tag_sections(bfd *abfd, asection *sect, void *obj)
       /* GNU: */
       if (check_note(abfd, sect, note, "GNU", 16, NT_GNU_ABI_TAG))
 	{
-	  unsigned int abi_tag = bfd_h_get_32(abfd, note + 16);
+	  uint32_t abi_tag = (uint32_t)bfd_h_get_32(abfd, (note + 16));
 
 	  switch (abi_tag)
 	    {
@@ -474,9 +474,9 @@ generic_elf_osabi_sniff_abi_tag_sections(bfd *abfd, asection *sect, void *obj)
 	      break;
 
 	    default:
-	      internal_error (__FILE__, __LINE__, _("\
+	      internal_error(__FILE__, __LINE__, _("\
 generic_elf_osabi_sniff_abi_tag_sections: unknown OS number %d"),
-			      abi_tag);
+                             abi_tag);
 	    }
 	  return;
 	}

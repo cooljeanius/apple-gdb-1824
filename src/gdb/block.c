@@ -155,6 +155,15 @@ block_function (const struct block *bl)
   return BLOCK_FUNCTION (bl);
 }
 
+/* FIXME: need to rename some struct fields that currently live in headers,
+ * and deal with all of the resulting fallout, before removing this: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* APPLE LOCAL begin address ranges  */
 /* Return a 1 if any of the address ranges for block BL begins with START
    and any of the address ranges for BL ends with END; return a 0 otherwise.  */
@@ -521,5 +530,12 @@ allocate_block(struct obstack *obstack)
 
   return bl;
 }
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* EOF */

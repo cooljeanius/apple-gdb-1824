@@ -215,25 +215,25 @@ java_value_print(struct value *val, struct ui_file *stream, int format,
       unsigned long count;
       struct value *mark;
 
-      mark = value_mark ();	/* Remember start of new values */
+      mark = value_mark();	/* Remember start of new values */
 
-      data_val = value_struct_elt (&val, NULL, "data", NULL, NULL);
-      data = value_as_address (data_val);
+      data_val = value_struct_elt(&val, NULL, "data", NULL, NULL);
+      data = value_as_address(data_val);
 
-      boffset_val = value_struct_elt (&val, NULL, "boffset", NULL, NULL);
-      boffset = value_as_address (boffset_val);
+      boffset_val = value_struct_elt(&val, NULL, "boffset", NULL, NULL);
+      boffset = (unsigned long)value_as_address(boffset_val);
 
-      count_val = value_struct_elt (&val, NULL, "count", NULL, NULL);
-      count = value_as_address (count_val);
+      count_val = value_struct_elt(&val, NULL, "count", NULL, NULL);
+      count = (unsigned long)value_as_address(count_val);
 
-      value_free_to_mark (mark);	/* Release unnecessary values */
+      value_free_to_mark(mark);	/* Release unnecessary values */
 
-      val_print_string (data + boffset, count, 2, stream);
+      val_print_string((data + boffset), count, 2, stream);
 
       return 0;
     }
 
-  return common_val_print (val, stream, format, 1, 0, pretty);
+  return common_val_print(val, stream, format, 1, 0, pretty);
 }
 
 /* TYPE, VALADDR, ADDRESS, STREAM, RECURSE, and PRETTY have the

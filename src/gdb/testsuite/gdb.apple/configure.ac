@@ -40,17 +40,33 @@ fi
 AC_OBJEXT
 AC_EXEEXT
 
-if test "x${CC}" = "x"; then
+if test "x${CC_C_O}" = "x"; then
+  test -z "${CC_C_O}"
+  AM_PROG_CC_C_O
+fi
+if test "x${CC}" = "x" || test "x${CC}" != "x${MY_CC}"; then
   test -z "${CC}"
   AC_PROG_CC
 else
   test ! -z "${CC}"
+  if test "x${ac_cv_c_compiler_gnu}" = "x"; then
+    test -z "${ac_cv_c_compiler_gnu}"
+    if test "x${GCC}" = "xyes" || test "x${CC}" = "xgcc"; then
+      export ac_cv_c_compiler_gnu=yes
+    else
+      export ac_cv_c_compiler_gnu=no
+    fi
+  fi
   AC_PROG_GCC_TRADITIONAL
 fi
 AC_PROG_AWK
 AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_OBJC
+if test "x${OBJCPP}" = "x"; then
+  test -z "${OBJCPP}"
+  AC_PROG_OBJCPP
+fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN

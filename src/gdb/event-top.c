@@ -519,6 +519,10 @@ async_disable_stdin (void)
 }
 
 
+/* only declare these here in this file: */
+extern int display_time;
+extern int display_space;
+
 /* Handles a gdb command. This function is called by
    command_line_handler, which has processed one or more input lines
    into COMMAND. */
@@ -526,23 +530,21 @@ async_disable_stdin (void)
    function.  The command_loop function will be obsolete when we
    switch to use the event loop at every execution of gdb. */
 static void
-command_handler (char *command)
+command_handler(char *command)
 {
   struct cleanup *old_chain;
-  int stdin_is_tty = ISATTY (stdin);
+  int stdin_is_tty = ISATTY(stdin);
   struct continuation_arg *arg1;
   struct continuation_arg *arg2;
   long time_at_cmd_start;
 #ifdef HAVE_SBRK
   long space_at_cmd_start = 0;
-#endif
-  extern int display_time;
-  extern int display_space;
+#endif /* HAVE_SBRK */
 
   quit_flag = 0;
   if (instream == stdin && stdin_is_tty)
-    reinitialize_more_filter ();
-  old_chain = make_cleanup (null_cleanup, 0);
+    reinitialize_more_filter();
+  old_chain = make_cleanup(null_cleanup, 0);
 
   /* If readline returned a NULL command, it means that the
      connection with the terminal is gone. This happens at the
@@ -550,66 +552,66 @@ command_handler (char *command)
      but GDB is still alive. In such a case, we just quit gdb
      killing the inferior program too. */
   if (command == 0)
-    quit_command ((char *) 0, stdin == instream);
+    quit_command((char *)0, stdin == instream);
 
-  time_at_cmd_start = get_run_time ();
+  time_at_cmd_start = get_run_time();
 
   if (display_space)
     {
 #ifdef HAVE_SBRK
-      char *lim = (char *) sbrk (0);
-      space_at_cmd_start = lim - lim_at_start;
-#endif
+      char *lim = (char *)sbrk(0);
+      space_at_cmd_start = (lim - lim_at_start);
+#endif /* HAVE_SBRK */
     }
 
-  execute_command (command, instream == stdin);
+  execute_command(command, instream == stdin);
 
   /* Set things up for this function to be compete later, once the
      execution has completed, if we are doing an execution command,
      otherwise, just go ahead and finish. */
-  if (target_can_async_p () && target_executing)
+  if (target_can_async_p() && target_executing)
     {
       arg1 =
-	(struct continuation_arg *) xmalloc (sizeof (struct continuation_arg));
+	(struct continuation_arg*)xmalloc(sizeof(struct continuation_arg));
       arg2 =
-	(struct continuation_arg *) xmalloc (sizeof (struct continuation_arg));
+	(struct continuation_arg*)xmalloc(sizeof(struct continuation_arg));
       arg1->next = arg2;
       arg2->next = NULL;
       arg1->data.longint = time_at_cmd_start;
 #ifdef HAVE_SBRK
       arg2->data.longint = space_at_cmd_start;
-#endif
-      add_continuation (command_line_handler_continuation, arg1);
+#endif /* HAVE_SBRK */
+      add_continuation(command_line_handler_continuation, arg1);
     }
 
   /* Do any commands attached to breakpoint we stopped at. Only if we
      are always running synchronously. Or if we have just executed a
      command that doesn't start the target. */
-  if (!target_can_async_p () || !target_executing)
+  if (!target_can_async_p() || !target_executing)
     {
-      bpstat_do_actions (&stop_bpstat);
-      do_cleanups (old_chain);
+      bpstat_do_actions(&stop_bpstat);
+      do_cleanups(old_chain);
 
       if (display_time)
 	{
-	  long cmd_time = get_run_time () - time_at_cmd_start;
+	  long cmd_time = (get_run_time() - time_at_cmd_start);
 
-	  printf_unfiltered (_("Command execution time: %ld.%06ld\n"),
-			     cmd_time / 1000000, cmd_time % 1000000);
+	  printf_unfiltered(_("Command execution time: %ld.%06ld\n"),
+			    (cmd_time / 1000000), (cmd_time % 1000000));
 	}
 
       if (display_space)
 	{
 #ifdef HAVE_SBRK
-	  char *lim = (char *) sbrk (0);
-	  long space_now = lim - lim_at_start;
-	  long space_diff = space_now - space_at_cmd_start;
+	  char *lim = (char *)sbrk(0);
+	  long space_now = (lim - lim_at_start);
+	  long space_diff = (space_now - space_at_cmd_start);
 
-	  printf_unfiltered (_("Space used: %ld (%c%ld for this command)\n"),
-			     space_now,
-			     (space_diff >= 0 ? '+' : '-'),
-			     space_diff);
-#endif
+	  printf_unfiltered(_("Space used: %ld (%c%ld for this command)\n"),
+			    space_now,
+			    ((space_diff >= 0) ? '+' : '-'),
+			    space_diff);
+#endif /* HAVE_SBRK */
 	}
     }
 }
@@ -618,38 +620,40 @@ command_handler (char *command)
    are always running synchronously. Or if we have just executed a
    command that doesn't start the target. */
 void
-command_line_handler_continuation (struct continuation_arg *arg)
+command_line_handler_continuation(struct continuation_arg *arg)
 {
-  extern int display_time;
-  extern int display_space;
-
-  long time_at_cmd_start  = arg->data.longint;
+  long time_at_cmd_start = arg->data.longint;
   long space_at_cmd_start = arg->next->data.longint;
 
-  bpstat_do_actions (&stop_bpstat);
-  /*do_cleanups (old_chain); *//*?????FIXME????? */
+  bpstat_do_actions(&stop_bpstat);
+#if 0
+  do_cleanups(old_chain); /* ?????FIXME????? */
+#endif /* 0 */
 
   if (display_time)
     {
-      long cmd_time = get_run_time () - time_at_cmd_start;
+      long cmd_time = (get_run_time() - time_at_cmd_start);
 
-      printf_unfiltered (_("Command execution time: %ld.%06ld\n"),
-			 cmd_time / 1000000, cmd_time % 1000000);
+      printf_unfiltered(_("Command execution time: %ld.%06ld\n"),
+                        (cmd_time / 1000000), (cmd_time % 1000000));
     }
   if (display_space)
     {
 #ifdef HAVE_SBRK
-      char *lim = (char *) sbrk (0);
-      long space_now = lim - lim_at_start;
-      long space_diff = space_now - space_at_cmd_start;
+      char *lim = (char *)sbrk(0);
+      long space_now = (lim - lim_at_start);
+      long space_diff = (space_now - space_at_cmd_start);
 
-      printf_unfiltered (_("Space used: %ld (%c%ld for this command)\n"),
-			 space_now,
-			 (space_diff >= 0 ? '+' : '-'),
-			 space_diff);
-#endif
+      printf_unfiltered(_("Space used: %ld (%c%ld for this command)\n"),
+                        space_now,
+                        ((space_diff >= 0) ? '+' : '-'),
+                        space_diff);
+#endif /* HAVE_SBRK */
     }
 }
+
+extern char *line;
+extern size_t linesize;
 
 /* Handle a complete line of input. This is called by the callback
    mechanism within the readline library.  Deal with incomplete commands
@@ -666,11 +670,8 @@ command_line_handler(char *rl)
   static unsigned int linelength = 0U;
   char *p;
   char *p1;
-  extern char *line;
-  extern int linesize;
   char *nline;
   char got_eof = 0;
-
 
   int repeat = (instream == stdin);
 
@@ -732,7 +733,7 @@ command_line_handler(char *rl)
   while (*p1)
     *p++ = *p1++;
 
-  xfree (rl);			/* Allocated in readline.  */
+  xfree(rl);			/* Allocated in readline.  */
 
   if ((p > linebuffer) && (*(p - 1) == '\\'))
     {
@@ -855,7 +856,9 @@ command_line_handler(char *rl)
 
   command_handler(linebuffer);
   display_gdb_prompt(0);
-  return;
+  if (got_eof > 0) {
+    return; /* else just fall off the end */
+  }
 }
 
 /* Does reading of input from terminal w/o the editing features
@@ -1132,19 +1135,19 @@ async_stop_sig (gdb_client_data arg)
 /* Tell the event loop what to do if SIGFPE is received.
    See event-signal.c. */
 static void
-handle_sigfpe (int sig)
+handle_sigfpe(int sig)
 {
-  mark_async_signal_handler_wrapper (sigfpe_token);
-  signal (sig, handle_sigfpe);
+  mark_async_signal_handler_wrapper(sigfpe_token);
+  signal(sig, handle_sigfpe);
 }
 
 /* Event loop will call this functin to process a SIGFPE. */
-static void
-async_float_handler (gdb_client_data arg)
+static void ATTR_NORETURN
+async_float_handler(gdb_client_data arg)
 {
   /* This message is based on ANSI C, section 4.7. Note that integer
      divide by zero causes this, so "float" is a misnomer. */
-  error (_("Erroneous arithmetic operation."));
+  error(_("Erroneous arithmetic operation."));
 }
 
 /* Tell the event loop what to do if SIGWINCH is received.

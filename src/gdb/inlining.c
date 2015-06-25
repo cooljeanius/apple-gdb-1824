@@ -370,11 +370,11 @@ add_item_to_temp_frame_stack(struct linetable_entry *item,
    global_inlined_call_stack.  */
 
 static void
-update_tmp_frame_stack (CORE_ADDR pc)
+update_tmp_frame_stack(CORE_ADDR pc)
 {
   struct symtab *s;
   struct symtab *orig_s;
-  struct symtab *alt_symtab = 0;
+  struct symtab *alt_symtab = (struct symtab *)0;
   struct linetable *l;
   int len;
   struct linetable_entry *alt = NULL;
@@ -385,8 +385,8 @@ update_tmp_frame_stack (CORE_ADDR pc)
   struct bfd_section *section;
   int i;
   struct linetable_entry *best = NULL;
-  CORE_ADDR best_end = 0;
-  struct symtab *best_symtab = 0;
+  CORE_ADDR best_end = 0UL;
+  struct symtab *best_symtab = (struct symtab *)0;
   struct pending_node *pending_list;
   struct pending_node *temp;
   struct pending_node *cur_pend;
@@ -395,28 +395,31 @@ update_tmp_frame_stack (CORE_ADDR pc)
       || temp_frame_stack.last_pc == pc)
     return;
 
+  reset_temp_frame_stack();
 
-  reset_temp_frame_stack ();
+  section_tmp = find_pc_overlay(pc);
+  if (pc_in_unmapped_range(pc, section_tmp))
+    pc = overlay_mapped_address(pc, section_tmp);
+  section = (struct bfd_section *)section_tmp;
 
-  section_tmp = find_pc_overlay (pc);
-  if (pc_in_unmapped_range (pc, section_tmp))
-    pc = overlay_mapped_address (pc, section_tmp);
-  section = (struct bfd_section *) section_tmp;
-
-
-  s = find_pc_sect_symtab (pc, section);
+  s = find_pc_sect_symtab(pc, section);
   orig_s = s;
+
+  if (orig_s == NULL) {
+    ; /* do nothing for now; just silence '-Wunused-but-set-variable' */
+  }
+
   if (s)
     {
-      bv = BLOCKVECTOR (s);
+      bv = BLOCKVECTOR(s);
 
       /* Look at all the symtabs that share this blockvector.
          They all have the same apriori range, that we found was right;
          but they have different line tables.  */
 
-      for ( ; s && BLOCKVECTOR (s) == bv; s = s->next)
+      for ( ; s && BLOCKVECTOR(s) == bv; s = s->next)
 	{
-	  l = LINETABLE (s);
+	  l = LINETABLE(s);
 	  if (!l)
 	    continue;
 	  len = l->nitems;
@@ -444,12 +447,12 @@ update_tmp_frame_stack (CORE_ADDR pc)
 		     collected and sorted, they get added to the
 		     call stack in the correct order.  */
 
-		  temp = (struct pending_node *)
-		                     xmalloc (sizeof (struct pending_node));
+		  temp = ((struct pending_node *)
+                          xmalloc(sizeof(struct pending_node)));
 		  temp->entry = item;
 		  temp->s = s;
 		  temp->next = NULL;
-		  insert_pending_node (temp, &pending_list);
+		  insert_pending_node(temp, &pending_list);
 		}
 
 	      if (item->pc > pc
@@ -489,20 +492,20 @@ update_tmp_frame_stack (CORE_ADDR pc)
 			 collected and sorted, they get added to the
 			 call stack in the correct order.  */
 
-		      temp = (struct pending_node *)
-			            xmalloc (sizeof (struct pending_node));
+		      temp = ((struct pending_node *)
+                              xmalloc(sizeof(struct pending_node)));
 		      temp->entry = item;
 		      temp->s = s;
 		      temp->next = NULL;
-		      insert_pending_node (temp, &pending_list);
+		      insert_pending_node(temp, &pending_list);
 		    }
 		}
 	      best = prev;
 	    }
 
 	  for (cur_pend = pending_list; cur_pend; cur_pend = cur_pend->next)
-	    add_item_to_temp_frame_stack (cur_pend->entry, cur_pend->s,
-					  section);
+	    add_item_to_temp_frame_stack(cur_pend->entry, cur_pend->s,
+					 section);
 	}
     }
 
@@ -511,6 +514,11 @@ update_tmp_frame_stack (CORE_ADDR pc)
   if (temp_frame_stack.nelts > 0)
     temp_frame_stack.last_inlined_pc = pc;
   temp_frame_stack.last_pc = pc;
+
+  /* use another unused variable: */
+  if (alt_symtab == NULL) {
+    return; /* else fall off the end; it matters little either way... */
+  }
 }
 
 /* Given an array index I, and an address PC, this function determines
@@ -943,32 +951,31 @@ verify_stack (void)
    in the list MATCHES.  */
 
 static void
-rb_tree_find_all_nodes_in_between (struct rb_tree_node *root, CORE_ADDR start,
-				   CORE_ADDR end,
-				   struct rb_tree_node_list **matches)
+rb_tree_find_all_nodes_in_between(struct rb_tree_node *root,
+                                  CORE_ADDR start, CORE_ADDR end,
+				  struct rb_tree_node_list **matches)
 {
   struct rb_tree_node_list *tmp_node;
 
   if (!root)
     return;
 
-    if (start <= root->key
-        && root->key < end
-	&& root->third_key < end)
-      {
-	tmp_node = (struct rb_tree_node_list *) xmalloc (sizeof (struct rb_tree_node_list));
-	tmp_node->node = root;
-	tmp_node->next = *matches;
-	*matches = tmp_node;
-      }
+  if ((start <= root->key) && (root->key < end)
+      && (root->third_key < end))
+    {
+      tmp_node = (struct rb_tree_node_list *)xmalloc(sizeof(struct rb_tree_node_list));
+      tmp_node->node = root;
+      tmp_node->next = *matches;
+      *matches = tmp_node;
+    }
 
-    if (start <= root->key)
-      {
-	rb_tree_find_all_nodes_in_between (root->left, start, end, matches);
-	rb_tree_find_all_nodes_in_between (root->right, start, end, matches);
-      }
-    else if (start > root->key)
-      rb_tree_find_all_nodes_in_between (root->right, start, end, matches);
+  if (start <= root->key)
+    {
+      rb_tree_find_all_nodes_in_between(root->left, start, end, matches);
+      rb_tree_find_all_nodes_in_between(root->right, start, end, matches);
+    }
+  else if (start > root->key)
+    rb_tree_find_all_nodes_in_between(root->right, start, end, matches);
 }
 
 /* APPLE LOCAL begin inlined function symbols & blocks  */
@@ -1065,29 +1072,29 @@ rb_tree_find_all_matching_nodes (struct rb_tree_node *root, CORE_ADDR key,
    tree node that matches (this is a possibility).  */
 
 static struct rb_tree_node *
-rb_tree_find_next_node (struct rb_tree_node *root, long long key, int secondary_key,
-			long long third_key)
+rb_tree_find_next_node(struct rb_tree_node *root, long long key, int secondary_key,
+                       long long third_key)
 {
   /* First look for a right-hand sibling.  If found, return that.  Otherwise, look
      for children.  */
 
   if (root->parent
       && root == root->parent->left
-      && root->parent->key == key
-      && root->parent->third_key == third_key
+      && root->parent->key == (CORE_ADDR)key
+      && root->parent->third_key == (CORE_ADDR)third_key
       && root->parent->right)
     {
-      if (root->parent->right->key == key
-	  && root->parent->right->third_key == third_key)
+      if (root->parent->right->key == (CORE_ADDR)key
+	  && root->parent->right->third_key == (CORE_ADDR)third_key)
 	return root->parent->right;
     }
   else if (root->left
-	   && root->left->key == key
-	   && root->left->third_key == third_key)
+	   && root->left->key == (CORE_ADDR)key
+	   && root->left->third_key == (CORE_ADDR)third_key)
     return root->left;
   else if (root->right
-	   && root->right->key == key
-	   && root->right->third_key == third_key)
+	   && root->right->key == (CORE_ADDR)key
+	   && root->right->third_key == (CORE_ADDR)third_key)
     return root->right;
   else
     return NULL;
@@ -1485,7 +1492,7 @@ inlined_function_update_call_stack(CORE_ADDR pc)
 {
   struct symtab *s;
   struct symtab *orig_s;
-  struct symtab *alt_symtab = 0;
+  struct symtab *alt_symtab = (struct symtab *)0;
   struct linetable *l;
   int len;
   struct linetable_entry *alt = NULL;
@@ -1723,6 +1730,11 @@ inlined_function_update_call_stack(CORE_ADDR pc)
   if (global_inlined_call_stack.nelts > 0)
     global_inlined_call_stack.last_inlined_pc = pc;
   inlined_function_update_call_stack_pc(pc);
+
+  /* use another unused variable: */
+  if (alt_symtab == NULL) {
+    return; /* else fall off the end; it matters little either way... */
+  }
 }
 
 /* This function is call from check_inlined_function_calls in
@@ -3364,6 +3376,8 @@ inlined_function_find_first_line (struct symtab_and_line sal)
 	      }
 	}
     }
+
+  (void)prev;
 
   return first_line;
 }

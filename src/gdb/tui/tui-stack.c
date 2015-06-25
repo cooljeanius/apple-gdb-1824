@@ -138,11 +138,11 @@ tui_make_status_line(struct tui_locator_element* loc)
             {
               proc_width += (pc_width + sizeof(PC_PREFIX) - 1UL + 1UL);
               pc_width = 0UL;
-              if (proc_width < 0UL)
+              if ((long)proc_width < 0L)
                 {
                   proc_width += (line_width + sizeof(LINE_PREFIX) - 1 + 1);
                   line_width = 0UL;
-                  if (proc_width < 0UL)
+                  if ((long)proc_width < 0L)
                     proc_width = 0;
                 }
             }

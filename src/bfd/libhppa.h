@@ -3,7 +3,7 @@
    2003 Free Software Foundation, Inc.
 
    Contributed by the Center for Software Science at the
-   University of Utah (pa-gdb-bugs@cs.utah.edu).
+   University of Utah <pa-gdb-bugs@cs.utah.edu>.
 
    This file is part of BFD, the Binary File Descriptor library.
 
@@ -19,12 +19,19 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #ifndef _LIBHPPA_H
 #define _LIBHPPA_H
 
-#define BYTES_IN_WORD 4
+#ifndef BYTES_IN_WORD
+# if defined(__LP64__) && __LP64__
+#  define BYTES_IN_WORD 8
+# else
+#  define BYTES_IN_WORD 4
+# endif /* __LP64__ */
+#endif /* !BYTES_IN_WORD */
+
 #define PA_PAGESIZE 0x1000
 
 /* The PA instruction set variants.  */

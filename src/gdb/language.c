@@ -379,20 +379,20 @@ set_type_range_case (void)
 /* Set current language to (enum language) LANG.  Returns previous language. */
 
 enum language
-set_language (enum language lang)
+set_language(enum language lang)
 {
-  int i;
+  size_t i;
   enum language prev_language;
 
   prev_language = current_language->la_language;
 
-  for (i = 0; i < languages_size; i++)
+  for (i = 0UL; i < languages_size; i++)
     {
       if (languages[i]->la_language == lang)
 	{
 	  current_language = languages[i];
-	  set_type_range_case ();
-	  set_lang_str ();
+	  set_type_range_case();
+	  set_lang_str();
 	  break;
 	}
     }
@@ -936,25 +936,24 @@ range_error (const char *string,...)
 /* Return the language enum for a given language string. */
 
 enum language
-language_enum (char *str)
+language_enum(char *str)
 {
-  int i;
+  size_t i;
 
-  for (i = 0; i < languages_size; i++)
-    if (DEPRECATED_STREQ (languages[i]->la_name, str))
+  for (i = 0UL; i < languages_size; i++)
+    if (DEPRECATED_STREQ(languages[i]->la_name, str))
       return languages[i]->la_language;
 
   return language_unknown;
 }
 
-/* Return the language struct for a given language enum. */
-
+/* Return the language struct for a given language enum: */
 const struct language_defn *
-language_def (enum language lang)
+language_def(enum language lang)
 {
-  int i;
+  size_t i;
 
-  for (i = 0; i < languages_size; i++)
+  for (i = 0UL; i < languages_size; i++)
     {
       if (languages[i]->la_language == lang)
 	{
@@ -966,11 +965,11 @@ language_def (enum language lang)
 
 /* Return the language as a string */
 char *
-language_str (enum language lang)
+language_str(enum language lang)
 {
-  int i;
+  size_t i;
 
-  for (i = 0; i < languages_size; i++)
+  for (i = 0UL; i < languages_size; i++)
     {
       if (languages[i]->la_language == lang)
 	{
@@ -1026,15 +1025,15 @@ add_language (const struct language_defn *lang)
    Return the result from the first that returns non-zero, or 0 if all
    `fail'.  */
 CORE_ADDR
-skip_language_trampoline (CORE_ADDR pc)
+skip_language_trampoline(CORE_ADDR pc)
 {
-  int i;
+  size_t i;
 
-  for (i = 0; i < languages_size; i++)
+  for (i = 0UL; i < languages_size; i++)
     {
       if (languages[i]->skip_trampoline)
 	{
-	  CORE_ADDR real_pc = (languages[i]->skip_trampoline) (pc);
+	  CORE_ADDR real_pc = (languages[i]->skip_trampoline)(pc);
 	  if (real_pc)
 	    return real_pc;
 	}
@@ -1090,41 +1089,41 @@ unk_lang_parser(void)
   return 1;
 }
 
-static void
+static void ATTR_NORETURN
 unk_lang_error(char *msg ATTRIBUTE_UNUSED)
 {
   error(_("Attempted to parse an expression with unknown language"));
 }
 
-static void
+static void ATTR_NORETURN
 unk_lang_emit_char(int c, struct ui_file *stream, int quoter)
 {
   error(_("internal error - unimplemented function unk_lang_emit_char called."));
 }
 
-static void
+static void ATTR_NORETURN
 unk_lang_printchar(int c, struct ui_file *stream)
 {
   error (_("internal error - unimplemented function unk_lang_printchar called."));
 }
 
-static void
+static void ATTR_NORETURN
 unk_lang_printstr(struct ui_file *stream, const gdb_byte *string,
 		  unsigned int length, int width, int force_ellipses)
 {
   error(_("internal error - unimplemented function unk_lang_printstr called."));
 }
 
-static struct type *
+static struct type *ATTR_NORETURN
 unk_lang_create_fundamental_type(struct objfile *objfile ATTRIBUTE_UNUSED,
                                  int unktypeid ATTRIBUTE_UNUSED)
 {
   error(_("internal error - unimplemented function unk_lang_create_fundamental_type called."));
 }
 
-static void
-unk_lang_print_type (struct type *type, char *varstring, struct ui_file *stream,
-		     int show, int level)
+static void ATTR_NORETURN
+unk_lang_print_type(struct type *type, char *varstring,
+                    struct ui_file *stream, int show, int level)
 {
   error(_("internal error - unimplemented function unk_lang_print_type called."));
 }
@@ -1150,29 +1149,29 @@ static CORE_ADDR unk_lang_trampoline(CORE_ADDR pc)
   return 0;
 }
 
-/* Unknown languages just use the cplus demangler.  */
-static char *unk_lang_demangle (const char *mangled, int options)
+/* Unknown languages just use the cplus demangler: */
+static char *unk_lang_demangle(const char *mangled, int options)
 {
-  return cplus_demangle (mangled, options);
+  return cplus_demangle(mangled, options);
 }
 
-static char *unk_lang_class_name (const char *mangled)
+static char *unk_lang_class_name(const char *mangled)
 {
   return NULL;
 }
 
 static const struct op_print unk_op_print_tab[] =
 {
-  {NULL, OP_NULL, PREC_NULL, 0}
+  { NULL, OP_NULL, PREC_NULL, 0 }
 };
 
 static void
-unknown_language_arch_info (struct gdbarch *gdbarch,
-			    struct language_arch_info *lai)
+unknown_language_arch_info(struct gdbarch *gdbarch,
+			   struct language_arch_info *lai)
 {
-  lai->string_char_type = builtin_type (gdbarch)->builtin_char;
-  lai->primitive_type_vector = GDBARCH_OBSTACK_CALLOC (gdbarch, 1,
-						       struct type *);
+  lai->string_char_type = builtin_type(gdbarch)->builtin_char;
+  lai->primitive_type_vector = GDBARCH_OBSTACK_CALLOC(gdbarch, 1,
+						      struct type *);
 }
 
 const struct language_defn unknown_language_defn =
@@ -1182,8 +1181,8 @@ const struct language_defn unknown_language_defn =
   NULL,
   range_check_off,
   type_check_off,
-  array_row_major,
   case_sensitive_on,
+  array_row_major,
   &exp_descriptor_standard,
   unk_lang_parser,
   unk_lang_error,
@@ -1218,8 +1217,8 @@ const struct language_defn auto_language_defn =
   NULL,
   range_check_off,
   type_check_off,
-  array_row_major,
   case_sensitive_on,
+  array_row_major,
   &exp_descriptor_standard,
   unk_lang_parser,
   unk_lang_error,
@@ -1293,13 +1292,13 @@ struct language_gdbarch
 };
 
 static void *
-language_gdbarch_post_init (struct gdbarch *gdbarch)
+language_gdbarch_post_init(struct gdbarch *gdbarch)
 {
   struct language_gdbarch *l;
-  int i;
+  size_t i;
 
-  l = GDBARCH_OBSTACK_ZALLOC (gdbarch, struct language_gdbarch);
-  for (i = 0; i < languages_size; i++)
+  l = GDBARCH_OBSTACK_ZALLOC(gdbarch, struct language_gdbarch);
+  for (i = 0UL; i < languages_size; i++)
     {
       if (languages[i] != NULL
 	  && languages[i]->la_language_arch_info != NULL)
@@ -1310,11 +1309,12 @@ language_gdbarch_post_init (struct gdbarch *gdbarch)
 }
 
 struct type *
-language_string_char_type (const struct language_defn *la,
-			   struct gdbarch *gdbarch)
+language_string_char_type(const struct language_defn *la,
+			  struct gdbarch *gdbarch)
 {
-  struct language_gdbarch *ld = gdbarch_data (gdbarch,
-					      language_gdbarch_data);
+  struct language_gdbarch *ld;
+  ld = (struct language_gdbarch *)gdbarch_data(gdbarch,
+                                               language_gdbarch_data);
   if (ld->arch_info[la->la_language].string_char_type != NULL)
     return ld->arch_info[la->la_language].string_char_type;
   else
@@ -1322,12 +1322,13 @@ language_string_char_type (const struct language_defn *la,
 }
 
 struct type *
-language_lookup_primitive_type_by_name (const struct language_defn *la,
-					struct gdbarch *gdbarch,
-					const char *name)
+language_lookup_primitive_type_by_name(const struct language_defn *la,
+                                       struct gdbarch *gdbarch,
+                                       const char *name)
 {
-  struct language_gdbarch *ld = gdbarch_data (gdbarch,
-					      language_gdbarch_data);
+  struct language_gdbarch *ld;
+  ld = (struct language_gdbarch *)gdbarch_data(gdbarch,
+                                               language_gdbarch_data);
   if (ld->arch_info[la->la_language].primitive_type_vector != NULL)
     {
       struct type *const *p;

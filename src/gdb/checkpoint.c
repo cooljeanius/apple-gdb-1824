@@ -91,8 +91,8 @@ memcache_get(struct checkpoint *cp, ULONGEST addr, int len)
   mc->next = cp->mem;
   cp->mem = mc;
 
-  actual = target_read_partial(&current_target, TARGET_OBJECT_MEMORY,
-                               NULL, mc->cache, addr, len);
+  actual = (int)target_read_partial(&current_target, TARGET_OBJECT_MEMORY,
+                                    NULL, mc->cache, addr, len);
 #if defined(DEBUG) || defined(_DEBUG)
   printf("cached %d (orig %d) bytes at 0x%llx\n", actual, len, addr);
 #endif /* DEBUG || _DEBUG */
@@ -173,7 +173,7 @@ load_helpers(void)
       val = call_function_by_hand_expecting_type(dlfn,
 						 builtin_type_int, 2,
                                                  args, 1);
-      rslt = value_as_long (val);
+      rslt = (long)value_as_long(val);
       if (rslt == 0)
 	warning("dlopen of checkpoint library returned NULL");
     }
@@ -258,7 +258,7 @@ collect_checkpoint(void)
   struct checkpoint *cp;
   struct value *forkfn;
   struct value *val;
-  int retval;
+  long retval;
 
   cp = start_checkpoint();
 
@@ -287,6 +287,9 @@ collect_checkpoint(void)
       {
 	val = call_function_by_hand_expecting_type(cgfn,
 						   builtin_type_int, 1, &arg, 1);
+        if (val == NULL) {
+          ; /* ??? */
+        }
       }
     else
       {
@@ -307,7 +310,7 @@ collect_checkpoint(void)
 	  val = call_function_by_hand_expecting_type(forkfn,
 						     builtin_type_int, 0, NULL, 1);
 
-	  retval = value_as_long(val);
+	  retval = (long)value_as_long(val);
 
 	  /* Keep the pid around, only dig through fork when rolling back.  */
 	  cp->pid = retval;
@@ -431,11 +434,11 @@ prune_checkpoint_list(void)
   xfree(todel);
 }
 
+extern int regcache_compare(struct regcache *rc1, struct regcache *rc2);
+
 int
 checkpoint_compare(struct checkpoint *cp1, struct checkpoint *cp2)
 {
-  int regcache_compare(struct regcache *rc1, struct regcache *rc2);
-
   if (regcache_compare(cp1->regs, cp2->regs) == 0)
     return 0;
 
@@ -466,7 +469,7 @@ maybe_create_checkpoint(void)
 
   tmpcp = collect_checkpoint();
 
-#if 0 /* used for re-execution */
+#ifdef DO_REEXECUTION /* used for re-execution */
   for (cp = checkpoint_list; cp != NULL; cp = cp->next)
     if (checkpoint_compare(cp, tmpcp))
       {
@@ -475,16 +478,16 @@ maybe_create_checkpoint(void)
 	  current_checkpoint->immediate_prev = lastcp;
 	return;
       }
-#endif /* 0 */
+#endif /* DO_REEXECUTION */
 
   finish_checkpoint(tmpcp);
 
   tmpcp->type = autogen;
 
-#if 0
+#if defined(DEBUG) || defined(_DEBUG) || defined(lint) || 1
   if ((rx_cp && lastcp) || (step_range_end == 1))
     current_checkpoint->immediate_prev = lastcp;
-#endif /* 0 */
+#endif /* DEBUG || _DEBUG || lint || 1 */
 
   collecting_checkpoint = 0;
 }
@@ -563,6 +566,9 @@ rollback_to_checkpoint(struct checkpoint *cp)
       {
 	val = call_function_by_hand_expecting_type(cgfn,
 						   builtin_type_int, 1, &arg, 1);
+        if (val == NULL) {
+          ; /* ??? */
+        }
       }
     else
       {
@@ -816,9 +822,9 @@ delete_checkpoint_command (char *args, int from_tty)
 
 }
 
-#if 0 /* comment out for now */
+#ifdef BUILD_COMMENTED_OUT_CODE /* comment out for now */
 static void
-reverse_step_command (char *args, int from_tty)
+reverse_step_command(char *args, int from_tty)
 {
   struct checkpoint *cp, *prev;
   gdb_byte reg_buf[MAX_REGISTER_SIZE];
@@ -827,13 +833,13 @@ reverse_step_command (char *args, int from_tty)
 
   if (current_checkpoint == NULL)
     {
-      printf ("no cp!\n");
+      printf("no cp!\n");
       return;
     }
 
   if (current_checkpoint->immediate_prev == NULL)
     {
-      /* re-execute to find old state */
+      ; /* re-execute to find old state */
     }
 
   if (current_checkpoint->immediate_prev)
@@ -842,15 +848,15 @@ reverse_step_command (char *args, int from_tty)
       prev = cp->immediate_prev;
       while (prev)
 	{
-	  regcache_cooked_read (cp->regs, PC_REGNUM, reg_buf);
-	  pc = *((LONGEST *) reg_buf);
-	  sal = find_pc_line (pc, 0);
-	  regcache_cooked_read (prev->regs, PC_REGNUM, reg_buf);
-	  prev_pc = *((LONGEST *) reg_buf);
-	  prev_sal = find_pc_line (prev_pc, 0);
+	  regcache_cooked_read(cp->regs, PC_REGNUM, reg_buf);
+	  pc = *((LONGEST *)reg_buf);
+	  sal = find_pc_line(pc, 0);
+	  regcache_cooked_read(prev->regs, PC_REGNUM, reg_buf);
+	  prev_pc = *((LONGEST *)reg_buf);
+	  prev_sal = find_pc_line(prev_pc, 0);
 	  if (prev_sal.line != sal.line)
 	    {
-	      rollback_to_checkpoint (cp);
+	      rollback_to_checkpoint(cp);
 	      return;
 	    }
 	  cp = prev;
@@ -861,32 +867,32 @@ reverse_step_command (char *args, int from_tty)
 	      return;
 	    }
 	}
-      printf ("no prev line found\n");
+      printf("no prev line found\n");
     }
   else
     printf("no cp?\n");
 }
 
 static void
-reverse_stepi_command (char *args, int from_tty)
+reverse_stepi_command(char *args, int from_tty)
 {
   if (current_checkpoint == NULL)
     {
-      printf ("no cp!\n");
+      printf("no cp!\n");
       return;
     }
 
   if (current_checkpoint->immediate_prev == NULL)
     {
-      /* re-execute to find old state */
+      ; /* re-execute to find old state */
     }
 
   if (current_checkpoint->immediate_prev)
-    rollback_to_checkpoint (current_checkpoint->immediate_prev);
+    rollback_to_checkpoint(current_checkpoint->immediate_prev);
   else
     printf("no cp?\n");
 }
-#endif /* 0 */
+#endif /* BUILD_COMMENTED_OUT_CODE */
 
 /* Clear out all accumulated checkpoint stuff: */
 void
@@ -915,7 +921,7 @@ set_max_checkpoints(char *args ATTRIBUTE_UNUSED,
 
 /* Catch SIGTERM so we can be sure to get rid of any checkpoint forks that
  * are hanging around: */
-static void
+static void ATTR_NORETURN
 sigterm_handler(int signo ATTRIBUTE_UNUSED)
 {
   struct checkpoint *cp;

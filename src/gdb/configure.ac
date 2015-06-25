@@ -371,7 +371,10 @@ AC_CHECK_FUNCS([gettext _gettext])dnl
 if test "x${ac_cv_func_strerror}" = "xyes" || test "x${ac_cv_search_strerror}" != "x"; then
   test -n "${ac_cv_func_strerror}" || test -n "${ac_cv_search_strerror}"
   AC_CHECK_LIB([intl],[dgettext],[:],[
-    AC_CHECK_LIB([intl],[libintl_dgettext])dnl
+    if test -x "`which ld`" && test "x${LD}" != "xld-136"; then
+      AC_CHECK_LIB([intl],[libintl_dgettext])dnl
+      ## cache value is also used below...
+    fi
   ])dnl
   ## should be enough here
 fi
@@ -379,22 +382,30 @@ unset ac_cv_lib_intl_gettext
 # Also check for -lintl anyways, but with different functions:
 AC_CHECK_LIB([intl],[gettext],[:],[
   AC_CHECK_LIB([intl],[libintl_gettext],[:],[
-    if test -x "`which ld`" && test "x${ac_cv_lib_intl_main}" = "x"; then
-      test -z "${ac_cv_lib_intl_main}"
-      ## neither worked:
-      PRE_INTL_LDFLAGS="${LDFLAGS}"
-      LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-      ##FIXME: the linker sometimes crashes here:
-      AC_CHECK_LIB([intl],[main])dnl
-      ## reset:
-      LDFLAGS="${PRE_INTL_LDFLAGS}"
+    if test -x "`which ld`" && test "x${LD}" != "xld-136"; then
+      if test "x${ac_cv_lib_intl_main}" = "x" && test "x${LD}" = "Y0"; then
+        test -z "${ac_cv_lib_intl_main}"
+        ## neither worked:
+        PRE_INTL_LDFLAGS="${LDFLAGS}"
+        LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+        ##FIXME: the linker sometimes crashes here:
+        AC_CHECK_LIB([intl],[main])dnl
+        ## reset:
+        LDFLAGS="${PRE_INTL_LDFLAGS}"
+      fi
     fi
   ])dnl#end case where symbols are prefixed with "libintl_"
 ])dnl#end case where symbols are unprefixed
   ## just in case:
-AC_SEARCH_LIBS([libintl_dgettext],[intl asprintf gettextlib gettextpo \
-                                   gettextsrc gettext libintl lintl \
-                                   gnu c iberty iconv])dnl
+if test -x "`which ld`" && test "x${LD}" != "xld-136"; then
+  if test "x${ac_cv_lib_intl_libintl_dgettext}" = "x"; then
+    test -z "${ac_cv_lib_intl_libintl_dgettext}"
+    AC_SEARCH_LIBS([libintl_dgettext],[intl asprintf gettextlib gettextpo \
+                                       gettextsrc gettext libintl lintl \
+                                       gnu c iberty iconv])dnl
+    ## ...or is it here where the linker crashes?
+  fi
+fi
 
 localedir='${datadir}/locale'
 AC_SUBST([localedir])dnl
@@ -1444,10 +1455,11 @@ AC_SUBST([EXTRA_DEFS])dnl
 AC_CHECK_HEADERS([stdarg.h varargs.h])dnl
 # even more header checks:
 AC_HEADER_ASSERT
-AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h \
+AC_CHECK_HEADERS([Availability.h AvailabilityMacros.h \
+                  CoreFoundation/CoreFoundation.h \
                   CoreFoundation/CFPropertyList.h \
                   CoreFoundation/CFURLAccess.h assert.h \
-                  architecture/byte_order.h bits/endian.h \
+                  architecture/byte_order.h bits/endian.h crt_externs.h \
                   libgen.h libgettext.h linux/byteorder/big_endian.h \
                   linux/byteorder/little_endian.h mach.h mach_error.h \
                   mach/kern_return.h mach/kmod.h mach/mach_error.h \
@@ -2486,6 +2498,12 @@ if test "x${gdb_cv_c_long_double}" = "xyes"; then
   ## end def
 fi
 
+dnl# While we cannot use the macro mentioned above, we can use this one
+dnl# separately; the resulting define should be non-conflicting:
+m4_ifdef([AC_TYPE_LONG_DOUBLE_WIDER],[
+  AC_TYPE_LONG_DOUBLE_WIDER
+])dnl
+
 # Check if the compiler and runtime support printing long doubles:
 AC_CACHE_CHECK([for long double support in printf],
                [gdb_cv_printf_has_long_double],
@@ -2888,6 +2906,8 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
     test -z "${MIG_CHECKING}"
     build_warnings="${build_warnings} -Wused-but-marked-unused"
   fi
+  ## the clang version of this warning is un-pluralized, unlike in GCC:
+  build_warnings="${build_warnings} -Wno-unused-local-typedef"
 fi
 
 dnl# (we now ensure that 'acl_cv_wl' is set elsewhere above)
@@ -2900,7 +2920,7 @@ case "${host}" in
     # FSF gcc, but it only makes sense on Apple platforms.
     build_warnings="${build_warnings} -Wmost -Wextra-tokens -Wnewline-eof \
 -Wendif-labels -Wformat -Wformat-nonliteral -Wformat-y2k \
--Wnonportable-cfstrings -std=gnu99"
+-Wnonportable-cfstrings -Wno-unused-function -std=gnu99"
     case "${host}" in
       *64*-apple-darwin9* | *64*-apple-darwin1[[0123456789]].*.*)
         build_warnings="${build_warnings} -Wshorten-64-to-32"

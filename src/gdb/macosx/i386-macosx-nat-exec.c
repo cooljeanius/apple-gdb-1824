@@ -620,7 +620,7 @@ i386_macosx_dr_reset_addr(int regnum)
 unsigned long
 i386_macosx_dr_get_status(void)
 {
-  return i386_macosx_dr_get(DR_STATUS);
+  return (unsigned long)i386_macosx_dr_get(DR_STATUS);
 }
 
 /* I have no idea why this target vector entry gets passed in the target.

@@ -76,19 +76,23 @@ struct _sr_settings sr_settings =
 
 struct gr_settings *gr_settings = NULL;
 
-static void usage (char *, char *);
-static void sr_com (char *, int);
+static void usage(char *, char *);
+static void sr_com(char *, int);
 
-static void
-usage (char *proto, char *junk)
+static void ATTR_NORETURN
+usage(char *proto, char *junk)
 {
-  if (junk != NULL)
-    fprintf_unfiltered (gdb_stderr, "Unrecognized arguments: `%s'.\n", junk);
+  if (junk != NULL) {
+    fprintf_unfiltered(gdb_stderr, "Unrecognized arguments: `%s'.\n",
+                       junk);
+  }
 
-  error (_("Usage: target %s [DEVICE [SPEED [DEBUG]]]\n\
+  error(_("Usage: target %s [DEVICE [SPEED [DEBUG]]]\n\
 where DEVICE is the name of a device or HOST:PORT"), proto);
 
+#ifndef ATTR_NORETURN
   return;
+#endif /* !ATTR_NORETURN */
 }
 
 #define CHECKDONE(p, q) \
@@ -103,45 +107,51 @@ where DEVICE is the name of a device or HOST:PORT"), proto);
 }
 
 void
-sr_scan_args (char *proto, char *args)
+sr_scan_args(char *proto, char *args)
 {
   int n;
   char *p, *q;
 
-  /* if no args, then nothing to do. */
+  /* if no args, then nothing to do: */
   if (args == NULL || *args == '\0')
     return;
 
-  /* scan off white space.  */
-  for (p = args; isspace (*p); ++p);;
+  /* scan off white space: */
+  for (p = args; isspace(*p); ++p) {
+    ; /* (do nothing) */
+  };
 
-  /* find end of device name.  */
-  for (q = p; *q != '\0' && !isspace (*q); ++q);;
+  /* find end of device name: */
+  for (q = p; (*q != '\0') && !isspace(*q); ++q) {
+    ; /* (do nothing) */
+  };
 
-  /* check for missing or empty device name.  */
-  CHECKDONE (p, q);
-  sr_set_device (savestring (p, q - p));
+  /* check for missing or empty device name: */
+  CHECKDONE(p, q);
+  sr_set_device(savestring(p, (q - p)));
 
-  /* look for baud rate.  */
-  n = strtol (q, &p, 10);
+  /* look for baud rate: */
+  n = strtol(q, &p, 10);
 
-  /* check for missing or empty baud rate.  */
-  CHECKDONE (p, q);
+  /* check for missing or empty baud rate: */
+  CHECKDONE(p, q);
   baud_rate = n;
 
-  /* look for debug value.  */
-  n = strtol (p, &q, 10);
+  /* look for debug value: */
+  n = strtol(p, &q, 10);
 
-  /* check for missing or empty debug value.  */
-  CHECKDONE (p, q);
-  sr_set_debug (n);
+  /* check for missing or empty debug value: */
+  CHECKDONE(p, q);
+  sr_set_debug(n);
 
-  /* scan off remaining white space.  */
-  for (p = q; isspace (*p); ++p);;
+  /* scan off remaining white space: */
+  for (p = q; isspace(*p); ++p) {
+    ; /* (do nothing) */
+  };
 
   /* if not end of string, then there's unrecognized junk. */
   if (*p != '\0')
-    usage (proto, p);
+    usage(proto, p);
 
   return;
 }

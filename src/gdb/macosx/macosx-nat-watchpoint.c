@@ -408,7 +408,7 @@ get_dictionary_bucket_of_page(CORE_ADDR page_start)
   hash = (page_start / memory_page_dictionary.page_size);
   hash = (hash % MEMORY_PAGE_DICTIONARY_BUCKET_COUNT);
 
-  return hash;
+  return (int)hash;
 }
 
 /* Given a memory page's starting address, get (i.e., find an existing

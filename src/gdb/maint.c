@@ -122,10 +122,10 @@ maintenance_dump_me(char *args, int from_tty)
    Also useful when the user wants to drop a core file but not exit
    GDB. */
 
-static void
-maintenance_internal_error (char *args, int from_tty)
+static void ATTR_NORETURN
+maintenance_internal_error(char *args, int from_tty)
 {
-  internal_error (__FILE__, __LINE__, "%s", (args == NULL ? "" : args));
+  internal_error(__FILE__, __LINE__, "%s", ((args == NULL) ? "" : args));
 }
 
 /* Stimulate the internal error mechanism that GDB uses when an
@@ -134,9 +134,9 @@ maintenance_internal_error (char *args, int from_tty)
    GDB. */
 
 static void
-maintenance_internal_warning (char *args, int from_tty)
+maintenance_internal_warning(char *args, int from_tty)
 {
-  internal_warning (__FILE__, __LINE__, "%s", (args == NULL ? "" : args));
+  internal_warning(__FILE__, __LINE__, "%s", (args == NULL ? "" : args));
 }
 
 /* Someday we should allow demangling for things other than just
@@ -148,68 +148,69 @@ maintenance_internal_warning (char *args, int from_tty)
    demangle and print what it points to, etc.  (FIXME) */
 
 static void
-maintenance_demangle (char *args, int from_tty)
+maintenance_demangle(char *args, int from_tty)
 {
   char *demangled;
 
   if (args == NULL || *args == '\0')
     {
-      printf_unfiltered (_("\"maintenance demangle\" takes an argument to demangle.\n"));
+      printf_unfiltered(_("\"maintenance demangle\" takes an argument to demangle.\n"));
     }
   else
     {
       /* APPLE LOCAL: Using language_demangle is wrong here, because this is a
 	 simple utility function, and should work in most cases even when the
 	 language is not correct... */
-
-#if 0
-      demangled = language_demangle (current_language, args,
-				     DMGL_ANSI | DMGL_PARAMS);
-#endif
+#if !(defined(__APPLE__) && defined(__APPLE_CC__))
+      demangled = language_demangle(current_language, args,
+				    (DMGL_ANSI | DMGL_PARAMS));
+#endif /* !(__APPLE__ && __APPLE_CC__) */
       switch (current_language->la_language)
         {
         case language_objc:
-          demangled = objc_demangle (args, 0);
+          demangled = objc_demangle(args, 0);
           break;
         case language_objcplus:
+          demangled = objcplus_demangle(args, (DMGL_ANSI | DMGL_PARAMS));
+          break;
         case language_cplus:
         default:
-          demangled = cplus_demangle (args, DMGL_ANSI | DMGL_PARAMS);
+          demangled = cplus_demangle(args, (DMGL_ANSI | DMGL_PARAMS));
           break;
         }
 
       if (demangled != NULL)
 	{
-	  printf_unfiltered ("%s\n", demangled);
-	  xfree (demangled);
+	  printf_unfiltered("%s\n", demangled);
+	  xfree(demangled);
 	}
       else
 	{
-	  printf_unfiltered (_("Can't demangle \"%s\"\n"), args);
+	  printf_unfiltered(_("Cannot demangle \"%s\"\n"), args);
 	}
     }
 }
 
+extern int display_time; /* only declare this once in this file, up here */
+
 static void
 maintenance_time_display (char *args, int from_tty)
 {
-  extern int display_time;
-
   if (args == NULL || *args == '\0')
-    printf_unfiltered (_("\"maintenance time\" takes a numeric argument.\n"));
+    printf_unfiltered(_("\"maintenance time\" takes a numeric argument.\n"));
   else
-    display_time = strtol (args, NULL, 10);
+    display_time = strtol(args, NULL, 10);
 }
 
-static void
-maintenance_space_display (char *args, int from_tty)
-{
-  extern int display_space;
+extern int display_space;
 
+static void
+maintenance_space_display(char *args, int from_tty)
+{
   if (args == NULL || *args == '\0')
-    printf_unfiltered ("\"maintenance space\" takes a numeric argument.\n");
+    printf_unfiltered("\"maintenance space\" takes a numeric argument.\n");
   else
-    display_space = strtol (args, NULL, 10);
+    display_space = strtol(args, NULL, 10);
 }
 
 /* The "maintenance info" command is defined as a prefix, with
@@ -348,32 +349,32 @@ print_bfd_section_info(bfd *abfd, asection *asect, void *arg)
   flagword flags = bfd_get_section_flags(abfd, asect);
   const char *name = bfd_section_name(abfd, asect);
 
-  if (arg == NULL || *((char *) arg) == '\0'
-      || match_substring ((char *) arg, name)
-      || match_bfd_flags ((char *) arg, flags))
+  if ((arg == NULL) || (*((char *)arg) == '\0')
+      || match_substring((char *)arg, name)
+      || match_bfd_flags((char *)arg, flags))
     {
       CORE_ADDR addr, endaddr;
 
-      addr = bfd_section_vma (abfd, asect);
-      endaddr = addr + bfd_section_size (abfd, asect);
-      maint_print_section_info (name, flags, addr, endaddr, asect->filepos);
+      addr = bfd_section_vma(abfd, asect);
+      endaddr = (addr + bfd_section_size(abfd, asect));
+      maint_print_section_info(name, flags, addr, endaddr,
+                               (unsigned long)asect->filepos);
     }
 }
 
 static void
-print_objfile_section_info (bfd *abfd,
-			    struct obj_section *asect,
-			    char *string)
+print_objfile_section_info(bfd *abfd, struct obj_section *asect,
+			   char *string)
 {
-  flagword flags = bfd_get_section_flags (abfd, asect->the_bfd_section);
-  const char *name = bfd_section_name (abfd, asect->the_bfd_section);
+  flagword flags = bfd_get_section_flags(abfd, asect->the_bfd_section);
+  const char *name = bfd_section_name(abfd, asect->the_bfd_section);
 
-  if (string == NULL || *string == '\0'
-      || match_substring (string, name)
-      || match_bfd_flags (string, flags))
+  if ((string == NULL) || (*string == '\0')
+      || match_substring(string, name)
+      || match_bfd_flags(string, flags))
     {
-      maint_print_section_info (name, flags, asect->addr, asect->endaddr,
-			  asect->the_bfd_section->filepos);
+      maint_print_section_info(name, flags, asect->addr, asect->endaddr,
+			  (unsigned long)asect->the_bfd_section->filepos);
     }
 }
 
@@ -716,10 +717,10 @@ maintenance_set_profile_cmd (char *args, int from_tty, struct cmd_list_element *
     }
 }
 #else
-static void
-maintenance_set_profile_cmd (char *args, int from_tty, struct cmd_list_element *c)
+static void ATTR_NORETURN
+maintenance_set_profile_cmd(char *args, int from_tty, struct cmd_list_element *c)
 {
-  error (_("Profiling support is not available on this system."));
+  error(_("Profiling support is not available on this system."));
 }
 #endif
 
@@ -756,19 +757,16 @@ int maint_use_timers = 0;
 /* Turns on and off printing interval timers.  Right now this
    is an all or nothing thing.  But we could ass a timer regexp
    or timer list or something and check the timers against that.  */
-
 static void
 maintenance_interval_display (char *args, int from_tty)
 {
-  extern int display_time;
-
   if (args == NULL || *args == '\0')
-    printf_unfiltered (_("\"maintenance interval\" takes \"all\", \"off\" or a list of timers.\n"));
-  else if (strcmp (args, "off") == 0)
+    printf_unfiltered(_("\"maintenance interval\" takes \"all\", \"off\" or a list of timers.\n"));
+  else if (strcmp(args, "off") == 0)
     {
       maint_use_timers = 0;
       if (active_timer_list != NULL)
-	xfree (active_timer_list);
+	xfree(active_timer_list);
       active_timer_list = NULL;
     }
   else
