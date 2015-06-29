@@ -99,7 +99,9 @@ struct macosx_dyld_thread_status
 };
 typedef struct macosx_dyld_thread_status macosx_dyld_thread_status;
 
-void dyld_debug(const char *fmt, ...); /* ...duplicate symbol(?) */
+void dyld_debug(const char *fmt, ...)
+  ATTR_FORMAT(gnu_printf, 1, 2);
+/* ...duplicate symbol(?) */
 
 void dyld_print_status_info(macosx_dyld_thread_status *s, unsigned int mask,
                             char *args);

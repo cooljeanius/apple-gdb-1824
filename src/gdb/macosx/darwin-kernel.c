@@ -96,7 +96,12 @@ typedef enum
   DARWIN_KERNEL_LOG_DEBUG = 4
 } darwin_kernel_log_level;
 
-static void darwin_kernel_logger(darwin_kernel_log_level l, char * call,
+/* prototype: */
+static void darwin_kernel_logger(darwin_kernel_log_level, char *,
+                                 const char *, ...)
+  ATTR_FORMAT(gnu_printf, 3, 4);
+
+static void darwin_kernel_logger(darwin_kernel_log_level l, char *call,
                                  const char *format, ...)
 {
   va_list ap;
@@ -136,7 +141,7 @@ static void darwin_kernel_attach(char *args, int from_tty)
         strcpy(errstr, "The /dev/kmem device is inaccessible; GDB must run as the superuser to access the kernel address space.\n");
       }
     }
-    darwin_kernel_logger(DARWIN_KERNEL_LOG_ERROR, "open", errstr);
+    darwin_kernel_logger(DARWIN_KERNEL_LOG_ERROR, "open", "%s", errstr);
     return;
   }
 

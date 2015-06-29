@@ -917,7 +917,7 @@ create_pre_run_memory_map(struct bfd *abfd)
   else
     {
       map->number_of_buckets = 4000;
-      map->bucket_size = (ULLONG_MAX / map->number_of_buckets);
+      map->bucket_size = (CORE_ADDR)(ULLONG_MAX / map->number_of_buckets);
       map->bucket_size &= ~(4096 - 1);
     }
 

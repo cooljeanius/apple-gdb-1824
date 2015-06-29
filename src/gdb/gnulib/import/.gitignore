@@ -36,6 +36,8 @@ c++defs.h-t
 warn-on-use.h-t
 signal.h
 signal.h-t
+stdalign.h
+stdalign.h-t
 stdbool.h
 stdbool.h-t
 stddef.h
@@ -48,6 +50,8 @@ stdlib.h
 stdlib.h-t
 string.h
 string.h-t
+strings.h
+strings.h-t
 sys/select.h
 sys/select.h-t
 sys/stat.h

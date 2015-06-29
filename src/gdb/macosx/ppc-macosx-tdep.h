@@ -64,7 +64,8 @@ int ppc_frameless_function_invocation(struct frame_info *frame);
 
 int ppc_invalid_float(char *f, size_t len);
 
-void ppc_debug(const char *fmt, ...);
+void ppc_debug(const char *fmt, ...)
+  ATTR_FORMAT(gnu_printf, 1, 2);
 
 CORE_ADDR ppc_frame_unwind_sp(struct frame_info *next_frame, void **this_cache);
 

@@ -6581,6 +6581,18 @@ _ACEOF
 fi
 done
 
+# Checks for declarations.
+ac_fn_c_check_decl "$LINENO" "basename" "ac_cv_have_decl_basename" "$ac_includes_default"
+if test "x$ac_cv_have_decl_basename" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_BASENAME $ac_have_decl
+_ACEOF
+
 # Output.
 ac_config_files="$ac_config_files Makefile"
 cat >confcache <<\_ACEOF

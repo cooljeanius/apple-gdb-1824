@@ -3394,7 +3394,8 @@ add_dsym_command(char *args, int from_tty)
   do_cleanups(argv_cleanup);
 }
 
-static void add_shared_symbol_files_command(char *args, int from_tty)
+static void ATTR_NORETURN
+add_shared_symbol_files_command(char *args, int from_tty)
 {
 #undef ADD_SHARED_SYMBOL_FILES /*FIXME*/
 #ifdef ADD_SHARED_SYMBOL_FILES

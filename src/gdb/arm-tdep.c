@@ -3953,7 +3953,8 @@ arm_macosx_fast_show_stack(unsigned int count_limit,
                                             int *frame_num,
                                             CORE_ADDR pc, CORE_ADDR fp))
 {
-  CORE_ADDR fp, prev_fp;
+  CORE_ADDR fp;
+  CORE_ADDR prev_fp = 0UL;
   static CORE_ADDR sigtramp_start = 0UL;
   static CORE_ADDR sigtramp_end = 0UL;
   unsigned int i = 0U;

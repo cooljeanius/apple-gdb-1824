@@ -618,7 +618,7 @@ mostlyclean-am: mostlyclean-compile mostlyclean-generic
 
 pdf: pdf-am
 
-pdf-am:
+pdf-am: pdf-local
 
 ps: ps-am
 
@@ -640,14 +640,17 @@ uninstall-am:
 	install-pdf-am install-ps install-ps-am install-strip \
 	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am
+	mostlyclean-generic pdf pdf-am pdf-local ps ps-am tags tags-am \
+	uninstall uninstall-am
 
 .PRECIOUS: Makefile
 
 
 configure.scan:
 	autoscan || touch $@
+
+pdf-local:
+.PHONY: pdf-local
 
 distclean-local:
 	rm -rfv autom4te.cache || rmdir autom4te.cache

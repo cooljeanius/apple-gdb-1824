@@ -37,11 +37,14 @@ y.output
 yacc.acts
 yacc.tmp
 y.tab.h
+y.tab.hxx
+stack.hh
 *.dSYM
 data-directory/Makefile
 gnulib/Makefile
 gcore
 gdb-gdb.gdb
+gdb.z
 conf*/*.awk
 *libs/*
 *.rsrc

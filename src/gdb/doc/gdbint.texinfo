@@ -4953,6 +4953,12 @@ Normally this would be part of @option{-Wall}, but we do not use that here.
 @item -Waddress
 Likewise.
 
+@item -Wbool-compare
+Likewise.
+
+@item -Wlogical-not-parentheses
+Likewise.
+
 @item -Wmain
 Likewise.
 
@@ -4982,6 +4988,18 @@ Likewise (default).
 Likewise (default).
 
 @item -Wpragmas
+Likewise (default).
+
+@item -Wsizeof-array-argument
+Likewise (default).
+
+@item -Wshift-count-negative
+Likewise (default).
+
+@item -Wshift-count-overflow
+Likewise (default).
+
+@item -Wswitch-bool
 Likewise (default).
 
 @item -Wcoverage-mismatch
@@ -5072,6 +5090,9 @@ here.
 @item -Wclobbered
 Likewise (extra).
 
+@item -Wmissing-field-initializers
+Likewise (extra).
+
 @item -Wmissing-parameter-type
 Likewise (extra).
 
@@ -5081,9 +5102,23 @@ Likewise (extra).
 @item -Wsign-compare
 Likewise, except the @option{-Wextra} would be @option{-Wall} in C++.
 
+@item -Wshift-negative-value
+Like the previous @option{-Wextra} sub-options, except only in C99 and
+C++11 modes (and newer).
+
+@item -Wlto-type-mismatch
+In case we start building with Link-Time Optimization.
+
+@item -Wmisleading-indentation
+I really hate bad indentation, and am extremely thankful that this option
+exists as of GCC 6.
+
 @item -Wmissing-declarations
 Elsewhere in this document, it says that it is okay to write code to pacify
 this option.
+
+@item -Wmissing-format-attribute
+See the notes for why we use @option{-Wformat-nonliteral}.
 
 @item -Wmissing-noreturn
 A reminder to use @code{ATTRIBUTE_NORETURN} when applicable.

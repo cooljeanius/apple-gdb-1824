@@ -65,6 +65,9 @@ static int dont_handle_bad_access = 0;
 # define MACH_EXCEPTION_CODES 0
 #endif /* !HAVE_64_BIT_MACH_EXCEPTIONS */
 
+static void excthread_debug_re(int level, const char *fmt, ...)
+  ATTR_FORMAT(gnu_printf, 2, 3);
+
 extern boolean_t mach_exc_server(mach_msg_header_t *in,
                                  mach_msg_header_t *out);
 

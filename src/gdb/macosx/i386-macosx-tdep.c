@@ -56,7 +56,7 @@
   (*(addr)) = (unsigned int)extract_unsigned_integer(buf, 4);
 
 #define supply_unsigned_int64(regnum, val)\
-  store_unsigned_integer(buf, 8, val); \
+  store_unsigned_integer(buf, 8, (ULONGEST)val); \
   regcache_raw_supply(current_regcache, regnum, buf);
 
 #define collect_unsigned_int64(regnum, addr)\
@@ -91,173 +91,173 @@ i386_macosx_fetch_gp_registers(gdb_i386_thread_state_t *sp_regs)
 }
 
 void
-i386_macosx_fetch_gp_registers_raw (gdb_i386_thread_state_t *sp_regs)
+i386_macosx_fetch_gp_registers_raw(gdb_i386_thread_state_t *sp_regs)
 {
-  regcache_raw_supply (current_regcache, 0, &sp_regs->eax);
-  regcache_raw_supply (current_regcache, 1, &sp_regs->ecx);
-  regcache_raw_supply (current_regcache, 2, &sp_regs->edx);
-  regcache_raw_supply (current_regcache, 3, &sp_regs->ebx);
-  regcache_raw_supply (current_regcache, 4, &sp_regs->esp);
-  regcache_raw_supply (current_regcache, 5, &sp_regs->ebp);
-  regcache_raw_supply (current_regcache, 6, &sp_regs->esi);
-  regcache_raw_supply (current_regcache, 7, &sp_regs->edi);
-  regcache_raw_supply (current_regcache, 8, &sp_regs->eip);
-  regcache_raw_supply (current_regcache, 9, &sp_regs->eflags);
-  regcache_raw_supply (current_regcache, 10, &sp_regs->cs);
-  regcache_raw_supply (current_regcache, 11, &sp_regs->ss);
-  regcache_raw_supply (current_regcache, 12, &sp_regs->ds);
-  regcache_raw_supply (current_regcache, 13, &sp_regs->es);
-  regcache_raw_supply (current_regcache, 14, &sp_regs->fs);
-  regcache_raw_supply (current_regcache, 15, &sp_regs->gs);
+  regcache_raw_supply(current_regcache, 0, &sp_regs->eax);
+  regcache_raw_supply(current_regcache, 1, &sp_regs->ecx);
+  regcache_raw_supply(current_regcache, 2, &sp_regs->edx);
+  regcache_raw_supply(current_regcache, 3, &sp_regs->ebx);
+  regcache_raw_supply(current_regcache, 4, &sp_regs->esp);
+  regcache_raw_supply(current_regcache, 5, &sp_regs->ebp);
+  regcache_raw_supply(current_regcache, 6, &sp_regs->esi);
+  regcache_raw_supply(current_regcache, 7, &sp_regs->edi);
+  regcache_raw_supply(current_regcache, 8, &sp_regs->eip);
+  regcache_raw_supply(current_regcache, 9, &sp_regs->eflags);
+  regcache_raw_supply(current_regcache, 10, &sp_regs->cs);
+  regcache_raw_supply(current_regcache, 11, &sp_regs->ss);
+  regcache_raw_supply(current_regcache, 12, &sp_regs->ds);
+  regcache_raw_supply(current_regcache, 13, &sp_regs->es);
+  regcache_raw_supply(current_regcache, 14, &sp_regs->fs);
+  regcache_raw_supply(current_regcache, 15, &sp_regs->gs);
 }
 
 void
-i386_macosx_store_gp_registers (gdb_i386_thread_state_t *sp_regs)
+i386_macosx_store_gp_registers(gdb_i386_thread_state_t *sp_regs)
 {
   unsigned char buf[4];
-  collect_unsigned_int (0, &sp_regs->eax);
-  collect_unsigned_int (1, &sp_regs->ecx);
-  collect_unsigned_int (2, &sp_regs->edx);
-  collect_unsigned_int (3, &sp_regs->ebx);
-  collect_unsigned_int (4, &sp_regs->esp);
-  collect_unsigned_int (5, &sp_regs->ebp);
-  collect_unsigned_int (6, &sp_regs->esi);
-  collect_unsigned_int (7, &sp_regs->edi);
-  collect_unsigned_int (8, &sp_regs->eip);
-  collect_unsigned_int (9, &sp_regs->eflags);
-  collect_unsigned_int (10, &sp_regs->cs);
-  collect_unsigned_int (11, &sp_regs->ss);
-  collect_unsigned_int (12, &sp_regs->ds);
-  collect_unsigned_int (13, &sp_regs->es);
-  collect_unsigned_int (14, &sp_regs->fs);
-  collect_unsigned_int (15, &sp_regs->gs);
+  collect_unsigned_int(0, &sp_regs->eax);
+  collect_unsigned_int(1, &sp_regs->ecx);
+  collect_unsigned_int(2, &sp_regs->edx);
+  collect_unsigned_int(3, &sp_regs->ebx);
+  collect_unsigned_int(4, &sp_regs->esp);
+  collect_unsigned_int(5, &sp_regs->ebp);
+  collect_unsigned_int(6, &sp_regs->esi);
+  collect_unsigned_int(7, &sp_regs->edi);
+  collect_unsigned_int(8, &sp_regs->eip);
+  collect_unsigned_int(9, &sp_regs->eflags);
+  collect_unsigned_int(10, &sp_regs->cs);
+  collect_unsigned_int(11, &sp_regs->ss);
+  collect_unsigned_int(12, &sp_regs->ds);
+  collect_unsigned_int(13, &sp_regs->es);
+  collect_unsigned_int(14, &sp_regs->fs);
+  collect_unsigned_int(15, &sp_regs->gs);
 }
 
 void
-i386_macosx_store_gp_registers_raw (gdb_i386_thread_state_t *sp_regs)
+i386_macosx_store_gp_registers_raw(gdb_i386_thread_state_t *sp_regs)
 {
-  regcache_raw_collect (current_regcache, 0, &sp_regs->eax);
-  regcache_raw_collect (current_regcache, 1, &sp_regs->ecx);
-  regcache_raw_collect (current_regcache, 2, &sp_regs->edx);
-  regcache_raw_collect (current_regcache, 3, &sp_regs->ebx);
-  regcache_raw_collect (current_regcache, 4, &sp_regs->esp);
-  regcache_raw_collect (current_regcache, 5, &sp_regs->ebp);
-  regcache_raw_collect (current_regcache, 6, &sp_regs->esi);
-  regcache_raw_collect (current_regcache, 7, &sp_regs->edi);
-  regcache_raw_collect (current_regcache, 8, &sp_regs->eip);
-  regcache_raw_collect (current_regcache, 9, &sp_regs->eflags);
-  regcache_raw_collect (current_regcache, 10, &sp_regs->cs);
-  regcache_raw_collect (current_regcache, 11, &sp_regs->ss);
-  regcache_raw_collect (current_regcache, 12, &sp_regs->ds);
-  regcache_raw_collect (current_regcache, 13, &sp_regs->es);
-  regcache_raw_collect (current_regcache, 14, &sp_regs->fs);
-  regcache_raw_collect (current_regcache, 15, &sp_regs->gs);
+  regcache_raw_collect(current_regcache, 0, &sp_regs->eax);
+  regcache_raw_collect(current_regcache, 1, &sp_regs->ecx);
+  regcache_raw_collect(current_regcache, 2, &sp_regs->edx);
+  regcache_raw_collect(current_regcache, 3, &sp_regs->ebx);
+  regcache_raw_collect(current_regcache, 4, &sp_regs->esp);
+  regcache_raw_collect(current_regcache, 5, &sp_regs->ebp);
+  regcache_raw_collect(current_regcache, 6, &sp_regs->esi);
+  regcache_raw_collect(current_regcache, 7, &sp_regs->edi);
+  regcache_raw_collect(current_regcache, 8, &sp_regs->eip);
+  regcache_raw_collect(current_regcache, 9, &sp_regs->eflags);
+  regcache_raw_collect(current_regcache, 10, &sp_regs->cs);
+  regcache_raw_collect(current_regcache, 11, &sp_regs->ss);
+  regcache_raw_collect(current_regcache, 12, &sp_regs->ds);
+  regcache_raw_collect(current_regcache, 13, &sp_regs->es);
+  regcache_raw_collect(current_regcache, 14, &sp_regs->fs);
+  regcache_raw_collect(current_regcache, 15, &sp_regs->gs);
 }
 
 void
-x86_64_macosx_fetch_gp_registers (gdb_x86_thread_state64_t *sp_regs)
-{
-  unsigned char buf[8];
-  supply_unsigned_int64 (AMD64_RAX_REGNUM, sp_regs->rax);
-  supply_unsigned_int64 (AMD64_RBX_REGNUM, sp_regs->rbx);
-  supply_unsigned_int64 (AMD64_RCX_REGNUM, sp_regs->rcx);
-  supply_unsigned_int64 (AMD64_RDX_REGNUM, sp_regs->rdx);
-  supply_unsigned_int64 (AMD64_RDI_REGNUM, sp_regs->rdi);
-  supply_unsigned_int64 (AMD64_RSI_REGNUM, sp_regs->rsi);
-  supply_unsigned_int64 (AMD64_RBP_REGNUM, sp_regs->rbp);
-  supply_unsigned_int64 (AMD64_RSP_REGNUM, sp_regs->rsp);
-  supply_unsigned_int64 (AMD64_R8_REGNUM, sp_regs->r8);
-  supply_unsigned_int64 (AMD64_R8_REGNUM + 1, sp_regs->r9);
-  supply_unsigned_int64 (AMD64_R8_REGNUM + 2, sp_regs->r10);
-  supply_unsigned_int64 (AMD64_R8_REGNUM + 3, sp_regs->r11);
-  supply_unsigned_int64 (AMD64_R8_REGNUM + 4, sp_regs->r12);
-  supply_unsigned_int64 (AMD64_R8_REGNUM + 5, sp_regs->r13);
-  supply_unsigned_int64 (AMD64_R8_REGNUM + 6, sp_regs->r14);
-  supply_unsigned_int64 (AMD64_R8_REGNUM + 7, sp_regs->r15);
-  supply_unsigned_int64 (AMD64_RIP_REGNUM, sp_regs->rip);
-  supply_unsigned_int64 (AMD64_EFLAGS_REGNUM, sp_regs->rflags);
-  supply_unsigned_int64 (AMD64_CS_REGNUM, sp_regs->cs);
-  supply_unsigned_int64 (AMD64_FS_REGNUM, sp_regs->fs);
-  supply_unsigned_int64 (AMD64_GS_REGNUM, sp_regs->gs);
-}
-
-void
-x86_64_macosx_fetch_gp_registers_raw (gdb_x86_thread_state64_t *sp_regs)
-{
-  regcache_raw_supply (current_regcache, AMD64_RAX_REGNUM, &sp_regs->rax);
-  regcache_raw_supply (current_regcache, AMD64_RBX_REGNUM, &sp_regs->rbx);
-  regcache_raw_supply (current_regcache, AMD64_RCX_REGNUM, &sp_regs->rcx);
-  regcache_raw_supply (current_regcache, AMD64_RDX_REGNUM, &sp_regs->rdx);
-  regcache_raw_supply (current_regcache, AMD64_RDI_REGNUM, &sp_regs->rdi);
-  regcache_raw_supply (current_regcache, AMD64_RSI_REGNUM, &sp_regs->rsi);
-  regcache_raw_supply (current_regcache, AMD64_RBP_REGNUM, &sp_regs->rbp);
-  regcache_raw_supply (current_regcache, AMD64_RSP_REGNUM, &sp_regs->rsp);
-  regcache_raw_supply (current_regcache, AMD64_R8_REGNUM, &sp_regs->r8);
-  regcache_raw_supply (current_regcache, AMD64_R8_REGNUM + 1, &sp_regs->r9);
-  regcache_raw_supply (current_regcache, AMD64_R8_REGNUM + 2, &sp_regs->r10);
-  regcache_raw_supply (current_regcache, AMD64_R8_REGNUM + 3, &sp_regs->r11);
-  regcache_raw_supply (current_regcache, AMD64_R8_REGNUM + 4, &sp_regs->r12);
-  regcache_raw_supply (current_regcache, AMD64_R8_REGNUM + 5, &sp_regs->r13);
-  regcache_raw_supply (current_regcache, AMD64_R8_REGNUM + 6, &sp_regs->r14);
-  regcache_raw_supply (current_regcache, AMD64_R8_REGNUM + 7, &sp_regs->r15);
-  regcache_raw_supply (current_regcache, AMD64_RIP_REGNUM, &sp_regs->rip);
-  regcache_raw_supply (current_regcache, AMD64_EFLAGS_REGNUM, &sp_regs->rflags);
-  regcache_raw_supply (current_regcache, AMD64_CS_REGNUM, &sp_regs->cs);
-  regcache_raw_supply (current_regcache, AMD64_FS_REGNUM, &sp_regs->fs);
-  regcache_raw_supply (current_regcache, AMD64_GS_REGNUM, &sp_regs->gs);
-}
-
-void
-x86_64_macosx_store_gp_registers (gdb_x86_thread_state64_t *sp_regs)
+x86_64_macosx_fetch_gp_registers(gdb_x86_thread_state64_t *sp_regs)
 {
   unsigned char buf[8];
-  collect_unsigned_int64 (AMD64_RAX_REGNUM, &sp_regs->rax);
-  collect_unsigned_int64 (AMD64_RBX_REGNUM, &sp_regs->rbx);
-  collect_unsigned_int64 (AMD64_RCX_REGNUM, &sp_regs->rcx);
-  collect_unsigned_int64 (AMD64_RDX_REGNUM, &sp_regs->rdx);
-  collect_unsigned_int64 (AMD64_RDI_REGNUM, &sp_regs->rdi);
-  collect_unsigned_int64 (AMD64_RSI_REGNUM, &sp_regs->rsi);
-  collect_unsigned_int64 (AMD64_RBP_REGNUM, &sp_regs->rbp);
-  collect_unsigned_int64 (AMD64_RSP_REGNUM, &sp_regs->rsp);
-  collect_unsigned_int64 (AMD64_R8_REGNUM, &sp_regs->r8);
-  collect_unsigned_int64 (AMD64_R8_REGNUM + 1, &sp_regs->r9);
-  collect_unsigned_int64 (AMD64_R8_REGNUM + 2, &sp_regs->r10);
-  collect_unsigned_int64 (AMD64_R8_REGNUM + 3, &sp_regs->r11);
-  collect_unsigned_int64 (AMD64_R8_REGNUM + 4, &sp_regs->r12);
-  collect_unsigned_int64 (AMD64_R8_REGNUM + 5, &sp_regs->r13);
-  collect_unsigned_int64 (AMD64_R8_REGNUM + 6, &sp_regs->r14);
-  collect_unsigned_int64 (AMD64_R8_REGNUM + 7, &sp_regs->r15);
-  collect_unsigned_int64 (AMD64_RIP_REGNUM, &sp_regs->rip);
-  collect_unsigned_int64 (AMD64_EFLAGS_REGNUM, &sp_regs->rflags);
-  collect_unsigned_int64 (AMD64_CS_REGNUM, &sp_regs->cs);
-  collect_unsigned_int64 (AMD64_FS_REGNUM, &sp_regs->fs);
-  collect_unsigned_int64 (AMD64_GS_REGNUM, &sp_regs->gs);
+  supply_unsigned_int64(AMD64_RAX_REGNUM, sp_regs->rax);
+  supply_unsigned_int64(AMD64_RBX_REGNUM, sp_regs->rbx);
+  supply_unsigned_int64(AMD64_RCX_REGNUM, sp_regs->rcx);
+  supply_unsigned_int64(AMD64_RDX_REGNUM, sp_regs->rdx);
+  supply_unsigned_int64(AMD64_RDI_REGNUM, sp_regs->rdi);
+  supply_unsigned_int64(AMD64_RSI_REGNUM, sp_regs->rsi);
+  supply_unsigned_int64(AMD64_RBP_REGNUM, sp_regs->rbp);
+  supply_unsigned_int64(AMD64_RSP_REGNUM, sp_regs->rsp);
+  supply_unsigned_int64(AMD64_R8_REGNUM, sp_regs->r8);
+  supply_unsigned_int64((AMD64_R8_REGNUM + 1), sp_regs->r9);
+  supply_unsigned_int64((AMD64_R8_REGNUM + 2), sp_regs->r10);
+  supply_unsigned_int64((AMD64_R8_REGNUM + 3), sp_regs->r11);
+  supply_unsigned_int64((AMD64_R8_REGNUM + 4), sp_regs->r12);
+  supply_unsigned_int64((AMD64_R8_REGNUM + 5), sp_regs->r13);
+  supply_unsigned_int64((AMD64_R8_REGNUM + 6), sp_regs->r14);
+  supply_unsigned_int64((AMD64_R8_REGNUM + 7), sp_regs->r15);
+  supply_unsigned_int64(AMD64_RIP_REGNUM, sp_regs->rip);
+  supply_unsigned_int64(AMD64_EFLAGS_REGNUM, sp_regs->rflags);
+  supply_unsigned_int64(AMD64_CS_REGNUM, sp_regs->cs);
+  supply_unsigned_int64(AMD64_FS_REGNUM, sp_regs->fs);
+  supply_unsigned_int64(AMD64_GS_REGNUM, sp_regs->gs);
 }
 
 void
-x86_64_macosx_store_gp_registers_raw (gdb_x86_thread_state64_t *sp_regs)
+x86_64_macosx_fetch_gp_registers_raw(gdb_x86_thread_state64_t *sp_regs)
 {
-  regcache_raw_collect (current_regcache, AMD64_RAX_REGNUM, &sp_regs->rax);
-  regcache_raw_collect (current_regcache, AMD64_RBX_REGNUM, &sp_regs->rbx);
-  regcache_raw_collect (current_regcache, AMD64_RCX_REGNUM, &sp_regs->rcx);
-  regcache_raw_collect (current_regcache, AMD64_RDX_REGNUM, &sp_regs->rdx);
-  regcache_raw_collect (current_regcache, AMD64_RDI_REGNUM, &sp_regs->rdi);
-  regcache_raw_collect (current_regcache, AMD64_RSI_REGNUM, &sp_regs->rsi);
-  regcache_raw_collect (current_regcache, AMD64_RBP_REGNUM, &sp_regs->rbp);
-  regcache_raw_collect (current_regcache, AMD64_RSP_REGNUM, &sp_regs->rsp);
-  regcache_raw_collect (current_regcache, AMD64_R8_REGNUM, &sp_regs->r8);
-  regcache_raw_collect (current_regcache, AMD64_R8_REGNUM + 1, &sp_regs->r9);
-  regcache_raw_collect (current_regcache, AMD64_R8_REGNUM + 2, &sp_regs->r10);
-  regcache_raw_collect (current_regcache, AMD64_R8_REGNUM + 3, &sp_regs->r11);
-  regcache_raw_collect (current_regcache, AMD64_R8_REGNUM + 4, &sp_regs->r12);
-  regcache_raw_collect (current_regcache, AMD64_R8_REGNUM + 5, &sp_regs->r13);
-  regcache_raw_collect (current_regcache, AMD64_R8_REGNUM + 6, &sp_regs->r14);
-  regcache_raw_collect (current_regcache, AMD64_R8_REGNUM + 7, &sp_regs->r15);
-  regcache_raw_collect (current_regcache, AMD64_RIP_REGNUM, &sp_regs->rip);
-  regcache_raw_collect (current_regcache, AMD64_EFLAGS_REGNUM, &sp_regs->rflags);
-  regcache_raw_collect (current_regcache, AMD64_CS_REGNUM, &sp_regs->cs);
-  regcache_raw_collect (current_regcache, AMD64_FS_REGNUM, &sp_regs->fs);
-  regcache_raw_collect (current_regcache, AMD64_GS_REGNUM, &sp_regs->gs);
+  regcache_raw_supply(current_regcache, AMD64_RAX_REGNUM, &sp_regs->rax);
+  regcache_raw_supply(current_regcache, AMD64_RBX_REGNUM, &sp_regs->rbx);
+  regcache_raw_supply(current_regcache, AMD64_RCX_REGNUM, &sp_regs->rcx);
+  regcache_raw_supply(current_regcache, AMD64_RDX_REGNUM, &sp_regs->rdx);
+  regcache_raw_supply(current_regcache, AMD64_RDI_REGNUM, &sp_regs->rdi);
+  regcache_raw_supply(current_regcache, AMD64_RSI_REGNUM, &sp_regs->rsi);
+  regcache_raw_supply(current_regcache, AMD64_RBP_REGNUM, &sp_regs->rbp);
+  regcache_raw_supply(current_regcache, AMD64_RSP_REGNUM, &sp_regs->rsp);
+  regcache_raw_supply(current_regcache, AMD64_R8_REGNUM, &sp_regs->r8);
+  regcache_raw_supply(current_regcache, AMD64_R8_REGNUM + 1, &sp_regs->r9);
+  regcache_raw_supply(current_regcache, AMD64_R8_REGNUM + 2, &sp_regs->r10);
+  regcache_raw_supply(current_regcache, AMD64_R8_REGNUM + 3, &sp_regs->r11);
+  regcache_raw_supply(current_regcache, AMD64_R8_REGNUM + 4, &sp_regs->r12);
+  regcache_raw_supply(current_regcache, AMD64_R8_REGNUM + 5, &sp_regs->r13);
+  regcache_raw_supply(current_regcache, AMD64_R8_REGNUM + 6, &sp_regs->r14);
+  regcache_raw_supply(current_regcache, AMD64_R8_REGNUM + 7, &sp_regs->r15);
+  regcache_raw_supply(current_regcache, AMD64_RIP_REGNUM, &sp_regs->rip);
+  regcache_raw_supply(current_regcache, AMD64_EFLAGS_REGNUM, &sp_regs->rflags);
+  regcache_raw_supply(current_regcache, AMD64_CS_REGNUM, &sp_regs->cs);
+  regcache_raw_supply(current_regcache, AMD64_FS_REGNUM, &sp_regs->fs);
+  regcache_raw_supply(current_regcache, AMD64_GS_REGNUM, &sp_regs->gs);
+}
+
+void
+x86_64_macosx_store_gp_registers(gdb_x86_thread_state64_t *sp_regs)
+{
+  unsigned char buf[8];
+  collect_unsigned_int64(AMD64_RAX_REGNUM, &sp_regs->rax);
+  collect_unsigned_int64(AMD64_RBX_REGNUM, &sp_regs->rbx);
+  collect_unsigned_int64(AMD64_RCX_REGNUM, &sp_regs->rcx);
+  collect_unsigned_int64(AMD64_RDX_REGNUM, &sp_regs->rdx);
+  collect_unsigned_int64(AMD64_RDI_REGNUM, &sp_regs->rdi);
+  collect_unsigned_int64(AMD64_RSI_REGNUM, &sp_regs->rsi);
+  collect_unsigned_int64(AMD64_RBP_REGNUM, &sp_regs->rbp);
+  collect_unsigned_int64(AMD64_RSP_REGNUM, &sp_regs->rsp);
+  collect_unsigned_int64(AMD64_R8_REGNUM, &sp_regs->r8);
+  collect_unsigned_int64((AMD64_R8_REGNUM + 1), &sp_regs->r9);
+  collect_unsigned_int64((AMD64_R8_REGNUM + 2), &sp_regs->r10);
+  collect_unsigned_int64((AMD64_R8_REGNUM + 3), &sp_regs->r11);
+  collect_unsigned_int64((AMD64_R8_REGNUM + 4), &sp_regs->r12);
+  collect_unsigned_int64((AMD64_R8_REGNUM + 5), &sp_regs->r13);
+  collect_unsigned_int64((AMD64_R8_REGNUM + 6), &sp_regs->r14);
+  collect_unsigned_int64((AMD64_R8_REGNUM + 7), &sp_regs->r15);
+  collect_unsigned_int64(AMD64_RIP_REGNUM, &sp_regs->rip);
+  collect_unsigned_int64(AMD64_EFLAGS_REGNUM, &sp_regs->rflags);
+  collect_unsigned_int64(AMD64_CS_REGNUM, &sp_regs->cs);
+  collect_unsigned_int64(AMD64_FS_REGNUM, &sp_regs->fs);
+  collect_unsigned_int64(AMD64_GS_REGNUM, &sp_regs->gs);
+}
+
+void
+x86_64_macosx_store_gp_registers_raw(gdb_x86_thread_state64_t *sp_regs)
+{
+  regcache_raw_collect(current_regcache, AMD64_RAX_REGNUM, &sp_regs->rax);
+  regcache_raw_collect(current_regcache, AMD64_RBX_REGNUM, &sp_regs->rbx);
+  regcache_raw_collect(current_regcache, AMD64_RCX_REGNUM, &sp_regs->rcx);
+  regcache_raw_collect(current_regcache, AMD64_RDX_REGNUM, &sp_regs->rdx);
+  regcache_raw_collect(current_regcache, AMD64_RDI_REGNUM, &sp_regs->rdi);
+  regcache_raw_collect(current_regcache, AMD64_RSI_REGNUM, &sp_regs->rsi);
+  regcache_raw_collect(current_regcache, AMD64_RBP_REGNUM, &sp_regs->rbp);
+  regcache_raw_collect(current_regcache, AMD64_RSP_REGNUM, &sp_regs->rsp);
+  regcache_raw_collect(current_regcache, AMD64_R8_REGNUM, &sp_regs->r8);
+  regcache_raw_collect(current_regcache, AMD64_R8_REGNUM + 1, &sp_regs->r9);
+  regcache_raw_collect(current_regcache, AMD64_R8_REGNUM + 2, &sp_regs->r10);
+  regcache_raw_collect(current_regcache, AMD64_R8_REGNUM + 3, &sp_regs->r11);
+  regcache_raw_collect(current_regcache, AMD64_R8_REGNUM + 4, &sp_regs->r12);
+  regcache_raw_collect(current_regcache, AMD64_R8_REGNUM + 5, &sp_regs->r13);
+  regcache_raw_collect(current_regcache, AMD64_R8_REGNUM + 6, &sp_regs->r14);
+  regcache_raw_collect(current_regcache, AMD64_R8_REGNUM + 7, &sp_regs->r15);
+  regcache_raw_collect(current_regcache, AMD64_RIP_REGNUM, &sp_regs->rip);
+  regcache_raw_collect(current_regcache, AMD64_EFLAGS_REGNUM, &sp_regs->rflags);
+  regcache_raw_collect(current_regcache, AMD64_CS_REGNUM, &sp_regs->cs);
+  regcache_raw_collect(current_regcache, AMD64_FS_REGNUM, &sp_regs->fs);
+  regcache_raw_collect(current_regcache, AMD64_GS_REGNUM, &sp_regs->gs);
 }
 
 /* Fetching the the registers from the inferior into our reg cache.

@@ -1,4 +1,4 @@
-/* remote-utils.c: Generic support for remote debugging interfaces.
+/* gdb/remote-utils.c: Generic support for remote debugging interfaces.
 
    Copyright 1993, 1994, 1995, 1996, 1998, 2000, 2001
    Free Software Foundation, Inc.

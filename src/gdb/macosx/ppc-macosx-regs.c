@@ -115,13 +115,13 @@ regcache_raw_collect_uint32_raw(int regnum, unsigned int *uint32_ptr)
 
 
 static inline void
-supply_unsigned_int_64 (int regnum, unsigned long long val)
+supply_unsigned_int_64(int regnum, unsigned long long val)
 {
   gdb_byte buf[8];
-  store_unsigned_integer (buf, 8, val);
-  if (register_size (current_gdbarch, regnum) != 8)
-    internal_error (__FILE__, __LINE__, "incorrect size for register");
-  regcache_raw_supply (current_regcache, regnum, buf);
+  store_unsigned_integer(buf, 8, (ULONGEST)val);
+  if (register_size(current_gdbarch, regnum) != 8)
+    internal_error(__FILE__, __LINE__, "incorrect size for register");
+  regcache_raw_supply(current_regcache, regnum, buf);
 }
 
 static inline void

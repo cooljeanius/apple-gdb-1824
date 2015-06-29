@@ -250,31 +250,33 @@ static char *ada_completer_word_break_characters =
   " \t\n!@#$%^&*()+=|~`}{[]\";:?/,-";
 #endif /* VMS */
 
-/* The name of the symbol to use to get the name of the main subprogram.  */
-static const char ADA_MAIN_PROGRAM_SYMBOL_NAME[]
-  = "__gnat_ada_main_program_name";
+/* The name of the symbol to use to get the name of the main subprogram: */
+static const char ADA_MAIN_PROGRAM_SYMBOL_NAME[] =
+  "__gnat_ada_main_program_name";
 
-/* The name of the runtime function called when an exception is raised.  */
-static const char raise_sym_name[] = "__gnat_raise_nodefer_with_msg";
+/* The name of the runtime function called when an exception is raised: */
+static const char raise_sym_name[] ATTRIBUTE_USED =
+  "__gnat_raise_nodefer_with_msg";
 
 /* The name of the runtime function called when an unhandled exception
    is raised.  */
-static const char raise_unhandled_sym_name[] = "__gnat_unhandled_exception";
+static const char raise_unhandled_sym_name[] ATTRIBUTE_USED =
+  "__gnat_unhandled_exception";
 
 /* The name of the runtime function called when an assert failure is
    raised.  */
-static const char raise_assert_sym_name[] =
+static const char raise_assert_sym_name[] ATTRIBUTE_USED =
   "system__assertions__raise_assert_failure";
 
 /* When GDB stops on an unhandled exception, GDB will go up the stack until
    if finds a frame corresponding to this function, in order to extract the
    name of the exception that has been raised from one of the parameters.  */
-static const char process_raise_exception_name[] =
+static const char process_raise_exception_name[] ATTRIBUTE_USED =
   "ada__exceptions__process_raise_exception";
 
 /* A string that reflects the longest exception expression rewrite,
    aside from the exception name.  */
-static const char longest_exception_template[] =
+static const char longest_exception_template[] ATTRIBUTE_USED =
   "'__gnat_raise_nodefer_with_msg' if long_integer(e) = long_integer(&)";
 
 /* Limit on the number of warnings to raise per expression evaluation.  */
@@ -284,11 +286,11 @@ static int warning_limit = 2;
    expression evaluation.  */
 static int warnings_issued = 0;
 
-static const char *known_runtime_file_name_patterns[] = {
+static const char *known_runtime_file_name_patterns[] ATTRIBUTE_USED = {
   ADA_KNOWN_RUNTIME_FILE_NAME_PATTERNS NULL
 };
 
-static const char *known_auxiliary_function_name_patterns[] = {
+static const char *known_auxiliary_function_name_patterns[] ATTRIBUTE_USED = {
   ADA_KNOWN_AUXILIARY_FUNCTION_NAME_PATTERNS NULL
 };
 

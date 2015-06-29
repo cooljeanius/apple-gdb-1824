@@ -1,3 +1,5 @@
+/* gdb/testsuite/gdb.apple/dylib-loader.c */
+
 #include <stdio.h>
 #include <mach-o/dyld.h>
 #include <unistd.h>
@@ -7,10 +9,13 @@
     looks up a function called foo(), and calls that function. */
 
 #ifndef LIBNAME
-#define LIBNAME NULL
-#endif
+# define LIBNAME NULL
+#endif /* !LIBNAME */
+#ifndef SECONDLIBNAME
+# define SECONDLIBNAME NULL
+#endif /* !SECONDLIBNAME */
 
-main (int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *libname = NULL;
 
@@ -18,7 +23,7 @@ main (int argc, char **argv)
     libname = LIBNAME;
   else if (argc == 2 && argv[1] != NULL)
     libname = argv[1];
-    
+
   if (libname)
     {
       if (! NSAddLibrary (libname))
@@ -27,9 +32,9 @@ main (int argc, char **argv)
           exit (1);
         }
 
-      if (NSIsSymbolNameDefined ("_foo")) 
+      if (NSIsSymbolNameDefined ("_foo"))
         {
-          int (*addr)(void) = 
+          int (*addr)(void) =
             NSAddressOfSymbol (NSLookupAndBindSymbol ("_foo"));
           printf ("foo is resolved to address %lx\n", (unsigned long) addr);
           if (addr)
@@ -43,7 +48,7 @@ main (int argc, char **argv)
     libname = SECONDLIBNAME;
   else if (argc == 2 && argv[1] != NULL)
     libname = argv[1];
-    
+
   if (libname)
     {
       if (! NSAddLibrary (libname))
@@ -52,9 +57,9 @@ main (int argc, char **argv)
           exit (1);
         }
 
-      if (NSIsSymbolNameDefined ("_blubby")) 
+      if (NSIsSymbolNameDefined ("_blubby"))
         {
-          int (*addr)(int) = 
+          int (*addr)(int) =
             NSAddressOfSymbol (NSLookupAndBindSymbol ("_blubby"));
           printf ("blubby is resolved to address %lx\n", (unsigned long) addr);
           if (addr)

@@ -63,8 +63,8 @@ AC_PROG_AWK
 AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_OBJC
-if test "x${OBJCPP}" = "x"; then
-  test -z "${OBJCPP}"
+if test "x${OBJCPP}" = "x" && test -e /lib/cpp; then
+  test -z "${OBJCPP}" && test -x /lib/cpp
   AC_PROG_OBJCPP
 fi
 

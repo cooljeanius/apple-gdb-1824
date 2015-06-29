@@ -1,4 +1,4 @@
-/* dis-asm.h: Interface between the opcode library and its callers.
+/* include/dis-asm.h: Interface between the opcode library and its callers.
 
    Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006
    Free Software Foundation, Inc.
@@ -35,7 +35,7 @@ extern "C" {
 #include <stdio.h>
 #include "bfd.h"
 
-typedef int (*fprintf_ftype)(void *, const char*, ...) /*ATTRIBUTE_FPTR_PRINTF_2*/;
+typedef int (*fprintf_ftype)(void *, const char*, ...) ATTRIBUTE_FPTR_PRINTF_2;
 
 enum dis_insn_type
 {

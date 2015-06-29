@@ -32,7 +32,8 @@ struct macosx_signal_thread_status
 typedef struct macosx_signal_thread_message macosx_signal_thread_message;
 typedef struct macosx_signal_thread_status macosx_signal_thread_status;
 
-extern void sigthread_debug_re(const char *fmt, ...);
+extern void sigthread_debug_re(const char *fmt, ...)
+  ATTR_FORMAT(gnu_printf, 1, 2);
 
 void macosx_signal_thread_debug(FILE *f,
                                 struct macosx_signal_thread_status *s);

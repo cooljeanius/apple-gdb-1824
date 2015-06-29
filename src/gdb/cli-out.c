@@ -40,36 +40,40 @@ typedef struct ui_out_data cli_out_data;
 
 /* These are the CLI output functions */
 
-static void cli_table_begin (struct ui_out *uiout, int nbrofcols,
-			     int nr_rows, const char *tblid);
-static void cli_table_body (struct ui_out *uiout);
-static void cli_table_end (struct ui_out *uiout);
-static void cli_table_header (struct ui_out *uiout, int width,
-			      enum ui_align alig, const char *col_name,
-			      const char *colhdr);
-static void cli_begin (struct ui_out *uiout, enum ui_out_type type,
-		       int level, const char *lstid);
-static void cli_end (struct ui_out *uiout, enum ui_out_type type, int level);
-static void cli_field_int (struct ui_out *uiout, int fldno, int width,
-			   enum ui_align alig, const char *fldname, int value);
-static void cli_field_skip (struct ui_out *uiout, int fldno, int width,
-			    enum ui_align alig, const char *fldname);
-static void cli_field_string (struct ui_out *uiout, int fldno, int width,
-			      enum ui_align alig, const char *fldname,
-			      const char *string);
-static void cli_field_fmt (struct ui_out *uiout, int fldno,
-			   int width, enum ui_align align,
-			   const char *fldname, const char *format,
-			   va_list args) ATTR_FORMAT (printf, 6, 0);
-static void cli_spaces (struct ui_out *uiout, int numspaces);
-static void cli_text (struct ui_out *uiout, const char *string);
-static void cli_text_fmt (struct ui_out *uiout, const char *format, va_list args);
-static void cli_message (struct ui_out *uiout, int verbosity,
-			 const char *format, va_list args)
-     ATTR_FORMAT (printf, 3, 0);
-static void cli_wrap_hint (struct ui_out *uiout, const char *identstring);
-static void cli_flush (struct ui_out *uiout);
-static int cli_redirect (struct ui_out *uiout, struct ui_file *outstream);
+static void cli_table_begin(struct ui_out *uiout, int nbrofcols,
+                            int nr_rows, const char *tblid);
+static void cli_table_body(struct ui_out *uiout);
+static void cli_table_end(struct ui_out *uiout);
+static void cli_table_header(struct ui_out *uiout, int width,
+			     enum ui_align alig, const char *col_name,
+			     const char *colhdr);
+static void cli_begin(struct ui_out *uiout, enum ui_out_type type,
+		      int level, const char *lstid);
+static void cli_end(struct ui_out *uiout, enum ui_out_type type,
+                    int level);
+static void cli_field_int(struct ui_out *uiout, int fldno, int width,
+			  enum ui_align alig, const char *fldname,
+                          int value);
+static void cli_field_skip(struct ui_out *uiout, int fldno, int width,
+			   enum ui_align alig, const char *fldname);
+static void cli_field_string(struct ui_out *uiout, int fldno, int width,
+			     enum ui_align alig, const char *fldname,
+			     const char *string);
+static void cli_field_fmt(struct ui_out *uiout, int fldno,
+			  int width, enum ui_align align,
+			  const char *fldname, const char *format,
+			  va_list args) ATTR_FORMAT(printf, 6, 0);
+static void cli_spaces(struct ui_out *uiout, int numspaces);
+static void cli_text(struct ui_out *uiout, const char *string);
+static void cli_text_fmt(struct ui_out *uiout, const char *format,
+                         va_list args)
+    ATTR_FORMAT(gnu_printf, 2, 0);
+static void cli_message(struct ui_out *uiout, int verbosity,
+                        const char *format, va_list args)
+     ATTR_FORMAT(printf, 3, 0);
+static void cli_wrap_hint(struct ui_out *uiout, const char *identstring);
+static void cli_flush(struct ui_out *uiout);
+static int cli_redirect(struct ui_out *uiout, struct ui_file *outstream);
 
 /* This is the CLI ui-out implementation functions vector */
 

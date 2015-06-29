@@ -77,7 +77,9 @@ host_modules= { module= gmp; lib_path=.libs; bootstrap=true;
 	        host="none-${host_vendor}-${host_os}";
 		// gmp's configure will complain if given anything
 		// different from host for target.
-	        target="none-${host_vendor}-${host_os}"; };
+	        target="none-${host_vendor}-${host_os}";
+	        missing= install-html; 
+	        missing= install-pdf; };
 host_modules= { module= mpfr; lib_path=.libs; bootstrap=true;
 		extra_configure_flags='--disable-shared @extra_mpfr_configure_flags@';
 		no_install= true; };
@@ -103,7 +105,8 @@ host_modules= { module= itcl; };
 host_modules= { module= ld; bootstrap=true; };
 host_modules= { module= libbacktrace; bootstrap=true; };
 host_modules= { module= libcpp; bootstrap=true; };
-host_modules= { module= libdecnumber; bootstrap=true; };
+host_modules= { module= libdecnumber; bootstrap=true;
+                missing= TAGS; };
 host_modules= { module= libelf; lib_path=.libs; bootstrap=true;
 		extra_configure_flags='--disable-shared';
                 no_install= true; };

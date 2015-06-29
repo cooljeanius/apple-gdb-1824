@@ -144,6 +144,9 @@ static int remote_kdp_feature = 0;
 
 struct target_ops kdp_ops;
 
+static void logger(kdp_log_level, const char *, ...)
+  ATTR_FORMAT(gnu_printf, 2, 3);
+
 static void kdp_mourn_inferior(void);
 
 extern void _initialize_remote_kdp(void);
@@ -635,8 +638,8 @@ kdp_attach (char *args, int from_tty)
       kdpret = kdp_destroy (&c);
       if (kdpret != RR_SUCCESS)
         {
-          error ("unable to deallocate KDP connection: %s",
-                 kdp_return_string (kdpret));
+          error("unable to deallocate KDP connection: %s",
+                kdp_return_string(kdpret));
         }
     }
 
@@ -644,11 +647,11 @@ kdp_attach (char *args, int from_tty)
   old_exc_seqno = c.exc_seqno;
 
   kdpret =
-    kdp_create (&c, logger, args, kdp_default_port, kdp_timeout, kdp_retries);
+    kdp_create(&c, logger, args, kdp_default_port, kdp_timeout, kdp_retries);
   if (kdpret != RR_SUCCESS)
     {
-      error ("unable to create connection for host \"%s\": %s", args,
-             kdp_return_string (kdpret));
+      error("unable to create connection for host \"%s\": %s", args,
+            kdp_return_string(kdpret));
     }
 
 #if KDP_TARGET_POWERPC
@@ -774,29 +777,29 @@ kdp_detach (char *args, int from_tty)
 }
 
 static void
-kdp_reattach_command (char *args, int from_tty)
+kdp_reattach_command(char *args, int from_tty)
 {
   kdp_return_t kdpret;
   char **argv;
   char *host;
 
-  argv = buildargv (args);
+  argv = buildargv(args);
 
   if ((argv == NULL) || (argv[0] == NULL) || (argv[1] != NULL))
-    error ("usage: kdp-reattach <hostname>");
+    error("usage: kdp-reattach <hostname>");
 
   host = argv[0];
 
-  kdp_open (NULL, 0);
+  kdp_open(NULL, 0);
 
-  kdp_reset (&c);
+  kdp_reset(&c);
 
   kdpret =
-    kdp_create (&c, logger, argv[0], kdp_default_port, kdp_timeout,
-                kdp_retries);
+    kdp_create(&c, logger, argv[0], kdp_default_port, kdp_timeout,
+               kdp_retries);
   if (kdpret != RR_SUCCESS)
-    error ("unable to create connection for host \"%s\": %s", args,
-           kdp_return_string (kdpret));
+    error("unable to create connection for host \"%s\": %s", args,
+          kdp_return_string(kdpret));
 
 #if KDP_TARGET_POWERPC
   kdp_set_little_endian (&c);

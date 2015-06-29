@@ -468,6 +468,13 @@ struct cleanup
 # endif /* __GNUC__ version check */
 #endif /* !ATTR_FORMAT */
 
+/* FIXME: dirty hack: */
+#ifndef gnu_printf
+# if defined(__clang__) || (defined(__APPLE_CC__) && (__APPLE_CC__ > 1))
+#  define gnu_printf printf
+# endif /* __clang__ || (__APPLE_CC__ > 1) */
+#endif /* !gnu_printf */
+
 /* We use __extension__ in some places to suppress -pedantic warnings
  * about GCC extensions.  This feature did NOT work properly before
  * gcc 2.8.  */
@@ -699,7 +706,7 @@ extern void vprintf_filtered(const char *, va_list)
   ATTR_FORMAT(printf, 1, 0);
 
 extern void vfprintf_filtered(struct ui_file *, const char *, va_list)
-  ATTR_FORMAT(printf, 2, 0);
+  ATTR_FORMAT(gnu_printf, 2, 0);
 
 extern void fprintf_filtered(struct ui_file *, const char *, ...)
   ATTR_FORMAT(printf, 2, 3);
@@ -1220,7 +1227,7 @@ extern void xvasprintf(char **ret, const char *format, va_list ap)
    if no memory.  */
 extern char *xstrprintf(const char *format, ...) ATTR_FORMAT(printf, 1, 2);
 extern char *xstrvprintf(const char *format, va_list ap)
-     ATTR_FORMAT(printf, 1, 0);
+     ATTR_FORMAT(gnu_printf, 1, 0);
 
 /* Like snprintf, but throw an error if the output buffer is too small.  */
 extern int xsnprintf(char *str, size_t size, const char *format, ...)
@@ -1286,13 +1293,13 @@ extern void vwarning(const char *, va_list args) ATTR_FORMAT(printf, 1, 0);
 # endif /* __GNUC__ && !__STRICT_ANSI__ && !__STDDEF_H__ */
 #endif /* HAVE_STDDEF_H */
 
-#ifdef HAVE_STDLIB_H
+#if defined(HAVE_STDLIB_H)  || defined(STDC_HEADERS) || defined(__STDC__)
 # include <stdlib.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
  #  warning "defs.h expects <stdlib.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
-#endif /* HAVE_STDLIB_H */
+#endif /* HAVE_STDLIB_H || STDC_HEADERS || __STDC__ */
 
 #ifndef min
 # define min(a, b) ((a) < (b) ? (a) : (b))

@@ -915,6 +915,9 @@ dvi: do-dvi
 pdf: do-pdf
 html: do-html
 
+doc docs: info dvi pdf html 
+.PHONY: doc docs
+
 # Make sure makeinfo is built before we do a `make info', if we're
 # in fact building texinfo.
 do-info: maybe-all-texinfo

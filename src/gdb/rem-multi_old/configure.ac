@@ -130,6 +130,9 @@ AC_CHECK_FUNCS([_exit bcopy clearerr close execle exit fflush fgetc fgets \
                 fileno fprintf fputc free gets ioctl perror printf ptrace \
                 read signal strcat strcpy strlen wait write])dnl
 
+# Checks for declarations.
+AC_CHECK_DECLS([basename])dnl
+
 # Output.
 AC_CONFIG_FILES([Makefile])dnl
 AC_OUTPUT

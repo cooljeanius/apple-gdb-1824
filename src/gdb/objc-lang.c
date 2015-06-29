@@ -75,7 +75,7 @@ struct objc_class {
 
 struct objc_super {
   CORE_ADDR receiver;
-  CORE_ADDR class; /* FIXME: rename */
+  CORE_ADDR objc_class;
 };
 
 struct objc_method {
@@ -1179,7 +1179,7 @@ pc_in_objc_trampoline_p(CORE_ADDR pc, uint32_t *flags)
 		{
 		  if (region->records[i].start_addr <= pc)
 		    {
-		      *flags = region->records[i].flags;
+		      *flags = (uint32_t)region->records[i].flags;
 		      return in_tramp;
 		    }
 		}
@@ -3296,7 +3296,8 @@ read_objc_super(CORE_ADDR addr, struct objc_super *super)
 {
   int addrsize = TARGET_ADDRESS_BYTES;
   super->receiver = read_memory_unsigned_integer(addr, addrsize);
-  super->class = read_memory_unsigned_integer((addr + addrsize), addrsize);
+  super->objc_class = read_memory_unsigned_integer((addr + addrsize),
+                                                   addrsize);
 };
 
 /* Read a 'struct objc_class' in the inferior's objc runtime: */
@@ -3596,8 +3597,8 @@ find_implementation_from_class(CORE_ADDR objc_class, CORE_ADDR sel)
 		 method chunk pointers within an allocation block,
 		 and -1 for the end of an allocation block.  */
 
-	      if (mlist == 0 || mlist == 0xffffffff
-                  || mlist == 0xffffffffffffffffULL)
+	      if ((mlist == 0) || (mlist == 0xffffffff)
+                  || ((ULONGEST)mlist == 0xffffffffffffffffULL))
 		break;
 	    }
 
@@ -3920,7 +3921,8 @@ resolve_newruntime_objc_msgsendsuper(CORE_ADDR pc, CORE_ADDR *new_pc,
    * in fact, to be the class.  So we have to grab the super_class from
    * that instead.  */
 
-  object = read_memory_unsigned_integer(sstr.class + addrsize, addrsize);
+  object = read_memory_unsigned_integer((sstr.objc_class + addrsize),
+                                        addrsize);
 
   res = lookup_implementation_in_cache(object, sel);
   if (res != 0)
@@ -4007,10 +4009,10 @@ resolve_msgsend_super(CORE_ADDR pc, CORE_ADDR *new_pc)
   sel = OBJC_FETCH_POINTER_ARGUMENT(1);
 
   read_objc_super(super, &sstr);
-  if (sstr.class == 0)
+  if (sstr.objc_class == 0)
     return 0;
 
-  res = find_implementation_from_class(sstr.class, sel);
+  res = find_implementation_from_class(sstr.objc_class, sel);
   if (new_pc != 0)
     *new_pc = res;
   if (res == 0)
@@ -4022,7 +4024,7 @@ resolve_msgsend_super(CORE_ADDR pc, CORE_ADDR *new_pc)
    32-bit Objective-C runtime.  */
 
 static int
-resolve_msgsend_super_stret (CORE_ADDR pc, CORE_ADDR *new_pc)
+resolve_msgsend_super_stret(CORE_ADDR pc, CORE_ADDR *new_pc)
 {
   struct objc_super sstr;
 
@@ -4030,14 +4032,14 @@ resolve_msgsend_super_stret (CORE_ADDR pc, CORE_ADDR *new_pc)
   CORE_ADDR sel;
   CORE_ADDR res;
 
-  super = OBJC_FETCH_POINTER_ARGUMENT (1);
+  super = OBJC_FETCH_POINTER_ARGUMENT(1);
   sel = OBJC_FETCH_POINTER_ARGUMENT(2);
 
   read_objc_super(super, &sstr);
-  if (sstr.class == 0)
+  if (sstr.objc_class == 0)
     return 0;
 
-  res = find_implementation_from_class(sstr.class, sel);
+  res = find_implementation_from_class(sstr.objc_class, sel);
   if (new_pc != 0)
     *new_pc = res;
   if (res == 0)

@@ -513,6 +513,7 @@ DESCRIPTION
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic push
  #  pragma GCC diagnostic ignored "-Wsign-conversion"
+ #  pragma GCC diagnostic ignored "-Wshift-count-overflow"
 # else
 #  if ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2))) && \
       (defined(__APPLE__) && defined(__APPLE_CC__) && (__APPLE_CC__ > 1))
@@ -624,13 +625,6 @@ bfd_getl_signed_32(const void *p)
   v |= ((unsigned long)addr[3] << 24);
   return (bfd_signed_vma)COERCE32(v);
 }
-
-/* keep condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
 
 bfd_uint64_t
 bfd_getb64(const void *p)
@@ -801,6 +795,13 @@ bfd_putl64(bfd_uint64_t data, void *p)
   BFD_FAIL();
 #endif /* BFD_HOST_64_BIT */
 }
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 void
 bfd_put_bits(bfd_uint64_t data, void *p, int bits, bfd_boolean big_p)

@@ -61,6 +61,8 @@
 
 #include "reggroups.h"
 
+#include "rs6000-tdep.h"
+
 /* If the kernel has to deliver a signal, it pushes a sigcontext
    structure on the stack and then calls the signal handler, passing
    the address of the sigcontext in an argument register. Usually
@@ -74,8 +76,8 @@
 
 /* APPLE LOCAL begin huh? */
 #ifndef TEXT_SEGMENT_BASE
-#define TEXT_SEGMENT_BASE 0
-#endif
+# define TEXT_SEGMENT_BASE 0
+#endif /* !TEXT_SEGMENT_BASE */
 /* APPLE LOCAL end huh? */
 
 /* To be used by skip_prologue. */
@@ -344,12 +346,13 @@ ppc_collect_reg(const struct regcache *regcache, int regnum,
    REGCACHE.  If REGNUM is -1, do this for all registers in REGSET.  */
 
 void
-ppc_supply_gregset (const struct regset *regset, struct regcache *regcache,
-		    int regnum, const void *gregs, size_t len)
+ppc_supply_gregset(const struct regset *regset, struct regcache *regcache,
+		   int regnum, const void *gregs, size_t len)
 {
-  struct gdbarch *gdbarch = get_regcache_arch (regcache);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  const struct ppc_reg_offsets *offsets = regset->descr;
+  struct gdbarch *gdbarch = get_regcache_arch(regcache);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  const struct ppc_reg_offsets *offsets =
+    (const struct ppc_reg_offsets *)regset->descr;
   size_t offset;
   int i;
 
@@ -358,28 +361,30 @@ ppc_supply_gregset (const struct regset *regset, struct regcache *regcache,
        i++, offset += 4)
     {
       if (regnum == -1 || regnum == i)
-	ppc_supply_reg (regcache, i, gregs, offset);
+	ppc_supply_reg(regcache, i, (const gdb_byte *)gregs, offset);
     }
 
   if (regnum == -1 || regnum == PC_REGNUM)
-    ppc_supply_reg (regcache, PC_REGNUM, gregs, offsets->pc_offset);
+    ppc_supply_reg(regcache, PC_REGNUM, (const gdb_byte *)gregs,
+                   offsets->pc_offset);
   if (regnum == -1 || regnum == tdep->ppc_ps_regnum)
-    ppc_supply_reg (regcache, tdep->ppc_ps_regnum,
-		    gregs, offsets->ps_offset);
+    ppc_supply_reg(regcache, tdep->ppc_ps_regnum,
+		   (const gdb_byte *)gregs, offsets->ps_offset);
   if (regnum == -1 || regnum == tdep->ppc_cr_regnum)
-    ppc_supply_reg (regcache, tdep->ppc_cr_regnum,
-		    gregs, offsets->cr_offset);
+    ppc_supply_reg(regcache, tdep->ppc_cr_regnum,
+		   (const gdb_byte *)gregs, offsets->cr_offset);
   if (regnum == -1 || regnum == tdep->ppc_lr_regnum)
-    ppc_supply_reg (regcache, tdep->ppc_lr_regnum,
-		    gregs, offsets->lr_offset);
+    ppc_supply_reg(regcache, tdep->ppc_lr_regnum,
+                   (const gdb_byte *)gregs, offsets->lr_offset);
   if (regnum == -1 || regnum == tdep->ppc_ctr_regnum)
-    ppc_supply_reg (regcache, tdep->ppc_ctr_regnum,
-		    gregs, offsets->ctr_offset);
+    ppc_supply_reg(regcache, tdep->ppc_ctr_regnum,
+                   (const gdb_byte *)gregs, offsets->ctr_offset);
   if (regnum == -1 || regnum == tdep->ppc_xer_regnum)
-    ppc_supply_reg (regcache, tdep->ppc_xer_regnum,
-		    gregs, offsets->cr_offset);
+    ppc_supply_reg(regcache, tdep->ppc_xer_regnum,
+                   (const gdb_byte *)gregs, offsets->cr_offset);
   if (regnum == -1 || regnum == tdep->ppc_mq_regnum)
-    ppc_supply_reg (regcache, tdep->ppc_mq_regnum, gregs, offsets->mq_offset);
+    ppc_supply_reg(regcache, tdep->ppc_mq_regnum, (const gdb_byte *)gregs,
+                   offsets->mq_offset);
 }
 
 /* Supply register REGNUM in the floating-point register set REGSET
@@ -387,16 +392,17 @@ ppc_supply_gregset (const struct regset *regset, struct regcache *regcache,
    REGCACHE.  If REGNUM is -1, do this for all registers in REGSET.  */
 
 void
-ppc_supply_fpregset (const struct regset *regset, struct regcache *regcache,
-		     int regnum, const void *fpregs, size_t len)
+ppc_supply_fpregset(const struct regset *regset, struct regcache *regcache,
+		    int regnum, const void *fpregs, size_t len)
 {
-  struct gdbarch *gdbarch = get_regcache_arch (regcache);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  const struct ppc_reg_offsets *offsets = regset->descr;
+  struct gdbarch *gdbarch = get_regcache_arch(regcache);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  const struct ppc_reg_offsets *offsets =
+    (const struct ppc_reg_offsets *)regset->descr;
   size_t offset;
   int i;
 
-  gdb_assert (ppc_floating_point_unit_p (gdbarch));
+  gdb_assert(ppc_floating_point_unit_p(gdbarch));
 
   offset = offsets->f0_offset;
   for (i = tdep->ppc_fp0_regnum;
@@ -404,12 +410,12 @@ ppc_supply_fpregset (const struct regset *regset, struct regcache *regcache,
        i++, offset += 8)
     {
       if (regnum == -1 || regnum == i)
-	ppc_supply_reg (regcache, i, fpregs, offset);
+	ppc_supply_reg(regcache, i, (const gdb_byte *)fpregs, offset);
     }
 
   if (regnum == -1 || regnum == tdep->ppc_fpscr_regnum)
-    ppc_supply_reg (regcache, tdep->ppc_fpscr_regnum,
-		    fpregs, offsets->fpscr_offset);
+    ppc_supply_reg(regcache, tdep->ppc_fpscr_regnum,
+		   (const gdb_byte *)fpregs, offsets->fpscr_offset);
 }
 
 /* Collect register REGNUM in the general-purpose register set
@@ -418,13 +424,14 @@ ppc_supply_fpregset (const struct regset *regset, struct regcache *regcache,
    REGSET.  */
 
 void
-ppc_collect_gregset (const struct regset *regset,
-		     const struct regcache *regcache,
-		     int regnum, void *gregs, size_t len)
+ppc_collect_gregset(const struct regset *regset,
+		    const struct regcache *regcache,
+		    int regnum, void *gregs, size_t len)
 {
-  struct gdbarch *gdbarch = get_regcache_arch (regcache);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  const struct ppc_reg_offsets *offsets = regset->descr;
+  struct gdbarch *gdbarch = get_regcache_arch(regcache);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  const struct ppc_reg_offsets *offsets =
+    (const struct ppc_reg_offsets *)regset->descr;
   size_t offset;
   int i;
 
@@ -434,29 +441,30 @@ ppc_collect_gregset (const struct regset *regset,
        i++, offset += 4)
     {
       if (regnum == -1 || regnum == i)
-	ppc_collect_reg (regcache, i, gregs, offset);
+	ppc_collect_reg(regcache, i, (gdb_byte *)gregs, offset);
     }
 
   if (regnum == -1 || regnum == PC_REGNUM)
-    ppc_collect_reg (regcache, PC_REGNUM, gregs, offsets->pc_offset);
+    ppc_collect_reg(regcache, PC_REGNUM, (gdb_byte *)gregs,
+                    offsets->pc_offset);
   if (regnum == -1 || regnum == tdep->ppc_ps_regnum)
-    ppc_collect_reg (regcache, tdep->ppc_ps_regnum,
-		     gregs, offsets->ps_offset);
+    ppc_collect_reg(regcache, tdep->ppc_ps_regnum,
+		    (gdb_byte *)gregs, offsets->ps_offset);
   if (regnum == -1 || regnum == tdep->ppc_cr_regnum)
-    ppc_collect_reg (regcache, tdep->ppc_cr_regnum,
-		     gregs, offsets->cr_offset);
+    ppc_collect_reg(regcache, tdep->ppc_cr_regnum,
+		    (gdb_byte *)gregs, offsets->cr_offset);
   if (regnum == -1 || regnum == tdep->ppc_lr_regnum)
-    ppc_collect_reg (regcache, tdep->ppc_lr_regnum,
-		     gregs, offsets->lr_offset);
+    ppc_collect_reg(regcache, tdep->ppc_lr_regnum,
+		    (gdb_byte *)gregs, offsets->lr_offset);
   if (regnum == -1 || regnum == tdep->ppc_ctr_regnum)
-    ppc_collect_reg (regcache, tdep->ppc_ctr_regnum,
-		     gregs, offsets->ctr_offset);
+    ppc_collect_reg(regcache, tdep->ppc_ctr_regnum,
+		    (gdb_byte *)gregs, offsets->ctr_offset);
   if (regnum == -1 || regnum == tdep->ppc_xer_regnum)
-    ppc_collect_reg (regcache, tdep->ppc_xer_regnum,
-		     gregs, offsets->xer_offset);
+    ppc_collect_reg(regcache, tdep->ppc_xer_regnum,
+		    (gdb_byte *)gregs, offsets->xer_offset);
   if (regnum == -1 || regnum == tdep->ppc_mq_regnum)
-    ppc_collect_reg (regcache, tdep->ppc_mq_regnum,
-		     gregs, offsets->mq_offset);
+    ppc_collect_reg(regcache, tdep->ppc_mq_regnum,
+		    (gdb_byte *)gregs, offsets->mq_offset);
 }
 
 /* Collect register REGNUM in the floating-point register set
@@ -465,17 +473,18 @@ ppc_collect_gregset (const struct regset *regset,
    REGSET.  */
 
 void
-ppc_collect_fpregset (const struct regset *regset,
-		      const struct regcache *regcache,
-		      int regnum, void *fpregs, size_t len)
+ppc_collect_fpregset(const struct regset *regset,
+		     const struct regcache *regcache,
+		     int regnum, void *fpregs, size_t len)
 {
-  struct gdbarch *gdbarch = get_regcache_arch (regcache);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  const struct ppc_reg_offsets *offsets = regset->descr;
+  struct gdbarch *gdbarch = get_regcache_arch(regcache);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  const struct ppc_reg_offsets *offsets =
+    (const struct ppc_reg_offsets *)regset->descr;
   size_t offset;
   int i;
 
-  gdb_assert (ppc_floating_point_unit_p (gdbarch));
+  gdb_assert(ppc_floating_point_unit_p(gdbarch));
 
   offset = offsets->f0_offset;
   for (i = tdep->ppc_fp0_regnum;
@@ -483,19 +492,18 @@ ppc_collect_fpregset (const struct regset *regset,
        i++, offset += 8)
     {
       if (regnum == -1 || regnum == i)
-	ppc_collect_reg (regcache, i, fpregs, offset);
+	ppc_collect_reg(regcache, i, (gdb_byte *)fpregs, offset);
     }
 
   if (regnum == -1 || regnum == tdep->ppc_fpscr_regnum)
-    ppc_collect_reg (regcache, tdep->ppc_fpscr_regnum,
-		     fpregs, offsets->fpscr_offset);
+    ppc_collect_reg(regcache, tdep->ppc_fpscr_regnum,
+		    (gdb_byte *)fpregs, offsets->fpscr_offset);
 }
 
 
-/* Read a LEN-byte address from debugged memory address MEMADDR. */
-
+/* Read a LEN-byte address from debugged memory address MEMADDR: */
 static CORE_ADDR
-read_memory_addr (CORE_ADDR memaddr, int len)
+read_memory_addr(CORE_ADDR memaddr, int len)
 {
   return read_memory_unsigned_integer (memaddr, len);
 }
@@ -524,23 +532,22 @@ struct frame_extra_info
 /* Get the ith function argument for the current function.  */
 /* APPLE LOCAL make globally visible */
 CORE_ADDR
-rs6000_fetch_pointer_argument (struct frame_info *frame, int argi,
-			       struct type *type)
+rs6000_fetch_pointer_argument(struct frame_info *frame, int argi,
+			      struct type *type)
 {
-  return get_frame_register_unsigned (frame, 3 + argi);
+  return get_frame_register_unsigned(frame, (3 + argi));
 }
 
-/* Calculate the destination of a branch/jump.  Return -1 if not a branch.  */
-
+/* Calculate destination of a branch/jump; return -1 if not a branch: */
 static CORE_ADDR
-branch_dest (int opcode, int instr, CORE_ADDR pc, CORE_ADDR safety)
+branch_dest(int opcode, int instr, CORE_ADDR pc, CORE_ADDR safety)
 {
   CORE_ADDR dest;
   int immediate;
   int absolute;
   int ext_op;
 
-  absolute = (int) ((instr >> 1) & 1);
+  absolute = (int)((instr >> 1) & 1);
 
   switch (opcode)
     {
@@ -565,31 +572,30 @@ branch_dest (int opcode, int instr, CORE_ADDR pc, CORE_ADDR safety)
 
       if (ext_op == 16)		/* br conditional register */
 	{
-          dest = read_register (gdbarch_tdep (current_gdbarch)->ppc_lr_regnum) & ~3;
+          dest = (read_register(gdbarch_tdep(current_gdbarch)->ppc_lr_regnum) & ~3);
 
 	  /* If we are about to return from a signal handler, dest is
 	     something like 0x3c90.  The current frame is a signal handler
 	     caller frame, upon completion of the sigreturn system call
 	     execution will return to the saved PC in the frame.  */
-	  if (dest < TEXT_SEGMENT_BASE)
+	  if ((LONGEST)dest < TEXT_SEGMENT_BASE)
 	    {
 	      struct frame_info *fi;
 
-	      fi = get_current_frame ();
+	      fi = get_current_frame();
 	      if (fi != NULL)
-		dest = read_memory_addr (get_frame_base (fi) + SIG_FRAME_PC_OFFSET,
-					 gdbarch_tdep (current_gdbarch)->wordsize);
+		dest = read_memory_addr(get_frame_base(fi) + SIG_FRAME_PC_OFFSET,
+                                        gdbarch_tdep(current_gdbarch)->wordsize);
 	    }
 	}
-
       else if (ext_op == 528)	/* br cond to count reg */
 	{
-          dest = read_register (gdbarch_tdep (current_gdbarch)->ppc_ctr_regnum) & ~3;
+          dest = (read_register(gdbarch_tdep(current_gdbarch)->ppc_ctr_regnum) & ~3);
 
 	  /* If we are about to execute a system call, dest is something
 	     like 0x22fc or 0x3b00.  Upon completion the system call
 	     will return to the address in the link register.  */
-	  if (dest < TEXT_SEGMENT_BASE)
+	  if ((LONGEST)dest < TEXT_SEGMENT_BASE)
             dest = (read_register(gdbarch_tdep(current_gdbarch)->ppc_lr_regnum) & ~3);
 	}
       else
@@ -599,7 +605,7 @@ branch_dest (int opcode, int instr, CORE_ADDR pc, CORE_ADDR safety)
     default:
       return -1;
     }
-  return ((dest < TEXT_SEGMENT_BASE) ? safety : dest);
+  return (((LONGEST)dest < TEXT_SEGMENT_BASE) ? safety : dest);
 }
 
 
@@ -1133,7 +1139,7 @@ skip_prologue (CORE_ADDR pc, CORE_ADDR lim_pc, struct rs6000_framedata *fdata)
       /* 100100 sssss 00001 dddddddd dddddddd */
       else if ((op & 0xfc1f0000) == 0x90010000)     /* stw rS, d(r1) */
         {
-          if (vrsave_reg == GET_SRC_REG(op))
+          if (vrsave_reg == (int)GET_SRC_REG(op))
 	    {
 	      fdata->vrsave_offset = (SIGNED_SHORT(op) + offset);
 	      vrsave_reg = -1;
@@ -1893,7 +1899,7 @@ rs6000_convert_register_p(int regnum, struct type *type)
 }
 
 /* APPLE LOCAL make globally visible */
-/* static */ void
+void
 rs6000_register_to_value(struct frame_info *frame, int regnum,
                          struct type *type, gdb_byte *to)
 {
@@ -1908,7 +1914,7 @@ rs6000_register_to_value(struct frame_info *frame, int regnum,
 }
 
 /* APPLE LOCAL make globally visible */
-/* static */ void
+void
 rs6000_value_to_register(struct frame_info *frame, int regnum,
                          struct type *type, const gdb_byte *from)
 {

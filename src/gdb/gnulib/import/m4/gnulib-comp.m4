@@ -51,8 +51,13 @@ AC_DEFUN([gl_EARLY],
   # Code from module atexit:
   # Code from module autobuild:
   AB_INIT
+  # Code from module bcopy:
+  # Code from module bison-i18n:
   # Code from module bitrotate:
   # Code from module btowc:
+  # Code from module c-ctype:
+  # Code from module c-strcase:
+  # Code from module c-strcasestr:
   # Code from module chdir:
   # Code from module chdir-long:
   # Code from module cloexec:
@@ -100,9 +105,11 @@ AC_DEFUN([gl_EARLY],
   # Code from module fstat:
   # Code from module fstatat:
   # Code from module fts:
+  # Code from module getcwd:
   # Code from module getcwd-lgpl:
   # Code from module getdtablesize:
   # Code from module getpagesize:
+  # Code from module gettext:
   # Code from module gettext-h:
   # Code from module gettimeofday:
   # Code from module git-version-gen:
@@ -177,6 +184,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module regex:
   # Code from module regex-quote:
   # Code from module regexprops-generic:
+  # Code from module rewinddir:
   # Code from module rmdir:
   # Code from module same-inode:
   # Code from module save-cwd:
@@ -198,6 +206,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module stat-macros:
   # Code from module stat-size:
   # Code from module stat-time:
+  # Code from module stdalign:
   # Code from module stdbool:
   # Code from module stddef:
   # Code from module stdint:
@@ -210,6 +219,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module strerror-override:
   # Code from module strerror_r-posix:
   # Code from module string:
+  # Code from module strings:
   # Code from module strnlen:
   # Code from module strnlen1:
   # Code from module strstr:
@@ -272,6 +282,8 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([atexit])
     gl_PREREQ_ATEXIT
   fi
+  AC_REPLACE_FUNCS(bcopy)
+  BISON_I18N
   gl_FUNC_BTOWC
   if test $HAVE_BTOWC = 0 || test $REPLACE_BTOWC = 1; then
     AC_LIBOBJ([btowc])
@@ -400,6 +412,13 @@ AC_DEFUN([gl_INIT],
   dnl Use this version of fts unconditionally, since the GNU libc and
   dnl NetBSD versions have bugs and/or unnecessary limitations.
   AC_LIBOBJ([fts])
+  gl_FUNC_GETCWD
+  if test $REPLACE_GETCWD = 1; then
+    AC_LIBOBJ([getcwd])
+    gl_PREREQ_GETCWD
+  fi
+  gl_MODULE_INDICATOR([getcwd])
+  gl_UNISTD_MODULE_INDICATOR([getcwd])
   gl_FUNC_GETCWD_LGPL
   if test $REPLACE_GETCWD = 1; then
     AC_LIBOBJ([getcwd-lgpl])
@@ -416,6 +435,8 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([getpagesize])
   fi
   gl_UNISTD_MODULE_INDICATOR([getpagesize])
+  dnl you must add AM_GNU_GETTEXT([external]) or similar to configure.ac.
+  AM_GNU_GETTEXT_VERSION([0.18.1])
   AC_SUBST([LIBINTL])
   AC_SUBST([LTLIBINTL])
   gl_FUNC_GETTIMEOFDAY
@@ -643,6 +664,11 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([regex])
     gl_PREREQ_REGEX
   fi
+  gl_FUNC_REWINDDIR
+  if test $HAVE_REWINDDIR = 0; then
+    AC_LIBOBJ([rewinddir])
+  fi
+  gl_DIRENT_MODULE_INDICATOR([rewinddir])
   gl_FUNC_RMDIR
   if test $REPLACE_RMDIR = 1; then
     AC_LIBOBJ([rmdir])
@@ -697,6 +723,7 @@ AC_DEFUN([gl_INIT],
   gl_STAT_SIZE
   gl_STAT_TIME
   gl_STAT_BIRTHTIME
+  gl_STDALIGN_H
   AM_STDBOOL_H
   gl_STDDEF_H
   gl_STDINT_H
@@ -733,6 +760,7 @@ AC_DEFUN([gl_INIT],
   fi
   gl_STRING_MODULE_INDICATOR([strerror_r])
   gl_HEADER_STRING_H
+  gl_HEADER_STRINGS_H
   gl_FUNC_STRNLEN
   if test $HAVE_DECL_STRNLEN = 0 || test $REPLACE_STRNLEN = 1; then
     AC_LIBOBJ([strnlen])
@@ -764,7 +792,7 @@ AC_DEFUN([gl_INIT],
   gl_UNISTD_SAFER
   gl_LIBUNISTRING_LIBHEADER([0.9.4], [unitypes.h])
   gl_LIBUNISTRING_LIBHEADER([0.9.4], [uniwidth.h])
-  gl_LIBUNISTRING_MODULE([0.9.5], [uniwidth/width])
+  gl_LIBUNISTRING_MODULE([0.9.6], [uniwidth/width])
   gl_FUNC_UNLINK
   if test $REPLACE_UNLINK = 1; then
     AC_LIBOBJ([unlink])
@@ -965,9 +993,17 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/at-func.c
   lib/atexit.c
   lib/basename-lgpl.c
+  lib/bcopy.c
   lib/bitrotate.c
   lib/bitrotate.h
   lib/btowc.c
+  lib/c-ctype.c
+  lib/c-ctype.h
+  lib/c-strcase.h
+  lib/c-strcasecmp.c
+  lib/c-strcasestr.c
+  lib/c-strcasestr.h
+  lib/c-strncasecmp.c
   lib/chdir-long.c
   lib/chdir-long.h
   lib/cloexec.c
@@ -1023,6 +1059,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/fts.c
   lib/fts_.h
   lib/getcwd-lgpl.c
+  lib/getcwd.c
   lib/getdtablesize.c
   lib/getpagesize.c
   lib/gettext.h
@@ -1105,6 +1142,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/regex_internal.c
   lib/regex_internal.h
   lib/regexec.c
+  lib/rewinddir.c
   lib/rmdir.c
   lib/same-inode.h
   lib/save-cwd.c
@@ -1123,6 +1161,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/stat-time.c
   lib/stat-time.h
   lib/stat.c
+  lib/stdalign.in.h
   lib/stdbool.in.h
   lib/stddef.in.h
   lib/stdint.in.h
@@ -1137,6 +1176,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/strerror.c
   lib/strerror_r.c
   lib/string.in.h
+  lib/strings.in.h
   lib/stripslash.c
   lib/strnlen.c
   lib/strnlen1.c
@@ -1183,6 +1223,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/assert_h.m4
   m4/atexit.m4
   m4/autobuild.m4
+  m4/bison-i18n.m4
   m4/btowc.m4
   m4/chdir-long.m4
   m4/close.m4
@@ -1225,20 +1266,31 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/fstat.m4
   m4/fstatat.m4
   m4/fts.m4
+  m4/getcwd-abort-bug.m4
+  m4/getcwd-path-max.m4
   m4/getcwd.m4
   m4/getdtablesize.m4
   m4/getpagesize.m4
+  m4/gettext.m4
   m4/gettimeofday.m4
+  m4/glibc2.m4
   m4/glibc21.m4
   m4/gnu-make.m4
   m4/gnulib-common.m4
   m4/host-cpu-c-abi.m4
   m4/host-os.m4
   m4/i-ring.m4
+  m4/iconv.m4
   m4/include_next.m4
   m4/inline.m4
+  m4/intdiv0.m4
+  m4/intl.m4
+  m4/intldir.m4
+  m4/intlmacosx.m4
+  m4/intmax.m4
   m4/inttypes-pri.m4
   m4/inttypes.m4
+  m4/inttypes_h.m4
   m4/isnand.m4
   m4/isnanl.m4
   m4/iswblank.m4
@@ -1247,6 +1299,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/jm-winsz2.m4
   m4/langinfo_h.m4
   m4/largefile.m4
+  m4/lcmessage.m4
   m4/ldd.m4
   m4/lib-ld.m4
   m4/lib-link.m4
@@ -1258,6 +1311,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/locale-zh.m4
   m4/locale_h.m4
   m4/localeconv.m4
+  m4/lock.m4
   m4/longlong.m4
   m4/lstat.m4
   m4/malloc.m4
@@ -1284,6 +1338,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/msvc-inval.m4
   m4/multiarch.m4
   m4/nl_langinfo.m4
+  m4/nls.m4
   m4/no-c++.m4
   m4/nocrash.m4
   m4/obstack.m4
@@ -1294,13 +1349,17 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/openmp.m4
   m4/pathmax.m4
   m4/pclose.m4
+  m4/po.m4
   m4/popen.m4
+  m4/printf-posix.m4
+  m4/progtest.m4
   m4/putenv.m4
   m4/raise.m4
   m4/readdir.m4
   m4/readlink.m4
   m4/realloc.m4
   m4/regex.m4
+  m4/rewinddir.m4
   m4/rmdir.m4
   m4/save-cwd.m4
   m4/secure_getenv.m4
@@ -1308,20 +1367,24 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/signal_h.m4
   m4/signalblocking.m4
   m4/sigpipe.m4
+  m4/size_max.m4
   m4/sleep.m4
   m4/ssize_t.m4
   m4/stat-size.m4
   m4/stat-time.m4
   m4/stat.m4
+  m4/stdalign.m4
   m4/stdbool.m4
   m4/stddef_h.m4
   m4/stdint.m4
+  m4/stdint_h.m4
   m4/stdio_h.m4
   m4/stdlib_h.m4
   m4/strdup.m4
   m4/strerror.m4
   m4/strerror_r.m4
   m4/string_h.m4
+  m4/strings_h.m4
   m4/strnlen.m4
   m4/strstr.m4
   m4/sys_select_h.m4
@@ -1331,12 +1394,15 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/sys_types_h.m4
   m4/sys_wait_h.m4
   m4/tempname.m4
+  m4/threadlib.m4
   m4/time_h.m4
+  m4/uintmax_t.m4
   m4/unistd-safer.m4
   m4/unistd_h.m4
   m4/unlink-busy.m4
   m4/unlink.m4
   m4/usleep.m4
+  m4/visibility.m4
   m4/warn-on-use.m4
   m4/warnings.m4
   m4/wchar_h.m4
@@ -1348,4 +1414,5 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/wcwidth.m4
   m4/wint_t.m4
   m4/xalloc.m4
+  m4/xsize.m4
 ])

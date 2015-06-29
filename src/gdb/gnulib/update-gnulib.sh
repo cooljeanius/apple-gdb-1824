@@ -32,13 +32,14 @@
 IMPORTED_GNULIB_MODULES="\
     absolute-header alignof alloca alloca-opt ansi-c++-opt assert assert-h \
     assure autobuild \
-    chdir-long configmake closedir \
-    dirent dirent-safer dirfd dosname double-slash-root \
-    errno error exitfail extensions extern-inline \
+    bcopy bison-i18n btowc \
+    c-ctype c-strcase c-strcasestr chdir-long configmake closedir \
+    dirent dirent-safer dirfd dosname double-slash-root dup2 \
+    environ errno error exitfail extensions extern-inline \
     fcntl fcntl-h fcntl-safer fileblocks flexmember float fnmatch fnmatch-gnu \
     fpieee fpucw frexp frexpl fstatat fts \
-    getpagesize gettext-h gettimeofday git-version-gen gitlog-to-changelog \
-    gnu-make gpl-2.0 \
+    getcwd getcwd-lgpl getpagesize gettext-h gettimeofday git-version-gen \
+    gitlog-to-changelog gnu-make gpl-2.0 \
     havelib host-cpu-c-abi host-os \
     ignore-value include_next inline intprops inttypes inttypes-incomplete \
     isnand-nolibm isnanl-nolibm iswctype \
@@ -58,15 +59,25 @@ IMPORTED_GNULIB_MODULES="\
     streq strerror strerror_r-posix strerror-override string strnlen strnlen1 \
     strstr strstr-simple sys_select sys_stat sys_time sys_types sys_wait \
     tempname time \
-    unistd unlink unlink-busy update-copyright usleep \
+    unistd unistd-safer unlink unlink-busy update-copyright usleep \
     vc-list-files verify \
     warnings wchar wcsncasecmp wctype-h winsz-ioctl winsz-termios \
     xalloc xalloc-die xalloc-oversized"
 # (might want to check to see if any of the libiberty/gettext duplicates cause
 # any conflicts...)
 
+# Obsolete modules I am tempted to add, but am going to omit for now:
+# - atexit
+# - dup2-obsolete
+# - memchr-obsolete
+# - memmove
+# - strdup
+# - wctype
+# (even though I cannot add them, there is no need to explicitly ignore them
+# below, though, so they may still get dragged in as dependencies)
+
 # The gnulib commit ID to use for the update.
-GNULIB_COMMIT_SHA1="b287b621969d5a3f56058ff01e554839814da4e1"
+GNULIB_COMMIT_SHA1="49078a780041205fbbab56802033595eb44f854d"
 # (feel free to update if you know that your version works and is newer)
 
 # The expected version number for the various auto tools we will

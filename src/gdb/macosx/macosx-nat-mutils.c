@@ -101,7 +101,7 @@ extern macosx_inferior_status *macosx_status;
 
 extern void _initialize_macosx_mutils(void);
 
-static const char* g_macosx_protection_strs[8] =
+static const char *g_macosx_protection_strs[8] =
 { "---", "--r", "-w-", "-wr", "x--", "x-r", "xw-", "xwr" };
 
 void
@@ -171,7 +171,7 @@ mach_xfer_memory_remainder(CORE_ADDR memaddr, gdb_byte *myaddr,
 	  mutils_debug("Unable to read page for region at 0x%s w/length %lu from inferior: "
                        "%s (0x%lx)\n",
                        paddr_nz(pageaddr), (unsigned long)len,
-                       MACH_ERROR_STRING(kret), kret);
+                       MACH_ERROR_STRING(kret), (unsigned long)kret);
 	  return 0;
 	}
       if (memcopied != pagesize)
@@ -222,7 +222,7 @@ mach_xfer_memory_remainder(CORE_ADDR memaddr, gdb_byte *myaddr,
           mutils_debug("Unable to write region at 0x%s w/length %lu to inferior: "
                        "%s (0x%lx)\n",
                        paddr_nz(memaddr), (unsigned long)len,
-                       MACH_ERROR_STRING (kret), kret);
+                       MACH_ERROR_STRING(kret), (unsigned long)kret);
           return 0;
         }
 
@@ -236,7 +236,7 @@ mach_xfer_memory_remainder(CORE_ADDR memaddr, gdb_byte *myaddr,
           mutils_debug("Unable to read page for region at 0x%s w/length %lu from inferior to reset cache: "
                        "%s (0x%lx)\n",
                        paddr_nz(pageaddr), (unsigned long)len,
-                       MACH_ERROR_STRING(kret), kret);
+                       MACH_ERROR_STRING(kret), (unsigned long)kret);
         }
       else
         {
@@ -247,7 +247,7 @@ mach_xfer_memory_remainder(CORE_ADDR memaddr, gdb_byte *myaddr,
             {
               mutils_debug("Unable to flush GDB's address space after memcpy prior to vm_write: "
                            "%s (0x%lx)\n",
-                           MACH_ERROR_STRING(kret), kret);
+                           MACH_ERROR_STRING(kret), (unsigned long)kret);
             }
 	  vm_deallocate(mach_task_self(), mempointer, memcopied);
         }
@@ -281,7 +281,7 @@ mach_xfer_memory_block(CORE_ADDR memaddr, gdb_byte *myaddr,
           mutils_debug("Unable to read region at 0x%s w/length %lu from inferior: "
                        "%s (0x%lx)\n",
                        paddr_nz(memaddr), (unsigned long)len,
-                       MACH_ERROR_STRING(kret), kret);
+                       MACH_ERROR_STRING(kret), (unsigned long)kret);
           return 0;
         }
       if (memcopied != (mach_msg_type_number_t)len)
@@ -318,7 +318,7 @@ mach_xfer_memory_block(CORE_ADDR memaddr, gdb_byte *myaddr,
           mutils_debug("Unable to write region at 0x%s w/length %lu from inferior: "
                        "%s (0x%lx)\n",
                        paddr_nz(memaddr), (unsigned long)len,
-                       MACH_ERROR_STRING(kret), kret);
+                       MACH_ERROR_STRING(kret), (unsigned long)kret);
           return 0;
         }
     }
@@ -408,47 +408,44 @@ macosx_vm_region(task_t task, mach_vm_address_t addr,
   vm_region_basic_info_data_64_t r_basic_data;
 
   r_info_size = VM_REGION_BASIC_INFO_COUNT_64;
-  kret = mach_vm_region (macosx_status->task, r_start, r_size,
-			 VM_REGION_BASIC_INFO_64,
-			 (vm_region_info_t) & r_basic_data, &r_info_size,
-			  &r_object_name);
+  kret = mach_vm_region(macosx_status->task, r_start, r_size,
+                        VM_REGION_BASIC_INFO_64,
+                        (vm_region_info_t)&r_basic_data, &r_info_size,
+                        &r_object_name);
   if (kret == KERN_SUCCESS)
     {
       *prot = r_basic_data.protection;
       *max_prot = r_basic_data.max_protection;
-      mutils_debug ("macosx_vm_region ( 0x%8s ): [ 0x%8s - 0x%8s ) prot = %c%c%s "
-		    "max_prot = %c%c%s\n",
-		    paddr (addr),
-		    paddr (*r_start),
-		    paddr (*r_start + *r_size),
-		    *prot & VM_PROT_COPY ? 'c' : '-',
-		    *prot & VM_PROT_NO_CHANGE ? '!' : '-',
-		    g_macosx_protection_strs[*prot & 7],
-		    *max_prot & VM_PROT_COPY ? 'c' : '-',
-		    *max_prot & VM_PROT_NO_CHANGE ? '!' : '-',
-		    g_macosx_protection_strs[*max_prot & 7]);
+      mutils_debug("macosx_vm_region ( 0x%8s ): [ 0x%8s - 0x%8s ) prot = %c%c%s "
+		   "max_prot = %c%c%s\n",
+		   paddr((CORE_ADDR)addr),
+		   paddr((CORE_ADDR)(*r_start)),
+		   paddr((CORE_ADDR)(*r_start + *r_size)),
+		   ((*prot & VM_PROT_COPY) ? 'c' : '-'),
+		   ((*prot & VM_PROT_NO_CHANGE) ? '!' : '-'),
+		   g_macosx_protection_strs[*prot & 7],
+		   ((*max_prot & VM_PROT_COPY) ? 'c' : '-'),
+		   ((*max_prot & VM_PROT_NO_CHANGE) ? '!' : '-'),
+		   g_macosx_protection_strs[*max_prot & 7]);
     }
   else
     {
-      mutils_debug ("macosx_vm_region ( 0x%8s ): ERROR %s\n",
-		    paddr (addr), MACH_ERROR_STRING (kret));
+      mutils_debug("macosx_vm_region ( 0x%8s ): ERROR %s\n",
+		   paddr((CORE_ADDR)addr), MACH_ERROR_STRING(kret));
       *r_start = 0;
       *r_size = 0;
       *prot = VM_PROT_NONE;
       *max_prot = VM_PROT_NONE;
     }
   return kret;
-
 }
 
 
 static kern_return_t
-macosx_vm_region_recurse_long (task_t task,
-			       mach_vm_address_t addr,
-			       mach_vm_address_t *r_start,
-			       mach_vm_size_t *r_size,
-			       vm_prot_t *prot,
-			       vm_prot_t *max_prot)
+macosx_vm_region_recurse_long(task_t task, mach_vm_address_t addr,
+			      mach_vm_address_t *r_start,
+			      mach_vm_size_t *r_size,
+			      vm_prot_t *prot, vm_prot_t *max_prot)
 {
   vm_region_submap_info_data_64_t r_long_data;
   mach_msg_type_number_t r_info_size;
@@ -459,32 +456,30 @@ macosx_vm_region_recurse_long (task_t task,
   r_depth = 1000;
   *r_start = addr;
 
-  kret = mach_vm_region_recurse (task,
-				 r_start, r_size,
-				 & r_depth,
-				 (vm_region_recurse_info_t) &r_long_data,
-				 &r_info_size);
+  kret = mach_vm_region_recurse(task, r_start, r_size, &r_depth,
+                                (vm_region_recurse_info_t)&r_long_data,
+                                &r_info_size);
   if (kret == KERN_SUCCESS)
     {
       *prot = r_long_data.protection;
       *max_prot = r_long_data.max_protection;
-      mutils_debug ("macosx_vm_region_recurse_long ( 0x%8s ): [ 0x%8s - 0x%8s ) "
-		    "depth = %d, prot = %c%c%s max_prot = %c%c%s\n",
-		    paddr (addr),
-		    paddr (*r_start),
-		    paddr (*r_start + *r_size),
-		    r_depth,
-		    *prot & VM_PROT_COPY ? 'c' : '-',
-		    *prot & VM_PROT_NO_CHANGE ? '!' : '-',
-		    g_macosx_protection_strs[*prot & 7],
-		    *max_prot & VM_PROT_COPY ? 'c' : '-',
-		    *max_prot & VM_PROT_NO_CHANGE ? '!' : '-',
-		    g_macosx_protection_strs[*max_prot & 7]);
+      mutils_debug("macosx_vm_region_recurse_long ( 0x%8s ): [ 0x%8s - 0x%8s ) "
+		   "depth = %d, prot = %c%c%s max_prot = %c%c%s\n",
+		   paddr((CORE_ADDR)addr),
+		   paddr((CORE_ADDR)(*r_start)),
+		   paddr((CORE_ADDR)(*r_start + *r_size)),
+		   r_depth,
+		   ((*prot & VM_PROT_COPY) ? 'c' : '-'),
+		   ((*prot & VM_PROT_NO_CHANGE) ? '!' : '-'),
+		   g_macosx_protection_strs[*prot & 7],
+		   ((*max_prot & VM_PROT_COPY) ? 'c' : '-'),
+		   ((*max_prot & VM_PROT_NO_CHANGE) ? '!' : '-'),
+		   g_macosx_protection_strs[*max_prot & 7]);
     }
   else
     {
-      mutils_debug ("macosx_vm_region_recurse_long ( 0x%8s ): ERROR %s\n",
-		    paddr (addr), MACH_ERROR_STRING (kret));
+      mutils_debug("macosx_vm_region_recurse_long ( 0x%8s ): ERROR %s\n",
+		   paddr((CORE_ADDR)addr), MACH_ERROR_STRING(kret));
       *r_start = 0;
       *r_size = 0;
       *prot = VM_PROT_NONE;
@@ -521,23 +516,23 @@ macosx_vm_region_recurse_short (task_t task,
     {
       *prot = r_short_data.protection;
       *max_prot = r_short_data.max_protection;
-      mutils_debug ("macosx_vm_region_recurse_short ( 0x%8s ): [ 0x%8s - 0x%8s ) "
-		    "depth = %d, prot = %c%c%s max_prot = %c%c%s\n",
-		    paddr (addr),
-		    paddr (*r_start),
-		    paddr (*r_start + *r_size),
-		    r_depth,
-		    *prot & VM_PROT_COPY ? 'c' : '-',
-		    *prot & VM_PROT_NO_CHANGE ? '!' : '-',
-		    g_macosx_protection_strs[*prot & 7],
-		    *max_prot & VM_PROT_COPY ? 'c' : '-',
-		    *max_prot & VM_PROT_NO_CHANGE ? '!' : '-',
-		    g_macosx_protection_strs[*max_prot & 7]);
+      mutils_debug("macosx_vm_region_recurse_short ( 0x%8s ): [ 0x%8s - 0x%8s ) "
+		   "depth = %d, prot = %c%c%s max_prot = %c%c%s\n",
+		   paddr((CORE_ADDR)addr),
+		   paddr((CORE_ADDR)(*r_start)),
+		   paddr((CORE_ADDR)(*r_start + *r_size)),
+		   r_depth,
+		   ((*prot & VM_PROT_COPY) ? 'c' : '-'),
+		   ((*prot & VM_PROT_NO_CHANGE) ? '!' : '-'),
+		   g_macosx_protection_strs[*prot & 7],
+		   ((*max_prot & VM_PROT_COPY) ? 'c' : '-'),
+		   ((*max_prot & VM_PROT_NO_CHANGE) ? '!' : '-'),
+		   g_macosx_protection_strs[*max_prot & 7]);
     }
   else
     {
-      mutils_debug ("macosx_vm_region_recurse_short ( 0x%8s ): ERROR %s\n",
-		    paddr (addr), MACH_ERROR_STRING (kret));
+      mutils_debug("macosx_vm_region_recurse_short ( 0x%8s ): ERROR %s\n",
+		   paddr((CORE_ADDR)addr), MACH_ERROR_STRING(kret));
       *r_start = 0;
       *r_size = 0;
       *prot = VM_PROT_NONE;
@@ -563,16 +558,16 @@ macosx_vm_protect_range(task_t task, mach_vm_address_t region_start,
   protect_addr = addr;
   protect_size = size;
 
-  kret = mach_vm_protect (task, protect_addr, protect_size, set_max, prot);
-  mutils_debug ("macosx_vm_protect_range ( 0x%8s ):  [ 0x%8s - 0x%8s ) %s = %c%c%s => %s\n",
-		paddr (addr),
-		paddr (protect_addr),
-		paddr (protect_addr + protect_size),
-		set_max ? "max_prot" : "prot",
-		prot & VM_PROT_COPY ? 'c' : '-',
-		prot & VM_PROT_NO_CHANGE ? '!' : '-',
-		g_macosx_protection_strs[prot & 7],
-		kret ? MACH_ERROR_STRING (kret) : "0");
+  kret = mach_vm_protect(task, protect_addr, protect_size, set_max, prot);
+  mutils_debug("macosx_vm_protect_range ( 0x%8s ):  [ 0x%8s - 0x%8s ) %s = %c%c%s => %s\n",
+               paddr((CORE_ADDR)addr),
+               paddr((CORE_ADDR)protect_addr),
+               paddr((CORE_ADDR)(protect_addr + protect_size)),
+               (set_max ? "max_prot" : "prot"),
+               ((prot & VM_PROT_COPY) ? 'c' : '-'),
+               ((prot & VM_PROT_NO_CHANGE) ? '!' : '-'),
+               g_macosx_protection_strs[prot & 7],
+               (kret ? MACH_ERROR_STRING(kret) : "0"));
   return kret;
 }
 
@@ -593,8 +588,8 @@ macosx_vm_protect_region(task_t task, mach_vm_address_t region_start,
   kret = mach_vm_protect(task, protect_addr, protect_size, set_max, prot);
 
   mutils_debug("macosx_vm_protect_region ( 0x%8s ):  [ 0x%8s - 0x%8s ) %s = %c%c%s => %s\n",
-               paddr(addr), paddr(protect_addr),
-               paddr(protect_addr + protect_size),
+               paddr((CORE_ADDR)addr), paddr((CORE_ADDR)protect_addr),
+               paddr((CORE_ADDR)(protect_addr + protect_size)),
                (set_max ? "max_prot" : "prot"),
                ((prot & VM_PROT_COPY) ? 'c' : '-'),
                ((prot & VM_PROT_NO_CHANGE) ? '!' : '-'),
@@ -689,14 +684,14 @@ mach_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr,
           {
             mutils_debug("First available address near 0x%s is at 0x%s; "
                          "returning\n",
-                         paddr_nz(memaddr), paddr_nz(r_start));
-            return -(r_start - memaddr);
+                         paddr_nz(memaddr), paddr_nz((CORE_ADDR)r_start));
+            return (int)(-(r_start - memaddr));
           }
         else
           {
             mutils_debug("First available address near 0x%s is at 0x%s "
                          "(too far; returning 0)\n",
-                         paddr_nz(memaddr), paddr_nz(r_start));
+                         paddr_nz(memaddr), paddr_nz((CORE_ADDR)r_start));
             return 0;
           }
       }
@@ -725,8 +720,8 @@ mach_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr,
       if (r_start > cur_memaddr)
         {
           mutils_debug("Next available region for address at 0x%s is: "
-                       "0x%s\n",
-                       paddr_nz(cur_memaddr), paddr_nz(r_start));
+                       "0x%s\n", paddr_nz(cur_memaddr),
+                       paddr_nz((CORE_ADDR)r_start));
           break;
         }
 
@@ -754,22 +749,25 @@ mach_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr,
 	      else
 		prot_size = (cur_memaddr - r_start);
 
-	      kret = macosx_vm_protect(macosx_status->task, r_start, r_size,
-                                       cur_memaddr, prot_size, new_prot, 0);
+	      kret = macosx_vm_protect(macosx_status->task, r_start,
+                                       r_size, cur_memaddr, prot_size,
+                                       new_prot, 0);
 
 	      if (kret != KERN_SUCCESS)
 		{
 		  mutils_debug("Without COPY failed: %s (0x%lx)\n",
-                               MACH_ERROR_STRING(kret), kret);
-		  kret = macosx_vm_protect(macosx_status->task, r_start, r_size,
-					   cur_memaddr, prot_size,
+                               MACH_ERROR_STRING(kret),
+                               (unsigned long)kret);
+		  kret = macosx_vm_protect(macosx_status->task, r_start,
+                                           r_size, cur_memaddr, prot_size,
 					   (VM_PROT_COPY | new_prot), 0);
 		}
 
 	      if (kret != KERN_SUCCESS)
 		{
 		  mutils_debug("Unable to add write access to region at 0x%s: %s (0x%lx)\n",
-                               paddr_nz(r_start), MACH_ERROR_STRING(kret), kret);
+                               paddr_nz((CORE_ADDR)r_start), MACH_ERROR_STRING(kret),
+                               (unsigned long)kret);
 		  break;
 		}
 	    }
@@ -796,8 +794,8 @@ mach_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr,
         }
       else if ((vm_size_t)cur_len >= pagesize)
         {
-          int max_len = (r_end - cur_memaddr);
-          int op_len = cur_len;
+          size_t max_len = (size_t)(r_end - cur_memaddr);
+          size_t op_len = cur_len;
           if (op_len > max_len)
             {
               op_len = max_len;
@@ -852,7 +850,7 @@ mach_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr,
 	      if (kret != KERN_SUCCESS)
 		{
 		  warning("Unable to restore original permissions for region at 0x%s",
-                          paddr_nz(r_start));
+                          paddr_nz((CORE_ADDR)r_start));
 		}
 	    }
         }
@@ -1014,8 +1012,8 @@ macosx_msg_receive (mach_msg_header_t * msgin, size_t msg_size,
         }
       else
         {
-          mutils_debug ("macosx_msg_receive: returning %s (0x%lx)\n",
-                        MACH_ERROR_STRING (kret), kret);
+          mutils_debug("macosx_msg_receive: returning %s (0x%lx)\n",
+                       MACH_ERROR_STRING(kret), (unsigned long)kret);
         }
     }
 
@@ -1249,25 +1247,25 @@ do_over_unique_frames(stack_logging_record_t record, void *data)
   volatile unsigned int i;
   CORE_ADDR thread;
   volatile int final_return = 0;
-  struct current_record_state *state = (struct current_record_state *) data;
+  struct current_record_state *state = (struct current_record_state *)data;
 
   if (state != NULL)
     {
-      if (STACK_LOGGING_ALLOC_P (record))
+      if (STACK_LOGGING_ALLOC_P(record))
 	{
-	  /* For alloc type events the "argument" field is the size of the allocation. */
-	      if (state->requested_address >= record.address
-		  && state->requested_address < record.address + record.argument)
-		{
-		  /* We need to record the actual address of this allocation so we can
-		     match it up with the deallocation event.  */
-		  state->block_address = record.address;
-
-		}
-	      else
-		return;
+	  /* For alloc type events, the "argument" field is the size of
+           * the allocation: */
+          if ((state->requested_address >= record.address)
+              && (state->requested_address < (record.address + record.argument)))
+            {
+              /* We need to record the actual address of this allocation
+               * so we can match it up with the deallocation event: */
+              state->block_address = (vm_address_t)record.address;
+            }
+          else
+            return;
 	}
-      else if (STACK_LOGGING_DEALLOC_P (record))
+      else if (STACK_LOGGING_DEALLOC_P(record))
 	{
 	  if (record.address != state->block_address)
 	    return;
@@ -1277,17 +1275,17 @@ do_over_unique_frames(stack_logging_record_t record, void *data)
     }
 
 #if HAVE_64_BIT_STACK_LOGGING
-  if (__mach_stack_logging_frames_for_uniqued_stack (macosx_status->task,
-						     record.stack_identifier,
-						     frames, MAX_NUM_FRAMES, &num_frames))
+  if (__mach_stack_logging_frames_for_uniqued_stack(macosx_status->task,
+						    record.stack_identifier,
+						    frames, MAX_NUM_FRAMES, &num_frames))
 #elif HAVE_32_BIT_STACK_LOGGING
-  if (stack_logging_frames_for_uniqued_stack (macosx_status->task,
-					      gdb_malloc_reader,
-					      record.uniqued_stack,
-					      frames, MAX_NUM_FRAMES, &num_frames))
+  if (stack_logging_frames_for_uniqued_stack(macosx_status->task,
+					     gdb_malloc_reader,
+					     record.uniqued_stack,
+					     frames, MAX_NUM_FRAMES, &num_frames))
 #endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
     {
-      warning ("Error running stack_logging_frames_for_uniqued_stack");
+      warning("Error running stack_logging_frames_for_uniqued_stack");
       return;
     }
 
@@ -1298,35 +1296,37 @@ do_over_unique_frames(stack_logging_record_t record, void *data)
      (plus 1 for no apparent reason). The second to the last element seems to
      always be "1" or sometimes "2". We always make the first page unreadable,
      so I will just say if the frame address is < 1024 it cannot be right and elide it... */
-  thread = (CORE_ADDR) (frames[--num_frames] - 1);
+  thread = (CORE_ADDR)(frames[--num_frames] - 1U);
   if (frames[num_frames - 1] <= 1024)
     num_frames--;
 
-  cleanup = make_cleanup_ui_out_tuple_begin_end (uiout, NULL);
+  cleanup = make_cleanup_ui_out_tuple_begin_end(uiout, NULL);
 
-  if (STACK_LOGGING_ALLOC_P (record))
+  if (STACK_LOGGING_ALLOC_P(record))
     {
-      ui_out_field_string (uiout, "record-type", "Alloc");
-      ui_out_text (uiout, ": Block address: ");
-      ui_out_field_core_addr (uiout, "block_address", record.address);
-      ui_out_text (uiout, " length: ");
-      ui_out_field_int (uiout, "length", record.argument);
-      ui_out_text (uiout, "\n");
+      ui_out_field_string(uiout, "record-type", "Alloc");
+      ui_out_text(uiout, ": Block address: ");
+      ui_out_field_core_addr(uiout, "block_address",
+                             (CORE_ADDR)record.address);
+      ui_out_text(uiout, " length: ");
+      ui_out_field_int(uiout, "length", (int)record.argument);
+      ui_out_text(uiout, "\n");
     }
   else
     {
-      ui_out_field_string (uiout, "record-type", "Dealloc");
-      ui_out_text (uiout, ": Block address: ");
-      ui_out_field_core_addr (uiout, "block_address", record.address);
-      ui_out_text (uiout, "\n");
+      ui_out_field_string(uiout, "record-type", "Dealloc");
+      ui_out_text(uiout, ": Block address: ");
+      ui_out_field_core_addr(uiout, "block_address",
+                             (CORE_ADDR)record.address);
+      ui_out_text(uiout, "\n");
       final_return = 1;
     }
 
-  ui_out_text (uiout, "Stack - pthread: ");
-  ui_out_field_fmt (uiout, "pthread", "0x%s", paddr_nz (thread));
-  ui_out_text (uiout, " number of frames: ");
-  ui_out_field_int (uiout, "num_frames", num_frames);
-  ui_out_text (uiout, "\n");
+  ui_out_text(uiout, "Stack - pthread: ");
+  ui_out_field_fmt(uiout, "pthread", "0x%s", paddr_nz(thread));
+  ui_out_text(uiout, " number of frames: ");
+  ui_out_field_int(uiout, "num_frames", num_frames);
+  ui_out_text(uiout, "\n");
 
   for (i = 0U; i < num_frames; i++)
     {
@@ -1344,48 +1344,51 @@ do_over_unique_frames(stack_logging_record_t record, void *data)
       else
 	ui_out_text(uiout, "  ");
 
-      ui_out_field_int (uiout, "level", i);
-      ui_out_text (uiout, ": ");
+      ui_out_field_int(uiout, "level", i);
+      ui_out_text(uiout, ": ");
 
-      ui_out_field_fmt (uiout, "addr", "0x%s", paddr_nz (frames[i]));
+      ui_out_field_fmt(uiout, "addr", "0x%s",
+                       paddr_nz((CORE_ADDR)frames[i]));
 
       /* Since we are going to do pc->symbol, we should raise the load level
        * of the library involved before doing so.  */
 
-      TRY_CATCH (e, RETURN_MASK_ERROR)
+      TRY_CATCH(e, RETURN_MASK_ERROR)
 	{
-	  pc_set_load_state (frames[i], OBJF_SYM_ALL, 1);
+	  pc_set_load_state((CORE_ADDR)frames[i], OBJF_SYM_ALL, 1);
 	}
       if (e.reason != (enum return_reason)NO_ERROR)
 	{
-	  ui_out_text (uiout, "\n");
-	  warning ("Could not raise load level for objfile at pc: 0x%s.", paddr_nz (frames[i]));
+	  ui_out_text(uiout, "\n");
+	  warning("Could not raise load level for objfile at pc: 0x%s.",
+                  paddr_nz((CORE_ADDR)frames[i]));
 	  continue;
 	}
 
       TRY_CATCH(e, RETURN_MASK_ERROR)
 	{
-	  err = find_pc_partial_function_no_inlined(frames[i], &name, NULL, NULL);
+	  err = find_pc_partial_function_no_inlined((CORE_ADDR)frames[i],
+                                                    &name, NULL, NULL);
 	}
       if ((e.reason == (enum return_reason)NO_ERROR) && (err != 0))
 	{
 	  ui_out_text(uiout, " in ");
-	  ui_out_field_string (uiout, "func", name);
+	  ui_out_field_string(uiout, "func", name);
 	}
 
       TRY_CATCH(e, RETURN_MASK_ERROR)
 	{
-	  sal = find_pc_line(frames[i], 0);
+	  sal = find_pc_line((CORE_ADDR)frames[i], 0);
 	}
       if ((e.reason == (enum return_reason)NO_ERROR) && (sal.symtab != 0))
 	{
-	  ui_out_text (uiout, " at ");
-	  ui_out_field_string (uiout, "file", sal.symtab->filename);
-	  ui_out_text (uiout, ":");
-	  ui_out_field_int (uiout, "line", sal.line);
+	  ui_out_text(uiout, " at ");
+	  ui_out_field_string(uiout, "file", sal.symtab->filename);
+	  ui_out_text(uiout, ":");
+	  ui_out_field_int(uiout, "line", sal.line);
 	}
-      ui_out_text (uiout, "\n");
-      do_cleanups (frame_cleanup);
+      ui_out_text(uiout, "\n");
+      do_cleanups(frame_cleanup);
     }
   do_cleanups(cleanup);
   if (final_return)
@@ -1444,14 +1447,14 @@ malloc_history_info_command(char *arg, int from_tty)
   if (strstr(arg, "-exact") == arg)
     {
       exact = 1;
-      arg += sizeof ("-exact") - 1;
+      arg += sizeof("-exact") - 1;
       while (*arg == ' ')
 	arg++;
     }
-  else if (strstr (arg, "-range") == arg)
+  else if (strstr(arg, "-range") == arg)
     {
       exact = 0;
-      arg += sizeof ("-range") - 1;
+      arg += sizeof("-range") - 1;
       while (*arg == ' ')
 	arg++;
     }
@@ -1475,14 +1478,14 @@ malloc_history_info_command(char *arg, int from_tty)
 
   if (exact)
     {
-      passed_addr = addr;
+      passed_addr = (vm_address_t)addr;
       passed_state = NULL;
     }
   else
     {
-      passed_addr = 0;
-      state.requested_address = addr;
-      state.block_address = 0;
+      passed_addr = 0U;
+      state.requested_address = (vm_address_t)addr;
+      state.block_address = 0U;
       passed_state = &state;
     }
 
@@ -1562,7 +1565,7 @@ malloc_history_info_command(char *arg, int from_tty)
 
 #if HAVE_32_BIT_STACK_LOGGING
   /* Remember to reset the memory copy areas.  */
-  free_malloc_history_buffers ();
+  free_malloc_history_buffers();
 #endif /* HAVE_32_BIT_STACK_LOGGING */
   do_cleanups (cleanup);
 

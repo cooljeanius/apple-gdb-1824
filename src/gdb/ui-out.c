@@ -267,7 +267,8 @@ static void uo_field_fmt(struct ui_out *uiout, int fldno, int width,
 static void uo_spaces(struct ui_out *uiout, int numspaces);
 static void uo_text(struct ui_out *uiout, const char *string);
 static void uo_text_fmt(struct ui_out *uiout, const char *format,
-                        va_list args);
+                        va_list args)
+    ATTR_FORMAT(gnu_printf, 2, 0);
 static void uo_message(struct ui_out *uiout, int verbosity,
                        const char *format, va_list args)
      ATTR_FORMAT(printf, 3, 0);

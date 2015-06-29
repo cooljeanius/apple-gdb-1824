@@ -15,7 +15,8 @@ extern int inferior_debug_flag;
 
 struct macosx_inferior_status;
 
-void inferior_debug(int level, const char *fmt, ...);
+void inferior_debug(int level, const char *fmt, ...)
+  ATTR_FORMAT(gnu_printf, 2, 3);
 void macosx_debug_port_info(task_t task, mach_port_t port);
 void macosx_debug_task_port_info(mach_port_t task);
 void macosx_debug_inferior_status(struct macosx_inferior_status *s);

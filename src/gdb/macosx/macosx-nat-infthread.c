@@ -814,23 +814,23 @@ print_thread_info(thread_t tid, int *gdb_thread_id)
   MACH_CHECK_ERROR(kret);
 
   printf_filtered("\tpthread ID: 0x%s\n",
-                  paddr_nz(tident.thread_handle));
+                  paddr_nz((CORE_ADDR)tident.thread_handle));
   printf_filtered("\tsystem-wide unique thread id: 0x%s\n",
-                  paddr_nz(tident.thread_id));
+                  paddr_nz((CORE_ADDR)tident.thread_id));
 
   /* If the pthread_self() value for this thread is 0x0, we have a thread
      that is very early in the setup process (e.g. it is in
-     _pthread_struct_init () or something like that) -- it most likely
+     _pthread_struct_init() or something like that) -- it most likely
      has a bogus dispatch_qaddr value.  Save ourself a couple of
      memory_error()s and just skip this processing.  */
   if (tident.thread_handle != 0)
     {
-      char *queue_name = get_dispatch_queue_name(tident.dispatch_qaddr);
+      char *queue_name = get_dispatch_queue_name((CORE_ADDR)tident.dispatch_qaddr);
       uint32_t queue_flags;
       if (queue_name && (queue_name[0] != '\0'))
         printf_filtered("\tdispatch queue name: \"%s\"\n", queue_name);
 
-      if (get_dispatch_queue_flags(tident.dispatch_qaddr, &queue_flags))
+      if (get_dispatch_queue_flags((CORE_ADDR)tident.dispatch_qaddr, &queue_flags))
         {
           printf_filtered("\tdispatch queue flags: 0x%x", queue_flags);
           /* Constants defined in libdispatch's src/private.h,
@@ -1175,9 +1175,9 @@ macosx_print_thread_details(struct ui_out *uiout, ptid_t ptid)
   MACH_CHECK_ERROR(kret);
 
   ui_out_field_fmt(uiout, "pthread-id", "0x%s",
-                   paddr_nz(tident.thread_handle));
+                   paddr_nz((CORE_ADDR)tident.thread_handle));
   ui_out_field_fmt(uiout, "unique-id", "0x%s",
-                   paddr_nz(tident.thread_id));
+                   paddr_nz((CORE_ADDR)tident.thread_id));
 
   retval = proc_pidinfo(PIDGET(ptid), PROC_PIDTHREADINFO,
                         tident.thread_handle, &pth, sizeof(pth));
@@ -1185,11 +1185,11 @@ macosx_print_thread_details(struct ui_out *uiout, ptid_t ptid)
     ui_out_field_string(uiout, "name", pth.pth_name);
 
   if (tident.thread_handle != 0) {
-      char *queue_name = get_dispatch_queue_name(tident.dispatch_qaddr);
+      char *queue_name = get_dispatch_queue_name((CORE_ADDR)tident.dispatch_qaddr);
       if (queue_name && (queue_name[0] != '\0')) {
           CORE_ADDR struct_addr;
           ui_out_field_string(uiout, "workqueue", queue_name);
-          struct_addr = get_dispatch_queue_addr(tident.dispatch_qaddr);
+          struct_addr = get_dispatch_queue_addr((CORE_ADDR)tident.dispatch_qaddr);
           if (struct_addr != 0)
             ui_out_field_fmt(uiout, "workqueue_addr", "0x%s",
                              paddr_nz(struct_addr));

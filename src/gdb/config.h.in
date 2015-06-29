@@ -236,6 +236,9 @@
 /* Define to 1 if you have the <bits/endian.h> header file. */
 #undef HAVE_BITS_ENDIAN_H
 
+/* Define to 1 if you have the `bsearch' function. */
+#undef HAVE_BSEARCH
+
 /* Define to 1 if you have the `btowc' function. */
 #undef HAVE_BTOWC
 

@@ -97,9 +97,9 @@ call_ptrace(int request, int pid, PTRACE_ARG3_TYPE arg3, int arg4)
   errno = 0;
   ret = ptrace(request, pid, (caddr_t)arg3, arg4);
 
-  inferior_debug(2, "ptrace (%s, %d, %d, %d): %d (%s)\n",
+  inferior_debug(2, "ptrace(%s, %d, %s, %d): %d (%s)\n",
                  ptrace_request_unparse(request),
-                 pid, arg3, arg4, ret,
+                 pid, (caddr_t)arg3, arg4, ret,
                  ((ret != 0) ? strerror(errno) : "no error"));
   return ret;
 }

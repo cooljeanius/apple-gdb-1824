@@ -1413,13 +1413,13 @@ x86_cxx_virtual_override_thunk_trampline (CORE_ADDR pc)
       if (op == 0xe9)
         {
           int64_t off = read_memory_integer(pc + 1, 4);
-          return (pc + 5 + off);
+          return (pc + 5UL + (CORE_ADDR)off);
         }
       /* EB is JMP with a 1-byte relative displacement: */
       if (op == 0xeb)
         {
           int64_t off = read_memory_integer(pc + 1, 1);
-          return (pc + 1 + off);
+          return (pc + 1UL + (CORE_ADDR)off);
         }
       pc += length_of_this_instruction(pc);
     }

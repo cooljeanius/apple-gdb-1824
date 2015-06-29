@@ -87,7 +87,7 @@ extern enum type_check
 type_check;
 
 /* case_mode ==
-   case_mode_auto:   case_sensitivity set upon selection of scope 
+   case_mode_auto:   case_sensitivity set upon selection of scope
    case_mode_manual: case_sensitivity set only by user.  */
 
 extern enum case_mode
@@ -103,7 +103,7 @@ case_mode;
 extern enum array_ordering
   {
     array_row_major, array_column_major
-  } 
+  }
 array_ordering;
 
 
@@ -185,8 +185,8 @@ struct language_defn
 
     /* Given an expression *EXPP created by prefixifying the result of
        la_parser, perform any remaining processing necessary to complete
-       its translation.  *EXPP may change; la_post_parser is responsible 
-       for releasing its previous contents, if necessary.  If 
+       its translation.  *EXPP may change; la_post_parser is responsible
+       for releasing its previous contents, if necessary.  If
        VOID_CONTEXT_P, then no value is expected from the expression.  */
 
     void (*la_post_parser) (struct expression ** expp, int void_context_p);
@@ -307,7 +307,7 @@ extern const struct language_defn *current_language;
 
 extern const struct language_defn *expected_language;
 
-/* language_mode == 
+/* language_mode ==
    language_mode_auto:   current_language automatically set upon selection
    of scope (e.g. stack frame)
    language_mode_manual: current_language set only by user.  */
@@ -318,7 +318,7 @@ extern enum language_mode
   }
 language_mode;
 
-/* These macros define the behaviour of the expression 
+/* These macros define the behaviour of the expression
    evaluator.  */
 
 /* Should we strictly type check expressions? */
@@ -410,53 +410,57 @@ extern int structured_type (struct type *);
 /* FIXME:  Does not appear to be used */
 #define unop_type_check(v,o) binop_type_check((v),NULL,(o))
 
-extern void binop_type_check (struct value *, struct value *, int);
+extern void binop_type_check(struct value *, struct value *, int);
 
 /* Error messages */
 
-extern void op_error (const char *lhs, enum exp_opcode,
-		      const char *rhs);
+extern void op_error(const char *lhs, enum exp_opcode,
+		     const char *rhs);
 
-extern void type_error (const char *, ...) ATTR_FORMAT (printf, 1, 2);
+#ifdef ATTR_FORMAT
+# ifdef printf
+#  undef printf
+# endif /* printf */
+#endif /* ATTR_FORMAT */
 
-extern void range_error (const char *, ...) ATTR_FORMAT (printf, 1, 2);
+extern void type_error(const char *, ...) ATTR_FORMAT(printf, 1, 2);
+
+extern void range_error(const char *, ...) ATTR_FORMAT(printf, 1, 2);
 
 /* Data:  Does this value represent "truth" to the current language?  */
 
-extern int value_true (struct value *);
+extern int value_true(struct value *);
 
-extern struct type *lang_bool_type (void);
+extern struct type *lang_bool_type(void);
 
-/* The type used for Boolean values in the current language. */
-#define LA_BOOL_TYPE lang_bool_type ()
+/* The type used for Boolean values in the current language: */
+#define LA_BOOL_TYPE lang_bool_type()
 
 /* Misc:  The string representing a particular enum language.  */
 
-extern enum language language_enum (char *str);
+extern enum language language_enum(char *str);
 
-extern const struct language_defn *language_def (enum language);
+extern const struct language_defn *language_def(enum language);
 
-extern char *language_str (enum language);
+extern char *language_str(enum language);
 
-/* Add a language to the set known by GDB (at initialization time).  */
+/* Add a language to the set known by GDB (at initialization time): */
+extern void add_language(const struct language_defn *);
 
-extern void add_language (const struct language_defn *);
+extern enum language get_frame_language(void);	/* In stack.c */
 
-extern enum language get_frame_language (void);	/* In stack.c */
+/* Check for a language-specific trampoline: */
+extern CORE_ADDR skip_language_trampoline(CORE_ADDR pc);
 
-/* Check for a language-specific trampoline. */
+/* Return demangled language symbol, or NULL: */
+extern char *language_demangle(const struct language_defn *current_language,
+                               const char *mangled, int options);
 
-extern CORE_ADDR skip_language_trampoline (CORE_ADDR pc);
+/* Return class name from physname, or NULL: */
+extern char *language_class_name_from_physname(const struct language_defn *,
+					       const char *physname);
 
-/* Return demangled language symbol, or NULL.  */
-extern char *language_demangle (const struct language_defn *current_language, 
-				const char *mangled, int options);
-
-/* Return class name from physname, or NULL.  */
-extern char *language_class_name_from_physname (const struct language_defn *,
-					        const char *physname);
-
-/* Splitting strings into words.  */
-extern char *default_word_break_characters (void);
+/* Splitting strings into words: */
+extern char *default_word_break_characters(void);
 
 #endif /* defined (LANGUAGE_H) */

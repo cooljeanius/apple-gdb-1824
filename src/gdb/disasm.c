@@ -34,6 +34,10 @@
    FIXME: We should get rid of all the duplicate code in gdb that does
    the same thing: disassemble_command() and the gdbtk variation. */
 
+/* prototype: */
+static int fprintf_disasm(void *, const char *, ...)
+  ATTR_FORMAT(printf, 2, 3);
+
 /* This Structure is used to store line number information.
    We need a different sort of line table from the normal one cuz we can't
    depend upon implicit line-end pc's for lines to do the

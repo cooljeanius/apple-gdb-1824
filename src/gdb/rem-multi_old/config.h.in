@@ -67,6 +67,10 @@
 /* Define to 1 if you have the `close' function. */
 #undef HAVE_CLOSE
 
+/* Define to 1 if you have the declaration of `basename', and to 0 if you
+   don't. */
+#undef HAVE_DECL_BASENAME
+
 /* Define to 1 if you have the declaration of `ptrace', and to 0 if you don't.
    */
 #undef HAVE_DECL_PTRACE

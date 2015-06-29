@@ -1,4 +1,4 @@
-/* remote-utils.c
+/* gdbserver/remote-utils.c
    Remote utility routines for the remote server for GDB.
    Copyright 1986, 1989, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
    2002, 2003, 2004, 2005

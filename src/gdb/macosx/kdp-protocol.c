@@ -292,77 +292,76 @@ kdp_log_data (kdp_log_function * f,
 }
 
 void
-kdp_log_packet (kdp_log_function * f, kdp_log_level l, const kdp_pkt_t * p)
+kdp_log_packet(kdp_log_function *f, kdp_log_level l, const kdp_pkt_t *p)
 {
   const kdp_hdr_t *h = &p->hdr;
   unsigned int i;
 
-  f (l,
-     "{\n"
-     "  %8s: %s\n"
-     "  %8s: %d\n"
-     "  %8s: %d\n"
-     "  %8s: %d\n",
-     "request", kdp_req_string (h->request),
-     "is_reply", h->is_reply, "seq", h->seq, "key", h->key);
+  f(l,
+    "{\n"
+    "  %8s: %s\n"
+    "  %8s: %d\n"
+    "  %8s: %d\n"
+    "  %8s: %d\n",
+    "request", kdp_req_string(h->request),
+    "is_reply", h->is_reply, "seq", h->seq, "key", h->key);
 
   if (h->is_reply)
     {
-
       switch (h->request)
         {
         case KDP_CONNECT:
-          f (l,
-             "  %8s: \"%s\" (%d)\n",
-             "error", kdp_error_string (p->connect_reply.error),
-             p->connect_reply.error);
+          f(l,
+            "  %8s: \"%s\" (%d)\n",
+            "error", kdp_error_string(p->connect_reply.error),
+            p->connect_reply.error);
           break;
         case KDP_DISCONNECT:
         case KDP_REATTACH:
           break;
         case KDP_HOSTINFO:
-          f (l,
-             "  %8s: %d\n"
-             "  %8s: %d\n"
-             "  %8s: %d\n",
-             "cpu_mask", p->hostinfo_reply.cpu_mask,
-             "type", p->hostinfo_reply.cpu_type,
-             "subtype", p->hostinfo_reply.cpu_subtype);
+          f(l,
+            "  %8s: %d\n"
+            "  %8s: %d\n"
+            "  %8s: %d\n",
+            "cpu_mask", p->hostinfo_reply.cpu_mask,
+            "type", p->hostinfo_reply.cpu_type,
+            "subtype", p->hostinfo_reply.cpu_subtype);
           break;
         case KDP_VERSION:
-          f (l,
-             "  %8s: %d\n"
-             "  %8s: %d\n",
-             "version", p->version_reply.version,
-             "feature", p->version_reply.feature);
+          f(l,
+            "  %8s: %d\n"
+            "  %8s: %d\n",
+            "version", p->version_reply.version,
+            "feature", p->version_reply.feature);
           break;
         case KDP_KERNELVERSION:
-          f (l,
-	     "  %8s: \"%s\"\n", "kernelversion", p->kernelversion_reply.version);
+          f(l,
+	    "  %8s: \"%s\"\n", "kernelversion", p->kernelversion_reply.version);
           break;
         case KDP_REGIONS:
-          f (l, "  %8s: %d\n", "nregions", p->regions_reply.nregions);
+          f(l, "  %8s: %d\n", "nregions", p->regions_reply.nregions);
           for (i = 0; i < p->regions_reply.nregions; i++)
             {
-              f (l,
-                 "            r[%d].addr: %d\n"
-                 "            r[%d].nbytes: %d\n"
-                 "            r[%d].prot: %d\n",
-                 i, p->regions_reply.regions[i].address,
-                 i, p->regions_reply.regions[i].nbytes,
-                 i, p->regions_reply.regions[i].protection);
+              f(l,
+                "            r[%d].addr: %d\n"
+                "            r[%d].nbytes: %lu\n"
+                "            r[%d].prot: %d\n",
+                i, p->regions_reply.regions[i].address,
+                i, p->regions_reply.regions[i].nbytes,
+                i, p->regions_reply.regions[i].protection);
             }
           break;
         case KDP_MAXBYTES:
-          f (l, "  %8s: %d\n", "maxbytes", p->maxbytes_reply.max_bytes);
+          f(l, "  %8s: %lu\n", "maxbytes", p->maxbytes_reply.max_bytes);
           break;
         case KDP_READMEM:
-          f (l,
-             "  %8s: \"%s\" (%d)\n"
-             "  %8s: %d\n",
-             "error", kdp_error_string (p->readmem_reply.error),
-             p->readmem_reply.error, "nbytes", p->readmem_reply.nbytes);
-          kdp_log_data (f, l, p->readmem_reply.data, p->readmem_reply.nbytes);
+          f(l,
+            "  %8s: \"%s\" (%d)\n"
+            "  %8s: %d\n",
+            "error", kdp_error_string(p->readmem_reply.error),
+            p->readmem_reply.error, "nbytes", p->readmem_reply.nbytes);
+          kdp_log_data(f, l, p->readmem_reply.data, p->readmem_reply.nbytes);
           break;
         case KDP_READMEM64:
           f (l,
@@ -385,42 +384,42 @@ kdp_log_packet (kdp_log_function * f, kdp_log_level l, const kdp_pkt_t * p)
              p->writemem64_reply.error);
           break;
         case KDP_READREGS:
-          f (l,
-             "  %8s: \"%s\" (%d)\n"
-             "  %8s: %d\n",
-             "error", kdp_error_string (p->readregs_reply.error),
-             p->readregs_reply.error, "nbytes", p->readregs_reply.nbytes);
-          kdp_log_data (f, l, p->readregs_reply.data,
-                        p->readregs_reply.nbytes);
+          f(l,
+            "  %8s: \"%s\" (%d)\n"
+            "  %8s: %lu\n",
+            "error", kdp_error_string(p->readregs_reply.error),
+            p->readregs_reply.error, "nbytes", p->readregs_reply.nbytes);
+          kdp_log_data(f, l, p->readregs_reply.data,
+                       p->readregs_reply.nbytes);
           break;
         case KDP_WRITEREGS:
-          f (l,
-             "  %8s: \"%s\" (%d)\n",
-             "error", kdp_error_string (p->writeregs_reply.error),
-             p->writeregs_reply.error);
+          f(l,
+            "  %8s: \"%s\" (%d)\n",
+            "error", kdp_error_string(p->writeregs_reply.error),
+            p->writeregs_reply.error);
           break;
         case KDP_LOAD:
-          f (l,
-             "  %8s: \"%s\" (%d)\n",
-             "error", kdp_error_string (p->load_reply.error),
-             p->load_reply.error);
+          f(l,
+            "  %8s: \"%s\" (%d)\n",
+            "error", kdp_error_string(p->load_reply.error),
+            p->load_reply.error);
           break;
         case KDP_IMAGEPATH:
-          f (l, "  %8s: \"%s\"\n", "path", p->imagepath_reply.path);
+          f(l, "  %8s: \"%s\"\n", "path", p->imagepath_reply.path);
           break;
         case KDP_BREAKPOINT_SET:
         case KDP_BREAKPOINT_REMOVE:
-          f (l,
-             "  %8s: \"%s\" (%d)\n",
-             "error", kdp_error_string (p->breakpoint_reply.error),
-             p->breakpoint_reply.error);
+          f(l,
+            "  %8s: \"%s\" (%d)\n",
+            "error", kdp_error_string(p->breakpoint_reply.error),
+            p->breakpoint_reply.error);
           break;
         case KDP_BREAKPOINT64_SET:
         case KDP_BREAKPOINT64_REMOVE:
-          f (l,
-             "  %8s: \"%s\" (%d)\n",
-             "error", kdp_error_string (p->breakpoint64_reply.error),
-             p->breakpoint64_reply.error);
+          f(l,
+            "  %8s: \"%s\" (%d)\n",
+            "error", kdp_error_string(p->breakpoint64_reply.error),
+            p->breakpoint64_reply.error);
           break;
         case KDP_SUSPEND:
         case KDP_RESUMECPUS:
@@ -434,11 +433,9 @@ kdp_log_packet (kdp_log_function * f, kdp_log_level l, const kdp_pkt_t * p)
                   catch this value and ignore it.  */
           break;
         }
-
     }
   else
     {
-
       switch (h->request)
         {
         case KDP_CONNECT:
@@ -467,73 +464,74 @@ kdp_log_packet (kdp_log_function * f, kdp_log_level l, const kdp_pkt_t * p)
         case KDP_MAXBYTES:
           break;
         case KDP_READMEM:
-          f (l,
-             "  %8s: 0x%s\n"
-             "  %8s: %d\n",
-             "addr", paddr_nz (p->readmem_req.address),
-             "nbytes", p->readmem_req.nbytes);
+          f(l,
+            "  %8s: 0x%s\n"
+            "  %8s: %d\n",
+            "addr", paddr_nz(p->readmem_req.address),
+            "nbytes", p->readmem_req.nbytes);
           break;
         case KDP_READMEM64:
-          f (l,
-             "  %8s: 0x%s\n"
-             "  %8s: %d\n",
-             "addr", paddr_nz (p->readmem64_req.address),
-             "nbytes", p->readmem64_req.nbytes);
+          f(l,
+            "  %8s: 0x%s\n"
+            "  %8s: %d\n",
+            "addr", paddr_nz((CORE_ADDR)p->readmem64_req.address),
+            "nbytes", p->readmem64_req.nbytes);
           break;
         case KDP_WRITEMEM:
-          f (l,
-             "  %8s: 0x%s\n"
-             "  %8s: %d\n",
-             "addr", paddr_nz (p->writemem_req.address),
-             "nbytes", p->writemem_req.nbytes);
-          kdp_log_data (f, l, p->writemem_req.data, p->writemem_req.nbytes);
+          f(l,
+            "  %8s: 0x%s\n"
+            "  %8s: %d\n",
+            "addr", paddr_nz(p->writemem_req.address),
+            "nbytes", p->writemem_req.nbytes);
+          kdp_log_data(f, l, p->writemem_req.data, p->writemem_req.nbytes);
           break;
         case KDP_WRITEMEM64:
-          f (l,
-             "  %8s: 0x%s\n"
-             "  %8s: %d\n",
-             "addr", paddr_nz (p->writemem64_req.address),
-             "nbytes", p->writemem64_req.nbytes);
-          kdp_log_data (f, l, p->writemem64_req.data, p->writemem64_req.nbytes);
+          f(l,
+            "  %8s: 0x%s\n"
+            "  %8s: %d\n",
+            "addr", paddr_nz((CORE_ADDR)p->writemem64_req.address),
+            "nbytes", p->writemem64_req.nbytes);
+          kdp_log_data(f, l, p->writemem64_req.data, p->writemem64_req.nbytes);
           break;
         case KDP_BREAKPOINT_SET:
         case KDP_BREAKPOINT_REMOVE:
-          f (l,
-             "  %8s: 0x%s\n",
-             "addr", paddr_nz (p->breakpoint_req.address));
+          f(l,
+            "  %8s: 0x%s\n",
+            "addr", paddr_nz(p->breakpoint_req.address));
           break;
         case KDP_BREAKPOINT64_SET:
         case KDP_BREAKPOINT64_REMOVE:
-          f (l,
-             "  %8s: 0x%s\n",
-             "addr", paddr_nz (p->breakpoint64_req.address));
+          f(l,
+            "  %8s: 0x%s\n",
+            "addr", paddr_nz((CORE_ADDR)p->breakpoint64_req.address));
           break;
         case KDP_READREGS:
-          f (l,
-             "  %8s: 0x%lx\n"
-             "  %8s: 0x%lx\n",
-             "cpu", (unsigned long) p->readregs_req.cpu,
-             "flavor", (unsigned long) p->readregs_req.flavor);
+          f(l,
+            "  %8s: 0x%lx\n"
+            "  %8s: 0x%lx\n",
+            "cpu", (unsigned long)p->readregs_req.cpu,
+            "flavor", (unsigned long)p->readregs_req.flavor);
           break;
         case KDP_WRITEREGS:
-          f (l,
-             "  %8s: 0x%lx\n"
-             "  %8s: 0x%lx\n"
-             "  %8s: 0x%lx\n",
-             "cpu", (unsigned long) p->writeregs_req.cpu,
-             "flavor", (unsigned long) p->writeregs_req.flavor,
-             "nbytes", (unsigned long) p->writeregs_req.nbytes);
-          kdp_log_data (f, l, p->writeregs_req.data, p->writeregs_req.nbytes);
+          f(l,
+            "  %8s: 0x%lx\n"
+            "  %8s: 0x%lx\n"
+            "  %8s: 0x%lx\n",
+            "cpu", (unsigned long)p->writeregs_req.cpu,
+            "flavor", (unsigned long)p->writeregs_req.flavor,
+            "nbytes", (unsigned long)p->writeregs_req.nbytes);
+          kdp_log_data(f, l, p->writeregs_req.data, p->writeregs_req.nbytes);
           break;
         case KDP_LOAD:
-          f (l, "  %8s: \"%s\"\n", "file", p->load_req.file_args);
+          f(l, "  %8s: \"%s\"\n", "file", p->load_req.file_args);
           break;
         case KDP_IMAGEPATH:
           break;
         case KDP_SUSPEND:
           break;
         case KDP_RESUMECPUS:
-          f (l, "  %8s: 0x%lx\n", "mask", p->resumecpus_req.cpu_mask);
+          f(l, "  %8s: 0x%lx\n", "mask",
+            (unsigned long)p->resumecpus_req.cpu_mask);
           break;
         case KDP_EXCEPTION:
           break;
@@ -770,10 +768,10 @@ kdp_marshal (kdp_connection *c,
             unsigned int reglen = p->writeregs_req.nbytes;
             if ((reglen % KDP_REGISTER_SIZE) != 0)
               {
-                c->logger (KDP_LOG_ERROR,
-                           "kdp_marshal: length of register data (%u bytes) "
-                           "is not a multiple of register size (%u bytes)\n",
-                           p->writeregs_req.nbytes, KDP_REGISTER_SIZE);
+                c->logger(KDP_LOG_ERROR,
+                          "kdp_marshal: length of register data (%lu bytes) "
+                          "is not a multiple of register size (%u bytes)\n",
+                          p->writeregs_req.nbytes, KDP_REGISTER_SIZE);
                 return RR_IP_ERROR;
               }
             len = reglen + 16;
@@ -839,9 +837,9 @@ kdp_marshal (kdp_connection *c,
 
   if (len < 8)
     {
-      c->logger (KDP_LOG_ERROR,
-                 "kdp_marshal: length of packet (%lu) is less than 8 "
-                 "(an error must have occurred)\n");
+      c->logger(KDP_LOG_ERROR,
+                "kdp_marshal: length of packet (%lu) is less than 8 "
+                "(an error must have occurred)\n", len);
       return RR_RESOURCE;
     }
 

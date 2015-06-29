@@ -641,13 +641,21 @@ bfd_assert(const char *, int);
 
 extern void _bfd_abort(const char *, int, const char *) ATTRIBUTE_NORETURN;
 
+/* We use __extension__ here to suppress -pedantic warnings about GCC
+ * extensions.  This feature did NOT work properly before gcc 2.8: */
+#if !defined(__extension__) && defined(GCC_VERSION)
+# if (GCC_VERSION < 2008)
+#  define __extension__
+# endif /* gcc pre-2.8 */
+#endif /* !__extension__ && GCC_VERSION */
+
 /* if gcc >= 2.6, we can give a function name, too: */
 #if (__GNUC__ < 2) || ((__GNUC__ == 2) && (__GNUC_MINOR__ < 6))
 # define __PRETTY_FUNCTION__  ((char *)NULL)
 #endif /* gcc pre-2.6 */
 
 #undef abort
-#define abort() _bfd_abort(__FILE__, __LINE__, __PRETTY_FUNCTION__)
+#define abort() _bfd_abort(__FILE__, __LINE__, __extension__ __PRETTY_FUNCTION__)
 
 /* Manipulate a system FILE but using BFD's "file_ptr", rather than
  * the system "off_t" or "off64_t", as the offset.  */

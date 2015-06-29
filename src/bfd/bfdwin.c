@@ -107,8 +107,8 @@ bfd_free_window(bfd_window *windowp)
   i->refcount--;
   if (debug_windows)
     fprintf(stderr, "freeing window @%p<%p,%lx,%p>\n",
-	    windowp, windowp->data, (unsigned long)windowp->size,
-            windowp->i);
+	    (void *)windowp, windowp->data, (unsigned long)windowp->size,
+            (void *)windowp->i);
   if (i->refcount > 0)
     return;
 
@@ -156,8 +156,9 @@ _bfd_get_file_window_mmap(bfd *abfd, ufile_ptr offset, bfd_size_type size,
   if (debug_windows)
     fprintf(stderr,
             "bfd_get_file_window (%p, %6ld, %6ld, %p<%p,%lx,%p>, %d)",
-            abfd, (long)offset, (long)size, windowp, windowp->data,
-            (unsigned long)windowp->size, windowp->i, writable);
+            (void *)abfd, (long)offset, (long)size, (void *)windowp,
+            windowp->data, (unsigned long)windowp->size,
+            (void *)windowp->i, writable);
 
   /* Make sure we know the page size, so we can be friendly to mmap: */
   if (pagesize == 0)
@@ -348,8 +349,9 @@ bfd_get_file_window(bfd *abfd, ufile_ptr offset, bfd_size_type size,
   if (debug_windows)
     fprintf(stderr,
             "bfd_get_file_window (%p, %6ld, %6ld, %p<%p,%lx,%p>, %d)",
-            abfd, (long)offset, (long)size, windowp, windowp->data,
-            (unsigned long)windowp->size, windowp->i, writable);
+            (void *)abfd, (long)offset, (long)size, (void *)windowp,
+            windowp->data, (unsigned long)windowp->size,
+            (void *)windowp->i, writable);
 
   BFD_ASSERT(i == NULL);
 

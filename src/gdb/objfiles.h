@@ -714,11 +714,16 @@ enum objfile_matches_name_return
     objfile_match_base
   };
 
-enum objfile_matches_name_return objfile_matches_name (struct objfile *objfile, char *name);
-struct cleanup *make_cleanup_restrict_to_objfile (struct objfile *objfile);
+enum objfile_matches_name_return objfile_matches_name(struct objfile *objfile, char *name);
+void do_cleanup_restrict_to_objfile(void *arg);
+struct cleanup *make_cleanup_restrict_to_objfile(struct objfile *objfile);
 /* APPLE LOCAL radar 5273932  */
-struct cleanup *make_cleanup_restrict_to_objfile_by_name (char *objfile_name);
-struct cleanup *make_cleanup_restrict_to_shlib (char *shlib);
+struct cleanup *make_cleanup_restrict_to_objfile_by_name(char *objfile_name);
+struct cleanup *make_cleanup_restrict_to_objfile_list(struct objfile_list *objlist);
+void push_front_restrict_list(struct objfile_list **requested_list_head,
+                              struct objfile *objfile);
+void clear_restrict_list(struct objfile_list **requested_list_head);
+struct cleanup *make_cleanup_restrict_to_shlib(char *shlib);
 
 /* APPLE LOCAL: These manage & look up obj_sections in the ordered_sections
    array.  */

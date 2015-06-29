@@ -1,4 +1,4 @@
-/* remote_inflow.c
+/* rem-multi_old/remote_inflow.c
  * Low level interface to ptrace, for GDB when running under Unix.
  * Copyright (C) 1986, 1987 Free Software Foundation, Inc.
  */
@@ -35,7 +35,7 @@
 /* Definitions: */
 #if !defined(REGISTER_BYTES) && !defined(HAVE_DECL_REGISTER_BYTES)
 /* arbitrarily made-up default: */
-# define REGISTER_BYTES 0
+# define REGISTER_BYTES 4
 #endif /* !REGISTER_BYTES && !HAVE_DECL_REGISTER_BYTES */
 
 #ifndef MAX_REGISTER_RAW_SIZE
@@ -163,7 +163,7 @@ CORE_ADDR read_register(int regno);
 int store_inferior_registers(int regno);
 int have_inferior_p(void);
 void fetch_inferior_registers(void);
-int write_inferior_memory(CORE_ADDR memaddr, char *myaddr, int len);
+int write_inferior_memory(CORE_ADDR memaddr, char *myaddr, size_t len);
 
 /* Nonzero if we are debugging an attached outside process
  * rather than an inferior. */
@@ -171,7 +171,7 @@ int write_inferior_memory(CORE_ADDR memaddr, char *myaddr, int len);
 /* Start an inferior process and returns its pid.
  * ALLARGS is a vector of program-name and args.
  * ENV is the environment vector to pass.  */
-int create_inferior (char ** allargs, char ** env)
+int create_inferior(char ** allargs, char ** env)
 {
   int pid;
 
@@ -346,22 +346,22 @@ int store_inferior_registers(int regno)
 
 /* Copy LEN bytes from inferior's memory starting at MEMADDR
  * to debugger memory starting at MYADDR: */
-int read_inferior_memory(CORE_ADDR memaddr, char *myaddr, int len)
+int read_inferior_memory(CORE_ADDR memaddr, char *myaddr, size_t len)
 {
   register int i;
   register CORE_ADDR addr;
-  register int count;
+  register size_t count;
   register int *buffer;
 
   /* Round starting address down to longword boundary: */
-  addr = (memaddr & - sizeof(int));
+  addr = (memaddr & -sizeof(int));
   /* Round ending address up; get number of longwords that makes: */
-  count = ((((memaddr + len) - addr) + sizeof(int) - 1) / sizeof(int));
+  count = (size_t)((((memaddr + len) - addr) + sizeof(int) - 1UL) / sizeof(int));
   /* Allocate buffer of that many longwords: */
   buffer = (int *)alloca(count * sizeof(int));
 
-  /* Read all the longwords */
-  for ((i = 0); (i < count); i++, (addr += sizeof(int))) {
+  /* Read all the longwords: */
+  for (i = 0; i < (int)count; i++, addr += sizeof(int)) {
     buffer[i] = ptrace(1, inferior_pid, (PTRACE_TYPE_ARG3)(intptr_t)addr, 0);
   }
 
@@ -374,17 +374,17 @@ int read_inferior_memory(CORE_ADDR memaddr, char *myaddr, int len)
 /* Copy LEN bytes of data from debugger memory at MYADDR to inferior's
  * memory at MEMADDR. On failure (cannot write the inferior) returns
  * the value of errno. */
-int write_inferior_memory(CORE_ADDR memaddr, char *myaddr, int len)
+int write_inferior_memory(CORE_ADDR memaddr, char *myaddr, size_t len)
 {
   register int i;
   register CORE_ADDR addr;
-  register int count;
+  register size_t count;
   register int *buffer;
 
   /* Round starting address down to longword boundary: */
-  addr = (memaddr & - sizeof(int));
+  addr = (memaddr & -sizeof(int));
   /* Round ending address up; get number of longwords that makes: */
-  count = ((((memaddr + len) - addr) + sizeof(int) - 1) / sizeof(int));
+  count = (size_t)((((memaddr + len) - addr) + sizeof(int) - 1UL) / sizeof(int));
   /* Allocate buffer of that many longwords: */
   buffer = (int *)alloca(count * sizeof(int));
 
@@ -394,14 +394,14 @@ int write_inferior_memory(CORE_ADDR memaddr, char *myaddr, int len)
   if (count > 1) {
     buffer[(count - 1)] = ptrace(1, inferior_pid,
                                  ((PTRACE_TYPE_ARG3)
-                                  (intptr_t)(addr + (count - 1) * sizeof(int))), 0);
+                                  (intptr_t)(addr + (count - 1UL) * sizeof(int))), 0);
   }
 
   /* Copy data to be written over corresponding part of buffer: */
   bcopy(myaddr, (char *)buffer + (memaddr & (sizeof(int) - 1)), len);
 
   /* Write the entire buffer: */
-  for ((i = 0); (i < count); i++, (addr += sizeof(int))) {
+  for (i = 0; i < (int)count; i++, addr += sizeof(int)) {
       errno = 0;
       ptrace(4, inferior_pid, (PTRACE_TYPE_ARG3)(intptr_t)addr, buffer[i]);
       if (errno) {
@@ -426,7 +426,7 @@ void try_writing_regs_command(void)
   for ((i = 0); (i < 18); i ++) {
       QUIT;
       errno = 0;
-      value = read_register(i);
+      value = (int)read_register(i);
       write_register(i, value);
       if (errno == 0) {
         printf(" Succeeded with register %d; value 0x%x (%d).\n",
@@ -447,7 +447,7 @@ void initialize(void)
 CORE_ADDR read_register(int regno)
 {
   /* This loses when (REGISTER_RAW_SIZE(regno) != sizeof(int)): */
-  return *(int *)&registers[REGISTER_BYTE(regno)];
+  return (CORE_ADDR)(*(int *)&registers[REGISTER_BYTE(regno)]);
 }
 
 /* Store VALUE in the register number REGNO, regarded as an integer: */

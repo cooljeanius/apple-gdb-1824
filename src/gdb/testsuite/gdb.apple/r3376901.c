@@ -1,4 +1,4 @@
-main ()
+int main ()
 {
 
   foo ();
@@ -22,7 +22,7 @@ main ()
 
 
 
-foo ()
+int foo ()
 {
    bar ();
 }
@@ -49,7 +49,7 @@ foo ()
 
 
 
-bar ()
+int bar ()
 {
 
 }

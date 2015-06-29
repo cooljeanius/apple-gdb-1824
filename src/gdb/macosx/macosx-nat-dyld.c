@@ -596,7 +596,7 @@ dyld_starts_here_p(mach_vm_address_t addr)
       mach vm region calls unless we add something special to gdbserver.
       We will try just reading memory  */
   if (target_is_remote())
-    return dyld_starts_here_in_memory(addr);
+    return dyld_starts_here_in_memory((CORE_ADDR)addr);
 
 #if defined(NM_NEXTSTEP)
   address = addr;
@@ -838,7 +838,7 @@ macosx_locate_dyld_via_taskinfo(macosx_dyld_thread_status *s)
               || (task_dyld_info.all_image_info_addr == 0)
               || (task_dyld_info.all_image_info_size == 0))
             return 0;
-          all_image_info_addr = task_dyld_info.all_image_info_addr;
+          all_image_info_addr = (CORE_ADDR)task_dyld_info.all_image_info_addr;
 #else
            return 0;
 #endif /* NM_NEXTSTEP */
@@ -915,16 +915,16 @@ macosx_locate_dyld_via_taskinfo(macosx_dyld_thread_status *s)
    as a hint for where to find dyld. */
 
 static int
-macosx_locate_dyld (CORE_ADDR *value, CORE_ADDR hint)
+macosx_locate_dyld(CORE_ADDR *value, CORE_ADDR hint)
 {
   /* If we have remote Mac OS X target, we do NOT support alternate
      dyld versions when remote debugging. If we ever need to
      support alternate dyld versions remotely, we will need to
      add the region-searching functionality to gdbserver and
      create a custom command to access the results.  */
-  if (target_is_remote ())
+  if (target_is_remote())
     {
-      if (hint != INVALID_ADDRESS && dyld_starts_here_p (hint))
+      if ((hint != INVALID_ADDRESS) && dyld_starts_here_p(hint))
         {
           *value = hint;
           return 1;
@@ -958,7 +958,7 @@ macosx_locate_dyld (CORE_ADDR *value, CORE_ADDR hint)
 
       if (dyld_starts_here_p(test_addr))
         {
-          *value = test_addr;
+          *value = (CORE_ADDR)test_addr;
           return 1;
         }
 

@@ -792,8 +792,8 @@ ihex_write_object_contents(bfd *abfd)
 		  BFD_ASSERT(extbase == 0);
 
 		  segbase = where & 0xf0000;
-		  addr[0] = (bfd_byte)(segbase >> 12) & 0xff;
-		  addr[1] = (bfd_byte)(segbase >> 4) & 0xff;
+		  addr[0] = (bfd_byte)((segbase >> 12) & 0xff);
+		  addr[1] = (bfd_byte)((segbase >> 4) & 0xff);
 		  if (! ihex_write_record(abfd, (size_t)2UL, 0U, 2U, addr))
 		    return FALSE;
 		}
@@ -827,8 +827,8 @@ ihex_write_object_contents(bfd *abfd)
 		      bfd_set_error(bfd_error_bad_value);
 		      return FALSE;
 		    }
-		  addr[0] = (bfd_byte)(extbase >> 24) & 0xff;
-		  addr[1] = (bfd_byte)(extbase >> 16) & 0xff;
+		  addr[0] = (bfd_byte)((extbase >> 24) & 0xff);
+		  addr[1] = (bfd_byte)((extbase >> 16) & 0xff);
 		  if (! ihex_write_record(abfd, (size_t)2UL, 0U, 4U, addr))
 		    return FALSE;
 		}
@@ -858,19 +858,19 @@ ihex_write_object_contents(bfd *abfd)
 
       if (start <= 0xfffff)
 	{
-	  startbuf[0] = (bfd_byte)((start & 0xf0000) >> 12) & 0xff;
+	  startbuf[0] = (bfd_byte)(((start & 0xf0000) >> 12) & 0xff);
 	  startbuf[1] = 0;
-	  startbuf[2] = (bfd_byte)(start >> 8) & 0xff;
-	  startbuf[3] = (bfd_byte)start & 0xff;
+	  startbuf[2] = (bfd_byte)((start >> 8) & 0xff);
+	  startbuf[3] = (bfd_byte)(start & 0xff);
 	  if (! ihex_write_record(abfd, (size_t)4UL, 0U, 3U, startbuf))
 	    return FALSE;
 	}
       else
 	{
-	  startbuf[0] = (bfd_byte)(start >> 24) & 0xff;
-	  startbuf[1] = (bfd_byte)(start >> 16) & 0xff;
-	  startbuf[2] = (bfd_byte)(start >> 8) & 0xff;
-	  startbuf[3] = (bfd_byte)start & 0xff;
+	  startbuf[0] = (bfd_byte)((start >> 24) & 0xff);
+	  startbuf[1] = (bfd_byte)((start >> 16) & 0xff);
+	  startbuf[2] = (bfd_byte)((start >> 8) & 0xff);
+	  startbuf[3] = (bfd_byte)(start & 0xff);
 	  if (! ihex_write_record(abfd, (size_t)4UL, 0U, 5U, startbuf))
 	    return FALSE;
 	}

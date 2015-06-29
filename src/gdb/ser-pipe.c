@@ -142,7 +142,7 @@ pipe_close(struct serial *scb)
     }
 }
 
-static struct serial_ops pipe_ops; /* FIXME: use? */
+static struct serial_ops pipe_ops ATTRIBUTE_USED;
 
 void
 _initialize_ser_pipe(void)

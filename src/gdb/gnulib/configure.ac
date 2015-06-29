@@ -62,6 +62,12 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   AC_SUBST([TARGET_ARCHITECTURE])
 fi
 
+m4_ifdef([BISON_I18N],[
+  if test "x${USE_NLS}" = "x"; then
+    test -z "${USE_NLS}" && export USE_NLS="no"
+  fi
+])dnl
+
 AC_MSG_NOTICE([initializing gnulib for real now])
 gl_INIT
 AC_MSG_NOTICE([doing some extra gnulib initialization checks])
@@ -104,6 +110,8 @@ m4_ifdef([AM_PROG_AR],[
 AM_PROG_AS
 AC_PROG_CXXCPP
 AC_REQUIRE_GREPS dnl# (just in case)
+
+AC_PROG_YACC
 
 # Check for the 'make' the user wants to use:
 AC_CHECK_PROGS([MAKE],[make gmake gnumake remake])
@@ -341,8 +349,9 @@ fi
 AC_FUNC_STRNLEN dnl# (might create libobj)
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([getcwd isascii iswprint localeconv memset putenv re_comp \
-                regcomp rmdir setlocale stpcpy strchr strcmp strcspn \
-                strerror strndup strpbrk strrchr strspn strstr tzset])dnl
+                regcomp rmdir setlocale stpcpy strcasecmp strchr strcmp \
+                strcspn strerror strncasecmp strndup strpbrk strrchr \
+                strspn strstr tzset])dnl
   ## dummies to keep autoscan happy:
 if test "x${ac_cv_func_atexit}" = "x"; then
   test -z "${ac_cv_func_atexit}"

@@ -638,6 +638,13 @@ make_cvr_type(int cnst, int voltl, int restrct, struct type *type,
           return builtin_type_error;
         }
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Waddress"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
       /* TYPE and *TYPEPTR must be in the same objfile.  We can't have
 	 a C-V variant chain that threads across objfiles: if one
 	 objfile gets freed, then the other has a broken C-V chain.
@@ -665,6 +672,13 @@ make_cvr_type(int cnst, int voltl, int restrct, struct type *type,
           && !TYPE_STUB(*typeptr) && !TYPE_IS_OPAQUE(*typeptr))
         return builtin_type_error;
 #endif /* gdb_assert && !__APPLE__ */
+
+      /* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
     }
 
   ntype = make_qualified_type(type, new_flags, typeptr ? *typeptr : NULL);
@@ -1677,9 +1691,16 @@ check_typedef (struct type *type)
       type = TYPE_TARGET_TYPE (type);
     }
 
-  is_const = TYPE_CONST (type);
-  is_volatile = TYPE_VOLATILE (type);
-  is_restrict= TYPE_RESTRICT (type);
+  is_const = TYPE_CONST(type);
+  is_volatile = TYPE_VOLATILE(type);
+  is_restrict= TYPE_RESTRICT(type);
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Waddress"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
   /* If this is a struct/class/union with no fields, then check whether a
      full definition exists somewhere else.  This is for systems where a
@@ -1709,16 +1730,16 @@ check_typedef (struct type *type)
 	     objfile is pointless, too, since you'll have to move over any
 	     other types NEWTYPE refers to, which could be an unbounded
 	     amount of stuff.  */
-	  if (TYPE_OBJFILE (newtype) == TYPE_OBJFILE (type))
-	    make_cvr_type (is_const, is_volatile, is_restrict, newtype, &type);
+	  if (TYPE_OBJFILE(newtype) == TYPE_OBJFILE(type))
+	    make_cvr_type(is_const, is_volatile, is_restrict, newtype, &type);
 	  else
 	    type = newtype;
 	}
     }
   /* Otherwise, rely on the stub flag being set for opaque/stubbed types */
-  else if (TYPE_STUB (type) && !currently_reading_symtab)
+  else if (TYPE_STUB(type) && !currently_reading_symtab)
     {
-      char *name = type_name_no_tag (type);
+      char *name = type_name_no_tag(type);
       /* FIXME: shouldn't we separately check the TYPE_NAME and the
          TYPE_TAG_NAME, and look in STRUCT_DOMAIN and/or VAR_DOMAIN
          as appropriate?  (this code was written before TYPE_NAME and
@@ -1726,26 +1747,36 @@ check_typedef (struct type *type)
       struct symbol *sym;
       if (name == NULL)
 	{
-	  stub_noname_complaint ();
+	  stub_noname_complaint();
 	  return type;
 	}
-      sym = lookup_symbol (name, 0, STRUCT_DOMAIN, 0, (struct symtab **) NULL);
+      sym = lookup_symbol(name, 0, STRUCT_DOMAIN, 0,
+                          (struct symtab **)NULL);
       if (sym)
         {
-          if (TYPE_OBJFILE (type) == TYPE_OBJFILE (SYMBOL_TYPE (sym)))
-            make_cvr_type (is_const, is_volatile, is_restrict, SYMBOL_TYPE (sym), &type);
+          if (TYPE_OBJFILE(type) == TYPE_OBJFILE (SYMBOL_TYPE(sym)))
+            make_cvr_type(is_const, is_volatile, is_restrict,
+                          SYMBOL_TYPE(sym), &type);
           else
-            type = SYMBOL_TYPE (sym);
+            type = SYMBOL_TYPE(sym);
         }
     }
 
-  if (TYPE_TARGET_STUB (type))
+  /* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
+  if (TYPE_TARGET_STUB(type))
     {
       struct type *range_type;
-      struct type *target_type = check_typedef (TYPE_TARGET_TYPE (type));
+      struct type *target_type = check_typedef(TYPE_TARGET_TYPE(type));
 
-      if (TYPE_STUB (target_type) || TYPE_TARGET_STUB (target_type))
+      if (TYPE_STUB(target_type) || TYPE_TARGET_STUB(target_type))
 	{
+          ; /* ??? */
 	}
       else if (TYPE_CODE (type) == TYPE_CODE_ARRAY
 	       && TYPE_NFIELDS (type) == 1
@@ -3808,6 +3839,13 @@ gdbtypes_post_init (struct gdbarch *gdbarch)
 }
 
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wdeclaration-after-statement"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* APPLE LOCAL BEGIN: Helper functions for easily building bitfield
    built in types.
 
@@ -3903,6 +3941,13 @@ build_builtin_bitfield(const char *name, uint32_t size,
   TYPE_LENGTH_ASSIGN(t) = size;
   return t;
 }
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* APPLE LOCAL: closure dynamic type  */
 /* Note, in most functions I'm calling these "closures" not

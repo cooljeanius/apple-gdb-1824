@@ -38,6 +38,9 @@ nodist_noinst_DATA = @MAINT@ configure.scan
 configure.scan:
 	autoscan || touch $@
 
+pdf-local:
+.PHONY: pdf-local
+
 ##TODO: figure out automake version in which am__post_remove_distdir was
 ## introduced:
 distclean-local:

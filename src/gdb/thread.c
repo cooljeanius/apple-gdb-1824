@@ -98,6 +98,15 @@ delete_step_resume_breakpoint (void *arg)
     }
 }
 
+/* FIXME: need to rename some struct fields that currently live in headers,
+ * and deal with all of the resulting fallout, before removing this: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 static void
 free_thread(struct thread_info *tp)
 {
@@ -113,6 +122,13 @@ free_thread(struct thread_info *tp)
 
   xfree(tp);
 }
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 void
 init_thread_list(void)
@@ -525,7 +541,7 @@ info_threads_command(char *arg, int from_tty)
           if (longest_threadname > 0UL)
             {
               ui_out_text_fmt(uiout, "%-*s",
-                              (longest_threadname + 2UL), "");
+                              (int)(longest_threadname + 2UL), "");
               ui_out_text(uiout, " ");
             }
        }

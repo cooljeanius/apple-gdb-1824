@@ -34,6 +34,11 @@ C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_CFLAGS = $(C_ARCHFLAGS) -ggdb -fno-strict-aliasing -std=gnu99 -Wall \
 -Wextra -Wold-style-definition -Wwrite-strings -Wformat=2 \
 -Wmissing-include-dirs @MAINT@ -Wstrict-prototypes -Wnested-externs
+## put these in an unused variable, just to record what I tried:
+AM_EXTRA_WARN_CFLAGS = -Wmissing-format-attribute -Wc++-compat \
+-Wmissing-parameter-type -Wundef -Wshadow -Wold-style-declaration \
+-Wc99-c11-compat -pedantic -Wfloat-conversion -Wsign-conversion \
+-Wmisleading-indentation
 REMOTE_CFLAGS_COMBINED = ${AM_CPPFLAGS} ${DEFS} ${AM_CFLAGS}
 AM_LDFLAGS = -L. -L.. $(C_ARCHFLAGS)
 CC = @CC@
@@ -66,6 +71,9 @@ prog: $(SERVER) @MAINT@ Remote_Makefile
 	  echo "$@ (i.e. 'serve') is already good to go."; \
 	fi
 .PHONY: prog
+
+pdf-local:
+.PHONY: pdf-local
 
 clean-local:
 	rm -f $(AM_V_v) $(SERVER) serve prog

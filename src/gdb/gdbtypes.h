@@ -910,6 +910,13 @@ extern void allocate_cplus_struct_type (struct type *);
 
 /* C++ */
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Waddress"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 #define TYPE_VPTR_BASETYPE(thistype) TYPE_MAIN_TYPE(thistype)->vptr_basetype
 #define TYPE_DOMAIN_TYPE(thistype) TYPE_MAIN_TYPE(thistype)->vptr_basetype
 #define TYPE_VPTR_FIELDNO(thistype) TYPE_MAIN_TYPE(thistype)->vptr_fieldno
@@ -1052,6 +1059,13 @@ extern void allocate_cplus_struct_type (struct type *);
                                    (TYPE_CODE(thistype) == TYPE_CODE_UNION))        && \
                                   ((TYPE_NFIELDS(thistype) == 0) && (TYPE_LENGTH(thistype) == 0)) && \
                                   (TYPE_CPLUS_SPECIFIC_NONULL(thistype) && (TYPE_NFN_FIELDS(thistype) == 0)))
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 struct builtin_type
 {

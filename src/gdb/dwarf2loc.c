@@ -41,6 +41,10 @@
 
 #include "gdb_string.h"
 
+#if defined(TM_NEXTSTEP) && !defined(__GDB_MACOSX_TDEP_H__)
+# include "macosx-tdep.h"
+#endif /* TM_NEXTSTEP && !__GDB_MACOSX_TDEP_H__ */
+
 #ifndef DWARF2_REG_TO_REGNUM
 # define DWARF2_REG_TO_REGNUM(REG) (REG)
 #endif /* !DWARF2_REG_TO_REGNUM */
@@ -140,24 +144,24 @@ struct dwarf_expr_baton
    type will be returned in LVALP, and for lval_memory the register
    save address will be returned in ADDRP.  */
 static CORE_ADDR
-dwarf_expr_read_reg (void *baton, int dwarf_regnum)
+dwarf_expr_read_reg(void *baton, int dwarf_regnum)
 {
-  struct dwarf_expr_baton *debaton = (struct dwarf_expr_baton *) baton;
+  struct dwarf_expr_baton *debaton = (struct dwarf_expr_baton *)baton;
   CORE_ADDR result, save_addr;
   enum lval_type lval_type;
   gdb_byte *buf;
   enum opt_state optimized;
   int regnum, realnum, regsize;
 
-  regnum = DWARF2_REG_TO_REGNUM (dwarf_regnum);
-  regsize = register_size (current_gdbarch, regnum);
-  buf = alloca (regsize);
+  regnum = DWARF2_REG_TO_REGNUM(dwarf_regnum);
+  regsize = register_size(current_gdbarch, regnum);
+  buf = (gdb_byte *)alloca(regsize);
 
-  frame_register (debaton->frame, regnum, &optimized, &lval_type, &save_addr,
-		  &realnum, buf);
+  frame_register(debaton->frame, regnum, &optimized, &lval_type,
+                 &save_addr, &realnum, buf);
   /* NOTE: cagney/2003-05-22: This extract is assuming that a DWARF 2
      address is always unsigned.  That may or may not be true.  */
-  result = extract_unsigned_integer (buf, regsize);
+  result = extract_unsigned_integer(buf, regsize);
 
   return result;
 }
@@ -174,34 +178,36 @@ dwarf_expr_read_mem (void *baton, gdb_byte *buf, CORE_ADDR addr, size_t len)
    describing the frame base.  Return a pointer to it in START and
    its length in LENGTH.  */
 static void
-dwarf_expr_frame_base (void *baton, gdb_byte **start, size_t * length)
+dwarf_expr_frame_base(void *baton, gdb_byte **start, size_t * length)
 {
   /* FIXME: cagney/2003-03-26: This code should be using
      get_frame_base_address(), and then implement a dwarf2 specific
      this_base method.  */
   struct symbol *framefunc;
-  struct dwarf_expr_baton *debaton = (struct dwarf_expr_baton *) baton;
+  struct dwarf_expr_baton *debaton = (struct dwarf_expr_baton *)baton;
 
-  framefunc = get_frame_function (debaton->frame);
+  framefunc = get_frame_function(debaton->frame);
 
-  if (SYMBOL_OPS (framefunc) == &dwarf2_loclist_funcs)
+  if (SYMBOL_OPS(framefunc) == &dwarf2_loclist_funcs)
     {
       struct dwarf2_address_translation *symbaton;
-      symbaton = SYMBOL_LOCATION_BATON (framefunc);
-      *start = find_location_expression (symbaton, length,
-					 get_frame_pc (debaton->frame));
+      symbaton = ((struct dwarf2_address_translation *)
+                  SYMBOL_LOCATION_BATON(framefunc));
+      *start = find_location_expression(symbaton, length,
+                                        get_frame_pc(debaton->frame));
     }
   else
     {
       struct dwarf2_address_translation *symbaton;
-      symbaton = SYMBOL_LOCATION_BATON (framefunc);
+      symbaton = ((struct dwarf2_address_translation *)
+                  SYMBOL_LOCATION_BATON(framefunc));
       *length = symbaton->size;
       *start = symbaton->data;
     }
 
   if (*start == NULL)
-    error (_("Could not find the frame base for \"%s\"."),
-	   SYMBOL_NATURAL_NAME (framefunc));
+    error(_("Could not find the frame base for \"%s\"."),
+	  SYMBOL_NATURAL_NAME(framefunc));
 }
 
 /* Using the objfile specified in BATON, find the address for the
@@ -322,7 +328,9 @@ dwarf2_evaluate_loc_desc(struct symbol *var, struct frame_info *frame,
   ctx->get_frame_base = dwarf_expr_frame_base;
   ctx->get_tls_address = dwarf_expr_tls_address;
 
-  dwarf_expr_eval(ctx, data, size, 0, SYMBOL_LOCATION_BATON(var));
+  dwarf_expr_eval(ctx, data, size, 0,
+                  ((struct dwarf2_address_translation *)
+                   SYMBOL_LOCATION_BATON(var)));
   /* APPLE LOCAL begin DW_op_pieces for PPC registers */
   if (ctx->num_pieces == 2
       && ctx->pieces[0].in_reg
@@ -409,28 +417,29 @@ struct needs_frame_baton
   int needs_frame;
 };
 
-/* Reads from registers do require a frame.  */
+/* Reads from registers do require a frame: */
 static CORE_ADDR
-needs_frame_read_reg (void *baton, int regnum)
+needs_frame_read_reg(void *baton, int regnum)
 {
-  struct needs_frame_baton *nf_baton = baton;
+  struct needs_frame_baton *nf_baton = (struct needs_frame_baton *)baton;
   nf_baton->needs_frame = 1;
   return 1;
 }
 
-/* Reads from memory do not require a frame.  */
+/* Reads from memory do not require a frame: */
 static void
-needs_frame_read_mem (void *baton, gdb_byte *buf, CORE_ADDR addr, size_t len)
+needs_frame_read_mem(void *baton, gdb_byte *buf, CORE_ADDR addr,
+                     size_t len)
 {
-  memset (buf, 0, len);
+  memset(buf, 0, len);
 }
 
-/* Frame-relative accesses do require a frame.  */
+/* Frame-relative accesses do require a frame: */
 static void
-needs_frame_frame_base (void *baton, gdb_byte **start, size_t * length)
+needs_frame_frame_base(void *baton, gdb_byte **start, size_t *length)
 {
   static gdb_byte lit0 = DW_OP_lit0;
-  struct needs_frame_baton *nf_baton = baton;
+  struct needs_frame_baton *nf_baton = (struct needs_frame_baton *)baton;
 
   *start = &lit0;
   *length = 1;
@@ -438,11 +447,11 @@ needs_frame_frame_base (void *baton, gdb_byte **start, size_t * length)
   nf_baton->needs_frame = 1;
 }
 
-/* Thread-local accesses do require a frame.  */
+/* Thread-local accesses do require a frame: */
 static CORE_ADDR
-needs_frame_tls_address (void *baton, CORE_ADDR offset)
+needs_frame_tls_address(void *baton, CORE_ADDR offset)
 {
-  struct needs_frame_baton *nf_baton = baton;
+  struct needs_frame_baton *nf_baton = (struct needs_frame_baton *)baton;
   nf_baton->needs_frame = 1;
   return 1;
 }
@@ -539,31 +548,34 @@ dwarf2_tracepoint_var_ref(struct symbol *symbol, struct agent_expr *ax,
 /* Return the value of SYMBOL in FRAME using the DWARF-2 expression
    evaluator to calculate the location.  */
 static struct value *
-locexpr_read_variable (struct symbol *symbol, struct frame_info *frame)
+locexpr_read_variable(struct symbol *symbol, struct frame_info *frame)
 {
-  struct dwarf2_address_translation *dlbaton = SYMBOL_LOCATION_BATON (symbol);
+  struct dwarf2_address_translation *dlbaton =
+    (struct dwarf2_address_translation *)SYMBOL_LOCATION_BATON(symbol);
   struct value *val;
-  val = dwarf2_evaluate_loc_desc (symbol, frame, dlbaton->data, dlbaton->size,
-				  dlbaton->objfile);
+  val = dwarf2_evaluate_loc_desc(symbol, frame, dlbaton->data,
+                                 dlbaton->size, dlbaton->objfile);
 
   return val;
 }
 
-/* Return non-zero iff we need a frame to evaluate SYMBOL.  */
+/* Return non-zero iff we need a frame to evaluate SYMBOL: */
 static int
-locexpr_read_needs_frame (struct symbol *symbol)
+locexpr_read_needs_frame(struct symbol *symbol)
 {
-  struct dwarf2_address_translation *dlbaton = SYMBOL_LOCATION_BATON (symbol);
-  return dwarf2_loc_desc_needs_frame (dlbaton->data, dlbaton->size);
+  struct dwarf2_address_translation *dlbaton =
+    (struct dwarf2_address_translation *)SYMBOL_LOCATION_BATON(symbol);
+  return dwarf2_loc_desc_needs_frame(dlbaton->data, dlbaton->size);
 }
 
-/* Print a natural-language description of SYMBOL to STREAM.  */
+/* Print a natural-language description of SYMBOL to STREAM: */
 static int
-locexpr_describe_location (struct symbol *symbol, struct ui_file *stream)
+locexpr_describe_location(struct symbol *symbol, struct ui_file *stream)
 {
-  /* FIXME: be more extensive.  */
-  struct dwarf2_address_translation *dlbaton = SYMBOL_LOCATION_BATON (symbol);
-  /* APPLE LOCAL begin print better location information.  */
+  /* FIXME: be more extensive: */
+  struct dwarf2_address_translation *dlbaton =
+    (struct dwarf2_address_translation *)SYMBOL_LOCATION_BATON(symbol);
+  /* APPLE LOCAL begin print better location information: */
   struct dwarf_expr_context *ctx;
   gdb_byte *loc_ptr;
   gdb_byte *loc_end;
@@ -640,12 +652,14 @@ locexpr_describe_location (struct symbol *symbol, struct ui_file *stream)
    against.  When there is one this function should be revisited.  */
 
 static void
-locexpr_tracepoint_var_ref (struct symbol * symbol, struct agent_expr * ax,
-			    struct axs_value * value)
+locexpr_tracepoint_var_ref(struct symbol *symbol, struct agent_expr *ax,
+			   struct axs_value *value)
 {
-  struct dwarf2_address_translation *dlbaton = SYMBOL_LOCATION_BATON (symbol);
+  struct dwarf2_address_translation *dlbaton =
+    (struct dwarf2_address_translation *)SYMBOL_LOCATION_BATON(symbol);
 
-  dwarf2_tracepoint_var_ref (symbol, ax, value, dlbaton->data, dlbaton->size);
+  dwarf2_tracepoint_var_ref(symbol, ax, value, dlbaton->data,
+                            dlbaton->size);
 }
 
 /* The set of location functions used with the DWARF-2 expression
@@ -664,25 +678,26 @@ const struct symbol_ops dwarf2_locexpr_funcs = {
 /* Return the value of SYMBOL in FRAME using the DWARF-2 expression
    evaluator to calculate the location.  */
 static struct value *
-loclist_read_variable (struct symbol *symbol, struct frame_info *frame)
+loclist_read_variable(struct symbol *symbol, struct frame_info *frame)
 {
-  struct dwarf2_address_translation *dlbaton = SYMBOL_LOCATION_BATON (symbol);
+  struct dwarf2_address_translation *dlbaton =
+    (struct dwarf2_address_translation *)SYMBOL_LOCATION_BATON(symbol);
   struct value *val;
   gdb_byte *data;
   size_t size;
 
-  data = find_location_expression (dlbaton, &size,
-				   frame ? get_frame_pc (frame) : 0);
+  data = find_location_expression(dlbaton, &size,
+				  (frame ? get_frame_pc(frame) : 0));
   if (data == NULL)
     {
-      val = allocate_value (SYMBOL_TYPE (symbol));
-      VALUE_LVAL (val) = not_lval;
-      /* APPLE LOCAL variable opt states.  */
-      set_value_optimized_out (val, opt_evicted);
+      val = allocate_value(SYMBOL_TYPE(symbol));
+      VALUE_LVAL(val) = not_lval;
+      /* APPLE LOCAL variable opt states: */
+      set_value_optimized_out(val, opt_evicted);
     }
   else
-    val = dwarf2_evaluate_loc_desc (symbol, frame, data, size,
-				    dlbaton->objfile);
+    val = dwarf2_evaluate_loc_desc(symbol, frame, data, size,
+				   dlbaton->objfile);
 
   return val;
 }
@@ -709,9 +724,9 @@ loclist_read_needs_frame (struct symbol *symbol)
    the variable's location, not its value. */
 
 static void
-print_single_dwarf_location (struct ui_file *stream, gdb_byte **loc_ptr,
-			     gdb_byte *op_end,
-			     struct dwarf_expr_context *ctx)
+print_single_dwarf_location(struct ui_file *stream, gdb_byte **loc_ptr,
+			    gdb_byte *op_end,
+                            struct dwarf_expr_context *ctx)
 {
   CORE_ADDR result;
   int bytes_read;
@@ -721,7 +736,7 @@ print_single_dwarf_location (struct ui_file *stream, gdb_byte **loc_ptr,
 
   while (op_ptr < op_end)
     {
-      enum dwarf_location_atom op = *op_ptr++;
+      enum dwarf_location_atom op = (enum dwarf_location_atom)(*op_ptr++);
       switch (op)
 	{
 	case DW_OP_lit0:
@@ -756,49 +771,63 @@ print_single_dwarf_location (struct ui_file *stream, gdb_byte **loc_ptr,
 	case DW_OP_lit29:
 	case DW_OP_lit30:
 	case DW_OP_lit31:
-	  /* result = op - DW_OP_lit0; */
-	  fprintf_filtered (stream, "a literal");
+#if 0
+	  result = (op - DW_OP_lit0);
+#endif /* 0 */
+	  fprintf_filtered(stream, "a literal");
 	  break;
 
 	case DW_OP_addr:
-	  result = dwarf2_read_address (op_ptr, op_end, &bytes_read);
-	  fprintf_filtered (stream, "at address 0x%s", paddr_nz (result));
+	  result = dwarf2_read_address(op_ptr, op_end, &bytes_read);
+	  fprintf_filtered(stream, "at address 0x%s", paddr_nz(result));
 	  op_ptr += bytes_read;
 	  break;
 
 	case DW_OP_const1u:
 	case DW_OP_const1s:
-	  /* result = extract_unsigned_integer (op_ptr, 1); */
-	  fprintf_filtered (stream, "a constant");
+#if 0
+	  result = extract_unsigned_integer(op_ptr, 1);
+#endif /* 0 */
+	  fprintf_filtered(stream, "a constant");
 	  op_ptr += 1;
 	  break;
 	case DW_OP_const2u:
 	case DW_OP_const2s:
-	  /* result = extract_unsigned_integer (op_ptr, 2); */
-	  fprintf_filtered (stream, "a constant");
+#if 0
+	  result = extract_unsigned_integer(op_ptr, 2);
+#endif /* 0 */
+	  fprintf_filtered(stream, "a constant");
 	  op_ptr += 2;
 	  break;
 	case DW_OP_const4u:
 	case DW_OP_const4s:
-	  /* result = extract_unsigned_integer (op_ptr, 4); */
-	  fprintf_filtered (stream, "a constant");
+#if 0
+	  result = extract_unsigned_integer(op_ptr, 4);
+#endif /* 0 */
+	  fprintf_filtered(stream, "a constant");
 	  op_ptr += 4;
 	  break;
 	case DW_OP_const8u:
 	case DW_OP_const8s:
-	  /* result = extract_unsigned_integer (op_ptr, 8); */
-	  fprintf_filtered (stream, "a constant");
+#if 0
+	  result = extract_unsigned_integer(op_ptr, 8);
+#endif /* 0 */
+	  fprintf_filtered(stream, "a constant");
 	  op_ptr += 8;
 	  break;
 	case DW_OP_constu:
-	  op_ptr = read_uleb128 (op_ptr, op_end, &uoffset);
-	  /* result = uoffset; */
-	  fprintf_filtered (stream, "a constant");
+	  op_ptr = read_uleb128(op_ptr, op_end, &uoffset);
+#if 0
+	  result = uoffset;
+#endif /* 0 */
+	  fprintf_filtered(stream, "a constant");
 	  break;
 	case DW_OP_consts:
-	  op_ptr = read_sleb128 (op_ptr, op_end, &offset);
-	  /* result = offset; */
-	  fprintf_filtered (stream, "a constant");
+	  op_ptr = read_sleb128(op_ptr, op_end, &offset);
+#if 0
+	  result = offset;
+#endif /* 0 */
+	  fprintf_filtered(stream, "a constant");
 	  break;
 
 	  /* The DW_OP_reg operations are required to occur alone in
@@ -842,7 +871,7 @@ print_single_dwarf_location (struct ui_file *stream, gdb_byte **loc_ptr,
 		    "used either alone or in conjuction with DW_OP_piece."));
 
 	  result = (op - DW_OP_reg0);
-	  /* APPLE LOCAL print register name instead of number.  */
+	  /* APPLE LOCAL print register name instead of number: */
 	  fprintf_filtered(stream, "in register %s",
 			   REGISTER_NAME(DWARF2_REG_TO_REGNUM((int)result)));
 
@@ -855,7 +884,7 @@ print_single_dwarf_location (struct ui_file *stream, gdb_byte **loc_ptr,
 	      && (*op_ptr != DW_OP_APPLE_uninit))
 	    error(_("DWARF-2 expression error: DW_OP_reg operations must be "
 		    "used either alone or in conjuction with DW_OP_piece."));
-	  /* APPLE LOCAL print register name instead of number.  */
+	  /* APPLE LOCAL print register name instead of number: */
 	  fprintf_filtered(stream, "in register %s",
 			   REGISTER_NAME(DWARF2_REG_TO_REGNUM((int)reg)));
 	  break;
@@ -893,27 +922,27 @@ print_single_dwarf_location (struct ui_file *stream, gdb_byte **loc_ptr,
 	case DW_OP_breg30:
 	case DW_OP_breg31:
 	  {
-	    op_ptr = read_sleb128 (op_ptr, op_end, &offset);
-	    result = op - DW_OP_breg0;
+	    op_ptr = read_sleb128(op_ptr, op_end, &offset);
+	    result = (op - DW_OP_breg0);
 
-	    fprintf_filtered (stream, "at the address (reg %d + %d)",
-                              (unsigned int) result, (signed int) offset);
-	    /*
-	      result = (ctx->read_reg) (ctx->baton, op - DW_OP_breg0);
-	      result += offset;
-	    */
+	    fprintf_filtered(stream, "at the address (reg %d + %d)",
+                             (unsigned int)result, (signed int)offset);
+#if 0
+            result = (ctx->read_reg)(ctx->baton, (op - DW_OP_breg0));
+            result += offset;
+#endif /* 0 */
 	  }
 	  break;
 	case DW_OP_bregx:
 	  {
-	    op_ptr = read_uleb128 (op_ptr, op_end, &reg);
-	    op_ptr = read_sleb128 (op_ptr, op_end, &offset);
-	    fprintf_filtered (stream, "at the address (reg %d + %d)",
-			      (unsigned int) reg, (signed int)  offset);
-	    /*
-	      result = (ctx->read_reg) (ctx->baton, reg);
+	    op_ptr = read_uleb128(op_ptr, op_end, &reg);
+	    op_ptr = read_sleb128(op_ptr, op_end, &offset);
+	    fprintf_filtered(stream, "at the address (reg %d + %d)",
+			     (unsigned int)reg, (signed int)offset);
+#if 0
+	      result = (ctx->read_reg)(ctx->baton, reg);
 	      result += offset;
-	    */
+#endif /* 0 */
 	  }
 	  break;
 	case DW_OP_fbreg:
@@ -941,6 +970,10 @@ print_single_dwarf_location (struct ui_file *stream, gdb_byte **loc_ptr,
             result = (result + offset);
             ctx->stack_len = before_stack_len;
             ctx->in_reg = 0;
+#else
+            if (before_stack_len == 0U) {
+              ; /* ??? */
+            }
 #endif /* 0 */
 	  }
 	  break;
@@ -965,10 +998,9 @@ print_single_dwarf_location (struct ui_file *stream, gdb_byte **loc_ptr,
 	  {
 	    CORE_ADDR t1, t2, t3;
 
-
 	    if (ctx->stack_len < 3)
-	      error (_("Not enough elements for DW_OP_rot. Need 3, have %d."),
-		     ctx->stack_len);
+	      error(_("Not enough elements for DW_OP_rot. Need 3, have %d."),
+		    ctx->stack_len);
 	    t1 = ctx->stack[ctx->stack_len - 1];
 	    t2 = ctx->stack[ctx->stack_len - 2];
 	    t3 = ctx->stack[ctx->stack_len - 3];
@@ -986,32 +1018,34 @@ print_single_dwarf_location (struct ui_file *stream, gdb_byte **loc_ptr,
 	case DW_OP_plus_uconst:
 	  /* Unary operations.  */
 
-	  result = dwarf_expr_fetch (ctx, 0);
-	  dwarf_expr_pop (ctx);
+	  result = dwarf_expr_fetch(ctx, 0);
+	  dwarf_expr_pop(ctx);
 
 	  switch (op)
 	    {
 	    case DW_OP_deref:
 	      {
-		fprintf_filtered (stream, "at address 0x%s", paddr_nz (result));
-		/*
-		(ctx->read_mem) (ctx->baton, buf, result,
-		                 TARGET_ADDR_BIT / TARGET_CHAR_BIT);
-		*/
+		fprintf_filtered(stream, "at address 0x%s",
+                                 paddr_nz(result));
+#if 0
+		(ctx->read_mem)(ctx->baton, buf, result,
+		                (TARGET_ADDR_BIT / TARGET_CHAR_BIT));
+#endif /* 0 */
 	      }
 	      break;
 
 	    case DW_OP_deref_size:
 	      {
-		gdb_byte *buf = alloca (TARGET_ADDR_BIT / TARGET_CHAR_BIT);
+		gdb_byte *buf = alloca(TARGET_ADDR_BIT / TARGET_CHAR_BIT);
 
-		(ctx->read_mem) (ctx->baton, buf, result, *op_ptr++);
-		fprintf_filtered (stream, "at address 0x%s", paddr_nz (result));
+		(ctx->read_mem)(ctx->baton, buf, result, *op_ptr++);
+		fprintf_filtered(stream, "at address 0x%s",
+                                 paddr_nz(result));
 	      }
 	      break;
 
 	    case DW_OP_abs:
-	      if ((signed int) result < 0)
+	      if ((signed int)result < 0)
 		result = -result;
 	      break;
 	    case DW_OP_neg:
@@ -1021,7 +1055,7 @@ print_single_dwarf_location (struct ui_file *stream, gdb_byte **loc_ptr,
 	      result = ~result;
 	      break;
 	    case DW_OP_plus_uconst:
-	      op_ptr = read_uleb128 (op_ptr, op_end, &reg);
+	      op_ptr = read_uleb128(op_ptr, op_end, &reg);
 	      result += reg;
 	      break;
 	    default:
@@ -1053,14 +1087,14 @@ print_single_dwarf_location (struct ui_file *stream, gdb_byte **loc_ptr,
 	    enum exp_opcode binop;
 	    struct value *val1, *val2;
 
-	    second = dwarf_expr_fetch (ctx, 0);
-	    dwarf_expr_pop (ctx);
+	    second = dwarf_expr_fetch(ctx, 0);
+	    dwarf_expr_pop(ctx);
 
-	    first = dwarf_expr_fetch (ctx, 0);
-	    dwarf_expr_pop (ctx);
+	    first = dwarf_expr_fetch(ctx, 0);
+	    dwarf_expr_pop(ctx);
 
-	    val1 = value_from_longest (unsigned_address_type (), first);
-	    val2 = value_from_longest (unsigned_address_type (), second);
+	    val1 = value_from_longest(unsigned_address_type(), first);
+	    val2 = value_from_longest(unsigned_address_type(), second);
 
 	    switch (op)
 	      {
@@ -1093,7 +1127,7 @@ print_single_dwarf_location (struct ui_file *stream, gdb_byte **loc_ptr,
 		break;
 	      case DW_OP_shra:
 		binop = BINOP_RSH;
-		val1 = value_from_longest (signed_address_type (), first);
+		val1 = value_from_longest(signed_address_type(), first);
 		break;
 	      case DW_OP_xor:
 		binop = BINOP_BITWISE_XOR;
@@ -1117,10 +1151,10 @@ print_single_dwarf_location (struct ui_file *stream, gdb_byte **loc_ptr,
 		binop = BINOP_NOTEQUAL;
 		break;
 	      default:
-		internal_error (__FILE__, __LINE__,
-				_("Can't be reached."));
+		internal_error(__FILE__, __LINE__,
+                               _("Cannot be reached."));
 	      }
-	    result = value_as_long (value_binop (val1, val2, binop));
+	    result = value_as_long(value_binop(val1, val2, binop));
 	  }
 	  break;
 
@@ -1133,27 +1167,27 @@ print_single_dwarf_location (struct ui_file *stream, gdb_byte **loc_ptr,
 	     control block at which the variable is located.  Nothing
 	     should follow this operator, so the top of stack would be
 	     returned.  */
-	  result = dwarf_expr_fetch (ctx, 0);
-	  dwarf_expr_pop (ctx);
-	  result = (ctx->get_tls_address) (ctx->baton, result);
-	  fprintf_filtered (stream,
+	  result = dwarf_expr_fetch(ctx, 0);
+	  dwarf_expr_pop(ctx);
+	  result = (ctx->get_tls_address)(ctx->baton, result);
+	  fprintf_filtered(stream,
                        "at 0x%s offset from thread-local storage block",
-                       paddr_nz (result));
+                       paddr_nz(result));
 
 	  break;
 
 	case DW_OP_skip:
-	  offset = extract_signed_integer (op_ptr, 2);
+	  offset = extract_signed_integer(op_ptr, 2);
 	  op_ptr += 2;
 	  op_ptr += offset;
 	  break;
 
 	case DW_OP_bra:
-	  offset = extract_signed_integer (op_ptr, 2);
+	  offset = extract_signed_integer(op_ptr, 2);
 	  op_ptr += 2;
-	  if (dwarf_expr_fetch (ctx, 0) != 0)
+	  if (dwarf_expr_fetch(ctx, 0) != 0)
 	    op_ptr += offset;
-	  dwarf_expr_pop (ctx);
+	  dwarf_expr_pop(ctx);
 	  break;
 
 	case DW_OP_nop:
@@ -1164,23 +1198,23 @@ print_single_dwarf_location (struct ui_file *stream, gdb_byte **loc_ptr,
 	    ULONGEST size;
 	    CORE_ADDR addr_or_regnum;
 
-	    /* Record the piece.  */
-	    op_ptr = read_uleb128 (op_ptr, op_end, &size);
-	    addr_or_regnum = dwarf_expr_fetch (ctx, 0);
-	    add_piece (ctx, ctx->in_reg, addr_or_regnum, size);
+	    /* Record the piece: */
+	    op_ptr = read_uleb128(op_ptr, op_end, &size);
+	    addr_or_regnum = dwarf_expr_fetch(ctx, 0);
+	    add_piece(ctx, ctx->in_reg, addr_or_regnum, size);
 
-	    /* Pop off the address/regnum, and clear the in_reg flag.  */
-	    dwarf_expr_pop (ctx);
+	    /* Pop off the address/regnum, and clear the in_reg flag: */
+	    dwarf_expr_pop(ctx);
 	    ctx->in_reg = 0;
 	  }
 	  break;
 
 	case DW_OP_APPLE_uninit:
-	  fprintf_filtered (stream, " [ uninitialized ]");
+	  fprintf_filtered(stream, " [ uninitialized ]");
 	  break;
 
 	default:
-	  fprintf_filtered (stream, "unable to determine position");
+	  fprintf_filtered(stream, "unable to determine position");
 	}
 
     }
@@ -1193,7 +1227,8 @@ static int
 loclist_describe_location(struct symbol *symbol, struct ui_file *stream)
 {
   /* FIXME: Could print the entire list of locations: */
-  struct dwarf2_address_translation *dlbaton = SYMBOL_LOCATION_BATON(symbol);
+  struct dwarf2_address_translation *dlbaton =
+    (struct dwarf2_address_translation *)SYMBOL_LOCATION_BATON(symbol);
   struct dwarf_expr_context *ctx;
   gdb_byte *loc_ptr, *buf_end, *loc_end;
   size_t length;
@@ -1275,10 +1310,11 @@ loclist_describe_location(struct symbol *symbol, struct ui_file *stream)
 /* Describe the location of SYMBOL as an agent value in VALUE, generating
    any necessary bytecode in AX.  */
 static void
-loclist_tracepoint_var_ref (struct symbol * symbol, struct agent_expr * ax,
-			    struct axs_value * value)
+loclist_tracepoint_var_ref(struct symbol *symbol, struct agent_expr *ax,
+			   struct axs_value *value)
 {
-  struct dwarf2_address_translation *dlbaton = SYMBOL_LOCATION_BATON (symbol);
+  struct dwarf2_address_translation *dlbaton =
+    (struct dwarf2_address_translation *)SYMBOL_LOCATION_BATON(symbol);
   gdb_byte *data;
   size_t size;
 

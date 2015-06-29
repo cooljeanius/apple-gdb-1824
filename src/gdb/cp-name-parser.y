@@ -293,7 +293,7 @@ make_name (const char *name, int len)
 %token <typed_val_int> GLOBAL
 
 %{
-enum {
+enum demangle_component_type_extensions {
   GLOBAL_CONSTRUCTORS = DEMANGLE_COMPONENT_LITERAL + 20,
   GLOBAL_DESTRUCTORS = DEMANGLE_COMPONENT_LITERAL + 21
 };
@@ -1904,27 +1904,27 @@ yylex (void)
     case 3:
       HANDLE_SPECIAL ("VTT for ", DEMANGLE_COMPONENT_VTT);
       HANDLE_SPECIAL ("non-virtual thunk to ", DEMANGLE_COMPONENT_THUNK);
-      if (strncmp (tokstart, "new", 3) == 0)
+      if (strncmp(tokstart, "new", 3) == 0)
 	return NEW;
-      if (strncmp (tokstart, "int", 3) == 0)
+      if (strncmp(tokstart, "int", 3) == 0)
 	return INT_KEYWORD;
       break;
     default:
       break;
     }
 
-  yylval.comp = make_name (tokstart, namelen);
+  yylval.comp = make_name(tokstart, namelen);
   return NAME;
 }
 
 static void
-yyerror (char *msg)
+yyerror(char *msg)
 {
   if (global_errmsg)
     return;
 
   error_lexptr = prev_lexptr;
-  global_errmsg = msg ? msg : "parse error";
+  global_errmsg = (msg ? msg : "parse error");
 }
 
 /* Allocate all the components we'll need to build a tree.  We generally
@@ -2006,12 +2006,12 @@ cp_demangled_name_to_comp(const char *demangled_name, void **memory,
     {
       if (global_errmsg && errmsg)
 	{
-	  snprintf (errbuf, sizeof (errbuf) - 2, "%s, near `%s",
-		    global_errmsg, error_lexptr);
-	  strcat (errbuf, "'");
+	  snprintf(errbuf, (sizeof(errbuf) - 2UL), "%s, near `%s",
+		   global_errmsg, error_lexptr);
+	  strcat(errbuf, "'");
 	  *errmsg = errbuf;
 	}
-      free (demangle_info);
+      free(demangle_info);
       return NULL;
     }
 
@@ -2029,37 +2029,37 @@ cp_print(struct demangle_component *result)
   char *str;
   size_t err = 0;
 
-  if (result->type == GLOBAL_DESTRUCTORS)
+  if (result->type == (int)GLOBAL_DESTRUCTORS)
     {
-      result = d_left (result);
-      fputs ("global destructors keyed to ", stdout);
+      result = d_left(result);
+      fputs("global destructors keyed to ", stdout);
     }
-  else if (result->type == GLOBAL_CONSTRUCTORS)
+  else if (result->type == (int)GLOBAL_CONSTRUCTORS)
     {
-      result = d_left (result);
-      fputs ("global constructors keyed to ", stdout);
+      result = d_left(result);
+      fputs("global constructors keyed to ", stdout);
     }
 
-  str = cplus_demangle_print (DMGL_PARAMS | DMGL_ANSI, result, 64, &err);
+  str = cplus_demangle_print(DMGL_PARAMS | DMGL_ANSI, result, 64, &err);
   if (str == NULL)
     return;
 
-  fputs (str, stdout);
+  fputs(str, stdout);
 
-  free (str);
+  free(str);
 }
 
 static char
 trim_chars(char *lexptr, char **extra_chars)
 {
-  char *p = (char *) symbol_end (lexptr);
+  char *p = (char *)symbol_end(lexptr);
   char c = 0;
 
   if (*p)
     {
       c = *p;
       *p = 0;
-      *extra_chars = p + 1;
+      *extra_chars = (p + 1);
     }
 
   return c;
@@ -2076,47 +2076,49 @@ main(int argc, char **argv)
   struct demangle_component *result;
 
   arg = 1;
-  if (argv[arg] && strcmp (argv[arg], "--debug") == 0)
+  if (argv[arg] && (strcmp(argv[arg], "--debug") == 0))
     {
       yydebug = 1;
       arg++;
     }
 
   if (argv[arg] == NULL)
-    while (fgets (buf, 65536, stdin) != NULL)
+    while (fgets(buf, 65536, stdin) != NULL)
       {
-	int len;
-	buf[strlen (buf) - 1] = 0;
-	/* Use DMGL_VERBOSE to get expanded standard substitutions.  */
-	c = trim_chars (buf, &extra_chars);
-	str2 = cplus_demangle (buf, DMGL_PARAMS | DMGL_ANSI | DMGL_VERBOSE);
+	size_t len = (strlen(buf) - 1UL);
+	buf[len] = 0;
+	/* Use DMGL_VERBOSE to get expanded standard substitutions: */
+	c = trim_chars(buf, &extra_chars);
+	str2 = cplus_demangle(buf, DMGL_PARAMS | DMGL_ANSI | DMGL_VERBOSE);
 	if (str2 == NULL)
 	  {
-	    /* printf ("Demangling error\n"); */
-	    if (c)
-	      printf ("%s%c%s\n", buf, c, extra_chars);
+#if 0
+	    printf("Demangling error\n");
+#endif /* 0 */
+ 	    if (c)
+	      printf("%s%c%s\n", buf, c, extra_chars);
 	    else
-	      printf ("%s\n", buf);
+	      printf("%s\n", buf);
 	    continue;
 	  }
-	result = cp_demangled_name_to_comp (str2, &memory, &errmsg);
+	result = cp_demangled_name_to_comp(str2, &memory, &errmsg);
 	if (result == NULL)
 	  {
-	    fputs (errmsg, stderr);
-	    fputc ('\n', stderr);
+	    fputs(errmsg, stderr);
+	    fputc('\n', stderr);
 	    continue;
 	  }
 
-	cp_print (result);
-	free (memory);
+	cp_print(result);
+	free(memory);
 
-	free (str2);
+	free(str2);
 	if (c)
 	  {
-	    putchar (c);
-	    fputs (extra_chars, stdout);
+	    putchar(c);
+	    fputs(extra_chars, stdout);
 	  }
-	putchar ('\n');
+	putchar('\n');
       }
   else
     {

@@ -2871,6 +2871,9 @@ dvi: do-dvi
 pdf: do-pdf
 html: do-html
 
+doc docs: info dvi pdf html 
+.PHONY: doc docs
+
 # Make sure makeinfo is built before we do a `make info', if we're
 # in fact building texinfo.
 do-info: maybe-all-texinfo
@@ -16177,24 +16180,8 @@ maybe-install-pdf-gmp:
 @if gmp
 maybe-install-pdf-gmp: install-pdf-gmp
 
-install-pdf-gmp: \
-    configure-gmp \
-    pdf-gmp 
-	$(AM_V_at)[ -f ./gmp/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing install-pdf in gmp"; \
-	(cd $(HOST_SUBDIR)/gmp && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          install-pdf) \
-	  || exit 1
+# gmp doesn't support install-pdf.
+install-pdf-gmp:
 
 @endif gmp
 
@@ -16203,24 +16190,8 @@ maybe-install-html-gmp:
 @if gmp
 maybe-install-html-gmp: install-html-gmp
 
-install-html-gmp: \
-    configure-gmp \
-    html-gmp 
-	$(AM_V_at)[ -f ./gmp/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing install-html in gmp"; \
-	(cd $(HOST_SUBDIR)/gmp && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          install-html) \
-	  || exit 1
+# gmp doesn't support install-html.
+install-html-gmp:
 
 @endif gmp
 
@@ -26240,23 +26211,8 @@ maybe-TAGS-libdecnumber:
 @if libdecnumber
 maybe-TAGS-libdecnumber: TAGS-libdecnumber
 
-TAGS-libdecnumber: \
-    configure-libdecnumber 
-	$(AM_V_at)[ -f ./libdecnumber/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing TAGS in libdecnumber"; \
-	(cd $(HOST_SUBDIR)/libdecnumber && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          TAGS) \
-	  || exit 1
+# libdecnumber doesn't support TAGS.
+TAGS-libdecnumber:
 
 @endif libdecnumber
 

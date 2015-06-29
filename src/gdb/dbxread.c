@@ -90,6 +90,13 @@ static int end_fun_absolute_p = 0;
 
 #include "aout/aout64.h"
 #include "aout/stab_gnu.h"  /* We always use GNU stabs, not native, now */
+
+#ifdef HAVE_AVAILABILITYMACROS_H
+# include <AvailabilityMacros.h>
+#endif /* HAVE_AVAILABILITYMACROS_H */
+#ifndef MAC_OS_X_VERSION_MIN_REQUIRED
+# define MAC_OS_X_VERSION_MIN_REQUIRED 1010
+#endif /* !MAC_OS_X_VERSION_MIN_REQUIRED */
 
 /* We put a pointer to this structure in the read_symtab_private field
    of the psymtab.  */
@@ -121,8 +128,7 @@ struct symloc
     int file_string_offset;
 
     const char *prefix;
-
-};
+  };
 
 #define LDSYMOFF(p) (((struct symloc *)((p)->read_symtab_private))->ldsymoff)
 #define LDSYMLEN(p) (((struct symloc *)((p)->read_symtab_private))->ldsymlen)
@@ -201,24 +207,24 @@ stabsect_read_strtab_from_oso (struct bfd *oso_bfd, int *symcount,
 /* Complaints about the symbols we have encountered.  */
 
 static void
-unknown_symtype_complaint (const char *arg1)
+unknown_symtype_complaint(const char *arg1)
 {
-  complaint (&symfile_complaints, _("unknown symbol type %s"), arg1);
+  complaint(&symfile_complaints, _("unknown symbol type %s"), arg1);
 }
 
 static void
-lbrac_mismatch_complaint (int arg1)
+lbrac_mismatch_complaint(int arg1)
 {
-  complaint (&symfile_complaints,
-	     _("N_LBRAC/N_RBRAC symbol mismatch at symtab pos %d"), arg1);
+  complaint(&symfile_complaints,
+	    _("N_LBRAC/N_RBRAC symbol mismatch at symtab pos %d"), arg1);
 }
 
 static void
-repeated_header_complaint (const char *arg1, int arg2)
+repeated_header_complaint(const char *arg1, int arg2)
 {
-  complaint (&symfile_complaints,
-	     _("\"repeated\" header file %s not previously seen, at symtab pos %d"),
-	     arg1, arg2);
+  complaint(&symfile_complaints,
+	    _("\"repeated\" header file %s not previously seen, at symtab pos %d"),
+	    arg1, arg2);
 }
 
 /* find_text_range --- find start and end of loadable code sections
@@ -231,7 +237,7 @@ repeated_header_complaint (const char *arg1, int arg2)
    table, in some cases.  */
 
 static void
-find_text_range (bfd * sym_bfd, struct objfile *objfile)
+find_text_range(bfd *sym_bfd, struct objfile *objfile)
 {
   asection *sec;
   int found_any = 0;
@@ -417,64 +423,64 @@ add_old_header_file (char *name, int instance)
    so we record the file when its "begin" is seen and ignore the "end".  */
 
 static void
-add_new_header_file (char *name, int instance)
+add_new_header_file(char *name, int instance)
 {
   int i;
   struct header_file *hfile;
 
-  /* Make sure there is room for one more header file.  */
+  /* Make sure there is room for one more header file: */
+  i = N_ALLOCATED_HEADER_FILES(current_objfile);
 
-  i = N_ALLOCATED_HEADER_FILES (current_objfile);
-
-  if (N_HEADER_FILES (current_objfile) == i)
+  if (N_HEADER_FILES(current_objfile) == i)
     {
       if (i == 0)
 	{
-	  N_ALLOCATED_HEADER_FILES (current_objfile) = 10;
-	  HEADER_FILES (current_objfile) = (struct header_file *)
-	    xmalloc (10 * sizeof (struct header_file));
+	  N_ALLOCATED_HEADER_FILES(current_objfile) = 10;
+	  HEADER_FILES(current_objfile) =
+            ((struct header_file *)
+             xmalloc(10UL * sizeof(struct header_file)));
 	}
       else
 	{
 	  i *= 2;
-	  N_ALLOCATED_HEADER_FILES (current_objfile) = i;
-	  HEADER_FILES (current_objfile) = (struct header_file *)
-	    xrealloc ((char *) HEADER_FILES (current_objfile),
-		      (i * sizeof (struct header_file)));
+	  N_ALLOCATED_HEADER_FILES(current_objfile) = i;
+	  HEADER_FILES(current_objfile) =
+            ((struct header_file *)
+             xrealloc((char *)HEADER_FILES(current_objfile),
+                      (i * sizeof(struct header_file))));
 	}
     }
 
-  /* Create an entry for this header file.  */
-
-  i = N_HEADER_FILES (current_objfile)++;
-  hfile = HEADER_FILES (current_objfile) + i;
-  hfile->name = savestring (name, strlen (name));
+  /* Create an entry for this header file: */
+  i = N_HEADER_FILES(current_objfile)++;
+  hfile = (HEADER_FILES(current_objfile) + i);
+  hfile->name = savestring(name, strlen(name));
   hfile->instance = instance;
   hfile->length = 10;
-  hfile->vector
-    = (struct type **) xmalloc (10 * sizeof (struct type *));
-  memset (hfile->vector, 0, 10 * sizeof (struct type *));
+  hfile->vector = (struct type **)xmalloc(10UL * sizeof(struct type *));
+  memset(hfile->vector, 0, (10UL * sizeof(struct type *)));
 
-  add_this_object_header_file (i);
+  add_this_object_header_file(i);
 }
 
-#if 0
+#if 0 || 1
 static struct type **
-explicit_lookup_type (int real_filenum, int index)
+explicit_lookup_type(int real_filenum, int index)
 {
-  struct header_file *f = &HEADER_FILES (current_objfile)[real_filenum];
+  struct header_file *f = &HEADER_FILES(current_objfile)[real_filenum];
 
   if (index >= f->length)
     {
       f->length *= 2;
-      f->vector = (struct type **)
-	xrealloc (f->vector, f->length * sizeof (struct type *));
-      memset (&f->vector[f->length / 2],
-	      '\0', f->length * sizeof (struct type *) / 2);
+      f->vector = ((struct type **)
+                   xrealloc(f->vector,
+                            (f->length * sizeof(struct type *))));
+      memset(&f->vector[f->length / 2],
+             '\0', (f->length * sizeof(struct type *) / 2UL));
     }
   return &f->vector[index];
 }
-#endif
+#endif /* 0 || 1 */
 
 /* APPLE LOCAL: Pass in the desc along with the the type so we can
    see if this is a "special" symbol. */
@@ -545,7 +551,7 @@ record_minimal_symbol (char *name, CORE_ADDR address, int type,
       /* APPLE LOCAL: DBX_DATA_SECTION is an obj_section not an asection */
       bfd_section = DBX_DATA_SECTION (objfile)->the_bfd_section;
       break;
-#endif
+#endif /* N_SETV */
     case N_TEXT:
     case N_NBTEXT:
     case N_FN:
@@ -614,16 +620,17 @@ record_minimal_symbol (char *name, CORE_ADDR address, int type,
      nlist records in-memory, they all point to a single placeholder
      "<redacted>" name to convserve address space.  Don't add those
      symbols to our symbol table. */
-#if defined (TARGET_ARM) && defined (NM_NEXTSTEP)
-  if (bfd_mach_o_in_shared_cached_memory (objfile->obfd)
-      && strcmp (name, "<redacted>") == 0)
+#if defined(TARGET_ARM) && defined(NM_NEXTSTEP)
+  if (bfd_mach_o_in_shared_cached_memory(objfile->obfd)
+      && (strcmp(name, "<redacted>") == 0))
     return;
-#endif
+#endif /* TARGET_ARM && NM_NEXTSTEP */
 
-  /* APPLE LOCAL: Record the msymbol & make it special if it is.  */
-  msym = prim_record_minimal_symbol_and_info
-    (name, address, ms_type, NULL, section, bfd_section, objfile);
-  DBX_MAKE_MSYMBOL_SPECIAL (desc, msym);
+  /* APPLE LOCAL: Record the msymbol & make it special if it is: */
+  msym =
+    prim_record_minimal_symbol_and_info(name, address, ms_type, NULL,
+                                        section, bfd_section, objfile);
+  DBX_MAKE_MSYMBOL_SPECIAL(desc, msym);
 }
 
 /* Scan and build partial symbols for a symbol file.
@@ -636,7 +643,7 @@ record_minimal_symbol (char *name, CORE_ADDR address, int type,
 
 /* APPLE LOCAL make globally visible */
 void
-dbx_symfile_read (struct objfile *objfile, int mainline)
+dbx_symfile_read(struct objfile *objfile, int mainline)
 {
   bfd *sym_bfd;
   int val;
@@ -647,17 +654,17 @@ dbx_symfile_read (struct objfile *objfile, int mainline)
   static int timer = -1;
   struct cleanup *timer_cleanup = NULL;
 
-  /* APPLE LOCAL: If this is a dSYM that has minimal symbols, don't read the
-     minsyms or we'll end up with duplicated minsyms.  */
-  if (objfile->separate_debug_objfile_backlink ||
-      objfile->flags & OBJF_SEPARATE_DEBUG_FILE)
+  /* APPLE LOCAL: If this is a dSYM that has minimal symbols, then do NOT
+   * read the minsyms, or we will end up with duplicated minsyms: */
+  if (objfile->separate_debug_objfile_backlink
+      || (objfile->flags & OBJF_SEPARATE_DEBUG_FILE))
     {
       return;
     }
 
   if (maint_use_timers)
-    timer_cleanup = start_timer (&timer, "dbx_symfile_read",
-				 objfile->name ? objfile->name : "<unknown>");
+    timer_cleanup = start_timer(&timer, "dbx_symfile_read",
+                                (objfile->name ? objfile->name : "<unknown>"));
 
   sym_bfd = objfile->obfd;
 
@@ -665,19 +672,19 @@ dbx_symfile_read (struct objfile *objfile, int mainline)
      0.  This flag disables special (Solaris stabs-in-elf only) fixups for
      symbols with a value of 0.  */
 
-  symfile_relocatable = bfd_get_file_flags (sym_bfd) & HAS_RELOC;
+  symfile_relocatable = (bfd_get_file_flags(sym_bfd) & HAS_RELOC);
 
   /* This is true for Solaris (and all other systems which put stabs
      in sections, hopefully, since it would be silly to do things
      differently from Solaris), and false for SunOS4 and other a.out
      file formats.  */
   block_address_function_relative =
-    ((0 == strncmp (bfd_get_target (sym_bfd), "elf", 3))
-     || (0 == strncmp (bfd_get_target (sym_bfd), "som", 3))
-     || (0 == strncmp (bfd_get_target (sym_bfd), "coff", 4))
-     || (0 == strncmp (bfd_get_target (sym_bfd), "pe", 2))
-     || (0 == strncmp (bfd_get_target (sym_bfd), "epoc-pe", 7))
-     || (0 == strncmp (bfd_get_target (sym_bfd), "nlm", 3)));
+    ((0 == strncmp(bfd_get_target(sym_bfd), "elf", 3))
+     || (0 == strncmp(bfd_get_target(sym_bfd), "som", 3))
+     || (0 == strncmp(bfd_get_target(sym_bfd), "coff", 4))
+     || (0 == strncmp(bfd_get_target(sym_bfd), "pe", 2))
+     || (0 == strncmp(bfd_get_target(sym_bfd), "epoc-pe", 7))
+     || (0 == strncmp(bfd_get_target(sym_bfd), "nlm", 3)));
 
   /* APPLE LOCAL shared cache begin.  */
   /* FIXME: On SnowLeopard and later systems, this is not true.  The
@@ -687,7 +694,11 @@ dbx_symfile_read (struct objfile *objfile, int mainline)
      we need to deploy this on Leopard I'm just going to turn it off
      by hand here.  */
 
-  if (0) /* bfd_mach_o_in_shared_cached_memory (objfile->obfd))  */
+#if (MAC_OS_X_VERSION_MIN_REQUIRED >= 1060)
+  if (0)
+#else
+  if (bfd_mach_o_in_shared_cached_memory(objfile->obfd))
+#endif /* 10.6+ */
     {
       /* All shared libraries being read from memory that are in the new
          shared cache share a single large symbol and string table. These
@@ -695,70 +706,67 @@ dbx_symfile_read (struct objfile *objfile, int mainline)
 	 was set to the range of the EXTDEF symbols from the DYSYMTAB
 	 load command in the bfd_mach_o_scan_read_dysymtab function from
 	 the bfd mach-o.c reader.  */
-      dbx_symtab_offset = DBX_NONLOCAL_STAB_OFFSET (objfile);
-      dbx_symtab_count = DBX_NONLOCAL_STAB_COUNT (objfile);
+      dbx_symtab_offset = DBX_NONLOCAL_STAB_OFFSET(objfile);
+      dbx_symtab_count = DBX_NONLOCAL_STAB_COUNT(objfile);
     }
   else
     {
-      /* APPLE LOCAL shared cache end.  */
+      /* APPLE LOCAL shared cache end: */
       if (((OBJF_SYM_LEVELS_MASK & objfile->symflags) != OBJF_SYM_ALL)
-         && (objfile->symflags & OBJF_SYM_EXTERN
-             || objfile->symflags & OBJF_SYM_CONTAINER)
+         && ((objfile->symflags & OBJF_SYM_EXTERN)
+             || (objfile->symflags & OBJF_SYM_CONTAINER))
          && (OBJF_SYM_LEVELS_MASK & (objfile->symflags & ~OBJF_SYM_LOCAL))
          && (OBJF_SYM_LEVELS_MASK & (objfile->symflags & ~OBJF_SYM_DEBUG))
-         && DBX_LOCAL_STAB_COUNT (objfile) != 0
-         && DBX_NONLOCAL_STAB_COUNT (objfile) != 0
-         && !objfile_contains_objc (objfile))
+         && (DBX_LOCAL_STAB_COUNT(objfile) != 0)
+         && (DBX_NONLOCAL_STAB_COUNT(objfile) != 0)
+         && !objfile_contains_objc(objfile))
        {
-         dbx_symtab_offset = DBX_NONLOCAL_STAB_OFFSET (objfile);
-         dbx_symtab_count = DBX_NONLOCAL_STAB_COUNT (objfile);
+         dbx_symtab_offset = DBX_NONLOCAL_STAB_OFFSET(objfile);
+         dbx_symtab_count = DBX_NONLOCAL_STAB_COUNT(objfile);
        }
       else
        {
-         dbx_symtab_offset = DBX_SYMTAB_OFFSET (objfile);
-         dbx_symtab_count = DBX_SYMCOUNT (objfile);
+         dbx_symtab_offset = DBX_SYMTAB_OFFSET(objfile);
+         dbx_symtab_count = DBX_SYMCOUNT(objfile);
        }
     }
 
-  val = bfd_seek (sym_bfd, dbx_symtab_offset, SEEK_SET);
+  val = bfd_seek(sym_bfd, dbx_symtab_offset, SEEK_SET);
   if (val < 0)
-    perror_with_name (objfile->name);
+    perror_with_name(objfile->name);
 
   /* If we are reinitializing, or if we have never loaded syms yet, init */
   if (mainline
-      || (objfile->global_psymbols.size == 0
-	  &&  objfile->static_psymbols.size == 0))
-    init_psymbol_list (objfile, dbx_symtab_count);
+      || ((objfile->global_psymbols.size == 0)
+	  && (objfile->static_psymbols.size == 0)))
+    init_psymbol_list(objfile, dbx_symtab_count);
 
-  symbol_size = DBX_SYMBOL_SIZE (objfile);
+  symbol_size = DBX_SYMBOL_SIZE(objfile);
   symbol_table_offset = dbx_symtab_offset;
 
-  free_pending_blocks ();
-  back_to = make_cleanup (really_free_pendings, 0);
+  free_pending_blocks();
+  back_to = make_cleanup(really_free_pendings, 0);
 
-#if 0
-  init_minimal_symbol_collection ();
-  make_cleanup_discard_minimal_symbols ();
-#endif
+#if 0 || 1
+  init_minimal_symbol_collection();
+  make_cleanup_discard_minimal_symbols();
+#endif /* 0 || 1 */
 
-  /* Read stabs data from executable file and define symbols. */
+  /* Read stabs data from executable file and define symbols: */
+  read_dbx_symtab(objfile, dbx_symtab_count);
 
-  read_dbx_symtab (objfile, dbx_symtab_count);
-
-  /* Add the dynamic symbols.  */
-
-  read_dbx_dynamic_symtab (objfile);
+  /* Add the dynamic symbols: */
+  read_dbx_dynamic_symtab(objfile);
 
   /* Install any minimal symbols that have been collected as the current
-     minimal symbols for this objfile. */
+   * minimal symbols for this objfile: */
+#if 0 || 1
+  install_minimal_symbols(objfile);
+#endif /* 0 || 1 */
 
-#if 0
-  install_minimal_symbols (objfile);
-#endif
-
-  do_cleanups (back_to);
+  do_cleanups(back_to);
   if (maint_use_timers)
-    do_cleanups (timer_cleanup);
+    do_cleanups(timer_cleanup);
 }
 
 /* Initialize anything that needs initializing when a completely new
@@ -766,15 +774,15 @@ dbx_symfile_read (struct objfile *objfile, int mainline)
    file, e.g. a shared library).  */
 
 static void
-dbx_new_init (struct objfile *ignore)
+dbx_new_init(struct objfile *ignore)
 {
-  stabsread_new_init ();
-  buildsym_new_init ();
-  init_header_files ();
+  stabsread_new_init();
+  buildsym_new_init();
+  init_header_files();
 }
 
 
-/* dbx_symfile_init ()
+/* dbx_symfile_init()
    is the dbx-specific initialization routine for reading symbols.
    It is passed a struct objfile which contains, among other things,
    the BFD for the file whose symbols are being read, and a slot for a pointer
@@ -806,29 +814,29 @@ dbx_symfile_init (struct objfile *objfile)
   /* APPLE LOCAL: We put struct obj_sections in the DBX_TEXT_SECTION etc
      instead of BFD asections.  Conveniently, we also never execute this
      code path on MacOS X.  */
-#if 0
-  DBX_TEXT_SECTION (objfile) = bfd_get_section_by_name (sym_bfd, ".text");
-  DBX_DATA_SECTION (objfile) = bfd_get_section_by_name (sym_bfd, ".data");
-  DBX_BSS_SECTION (objfile) = bfd_get_section_by_name (sym_bfd, ".bss");
+#if !(defined(__APPLE__) || defined(NM_NEXTSTEP) || defined(TM_NEXTSTEP))
+  DBX_TEXT_SECTION(objfile) = bfd_get_section_by_name(sym_bfd, ".text");
+  DBX_DATA_SECTION(objfile) = bfd_get_section_by_name(sym_bfd, ".data");
+  DBX_BSS_SECTION(objfile) = bfd_get_section_by_name(sym_bfd, ".bss");
 #else
-  DBX_TEXT_SECTION (objfile) = NULL;
-  DBX_DATA_SECTION (objfile) = NULL;
-  DBX_BSS_SECTION (objfile) = NULL;
-#endif
+  DBX_TEXT_SECTION(objfile) = NULL;
+  DBX_DATA_SECTION(objfile) = NULL;
+  DBX_BSS_SECTION(objfile) = NULL;
+#endif /* !(__APPLE__ || NM_NEXTSTEP || TM_NEXTSTEP) */
 
   /* FIXME POKING INSIDE BFD DATA STRUCTURES */
-#define	STRING_TABLE_OFFSET	(sym_bfd->origin + obj_str_filepos (sym_bfd))
-#define	SYMBOL_TABLE_OFFSET	(sym_bfd->origin + obj_sym_filepos (sym_bfd))
+#define	STRING_TABLE_OFFSET    (sym_bfd->origin + obj_str_filepos(sym_bfd))
+#define	SYMBOL_TABLE_OFFSET    (sym_bfd->origin + obj_sym_filepos(sym_bfd))
 
   /* FIXME POKING INSIDE BFD DATA STRUCTURES */
 
-  DBX_SYMFILE_INFO (objfile)->stab_section_info = NULL;
+  DBX_SYMFILE_INFO(objfile)->stab_section_info = NULL;
 
-  text_sect = bfd_get_section_by_name (sym_bfd, ".text");
+  text_sect = bfd_get_section_by_name(sym_bfd, ".text");
   if (!text_sect)
-    error (_("Can't find .text section in symbol file"));
-  DBX_TEXT_ADDR (objfile) = bfd_section_vma (sym_bfd, text_sect);
-  DBX_TEXT_SIZE (objfile) = bfd_section_size (sym_bfd, text_sect);
+    error(_("Cannot find .text section in symbol file"));
+  DBX_TEXT_ADDR(objfile) = bfd_section_vma(sym_bfd, text_sect);
+  DBX_TEXT_SIZE(objfile) = bfd_section_size(sym_bfd, text_sect);
 
   DBX_SYMBOL_SIZE (objfile) = obj_symbol_entry_size (sym_bfd);
   DBX_SYMCOUNT (objfile) = bfd_get_symcount (sym_bfd);
@@ -884,28 +892,27 @@ dbx_symfile_init (struct objfile *objfile)
 	     random data that happened to be at STRING_TABLE_OFFSET, because
 	     bfd can't tell us there is no string table, the sanity checks may
 	     or may not catch this. */
-	  DBX_STRINGTAB_SIZE (objfile) = bfd_h_get_32 (sym_bfd, size_temp);
+	  DBX_STRINGTAB_SIZE(objfile) = bfd_h_get_32(sym_bfd, size_temp);
 
-	  if (DBX_STRINGTAB_SIZE (objfile) < sizeof (size_temp)
-	      || DBX_STRINGTAB_SIZE (objfile) > bfd_get_size (sym_bfd))
-	    error (_("ridiculous string table size (%d bytes)."),
-		   DBX_STRINGTAB_SIZE (objfile));
+	  if (((size_t)DBX_STRINGTAB_SIZE(objfile) < sizeof(size_temp))
+	      || (DBX_STRINGTAB_SIZE(objfile) > bfd_get_size(sym_bfd)))
+	    error(_("ridiculous string table size (%lu bytes)."),
+		  (size_t)DBX_STRINGTAB_SIZE(objfile));
 
-	  DBX_STRINGTAB (objfile) =
-	    (char *) obstack_alloc (&objfile->objfile_obstack,
-				    DBX_STRINGTAB_SIZE (objfile));
-	  OBJSTAT (objfile, sz_strtab += DBX_STRINGTAB_SIZE (objfile));
+	  DBX_STRINGTAB(objfile) =
+	    (char *)obstack_alloc(&objfile->objfile_obstack,
+                                  DBX_STRINGTAB_SIZE(objfile));
+	  OBJSTAT(objfile, sz_strtab += DBX_STRINGTAB_SIZE(objfile));
 
-	  /* Now read in the string table in one big gulp.  */
-
-	  val = bfd_seek (sym_bfd, STRING_TABLE_OFFSET, SEEK_SET);
+	  /* Now read in the string table in one big gulp: */
+	  val = bfd_seek(sym_bfd, STRING_TABLE_OFFSET, SEEK_SET);
 	  if (val < 0)
-	    perror_with_name (name);
-	  val = bfd_bread (DBX_STRINGTAB (objfile),
-			   DBX_STRINGTAB_SIZE (objfile),
-			   sym_bfd);
-	  if (val != DBX_STRINGTAB_SIZE (objfile))
-	    perror_with_name (name);
+	    perror_with_name(name);
+	  val = bfd_bread(DBX_STRINGTAB(objfile),
+			  DBX_STRINGTAB_SIZE(objfile),
+			  sym_bfd);
+	  if (val != DBX_STRINGTAB_SIZE(objfile))
+	    perror_with_name(name);
 	}
     }
 }
@@ -927,14 +934,14 @@ dbx_symfile_finish (struct objfile *objfile)
 
 	  while (--i >= 0)
 	    {
-	      xfree (hfiles[i].name);
-	      xfree (hfiles[i].vector);
+	      xfree(hfiles[i].name);
+	      xfree(hfiles[i].vector);
 	    }
-	  xfree (hfiles);
+	  xfree(hfiles);
 	}
-      xfree (objfile->deprecated_sym_stab_info);
+      xfree(objfile->deprecated_sym_stab_info);
     }
-  free_header_files ();
+  free_header_files();
 }
 
 
@@ -1003,7 +1010,7 @@ fill_symbuf (struct objfile *objfile)
   if (symbuf == NULL)
     {
       symbuf_size = objfile_symbuf_size;
-      symbuf = xmalloc (symbuf_size);
+      symbuf = (unsigned char *)xmalloc(symbuf_size);
     }
 
   if (stabs_data)
@@ -1011,21 +1018,21 @@ fill_symbuf (struct objfile *objfile)
       /* APPLE LOCAL: Don't use the symbuf if the data is already
 	 read into an internal buffer...  */
       return;
-#if 0
+#if defined(memcpy) && !defined(__APPLE__)
       nbytes = symbuf_size;
       if (nbytes > symbuf_left)
         nbytes = symbuf_left;
-      memcpy (symbuf, stabs_data + symbuf_read, nbytes);
-#endif
+      memcpy(symbuf, (stabs_data + symbuf_read), nbytes);
+#endif /* memcpy && !__APPLE__ */
     }
   else if (symbuf_sections == NULL)
     {
       struct cleanup *cache_cleanup;
-      mem_disable_caching ();
-      cache_cleanup = make_cleanup (mem_enable_caching, 0);
+      mem_disable_caching();
+      cache_cleanup = make_cleanup(mem_enable_caching, 0);
       count = symbuf_size;
-      nbytes = bfd_bread (symbuf, count, sym_bfd);
-      do_cleanups (cache_cleanup);
+      nbytes = bfd_bread(symbuf, count, sym_bfd);
+      do_cleanups(cache_cleanup);
     }
   else
     {
@@ -1063,14 +1070,14 @@ stabs_seek (int sym_offset)
       /* APPLE LOCAL: If we have ALL the stabs data read into an internal
 	 buffer, we don't use the symbuf.  So the symbuf_idx is a direct
 	 index into the data.  */
-      symbuf_idx = symbuf_idx + sym_offset/symbol_size;
-#if 0
+      symbuf_idx = (symbuf_idx + sym_offset/symbol_size);
+#ifndef __APPLE__
       symbuf_read += sym_offset;
       symbuf_left -= sym_offset;
-#endif
+#endif /* !__APPLE__ */
     }
   else
-    bfd_seek (processing_objfile->obfd, sym_offset, SEEK_CUR);
+    bfd_seek(processing_objfile->obfd, sym_offset, SEEK_CUR);
 }
 
 /* APPLE LOCAL: We added INTERNALIZE SYMBOL because the nlist data gdb
@@ -1083,36 +1090,36 @@ stabs_seek (int sym_offset)
    INTERNALIZE_SYMBOL.  */
 
 #ifndef INTERNALIZE_SYMBOL
-#define INTERNALIZE_SYMBOL(intern, sect_p, extern, abfd)			\
-  {									\
-    (intern).n_type = bfd_h_get_8 (abfd, (extern)->e_type);		\
-    (intern).n_strx = bfd_h_get_32 (abfd, (extern)->e_strx);		\
-    (intern).n_desc = bfd_h_get_16 (abfd, (extern)->e_desc);  		\
-    if (bfd_get_sign_extend_vma (abfd))					\
-      (intern).n_value = bfd_h_get_signed_32 (abfd, (extern)->e_value);	\
-    else								\
-      (intern).n_value = bfd_h_get_32 (abfd, (extern)->e_value);	\
-  }
-#endif
+# define INTERNALIZE_SYMBOL(intern, sect_p, extern, abfd)		\
+   {									\
+     (intern).n_type = bfd_h_get_8(abfd, (extern)->e_type);		\
+     (intern).n_strx = bfd_h_get_32(abfd, (extern)->e_strx);		\
+     (intern).n_desc = bfd_h_get_16(abfd, (extern)->e_desc);  		\
+     if (bfd_get_sign_extend_vma(abfd))					\
+       (intern).n_value = bfd_h_get_signed_32(abfd, (extern)->e_value);	\
+     else								\
+       (intern).n_value = bfd_h_get_32(abfd, (extern)->e_value);	\
+   }
+#endif /* !INTERNALIZE_SYMBOL */
 
 #ifndef PEEK_SYMBOL
-#define PEEK_SYMBOL(intern, sect_p, abfd)				\
-  {									\
-    if (symbuf_idx == symbuf_end)                                       \
-      fill_symbuf (processing_objfile);                                 \
-    INTERNALIZE_SYMBOL (intern, sect_p, (struct external_nlist *)       \
-                        ((stabs_data ? stabs_data: symbuf)              \
+# define PEEK_SYMBOL(intern, sect_p, abfd)				\
+   {									\
+     if (symbuf_idx == symbuf_end)                                      \
+       fill_symbuf(processing_objfile);                                 \
+     INTERNALIZE_SYMBOL(intern, sect_p, (struct external_nlist *)       \
+                        ((stabs_data ? stabs_data : symbuf)             \
                          + (symbol_size * symbuf_idx)), abfd);          \
-  }
-#endif
+   }
+#endif /* !PEEK_SYMBOL */
 
 #ifndef NEXT_SYMBOL
-#define NEXT_SYMBOL(intern,  sect_p, abfd)				\
-  {                                                                     \
-    PEEK_SYMBOL (intern, sect_p, abfd);					\
-    symbuf_idx++;                                                       \
-  }
-#endif
+# define NEXT_SYMBOL(intern, sect_p, abfd)				\
+   {                                                                    \
+     PEEK_SYMBOL(intern, sect_p, abfd);					\
+     symbuf_idx++;                                                      \
+   }
+#endif /* !NEXT_SYMBOL */
 
 /* Invariant: The symbol pointed to by symbuf_idx is the first one
    that hasn't been swapped.  Swap the symbol at the same time
@@ -1211,40 +1218,39 @@ add_bincl_to_list (struct partial_symtab *pst, char *name, int instance)
    with that header_file_location.  */
 
 static struct partial_symtab *
-find_corresponding_bincl_psymtab (char *name, int instance)
+find_corresponding_bincl_psymtab(char *name, int instance)
 {
   struct header_file_location *bincl;
-  unsigned long hash = bincl_hash (name);
+  unsigned long hash = bincl_hash(name);
 
   for (bincl = bincl_list; bincl < next_bincl; bincl++)
     if ((bincl->hash == hash)
 	&& (bincl->instance == instance)
-	&& strcmp (name, bincl->name) == 0)
+	&& strcmp(name, bincl->name) == 0)
       return bincl->pst;
 
-  repeated_header_complaint (name, symnum);
-  return (struct partial_symtab *) 0;
+  repeated_header_complaint(name, symnum);
+  return (struct partial_symtab *)0;
 }
 
-/* Free the storage allocated for the bincl list.  */
-
+/* Free the storage allocated for the bincl list: */
 static void
-free_bincl_list (struct objfile *objfile)
+free_bincl_list(struct objfile *objfile)
 {
-  xfree (bincl_list);
+  xfree(bincl_list);
   bincls_allocated = 0;
 }
 
 static void
-do_free_bincl_list_cleanup (void *objfile)
+do_free_bincl_list_cleanup(void *objfile)
 {
-  free_bincl_list (objfile);
+  free_bincl_list((struct objfile *)objfile);
 }
 
 static struct cleanup *
-make_cleanup_free_bincl_list (struct objfile *objfile)
+make_cleanup_free_bincl_list(struct objfile *objfile)
 {
-  return make_cleanup (do_free_bincl_list_cleanup, objfile);
+  return make_cleanup(do_free_bincl_list_cleanup, objfile);
 }
 
 /* Set namestring based on nlist.  If the string table index is invalid,
@@ -1253,35 +1259,35 @@ make_cleanup_free_bincl_list (struct objfile *objfile)
 
 static char *
 /* APPLE LOCAL symbol prefixes */
-set_namestring_1 (int strtab_size, char *strtab, char leading_char,
-                  struct internal_nlist nlist, const char *prefix)
+set_namestring_1(int strtab_size, char *strtab, char leading_char,
+                 struct internal_nlist nlist, const char *prefix)
 {
   char *namestring;
   static char *namebuf = NULL;
-  static size_t namebuf_len = 0;
+  static size_t namebuf_len = 0UL;
 
-  if (((unsigned int) nlist.n_strx + file_string_table_offset) >=
-      strtab_size)
+  if (((unsigned int)nlist.n_strx + file_string_table_offset)
+      >= (size_t)strtab_size)
     {
-      complaint (&symfile_complaints, _("bad string table offset in symbol %d"),
-		 symnum);
+      complaint(&symfile_complaints,
+                _("bad string table offset in symbol %d"), symnum);
       namestring = "<bad string table offset>";
     }
   else
     {
       const char *p = prefix;
-      char *s = nlist.n_strx + file_string_table_offset + strtab;
+      char *s = (nlist.n_strx + file_string_table_offset + strtab);
       if ((p != NULL) && (p[0] != '\0'))
 	{
-	  size_t req = 1 + strlen (p) + strlen (s) + 1 - 1;
+	  size_t req = (1UL + strlen(p) + strlen(s) + 1UL - 1UL);
 	  while (namebuf_len < req)
 	    {
-	      if (namebuf_len == 0)
-		namebuf_len = 1024;
-	      namebuf_len *= 2;
+	      if (namebuf_len == 0UL)
+		namebuf_len = 1024UL;
+	      namebuf_len *= 2UL;
 	    }
-	  namebuf = xrealloc (namebuf, namebuf_len);
-	  sprintf (namebuf, "%c%s%s", leading_char, p, s + 1);
+	  namebuf = (char *)xrealloc(namebuf, namebuf_len);
+	  sprintf(namebuf, "%c%s%s", leading_char, p, (s + 1));
 	  namestring = namebuf;
 	} else {
 	  namestring = s;
@@ -1446,22 +1452,22 @@ read_dbx_dynamic_symtab (struct objfile *objfile)
 
 #ifdef SOFUN_ADDRESS_MAYBE_MISSING
 static CORE_ADDR
-find_stab_function_addr (char *namestring, char *filename,
-			 struct objfile *objfile)
+find_stab_function_addr(char *namestring, char *filename,
+                        struct objfile *objfile)
 {
   struct minimal_symbol *msym;
   char *p;
   int n;
 
-  p = strchr (namestring, ':');
+  p = strchr(namestring, ':');
   if (p == NULL)
     p = namestring;
-  n = p - namestring;
-  p = alloca (n + 2);
-  strncpy (p, namestring, n);
+  n = (p - namestring);
+  p = (char *)alloca(n + 2UL);
+  strncpy(p, namestring, n);
   p[n] = 0;
 
-  msym = lookup_minimal_symbol (p, filename, objfile);
+  msym = lookup_minimal_symbol(p, filename, objfile);
   if (msym == NULL)
     {
       /* Sun Fortran appends an underscore to the minimal symbol name,
@@ -1486,27 +1492,27 @@ find_stab_function_addr (char *namestring, char *filename,
       msym = lookup_minimal_symbol (p, NULL, objfile);
     }
 
-  return msym == NULL ? 0 : SYMBOL_VALUE_ADDRESS (msym);
+  return ((msym == NULL) ? 0 : SYMBOL_VALUE_ADDRESS(msym));
 }
 #endif /* SOFUN_ADDRESS_MAYBE_MISSING */
 
 static void
-function_outside_compilation_unit_complaint (const char *arg1)
+function_outside_compilation_unit_complaint(const char *arg1)
 {
-  complaint (&symfile_complaints,
-	     _("function `%s' appears to be defined outside of all compilation units"),
-	     arg1);
+  complaint(&symfile_complaints,
+	    _("function `%s' appears to be defined outside of all compilation units"),
+	    arg1);
 }
 
-/* APPLE LOCAL: This function initializes the OSO list.  */
-
+/* APPLE LOCAL: This function initializes the OSO list: */
 struct oso_pst_list *
-init_oso_pst_list (char *oso_name, struct objfile *objfile)
+init_oso_pst_list(char *oso_name, struct objfile *objfile)
 {
   struct oso_pst_list *oso_list;
 
-  oso_list = (struct oso_pst_list *) obstack_alloc (&objfile->objfile_obstack,
-                                                 sizeof (struct oso_pst_list));
+  oso_list = ((struct oso_pst_list *)
+              obstack_alloc(&objfile->objfile_obstack,
+                            sizeof(struct oso_pst_list)));
   oso_list->oso_name = oso_name;
   oso_list->readin = 0;
   oso_list->pst_list = NULL;
@@ -1528,28 +1534,30 @@ static int oso_pst_num_allocated = 0;
 static int oso_pst_num_used = 0;
 
 void
-add_oso_pst_to_list (struct oso_pst_list *list,
-		     struct partial_symtab *pst,
-		     struct objfile *objfile)
+add_oso_pst_to_list(struct oso_pst_list *list, struct partial_symtab *pst,
+		    struct objfile *objfile)
 {
   if (list->pst_list == NULL)
     {
       oso_pst_num_allocated = 30;
       oso_pst_num_used = 0;
-      list->pst_list = (struct partial_symtab **)
-	xmalloc (oso_pst_num_allocated * sizeof (struct partial_symtab *));
+      list->pst_list =
+        ((struct partial_symtab **)
+         xmalloc(oso_pst_num_allocated * sizeof(struct partial_symtab *)));
     }
   else if (oso_pst_num_allocated == oso_pst_num_used)
     {
       oso_pst_num_allocated *= 2;
-      list->pst_list = (struct partial_symtab **) xrealloc (list->pst_list,
-                     oso_pst_num_allocated * sizeof (struct partial_symtab *));
+      list->pst_list =
+        ((struct partial_symtab **)
+         xrealloc(list->pst_list,
+                  (oso_pst_num_allocated
+                   * sizeof(struct partial_symtab *))));
     }
 
   list->pst_list[oso_pst_num_used++] = pst;
   if (pst != NULL)
-    PSYMTAB_OSO_PST_LIST (pst) = list;
-
+    PSYMTAB_OSO_PST_LIST(pst) = list;
 }
 
 /* This adds a NULL element at the end of the pst_list of LIST,
@@ -1557,18 +1565,20 @@ add_oso_pst_to_list (struct oso_pst_list *list,
    OBJFILE's obstack and frees the staging area.  */
 
 void
-end_oso_pst_list (struct oso_pst_list *list, struct objfile *objfile)
+end_oso_pst_list(struct oso_pst_list *list, struct objfile *objfile)
 {
   struct partial_symtab **old_list;
-  add_oso_pst_to_list (list, NULL, objfile);
+  add_oso_pst_to_list(list, NULL, objfile);
   old_list = list->pst_list;
-  list->pst_list = obstack_alloc (&objfile->objfile_obstack,
-                         oso_pst_num_used * sizeof (struct partial_symtab *));
-  memcpy (list->pst_list, old_list,
-                         oso_pst_num_used * sizeof (struct partial_symtab *));
+  list->pst_list =
+    ((struct partial_symtab **)
+     obstack_alloc(&objfile->objfile_obstack,
+                   (oso_pst_num_used * sizeof(struct partial_symtab *))));
+  memcpy(list->pst_list, old_list,
+         (oso_pst_num_used * sizeof(struct partial_symtab *)));
   oso_pst_num_used = 0;
   oso_pst_num_allocated = 0;
-  xfree (old_list);
+  xfree(old_list);
 }
 
 /* END APPLE LOCAL */
@@ -1586,28 +1596,28 @@ end_oso_pst_list (struct oso_pst_list *list, struct objfile *objfile)
    a file name or archive name has a '(' in it.  */
 
 int
-parse_archive_name (char *oso_name, char **archive_name, char **module_name)
+parse_archive_name(char *oso_name, char **archive_name, char **module_name)
 {
   char *lparen;
-  int ar_name_len;
-  int oso_name_len = strlen (oso_name);
-  if (oso_name[oso_name_len - 1] != ')')
+  size_t ar_name_len;
+  size_t oso_name_len = strlen(oso_name);
+  if (oso_name[oso_name_len - 1UL] != ')')
     return 0;
 
-  if (archive_name == NULL && module_name == NULL)
+  if ((archive_name == NULL) && (module_name == NULL))
     return 1;
 
-  lparen = strrchr (oso_name, '(');
+  lparen = strrchr(oso_name, '(');
   if (lparen == NULL)
     return 0;
 
-  ar_name_len = lparen - oso_name;
+  ar_name_len = (lparen - oso_name);
   if (archive_name != NULL)
     {
       char *copy;
-      copy = (char *) xmalloc ((ar_name_len  + 1)
-			       * sizeof (char));
-      memcpy (copy, oso_name, ar_name_len);
+      copy = (char *)xmalloc((ar_name_len + 1UL)
+                             * sizeof(char));
+      memcpy(copy, oso_name, ar_name_len);
       copy[ar_name_len] = '\0';
       *archive_name = copy;
     }
@@ -1615,12 +1625,12 @@ parse_archive_name (char *oso_name, char **archive_name, char **module_name)
   if (module_name != NULL)
     {
       char *copy;
-      int module_name_len;
-      module_name_len = oso_name_len - ar_name_len - 2;
-      copy = (char *) xmalloc ((module_name_len + 1)
-			       * sizeof (char));
-      memcpy (copy, oso_name + ar_name_len + 1,
-	      module_name_len);
+      size_t module_name_len;
+      module_name_len = (oso_name_len - ar_name_len - 2UL);
+      copy = (char *)xmalloc((module_name_len + 1UL)
+                             * sizeof(char));
+      memcpy(copy, (oso_name + ar_name_len + 1UL),
+	     module_name_len);
       copy[module_name_len] = '\0';
       *module_name = copy;
     }
@@ -1629,7 +1639,7 @@ parse_archive_name (char *oso_name, char **archive_name, char **module_name)
 
 /* APPLE LOCAL: pass in the # of stab nlist records we're going to parse. */
 static void
-read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
+read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
 {
   struct internal_nlist nlist;
   CORE_ADDR text_addr;
@@ -1638,23 +1648,23 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
   char *namestring;
   int nsl;
   int past_first_source_file = 0;
-  CORE_ADDR last_o_file_start = 0;
-  CORE_ADDR last_function_start = 0;
+  CORE_ADDR last_o_file_start = 0UL;
+  CORE_ADDR last_function_start = 0UL;
   struct cleanup *back_to;
   bfd *abfd;
   int textlow_not_set;
-  const char *prefix = NULL;
+  const char *prefix = (const char *)NULL;
   int data_sect_index;
 
-  /* Current partial symtab */
+  /* Current partial symtab: */
   struct partial_symtab *pst;
 
-  /* List of current psymtab's include files */
+  /* List of current psymtab's include files: */
   char **psymtab_include_list;
   int includes_allocated;
   int includes_used;
 
-  /* Index within current psymtab dependency list */
+  /* Index within current psymtab dependency list: */
   struct partial_symtab **dependency_list;
   int dependencies_used, dependencies_allocated;
 
@@ -1693,8 +1703,8 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
   /* If the .o file for a "debug in .o file" case is missing, this is set.  */
   int missing_oso_file = 0;
 
-  /* When we have a dSYM file associated with this objfile, this is set.  */
-  int have_dsym_file = objfile->separate_debug_objfile != NULL;
+  /* When we have a dSYM file associated with this objfile, this is set: */
+  int have_dsym_file = (objfile->separate_debug_objfile != NULL);
 
   /* If the objfile is a kext we need both the dSYM (with the ld -r'ed debug
      info of the kext) plus the debug map output from kextload when the kext
@@ -1705,8 +1715,8 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
 
   /* END APPLE LOCAL */
 
-  text_addr = DBX_TEXT_ADDR (objfile);
-  text_size = DBX_TEXT_SIZE (objfile);
+  text_addr = DBX_TEXT_ADDR(objfile);
+  text_size = DBX_TEXT_SIZE(objfile);
 
   prefix = objfile->prefix;
 
@@ -1715,28 +1725,28 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
   file_string_table_offset = 0;
   next_file_string_table_offset = 0;
 
-  stringtab_global = DBX_STRINGTAB (objfile);
+  stringtab_global = DBX_STRINGTAB(objfile);
 
-  pst = (struct partial_symtab *) 0;
+  pst = (struct partial_symtab *)0;
 
   includes_allocated = 30;
   includes_used = 0;
-  psymtab_include_list = (char **) alloca (includes_allocated *
-					   sizeof (char *));
+  psymtab_include_list = (char **)alloca(includes_allocated *
+                                         sizeof(char *));
 
   dependencies_allocated = 30;
   dependencies_used = 0;
   dependency_list =
-    (struct partial_symtab **) alloca (dependencies_allocated *
-				       sizeof (struct partial_symtab *));
+    (struct partial_symtab **)alloca(dependencies_allocated *
+                                     sizeof(struct partial_symtab *));
 
-  /* Init bincl list */
-  init_bincl_list (20, objfile);
-  back_to = make_cleanup_free_bincl_list (objfile);
+  /* Initialize the bincl list: */
+  init_bincl_list(20, objfile);
+  back_to = make_cleanup_free_bincl_list(objfile);
 
   last_source_file = NULL;
 
-  lowest_text_address = (CORE_ADDR) -1;
+  lowest_text_address = (CORE_ADDR)(-1L);
 
   processing_objfile = objfile;	/* For next_text_symbol */
   abfd = objfile->obfd;
@@ -1767,9 +1777,9 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
      .rodata section's offset.  */
   data_sect_index = objfile->sect_index_data;
   if (data_sect_index == -1)
-    data_sect_index = SECT_OFF_BSS (objfile);
+    data_sect_index = SECT_OFF_BSS(objfile);
   if (data_sect_index == -1)
-    data_sect_index = SECT_OFF_RODATA (objfile);
+    data_sect_index = SECT_OFF_RODATA(objfile);
 
   /* If data_sect_index is still -1, that's okay.  It's perfectly fine
      for the file to have no .data, no .bss, and no .text at all, if
@@ -1777,10 +1787,10 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
      get an internal error from an ANOFFSET macro below when we try to
      use data_sect_index.  */
 
-  for (symnum = 0; symnum <  dbx_symcount; symnum++)
+  for (symnum = 0U; symnum < (size_t)dbx_symcount; symnum++)
     {
       /* APPLE LOCAL: See comment below where this is used.  */
-      char leading_char = bfd_get_symbol_leading_char (objfile->obfd);
+      char leading_char = bfd_get_symbol_leading_char(objfile->obfd);
       /* APPLE LOCAL: We go to great lengths to remove the N_SECT flag
 	 from the n_type, but we need to know it here...  */
       int sect_p;
@@ -1788,7 +1798,7 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
       QUIT;			/* allow this to be interruptable */
       namestring = NULL;
 
-      NEXT_SYMBOL (nlist, sect_p, abfd);
+      NEXT_SYMBOL(nlist, sect_p, abfd);
 
       /* APPLE LOCAL: Skip all debug map nlist entries when we have a
 	 dSYM file.  */
@@ -1859,13 +1869,14 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
                from PC to stub target.  So we need to suppress
                reading these in.  */
 #ifdef TM_NEXTSTEP
-            if (sect_p && !macosx_record_symbols_from_sect_p (objfile->obfd,
-                                                              nlist.n_type,
-                                                              nlist.n_other))
+            if (sect_p &&
+                !macosx_record_symbols_from_sect_p(objfile->obfd,
+                                                   nlist.n_type,
+                                                   nlist.n_other))
               continue;
-#endif
+#endif /* TM_NEXTSTEP */
             /* APPLE LOCAL symbol prefixes */
-          namestring = set_namestring (objfile, nlist, prefix);
+          namestring = set_namestring(objfile, nlist, prefix);
 
 	  bss_ext_symbol:
 	  /* APPLE LOCAL: The nlist string table entries include the leading
@@ -2137,7 +2148,7 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
 	    static char *dirname_nso = NULL;
 	    int prev_textlow_not_set;
 
-	    valu = nlist.n_value + objfile_text_section_offset (objfile);
+	    valu = (nlist.n_value + objfile_text_section_offset(objfile));
 
 	    prev_textlow_not_set = textlow_not_set;
 
@@ -2155,11 +2166,11 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
 	      textlow_not_set = 0;
 #else
 	    textlow_not_set = 0;
-#endif
+#endif /* SOFUN_ADDRESS_MAYBE_MISSING */
 	    past_first_source_file = 1;
 
-	    if (prev_so_symnum != symnum - 1)
-	      {			/* Here if prev stab wasn't N_SO */
+	    if (prev_so_symnum != (int)(symnum - 1U))
+	      {			/* Here if prev stab was not N_SO */
 		first_so_symnum = symnum;
 
 		if (pst)
@@ -2318,22 +2329,23 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
               {
                 /* FIXME: we should not get here without a PST to work on.
                    Attempt to recover.  */
-                complaint (&symfile_complaints,
+                complaint(&symfile_complaints,
                        "N_OSO %s not in entries for any file, at symtab pos %d",
-                           namestring, symnum);
+                          namestring, symnum);
                 continue;
               }
-            PSYMTAB_OSO_NAME (pst) = obsavestring (namestring,
-                                    strlen (namestring),
-                                    &objfile->objfile_obstack);
-            PSYMTAB_OSO_MTIME (pst) = (long) nlist.n_value;
+            PSYMTAB_OSO_NAME(pst) =
+              obsavestring(namestring, strlen(namestring),
+                           &objfile->objfile_obstack);
+            PSYMTAB_OSO_MTIME(pst) = (long)nlist.n_value;
 
             /* Next, check to see if this is the symbol sep file... */
-            if (strstr (namestring, ".gch.o") != NULL)
+            if (strstr(namestring, ".gch.o") != NULL)
               {
-                struct partial_symtab_list *listptr =
-                                  xmalloc (sizeof (struct partial_symtab_list));
-                make_cleanup (xfree, listptr);
+                struct partial_symtab_list *listptr;
+                listptr = ((struct partial_symtab_list *)
+                           xmalloc(sizeof(struct partial_symtab_list)));
+                make_cleanup(xfree, listptr);
                 listptr->next = symbol_sep_pst;
                 symbol_sep_pst = listptr;
                 symbol_sep_pst->pst = pst;
@@ -2610,12 +2622,14 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
 		    cur_fun_statics->tail = NULL;
 		  }
 
-		new_static = (struct oso_fun_static *) xmalloc (sizeof (struct oso_fun_static));
-		new_static->address = nlist.n_value
-		  + objfile_section_offset (objfile, data_sect_index);
-		sym_name_len = p - namestring;
-		new_static->name = xmalloc (sym_name_len + 1);
-		strncpy (new_static->name, namestring, sym_name_len);
+		new_static = ((struct oso_fun_static *)
+                              xmalloc(sizeof(struct oso_fun_static)));
+		new_static->address = (nlist.n_value
+                                       + objfile_section_offset(objfile,
+                                                                data_sect_index));
+		sym_name_len = (p - namestring);
+		new_static->name = (char *)xmalloc(sym_name_len + 1UL);
+		strncpy(new_static->name, namestring, sym_name_len);
 		new_static->name[sym_name_len] = '\0';
 		new_static->next = NULL;
 
@@ -2632,15 +2646,15 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
 	      }
 	    continue;
 	  case 'S':
-	    nlist.n_value += objfile_section_offset (objfile, data_sect_index);
+	    nlist.n_value += objfile_section_offset(objfile, data_sect_index);
 #ifdef STATIC_TRANSFORM_NAME
-	    namestring = STATIC_TRANSFORM_NAME (namestring);
-#endif
-	    add_psymbol_to_list (namestring, p - namestring,
-				 VAR_DOMAIN, LOC_STATIC,
-				 &objfile->static_psymbols,
-				 0, nlist.n_value,
-				 psymtab_language, objfile);
+	    namestring = STATIC_TRANSFORM_NAME(namestring);
+#endif /* STATIC_TRANSFORM_NAME */
+	    add_psymbol_to_list(namestring, (p - namestring),
+                                VAR_DOMAIN, LOC_STATIC,
+                                &objfile->static_psymbols,
+                                0, nlist.n_value,
+                                psymtab_language, objfile);
 	    continue;
 	  case 'G':
 	    nlist.n_value += objfile_section_offset (objfile, data_sect_index);
@@ -2780,14 +2794,14 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
 	  global_or_local:
 	    if (! pst)
 	      {
-		int name_len = p - namestring;
-		char *name = xmalloc (name_len + 1);
-		memcpy (name, namestring, name_len);
+		size_t name_len = (p - namestring);
+		char *name = (char *)xmalloc(name_len + 1UL);
+		memcpy(name, namestring, name_len);
 		name[name_len] = '\0';
-		function_outside_compilation_unit_complaint (name);
-		xfree (name);
+		function_outside_compilation_unit_complaint(name);
+		xfree(name);
 	      }
-	    nlist.n_value += objfile_text_section_offset (objfile);
+	    nlist.n_value += objfile_text_section_offset(objfile);
 	    /* Kludges for ELF/STABS with Sun ACC */
 	    /* FIXME: namestring is not necessarily a pointer into the string table.
 	       If you pass a non-null "prefix" to set_namestring, then it reuses a static
@@ -2814,7 +2828,7 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
 		pst->textlow = nlist.n_value;
 		textlow_not_set = 0;
 	      }
-#endif
+#endif /* SOFUN_ADDRESS_MAYBE_MISSING */
 	    /* End kludge.  */
 
 	    /* Keep track of the start of the last function so we
@@ -2838,20 +2852,22 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
 	    /* APPLE LOCAL: Record the current function name so we can tag
 	       the type 'V' STSYM's with it.  But only when we are using
 	       stabs from a .o file.  */
-	    if (pst && PSYMTAB_OSO_NAME (pst) != NULL)
+	    if (pst && (PSYMTAB_OSO_NAME(pst) != NULL))
 	      {
 		if (cur_fun_name != NULL)
-		  xfree (cur_fun_name);
-		cur_fun_name = xmalloc (p - namestring + 1);
-		strncpy (cur_fun_name, namestring, p - namestring);
+		  xfree(cur_fun_name);
+		cur_fun_name = (char *)xmalloc((p - namestring) + 1UL);
+		strncpy(cur_fun_name, namestring, (p - namestring));
 		cur_fun_name[p - namestring] = '\0';
 	      }
 
-	    add_psymbol_to_list (namestring, p - namestring,
-				 VAR_DOMAIN, LOC_BLOCK,
-				 is_global_fun ? &objfile->global_psymbols : &objfile->static_psymbols,
-				 0, nlist.n_value,
-				 psymtab_language, objfile);
+	    add_psymbol_to_list(namestring, (p - namestring),
+                                VAR_DOMAIN, LOC_BLOCK,
+                                (is_global_fun
+                                 ? &objfile->global_psymbols
+                                 : &objfile->static_psymbols),
+                                0, nlist.n_value,
+                                psymtab_language, objfile);
 	    continue;
 
 	    /* Two things show up here (hopefully); static symbols of
@@ -2935,17 +2951,17 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
 		  {
 		    struct partial_symtab **orig = dependency_list;
 		    dependency_list =
-		      (struct partial_symtab **)
-		      alloca ((dependencies_allocated *= 2)
-			      * sizeof (struct partial_symtab *));
-		    memcpy (dependency_list, orig,
-			    (dependencies_used
-			     * sizeof (struct partial_symtab *)));
+		      ((struct partial_symtab **)
+                       alloca((dependencies_allocated *= 2)
+			      * sizeof(struct partial_symtab *)));
+		    memcpy(dependency_list, orig,
+			   (dependencies_used
+			    * sizeof(struct partial_symtab *)));
 #ifdef DEBUG_INFO
-		    fprintf_unfiltered (gdb_stderr, "Had to reallocate dependency list.\n");
-		    fprintf_unfiltered (gdb_stderr, "New dependencies allocated: %d\n",
-					dependencies_allocated);
-#endif
+		    fprintf_unfiltered(gdb_stderr, "Had to reallocate dependency list.\n");
+		    fprintf_unfiltered(gdb_stderr, "New dependencies allocated: %d\n",
+                                       dependencies_allocated);
+#endif /* DEBUG_INFO */
 		  }
 	      }
 	  }
@@ -2958,25 +2974,25 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
 	     is necessary if a module compiled without debugging info
 	     follows this module.  */
 	  if (pst)
-	  {
-	    end_psymtab (pst, psymtab_include_list, includes_used,
-			 symnum * symbol_size,
-			 (CORE_ADDR) 0,
-			 dependency_list, dependencies_used, textlow_not_set);
-	    pst = (struct partial_symtab *) 0;
-	    includes_used = 0;
-	    dependencies_used = 0;
-            in_dwarf_debug_map = 0;
-	    missing_oso_file = 0;
-	  }
-#endif
+            {
+              end_psymtab(pst, psymtab_include_list, includes_used,
+                          (symnum * symbol_size), (CORE_ADDR)0UL,
+                          dependency_list, dependencies_used,
+                          textlow_not_set);
+              pst = (struct partial_symtab *)0;
+              includes_used = 0;
+              dependencies_used = 0;
+              in_dwarf_debug_map = 0;
+              missing_oso_file = 0;
+            }
+#endif /* SOFUN_ADDRESS_MAYBE_MISSING */
 	  continue;
 
 	  case N_RBRAC:
 #ifdef HANDLE_RBRAC
-	  HANDLE_RBRAC (nlist.n_value);
+	  HANDLE_RBRAC(nlist.n_value);
 	  continue;
-#endif
+#endif /* HANDLE_RBRAC */
 	  case N_EINCL:
 	  case N_DSLINE:
 	  case N_BSLINE:
@@ -3043,6 +3059,10 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
  	}
     }
 
+  if (last_o_file_start > 0UL) {
+    ; /* ??? */
+  }
+
   /* APPLE LOCAL: If there's an OSO_PST_LIST in flight, finish
      it off.  */
   if (cur_oso_list != NULL)
@@ -3061,16 +3081,16 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
 	 : lowest_text_address)
 	+ text_size;
 
-      end_psymtab (pst, psymtab_include_list, includes_used,
-		   symnum * symbol_size,
-		   text_end > pst->texthigh ? text_end : pst->texthigh,
-		   dependency_list, dependencies_used, textlow_not_set);
+      end_psymtab(pst, psymtab_include_list, includes_used,
+		  (symnum * symbol_size),
+		  ((text_end > pst->texthigh) ? text_end : pst->texthigh),
+		  dependency_list, dependencies_used, textlow_not_set);
       in_dwarf_debug_map = 0;
       missing_oso_file = 0;
     }
 
-  clear_containing_archive_cache ();
-  do_cleanups (back_to);
+  clear_containing_archive_cache();
+  do_cleanups(back_to);
 }
 
 /* Allocate and partially fill a partial symtab.  It will be
@@ -3082,10 +3102,10 @@ read_dbx_symtab (struct objfile *objfile, int dbx_symcount)
 
 
 static struct partial_symtab *
-start_psymtab (struct objfile *objfile, char *filename, CORE_ADDR textlow,
-	       int ldsymoff, struct partial_symbol **global_syms,
-	       /* APPLE LOCAL symbol prefixes */
-	       struct partial_symbol **static_syms, const char *prefix)
+start_psymtab(struct objfile *objfile, char *filename, CORE_ADDR textlow,
+	      int ldsymoff, struct partial_symbol **global_syms,
+	      /* APPLE LOCAL symbol prefixes */
+	      struct partial_symbol **static_syms, const char *prefix)
 {
   struct partial_symtab *result =
   start_psymtab_common (objfile, objfile->section_offsets,
@@ -3128,10 +3148,10 @@ start_psymtab (struct objfile *objfile, char *filename, CORE_ADDR textlow,
    FIXME:  List variables and peculiarities of same.  */
 
 struct partial_symtab *
-end_psymtab (struct partial_symtab *pst, char **include_list, int num_includes,
-	     int capping_symbol_offset, CORE_ADDR capping_text,
-	     struct partial_symtab **dependency_list, int number_dependencies,
-	     int textlow_not_set)
+end_psymtab(struct partial_symtab *pst, char **include_list, int num_includes,
+	    int capping_symbol_offset, CORE_ADDR capping_text,
+	    struct partial_symtab **dependency_list, int number_dependencies,
+	    int textlow_not_set)
 {
   int i;
   struct objfile *objfile = pst->objfile;
@@ -3163,15 +3183,15 @@ end_psymtab (struct partial_symtab *pst, char **include_list, int num_includes,
       struct minimal_symbol *minsym;
 
       /* APPLE LOCAL */
-      p = find_name_end (last_function_name);
+      p = find_name_end(last_function_name);
       if (p == NULL)
 	p = last_function_name;
-      n = p - last_function_name;
-      p = alloca (n + 2);
-      strncpy (p, last_function_name, n);
+      n = (p - last_function_name);
+      p = (char *)alloca(n + 2UL);
+      strncpy(p, last_function_name, n);
       p[n] = 0;
 
-      minsym = lookup_minimal_symbol (p, pst->filename, objfile);
+      minsym = lookup_minimal_symbol(p, pst->filename, objfile);
       if (minsym == NULL)
 	{
 	  /* Sun Fortran appends an underscore to the minimal symbol name,
@@ -3363,12 +3383,10 @@ find_in_containing_archive_cache (char *archive_name)
   return NULL;
 }
 
-/* Adds CONTAINING_ARCHIVE to the archive cache.  */
-
+/* Adds CONTAINING_ARCHIVE to the archive cache: */
 static void
-add_to_containing_archive_cache (bfd *containing_archive)
+add_to_containing_archive_cache(bfd *containing_archive)
 {
-
   int i;
 
   /* This is a fast check, and if somebody inadvertently adds
@@ -3382,13 +3400,13 @@ add_to_containing_archive_cache (bfd *containing_archive)
   if (num_archives_for_pubtypes == max_num_archives_for_pubtypes)
     {
       max_num_archives_for_pubtypes += PUBTYPE_ARCHIVES_CHUNK;
-      pubtype_bfd_array
-	= xrealloc (pubtype_bfd_array,
-		    max_num_archives_for_pubtypes * sizeof (struct bfd *));
+      pubtype_bfd_array=
+        ((struct bfd **)
+         xrealloc(pubtype_bfd_array,
+		   max_num_archives_for_pubtypes * sizeof(struct bfd *)));
     }
 
-  pubtype_bfd_array[num_archives_for_pubtypes++]
-    = containing_archive;
+  pubtype_bfd_array[num_archives_for_pubtypes++] = containing_archive;
 }
 
 void
@@ -3423,7 +3441,7 @@ clear_containing_archive_cache(void)
    warn if the times don't match.  */
 
 struct bfd *
-open_bfd_from_oso (struct partial_symtab *pst, int *cached)
+open_bfd_from_oso(struct partial_symtab *pst, int *cached)
 {
   struct bfd *oso_bfd, *retval;
   long mtime = 0;
@@ -3450,19 +3468,19 @@ open_bfd_from_oso (struct partial_symtab *pst, int *cached)
             warning ("Could not open object file: \"%s\": %s", oso_name, strerror (errno));
 	  return NULL;
         }
-      if (bfd_check_format (oso_bfd, bfd_archive))
+      if (bfd_check_format(oso_bfd, bfd_archive))
 	{
 	  enum gdb_osabi oso_osabi = GDB_OSABI_UNKNOWN;
 #ifdef MACOSX_DYLD
 	  if (pst->objfile && pst->objfile->obfd)
-	    oso_osabi = macosx_get_osabi_from_dyld_entry (pst->objfile->obfd);
-#endif
-	  oso_bfd = open_bfd_matching_arch (oso_bfd, bfd_object, oso_osabi);
+	    oso_osabi = macosx_get_osabi_from_dyld_entry(pst->objfile->obfd);
+#endif /* MACOSX_DYLD */
+	  oso_bfd = open_bfd_matching_arch(oso_bfd, bfd_object, oso_osabi);
 	  if (oso_bfd == NULL)
 	    {
-	      warning ("Could not open OSO file matching current "
-		       "architecture for \"%s\".",
-		       oso_name);
+	      warning("Could not open OSO file matching current "
+		      "architecture for \"%s\".",
+		      oso_name);
 	      return NULL;
 	    }
 
@@ -3512,16 +3530,16 @@ open_bfd_from_oso (struct partial_symtab *pst, int *cached)
 	  enum gdb_osabi oso_osabi = GDB_OSABI_UNKNOWN;
 #ifdef MACOSX_DYLD
 	  if (pst->objfile && pst->objfile->obfd)
-	    oso_osabi = macosx_get_osabi_from_dyld_entry (pst->objfile->obfd);
-#endif
-	  archive_bfd = open_bfd_matching_arch (archive_bfd, bfd_archive,
-					        oso_osabi);
+	    oso_osabi = macosx_get_osabi_from_dyld_entry(pst->objfile->obfd);
+#endif /* MACOSX_DYLD */
+	  archive_bfd = open_bfd_matching_arch(archive_bfd, bfd_archive,
+					       oso_osabi);
 
 	  if (archive_bfd == NULL)
 	    {
-	      warning ("Could not open fork matching current "
-		       "architecture for OSO archive \"%s\"",
-		       archive_name);
+	      warning("Could not open fork matching current "
+		      "architecture for OSO archive \"%s\"",
+		      archive_name);
 	      retval = NULL;
 	      goto do_cleanups;
 	    }
@@ -3575,11 +3593,11 @@ open_bfd_from_oso (struct partial_symtab *pst, int *cached)
       else
 	name = "<Unknown objfile>";
 
-      warning (".o file \"%s\" more recent than executable timestamp in \"%s\"", oso_name, name);
+      warning(".o file \"%s\" more recent than executable timestamp in \"%s\"", oso_name, name);
       if (cached)
-	clear_containing_archive_cache ();
+	clear_containing_archive_cache();
       else
-	close_bfd_or_archive (retval);
+	close_bfd_or_archive(retval);
 
       return NULL;
     }
@@ -3593,7 +3611,7 @@ open_bfd_from_oso (struct partial_symtab *pst, int *cached)
    while we are at it, so we can find the separate .o's again more efficiently.  */
 
 void
-oso_scan_partial_symtab (struct partial_symtab *pst)
+oso_scan_partial_symtab(struct partial_symtab *pst)
 {
   struct internal_nlist nlist;
   struct oso_pst_list *list;
@@ -3609,58 +3627,55 @@ oso_scan_partial_symtab (struct partial_symtab *pst)
   struct partial_symtab *current_pst = NULL;
   struct objfile *objfile;
   char leading_char;
-  /* Index within current psymtab dependency list */
+  /* Index within current psymtab dependency list: */
   struct partial_symtab **dependency_list;
   int dependencies_used, dependencies_allocated;
 
   dependencies_allocated = 30;
   dependencies_used = 0;
   dependency_list =
-    (struct partial_symtab **) alloca (dependencies_allocated *
-				       sizeof (struct partial_symtab *));
+    (struct partial_symtab **)alloca(dependencies_allocated *
+                                     sizeof(struct partial_symtab *));
 
-  list = PSYMTAB_OSO_PST_LIST (pst);
+  list = PSYMTAB_OSO_PST_LIST(pst);
   if (list == NULL || list->readin)
     return;
 
   list->readin = 1;
 
-  prefix = SYMBOL_PREFIX (pst);
+  prefix = SYMBOL_PREFIX(pst);
   objfile = pst->objfile;
 
-  oso_bfd = open_bfd_from_oso (pst, &cached);
+  oso_bfd = open_bfd_from_oso(pst, &cached);
   if (oso_bfd == NULL)
     {
-      warning ("Couldn't open bfd for .o file: %s.", PSYMTAB_OSO_NAME (pst));
+      warning("Couldn't open bfd for .o file: %s.", PSYMTAB_OSO_NAME(pst));
       return;
     }
 
-  if (!bfd_check_format (oso_bfd, bfd_object))
-    warning ("Not in bfd_object form");
+  if (!bfd_check_format(oso_bfd, bfd_object))
+    warning("Not in bfd_object form");
 
-  leading_char = bfd_get_symbol_leading_char (oso_bfd);
+  leading_char = bfd_get_symbol_leading_char(oso_bfd);
 
   /* Read the nlist data into stabs_data, and read the string_table into
      strtab_ptr.  */
-  oso_data_cleanup = stabsect_read_strtab_from_oso (oso_bfd, &num_syms,
+  oso_data_cleanup = stabsect_read_strtab_from_oso(oso_bfd, &num_syms,
                            &sym_size, &strtab_size, &stabs_data, &strtab_data);
 
   sym_offset = 0;
   symbuf_end = symbuf_idx = 0;
   symbuf_read = 0;
-  symbuf_left = sym_offset + num_syms * sym_size;
+  symbuf_left = (sym_offset + num_syms * sym_size);
 
-  stabs_seek (sym_offset);
+  stabs_seek(sym_offset);
 
-  init_bincl_list (20, objfile);
-  make_cleanup_free_bincl_list (objfile);
+  init_bincl_list(20, objfile);
+  make_cleanup_free_bincl_list(objfile);
 
-  for (symnum = 0;
-       symnum < num_syms;
-       symnum++)
+  for (symnum = 0U; symnum < (size_t)num_syms; symnum++)
     {
-
-      NEXT_SYMBOL (nlist, sect_p, oso_bfd);
+      NEXT_SYMBOL(nlist, sect_p, oso_bfd);
 
       type = nlist.n_type;
       switch (type)
@@ -3671,10 +3686,10 @@ oso_scan_partial_symtab (struct partial_symtab *pst)
 	    static int prev_so_symnum = -10;
 	    static int first_so_symnum;
 	    char *namestring;
-	    namestring = set_namestring_1 (strtab_size, strtab_data,
-					   leading_char, nlist, prefix);
+	    namestring = set_namestring_1(strtab_size, strtab_data,
+					  leading_char, nlist, prefix);
 
-	    if (prev_so_symnum != symnum - 1)
+	    if (prev_so_symnum != (int)(symnum - 1U))
 	      first_so_symnum = symnum;
 
 	    prev_so_symnum = symnum;
@@ -3683,8 +3698,8 @@ oso_scan_partial_symtab (struct partial_symtab *pst)
 	      {
 		/* This is the end of one symtab.
                    Consolidate the dependencies.  */
-		LDSYMLEN (current_pst) = symnum * symbol_size -
-                                                       LDSYMOFF (current_pst);
+		LDSYMLEN(current_pst) = ((symnum * symbol_size)
+                                         - LDSYMOFF(current_pst));
 
 		current_pst->number_of_dependencies = dependencies_used;
 		if (dependencies_used)
@@ -3787,12 +3802,12 @@ oso_scan_partial_symtab (struct partial_symtab *pst)
 	}
     }
 
-  do_cleanups (oso_data_cleanup);
+  do_cleanups(oso_data_cleanup);
 
   if (cached)
-    clear_containing_archive_cache ();
+    clear_containing_archive_cache();
   else
-    close_bfd_or_archive (oso_bfd);
+    close_bfd_or_archive(oso_bfd);
 }
 
 /* APPLE LOCAL: Called from dwarf2read.c, this function reads all the
@@ -3810,9 +3825,9 @@ oso_scan_partial_symtab (struct partial_symtab *pst)
    array.  */
 
 void
-read_oso_nlists (bfd *oso_bfd, struct partial_symtab *pst,
-                 struct nlist_rec **nlists, int *nlists_count,
-                 char ***common_symnames, int *common_symnames_count)
+read_oso_nlists(bfd *oso_bfd, struct partial_symtab *pst,
+                struct nlist_rec **nlists, int *nlists_count,
+                char ***common_symnames, int *common_symnames_count)
 {
   struct internal_nlist nlist;
   const char *prefix;
@@ -3826,41 +3841,43 @@ read_oso_nlists (bfd *oso_bfd, struct partial_symtab *pst,
   char *namestring;
   struct cleanup *oso_data_cleanup;
 
-  *nlists = (struct nlist_rec *) xmalloc
-                                  (sizeof (struct nlist_rec) * nlists_arr_size);
+  *nlists = ((struct nlist_rec *)
+             xmalloc(sizeof(struct nlist_rec) * nlists_arr_size));
   *nlists_count = 0;
 
-  *common_symnames = (char **) xmalloc
-                                  (sizeof (char *) * common_symnames_arr_size);
+  *common_symnames = ((char **)
+                      xmalloc(sizeof(char *) * common_symnames_arr_size));
   *common_symnames_count = 0;
 
-  prefix = SYMBOL_PREFIX (pst);
+  prefix = SYMBOL_PREFIX(pst);
   objfile = pst->objfile;
-  processing_objfile = pst->objfile;  /* Initialize for NEXT_SYMBOL's use */
 
-  leading_char = bfd_get_symbol_leading_char (oso_bfd);
-  oso_data_cleanup = stabsect_read_strtab_from_oso (oso_bfd,
-                                         &num_syms, &sym_size,
-                                         &strtab_size, &stabs_data,
-                                         &strtab_data);
+  if (objfile == NULL) {
+    ; /* ??? */
+  }
+
+  processing_objfile = pst->objfile; /* Initialize for NEXT_SYMBOL's use */
+
+  leading_char = bfd_get_symbol_leading_char(oso_bfd);
+  oso_data_cleanup =
+    stabsect_read_strtab_from_oso(oso_bfd, &num_syms, &sym_size,
+                                  &strtab_size, &stabs_data, &strtab_data);
 
   sym_offset = 0;
   symbuf_end = symbuf_idx = 0;
   symbuf_read = 0;
-  symbuf_left = sym_offset + num_syms * sym_size;
+  symbuf_left = (sym_offset + num_syms * sym_size);
 
-  stabs_seek (sym_offset);
+  stabs_seek(sym_offset);
 
-  for (symnum = 0;
-       symnum < num_syms;
-       symnum++)
+  for (symnum = 0U; symnum < (size_t)num_syms; symnum++)
     {
       int record_standard = 0;
       int record_common = 0;
 
-      NEXT_SYMBOL (nlist, sect_p, oso_bfd);
+      NEXT_SYMBOL(nlist, sect_p, oso_bfd);
 
-      /* A stab nlist?  That shouldn't be here.  Issue warning?  */
+      /* A stab nlist?  That should NOT be here.  Issue warning?  */
       if (nlist.n_type & N_STAB)
         continue;
 
@@ -3869,7 +3886,6 @@ read_oso_nlists (bfd *oso_bfd, struct partial_symtab *pst,
            /*
             * Standard, external, non-debugger, symbols
             */
-
            case N_TEXT:
            case N_TEXT | N_EXT:
            case N_NBTEXT | N_EXT:
@@ -3907,9 +3923,9 @@ read_oso_nlists (bfd *oso_bfd, struct partial_symtab *pst,
          These are not the symbols we use to do the mapping
          from PC to stub target.  So we need to suppress
          reading these in.  */
-      if (sect_p && !macosx_record_symbols_from_sect_p (oso_bfd,
-                                                        nlist.n_type,
-                                                        nlist.n_other))
+      if (sect_p && !macosx_record_symbols_from_sect_p(oso_bfd,
+                                                       nlist.n_type,
+                                                       nlist.n_other))
         continue;
 
       if (record_standard)
@@ -3920,8 +3936,8 @@ read_oso_nlists (bfd *oso_bfd, struct partial_symtab *pst,
           int name_dot_followed_by_digit = 0;
 
           /* APPLE LOCAL symbol prefixes */
-          namestring = set_namestring_1 (strtab_size, strtab_data,
-                                         leading_char, nlist, prefix);
+          namestring = set_namestring_1(strtab_size, strtab_data,
+                                        leading_char, nlist, prefix);
 
           if (leading_char == namestring[0])
             namestring++;
@@ -3929,7 +3945,7 @@ read_oso_nlists (bfd *oso_bfd, struct partial_symtab *pst,
           /* Symbol names like "foo.h" and ".objc_class_name_SKTGraphic" are
              not relevant to the user and will only confuse things.  */
 
-          c = strchr (namestring, '.');
+          c = strchr(namestring, '.');
           if (c != NULL)
             name_has_dot = 1;
 
@@ -3939,17 +3955,17 @@ read_oso_nlists (bfd *oso_bfd, struct partial_symtab *pst,
 
           if (name_has_dot && namestring[0] == '_' && namestring[1] == 'Z')
             {
-              char *demangled = cplus_demangle_v3 (namestring, DMGL_ANSI);
+              char *demangled = cplus_demangle_v3(namestring, DMGL_ANSI);
               if (demangled != NULL)
                 {
-                  if (strstr (demangled, "anonymous namespace") != NULL)
+                  if (strstr(demangled, "anonymous namespace") != NULL)
                     name_is_anon_namespace = 1;
-                  xfree (demangled);
+                  xfree(demangled);
                 }
             }
 
           /* If the dot is followed by a number, we're probably looking
-             at a function static variable, e.g "foo () {static int myvar;}"
+             at a function static variable, e.g "foo() {static int myvar;}"
              will give you a linker symbol name of myvar.3821 or some similarly
              unique name.
              The match is restricted to data/bss section symbols to help avoid
@@ -3959,58 +3975,60 @@ read_oso_nlists (bfd *oso_bfd, struct partial_symtab *pst,
              not match by accident.  */
           if (name_has_dot
               && (namestring[0] != '.')
-              && (isalnum (*(c + 1)) || *(c + 1) == '_')
+              && (isalnum(*(c + 1)) || (*(c + 1) == '_'))
               && (((nlist.n_type & N_DATA) == N_DATA)
                   || ((nlist.n_type & N_BSS) == N_BSS)))
             {
-                /* Don't match ".eh" exception handling symbols here.  */
+                /* Do NOT match ".eh" exception handling symbols here: */
                 if (*(c + 2) == '\0')
                   name_dot_followed_by_digit = 1;
-                else if (*(c + 1) != 'e' && *(c + 2) != 'h' && *(c + 3) != '\0')
+                else if ((*(c + 1) != 'e') && (*(c + 2) != 'h')
+                         && (*(c + 3) != '\0'))
                   name_dot_followed_by_digit = 1;
             }
 
-          if (name_has_dot
-              && !name_is_anon_namespace
+          if (name_has_dot && !name_is_anon_namespace
               && !name_dot_followed_by_digit)
             continue;
 
           (*nlists)[*nlists_count].addr = nlist.n_value;
-          (*nlists)[*nlists_count].name = xstrdup (namestring);
+          (*nlists)[*nlists_count].name = xstrdup(namestring);
 
           if (++(*nlists_count) == nlists_arr_size)
             {
               nlists_arr_size *= 2;
-              *nlists = (struct nlist_rec *)
-                            xrealloc (*nlists,
-                                 sizeof (struct nlist_rec) * nlists_arr_size);
+              *nlists =
+                ((struct nlist_rec *)
+                 xrealloc(*nlists,
+                          (sizeof(struct nlist_rec) * nlists_arr_size)));
             }
         }
 
       if (record_common)
         {
           /* APPLE LOCAL symbol prefixes */
-          namestring = set_namestring_1 (strtab_size, strtab_data,
-                                         leading_char, nlist, prefix);
+          namestring = set_namestring_1(strtab_size, strtab_data,
+                                        leading_char, nlist, prefix);
           if (leading_char == namestring[0])
             namestring++;
 
-          (*common_symnames)[*common_symnames_count] = xstrdup (namestring);
+          (*common_symnames)[*common_symnames_count] = xstrdup(namestring);
           if (++(*common_symnames_count) == common_symnames_arr_size)
             {
               common_symnames_arr_size *= 2;
-              *common_symnames = (char **)
-                            xrealloc (*common_symnames,
-                                 sizeof (char *) * common_symnames_arr_size);
+              *common_symnames =
+                ((char **)
+                 xrealloc(*common_symnames,
+                          (sizeof(char *) * common_symnames_arr_size)));
             }
         }
     }
 
-  do_cleanups (oso_data_cleanup);
+  do_cleanups(oso_data_cleanup);
 }
 
 static void
-dbx_psymtab_to_symtab_1 (struct partial_symtab *pst)
+dbx_psymtab_to_symtab_1(struct partial_symtab *pst)
 {
   struct cleanup *old_chain;
   int i;
@@ -4040,22 +4058,22 @@ dbx_psymtab_to_symtab_1 (struct partial_symtab *pst)
 	/* Inform about additional files that need to be read in.  */
 	if (info_verbose)
 	  {
-	    fputs_filtered (" ", gdb_stdout);
-	    wrap_here ("");
-	    fputs_filtered ("and ", gdb_stdout);
-	    wrap_here ("");
-	    printf_filtered ("%s...", pst->dependencies[i]->filename);
-	    wrap_here ("");	/* Flush output */
-	    gdb_flush (gdb_stdout);
+	    fputs_filtered(" ", gdb_stdout);
+	    wrap_here("");
+	    fputs_filtered("and ", gdb_stdout);
+	    wrap_here("");
+	    printf_filtered("%s...", pst->dependencies[i]->filename);
+	    wrap_here("");	/* Flush output */
+	    gdb_flush(gdb_stdout);
 	  }
-	dbx_psymtab_to_symtab_1 (pst->dependencies[i]);
+	dbx_psymtab_to_symtab_1(pst->dependencies[i]);
       }
 
-  if (LDSYMLEN (pst))		/* Otherwise it's a dummy */
+  if (LDSYMLEN(pst))		/* Otherwise it's a dummy */
     {
       /* Init stuff necessary for reading in symbols */
-      stabsread_init ();
-      buildsym_init ();
+      stabsread_init();
+      buildsym_init();
       old_chain = make_cleanup (really_free_pendings, 0);
       /* Read in this file's symbols */
 
@@ -4082,22 +4100,22 @@ dbx_psymtab_to_symtab_1 (struct partial_symtab *pst)
 	    warning ("Couldn't open bfd for .o file: %s\n", PSYMTAB_OSO_NAME (pst));
 	  else
 	    {
-	      if (!bfd_check_format (oso_bfd, bfd_object))
-		warning ("Not in bfd_object form");
+	      if (!bfd_check_format(oso_bfd, bfd_object))
+		warning("Not in bfd_object form");
 
-	      read_ofile_symtab_from_oso (pst, oso_bfd);
+	      read_ofile_symtab_from_oso(pst, oso_bfd);
 	      /* Either dispose of the containing archive & all it's contents,
 		or just the one oso_bfd.  */
 	      if (cached)
-		clear_containing_archive_cache ();
+		clear_containing_archive_cache();
 	      else if (oso_bfd->my_archive)
-		bfd_close (oso_bfd->my_archive);
+		bfd_close(oso_bfd->my_archive);
 	      else
 		bfd_close(oso_bfd);
 	    }
 	}
       /* END APPLE LOCAL */
-      do_cleanups (old_chain);
+      do_cleanups(old_chain);
     }
 
   pst->readin = 1;
@@ -4118,7 +4136,7 @@ struct oso_data_cleanup
 #ifdef HAVE_MMAP
   bfd_window stab_window;
   bfd_window strtab_window;
-#endif
+#endif /* HAVE_MMAP */
   bfd_byte **stab_data_handle;
   char **strtab_data_handle;
 };
@@ -4126,17 +4144,17 @@ struct oso_data_cleanup
 static void
 cleanup_oso_data (void *data)
 {
-  struct oso_data_cleanup *args = (struct oso_data_cleanup *) data;
+  struct oso_data_cleanup *args = (struct oso_data_cleanup *)data;
 #ifdef HAVE_MMAP
-  bfd_free_window (&(args->stab_window));
-  bfd_free_window (&(args->strtab_window));
+  bfd_free_window(&(args->stab_window));
+  bfd_free_window(&(args->strtab_window));
 #else
-  xfree (*args->stab_data_handle);
-  xfree (*args->strtab_window);
-#endif
+  xfree(*args->stab_data_handle);
+  xfree(*args->strtab_window);
+#endif /* HAVE_MMAP */
   *args->stab_data_handle = NULL;
   *args->strtab_data_handle = NULL;
-  xfree (args);
+  xfree(args);
 }
 
 /* APPLE LOCAL: This is how we open the stabs data for a .o file for Mach-o.
@@ -4145,15 +4163,15 @@ cleanup_oso_data (void *data)
    the data, and that isn't (and should not be) exported...  */
 
 static struct cleanup *
-stabsect_read_strtab_from_oso (struct bfd *oso_bfd, int *symcount,
-                               int *symsize, int *strtab_size,
-			       bfd_byte **stab_data_handle,
-                               char **strtab_data_handle)
+stabsect_read_strtab_from_oso(struct bfd *oso_bfd, int *symcount,
+                              int *symsize, int *strtab_size,
+			      bfd_byte **stab_data_handle,
+                              char **strtab_data_handle)
 {
-  asection *stabsect = bfd_get_section_by_name (oso_bfd, "LC_SYMTAB.stabs");
-  asection *stabstrsect = bfd_get_section_by_name (oso_bfd,  "LC_SYMTAB.stabstr");
+  asection *stabsect = bfd_get_section_by_name(oso_bfd, "LC_SYMTAB.stabs");
+  asection *stabstrsect = bfd_get_section_by_name(oso_bfd,  "LC_SYMTAB.stabstr");
   int val;
-  char *name = bfd_get_filename (oso_bfd);
+  char *name = bfd_get_filename(oso_bfd);
   int stabs_size;
   struct oso_data_cleanup *oso_cleanup;
   static unsigned char *empty_stabs_data = NULL;
@@ -4166,13 +4184,13 @@ stabsect_read_strtab_from_oso (struct bfd *oso_bfd, int *symcount,
 
   if (!stabsect || ! stabstrsect)
     {
-      complaint (&symfile_complaints,
-      "Couldn't find namelist for %s.\n",
-		 name ? name : "<Unknown>");
+      complaint(&symfile_complaints,
+                "Couldn't find namelist for %s.\n",
+                (name ? name : "<Unknown>"));
 
       if (empty_stabs_data == NULL)
 	{
-	  empty_stabs_data = (unsigned char *) xmalloc (1);
+	  empty_stabs_data = (unsigned char *)xmalloc(1);
 	  *empty_stabs_data = '\0';
 	}
 
@@ -4181,85 +4199,81 @@ stabsect_read_strtab_from_oso (struct bfd *oso_bfd, int *symcount,
       *strtab_size = 0;
       *stab_data_handle = empty_stabs_data;
       *strtab_data_handle = NULL;
-      return make_cleanup (null_cleanup, 0);
-
+      return make_cleanup(null_cleanup, 0);
     }
 
-  oso_cleanup
-    = (struct oso_data_cleanup *) malloc (sizeof (struct oso_data_cleanup));
+  oso_cleanup =
+    (struct oso_data_cleanup *)malloc(sizeof(struct oso_data_cleanup));
 
   oso_cleanup->stab_data_handle = stab_data_handle;
   oso_cleanup->strtab_data_handle = strtab_data_handle;
 
-    *symsize =
-    (bfd_mach_o_version (oso_bfd) > 1) ? 16 : 12;
-  stabs_size = bfd_section_size (oso_bfd, stabsect);
-  *symcount = stabs_size / (*symsize);
-    *strtab_size = bfd_section_size (oso_bfd, stabstrsect);
+  *symsize =
+    ((bfd_mach_o_version(oso_bfd) > 1) ? 16 : 12);
+  stabs_size = bfd_section_size(oso_bfd, stabsect);
+  *symcount = (stabs_size / (*symsize));
+  *strtab_size = bfd_section_size(oso_bfd, stabstrsect);
 
 #if HAVE_MMAP
-    /* currently breaks mapped symbol files (string table doesn't end up in objfile) */
+  /* currently breaks mapped symbol files (string table doesn't end up in objfile) */
 
+  bfd_init_window(&(oso_cleanup->stab_window));
 
-    bfd_init_window (&(oso_cleanup->stab_window));
+  /* APPLE LOCAL: Open the string table read only if possible.  Should be
+   * more efficient: */
+  val =
+    bfd_get_section_contents_in_window_with_mode(oso_bfd, stabstrsect,
+                                                 &(oso_cleanup->stab_window),
+                                                 0, *strtab_size, 0);
 
-    /* APPLE LOCAL: Open the string table read only if possible.  Should
-       be more efficient.  */
+  if (!val)
+    perror_with_name(name);
 
-    val = bfd_get_section_contents_in_window_with_mode
-      (oso_bfd, stabstrsect, &(oso_cleanup->stab_window), 0, *strtab_size, 0);
+  *strtab_data_handle = (char *)oso_cleanup->stab_window.data;
 
-    if (!val)
-      perror_with_name (name);
+  bfd_init_window(&(oso_cleanup->strtab_window));
 
-    *strtab_data_handle = oso_cleanup->stab_window.data;
+  val =
+    bfd_get_section_contents_in_window_with_mode(oso_bfd, stabsect,
+                                                 &(oso_cleanup->strtab_window),
+                                                 0, stabs_size, 0);
 
-    bfd_init_window (&(oso_cleanup->strtab_window));
+  if (!val)
+    perror_with_name(name);
 
-    val = bfd_get_section_contents_in_window_with_mode
-      (oso_bfd, stabsect, &(oso_cleanup->strtab_window), 0, stabs_size, 0);
-
-    if (!val)
-      perror_with_name (name);
-
-    *stab_data_handle = oso_cleanup->strtab_window.data;
+  *stab_data_handle = (bfd_byte *)oso_cleanup->strtab_window.data;
 #else
-    if (strtab_size > bfd_get_size (oso_bfd))
-      error
-	("error parsing symbol file: invalid string table size (%d bytes)",
-	 strtab_size);
-    *strtab_data_handle =
-      (char *) malloc (strtab_size + 1);
+  if (strtab_size > bfd_get_size(oso_bfd))
+    error("error parsing symbol file: invalid string table size (%d bytes)",
+          strtab_size);
+  *strtab_data_handle = (char *)malloc(strtab_size + 1UL);
 
-    /* Now read in the string table in one big gulp.  */
+  /* Now read in the string table in one big gulp: */
+  val =
+    bfd_get_section_contents(oso_bfd, stabstrsect, *strtab_data_handle,
+                             0, strtab_size);
 
-    val = bfd_get_section_contents
-      (oso_bfd, stabstrsect, *strtab_data_handle, 0,
-       strtab_size);
+  if (!val)
+    perror_with_name(name);
 
-    if (!val)
-      perror_with_name (name);
+  *stabs_data_handle =
+    (char *)malloc(stabs_size + 1UL);
 
-    *stabs_data_handle =
-      (char *) malloc (stabs_size + 1);
+  /* Now read in the string table in one big gulp: */
+  val = bfd_get_section_contents(oso_bfd, stabsect, *stabs_data_handle,
+                                 0, stabs_size);
 
-    /* Now read in the string table in one big gulp.  */
-
-    val = bfd_get_section_contents
-      (oso_bfd, stabsect, *stabs_data_handle, 0,
-       stabs_size);
-
-    if (!val)
-      perror_with_name (name);
-#endif
-    return make_cleanup (cleanup_oso_data, oso_cleanup);
+  if (!val)
+    perror_with_name(name);
+#endif /* HAVE_MMAP */
+  return make_cleanup(cleanup_oso_data, oso_cleanup);
 }
 
 /* Read in all of the symbols for a given psymtab for real.
    Be verbose about it if the user wants that.  */
 
 static void
-dbx_psymtab_to_symtab (struct partial_symtab *pst)
+dbx_psymtab_to_symtab(struct partial_symtab *pst)
 {
   bfd *sym_bfd;
   struct cleanup *back_to = NULL;
@@ -4269,47 +4283,51 @@ dbx_psymtab_to_symtab (struct partial_symtab *pst)
 
   if (pst->readin)
     {
-      fprintf_unfiltered (gdb_stderr, "Psymtab for %s already read in.  Shouldn't happen.\n",
-			  pst->filename);
+      fprintf_unfiltered(gdb_stderr, "Psymtab for %s already read in.  Shouldn't happen.\n",
+			 pst->filename);
       return;
     }
 
-  if (LDSYMLEN (pst) || pst->number_of_dependencies)
+  if (LDSYMLEN(pst) || pst->number_of_dependencies)
     {
       /* Print the message now, before reading the string table,
          to avoid disconcerting pauses.  */
       if (info_verbose)
 	{
-	  printf_filtered ("Reading in symbols for %s...", pst->filename);
-	  gdb_flush (gdb_stdout);
+	  printf_filtered("Reading in symbols for %s...", pst->filename);
+	  gdb_flush(gdb_stdout);
 	}
 
       sym_bfd = pst->objfile->obfd;
 
+      if (sym_bfd == NULL) {
+        ; /* ??? */
+      }
+
       next_symbol_text_func = dbx_next_symbol_text;
 
-      if (DBX_STAB_SECTION (pst->objfile))
+      if (DBX_STAB_SECTION(pst->objfile))
 	{
 	  stabs_data
-	    = symfile_relocate_debug_section (pst->objfile->obfd,
-					      DBX_STAB_SECTION (pst->objfile),
-					      NULL);
+	    = symfile_relocate_debug_section(pst->objfile->obfd,
+					     DBX_STAB_SECTION(pst->objfile),
+					     NULL);
 	  if (stabs_data)
-	    back_to = make_cleanup (free_current_contents, (void *) &stabs_data);
+	    back_to = make_cleanup(free_current_contents, (void *)&stabs_data);
 	}
 
-      dbx_psymtab_to_symtab_1 (pst);
+      dbx_psymtab_to_symtab_1(pst);
 
       if (back_to)
-	do_cleanups (back_to);
+	do_cleanups(back_to);
 
       /* Match with global symbols.  This only needs to be done once,
          after all of the symtabs and dependencies have been read in.   */
-      scan_file_globals (pst->objfile);
+      scan_file_globals(pst->objfile);
 
       /* Finish up the debug error message.  */
       if (info_verbose)
-	printf_filtered ("done.\n");
+	printf_filtered("done.\n");
     }
 }
 
@@ -4393,17 +4411,17 @@ read_ofile_symtab (struct partial_symtab *pst)
       /* Try to select a C++ demangling based on the compilation unit
          producer. */
 
-#if 0
+#if defined(AUTO_DEMANGLING) && defined(GNU_DEMANGLING_STYLE_STRING)
       /* For now, stay with AUTO_DEMANGLING for g++ output, as we don't
 	 know whether it will use the old style or v3 mangling.  */
       if (processing_gcc_compilation)
 	{
 	  if (AUTO_DEMANGLING)
 	    {
-	      set_demangling_style (GNU_DEMANGLING_STYLE_STRING);
+	      set_demangling_style(GNU_DEMANGLING_STYLE_STRING);
 	    }
 	}
-#endif
+#endif /* AUTO_DEMANGLING && GNU_DEMANGLING_STYLE_STRING */
     }
   else
     {
@@ -4449,23 +4467,22 @@ read_ofile_symtab (struct partial_symtab *pst)
 	     However, there is no reason not to accept
 	     the GCC_COMPILED_FLAG_SYMBOL anywhere.  */
 
-	  if (strcmp (namestring, GCC_COMPILED_FLAG_SYMBOL) == 0)
+	  if (strcmp(namestring, GCC_COMPILED_FLAG_SYMBOL) == 0)
 	    processing_gcc_compilation = 1;
-	  else if (strcmp (namestring, GCC2_COMPILED_FLAG_SYMBOL) == 0)
+	  else if (strcmp(namestring, GCC2_COMPILED_FLAG_SYMBOL) == 0)
 	    processing_gcc_compilation = 2;
 
-#if 0
+#if defined(AUTO_DEMANGLING) && defined(GNU_DEMANGLING_STYLE_STRING)
 	  /* For now, stay with AUTO_DEMANGLING for g++ output, as we don't
 	     know whether it will use the old style or v3 mangling.  */
 	  if (AUTO_DEMANGLING)
 	    {
-	      set_demangling_style (GNU_DEMANGLING_STYLE_STRING);
+	      set_demangling_style(GNU_DEMANGLING_STYLE_STRING);
 	    }
-#endif
+#endif /* AUTO_DEMANGLING && GNU_DEMANGLING_STYLE_STRING */
 	}
-      else if (type & N_EXT || type == (unsigned char) N_TEXT
-	       || type == (unsigned char) N_NBTEXT
-	)
+      else if ((type & N_EXT) || (type == (unsigned char)N_TEXT)
+	       || (type == (unsigned char)N_NBTEXT))
 	{
 	  /* Global symbol: see if we came across a dbx defintion for
 	     a corresponding symbol.  If so, store the value.  Remove
@@ -4494,9 +4511,9 @@ read_ofile_symtab (struct partial_symtab *pst)
   if (last_source_start_addr > text_offset)
     last_source_start_addr = text_offset;
 
-  pst->symtab = end_symtab (text_offset + text_size, objfile, SECT_OFF_TEXT (objfile));
+  pst->symtab = end_symtab(text_offset + text_size, objfile, SECT_OFF_TEXT(objfile));
 
-  end_stabs ();
+  end_stabs();
 }
 
 /* APPLE LOCAL: The following section is to support reading debug
@@ -4533,13 +4550,13 @@ lookup_psymbol_from_namestring (struct partial_symtab *pst,
       global = 0;
       break;
     default:
-      warning ("Unknown type passed to lookup_psymbol_from_namestring");
+      warning("Unknown type passed to lookup_psymbol_from_namestring");
       return NULL;
       break;
     }
-  name_len = name - namestring;
-  name = alloca (name_len + 1);
-  strncpy (name, namestring, name_len);
+  name_len = (name - namestring);
+  name = (char *)alloca(name_len + 1);
+  strncpy(name, namestring, name_len);
   name[name_len] = '\0';
 
   demangled = NULL;
@@ -4603,7 +4620,7 @@ oso_statics_pop (struct oso_fun_list *list_ptr)
 
 
 static void
-read_ofile_symtab_from_oso (struct partial_symtab *pst, struct bfd *oso_bfd)
+read_ofile_symtab_from_oso(struct partial_symtab *pst, struct bfd *oso_bfd)
 {
   char *namestring = NULL;
   struct internal_nlist nlist;
@@ -4626,59 +4643,65 @@ read_ofile_symtab_from_oso (struct partial_symtab *pst, struct bfd *oso_bfd)
 
   objfile = pst->objfile;
 
-  leading_char = bfd_get_symbol_leading_char (oso_bfd);
+  leading_char = bfd_get_symbol_leading_char(oso_bfd);
 
-  /* Read the nlist data into stabs_data, and read the string_table into strtab_ptr.  */
-  oso_data_cleanup = stabsect_read_strtab_from_oso (oso_bfd, &num_syms, &sym_size, &strtab_size,
-				 &stabs_data, &strtab_data);
+  /* Read the nlist data into stabs_data, and read the string_table into strtab_ptr: */
+  oso_data_cleanup =
+    stabsect_read_strtab_from_oso(oso_bfd, &num_syms, &sym_size,
+                                  &strtab_size, &stabs_data, &strtab_data);
 
   text_offset = pst->textlow;
-  text_size = pst->texthigh - pst->textlow;
+  text_size = (pst->texthigh - pst->textlow);
   /* This cannot be simply objfile->section_offsets because of
      elfstab_offset_sections() which initializes the psymtab section
      offsets information in a special way, and that is different from
      objfile->section_offsets. */
   section_offsets = pst->section_offsets;
-  prefix = SYMBOL_PREFIX (pst);
+  prefix = SYMBOL_PREFIX(pst);
 
   current_objfile = objfile;
   subfile_stack = NULL;
 
-  stringtab_global = (char *) stabs_data;
+  stringtab_global = (char *)stabs_data;
   last_source_file = NULL;
 
   abfd = oso_bfd;
+
+  if (abfd == NULL) {
+    ; /* ??? */
+  }
+
   processing_objfile = objfile;	/* Implicit param to next_text_symbol */
 
-  sym_offset = LDSYMOFF (pst);
+  sym_offset = LDSYMOFF(pst);
   symbuf_end = symbuf_idx = 0;
   symbuf_read = 0;
-  symbuf_left = sym_offset + num_syms * sym_size;
+  symbuf_left = (sym_offset + num_syms * sym_size);
 
-  stabs_seek (sym_offset);
+  stabs_seek(sym_offset);
 
   symnum = symbuf_idx;
 
   processing_gcc_compilation = 0;
 
-  PEEK_SYMBOL (nlist, sect_p, oso_bfd);
+  PEEK_SYMBOL(nlist, sect_p, oso_bfd);
   if (nlist.n_type != N_SO)
-    error ("First symbol in segment of executable not a source symbol");
+    error("First symbol in segment of executable not a source symbol");
 
-  for (;
-       symnum < num_syms;
-       symnum++)
+  for (; symnum < (size_t)num_syms; symnum++)
     {
       CORE_ADDR offset = 0;
 
       QUIT;			/* Allow this to be interruptable */
 
-      NEXT_SYMBOL (nlist, sect_p, oso_bfd);
-      /* OBJSTAT (objfile, n_stabs++); */
+      NEXT_SYMBOL(nlist, sect_p, oso_bfd);
+#ifdef OBJSTAT
+      OBJSTAT(objfile, n_stabs++);
+#endif /* OBJSTAT */
 
       type = nlist.n_type;
-      namestring = set_namestring_1 (strtab_size, strtab_data,
-				     leading_char, nlist, prefix);
+      namestring = set_namestring_1(strtab_size, strtab_data,
+				    leading_char, nlist, prefix);
 
       /* Here's where we scan ahead and look for the next N_FUN stab,
 	 then we match that with the partial_symbol we made from the
@@ -4686,10 +4709,10 @@ read_ofile_symtab_from_oso (struct partial_symtab *pst, struct bfd *oso_bfd)
 	 will give us the offset we will apply till we hit the next
 	 BNSYM.  */
 
-      /* FIXME: I am explicitly ONLY dealing with the stabs_data case here, and
-	 assuming you are reading directly from stabs_data.
-	 If you were going to use the symbuf, you would have to be more careful when
-	 you cross symbuf windows.  */
+      /* FIXME: I am explicitly ONLY dealing with the stabs_data case here,
+       * and assuming you are reading directly from stabs_data.
+       * If you were going to use the symbuf, then you would have to be
+       * more careful when you cross symbuf windows.  */
 
       if (type == N_BNSYM)
 	{
@@ -4702,7 +4725,7 @@ read_ofile_symtab_from_oso (struct partial_symtab *pst, struct bfd *oso_bfd)
 
 	  while (scan_ptr < num_syms)
 	    {
-	      NEXT_SYMBOL (tmp_nlist, sect_p, oso_bfd);
+	      NEXT_SYMBOL(tmp_nlist, sect_p, oso_bfd);
 	      if (tmp_nlist.n_type == N_FUN)
 		{
 		  found_it = 1;
@@ -4717,24 +4740,27 @@ read_ofile_symtab_from_oso (struct partial_symtab *pst, struct bfd *oso_bfd)
 	    }
 	  if (!found_it)
 	    {
-	      complaint (&symfile_complaints, "Scan to end from BNSYM without finding FUN");
+	      complaint(&symfile_complaints,
+                        "Scan to end from BNSYM without finding FUN");
 	    }
 	  else
 	    {
-
-	      /* Now look up the partial symbol for this FUN.  */
-	      fun_namestring = set_namestring_1 (strtab_size, strtab_data,
-						 leading_char, tmp_nlist, prefix);
+	      /* Now look up the partial symbol for this FUN: */
+	      fun_namestring = set_namestring_1(strtab_size, strtab_data,
+                                                leading_char, tmp_nlist,
+                                                prefix);
 
 	      if (fun_namestring[0] == '\0')
 		{
-		  complaint (&symfile_complaints, "Found NULL FUN stab scanning for function.");
+		  complaint(&symfile_complaints,
+                            "Found NULL FUN stab scanning for function.");
 		  fun_psym = NULL;
 		}
 	      else
 		{
-		  fun_psym = lookup_psymbol_from_namestring (pst, fun_namestring,
-							     VAR_DOMAIN);
+		  fun_psym =
+                    lookup_psymbol_from_namestring(pst, fun_namestring,
+                                                   VAR_DOMAIN);
 		}
 	    }
 
@@ -4748,10 +4774,10 @@ read_ofile_symtab_from_oso (struct partial_symtab *pst, struct bfd *oso_bfd)
 	         them.  */
 	      found_it = 0;
 	      symbuf_idx = old_symbuf_idx;
-	      while (symnum < num_syms)
+	      while (symnum < (size_t)num_syms)
 		{
 		  char *tmp_namestring;
-		  NEXT_SYMBOL (tmp_nlist, sect_p, oso_bfd);
+		  NEXT_SYMBOL(tmp_nlist, sect_p, oso_bfd);
 		  if (tmp_nlist.n_type == N_ENSYM)
 		    {
 		      found_it = 1;
@@ -4824,18 +4850,18 @@ read_ofile_symtab_from_oso (struct partial_symtab *pst, struct bfd *oso_bfd)
 			PSYMTAB_OSO_STATICS(pst) = oso_statics_pop (list_ptr);
 		    }
 		  if (cur_fun_name)
-		    xfree (cur_fun_name);
+		    xfree(cur_fun_name);
 		  cur_fun_name = NULL;
 		  break;
 		}
 	      else
 		{
-		  char *p = find_name_end (namestring);
-		  int namelen = p - namestring;
+		  char *p = find_name_end(namestring);
+		  int namelen = (p - namestring);
 		  if (cur_fun_name != NULL)
-		    xfree (cur_fun_name);
-		  cur_fun_name = xmalloc (namelen + 1);
-		  strncpy (cur_fun_name, namestring, namelen);
+		    xfree(cur_fun_name);
+		  cur_fun_name = (char *)xmalloc(namelen + 1UL);
+		  strncpy(cur_fun_name, namestring, namelen);
 		  cur_fun_name[namelen] = '\0';
 		}
 	    case N_SO:
@@ -4890,12 +4916,12 @@ read_ofile_symtab_from_oso (struct partial_symtab *pst, struct bfd *oso_bfd)
 			    if (static_ptr == NULL)
 			      {
 				char *symname;
-				symname = xmalloc (namelen + 1);
-				strncpy (symname, namestring, namelen);
+				symname = (char *)xmalloc(namelen + 1UL);
+				strncpy(symname, namestring, namelen);
 				symname[namelen] = '\0';
-				warning ("Could not find statics info for symbol: %s in function: %s",
-					 symname, cur_fun_name);
-				xfree (symname);
+				warning("Could not find statics info for symbol: %s in function: %s",
+                                        symname, cur_fun_name);
+				xfree(symname);
 			      }
 			    else
 			      {
@@ -4967,14 +4993,14 @@ read_ofile_symtab_from_oso (struct partial_symtab *pst, struct bfd *oso_bfd)
   if (last_source_start_addr > text_offset)
     last_source_start_addr = text_offset;
 
-  pst->symtab = end_symtab (text_offset + text_size, objfile, SECT_OFF_TEXT (objfile));
+  pst->symtab = end_symtab(text_offset + text_size, objfile, SECT_OFF_TEXT(objfile));
 
-  end_stabs ();
+  end_stabs();
 
   if (cur_fun_name != NULL)
-    xfree (cur_fun_name);
+    xfree(cur_fun_name);
 
-  do_cleanups (oso_data_cleanup);
+  do_cleanups(oso_data_cleanup);
 }
 
 
@@ -4994,13 +5020,13 @@ read_ofile_symtab_from_oso (struct partial_symtab *pst, struct bfd *oso_bfd)
    is used in end_symtab.  */
 
 void
-process_one_symbol (int type, int desc, CORE_ADDR valu, char *name,
-		    const char *prefix,
-                    struct section_offsets *section_offsets,
-		    struct objfile *objfile)
+process_one_symbol(int type, int desc, CORE_ADDR valu, char *name,
+		   const char *prefix,
+                   struct section_offsets *section_offsets,
+		   struct objfile *objfile)
 {
   /* APPLE LOCAL huh? */
-  struct context_stack *new = NULL;
+  struct context_stack *newstack = (struct context_stack *)NULL;
   /* This remembers the address of the start of a function.  It is
      used because in Solaris 2, N_LBRAC, N_RBRAC, and N_SLINE entries
      are relative to the current function's start address.  On systems
@@ -5044,18 +5070,18 @@ process_one_symbol (int type, int desc, CORE_ADDR valu, char *name,
       /* N_LBRAC, N_RBRAC and N_SLINE entries are not relative to the
 	 function start address, so just use the text offset.  */
       function_start_offset =
-	ANOFFSET (section_offsets, SECT_OFF_TEXT (objfile));
+	ANOFFSET(section_offsets, SECT_OFF_TEXT(objfile));
     }
 
   /* Something is wrong if we see real data before seeing a source
      file name.  */
 
-  if (last_source_file == NULL && type != (unsigned char) N_SO)
+  if ((last_source_file == NULL) && (type != (unsigned char)N_SO))
     {
       /* Ignore any symbols which appear before an N_SO symbol.
          Currently no one puts symbols there, but we should deal
          gracefully with the case.  A complain()t might be in order,
-         but this should not be an error ().  */
+         but this should not be an error().  */
       return;
     }
 
@@ -5077,15 +5103,15 @@ process_one_symbol (int type, int desc, CORE_ADDR valu, char *name,
 
  	  if (context_stack_depth <= 0)
  	    {
-	      lbrac_mismatch_complaint (symnum);
+	      lbrac_mismatch_complaint(symnum);
  	      break;
  	    }
 
 	  /* APPLE LOCAL */
 	  if (!saw_fun_start)
 	    {
-	      complaint (&symfile_complaints,
-			 "Found an end function stab with no corresponding begin");
+	      complaint(&symfile_complaints,
+                        "Found an end function stab with no corresponding begin");
 	      break;
 	    }
 	  else
@@ -5101,31 +5127,33 @@ process_one_symbol (int type, int desc, CORE_ADDR valu, char *name,
 	    {
 	      /* APPLE LOCAL begin subroutine inlining  */
 	      if (processing_gcc_compilation || !end_fun_absolute_p)
-		record_line (current_subfile, 0, last_function_start + valu, 0,
-			     NORMAL_LT_ENTRY);
+		record_line(current_subfile, 0,
+                            (last_function_start + valu), 0,
+                            NORMAL_LT_ENTRY);
 	      else
-		record_line (current_subfile, 0, valu, 0, NORMAL_LT_ENTRY);
+		record_line(current_subfile, 0, valu, 0, NORMAL_LT_ENTRY);
 	      /* APPLE LOCAL end subroutine inlining  */
 	    }
 
 	  within_function = 0;
-	  new = pop_context ();
+	  newstack = pop_context();
 
 	  if (processing_gcc_compilation || !end_fun_absolute_p)
-	    valu_abs = new->start_addr + valu;
+	    valu_abs = (newstack->start_addr + valu);
 	  else
 	    {
 	      /* Relocate for dynamic loading */
 	      valu_abs = valu;
-	      valu_abs += ANOFFSET (section_offsets, SECT_OFF_TEXT (objfile));
-	      valu_abs = SMASH_TEXT_ADDRESS (valu_abs);
+	      valu_abs += ANOFFSET(section_offsets,
+                                   SECT_OFF_TEXT(objfile));
+	      valu_abs = SMASH_TEXT_ADDRESS(valu_abs);
 	    }
 
 	  /* Make a block for the local symbols within.  */
 	  /* APPLE LOCAL begin address ranges  */
-	  finish_block (new->name, &local_symbols, new->old_blocks,
-			new->start_addr, valu_abs, NULL,
-			objfile);
+	  finish_block(newstack->name, &local_symbols,
+                       newstack->old_blocks, newstack->start_addr,
+                       valu_abs, NULL, objfile);
 	  /* APPLE LOCAL end address ranges  */
 
 	  /* May be switching to an assembler file which may not be using
@@ -5138,9 +5166,9 @@ process_one_symbol (int type, int desc, CORE_ADDR valu, char *name,
 
       sline_found_in_function = 0;
 
-      /* Relocate for dynamic loading.  */
-      valu += ANOFFSET (section_offsets, SECT_OFF_TEXT (objfile));
-      valu = SMASH_TEXT_ADDRESS (valu);
+      /* Relocate for dynamic loading: */
+      valu += ANOFFSET(section_offsets, SECT_OFF_TEXT(objfile));
+      valu = SMASH_TEXT_ADDRESS(valu);
       last_function_start = valu;
 
       goto define_a_symbol;
@@ -5164,9 +5192,9 @@ process_one_symbol (int type, int desc, CORE_ADDR valu, char *name,
 	/* On most machines, the block addresses are relative to the
 	   N_SO, the linker did not relocate them (sigh).  */
 	valu += last_source_start_addr;
-#endif
+#endif /* BLOCK_ADDRESS_ABSOLUTE */
 
-      new = push_context (desc, valu);
+      newstack = push_context(desc, valu);
       break;
 
     case N_RBRAC:
@@ -5188,30 +5216,30 @@ process_one_symbol (int type, int desc, CORE_ADDR valu, char *name,
 	/* On most machines, the block addresses are relative to the
 	   N_SO, the linker did not relocate them (sigh).  */
 	valu += last_source_start_addr;
-#endif
+#endif /* BLOCK_ADDRESS_ABSOLUTE */
 
       if (context_stack_depth <= 0)
 	{
-	  lbrac_mismatch_complaint (symnum);
+	  lbrac_mismatch_complaint(symnum);
 	  break;
 	}
 
-      new = pop_context ();
-      if (desc != new->depth)
-	lbrac_mismatch_complaint (symnum);
+      newstack = pop_context();
+      if (desc != newstack->depth)
+	lbrac_mismatch_complaint(symnum);
 
       /* Some compilers put the variable decls inside of an
          LBRAC/RBRAC block.  This macro should be nonzero if this is
          true.  DESC is N_DESC from the N_RBRAC symbol.  GCC_P is true
          if we've detected the GCC_COMPILED_SYMBOL or the
          GCC2_COMPILED_SYMBOL.  */
-#if !defined (VARIABLES_INSIDE_BLOCK)
-#define VARIABLES_INSIDE_BLOCK(desc, gcc_p) 0
-#endif
+#if !defined(VARIABLES_INSIDE_BLOCK)
+# define VARIABLES_INSIDE_BLOCK(desc, gcc_p) 0
+#endif /* !VARIABLES_INSIDE_BLOCK */
 
       /* Can only use new->locals as local symbols here if we're in
          GCC or on a machine that puts them before the lbrack.  */
-      if (!VARIABLES_INSIDE_BLOCK (desc, processing_gcc_compilation))
+      if (!VARIABLES_INSIDE_BLOCK(desc, processing_gcc_compilation))
 	{
 	  if (local_symbols != NULL)
 	    {
@@ -5223,15 +5251,15 @@ process_one_symbol (int type, int desc, CORE_ADDR valu, char *name,
 		 symbols within an LBRAC/RBRAC block; this complaint
 		 might also help sort out problems in which
 		 VARIABLES_INSIDE_BLOCK is incorrectly defined.  */
-	      complaint (&symfile_complaints, _("\
+	      complaint(&symfile_complaints, _("\
 misplaced N_LBRAC entry; discarding local symbols which have \
 no enclosing block"));
 	    }
-	  local_symbols = new->locals;
+	  local_symbols = newstack->locals;
 	}
 
       if (context_stack_depth
-	  > !VARIABLES_INSIDE_BLOCK (desc, processing_gcc_compilation))
+	  > !VARIABLES_INSIDE_BLOCK(desc, processing_gcc_compilation))
 	{
 	  /* This is not the outermost LBRAC...RBRAC pair in the
 	     function, its local symbols preceded it, and are the ones
@@ -5244,16 +5272,16 @@ no enclosing block"));
 	      /* Muzzle a compiler bug that makes end < start.
 
 		 ??? Which compilers?  Is this ever harmful?.  */
-	      if (new->start_addr > valu)
+	      if (newstack->start_addr > valu)
 		{
-		  complaint (&symfile_complaints,
-			     _("block start larger than block end"));
-		  new->start_addr = valu;
+		  complaint(&symfile_complaints,
+			    _("block start larger than block end"));
+		  newstack->start_addr = valu;
 		}
 	      /* Make a block for the local symbols within.  */
 	      /* APPLE LOCAL begin address ranges  */
-	      finish_block (0, &local_symbols, new->old_blocks,
-			    new->start_addr, valu, NULL, objfile);
+	      finish_block(0, &local_symbols, newstack->old_blocks,
+			   newstack->start_addr, valu, NULL, objfile);
 	      /* APPLE LOCAL end address ranges  */
 	    }
 	}
@@ -5266,16 +5294,16 @@ no enclosing block"));
 	  within_function = 0;
 	}
 
-      if (VARIABLES_INSIDE_BLOCK (desc, processing_gcc_compilation))
+      if (VARIABLES_INSIDE_BLOCK(desc, processing_gcc_compilation))
 	/* Now pop locals of block just finished.  */
-	local_symbols = new->locals;
+	local_symbols = newstack->locals;
       break;
 
     case N_FN:
     case N_FN_SEQ:
       /* This kind of symbol indicates the start of an object file.
          Relocate for dynamic loading.  */
-      valu += ANOFFSET (section_offsets, SECT_OFF_TEXT (objfile));
+      valu += ANOFFSET(section_offsets, SECT_OFF_TEXT(objfile));
       break;
 
     case N_SO:
@@ -5283,7 +5311,7 @@ no enclosing block"));
          source file.  Finish the symbol table of the previous source
          file (if any) and start accumulating a new symbol table.
          Relocate for dynamic loading.  */
-      valu += ANOFFSET (section_offsets, SECT_OFF_TEXT (objfile));
+      valu += ANOFFSET(section_offsets, SECT_OFF_TEXT(objfile));
 
       n_opt_found = 0;
 
@@ -5293,16 +5321,16 @@ no enclosing block"));
 	     sanity checks).  If so, that one was actually the
 	     directory name, and the current one is the real file
 	     name.  Patch things up. */
-	  if (previous_stab_code == (unsigned char) N_SO)
+	  if (previous_stab_code == (unsigned char)N_SO)
 	    {
-	      patch_subfile_names (current_subfile, name);
-              /* APPLE LOCAL: Set the language if the SO stab includes it.  */
-              if (read_so_stab_language_hint (desc) != language_unknown)
-                current_subfile->language = read_so_stab_language_hint (desc);
+	      patch_subfile_names(current_subfile, name);
+              /* APPLE LOCAL: Set the language if the SO stab includes it: */
+              if (read_so_stab_language_hint(desc) != language_unknown)
+                current_subfile->language = read_so_stab_language_hint(desc);
 	      break;		/* Ignore repeated SOs */
 	    }
-	  end_symtab (valu, objfile, SECT_OFF_TEXT (objfile));
-	  end_stabs ();
+	  end_symtab(valu, objfile, SECT_OFF_TEXT(objfile));
+	  end_stabs();
 	}
 
       /* Null name means this just marks the end of text for this .o
@@ -5313,9 +5341,9 @@ no enclosing block"));
       if (block_address_function_relative)
 	function_start_offset = 0;
 
-      start_stabs ();
-      start_symtab (name, NULL, valu);
-      record_debugformat ("stabs");
+      start_stabs();
+      start_symtab(name, NULL, valu);
+      record_debugformat("stabs");
       break;
 
     /* APPLE LOCAL: Ignore N_OSO when re-scanning nlists to create a
@@ -5328,22 +5356,22 @@ no enclosing block"));
          sub-source-file, one whose contents were copied or included
          in the compilation of the main source file (whose name was
          given in the N_SO symbol).  Relocate for dynamic loading.  */
-      valu += ANOFFSET (section_offsets, SECT_OFF_TEXT (objfile));
-      start_subfile (name, current_subfile->dirname);
+      valu += ANOFFSET(section_offsets, SECT_OFF_TEXT(objfile));
+      start_subfile(name, current_subfile->dirname);
       break;
 
     case N_BINCL:
-      push_subfile ();
-      add_new_header_file (name, valu);
-      start_subfile (name, current_subfile->dirname);
+      push_subfile();
+      add_new_header_file(name, valu);
+      start_subfile(name, current_subfile->dirname);
       break;
 
     case N_EINCL:
-      start_subfile (pop_subfile (), current_subfile->dirname);
+      start_subfile(pop_subfile(), current_subfile->dirname);
       break;
 
     case N_EXCL:
-      add_old_header_file (name, valu);
+      add_old_header_file(name, valu);
       break;
 
     case N_SLINE:
@@ -5373,23 +5401,23 @@ no enclosing block"));
       if (within_function && sline_found_in_function == 0)
 	{
 	  if (processing_gcc_compilation == 2)
-	    record_line (current_subfile, desc, last_function_start, 0,
-			 NORMAL_LT_ENTRY);
+	    record_line(current_subfile, desc, last_function_start, 0,
+                        NORMAL_LT_ENTRY);
 	  else
-	    record_line (current_subfile, desc, valu, 0, NORMAL_LT_ENTRY);
+	    record_line(current_subfile, desc, valu, 0, NORMAL_LT_ENTRY);
 	  sline_found_in_function = 1;
 	}
       else
-	record_line (current_subfile, desc, valu, 0, NORMAL_LT_ENTRY);
+	record_line(current_subfile, desc, valu, 0, NORMAL_LT_ENTRY);
       /* APPLE LOCAL end subroutine inlining  */
       break;
 
     case N_BCOMM:
-      common_block_start (name, objfile);
+      common_block_start(name, objfile);
       break;
 
     case N_ECOMM:
-      common_block_end (objfile);
+      common_block_end(objfile);
       break;
 
       /* The following symbol types need to have the appropriate
@@ -5420,8 +5448,8 @@ no enclosing block"));
 
 	if (!symfile_relocatable)
 	  {
-	    p = find_name_end (name);
-	    if (p != 0 && p[1] == 'S')
+	    p = find_name_end(name);
+	    if ((p != 0) && (p[1] == 'S'))
 	      {
 		/* The linker relocated it.  We don't want to add an
 		   elfstab_offset_sections-type offset, but we *do*
@@ -5434,7 +5462,7 @@ no enclosing block"));
 		   elfstab_offset_sections ever starts dealing with
 		   the text offset, and we still need to do this, we
 		   need to invent a SECT_OFF_ADDR_KLUDGE or something.  */
-		valu += ANOFFSET (section_offsets, SECT_OFF_TEXT (objfile));
+		valu += ANOFFSET(section_offsets, SECT_OFF_TEXT(objfile));
 		goto define_a_symbol;
 	      }
 	  }
@@ -5449,29 +5477,29 @@ no enclosing block"));
 	  case N_ROSYM:
 	    goto case_N_ROSYM;
 	  default:
-	    internal_error (__FILE__, __LINE__,
-			    _("failed internal consistency check"));
+	    internal_error(__FILE__, __LINE__,
+			   _("failed internal consistency check"));
 	  }
       }
 
     case_N_STSYM:		/* Static symbol in data segment.  */
     case N_DSLINE:		/* Source line number, data segment.  */
-      valu += ANOFFSET (section_offsets, SECT_OFF_DATA (objfile));
+      valu += ANOFFSET(section_offsets, SECT_OFF_DATA(objfile));
       goto define_a_symbol;
 
     case_N_LCSYM:		/* Static symbol in BSS segment.  */
     case N_BSLINE:		/* Source line number, BSS segment.  */
       /* N_BROWS: overlaps with N_BSLINE.  */
-      valu += ANOFFSET (section_offsets, SECT_OFF_BSS (objfile));
+      valu += ANOFFSET(section_offsets, SECT_OFF_BSS(objfile));
       goto define_a_symbol;
 
-    case_N_ROSYM:		/* Static symbol in read-only data segment.  */
-      valu += ANOFFSET (section_offsets, SECT_OFF_RODATA (objfile));
+    case_N_ROSYM:	  /* Static symbol in read-only data segment.  */
+      valu += ANOFFSET (section_offsets, SECT_OFF_RODATA(objfile));
       goto define_a_symbol;
 
     case N_ENTRY:		/* Alternate entry point.  */
       /* Relocate for dynamic loading.  */
-      valu += ANOFFSET (section_offsets, SECT_OFF_TEXT (objfile));
+      valu += ANOFFSET(section_offsets, SECT_OFF_TEXT(objfile));
       goto define_a_symbol;
 
     case N_ENSYM:               /* MacOS X - just for linker - ignore */
@@ -5493,7 +5521,7 @@ no enclosing block"));
     case N_NBBSS:
     case N_NBSTS:
     case N_NBLCS:
-      unknown_symtype_complaint (hex_string (type));
+      unknown_symtype_complaint(hex_string(type));
       /* FALLTHROUGH */
 
       /* The following symbol types don't need the address field
@@ -5511,7 +5539,7 @@ no enclosing block"));
       if (name)
 	{
 	  int deftype;
-	  char *colon_pos = find_name_end (name);
+	  char *colon_pos = find_name_end(name);
 	  if (colon_pos == NULL)
 	    deftype = '\0';
 	  else
@@ -5526,12 +5554,12 @@ no enclosing block"));
 #ifdef SOFUN_ADDRESS_MAYBE_MISSING
 	      /* Deal with the SunPRO 3.0 compiler which omits the
 	         address from N_FUN symbols.  */
-	      if (type == N_FUN
-		  && valu == ANOFFSET (section_offsets,
-				       SECT_OFF_TEXT (objfile)))
+	      if ((type == N_FUN)
+		  && (valu == ANOFFSET(section_offsets,
+                                       SECT_OFF_TEXT(objfile))))
 		{
 		  CORE_ADDR minsym_valu =
-		    find_stab_function_addr (name, last_source_file, objfile);
+		    find_stab_function_addr(name, last_source_file, objfile);
 
 		  /* The function find_stab_function_addr will return
 		     0 if the minimal symbol wasn't found.
@@ -5542,7 +5570,7 @@ no enclosing block"));
 		  if (minsym_valu != 0)
 		    valu = minsym_valu;
 		}
-#endif
+#endif /* SOFUN_ADDRESS_MAYBE_MISSING */
 
 	      if (block_address_function_relative)
 		/* For Solaris 2 compilers, the block addresses and
@@ -5558,29 +5586,32 @@ no enclosing block"));
 
 	      if (context_stack_depth > 1)
 		{
-		  complaint (&symfile_complaints,
-			     _("unmatched N_LBRAC before symtab pos %d"), symnum);
+		  complaint(&symfile_complaints,
+			    _("unmatched N_LBRAC before symtab pos %d"),
+                            symnum);
 		  break;
 		}
 
 	      if (context_stack_depth > 0)
 		{
-		  new = pop_context ();
+		  newstack = pop_context();
 		  /* Make a block for the local symbols within.  */
 		  /* APPLE LOCAL begin address ranges  */
-		  finish_block (new->name, &local_symbols, new->old_blocks,
-				new->start_addr, valu, NULL, objfile);
+		  finish_block(newstack->name, &local_symbols,
+                               newstack->old_blocks, newstack->start_addr,
+                               valu, NULL, objfile);
 		  /* APPLE LOCAL end address ranges  */
 		}
 
-	      new = push_context (0, valu);
+	      newstack = push_context(0, valu);
 	      /* APPLE LOCAL symbol prefixes */
-	      new->name = define_symbol (valu, name, prefix, desc, type, objfile);
+	      newstack->name = define_symbol(valu, name, prefix, desc,
+                                             type, objfile);
 	      break;
 
 	    default:
 	      /* APPLE LOCAL symbol prefixes */
-	      define_symbol (valu, name, prefix, desc, type, objfile);
+	      define_symbol(valu, name, prefix, desc, type, objfile);
 	      break;
 	    }
 	}
@@ -5592,18 +5623,19 @@ no enclosing block"));
     case N_OPT:			/* Solaris 2: Compiler options.  */
       if (name)
 	{
-	  if (strcmp (name, GCC2_COMPILED_FLAG_SYMBOL) == 0)
+	  if (strcmp(name, GCC2_COMPILED_FLAG_SYMBOL) == 0)
 	    {
 	      processing_gcc_compilation = 2;
-#if 0				/* Works, but is experimental.  -fnf */
+              /* Works, but is experimental.  -fnf */
+#if defined(AUTO_DEMANGLING) && defined(GNU_DEMANGLING_STYLE_STRING)
 	      /* For now, stay with AUTO_DEMANGLING for g++ output, as
 		 we don't know whether it will use the old style or v3
 		 mangling.  */
 	      if (AUTO_DEMANGLING)
 		{
-		  set_demangling_style (GNU_DEMANGLING_STYLE_STRING);
+		  set_demangling_style(GNU_DEMANGLING_STYLE_STRING);
 		}
-#endif
+#endif /* AUTO_DEMANGLING && GNU_DEMANGLING_STYLE_STRING */
 	    }
 	  else
 	    n_opt_found = 1;
@@ -5620,7 +5652,7 @@ no enclosing block"));
 	 N_MAIN within a given objfile, complain() and choose
 	 arbitrarily. (kingdon) */
       if (name != NULL)
-	set_main_name (name);
+	set_main_name(name);
       break;
 
       /* The following symbol types can be ignored.  */
@@ -5630,9 +5662,13 @@ no enclosing block"));
       /* N_UNDF: -- we will never encounter it, since we only process
          one file's symbols at once.  */
     case N_ENDM:		/* Solaris 2: End of module.  */
-    case N_ALIAS:		/* SunPro F77: alias name, ignore for now.  */
+    case N_ALIAS:	    /* SunPro F77: alias name, ignore for now.  */
       break;
     }
+
+  if (function_stab_type > 0) {
+    ; /* ??? */
+  }
 
   /* '#' is a GNU C extension to allow one symbol to refer to another
      related symbol.
@@ -5653,10 +5689,10 @@ no enclosing block"));
 
          We go ahead and advance NAME past the reference, even though
          it is not strictly necessary at this time.  */
-      refnum = symbol_reference_defined (&s);
+      refnum = symbol_reference_defined(&s);
       if (refnum >= 0)
-	if (!ref_search (refnum))
-	  ref_add (refnum, 0, name, valu);
+	if (!ref_search(refnum))
+	  ref_add(refnum, 0, name, valu);
       name = s;
     }
 
@@ -5689,14 +5725,14 @@ no enclosing block"));
    adjusted for coff details. */
 
 void
-coffstab_build_psymtabs (struct objfile *objfile, int mainline,
-			 CORE_ADDR textaddr, unsigned int textsize,
-			 struct stab_section_list *stabsects,
-			 file_ptr stabstroffset, unsigned int stabstrsize)
+coffstab_build_psymtabs(struct objfile *objfile, int mainline,
+                        CORE_ADDR textaddr, unsigned int textsize,
+                        struct stab_section_list *stabsects,
+                        file_ptr stabstroffset, unsigned int stabstrsize)
 {
   int val;
   bfd *sym_bfd = objfile->obfd;
-  char *name = bfd_get_filename (sym_bfd);
+  char *name = bfd_get_filename(sym_bfd);
   struct dbx_symfile_info *info;
   unsigned int stabsize;
 
@@ -5704,33 +5740,37 @@ coffstab_build_psymtabs (struct objfile *objfile, int mainline,
      It might even contain some info from the coff symtab to help us.  */
   info = objfile->deprecated_sym_stab_info;
 
-  DBX_TEXT_ADDR (objfile) = textaddr;
-  DBX_TEXT_SIZE (objfile) = textsize;
+  if (info == NULL) {
+    ; /* ??? */
+  }
+
+  DBX_TEXT_ADDR(objfile) = textaddr;
+  DBX_TEXT_SIZE(objfile) = textsize;
 
 #define	COFF_STABS_SYMBOL_SIZE	12	/* XXX FIXME XXX */
-  DBX_SYMBOL_SIZE (objfile) = COFF_STABS_SYMBOL_SIZE;
-  DBX_STRINGTAB_SIZE (objfile) = stabstrsize;
+  DBX_SYMBOL_SIZE(objfile) = COFF_STABS_SYMBOL_SIZE;
+  DBX_STRINGTAB_SIZE(objfile) = stabstrsize;
 
-  if (stabstrsize > bfd_get_size (sym_bfd))
+  if (stabstrsize > (size_t)bfd_get_size(sym_bfd))
     /* APPLE LOCAL better error message */
-    error ("error parsing symbol file: invalid string table size (%d bytes).", stabstrsize);
-  DBX_STRINGTAB (objfile) = (char *)
-    obstack_alloc (&objfile->objfile_obstack, stabstrsize + 1);
-  OBJSTAT (objfile, sz_strtab += stabstrsize + 1);
+    error("error parsing symfile: invalid string table size (%d bytes).",
+          stabstrsize);
+  DBX_STRINGTAB(objfile) =
+    (char *)obstack_alloc(&objfile->objfile_obstack, (stabstrsize + 1U));
+  OBJSTAT(objfile, sz_strtab += (stabstrsize + 1U));
 
-  /* Now read in the string table in one big gulp.  */
-
-  val = bfd_seek (sym_bfd, stabstroffset, SEEK_SET);
+  /* Now read in the string table in one big gulp: */
+  val = bfd_seek(sym_bfd, stabstroffset, SEEK_SET);
   if (val < 0)
-    perror_with_name (name);
-  val = bfd_bread (DBX_STRINGTAB (objfile), stabstrsize, sym_bfd);
-  if (val != stabstrsize)
-    perror_with_name (name);
+    perror_with_name(name);
+  val = bfd_bread(DBX_STRINGTAB(objfile), stabstrsize, sym_bfd);
+  if ((size_t)val != stabstrsize)
+    perror_with_name(name);
 
-  stabsread_new_init ();
-  buildsym_new_init ();
-  free_header_files ();
-  init_header_files ();
+  stabsread_new_init();
+  buildsym_new_init();
+  free_header_files();
+  init_header_files();
 
   processing_acc_compilation = 1;
 
@@ -5783,13 +5823,13 @@ coffstab_build_psymtabs (struct objfile *objfile, int mainline,
    adjusted for elf details. */
 
 void
-elfstab_build_psymtabs (struct objfile *objfile, int mainline,
-			asection *stabsect,
-			file_ptr stabstroffset, unsigned int stabstrsize)
+elfstab_build_psymtabs(struct objfile *objfile, int mainline,
+                       asection *stabsect, file_ptr stabstroffset,
+                       unsigned int stabstrsize)
 {
   int val;
   bfd *sym_bfd = objfile->obfd;
-  char *name = bfd_get_filename (sym_bfd);
+  char *name = bfd_get_filename(sym_bfd);
   struct dbx_symfile_info *info;
   struct cleanup *back_to = NULL;
 
@@ -5797,46 +5837,50 @@ elfstab_build_psymtabs (struct objfile *objfile, int mainline,
      It might even contain some info from the ELF symtab to help us.  */
   info = objfile->deprecated_sym_stab_info;
 
+  if (info == NULL) {
+    ; /* ??? */
+  }
+
   /* Find the first and last text address.  dbx_symfile_read seems to
      want this.  */
-  find_text_range (sym_bfd, objfile);
+  find_text_range(sym_bfd, objfile);
 
 #define	ELF_STABS_SYMBOL_SIZE	12	/* XXX FIXME XXX */
-  DBX_SYMBOL_SIZE (objfile) = ELF_STABS_SYMBOL_SIZE;
-  DBX_SYMCOUNT (objfile)
-    = bfd_section_size (objfile->obfd, stabsect) / DBX_SYMBOL_SIZE (objfile);
-  DBX_STRINGTAB_SIZE (objfile) = stabstrsize;
-  DBX_SYMTAB_OFFSET (objfile) = stabsect->filepos;
-  DBX_STAB_SECTION (objfile) = stabsect;
+  DBX_SYMBOL_SIZE(objfile) = ELF_STABS_SYMBOL_SIZE;
+  DBX_SYMCOUNT(objfile) =
+    (bfd_section_size(objfile->obfd, stabsect) / DBX_SYMBOL_SIZE(objfile));
+  DBX_STRINGTAB_SIZE(objfile) = stabstrsize;
+  DBX_SYMTAB_OFFSET(objfile) = stabsect->filepos;
+  DBX_STAB_SECTION(objfile) = stabsect;
 
-  if (stabstrsize > bfd_get_size (sym_bfd))
+  if (stabstrsize > (size_t)bfd_get_size(sym_bfd))
     /* APPLE LOCAL better error message */
-    error ("error parsing symbol file: invalid string table size (%d bytes).", stabstrsize);
-  DBX_STRINGTAB (objfile) = (char *)
-    obstack_alloc (&objfile->objfile_obstack, stabstrsize + 1);
-  OBJSTAT (objfile, sz_strtab += stabstrsize + 1);
+    error("error parsing symfile: invalid string table size (%d bytes).",
+          stabstrsize);
+  DBX_STRINGTAB(objfile) =
+    (char *)obstack_alloc(&objfile->objfile_obstack, (stabstrsize + 1UL));
+  OBJSTAT(objfile, sz_strtab += (stabstrsize + 1U));
 
-  /* Now read in the string table in one big gulp.  */
-
-  val = bfd_seek (sym_bfd, stabstroffset, SEEK_SET);
+  /* Now read in the string table in one big gulp: */
+  val = bfd_seek(sym_bfd, stabstroffset, SEEK_SET);
   if (val < 0)
-    perror_with_name (name);
-  val = bfd_bread (DBX_STRINGTAB (objfile), stabstrsize, sym_bfd);
-  if (val != stabstrsize)
-    perror_with_name (name);
+    perror_with_name(name);
+  val = bfd_bread(DBX_STRINGTAB(objfile), stabstrsize, sym_bfd);
+  if ((size_t)val != stabstrsize)
+    perror_with_name(name);
 
-  stabsread_new_init ();
-  buildsym_new_init ();
-  free_header_files ();
-  init_header_files ();
+  stabsread_new_init();
+  buildsym_new_init();
+  free_header_files();
+  init_header_files();
 
   processing_acc_compilation = 1;
 
   symbuf_read = 0;
-  symbuf_left = bfd_section_size (objfile->obfd, stabsect);
-  stabs_data = symfile_relocate_debug_section (objfile->obfd, stabsect, NULL);
+  symbuf_left = bfd_section_size(objfile->obfd, stabsect);
+  stabs_data = symfile_relocate_debug_section(objfile->obfd, stabsect, NULL);
   if (stabs_data)
-    back_to = make_cleanup (free_current_contents, (void *) &stabs_data);
+    back_to = make_cleanup(free_current_contents, (void *)&stabs_data);
 
   /* In an elf file, we've already installed the minimal symbols that came
      from the elf (non-stab) symbol table, so always act like an
@@ -5844,10 +5888,10 @@ elfstab_build_psymtabs (struct objfile *objfile, int mainline,
      minimal symbols, since we will have already read the ELF dynamic symbol
      table and normal symbol entries won't be in the ".stab" section; but in
      case it does, it will install them itself.  */
-  dbx_symfile_read (objfile, 0);
+  dbx_symfile_read(objfile, 0);
 
   if (back_to)
-    do_cleanups (back_to);
+    do_cleanups(back_to);
 }
 
 /* Scan and build partial symbols for a file with special sections for stabs
@@ -5908,74 +5952,63 @@ stabsect_build_psymtabs (struct objfile *objfile, int mainline, char *stab_name,
     error (_("ridiculous string table size: %d bytes"), DBX_STRINGTAB_SIZE (objfile));
   DBX_STRINGTAB (objfile) = (char *)
     obstack_alloc (&objfile->objfile_obstack, DBX_STRINGTAB_SIZE (objfile) + 1);
-  OBJSTAT (objfile, sz_strtab += DBX_STRINGTAB_SIZE (objfile) + 1);
+  OBJSTAT(objfile, sz_strtab += DBX_STRINGTAB_SIZE(objfile) + 1);
 
-  /* Now read in the string table in one big gulp.  */
-
+  /* Now read in the string table in one big gulp: */
   {
     struct cleanup *cache_cleanup;
-    mem_disable_caching ();
-    cache_cleanup = make_cleanup (mem_enable_caching, 0);
-    val = bfd_get_section_contents (sym_bfd,	/* bfd */
-				    stabstrsect,	/* bfd section */
-				    DBX_STRINGTAB (objfile),	/* input buffer */
-				    0,	/* offset into section */
-				    DBX_STRINGTAB_SIZE (objfile));	/* amount to read */
-    do_cleanups (cache_cleanup);
+    mem_disable_caching();
+    cache_cleanup = make_cleanup(mem_enable_caching, 0);
+    val = bfd_get_section_contents(sym_bfd,	/* bfd */
+				   stabstrsect,	/* bfd section */
+				   DBX_STRINGTAB(objfile), /* input buffer */
+				   0,	/* offset into section */
+				   DBX_STRINGTAB_SIZE(objfile)); /* amount to read */
+    do_cleanups(cache_cleanup);
   }
 
   if (!val)
-    perror_with_name (name);
+    perror_with_name(name);
 
-  stabsread_new_init ();
-  buildsym_new_init ();
-  free_header_files ();
-  init_header_files ();
+  stabsread_new_init();
+  buildsym_new_init();
+  free_header_files();
+  init_header_files();
 
-  /* Now, do an incremental load */
+  /* Now, do an incremental load... */
 }
 
 /* APPLE LOCAL: The compiler may indicate the source language in
    the SO stab's "desc" field.  This was originally a Sun extension
    to stabs.  */
 static enum language
-read_so_stab_language_hint (short unsigned n_desc)
+read_so_stab_language_hint(short unsigned n_desc)
 {
   switch (n_desc) {
-    case N_SO_AS:
-      return language_asm;
-    case N_SO_C:
-      return language_c;
-    case N_SO_ANSI_C:
-      return language_c;
-    case N_SO_CC:
-      return language_cplus;
-    case N_SO_FORTRAN:
-      return language_fortran;
-    case N_SO_PASCAL:
-      return language_pascal;
-    case N_SO_FORTRAN90:
-      return language_fortran;
-    case N_SO_OBJC:
-      return language_objc;
-    case N_SO_OBJCPLUS:
-      return language_objcplus;
-    default:
-      return language_unknown;
+    case N_SO_AS: return language_asm;
+    case N_SO_C: return language_c;
+    case N_SO_ANSI_C: return language_c;
+    case N_SO_CC: return language_cplus;
+    case N_SO_FORTRAN: return language_fortran;
+    case N_SO_PASCAL: return language_pascal;
+    case N_SO_FORTRAN90: return language_fortran;
+    case N_SO_OBJC: return language_objc;
+    case N_SO_OBJCPLUS: return language_objcplus;
+    default: return language_unknown;
   }
 }
 
 /* APPLE LOCAL: Check for a telltale BFD section that will let us
    know if we're working on an objfile containing Objective C. */
 static int
-objfile_contains_objc (struct objfile *objfile)
+objfile_contains_objc(struct objfile *objfile)
 {
   /* This case works for i386...  */
-  if (bfd_get_section_by_name (objfile->obfd, "LC_SEGMENT.__OBJC"))
+  if (bfd_get_section_by_name(objfile->obfd, "LC_SEGMENT.__OBJC"))
     return 1;
   /* ...and this case works for x86_64.  */
-  else if (bfd_get_section_by_name (objfile->obfd,
-				    "LC_SEGMENT.__DATA.__objc_imageinfo"))
+  else if (bfd_get_section_by_name(objfile->obfd,
+				   "LC_SEGMENT.__DATA.__objc_imageinfo"))
     return 1;
 
   return 0;
@@ -5990,23 +6023,23 @@ objfile_contains_objc (struct objfile *objfile)
    is actually present in memory.  */
 
 void
-add_dyld_shared_cache_local_symbols (struct objfile *objfile, uint8_t *nlist_records_base,
-                                     int nlist_records_count, int nlist_record_size,
-                                     char *strings_base, CORE_ADDR slide, int mainline)
+add_dyld_shared_cache_local_symbols(struct objfile *objfile, uint8_t *nlist_records_base,
+                                    int nlist_records_count, int nlist_record_size,
+                                    char *strings_base, CORE_ADDR slide, int mainline)
 {
-#if defined (TARGET_ARM) && defined (NM_NEXTSTEP)
+#if defined(TARGET_ARM) && defined(NM_NEXTSTEP)
   if (objfile == NULL || nlist_records_base == NULL || strings_base == NULL)
     return;
-  if (nlist_record_size != 12 && nlist_record_size != 16)
+  if ((nlist_record_size != 12) && (nlist_record_size != 16))
     return;
   if (nlist_records_count == 0)
     return;
 
   /* If we are reinitializing, or if we have never loaded syms yet, init */
   if (mainline
-      || (objfile->global_psymbols.size == 0
-          &&  objfile->static_psymbols.size == 0))
-    init_psymbol_list (objfile, nlist_record_size);
+      || ((objfile->global_psymbols.size == 0)
+          &&  (objfile->static_psymbols.size == 0)))
+    init_psymbol_list(objfile, nlist_record_size);
 
   int i = 0;
   while (i < nlist_records_count)
@@ -6017,64 +6050,63 @@ add_dyld_shared_cache_local_symbols (struct objfile *objfile, uint8_t *nlist_rec
       int8_t type;
       int8_t sect;
       int16_t desc;
-      uint8_t *p = nlist_records_base + (i * nlist_record_size);
-      memcpy (&str_off, p, 4);
-      memcpy (&type, p + 4, 1);
-      memcpy (&sect, p + 5, 1);
-      memcpy (&desc, p + 6, 2);
+      uint8_t *p = (nlist_records_base + (i * nlist_record_size));
+      memcpy(&str_off, p, 4);
+      memcpy(&type, (p + 4), 1);
+      memcpy(&sect, (p + 5), 1);
+      memcpy(&desc, (p + 6), 2);
       if (nlist_record_size == 12)
         {
           int32_t addr;
-          memcpy (&addr, p + 8, 4);
-          address = addr + slide;
+          memcpy(&addr, (p + 8), 4);
+          address = (addr + slide);
         }
       else
         {
           int64_t addr;
-          memcpy (&addr, p + 8, 8);
-          address = addr + slide;
+          memcpy(&addr, (p + 8), 8);
+          address = (addr + slide);
         }
       if (*(strings_base + str_off) == '_')
         str_off++;
-      name = xstrdup (strings_base + str_off);
-      record_minimal_symbol (name, address, type, desc, objfile);
+      name = xstrdup(strings_base + str_off);
+      record_minimal_symbol(name, address, type, desc, objfile);
       i++;
     }
-#endif
+#else
+  return;
+#endif /* TARGET_ARM && NM_NEXTSTEP */
 }
 
 
 static struct sym_fns aout_sym_fns =
 {
   bfd_target_aout_flavour,
-  dbx_new_init,			/* sym_new_init: init anything gbl to entire symtab */
-  dbx_symfile_init,		/* sym_init: read initial info, setup for sym_read() */
-  dbx_symfile_read,		/* sym_read: read a symbol file into symtab */
-  dbx_symfile_finish,		/* sym_finish: finished with file, cleanup */
-  default_symfile_offsets,	/* sym_offsets: parse user's offsets to internal form */
-  NULL				/* next: pointer to next struct sym_fns */
+  dbx_new_init,	     /* sym_new_init: init anything gbl to entire symtab */
+  dbx_symfile_init, /* sym_init: read initial info, setup for sym_read() */
+  dbx_symfile_read,	/* sym_read: read a symbol file into symtab */
+  dbx_symfile_finish,	/* sym_finish: finished with file, cleanup */
+  default_symfile_offsets, /* sym_offsets: parse user's offsets to internal form */
+  NULL			/* next: pointer to next struct sym_fns */
 };
 
 void
-_initialize_dbxread (void)
+_initialize_dbxread(void)
 {
   /* APPLE LOCAL begin dbxread */
-  add_setshow_boolean_cmd ("read-type-psyms", class_obscure,
-			   &read_type_psym_p, _("\
+  add_setshow_boolean_cmd("read-type-psyms", class_obscure,
+			  &read_type_psym_p, _("\
 Set if we should create partial symbols for types."), _("\
 Show if we should create partial symbols for types."), NULL,
-			   NULL,
-			   NULL,
-			   &setlist, &showlist);
-  add_setshow_boolean_cmd ("function-end-absolute", class_obscure,
-			   &end_fun_absolute_p, _("\
+                          NULL, NULL, &setlist, &showlist);
+  add_setshow_boolean_cmd("function-end-absolute", class_obscure,
+			  &end_fun_absolute_p, _("\
 Set if N_FUN end-of-function symbols use absolute addresses on non-GCC files."), _("\
 Show if N_FUN end-of-function symbols use absolute addresses on non-GCC files."), NULL,
-			   NULL,
-			   NULL,
-			   &setlist, &showlist);
+                          NULL, NULL, &setlist, &showlist);
   /* APPLE LOCAL end dbxread */
 
-  add_symtab_fns (&aout_sym_fns);
-
+  add_symtab_fns(&aout_sym_fns);
 }
+
+/* EOF */

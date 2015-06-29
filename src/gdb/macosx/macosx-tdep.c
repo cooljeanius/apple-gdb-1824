@@ -3185,7 +3185,7 @@ macosx_get_kext_sect_addrs_from_kernel(const char *filename ATTRIBUTE_UNUSED,
         {
           if (memcmp(kext_uuids[j], loaded_kexts->kexts[i].uuid, sizeof(uuid_t)) == 0)
             {
-              mh_addr = loaded_kexts->kexts[i].address;
+              mh_addr = (CORE_ADDR)loaded_kexts->kexts[i].address;
               found_match = 1;
               break;
             }
@@ -3256,7 +3256,7 @@ add_all_kexts_command(char *args ATTRIBUTE_UNUSED, int from_tty)
        * file (the "symbol rich executable") and we may have the pathname to
        * a dSYM ("dsym_path").  */
 
-      sect_addrs = get_section_addresses_for_macho_in_memory(lks->kexts[i].address);
+      sect_addrs = get_section_addresses_for_macho_in_memory((CORE_ADDR)lks->kexts[i].address);
       if (sect_addrs == NULL)
         continue;
 
@@ -3473,9 +3473,9 @@ exhaustive_search_for_kernel_in_mem(struct objfile *ofile, CORE_ADDR *addr,
     {
       file_address = bfd_section_vma(ofile->obfd, bfd_get_section_by_name(ofile->obfd, TEXT_SEGMENT_NAME));
 
-      if (mach_kernel_starts_here_p(file_address, uuid, &in_memory_uuid, &in_memory_osabi))
+      if (mach_kernel_starts_here_p((CORE_ADDR)file_address, uuid, &in_memory_uuid, &in_memory_osabi))
         {
-          cur_addr = file_address;
+          cur_addr = (CORE_ADDR)file_address;
           found_kernel = 1;
         }
       else if (file_address != INVALID_ADDRESS)
@@ -3630,7 +3630,7 @@ exhaustive_search_for_kernel_in_mem(struct objfile *ofile, CORE_ADDR *addr,
       /* if valid file_address will contain the __TEXT address from disk image */
       if (file_address != INVALID_ADDRESS)
         {
-          cur_addr = file_address;
+          cur_addr = (CORE_ADDR)file_address;
           /* start searching the address space from kernel __TEXT address
            * on disk till UINT64_MAX: */
           while (!found_kernel && (cur_addr != 0) && cur_addr < stop_addr)
@@ -3896,7 +3896,7 @@ maintenance_list_kexts(char *arg ATTRIBUTE_UNUSED,
   for (i = 0U; i < kexts->count; i++) {
     printf_filtered("%*d 0x%s %s %s\n",
                     padcount, i,
-                    paddr_nz(kexts->kexts[i].address),
+                    paddr_nz((CORE_ADDR)kexts->kexts[i].address),
                     puuid(kexts->kexts[i].uuid),
                     kexts->kexts[i].name);
   }

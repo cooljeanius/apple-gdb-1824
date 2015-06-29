@@ -382,7 +382,7 @@ print_any_exception(struct ui_file *file, const char *prefix,
 
 NORETURN static void
 throw_it(enum return_reason reason, enum errors error, const char *fmt,
-	 va_list ap) ATTR_NORETURN;
+	 va_list ap) ATTR_NORETURN ATTR_FORMAT(gnu_printf, 3, 0);
 NORETURN static void
 throw_it(enum return_reason reason, enum errors error, const char *fmt,
 	 va_list ap)
@@ -396,19 +396,19 @@ throw_it(enum return_reason reason, enum errors error, const char *fmt,
   xfree(last_message);
   last_message = new_message;
 
-  /* Create the exception.  */
+  /* Create the exception: */
   e.reason = reason;
   e.error = error;
   e.message = last_message;
 
-  /* Throw the exception.  */
-  throw_exception (e);
+  /* Throw the exception: */
+  throw_exception(e);
 }
 
 NORETURN void
-throw_verror (enum errors error, const char *fmt, va_list ap)
+throw_verror(enum errors error, const char *fmt, va_list ap)
 {
-  throw_it (RETURN_ERROR, error, fmt, ap);
+  throw_it(RETURN_ERROR, error, fmt, ap);
 }
 
 NORETURN void
@@ -544,3 +544,5 @@ catch_command_errors (catch_command_errors_ftype * command,
     return 0;
   return 1;
 }
+
+/* EOF */

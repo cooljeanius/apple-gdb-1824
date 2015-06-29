@@ -1,4 +1,4 @@
-/* remote_utils.c
+/* rem-mulit_old/remote_utils.c
  * Remote utility routines for the remote server for GDB, the GNU debugger.
  * Copyright (C) 1986, 1989 Free Software Foundation, Inc. */
 /*
@@ -102,12 +102,12 @@ static int fromhex(int a)
 }
 
 /* Convert number NIB to a hex digit: */
-static int tohex(int nib)
+static char tohex(int nib)
 {
   if (nib < 10) {
-    return ('0' + nib);
+    return (char)('0' + (char)nib);
   } else {
-    return ('a' + nib - 10);
+    return (char)('a' + (char)nib - 10);
   }
 }
 
@@ -128,10 +128,10 @@ void remote_send(char *buf)
 void putpkt(char *buf)
 {
   int i;
-  unsigned char csum = 0;
+  unsigned char csum = 0U;
   char buf2[500];
   char buf3[1];
-  int cnt = strlen(buf);
+  size_t cnt = strlen(buf);
   char *p;
 
   if (kiodebug) {
@@ -143,8 +143,8 @@ void putpkt(char *buf)
   p = buf2;
   *p++ = '$';
 
-  for ((i = 0); (i < cnt); i++) {
-      csum += buf[i];
+  for (i = 0; i < (int)cnt; i++) {
+      csum += (unsigned char)buf[i];
       *p++ = buf[i];
   }
   *p++ = '#';
@@ -153,7 +153,7 @@ void putpkt(char *buf)
 
   /* Send it over and over until we get a positive ack: */
   do {
-      write(remote_desc, buf2, p - buf2);
+      write(remote_desc, buf2, (size_t)(p - buf2));
       read(remote_desc, buf3, 1);
   } while (buf3[0] != '+');
 }
@@ -178,23 +178,23 @@ void getpkt(char *buf)
 
   while (1) {
       csum = 0;
-      while ((c = readchar()) != '$') {
+      while ((c = (unsigned char)readchar()) != '$') {
         /* (do nothing) */ ;
       }
 
       bp = buf;
       while (1) {
-	  c = readchar();
+	  c = (unsigned char)readchar();
           if (c == '#') {
               break;
           }
-	  *bp++ = c;
-	  csum += c;
+	  *bp++ = (char)c;
+	  csum += (unsigned char)c;
       }
       *bp = 0;
 
-      c1 = fromhex(readchar());
-      c2 = fromhex(readchar());
+      c1 = (unsigned char)fromhex(readchar());
+      c2 = (unsigned char)fromhex(readchar());
       if (csum == ((c1 << 4) + c2)) {
         break;
       }
@@ -244,11 +244,11 @@ void convert_int_to_ascii(char *from, char *to, int n)
 
 void convert_ascii_to_int(char *from, char *to, int n)
 {
-  int nib1,nib2 ;
+  int nib1, nib2;
   while (n--) {
     nib1 = fromhex(*from++);
     nib2 = fromhex(*from++);
-    *to++ = (((nib1 & 0x0f)<< 4) & 0xf0) | (nib2 & 0x0f);
+    *to++ = (char)((((nib1 & 0x0f) << 4) & 0xf0) | (nib2 & 0x0f));
   }
 }
 
@@ -336,7 +336,7 @@ void decode_M_packet(char *from, unsigned int *mem_addr_ptr,
     printf("\nFinished len_ptr part: len = %d", *len_ptr);
     /************debugging end************/
 
-    convert_ascii_to_int(&from[i++], to, *len_ptr);
+    convert_ascii_to_int(&from[i++], to, (int)(*len_ptr));
 
     /************debugging begin************/
     printf("\nmembuf : %x", *(int *)to);

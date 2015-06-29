@@ -238,8 +238,8 @@ macosx_debug_regions(task_t task, mach_vm_address_t address, int max)
             printf_filtered("   ... ");
 
           printf_filtered("from 0x%s to 0x%s (%s, max %s; %s, %s, %s)",
-                          paddr_nz(prev_address),
-                          paddr_nz(prev_address + prev_size),
+                          paddr_nz((CORE_ADDR)prev_address),
+                          paddr_nz((CORE_ADDR)(prev_address + prev_size)),
                           unparse_protection(prev_info.protection),
                           unparse_protection(prev_info.max_protection),
                           unparse_inheritance(prev_info.inheritance),

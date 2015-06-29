@@ -1,4 +1,4 @@
-/* remote_server.c
+/* rem-multi_old/remote_server.c
  * Main code for remote server for GDB, the GNU Debugger.
  * Copyright (C) 1989 Free Software Foundation, Inc. */
 /*
@@ -25,8 +25,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <unistd.h>
 
 /* Prototypes for functions used in this file: */
-void read_inferior_memory(unsigned int memaddr, char *myaddr,
-                          unsigned int len);
+void read_inferior_memory(CORE_ADDR memaddr, char *myaddr,
+                          size_t len);
 void fetch_inferior_registers(void);
 unsigned char resume(int arg1, int arg2, char **status);
 void kill_inferior(void);
@@ -35,7 +35,7 @@ void try_writing_regs_command(void);
 int create_inferior(char *buf, char **environ);
 int read_register(void); /* unneeded? */
 int store_inferior_registers(int regno);
-int write_inferior_memory(CORE_ADDR memaddr, char *myaddr, int len);
+int write_inferior_memory(CORE_ADDR memaddr, char *myaddr, size_t len);
 
 /* global variables: */
 extern char registers[];
@@ -76,7 +76,8 @@ int main(int argc, char *argv[])
     char own_buf[2000], mem_buf[2000];
 	int i = 0;
 	unsigned char signal;
-	unsigned int mem_addr, len;
+	CORE_ADDR mem_addr;
+    size_t len;
 
 	initialize();
     printf("\nwill open serial link\n");
@@ -123,12 +124,14 @@ int main(int argc, char *argv[])
                 }
                 break;
 			case 'm':
-                decode_m_packet(&own_buf[1], &mem_addr, &len);
+                decode_m_packet(&own_buf[1], (unsigned int *)&mem_addr,
+                                (unsigned int *)&len);
                 read_inferior_memory(mem_addr, mem_buf, len);
-                convert_int_to_ascii(mem_buf, own_buf, len);
+                convert_int_to_ascii(mem_buf, own_buf, (int)len);
                 break;
 			case 'M':
-                decode_M_packet(&own_buf[1], &mem_addr, &len, mem_buf);
+                decode_M_packet(&own_buf[1], (unsigned int *)&mem_addr,
+                                (unsigned int *)&len, mem_buf);
                 if (write_inferior_memory(mem_addr, mem_buf, len) == 0) {
                     write_ok(own_buf);
                 } else {
@@ -162,7 +165,7 @@ int main(int argc, char *argv[])
         }
 
         putpkt(own_buf);
-     } while(1);
+    } while (1);
 
     close(remote_desc);
     /** now get out of here**/

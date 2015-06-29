@@ -22,6 +22,21 @@ dnl# from gnulib module assert-h:
 AC_REQUIRE([gl_ASSERT_H])dnl
 dnl# from gnulib module autobuild:
 AC_REQUIRE([AB_INIT])dnl
+dnl# from gnulib module bison-i18n:
+m4_ifdef([AM_GNU_GETTEXT],[
+  if test "x${USE_NLS}" = "x"; then
+    test -z "${USE_NLS}" && export USE_NLS="no"
+  fi
+  AC_REQUIRE([BISON_I18N])dnl
+])dnl
+dnl# from gnulib module btowc:
+AC_REQUIRE([gl_FUNC_BTOWC])dnl
+  ## set up libobj if needed:
+if test ${HAVE_BTOWC} = 0 || test ${REPLACE_BTOWC} = 1; then
+  AC_LIBOBJ([btowc])dnl
+  gl_PREREQ_BTOWC
+fi
+gl_WCHAR_MODULE_INDICATOR([btowc])dnl
 dnl# from gnulib module chdir-long:
 AC_REQUIRE([gl_FUNC_CHDIR_LONG])dnl
   ## set up libobj if needed:
@@ -54,6 +69,17 @@ fi
 gl_DIRENT_MODULE_INDICATOR([dirfd])dnl
 dnl# from gnulib module double-slash-root:
 AC_REQUIRE([gl_DOUBLE_SLASH_ROOT])dnl
+dnl# from gnulib module dup2:
+AC_REQUIRE([gl_FUNC_DUP2])dnl
+  ## set up libobj if needed:
+if test ${HAVE_DUP2} = 0 || test ${REPLACE_DUP2} = 1; then
+  AC_LIBOBJ([dup2])dnl
+  gl_PREREQ_DUP2
+fi
+gl_UNISTD_MODULE_INDICATOR([dup2])dnl
+dnl# from gnulib module environ:
+AC_REQUIRE([gl_ENVIRON])dnl
+gl_UNISTD_MODULE_INDICATOR([environ])dnl
 dnl# from gnulib module errno:
 AC_REQUIRE([gl_HEADER_ERRNO_H])dnl
 dnl# from gnulib module error:
@@ -140,6 +166,22 @@ if test ${HAVE_FSTATAT} = 0 || test ${REPLACE_FSTATAT} = 1; then
   ## end libobj
 fi
 gl_SYS_STAT_MODULE_INDICATOR([fstatat])dnl
+dnl# from gnulib module getcwd:
+AC_REQUIRE([gl_FUNC_GETCWD])dnl
+  ## set up libobj if needed:
+if test ${REPLACE_GETCWD} = 1; then
+  AC_LIBOBJ([getcwd])dnl
+  gl_PREREQ_GETCWD
+fi
+gl_MODULE_INDICATOR([getcwd])dnl
+gl_UNISTD_MODULE_INDICATOR([getcwd])dnl
+dnl# from gnulib module getcwd-lgpl:
+AC_REQUIRE([gl_FUNC_GETCWD_LGPL])dnl
+  ## set up libobj if needed:
+if test ${REPLACE_GETCWD} = 1; then
+  AC_LIBOBJ([getcwd-lgpl])dnl
+  ## end libobj
+fi
 dnl# from gnulib module getpagesize:
 AC_REQUIRE([gl_FUNC_GETPAGESIZE])dnl
   ## set up libobj if needed:
@@ -490,6 +532,8 @@ dnl# from gnulib module time:
 AC_REQUIRE([gl_HEADER_TIME_H])dnl
 dnl# from gnulib module unistd:
 AC_REQUIRE([gl_UNISTD_H])dnl
+dnl# from gnulib module unistd-safer:
+AC_REQUIRE([gl_UNISTD_SAFER])dnl
 dnl# from gnulib module usleep:
 AC_REQUIRE([gl_FUNC_USLEEP])dnl
   ## set up libobj if needed:

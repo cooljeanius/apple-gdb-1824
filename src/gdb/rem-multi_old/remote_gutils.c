@@ -1,4 +1,4 @@
-/* remote_gutils.c
+/* rem-multi_old/remote_gutils.c
  * General utility routines for the remote server for GDB, the GNU debugger.
  * Copyright (C) 1986, 1989 Free Software Foundation, Inc. */
 /*
@@ -19,6 +19,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,21 +33,29 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 # ifdef HAVE_VARARGS_H
 #  include <varargs.h>
 # else
-#  if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(__STDC__)
-#   warning "remote_gutils.c expects a header to be included for variadic macro support."
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "remote_gutils.c expects a header to be included for varargs support."
 #  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_VARARGS_H */
 #endif /* HAVE_STDARG_H */
 #if 0
 # include "defs.h" /* too much stuff conflicts for now */
+#else
+# ifndef ATTR_FORMAT
+#  if defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 4))
+#   define ATTR_FORMAT(type, x, y) __attribute__ ((format(type, x, y)))
+#  else
+#   define ATTR_FORMAT(type, x, y)	/* nothing */
+#  endif /* __GNUC__ version check */
+# endif /* !ATTR_FORMAT */
 #endif /* 0 */
 
 /* Globals (prototypes and global variables): */
 
 /* Prototypes first: */
-void error(const char *string, int arg1, int arg2, int arg3); /*FIXME*/
-void fatal(const char *string, int arg);
-char *xmalloc(long size);
+void error(const char *string, ...) ATTR_FORMAT(printf, 1, 2);
+void fatal(const char *string, ...) ATTR_FORMAT(printf, 1, 2);
+char *xmalloc(size_t size);
 
 /* structs: */
 typedef struct cleanup {
@@ -73,16 +84,16 @@ int immediate_quit;
  * Args are FUNCTION to clean up with, and ARG to pass to it. */
 struct cleanup *make_cleanup(void (*function)(char **), int arg)
 {
-    /*FIXME: move to variadic macros */
-    register struct cleanup *new;
+    /*FIXME: move this function to use a variadic argument list */
+    register struct cleanup *newcleanup;
     register struct cleanup *old_chain;
 
-    new = (struct cleanup *)xmalloc(sizeof(struct cleanup));
+    newcleanup = (struct cleanup *)xmalloc(sizeof(struct cleanup));
     old_chain = cleanup_chain;
-    new->next = cleanup_chain;
-    new->function = (void (*)(int))function;
-    new->arg = arg;
-    cleanup_chain = new;
+    newcleanup->next = cleanup_chain;
+    newcleanup->function = (void (*)(int))function;
+    newcleanup->arg = arg;
+    cleanup_chain = newcleanup;
 
     return old_chain;
 }
@@ -127,21 +138,21 @@ void free_current_contents(char **location)
  */
 
 /* Like malloc but get error if no storage available: */
-char *xmalloc(long size)
+char *xmalloc(size_t size)
 {
   register char *val = (char *)malloc(size);
   if (!val) {
-    fatal("virtual memory exhausted.", 0);
+    fatal("virtual memory exhausted.");
   }
   return val;
 }
 
 /* Like realloc but get error if no storage available: */
-char *xrealloc(char *ptr, long size)
+char *xrealloc(char *ptr, size_t size)
 {
   register char *val = (char *)realloc(ptr, size);
   if (!val) {
-    fatal("virtual memory exhausted.", 0);
+    fatal("virtual memory exhausted.");
   }
   return val;
 }
@@ -166,14 +177,12 @@ void perror_with_name(char *string)
     err = "unknown error";
   }
 
-  combined = (char *)alloca(strlen(err) + strlen(string) + 3);
+  combined = (char *)alloca(strlen(err) + strlen(string) + 3UL);
   strcpy(combined, string);
   strcat(combined, ": ");
   strcat(combined, err);
 
-  /*FIXME: misuse of variadic macros leads to issues conforming with the
-   * weird alternate prototype for this function in this file: */
-  error("%s. %i%i", combined, 0, 0); /*FIXME: this one is worse */
+  error("%s. ", combined);
 }
 
 /* Print the system error message for ERRCODE, and also mention STRING
@@ -201,9 +210,7 @@ void quit(void)
 {
   fflush(stdout);
   ioctl(fileno(stdout), TIOCFLUSH, 0);
-  /*FIXME: misuse of variadic macros leads to issues conforming with the
-   * weird alternate prototype for this function in this file: */
-  error("Quit: %i%i%i", 0, 0, 0);
+  error("Quit. ");
 }
 
 /* Control C comes here: */
@@ -218,11 +225,13 @@ void request_quit(void)
 /* Print an error message and return to command level.
  * STRING is the error message, used as a fprintf string,
  * and ARG is passed as an argument to it.  */
-void error(const char *string, int arg1, int arg2, int arg3)
+void error(const char *string, ...)
 {
-  /*FIXME: move to variadic macros */
+  va_list args;
   fflush(stdout);
-  fprintf(stderr, "%s %i%i%i", string, arg1, arg2, arg3);
+  va_start(args, string);
+  vfprintf(stderr, string, args);
+  va_end(args);
   fprintf(stderr, "\n");
 #if 0
   return_to_top_level();
@@ -232,22 +241,24 @@ void error(const char *string, int arg1, int arg2, int arg3)
 /* Print an error message and exit reporting failure.
  * This is for an error from which we cannot continue.
  * STRING and ARG are passed to fprintf. */
-void fatal(const char *string, int arg)
+void fatal(const char *string, ...)
 {
-  /*FIXME: move to variadic macros: */
+  va_list args;
   fprintf(stderr, "gdb: ");
-  fprintf(stderr, "%s %i", string, arg);
+  va_start(args, string);
+  vfprintf(stderr, string, args);
+  va_end(args);
   fprintf(stderr, "\n");
   exit(1);
 }
 
 /* Make a copy of the string at PTR with SIZE characters
  * (and add a null character at the end in the copy).
- * Uses malloc to get the space. Returns the address of the copy. */
-char *savestring(char *ptr, int size)
+ * Uses xmalloc to get the space. Returns the address of the copy. */
+char *savestring(char *ptr, size_t size)
 {
   register char *p;
-  p = (char *)xmalloc(size + 1);
+  p = (char *)xmalloc(size + 1UL);
   bcopy(ptr, p, size);
   p[size] = 0;
   return p;
@@ -255,7 +266,7 @@ char *savestring(char *ptr, int size)
 
 char *concat(char *s1, char *s2, char *s3)
 {
-  register int len = (strlen(s1) + strlen(s2) + strlen(s3) + 1);
+  register size_t len = (strlen(s1) + strlen(s2) + strlen(s3) + 1UL);
   register char *val = (char *)xmalloc(len);
   strcpy(val, s1);
   strcat(val, s2);
@@ -276,7 +287,7 @@ void print_spaces(register int n, register FILE *file)
  * It should NOT say how to answer, because we do that here. */
 int query(char *ctlstr, int arg1, int arg2)
 {
-  /*FIXME: move to variadic macros */
+  /*FIXME: move this function to use a variadic argument list */
   register int answer;
 
   /* Automatically answer "yes" if input is not from a terminal. */

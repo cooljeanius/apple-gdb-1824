@@ -174,6 +174,7 @@ AR_FLAGS = $(AM_V_ARFLAGS)
 # configure our bison/yacc usage:
 YACC=@YACC@
 YFLAGS = -d -t $(AM_V_v) @MAINT@@EXTRA_YFLAGS_SEP@ -k -Wall -Wyacc
+BISON_CXX_FLAG = @BISON_CXX_FLAG@
 
 # This is used to rebuild ada-lex.c from ada-lex.l.  If the program is
 # not defined, but ada-lex.c is present, compilation will continue,
@@ -562,12 +563,16 @@ ADD_DEPS = $(XM_ADD_FILES) $(TM_ADD_FILES) $(NAT_ADD_FILES)
 
 DIST=gdb
 
-LINT=/usr/5bin/lint
-LINT_CONFIGURED=@LINT@
-LINTFLAGS= $(GDB_CFLAGS) $(OPCODES_CFLAGS) $(READLINE_CFLAGS) \
+CXREF_FLAGS= $(GDB_CFLAGS) $(OPCODES_CFLAGS) $(READLINE_CFLAGS) \
 	$(BFD_CFLAGS) $(INCLUDE_CFLAGS) \
 	$(INTL_CFLAGS) $(LIBXML2_CFLAGS) $(MIG_CHECKING) \
-	$(UNIX03_UGH_CFLAGS) @MAINT@ @LINT_OPTS@
+	$(UNIX03_UGH_CFLAGS)
+
+LINT=/usr/5bin/lint
+LINT_CONFIGURED=@LINT@
+LINTFLAGS= $(CXREF_FLAGS) @MAINT@ @LINT_OPTS@
+
+CLANG_ANALYZER = @CLANG_ANALYZER@
 
 RUNTEST = `if [ -f $${rootsrc}/../dejagnu/runtest ]; then \
 		echo $${rootsrc}/../dejagnu/runtest; else echo runtest; \
@@ -986,6 +991,7 @@ regset_h = regset.h
 remote_fileio_h = remote-fileio.h
 remote_h = remote.h $(ansidecl_h)
 remote_utils_h = remote-utils.h $(target_h)
+rs6000_tdep_h = rs6000-tdep.h
 s390_tdep_h = s390-tdep.h
 scm_lang_h = scm-lang.h $(scm_tags_h)
 scm_tags_h = scm-tags.h
@@ -1081,7 +1087,7 @@ i386_macosx_nat_exec_h = $(macosxsrcdir)/i386-macosx-nat-exec.h \
 i386_macosx_tdep_h = $(macosxsrcdir)/i386-macosx-tdep.h \
   $(i386_macosx_thread_status_h)
 i386_macosx_thread_status_h = $(macosxsrcdir)/i386-macosx-thread-status.h
-kdp_protocol_h = $(macosxsrcdir)/kdp-protocol.h
+kdp_protocol_h = $(macosxsrcdir)/kdp-protocol.h $(ansidecl_h)
 kdp_transactions_h = $(macosxsrcdir)/kdp-transactions.h $(kdp_udp_h)
 kdp_udp_h = $(macosxsrcdir)/kdp-udp.h $(kdp_protocol_h)
 macosx_bundle_utils_h = $(macosxsrcdir)/macosx-bundle-utils.h
@@ -1375,9 +1381,10 @@ info dvi install-info clean-info html install-html pdf-local: force
 pdf: pdf-local
 .PHONY: pdf
 
-gdb.z:gdb.1
+# FIXME: add a configure check for how to call `pack` properly:
+gdb.z: gdb.1
 	nroff -man $(srcdir)/gdb.1 | col -b > gdb.t
-	pack gdb.t; rm -f gdb.t
+	pack gdb.t gdb.t.z; rm -f gdb.t
 	mv $(AM_V_v) gdb.t.z gdb.z
 
 # Traditionally "install" depends on "all". But it may be useful
@@ -1839,8 +1846,13 @@ lint: $(LINTFILES)
 	$(LINT) $(INCLUDE_CFLAGS) $(LINTFLAGS) $(LINTFILES) \
 	   `echo $(DEPFILES) | $(SED) 's/\.o /\.c /g'`
 
+#TODO: clang static analysis will eventually go here:
+lint-local: $(LINTFILES)
+.PHONY: lint-local
+
+#FIXME: cxref has trouble with frameworks...
 gdb.cxref: $(SFILES)
-	cxref -I. $(SFILES) >gdb.cxref
+	cxref -I. -Imacosx $(CXREF_FLAGS) $(SFILES) >gdb.cxref
 
 force_update:
 
@@ -2400,7 +2412,8 @@ dwarf2-frame.o: dwarf2-frame.c $(defs_h) $(dwarf2expr_h) $(elf_dwarf2_h) \
 dwarf2loc.o: dwarf2loc.c $(defs_h) $(ui_out_h) $(value_h) $(frame_h) \
   $(gdbcore_h) $(target_h) $(inferior_h) $(ax_h) $(ax_gdb_h) \
   $(regcache_h) $(objfiles_h) $(exceptions_h) $(elf_dwarf2_h) \
-  $(dwarf2expr_h) $(dwarf2loc_h) $(dwarf2read_h) $(gdb_string_h)
+  $(dwarf2expr_h) $(dwarf2loc_h) $(dwarf2read_h) $(gdb_string_h) \
+  $(macosx_tdep_h)
 # APPLE LOCAL begin subroutine inlining:
 dwarf2read.o: dwarf2read.c $(defs_h) $(bfd_h) $(symtab_h) $(gdbtypes_h) \
   $(objfiles_h) $(elf_dwarf2_h) $(buildsym_h) $(demangle_h) \
@@ -3009,7 +3022,7 @@ rs6000-tdep.o: rs6000-tdep.c $(defs_h) $(frame_h) $(inferior_h) \
   $(gdb_sim_ppc_h) $(reggroups_h) $(libbfd_h) $(coff_internal_h) \
   $(libcoff_h) $(coff_xcoff_h) $(libxcoff_h) $(elf_bfd_h) $(solib_svr4_h) \
   $(ppc_tdep_h) $(gdb_assert_h) $(dis_asm_h) $(trad_frame_h) \
-  $(frame_unwind_h) $(frame_base_h) $(reggroups_h)
+  $(frame_unwind_h) $(frame_base_h) $(reggroups_h) $(rs6000_tdep_h)
 s390-nat.o: s390-nat.c $(defs_h) $(tm_h) $(regcache_h) $(inferior_h) \
   $(s390_tdep_h)
 s390-tdep.o: s390-tdep.c $(defs_h) $(arch_utils_h) $(frame_h) \

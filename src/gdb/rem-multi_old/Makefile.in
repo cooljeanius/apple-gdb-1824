@@ -315,6 +315,11 @@ AM_CFLAGS = $(C_ARCHFLAGS) -ggdb -fno-strict-aliasing -std=gnu99 -Wall \
 -Wextra -Wold-style-definition -Wwrite-strings -Wformat=2 \
 -Wmissing-include-dirs @MAINT@ -Wstrict-prototypes -Wnested-externs
 
+AM_EXTRA_WARN_CFLAGS = -Wmissing-format-attribute -Wc++-compat \
+-Wmissing-parameter-type -Wundef -Wshadow -Wold-style-declaration \
+-Wc99-c11-compat -pedantic -Wfloat-conversion -Wsign-conversion \
+-Wmisleading-indentation
+
 REMOTE_CFLAGS_COMBINED = ${AM_CPPFLAGS} ${DEFS} ${AM_CFLAGS}
 AM_LDFLAGS = -L. -L.. $(C_ARCHFLAGS)
 AM_V_v = $(am__v_v_@AM_V@)
@@ -663,7 +668,7 @@ mostlyclean-am: mostlyclean-compile mostlyclean-generic
 
 pdf: pdf-am
 
-pdf-am:
+pdf-am: pdf-local
 
 ps: ps-am
 
@@ -685,8 +690,8 @@ uninstall-am: uninstall-binPROGRAMS
 	install-pdf-am install-ps install-ps-am install-strip \
 	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-binPROGRAMS
+	mostlyclean-generic pdf pdf-am pdf-local ps ps-am tags tags-am \
+	uninstall uninstall-am uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 
@@ -701,6 +706,9 @@ prog: $(SERVER) @MAINT@ Remote_Makefile
 	  echo "$@ (i.e. 'serve') is already good to go."; \
 	fi
 .PHONY: prog
+
+pdf-local:
+.PHONY: pdf-local
 
 clean-local:
 	rm -f $(AM_V_v) $(SERVER) serve prog

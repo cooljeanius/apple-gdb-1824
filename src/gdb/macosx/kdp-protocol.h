@@ -3,6 +3,8 @@
 #ifndef __GDB_KDP_PROTOCOL_H__
 #define __GDB_KDP_PROTOCOL_H__
 
+#include "ansidecl.h"
+
 #define KDP_MAX_PACKET_SIZE 1200        /* max packet size */
 #define KDP_MAX_DATA_SIZE 1024  /* max r/w data per packet */
 
@@ -512,7 +514,8 @@ typedef enum
   RR_RECV_INTR,
 } kdp_return_t;
 
-typedef void (kdp_log_function)(kdp_log_level l, const char *s, ...);
+typedef void (kdp_log_function)(kdp_log_level l, const char *s, ...)
+  ATTRIBUTE_FPTR_PRINTF_2;
 
 const char *kdp_req_string(kdp_req_t req);
 const char *kdp_error_string(kdp_error_t error);
@@ -520,20 +523,17 @@ const char *kdp_return_string(kdp_return_t error);
 
 struct kdp_connection;
 
-void kdp_log_data
-  (kdp_log_function *f, kdp_log_level l, const unsigned char *data,
-   unsigned int nbytes);
+void kdp_log_data(kdp_log_function *f, kdp_log_level l,
+                  const unsigned char *data, unsigned int nbytes);
 
-void kdp_log_packet
-  (kdp_log_function * f, kdp_log_level l, const kdp_pkt_t *p);
+void kdp_log_packet(kdp_log_function *f, kdp_log_level l,
+                    const kdp_pkt_t *p);
 
-kdp_return_t kdp_marshal
-  (struct kdp_connection *c, kdp_pkt_t *p, unsigned char *s, size_t maxlen,
-   size_t * plen);
+kdp_return_t kdp_marshal(struct kdp_connection *c, kdp_pkt_t *p,
+                         unsigned char *s, size_t maxlen, size_t *plen);
 
-kdp_return_t kdp_unmarshal
-  (struct kdp_connection *c, kdp_pkt_t *p, const unsigned char *s,
-   size_t rlen);
+kdp_return_t kdp_unmarshal(struct kdp_connection *c, kdp_pkt_t *p,
+                           const unsigned char *s, size_t rlen);
 
 #endif /* __GDB_KDP_PROTOCOL_H__ */
 

@@ -932,12 +932,28 @@ AX_PROG_BISON([
   # (might want to check the bison version first before warning)
   AC_MSG_NOTICE([Actually using bison in this case.])
   EXTRA_YFLAGS_SEP=''
+  BISON_CXX_FLAG=''
+  if test "x${enable_build_with_cxx}" = "xyes"; then
+    BISON_CXX_FLAG='--language=c++'
+  elif test "x${enable_build_with_cxx}" = "xno"; then
+    BISON_CXX_FLAG='--language=c'
+  fi
+  AC_SUBST([BISON_CXX_FLAG])dnl
 ],[
   # (might want to be more specific with this warning message)
   AC_MSG_WARN([Using something other than bison is untested.])
   EXTRA_YFLAGS_SEP='#'
 ])dnl##end bison conditional
 AC_SUBST([EXTRA_YFLAGS_SEP])dnl
+
+m4_ifdef([BISON_I18N],[
+  m4_ifdef([AM_GNU_GETTEXT],[
+    if test "x${USE_NLS}" = "x"; then
+      test -z "${USE_NLS}" && export USE_NLS="no"
+    fi
+    BISON_I18N
+  ])dnl
+])dnl
 
 AC_CHECK_TOOLS([DLLTOOL],[dlltool gdlltool])dnl
   ## duplicate that:
@@ -1929,16 +1945,16 @@ unset ac_cv_func_getcwd
 unset ac_cv_func_gethostbyname
 unset ac_cv_func_strcasecmp
 unset ac_cv_func_strchr
-AC_CHECK_FUNCS([atof alarm assert atexit bzero dup2 exit fflush fgets \
-                fprintf fwrite getcwd gethostbyaddr gethostbyname \
-                gethostname getpass gets gettimeofday inet_ntoa isascii \
-                mach_error_string memchr memcmp memcpy memmove mempcpy \
-                memset mkdir netname_look_up nl_langinfo pathconf pclose \
-                popen pow readdir re_comp regcomp select socket \
-                strcasecmp strcat strchr strcpy strcspn strdup strerror \
-                strlcat strlcpy strlen strncasecmp strncat strncmp \
-                strncpy strndup strpbrk strrchr strspn strstr strtok \
-                strtol strtoul uname wcwidth])dnl
+AC_CHECK_FUNCS([atof alarm assert atexit bsearch bzero dup2 exit \
+                fflush fgets fprintf fwrite getcwd gethostbyaddr \
+                gethostbyname gethostname getpass gets gettimeofday \
+                inet_ntoa isascii mach_error_string memchr memcmp memcpy \
+                memmove mempcpy memset mkdir netname_look_up nl_langinfo \
+                pathconf pclose popen pow readdir re_comp regcomp select \
+                socket strcasecmp strcat strchr strcpy strcspn strdup \
+                strerror strlcat strlcpy strlen strncasecmp strncat \
+                strncmp strncpy strndup strpbrk strrchr strspn strstr \
+                strtok strtol strtoul uname wcwidth])dnl
 
 # ----- #
 # Other #
@@ -2857,23 +2873,23 @@ AC_SUBST([TARGET_SYSTEM_ROOT_DEFINE])dnl
 ##  everywhere...)
 # NOTE: If you add to this list, remember to update
 # gdb/doc/gdbint.texinfo.
-build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
+build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wparentheses -Wpointer-arith \
 -Wno-unused -Wunused-value -Wunused-label -Wunused-result \
 -Wunused-variable -Wunused-but-set-variable \
 -Wempty-body -Wmissing-declarations -Wignored-qualifiers \
--Wno-format-security -Waddress -Wattributes \
+-Wmissing-format-attribute -Wno-format-security -Waddress -Wattributes \
 -Wswitch -Wclobbered -Wcoverage-mismatch -Wdiv-by-zero \
 -Wdouble-promotion -Wfree-nonheap-object -Wsign-compare -Wtype-limits \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
 -Wmissing-include-dirs -Woverflow -Woverlength-strings -Wpragmas \
 -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
 -Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc -Wlogical-op \
--Wunsuffixed-float-constants -Wfloat-conversion -Wjump-misses-init \
--Wmissing-field-initializers -Wno-deprecated-declarations -Wbool-compare \
--Wlogical-not-parentheses -Wsizeof-array-argument -Wswitch-bool \
--Wshift-count-negative -Wshift-count-overflow -Wshift-negative-value \
--Wshift-overflow -Wmisleading-indentation"
+-Wfloat-conversion -Wmissing-field-initializers \
+-Wno-deprecated-declarations -Wbool-compare -Wlogical-not-parentheses \
+-Wsizeof-array-argument -Wswitch-bool -Wshift-count-negative \
+-Wshift-count-overflow -Wshift-negative-value -Wshift-overflow \
+-Wmisleading-indentation -Wlto-type-mismatch"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -2882,7 +2898,8 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Wno-write-strings -Wno-narrowing"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
-  c_warnings="-Wpointer-sign -Wdeclaration-after-statement -Wc++-compat \
+  c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
+-Wpointer-sign -Wdeclaration-after-statement -Wc++-compat \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
 -Wstrict-prototypes -Woverride-init -Wnested-externs"
   build_warnings="${build_warnings} ${c_warnings}"
@@ -2898,17 +2915,7 @@ if test "x${ac_cv_c_vararrays}" != "xyes"; then
   build_warnings="${build_warnings} -Wvla"
 fi
 
-# clang-specific warnings:
-if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
-  ## mig typechecks cause paramaters that would otherwise be unused to be
-  ## used, triggering this:
-  if test "x${MIG_CHECKING}" = "x"; then
-    test -z "${MIG_CHECKING}"
-    build_warnings="${build_warnings} -Wused-but-marked-unused"
-  fi
-  ## the clang version of this warning is un-pluralized, unlike in GCC:
-  build_warnings="${build_warnings} -Wno-unused-local-typedef"
-fi
+# clang-specific warnings are now moved to after the host-specific ones.
 
 dnl# (we now ensure that 'acl_cv_wl' is set elsewhere above)
 
@@ -2919,8 +2926,8 @@ case "${host}" in
     # -Wnonportable-cfstrings is actually a flag for newer versions of the
     # FSF gcc, but it only makes sense on Apple platforms.
     build_warnings="${build_warnings} -Wmost -Wextra-tokens -Wnewline-eof \
--Wendif-labels -Wformat -Wformat-nonliteral -Wformat-y2k \
--Wnonportable-cfstrings -Wno-unused-function -std=gnu99"
+-Wendif-labels -Wformat -Wformat-y2k -Wnonportable-cfstrings \
+-Wno-unused-function -std=gnu99"
     case "${host}" in
       *64*-apple-darwin9* | *64*-apple-darwin1[[0123456789]].*.*)
         build_warnings="${build_warnings} -Wshorten-64-to-32"
@@ -2947,6 +2954,18 @@ ${acl_cv_wl}--warn-multiple-gp ${acl_cv_wl}--warn-section-align"
     build_warnings="${build_warnings} -Wformat -Wformat-nonliteral"
   ;;
 esac
+
+# clang-specific warnings:
+if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
+  ## mig typechecks cause paramaters that would otherwise be unused to be
+  ## used, triggering this:
+  if test "x${MIG_CHECKING}" = "x"; then
+    test -z "${MIG_CHECKING}"
+    build_warnings="${build_warnings} -Wused-but-marked-unused"
+  fi
+  ## the clang version of this warning is un-pluralized, unlike in GCC:
+  build_warnings="${build_warnings} -Wno-unused-local-typedef"
+fi
 
 # GCC supports -Wuninitialized only with -O or -On, n != 0.
 # ...and also -Winit-self only works when -Wuninitialized is also used.
@@ -3016,7 +3035,6 @@ fi
 #    the warnings back though.)
 #  * -Wformat (we used to explicitly disable this; but it was required for
 #    others such as -Wformat-nonliteral, so I added it back)
-#  * -Wformat-nonliteral (see the previous)
 #  * -Wnested-externs (if it gets redundant with -Wimplicit again)
 #  * -Wtype-limits (often triggered on purpose, so okay to just ignore it)
 # Up for debate in some other way:
@@ -3026,6 +3044,7 @@ fi
 #  * -Wabi (currently only used for C++, but sometimes accepted for just C)
 #  * -Wdouble-promotion (could be moved to the same place as -Wlong-long if
 #    we get rid of -Wunsuffixed-float-constants some time...)
+#  * -Wformat-nonliteral (as to the conditions in which we enable it)
 # NOT actually up for debate:
 #  * -Werror (never actually add this, even though upstream GDB does...)
 #  * -pedantic-errors (likewise, never add this)

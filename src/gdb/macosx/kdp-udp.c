@@ -109,8 +109,9 @@ kdp_transmit_fd(kdp_connection *c, kdp_pkt_t *packet, int fd)
     }
   if (ret != (int)plen)
     {
-      c->logger(KDP_LOG_ERROR, "kdp_transmit_fd: unable to transmit packet ",
-                "(only %lu of %lu bytes were transmitted)", ret, plen);
+      c->logger(KDP_LOG_ERROR, "kdp_transmit_fd: unable to transmit packet"
+                " (only %lu of %lu bytes were transmitted)",
+                (unsigned long)ret, plen);
       return RR_BYTE_COUNT;
     }
 

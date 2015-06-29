@@ -672,15 +672,15 @@ macosx_service_event (enum macosx_source_type source,
   if (source == NEXT_SOURCE_EXCEPTION)
     {
       macosx_exception_thread_message *msg =
-        (macosx_exception_thread_message *) buf;
-      inferior_debug (1,
-                      "macosx_service_events: got exception message 0x%lx\n",
-                      msg->exception_type);
-      CHECK_FATAL (inferior_bind_exception_port_flag);
-      macosx_handle_exception ((macosx_exception_thread_message *) buf,
-                               status);
+        (macosx_exception_thread_message *)buf;
+      inferior_debug(1,
+                     "macosx_service_events: got exception message 0x%lx\n",
+                     (unsigned long)msg->exception_type);
+      CHECK_FATAL(inferior_bind_exception_port_flag);
+      macosx_handle_exception((macosx_exception_thread_message *) buf,
+                              status);
       if (status->kind != TARGET_WAITKIND_SPURIOUS)
-          return 1;
+        return 1;
     }
   else if (source == NEXT_SOURCE_SIGNAL)
     {
@@ -820,12 +820,12 @@ macosx_backup_this_event(struct macosx_pending_event *event)
 	  if (breakpoint_here_p(new_pc)
 	      || address_contained_breakpoint_trap(new_pc))
 	  {
-	    /* Back up the PC if necessary.  */
+	    /* Back up the PC if necessary: */
 	    if (DECR_PC_AFTER_BREAK)
 	      {
 		write_pc_pid(new_pc, ptid);
 		inferior_debug(6, "backup_before_break: setting PID for thread: 0x%lx to %s\n",
-                               msg->thread_port, paddr_nz(new_pc));
+                               (unsigned long)msg->thread_port, paddr_nz(new_pc));
 	      }
 	  }
       }
@@ -863,7 +863,7 @@ macosx_backup_before_break(int ignore)
     {
       if (ret_event)
 	inferior_debug(6, "Backing up all breakpoint hits except thread 0x%lx\n",
-                       ((macosx_exception_thread_message *)ret_event->buf)->thread_port);
+                       (unsigned long)((macosx_exception_thread_message *)ret_event->buf)->thread_port);
       else
 	inferior_debug(6, "Backing up all breakpoint hits\n");
     }
@@ -2766,7 +2766,7 @@ macosx_get_thread_name (ptid_t ptid)
     {
       if (tident.thread_handle)
         {
-          char *queue_name = get_dispatch_queue_name(tident.dispatch_qaddr);
+          char *queue_name = get_dispatch_queue_name((CORE_ADDR)tident.dispatch_qaddr);
           if (queue_name && (queue_name[0] != '\0'))
             {
               strlcpy(buf, queue_name, sizeof(buf));
@@ -3409,8 +3409,8 @@ _initialize_macosx_inferior(void)
   add_target(&macosx_child_ops);
 
   inferior_stderr = fdopen(fileno(stderr), "w");
-  inferior_debug(2, "GDB task: 0x%lx, pid: %d\n", mach_task_self(),
-                 getpid());
+  inferior_debug(2, "GDB task: 0x%lx, pid: %d\n",
+                 (unsigned long)mach_task_self(), getpid());
 
   add_setshow_boolean_cmd("inferior-bind-exception-port", class_obscure,
 			  &inferior_bind_exception_port_flag, _("\

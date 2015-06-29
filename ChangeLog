@@ -1,3 +1,15 @@
+2015-06-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more warning silencing, update gnulib
+
+	Change-Id: Ie9ba43a5f572352f2f7f72dd76162ad6e0475233
+
+2015-06-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	warnings and configury and stuff, now with clang-3.6 and gcc6
+
+	Change-Id: I9d824fe284cbd91f0bba09042f5b2f44287ead2f
+
 2015-06-04  Eric Gallager  <egall@gwmail.gwu.edu>
 
 	stuff that shoulda gone in the prev. commit (Jun 4, 2014)

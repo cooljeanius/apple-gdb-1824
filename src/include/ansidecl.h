@@ -318,6 +318,15 @@ So instead we use the macro below and test it against specific values.  */
 # endif /* gcc 3.4+ */
 #endif /* ATTRIBUTE_UNUSED */
 
+/* Similar to the previous: */
+#ifndef ATTRIBUTE_USED
+# if GCC_VERSION >= 3004
+#  define ATTRIBUTE_USED __attribute__((__used__))
+# else
+#  define ATTRIBUTE_USED
+# endif /* gcc 3.4+ */
+#endif /* ATTRIBUTE_USED */
+
 /* Before GCC 3.4, the C++ frontend could NOT parse attributes placed after
  * the identifier name: */
 #if ! defined(__cplusplus) || (GCC_VERSION >= 3004)

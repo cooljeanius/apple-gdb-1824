@@ -516,6 +516,10 @@ am--refresh:
 
 force:
 
+# for the subdir_do target in the parent directory:
+pdf-local:
+.PHONY: pdf-local
+
 version.c: Makefile $(srcdir)/../version.in $(srcdir)/../../bfd/version.h \
   $(srcdir)/../common/create-version.sh
 	$(AM_V_GEN)if [ -f $(srcdir)/../common/create-version.sh ]; then \

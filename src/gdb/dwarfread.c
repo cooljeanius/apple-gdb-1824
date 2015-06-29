@@ -525,7 +525,7 @@ static struct type *dwarf_fundamental_type (struct objfile *, int);
    SYNOPSIS
 
    struct type *
-   dwarf_fundamental_type (struct objfile *objfile, int typeid)
+   dwarf_fundamental_type (struct objfile *objfile, int type_id)
 
    DESCRIPTION
 
@@ -550,23 +550,23 @@ static struct type *dwarf_fundamental_type (struct objfile *, int);
  */
 
 static struct type *
-dwarf_fundamental_type (struct objfile *objfile, int typeid)
+dwarf_fundamental_type(struct objfile *objfile, int type_id)
 {
-  if (typeid < 0 || typeid >= FT_NUM_MEMBERS)
+  if ((type_id < 0) || (type_id >= FT_NUM_MEMBERS))
     {
-      error (_("internal error - invalid fundamental type id %d"), typeid);
+      error(_("internal error - invalid fundamental type id %d"), type_id);
     }
 
   /* Look for this particular type in the fundamental type vector.  If one is
      not found, create and install one appropriate for the current language
      and the current target machine. */
 
-  if (ftypes[typeid] == NULL)
+  if (ftypes[type_id] == NULL)
     {
-      ftypes[typeid] = cu_language_defn->la_fund_type (objfile, typeid);
+      ftypes[type_id] = cu_language_defn->la_fund_type(objfile, type_id);
     }
 
-  return (ftypes[typeid]);
+  return (ftypes[type_id]);
 }
 
 /*
@@ -656,48 +656,48 @@ set_cu_language (struct dieinfo *dip)
  */
 
 void
-dwarf_build_psymtabs (struct objfile *objfile, int mainline, file_ptr dbfoff,
-		      unsigned int dbfsize, file_ptr lnoffset,
-		      unsigned int lnsize)
+dwarf_build_psymtabs(struct objfile *objfile, int mainline,
+                     file_ptr dbfoff, unsigned int dbfsize,
+                     file_ptr lnoffset, unsigned int lnsize)
 {
   bfd *abfd = objfile->obfd;
   struct cleanup *back_to;
 
   current_objfile = objfile;
   dbsize = dbfsize;
-  dbbase = xmalloc (dbsize);
+  dbbase = (char *)xmalloc(dbsize);
   dbroff = 0;
-  if ((bfd_seek (abfd, dbfoff, SEEK_SET) != 0) ||
-      (bfd_bread (dbbase, dbsize, abfd) != dbsize))
+  if ((bfd_seek(abfd, dbfoff, SEEK_SET) != 0) ||
+      (bfd_bread(dbbase, dbsize, abfd) != (bfd_size_type)dbsize))
     {
-      xfree (dbbase);
-      error (_("can't read DWARF data from '%s'"), bfd_get_filename (abfd));
+      xfree(dbbase);
+      error(_("cannot read DWARF data from '%s'"), bfd_get_filename(abfd));
     }
-  back_to = make_cleanup (xfree, dbbase);
+  back_to = make_cleanup(xfree, dbbase);
 
   /* If we are reinitializing, or if we have never loaded syms yet, init.
      Since we have no idea how many DIES we are looking at, we just guess
      some arbitrary value. */
 
   if (mainline
-      || (objfile->global_psymbols.size == 0
-	  && objfile->static_psymbols.size == 0))
+      || ((objfile->global_psymbols.size == 0)
+	  && (objfile->static_psymbols.size == 0)))
     {
-      init_psymbol_list (objfile, 1024);
+      init_psymbol_list(objfile, 1024);
     }
 
-  /* Save the relocation factor where everybody can see it.  */
-
+  /* Save the relocation factor where everybody can see it: */
   base_section_offsets = objfile->section_offsets;
-  baseaddr = ANOFFSET (objfile->section_offsets, 0);
+  baseaddr = ANOFFSET(objfile->section_offsets, 0);
 
   /* Follow the compilation unit sibling chain, building a partial symbol
      table entry for each one.  Save enough information about each compilation
      unit to locate the full DWARF information later. */
 
-  scan_compilation_units (dbbase, dbbase + dbsize, dbfoff, lnoffset, objfile);
+  scan_compilation_units(dbbase, dbbase + dbsize, dbfoff, lnoffset,
+                         objfile);
 
-  do_cleanups (back_to);
+  do_cleanups(back_to);
   current_objfile = NULL;
 }
 
@@ -718,22 +718,23 @@ dwarf_build_psymtabs (struct objfile *objfile, int mainline, file_ptr dbfoff,
  */
 
 static void
-read_lexical_block_scope (struct dieinfo *dip, char *thisdie, char *enddie,
-			  struct objfile *objfile)
+read_lexical_block_scope(struct dieinfo *dip, char *thisdie, char *enddie,
+			 struct objfile *objfile)
 {
-  struct context_stack *new;
+  struct context_stack *new_cstack;
 
-  push_context (0, dip->at_low_pc);
-  process_dies (thisdie + dip->die_length, enddie, objfile);
-  new = pop_context ();
+  push_context(0, dip->at_low_pc);
+  process_dies((thisdie + dip->die_length), enddie, objfile);
+  new_cstack = pop_context();
   if (local_symbols != NULL)
     {
       /* APPLE LOCAL begin address ranges  */
-      finish_block (0, &local_symbols, new->old_blocks, new->start_addr,
-		    dip->at_high_pc, NULL, objfile);
+      finish_block(0, &local_symbols, new_cstack->old_blocks,
+                   new_cstack->start_addr, dip->at_high_pc, NULL,
+                   objfile);
       /* APPLE LOCAL end address ranges  */
     }
-  local_symbols = new->locals;
+  local_symbols = new_cstack->locals;
 }
 
 /*
@@ -917,8 +918,8 @@ decode_die_type (struct dieinfo *dip)
  */
 
 static struct type *
-struct_type (struct dieinfo *dip, char *thisdie, char *enddie,
-	     struct objfile *objfile)
+struct_type(struct dieinfo *dip, char *thisdie, char *enddie,
+	    struct objfile *objfile)
 {
   struct type *type;
   struct nextfield
@@ -927,14 +928,14 @@ struct_type (struct dieinfo *dip, char *thisdie, char *enddie,
       struct field field;
     };
   struct nextfield *list = NULL;
-  struct nextfield *new;
+  struct nextfield *newf;
   int nfields = 0;
   int n;
   struct dieinfo mbr;
   char *nextdie;
   int anonymous_size;
 
-  type = lookup_utype (dip->die_ref);
+  type = lookup_utype(dip->die_ref);
   if (type == NULL)
     {
       /* No forward references created an empty type, so install one now */
@@ -1003,19 +1004,19 @@ struct_type (struct dieinfo *dip, char *thisdie, char *enddie,
 	  if (mbr.at_location == NULL)
 	    break;
 
-	  /* Get space to record the next field's data.  */
-	  new = (struct nextfield *) alloca (sizeof (struct nextfield));
-	  new->next = list;
-	  list = new;
-	  /* Save the data.  */
+	  /* Get space to record the next field's data: */
+	  newf = (struct nextfield *)alloca(sizeof(struct nextfield));
+	  newf->next = list;
+	  list = newf;
+	  /* Save the data: */
 	  list->field.name =
-	    obsavestring (mbr.at_name, strlen (mbr.at_name),
-			  &objfile->objfile_obstack);
-	  FIELD_TYPE (list->field) = decode_die_type (&mbr);
-	  FIELD_BITPOS (list->field) = 8 * locval (&mbr);
-	  FIELD_STATIC_KIND (list->field) = 0;
-	  /* Handle bit fields. */
-	  FIELD_BITSIZE (list->field) = mbr.at_bit_size;
+	    obsavestring(mbr.at_name, strlen(mbr.at_name),
+			 &objfile->objfile_obstack);
+	  FIELD_TYPE(list->field) = decode_die_type(&mbr);
+	  FIELD_BITPOS(list->field) = (8 * locval(&mbr));
+	  FIELD_STATIC_KIND(list->field) = 0;
+	  /* Handle bit fields: */
+	  FIELD_BITSIZE(list->field) = mbr.at_bit_size;
 	  if (BITS_BIG_ENDIAN)
 	    {
 	      /* For big endian bits, the at_bit_offset gives the
@@ -1578,20 +1579,20 @@ read_subroutine_type (struct dieinfo *dip, char *thisdie, char *enddie)
  */
 
 static void
-read_enumeration (struct dieinfo *dip, char *thisdie, char *enddie,
-		  struct objfile *objfile)
+read_enumeration(struct dieinfo *dip, char *thisdie, char *enddie,
+		 struct objfile *objfile)
 {
   struct type *type;
   struct symbol *sym;
 
-  type = enum_type (dip, objfile);
-  sym = new_symbol (dip, objfile);
+  type = enum_type(dip, objfile);
+  sym = new_symbol(dip, objfile);
   if (sym != NULL)
     {
-      SYMBOL_TYPE (sym) = type;
+      SYMBOL_TYPE(sym) = type;
       if (cu_language == language_cplus)
 	{
-	  synthesize_typedef (dip, objfile, type);
+	  synthesize_typedef(dip, objfile, type);
 	}
     }
 }
@@ -1627,7 +1628,7 @@ read_enumeration (struct dieinfo *dip, char *thisdie, char *enddie,
  */
 
 static struct type *
-enum_type (struct dieinfo *dip, struct objfile *objfile)
+enum_type(struct dieinfo *dip, struct objfile *objfile)
 {
   struct type *type;
   struct nextfield
@@ -1636,7 +1637,7 @@ enum_type (struct dieinfo *dip, struct objfile *objfile)
       struct field field;
     };
   struct nextfield *list = NULL;
-  struct nextfield *new;
+  struct nextfield *newfield;
   int nfields = 0;
   int n;
   char *scan;
@@ -1646,71 +1647,70 @@ enum_type (struct dieinfo *dip, struct objfile *objfile)
   int nbytes;
   int unsigned_enum = 1;
 
-  type = lookup_utype (dip->die_ref);
+  type = lookup_utype(dip->die_ref);
   if (type == NULL)
     {
       /* No forward references created an empty type, so install one now */
-      type = alloc_utype (dip->die_ref, NULL);
+      type = alloc_utype(dip->die_ref, NULL);
     }
-  TYPE_CODE (type) = TYPE_CODE_ENUM;
+  TYPE_CODE(type) = TYPE_CODE_ENUM;
   /* Some compilers try to be helpful by inventing "fake" names for
      anonymous enums, structures, and unions, like "~0fake" or ".0fake".
      Thanks, but no thanks... */
-  if (dip->at_name != NULL
-      && *dip->at_name != '~'
-      && *dip->at_name != '.')
+  if ((dip->at_name != NULL) && (*dip->at_name != '~')
+      && (*dip->at_name != '.'))
     {
-      TYPE_TAG_NAME (type) = obconcat (&objfile->objfile_obstack,
-				       "", "", dip->at_name);
+      TYPE_TAG_NAME(type) = obconcat(&objfile->objfile_obstack,
+				      "", "", dip->at_name);
     }
   if (dip->at_byte_size != 0)
     {
-      TYPE_LENGTH_ASSIGN (type) = dip->at_byte_size;
+      TYPE_LENGTH_ASSIGN(type) = dip->at_byte_size;
     }
   scan = dip->at_element_list;
   if (scan != NULL)
     {
       if (dip->short_element_list)
 	{
-	  nbytes = attribute_size (AT_short_element_list);
+	  nbytes = attribute_size(AT_short_element_list);
 	}
       else
 	{
-	  nbytes = attribute_size (AT_element_list);
+	  nbytes = attribute_size(AT_element_list);
 	}
-      blocksz = target_to_host (scan, nbytes, GET_UNSIGNED, objfile);
-      listend = scan + nbytes + blocksz;
+      blocksz = target_to_host(scan, nbytes, GET_UNSIGNED, objfile);
+      listend = (scan + nbytes + blocksz);
       scan += nbytes;
       while (scan < listend)
 	{
-	  new = (struct nextfield *) alloca (sizeof (struct nextfield));
-	  new->next = list;
-	  list = new;
-	  FIELD_TYPE (list->field) = NULL;
-	  FIELD_BITSIZE (list->field) = 0;
-	  FIELD_STATIC_KIND (list->field) = 0;
-	  FIELD_BITPOS (list->field) =
-	    target_to_host (scan, TARGET_FT_LONG_SIZE (objfile), GET_SIGNED,
-			    objfile);
-	  scan += TARGET_FT_LONG_SIZE (objfile);
-	  list->field.name = obsavestring (scan, strlen (scan),
-					   &objfile->objfile_obstack);
-	  scan += strlen (scan) + 1;
+	  newfield = (struct nextfield *)alloca(sizeof(struct nextfield));
+	  newfield->next = list;
+	  list = newfield;
+	  FIELD_TYPE(list->field) = NULL;
+	  FIELD_BITSIZE(list->field) = 0;
+	  FIELD_STATIC_KIND(list->field) = 0;
+	  FIELD_BITPOS(list->field) =
+	    target_to_host(scan, TARGET_FT_LONG_SIZE(objfile), GET_SIGNED,
+			   objfile);
+	  scan += TARGET_FT_LONG_SIZE(objfile);
+	  list->field.name = obsavestring(scan, strlen(scan),
+					  &objfile->objfile_obstack);
+	  scan += (strlen(scan) + 1UL);
 	  nfields++;
-	  /* Handcraft a new symbol for this enum member. */
-	  sym = (struct symbol *) obstack_alloc (&objfile->objfile_obstack,
-						 sizeof (struct symbol));
-	  memset (sym, 0, sizeof (struct symbol));
-	  DEPRECATED_SYMBOL_NAME (sym) = create_name (list->field.name,
+	  /* Handcraft a new symbol for this enum member: */
+	  sym = (struct symbol *)obstack_alloc(&objfile->objfile_obstack,
+                                               sizeof(struct symbol));
+	  memset(sym, 0, sizeof(struct symbol));
+	  DEPRECATED_SYMBOL_NAME(sym) = create_name(list->field.name,
 					   &objfile->objfile_obstack);
-	  SYMBOL_INIT_LANGUAGE_SPECIFIC (sym, cu_language);
-	  SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
-	  SYMBOL_CLASS (sym) = LOC_CONST;
-	  SYMBOL_TYPE (sym) = type;
-	  SYMBOL_VALUE (sym) = FIELD_BITPOS (list->field);
-	  if (SYMBOL_VALUE (sym) < 0)
+	  SYMBOL_INIT_LANGUAGE_SPECIFIC(sym, cu_language);
+	  SYMBOL_DOMAIN(sym) = VAR_DOMAIN;
+	  SYMBOL_CLASS(sym) = LOC_CONST;
+	  SYMBOL_TYPE(sym) = type;
+	  SYMBOL_VALUE(sym) = FIELD_BITPOS(list->field);
+	  if (SYMBOL_VALUE(sym) < 0)
 	    unsigned_enum = 0;
-	  add_symbol_to_list (sym, list_in_scope);
+	  add_symbol_to_list(sym, list_in_scope);
 	}
       /* Now create the vector of fields, and record how big it is. This is
          where we reverse the order, by pulling the members off the list in
@@ -1720,14 +1720,16 @@ enum_type (struct dieinfo *dip, struct objfile *objfile)
       if (nfields > 0)
 	{
 	  if (unsigned_enum)
-	    TYPE_FLAGS (type) |= TYPE_FLAG_UNSIGNED;
-	  TYPE_NFIELDS (type) = nfields;
-	  TYPE_FIELDS (type) = (struct field *)
-	    obstack_alloc (&objfile->objfile_obstack, sizeof (struct field) * nfields);
-	  /* Copy the saved-up fields into the field vector.  */
+	    TYPE_FLAGS(type) |= TYPE_FLAG_UNSIGNED;
+	  TYPE_NFIELDS(type) = nfields;
+	  TYPE_FIELDS(type) = ((struct field *)
+                               obstack_alloc(&objfile->objfile_obstack,
+                                             (sizeof(struct field)
+                                              * nfields)));
+	  /* Copy the saved-up fields into the field vector: */
 	  for (n = 0; (n < nfields) && (list != NULL); list = list->next)
 	    {
-	      TYPE_FIELD (type, n++) = list->field;
+	      TYPE_FIELD(type, n++) = list->field;
 	    }
 	}
     }
@@ -1755,10 +1757,10 @@ enum_type (struct dieinfo *dip, struct objfile *objfile)
  */
 
 static void
-read_func_scope (struct dieinfo *dip, char *thisdie, char *enddie,
-		 struct objfile *objfile)
+read_func_scope(struct dieinfo *dip, char *thisdie, char *enddie,
+                struct objfile *objfile)
 {
-  struct context_stack *new;
+  struct context_stack *newstack;
 
   /* AT_name is absent if the function is described with an
      AT_abstract_origin tag.
@@ -1766,20 +1768,20 @@ read_func_scope (struct dieinfo *dip, char *thisdie, char *enddie,
      FIXME: Add code to handle AT_abstract_origin tags properly.  */
   if (dip->at_name == NULL)
     {
-      complaint (&symfile_complaints, _("DIE @ 0x%x, AT_name tag missing"),
-		 DIE_ID);
+      complaint(&symfile_complaints, _("DIE @ 0x%x, AT_name tag missing"),
+                DIE_ID);
       return;
     }
 
-  new = push_context (0, dip->at_low_pc);
-  new->name = new_symbol (dip, objfile);
+  newstack = push_context(0, dip->at_low_pc);
+  newstack->name = new_symbol(dip, objfile);
   list_in_scope = &local_symbols;
-  process_dies (thisdie + dip->die_length, enddie, objfile);
-  new = pop_context ();
+  process_dies((thisdie + dip->die_length), enddie, objfile);
+  newstack = pop_context();
   /* Make a block for the local symbols within.  */
   /* APPLE LOCAL begin address ranges  */
-  finish_block (new->name, &local_symbols, new->old_blocks,
-		new->start_addr, dip->at_high_pc, NULL, objfile);
+  finish_block(newstack->name, &local_symbols, newstack->old_blocks,
+               newstack->start_addr, dip->at_high_pc, NULL, objfile);
   /* APPLE LOCAL end address ranges  */
   list_in_scope = &file_symbols;
 }
@@ -2202,14 +2204,14 @@ locval (struct dieinfo *dip)
 	}
       /* Enforce maximum stack depth of 63 to avoid ++stacki writing
          outside of the given size. Also enforce minimum > 0.
-         -- wad@google.com 14 Aug 2006 */
-      if (stacki >= sizeof (stack) / sizeof (*stack) - 1)
-        internal_error (__FILE__, __LINE__,
-                        _("location description stack too deep: %d"),
-                        stacki);
+         -- <wad@google.com> 14 Aug 2006 */
+      if ((size_t)stacki >= ((sizeof(stack) / sizeof(*stack)) - 1UL))
+        internal_error(__FILE__, __LINE__,
+                       _("location description stack too deep: %d"),
+                       stacki);
       if (stacki < 0)
-        internal_error (__FILE__, __LINE__,
-                        _("location description stack too shallow"));
+        internal_error(__FILE__, __LINE__,
+                       _("location description stack too shallow"));
     }
   return (stack[stacki]);
 }
@@ -2233,7 +2235,7 @@ locval (struct dieinfo *dip)
  */
 
 static void
-read_ofile_symtab (struct partial_symtab *pst)
+read_ofile_symtab(struct partial_symtab *pst)
 {
   struct cleanup *back_to;
   unsigned long lnsize;
@@ -2248,19 +2250,19 @@ read_ofile_symtab (struct partial_symtab *pst)
      unit, seek to the location in the file, and read in all the DIE's. */
 
   diecount = 0;
-  dbsize = DBLENGTH (pst);
-  dbbase = xmalloc (dbsize);
-  dbroff = DBROFF (pst);
-  foffset = DBFOFF (pst) + dbroff;
+  dbsize = DBLENGTH(pst);
+  dbbase = (char *)xmalloc(dbsize);
+  dbroff = DBROFF(pst);
+  foffset = (DBFOFF(pst) + dbroff);
   base_section_offsets = pst->section_offsets;
-  baseaddr = ANOFFSET (pst->section_offsets, 0);
-  if (bfd_seek (abfd, foffset, SEEK_SET) ||
-      (bfd_bread (dbbase, dbsize, abfd) != dbsize))
+  baseaddr = ANOFFSET(pst->section_offsets, 0);
+  if (bfd_seek(abfd, foffset, SEEK_SET) ||
+      (bfd_bread(dbbase, dbsize, abfd) != (bfd_size_type)dbsize))
     {
-      xfree (dbbase);
-      error (_("can't read DWARF data"));
+      xfree(dbbase);
+      error(_("cannot read DWARF data"));
     }
-  back_to = make_cleanup (xfree, dbbase);
+  back_to = make_cleanup(xfree, dbbase);
 
   /* If there is a line number table associated with this compilation unit
      then read the size of this fragment in bytes, from the fragment itself.
@@ -2268,28 +2270,28 @@ read_ofile_symtab (struct partial_symtab *pst)
      processing. */
 
   lnbase = NULL;
-  if (LNFOFF (pst))
+  if (LNFOFF(pst))
     {
-      if (bfd_seek (abfd, LNFOFF (pst), SEEK_SET) ||
-	  (bfd_bread (lnsizedata, sizeof (lnsizedata), abfd)
-	   != sizeof (lnsizedata)))
+      if (bfd_seek(abfd, LNFOFF(pst), SEEK_SET) ||
+	  (bfd_bread(lnsizedata, sizeof(lnsizedata), abfd)
+	   != sizeof(lnsizedata)))
 	{
-	  error (_("can't read DWARF line number table size"));
+	  error(_("cannot read DWARF line number table size"));
 	}
-      lnsize = target_to_host (lnsizedata, SIZEOF_LINETBL_LENGTH,
-			       GET_UNSIGNED, pst->objfile);
-      lnbase = xmalloc (lnsize);
-      if (bfd_seek (abfd, LNFOFF (pst), SEEK_SET) ||
-	  (bfd_bread (lnbase, lnsize, abfd) != lnsize))
+      lnsize = target_to_host(lnsizedata, SIZEOF_LINETBL_LENGTH,
+			      GET_UNSIGNED, pst->objfile);
+      lnbase = (char *)xmalloc(lnsize);
+      if (bfd_seek(abfd, LNFOFF(pst), SEEK_SET) ||
+	  (bfd_bread(lnbase, lnsize, abfd) != lnsize))
 	{
-	  xfree (lnbase);
-	  error (_("can't read DWARF line numbers"));
+	  xfree(lnbase);
+	  error(_("cannot read DWARF line numbers"));
 	}
-      make_cleanup (xfree, lnbase);
+      make_cleanup(xfree, lnbase);
     }
 
-  process_dies (dbbase, dbbase + dbsize, pst->objfile);
-  do_cleanups (back_to);
+  process_dies(dbbase, (dbbase + dbsize), pst->objfile);
+  do_cleanups(back_to);
   current_objfile = NULL;
   pst->symtab = pst->objfile->symtabs;
 }
