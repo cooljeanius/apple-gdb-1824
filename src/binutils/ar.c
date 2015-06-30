@@ -687,6 +687,8 @@ main(int argc, char **argv)
 		  operation = extract;
                   cbak = 'x';
 		  break;
+                default:
+                  break;
 		}
             }
 	    case 'l':

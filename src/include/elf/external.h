@@ -246,9 +246,10 @@ typedef struct {
 typedef struct {
   unsigned char		vs_vers[2];
 }
-#ifdef __GNUC__
-  __attribute__ ((packed))
-#endif
+#if defined(__GNUC__) && !defined(lint) && defined(__ELF__)
+  /* FIXME: '-Wpacked' says this is unnecessary: */
+  __attribute__((packed))
+#endif /* __GNUC__ && !lint && __ELF__ */
   Elf_External_Versym;
 
 /* Structure for syminfo section.  */

@@ -872,7 +872,14 @@ AC_PROG_LN_S
 AC_PROG_MKDIR_P
 AM_PATH_PYTHON
 AC_PROG_OBJC
-AC_PROG_OBJCPP
+if test "x${OBJCPP}" = "x" && test -e /lib/cpp; then
+  test -z "${OBJCPP}" && test -x /lib/cpp
+  AC_PROG_OBJCPP
+else
+  test -n "${OBJCPP}"
+  AC_SUBST([OBJCPP])dnl
+  ## just in case... I do something further here? idk...
+fi
 AC_PROG_OBJCXX
 AC_PROG_OBJCXXCPP
 if test "x${RANLIB}" = "x"; then
@@ -898,6 +905,9 @@ fi
 AC_PATH_PROGS([LINT],[lint splint lclint tdlint alint],[],[],
               [${PATH}:${LINT_PATH_DIR}])dnl
 AC_SUBST([LINT_OPTS])dnl
+
+AC_PATH_PROGS([RELPATH],[relpath],[],[],
+              [${PATH}:./../utils/relpath.tproj])dnl
 
 m4_ifdef([AM_BINUTILS_CLANG_STATIC_ANALYSIS],[
 AM_BINUTILS_CLANG_STATIC_ANALYSIS
@@ -1155,7 +1165,11 @@ m4_ifdef([AM_ZLIB],[
 AC_MSG_CHECKING([if there is a zlib sister directory in this source tree])
 if test -d ../zlib -o -d ${srcdir}/../zlib; then
   if test "x${zlibdir}" = "x"; then
-    test -z "${zlibdir}" && zlibdir=-L../zlib
+    if test -d ../zlib; then
+      test -z "${zlibdir}" && zlibdir=-L../zlib
+    elif test -d ${srcdir}/../zlib; then
+      test -z "${zlibdir}" && zlibdir=-L${srcdir}/../zlib
+    fi
   fi
   if test "x${zlibinc}" = "x"; then
     test -z "${zlibinc}" && zlibinc="-I\$(srcdir)/../zlib"
@@ -1828,14 +1842,15 @@ AC_MSG_CHECKING([compiler characteristics])
 AC_MSG_RESULT([ ])dnl
 
 AC_PROG_GCC_TRADITIONAL
-AC_C_BACKSLASH_A dnl# used in a few files
+AC_C_BACKSLASH_A dnl# "\a" is used in a few files
 AC_C_BIGENDIAN([
   AC_CHECK_DECLS([__BIG_ENDIAN])dnl
 ],[
   AC_CHECK_DECLS([__LITTLE_ENDIAN])dnl
 ],[
-  AC_MSG_WARN([cannot check for additional endianness decls when the endianness is unknown;
- presetting ac_cv_c_bigendian=no (or yes) will help])
+  AC_MSG_WARN([cannot check for additional endianness decls
+ when the endianness is unknown;
+ pre-setting ac_cv_c_bigendian=no (or yes) will help])
 ],[
   AC_CHECK_DECLS([__BIG_ENDIAN])dnl
   AC_CHECK_DECLS([__LITTLE_ENDIAN])dnl

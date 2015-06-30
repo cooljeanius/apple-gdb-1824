@@ -74,7 +74,7 @@
    while doing this.  */
 int only_read_from_live_memory = 0;
 
-int set_only_read_from_live_memory (int newval)
+int set_only_read_from_live_memory(int newval)
 {
   int oldval = only_read_from_live_memory;
   only_read_from_live_memory = newval;
@@ -87,7 +87,7 @@ int set_only_read_from_live_memory (int newval)
 void
 set_only_read_from_live_memory_cleanup(void *newptr)
 {
-  set_only_read_from_live_memory((int)newptr);
+  set_only_read_from_live_memory((int)(intptr_t)newptr);
 }
 
 

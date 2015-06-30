@@ -1,4 +1,4 @@
-/* malloc() function that is glibc compatible.
+/* readline/malloc.c: malloc() function that is glibc compatible.
 
    Copyright (C) 1997-1998, 2006-2007, 2009-2012 Free Software Foundation, Inc.
 

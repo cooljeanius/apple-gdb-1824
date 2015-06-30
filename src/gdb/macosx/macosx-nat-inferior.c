@@ -2282,7 +2282,7 @@ macosx_ptrace_me(void)
 static void
 post_to_semaphore(void *input)
 {
-  pid_t pid = (pid_t)input;
+  pid_t pid = (pid_t)(intptr_t)input;
   sem_t *sem;
   char sem_name[64];
 
@@ -2324,7 +2324,8 @@ macosx_ptrace_him(int pid)
      semaphore. I do it in a cleanup so I will NOT leave the fork
      side hanging if I run into an error here.  */
 
-  sem_cleanup = make_cleanup(post_to_semaphore, (void *)pid);
+  sem_cleanup = make_cleanup(post_to_semaphore,
+                             (void *)(intptr_t)pid);
 
   kret = task_for_pid(mach_task_self(), pid, &itask);
   if (kret != KERN_SUCCESS)

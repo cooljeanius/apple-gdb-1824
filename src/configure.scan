@@ -54,8 +54,9 @@ AC_FUNC_MALLOC
 AC_FUNC_MKTIME
 AC_FUNC_REALLOC
 AC_FUNC_STRCOLL
+AC_FUNC_STRNLEN
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([atexit floor getcwd gethostbyaddr gethostbyname gettimeofday isascii localeconv mblen memchr memmove memset modf pow putenv re_comp regcomp rint select setlocale socket sqrt strcasecmp strchr strcspn strerror strpbrk strrchr strspn strstr strtol strtoul strverscmp utime])
+AC_CHECK_FUNCS([atexit bzero floor getcwd gethostbyaddr gethostbyname gettimeofday isascii localeconv mblen memchr memmove mempcpy memset modf pow putenv re_comp regcomp rint select setlocale socket sqrt strcasecmp strchr strcspn strerror strndup strpbrk strrchr strspn strstr strtol strtoul strverscmp utime])
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_SUBDIRS([autogen
@@ -68,6 +69,7 @@ AC_CONFIG_SUBDIRS([autogen
                    expect
                    gdb
                    intl
+                   libbacktrace
                    libdecnumber
                    libiberty
                    libintl

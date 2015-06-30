@@ -2119,8 +2119,9 @@ dyld_info_process_raw(struct macosx_dyld_thread_status *s,
      shared library that we have read in already, we still want to read the raw
      information from memory.  */
   old_trust_readonly = set_trust_readonly(0);
-  override_trust_readonly = make_cleanup(set_trust_readonly_cleanup,
-                                         (void *)old_trust_readonly);
+  override_trust_readonly =
+    make_cleanup(set_trust_readonly_cleanup,
+                 (void *)(intptr_t)old_trust_readonly);
 
   /* Read the mach header for this entry and store it. The in memory version
      of the mach header will detail the exact slice and whether the image is

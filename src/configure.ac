@@ -1713,8 +1713,11 @@ else
   fi
   AC_PROG_CPP
   AC_PROG_CXX
+  AC_PROG_CXXCPP
   AC_PROG_OBJC
   AC_PROG_OBJCPP
+  AC_PROG_OBJCXX
+  AC_PROG_OBJCXXCPP
 
   # We must set the default linker to the linker used by gcc for the
   # correct operation of libtool. If LD is not defined and we are using
@@ -1952,12 +1955,19 @@ unset ac_cv_header_sys_time_h
 AC_CHECK_HEADERS([fcntl.h langinfo.h libintl.h limits.h locale.h \
                   mach/mach.h malloc.h malloc/malloc.h netdb.h \
                   netinet/in.h signal.h stddef.h stdio.h \
-                  sys/file.h sys/ioctl.h sys/param.h sys/time.h \
-                  wchar.h wctype.h])dnl
+                  sys/file.h sys/ioctl.h sys/param.h sys/time.h])dnl
 
 if test "x${ac_cv_header_sys_socket_h}" = "x"; then
   test -z "${ac_cv_header_sys_socket_h}"
   AC_CHECK_HEADERS([sys/socket.h])
+fi
+if test "x${ac_cv_header_wchar_h}" = "x"; then
+  test -z "${ac_cv_header_wchar_h}"
+  AC_CHECK_HEADERS([wchar.h])
+fi
+if test "x${ac_cv_header_wctype_h}" = "x"; then
+  test -z "${ac_cv_header_wctype_h}"
+  AC_CHECK_HEADERS([wctype.h])
 fi
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -2020,16 +2030,18 @@ m4_ifdef([AC_FUNC_SETVBUF_REVERSED],[
 AC_FUNC_STAT
 AC_FUNC_STRCOLL
 AC_FUNC_STRFTIME
+AC_FUNC_STRNLEN
 AC_FUNC_STRTOD
 AC_FUNC_UTIME_NULL
 AC_FUNC_VPRINTF
 unset ac_cv_func_gethostbyname
-AC_CHECK_FUNCS([atexit floor getcwd gethostbyaddr gethostbyname \
+unset ac_cv_func_mempcpy
+AC_CHECK_FUNCS([atexit bzero floor getcwd gethostbyaddr gethostbyname \
                 gettimeofday isascii localeconv mblen memchr memmove \
-                memset modf pow printf putenv re_comp regcomp rint \
-                select setlocale socket sqrt strcasecmp strchr strcspn \
-                strerror strncasecmp strpbrk strrchr strspn strstr \
-                strtol strtoul strverscmp system utime])dnl
+                mempcpy memset modf pow printf putenv re_comp regcomp \
+                rint select setlocale socket sqrt strcasecmp strchr \
+                strcspn strerror strncasecmp strndup strpbrk strrchr \
+                strspn strstr strtol strtoul strverscmp system utime])dnl
 AC_CHECK_DECLS_ONCE([basename])dnl
 
 # Checks for tcl-related functions.
@@ -3562,6 +3574,7 @@ AC_SUBST([AR_FOR_BUILD])dnl
 AC_SUBST([AS_FOR_BUILD])dnl
 AC_SUBST([CC_FOR_BUILD])dnl
 AC_SUBST([CFLAGS_FOR_BUILD])dnl
+AC_SUBST([CPP_FOR_BUILD])dnl
 AC_SUBST([CXXFLAGS_FOR_BUILD])dnl
 AC_SUBST([CXX_FOR_BUILD])dnl
 AC_SUBST([DLLTOOL_FOR_BUILD])dnl
@@ -3571,6 +3584,8 @@ AC_SUBST([GOC_FOR_BUILD])dnl
 AC_SUBST([LDFLAGS_FOR_BUILD])dnl
 AC_SUBST([LD_FOR_BUILD])dnl
 AC_SUBST([NM_FOR_BUILD])dnl
+AC_SUBST([OBJC_FOR_BUILD])dnl
+AC_SUBST([OBJCPP_FOR_BUILD])dnl
 AC_SUBST([RANLIB_FOR_BUILD])dnl
 AC_SUBST([WINDMC_FOR_BUILD])dnl
 AC_SUBST([WINDRES_FOR_BUILD])dnl
@@ -3686,8 +3701,8 @@ if test -x ${srcdir}/libtool -a ! -d ${srcdir}/libtool; then
     test ! -z "${LIBTOOLFLAGS}"
     AC_MSG_NOTICE([LIBTOOLFLAGS are set to "${LIBTOOLFLAGS}"])
   fi
-  dnl# temporarily set this to 2.4.4 while I update everything:
-  LT_PREREQ([2.4.4])dnl
+  dnl# temporarily set this to 2.4.6 while I update everything:
+  LT_PREREQ([2.4.6])dnl
   dnl#TODO: finish updating the libtool_gnu subdir as well... (?)
 else
   test -e libtool
@@ -3696,6 +3711,8 @@ else
 fi
 
 AC_SUBST([CC])dnl
+AC_SUBST([CPP])dnl
+AC_SUBST([CPPFLAGS])dnl
 AC_SUBST([CXX])dnl
 AC_SUBST([CFLAGS])dnl
 AC_SUBST([CFLAGS_FOR_BUILD])dnl
@@ -3718,7 +3735,7 @@ AC_ARG_WITH([build-time-tools],
 # the environment, then move it to CONFIGURED_*_FOR_TARGET.
 NCN_STRICT_CHECK_TARGET_TOOLS([AR_FOR_TARGET],[ar gar])
 NCN_STRICT_CHECK_TARGET_TOOLS([AS_FOR_TARGET],[as gas])
-NCN_STRICT_CHECK_TARGET_TOOLS([GAS_FOR_TARGET],[gas])
+NCN_STRICT_CHECK_TARGET_TOOLS([GAS_FOR_TARGET],[gas ggas])
 NCN_STRICT_CHECK_TARGET_TOOLS([CC_FOR_TARGET],[cc gcc])
 NCN_STRICT_CHECK_TARGET_TOOLS([CXX_FOR_TARGET],[c++ g++ cxx gxx])
 NCN_STRICT_CHECK_TARGET_TOOLS([DLLTOOL_FOR_TARGET],[dlltool gdlltool])
@@ -3730,7 +3747,13 @@ NCN_STRICT_CHECK_TARGET_TOOLS([LD_FOR_TARGET],
                               [ld gld ld.bfd ld.gold gold ld64 ld_classic])
 NCN_STRICT_CHECK_TARGET_TOOLS([LIPO_FOR_TARGET],[lipo])
 NCN_STRICT_CHECK_TARGET_TOOLS([NM_FOR_TARGET],[nm gnm])
+NCN_STRICT_CHECK_TARGET_TOOLS([OBJC_FOR_TARGET],
+                              [gcc objcc objc cc CC gobjc])
 NCN_STRICT_CHECK_TARGET_TOOLS([OBJCOPY_FOR_TARGET],[objcopy gobjcopy])
+NCN_STRICT_CHECK_TARGET_TOOLS([OBJCPP_FOR_TARGET],
+                              [gcc objcc objc cc CC gobjc cpp])
+NCN_STRICT_CHECK_TARGET_TOOLS([OBJCXX_FOR_TARGET],
+                              [g++ objc++ objcxx c++ CXX gobjc++ gobjcxx])
 NCN_STRICT_CHECK_TARGET_TOOLS([OBJDUMP_FOR_TARGET],[objdump gobjdump])
 NCN_STRICT_CHECK_TARGET_TOOLS([RANLIB_FOR_TARGET],[ranlib granlib],[:])
 NCN_STRICT_CHECK_TARGET_TOOLS([READELF_FOR_TARGET],[readelf greadelf])
@@ -3770,6 +3793,9 @@ CONFIGURED_GCJ_FOR_TARGET="${GCJ_FOR_TARGET}"
 CONFIGURED_GFORTRAN_FOR_TARGET="${GFORTRAN_FOR_TARGET}"
 CONFIGURED_LD_FOR_TARGET="${LD_FOR_TARGET}"
 CONFIGURED_NM_FOR_TARGET="${NM_FOR_TARGET}"
+CONFIGURED_OBJC_FOR_TARGET="${OBJC_FOR_TARGET}"
+CONFIGURED_OBJCPP_FOR_TARGET="${OBJCPP_FOR_TARGET}"
+CONFIGURED_OBJCXX_FOR_TARGET="${OBJCXX_FOR_TARGET}"
 CONFIGURED_RANLIB_FOR_TARGET="${RANLIB_FOR_TARGET}"
 CONFIGURED_WINDRES_FOR_TARGET="${WINDRES_FOR_TARGET}"
 
@@ -3784,6 +3810,9 @@ AC_SUBST([CONFIGURED_GCJ_FOR_TARGET])dnl
 AC_SUBST([CONFIGURED_GFORTRAN_FOR_TARGET])dnl
 AC_SUBST([CONFIGURED_LD_FOR_TARGET])dnl
 AC_SUBST([CONFIGURED_NM_FOR_TARGET])dnl
+AC_SUBST([CONFIGURED_OBJC_FOR_TARGET])dnl
+AC_SUBST([CONFIGURED_OBJCPP_FOR_TARGET])dnl
+AC_SUBST([CONFIGURED_OBJCXX_FOR_TARGET])dnl
 AC_SUBST([CONFIGURED_RANLIB_FOR_TARGET])dnl
 AC_SUBST([CONFIGURED_WINDRES_FOR_TARGET])dnl
 

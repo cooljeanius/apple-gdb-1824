@@ -1174,7 +1174,7 @@ static void add_var(char *name)
 
 static void compile(char *string)
 {
-  /* Add words to the dictionary.  */
+  /* Add words to the dictionary: */
   char *word;
   string = nextword(string, &word);
   while (string && *string && word[0]) {

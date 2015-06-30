@@ -222,6 +222,8 @@ main(int argc, char **argv)
       case 'H':
       case '?':
 	usage(stderr, 1);
+      default:
+        break;
       }
 
   if (show_version) {

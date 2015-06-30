@@ -727,12 +727,18 @@ am--refresh:
 clean:
 	rm -f *.a *.o libtcl* core errs *~ \#* TAGS *.E a.out \
 		errors tclsh tcltest lib.exp
-	cd dltest ; $(MAKE) clean
+	if test -f dltest/Makefile; then \
+	  cd dltest && $(MAKE) clean; \
+	fi
 
 distclean: clean
-	rm -rf Makefile config.status config.cache config.log tclConfig.sh \
-		$(PACKAGE).* prototype
-	cd dltest ; $(MAKE) distclean
+	rm -rf config.status config.cache config.log tclConfig.sh \
+		$(PACKAGE).* prototype .DS_Store *.dSYM
+	if test -f dltest/Makefile; then \
+	  cd dltest && $(MAKE) distclean; \
+	fi
+	-rm -f Makefile
+	-rm -rf autom4te.cache || rmdir autom4te.cache
 
 depend:
 	makedepend -- $(DEPEND_SWITCHES) -- $(SRCS)

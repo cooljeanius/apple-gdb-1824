@@ -164,19 +164,16 @@ char *progname;
 int done;
 
 char *
-dupstr(s)
-     char *s;
+dupstr(char *s)
 {
   char *r;
 
-  r = xmalloc(strlen(s) + 1);
+  r = (char *)xmalloc(strlen(s) + 1UL);
   strcpy(r, s);
   return (r);
 }
 
-int main(argc, argv)
-     int argc;
-     char **argv;
+int main(int argc, char **argv)
 {
   char *line, *s;
 
@@ -334,12 +331,11 @@ fileman_completion (text, start, end)
    to start from scratch; without any state (i.e. STATE == 0), then we
    start at the top of the list. */
 char *
-command_generator (text, state)
-     const char *text;
-     int state;
+command_generator(const char *text, int state)
 {
-  static int list_index, len;
-  char *name;
+  static int list_index;
+  static size_t len;
+  char *name = (char *)NULL;
 
   /* If this is a new word to complete, initialize now. This includes
      saving the length of TEXT for efficiency, and initializing the index
@@ -347,17 +343,15 @@ command_generator (text, state)
   if (!state)
     {
       list_index = 0;
-      len = strlen (text);
+      len = strlen(text);
     }
 
   /* Return the next name which partially matches from the command list. */
-	/* Turned this assignment into an equality comparison; if that was wrong,
-	 * use double parentheses instead. */
-  while (name == commands[list_index].name)
+  while ((name = commands[list_index].name))
     {
       list_index++;
 
-      if (strncmp (name, text, len) == 0)
+      if (strncmp(name, text, len) == 0)
         return (dupstr(name));
     }
 

@@ -53,3 +53,4 @@ distclean-local:
 	    *.xcoff | *.tds | *.d | *.pdb | *.xSYM | *.bb | *.bbg | *.map | *.inf | *.dSYM ) rm -rf $$ac_file ;; \
 	  esac; \
 	done
+.PHONY: distclean-local

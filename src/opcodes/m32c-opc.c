@@ -1,4 +1,4 @@
-/* Instruction opcode table for m32c.
+/* m32-opc.c: Instruction opcode table for m32c.
 
 THIS FILE WAS ORIGINALLY MACHINE GENERATED WITH CGEN.
 
@@ -79275,7 +79275,7 @@ static const CGEN_IBASE m32c_cgen_macro_insn_table[] =
 /* The macro instruction opcode table: */
 static const CGEN_OPCODE m32c_cgen_macro_insn_opcode_table[] =
 {
-  { 0 }
+  { { 0 } }
 };
 
 #undef A

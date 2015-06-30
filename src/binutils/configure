@@ -656,6 +656,7 @@ UNIQ_BIN
 ac_config_sub
 zlibinc
 zlibdir
+HAVE_ZLIB_SOURCE
 POW_LIB
 LIBOBJS
 INCINTL
@@ -17282,7 +17283,8 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
 -Wmissing-parameter-type -Wshadow -Wabi -Wmissing-include-dirs \
 -Wconversion -Wfloat-conversion -Wsign-conversion -Wsign-compare \
--Wshorten-64-to-32 -Wshadow -Wdouble-promotion -Wmisleading-indentation"
+-Wshorten-64-to-32 -Wshadow -Wdouble-promotion -Wmisleading-indentation \
+-Wformat -Wmissing-format-attribute -Wswitch -Wswitch-default -Wpacked"
 # "-Wconversion" and friends are because of a comment in libbfd.c
 WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint"
 WARN_LDFLAGS=""
@@ -26488,12 +26490,28 @@ fi
     fi
   fi
 
-  # for the in-tree one:
-  if test "x${zlibdir}" = "x"; then
-    test -z "${zlibdir}" && zlibdir=-L../zlib
-  fi
-  if test "x${zlibinc}" = "x"; then
-    test -z "${zlibinc}" && zlibinc="-I\$(srcdir)/../zlib"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if there is a zlib sister directory in our source tree" >&5
+$as_echo_n "checking if there is a zlib sister directory in our source tree... " >&6; }
+  if test -d ../zlib -o -d ${srcdir}/../zlib; then
+    if test "x${zlibdir}" = "x"; then
+      if test -d ../zlib; then
+        test -z "${zlibdir}" && zlibdir=-L../zlib
+      elif test -d ${srcdir}/../zlib; then
+        test -z "${zlibdir}" && zlibdir=-L${srcdir}/../zlib
+      fi
+    fi
+    if test "x${zlibinc}" = "x"; then
+      test -z "${zlibinc}" && zlibinc="-I\$(srcdir)/../zlib"
+    fi
+    export HAVE_ZLIB_SOURCE=1
+        ## print:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+  else
+    zlibdir=""
+    zlibinc=""
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
   fi
 
 

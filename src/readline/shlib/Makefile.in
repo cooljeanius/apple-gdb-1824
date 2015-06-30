@@ -190,6 +190,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
 BUILD_DIR = @BUILD_DIR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
@@ -448,9 +449,12 @@ LN = ln
 # Support an alternate destination root directory for package building
 DESTDIR = 
 
+# architecture flags:
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+
 # For libraries which include headers from other libraries.
 AM_CPPFLAGS = -I. -I.. -I$(topdir)
-CCFLAGS = $(DEFS) $(LOCAL_DEFS) $(CPPFLAGS) $(INCLUDES) $(AM_CPPFLAGS) $(LOCAL_CFLAGS) $(CFLAGS)
+CCFLAGS = $(DEFS) $(LOCAL_DEFS) $(CPPFLAGS) $(INCLUDES) $(AM_CPPFLAGS) $(LOCAL_CFLAGS) $(CFLAGS) $(C_ARCHFLAGS)
 SUFFIXES = .so
 
 # The name of the main library target.

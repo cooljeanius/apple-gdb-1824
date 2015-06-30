@@ -18,12 +18,26 @@ AC_DEFUN([AM_ZLIB],[
     fi
   fi
 
-  # for the in-tree one:
-  if test "x${zlibdir}" = "x"; then
-    test -z "${zlibdir}" && zlibdir=-L../zlib
-  fi
-  if test "x${zlibinc}" = "x"; then
-    test -z "${zlibinc}" && zlibinc="-I\$(srcdir)/../zlib"
+  AC_MSG_CHECKING([if there is a zlib sister directory in our source tree])
+  if test -d ../zlib -o -d ${srcdir}/../zlib; then
+    if test "x${zlibdir}" = "x"; then
+      if test -d ../zlib; then
+        test -z "${zlibdir}" && zlibdir=-L../zlib
+      elif test -d ${srcdir}/../zlib; then
+        test -z "${zlibdir}" && zlibdir=-L${srcdir}/../zlib
+      fi
+    fi
+    if test "x${zlibinc}" = "x"; then
+      test -z "${zlibinc}" && zlibinc="-I\$(srcdir)/../zlib"
+    fi
+    export HAVE_ZLIB_SOURCE=1
+    AC_SUBST([HAVE_ZLIB_SOURCE])dnl
+    ## print:
+    AC_MSG_RESULT([yes])
+  else
+    zlibdir=""
+    zlibinc=""
+    AC_MSG_RESULT([no])
   fi
   AC_SUBST([zlibdir])dnl
   AC_SUBST([zlibinc])dnl

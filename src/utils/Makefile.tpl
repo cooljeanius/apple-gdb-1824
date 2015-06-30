@@ -38,6 +38,9 @@ SHELL = /bin/sh
 CC = @CC@
 CFLAGS = @CFLAGS@
 
+CPP = @CPP@
+CPPFLAGS = @CPPFLAGS@
+
 AR = @AR@
 AS = @CCAS@
 
@@ -125,6 +128,8 @@ AR_FLAGS = qv
 FLAGS_TO_PASS = \
 	"CC=$(CC)" \
 	"CFLAGS=$(CFLAGS)" \
+	"CPP=$(CPP)" \
+	"CPPFLAGS=$(CPPFLAGS)" \
 	"AR=$(AR)" \
 	"AR_FLAGS=$(AR_FLAGS)" \
 	"AS=$(AS)" \

@@ -3070,9 +3070,9 @@ get_information_about_macho(const char *filename, CORE_ADDR mh_addr, bfd *abfd,
         {
           /* Force this to be read out of real memory: */
           make_cleanup(set_trust_readonly_cleanup,
-                       (void *)set_trust_readonly(0));
+                       (void*)(intptr_t)set_trust_readonly(0));
           make_cleanup(set_only_read_from_live_memory_cleanup,
-                       (void *)set_only_read_from_live_memory(1));
+                       (void*)(intptr_t)set_only_read_from_live_memory(1));
         }
 
       if (target_read_mach_header(mh_addr, &h) != 0)
@@ -3436,10 +3436,11 @@ exhaustive_search_for_kernel_in_mem(struct objfile *ofile, CORE_ADDR *addr,
   /* We need to read data directly out of memory, we cannot "trust" the read-only sections
      and read anything out of the symbol files (which may be at the wrong address at this
      point). */
-  override_trust_readonly = make_cleanup(set_trust_readonly_cleanup,
-                                         (void *)set_trust_readonly(0));
+  override_trust_readonly =
+    make_cleanup(set_trust_readonly_cleanup,
+                 (void *)(intptr_t)set_trust_readonly(0));
   make_cleanup(set_only_read_from_live_memory_cleanup,
-               (void *)set_only_read_from_live_memory(1));
+               (void *)(intptr_t)set_only_read_from_live_memory(1));
 
   if (ofile && bfd_mach_o_kernel_image(ofile->obfd) && bfd_get_section_by_name(ofile->obfd, TEXT_SEGMENT_NAME))
     {

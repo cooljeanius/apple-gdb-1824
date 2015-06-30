@@ -101,14 +101,14 @@ history_filename(const char *filename)
 {
   char *return_val;
   const char *home;
-  int home_len;
+  size_t home_len;
 
-  return_val = filename ? savestring (filename) : (char *)NULL;
+  return_val = (filename ? savestring(filename) : (char *)NULL);
 
   if (return_val)
     return (return_val);
 
-  home = sh_get_env_value ("HOME");
+  home = sh_get_env_value("HOME");
 
   if (home == 0)
     {
@@ -116,16 +116,16 @@ history_filename(const char *filename)
       home_len = 1;
     }
   else
-    home_len = strlen (home);
+    home_len = strlen(home);
 
-  return_val = (char *)xmalloc (2 + home_len + 8); /* strlen(".history") == 8 */
-  strcpy (return_val, home);
+  return_val = (char *)xmalloc(2UL + home_len + 8UL); /* strlen(".history") == 8 */
+  strcpy(return_val, home);
   return_val[home_len] = '/';
-#if defined (__MSDOS__)
-  strcpy (return_val + home_len + 1, "_history");
+#if defined(__MSDOS__)
+  strcpy((return_val + home_len + 1), "_history");
 #else
-  strcpy (return_val + home_len + 1, ".history");
-#endif
+  strcpy((return_val + home_len + 1), ".history");
+#endif /* __MSDOS__ */
 
   return (return_val);
 }
@@ -274,17 +274,17 @@ history_truncate_file(const char *fname, int lines)
   rv = 0;
 
   /* Don't try to truncate non-regular files. */
-  if (file == -1 || fstat (file, &finfo) == -1)
+  if (file == -1 || fstat(file, &finfo) == -1)
     {
       rv = errno;
       if (file != -1)
-	close (file);
+	close(file);
       goto truncate_exit;
     }
 
-  if (S_ISREG (finfo.st_mode) == 0)
+  if (S_ISREG(finfo.st_mode) == 0)
     {
-      close (file);
+      close(file);
 #ifdef EFTYPE
       rv = EFTYPE;
 #else
@@ -376,7 +376,9 @@ history_do_write(const char *filename, int nelements, int overwrite)
   register int i;
   char *output;
   int file, mode, rv;
+#if defined(HAVE_MMAP) || defined(ALLOW_UNUSED_VARIABLES)
   size_t cursize;
+#endif /* HAVE_MMAP || ALLOW_UNUSED_VARIABLES */
 
 #ifdef HAVE_MMAP
   mode = overwrite ? O_RDWR|O_CREAT|O_TRUNC|O_BINARY : O_RDWR|O_APPEND|O_BINARY;
@@ -388,13 +390,13 @@ history_do_write(const char *filename, int nelements, int overwrite)
 
   if ((file = open(output, mode, 0600)) == -1)
     {
-      FREE (output);
-      return (errno);
+      FREE(output);
+      return(errno);
     }
 
 #ifdef HAVE_MMAP
-  cursize = overwrite ? 0 : lseek (file, 0, SEEK_END);
-#endif
+  cursize = (overwrite ? 0 : lseek(file, 0, SEEK_END));
+#endif /* HAVE_MMAP */
 
   if (nelements > history_length)
     nelements = history_length;

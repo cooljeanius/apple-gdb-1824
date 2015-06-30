@@ -24,15 +24,20 @@ AUTOMAKE_OPTIONS = 1.9 gnits -Wno-override no-dependencies subdir-objects
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 ## hacks to extend the verbosity control:
-AM_V_redir = $(am__v_redir_$(V))
-am__v_redir_ = $(am__v_redir_$(AM_DEFAULT_VERBOSITY))
+AM_V_redir = $(am__v_redir_@AM_V@)
+am__v_redir_ = $(am__v_redir_@AM_DEFAULT_V@)
 am__v_redir_0 = >
 am__v_redir_1 = | tee
 
-AM_V_redir_a = $(am__v_redir_a_$(V))
-am__v_redir_a_ = $(am__v_redir_a_$(AM_DEFAULT_VERBOSITY))
+AM_V_redir_a = $(am__v_redir_a_@AM_V@)
+am__v_redir_a_ = $(am__v_redir_a_@AM_DEFAULT_V@)
 am__v_redir_a_0 = >>
 am__v_redir_a_1 = | tee -a
+
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
+am__v_v_0 =
+am__v_v_1 = -v
 
 docdir = .
 
@@ -94,13 +99,21 @@ bfd_TEXINFOS = $(DOCFILES) bfdsumm.texi
 
 MKDOC = chew$(EXEEXT_FOR_BUILD)
 src_MKDOC = $(srcdir)/$(MKDOC)
+build_MKDOC = $(builddir)/$(MKDOC)
 
 ## also build chew with automake to have automake generate rules for
 ## compiling C code for us, but rename it to try to avoid conflicts:
 noinst_PROGRAMS = chew_am
-chew_am_SOURCES = $(srcdir)/chew.c
+chew_am_SOURCES = $(srcdir)/chew.c $(srcdir_high)/include/ansidecl.h
 chew_am_CFLAGS = $(AM_CFLAGS) $(CFLAGS_FOR_BUILD) $(H_CFLAGS)
 chew_am_LDFLAGS = -L$(srcdir_high)/intl -L../../intl $(LDFLAGS_FOR_BUILD)
+EXTRA_chew_am_DEPENDENCIES = Makefile $(srcdir_up)/config.h
+
+chew_am-chew.o: chew.c $(srcdir_high)/include/ansidecl.h Makefile
+	if test -e $(srcdir)/chew_am-chew.o -a -w $(srcdir); then \
+	  rm -f $(AM_V_v) $(srcdir)/chew_am-chew.o; \
+	fi
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(chew_am_CFLAGS) $(CFLAGS) -c -o chew_am-chew.o `test -f '$(srcdir)/chew.c' || echo '$(srcdir)/'`$(srcdir)/chew.c
 
 ## yes, I do mean to override this here, to avoid an error with libtool:
 LDFLAGS =
@@ -467,8 +480,18 @@ MOSTLYCLEANFILES = $(MKDOC) *.o *.stamp
 CLEANFILES = *.p *.ip *.dSYM
 
 apple-clean:
-	rm -rfv *.dSYM || rmdir *.dSYM
+	-rm -rf $(AM_V_v) *.dSYM || rmdir *.dSYM
+	-if test -w $(srcdir); then \
+	  rm -rf $(AM_V_v) $(srcdir)/*.dSYM || rmdir $(srcdir)/*.dSYM; \
+	fi
 .PHONY: apple-clean
+
+clean-local: Makefile @MAINT@ apple-clean
+	-if test -w $(srcdir); then rm -f $(AM_V_v) $(srcdir)/*.o; fi
+.PHONY: clean-local
+
+all-local: clean-local $(build_MKDOC) protos
+.PHONY: all-local
 
 DISTCLEANFILES = bfd.?? bfd.??? bfd.h libbfd.h libcoff.h texput.log
 

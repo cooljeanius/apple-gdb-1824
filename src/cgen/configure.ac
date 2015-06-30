@@ -14,6 +14,14 @@ AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu])dnl
 AC_PROG_INSTALL
 AC_EXEEXT
 
+AC_PATH_PROGS([GUILE_BIN],
+              [guile guile2 guile-2.0 guile18 guile-1.8 guile16 guile-1.6])
+if test "x${GUILE_BIN}" != "x"; then
+  if test -x "${GUILE_BIN}"; then
+    AG_TEST_GUILE_VERSION
+  fi
+fi
+
 # Set target cpu, and various things that depend upon it:
 cpu_arch=${target_cpu}
 AC_SUBST([cpu_arch])dnl

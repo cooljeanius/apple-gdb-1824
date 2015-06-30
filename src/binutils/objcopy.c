@@ -2747,6 +2747,8 @@ copy_main (int argc, char *argv[])
 	      case OPTION_CHANGE_SECTION_VMA:
 		option = "--change-section-vma";
 		break;
+              default:
+                break;
 	      }
 
 	    s = strchr(optarg, '=');
@@ -2773,26 +2775,29 @@ copy_main (int argc, char *argv[])
 	    switch (*s)
 	      {
 	      case '=': what = CHANGE_SET; break;
-	      case '-': val  = - val; /* Drop through.  */
+	      case '-': val = (0 - val); /* Drop through.  */
 	      case '+': what = CHANGE_MODIFY; break;
+              default:;
 	      }
 
 	    switch (c)
 	      {
 	      case OPTION_CHANGE_SECTION_ADDRESS:
 		p->change_vma = what;
-		p->vma_val    = val;
+		p->vma_val = val;
 		/* Drop through.  */
 
 	      case OPTION_CHANGE_SECTION_LMA:
 		p->change_lma = what;
-		p->lma_val    = val;
+		p->lma_val = val;
 		break;
 
 	      case OPTION_CHANGE_SECTION_VMA:
 		p->change_vma = what;
-		p->vma_val    = val;
+		p->vma_val = val;
 		break;
+
+              default:;
 	      }
 	  }
 	  break;

@@ -518,7 +518,9 @@ along with GLD; see the file COPYING.  If not, write to the Free
 Software Foundation, 51 Franklin St., 5th Floor, Boston, MA
 02110-1301, USA.  */
 
-#include "config.h"
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #ifdef HAVE_STRING_H
 # include <string.h>
 #else
@@ -528,6 +530,14 @@ Software Foundation, 51 Franklin St., 5th Floor, Boston, MA
 #endif /* HAVE_STRING_H */
 #include "sysinfo.h"
 
+/* in case these got re-defined on us: */
+#ifdef malloc
+# undef malloc
+#endif /* malloc */
+#ifdef realloc
+# undef realloc
+#endif /* realloc */
+
 #define YY_NO_UNPUT
 
 #ifndef yywrap
@@ -535,7 +545,7 @@ static int yywrap(void) { return 1; }
 #endif /* !yywrap */
 
 extern int yylex(void);
-#line 539 "syslex.c"
+#line 549 "syslex.c"
 
 #define INITIAL 0
 
@@ -717,9 +727,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 39 "syslex.l"
+#line 49 "syslex.l"
 
-#line 723 "syslex.c"
+#line 733 "syslex.c"
 
 	if ( !(yy_init) )
 		{
@@ -804,67 +814,67 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 40 "syslex.l"
+#line 50 "syslex.l"
 { return '(';}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 41 "syslex.l"
+#line 51 "syslex.l"
 { return ')';}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 42 "syslex.l"
+#line 52 "syslex.l"
 { return '[';}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 43 "syslex.l"
+#line 53 "syslex.l"
 { return ']';}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 44 "syslex.l"
+#line 54 "syslex.l"
 { ; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 45 "syslex.l"
+#line 55 "syslex.l"
 { ; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 46 "syslex.l"
+#line 56 "syslex.l"
 { ; }
 	YY_BREAK
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 47 "syslex.l"
+#line 57 "syslex.l"
 { ; }
 	YY_BREAK
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
-#line 48 "syslex.l"
+#line 58 "syslex.l"
 {
 	yylval.s = (char *)malloc(yyleng - 1);
-	memcpy(yylval.s, yytext + 1, yyleng - 2);
+	memcpy(yylval.s, (yytext + 1), (yyleng - 2));
 	yylval.s[yyleng - 2] = '\0';
         return NAME;
 	}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 55 "syslex.l"
+#line 65 "syslex.l"
 {
-        yylval.i = strtol(yytext, 0, 16);
+        yylval.i = (int)strtol(yytext, 0, 16);
 	return  NUMBER;
 	}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 60 "syslex.l"
+#line 70 "syslex.l"
 {
         yylval.i = atoi(yytext);
 	return  NUMBER;
@@ -872,67 +882,67 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 66 "syslex.l"
+#line 76 "syslex.l"
 { yylval.i =1 ;return UNIT;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 67 "syslex.l"
+#line 77 "syslex.l"
 { yylval.i = 1; return UNIT;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 68 "syslex.l"
+#line 78 "syslex.l"
 { yylval.i= 8; return UNIT;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 69 "syslex.l"
+#line 79 "syslex.l"
 { yylval.i = 8; return UNIT;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 71 "syslex.l"
+#line 81 "syslex.l"
 { yylval.s = "INT"; return TYPE;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 72 "syslex.l"
+#line 82 "syslex.l"
 { yylval.s = "BARRAY"; return TYPE;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 73 "syslex.l"
+#line 83 "syslex.l"
 { yylval.s = "CHARS"; return TYPE;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 74 "syslex.l"
+#line 84 "syslex.l"
 { yylval.i = 0; return NUMBER;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 75 "syslex.l"
+#line 85 "syslex.l"
 { yylval.i = -4; return NUMBER;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 76 "syslex.l"
+#line 86 "syslex.l"
 { yylval.i = -2; return NUMBER; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 77 "syslex.l"
+#line 87 "syslex.l"
 { yylval.i = -1; return NUMBER; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 78 "syslex.l"
+#line 88 "syslex.l"
 { return COND;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 79 "syslex.l"
+#line 89 "syslex.l"
 { return REPEAT;}
 	YY_BREAK
 
@@ -940,10 +950,10 @@ YY_RULE_SETUP
 
 case 25:
 YY_RULE_SETUP
-#line 84 "syslex.l"
+#line 94 "syslex.l"
 ECHO;
 	YY_BREAK
-#line 947 "syslex.c"
+#line 957 "syslex.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1937,4 +1947,4 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 84 "syslex.l"
+#line 94 "syslex.l"

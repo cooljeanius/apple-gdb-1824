@@ -30,9 +30,13 @@ infodir = @infodir@
 includedir = @includedir@
 srcdir = @srcdir@
 
+AUTOCONF = autoconf
+
 CC = @CC@
 CLANG_ANALYZER = @CLANG_ANALYZER@
+CPP = @CPP@
 CFLAGS = @CFLAGS@
+CPPFLAGS = @CPPFLAGS@
 DEFS = @DEFS@
 
 man1dir = $(mandir)/man1
@@ -125,4 +129,4 @@ config.status: $(srcdir)/configure
 	./config.status --recheck
 
 $(srcdir)/configure: $(srcdir)/configure.ac
-	cd $(srcdir) && autoconf --force
+	cd $(srcdir) && $(AUTOCONF) --force

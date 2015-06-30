@@ -8070,8 +8070,8 @@ _bfd_mips_elf_additional_program_headers (bfd *abfd)
 /* Modify the segment map for an IRIX5 executable.  */
 
 bfd_boolean
-_bfd_mips_elf_modify_segment_map (bfd *abfd,
-				  struct bfd_link_info *info ATTRIBUTE_UNUSED)
+_bfd_mips_elf_modify_segment_map(bfd *abfd,
+				 struct bfd_link_info *info ATTRIBUTE_UNUSED)
 {
   asection *s;
   struct elf_segment_map *m, **pm;
@@ -8222,32 +8222,32 @@ _bfd_mips_elf_modify_segment_map (bfd *abfd,
 	  unsigned int i, c;
 	  struct elf_segment_map *n;
 
-	  low = ~(bfd_vma) 0;
+	  low = ~(bfd_vma)0L;
 	  high = 0;
-	  for (i = 0; i < sizeof sec_names / sizeof sec_names[0]; i++)
+	  for (i = 0; i < (sizeof(sec_names) / sizeof(sec_names[0])); i++)
 	    {
-	      s = bfd_get_section_by_name (abfd, sec_names[i]);
-	      if (s != NULL && (s->flags & SEC_LOAD) != 0)
+	      s = bfd_get_section_by_name(abfd, sec_names[i]);
+	      if ((s != NULL) && ((s->flags & SEC_LOAD) != 0))
 		{
 		  bfd_size_type sz;
 
 		  if (low > s->vma)
 		    low = s->vma;
 		  sz = s->size;
-		  if (high < s->vma + sz)
-		    high = s->vma + sz;
+		  if (high < (s->vma + sz))
+		    high = (s->vma + sz);
 		}
 	    }
 
 	  c = 0;
 	  for (s = abfd->sections; s != NULL; s = s->next)
-	    if ((s->flags & SEC_LOAD) != 0
-		&& s->vma >= low
-		&& s->vma + s->size <= high)
+	    if (((s->flags & SEC_LOAD) != 0) && (s->vma >= low)
+		&& ((s->vma + s->size) <= high))
 	      ++c;
 
-	  amt = sizeof *n + (bfd_size_type) (c - 1) * sizeof (asection *);
-	  n = bfd_zalloc (abfd, amt);
+	  amt = (sizeof(*n)
+                 + ((bfd_size_type)(c - 1UL) * sizeof(asection *)));
+	  n = (struct elf_segment_map *)bfd_zalloc(abfd, amt);
 	  if (n == NULL)
 	    return FALSE;
 	  *n = *m;
@@ -8606,16 +8606,16 @@ _bfd_mips_elf_find_nearest_line (bfd *abfd, asection *section,
       if (elf_section_data (msec)->this_hdr.sh_type != SHT_NOBITS)
 	msec->flags |= SEC_HAS_CONTENTS;
 
-      fi = elf_tdata (abfd)->find_line_info;
+      fi = elf_tdata(abfd)->find_line_info;
       if (fi == NULL)
 	{
 	  bfd_size_type external_fdr_size;
 	  char *fraw_src;
 	  char *fraw_end;
 	  struct fdr *fdr_ptr;
-	  bfd_size_type amt = sizeof (struct mips_elf_find_line);
+	  bfd_size_type amt = sizeof(struct mips_elf_find_line);
 
-	  fi = bfd_zalloc(abfd, amt);
+	  fi = (struct mips_elf_find_line *)bfd_zalloc(abfd, amt);
 	  if (fi == NULL)
 	    {
 	      msec->flags = origflags;

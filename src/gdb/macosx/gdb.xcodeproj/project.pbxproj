@@ -148,8 +148,8 @@
 		61D220DD192D616D00FA979E /* aoutx.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CE640E82C407008125DE /* aoutx.h */; };
 		61D220DE192D617D00FA979E /* dwarf1.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEF70E82C407008125DE /* dwarf1.c */; };
 		61D220DF192D617D00FA979E /* dwarf2.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEF80E82C407008125DE /* dwarf2.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
-		61D220E0192D617D00FA979E /* ecoff.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEF90E82C407008125DE /* ecoff.c */; };
-		61D220E1192D617D00FA979E /* ecofflink.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEFA0E82C407008125DE /* ecofflink.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing"; }; };
+		61D220E0192D617D00FA979E /* ecoff.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEF90E82C407008125DE /* ecoff.c */; settings = {COMPILER_FLAGS = "-DCHECK_ARMAP_HASH"; }; };
+		61D220E1192D617D00FA979E /* ecofflink.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEFA0E82C407008125DE /* ecofflink.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing -DTEST"; }; };
 		61D220E2192D617D00FA979E /* ecoffswap.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CEFB0E82C407008125DE /* ecoffswap.h */; };
 		61D220E3192D617D00FA979E /* efi-app-ia32.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEFC0E82C407008125DE /* efi-app-ia32.c */; };
 		61D220E4192D617D00FA979E /* efi-app-ia64.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEFD0E82C407008125DE /* efi-app-ia64.c */; settings = {COMPILER_FLAGS = "-Wshorten-64-to-32"; }; };
@@ -12603,7 +12603,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\n# shell script goes here:\n\nenv | uniq | sort | uniq\n\ncd ${SRCROOT} && pwd\n\nstat ${SRCROOT}/configure 2>&1 || echo \"stderr should have been redirected...\"\n\nif test -e ${SRCROOT}/configure; then\n  export CONFIGURE_ROOT=${SRCROOT}\nelif test -e ${SRCROOT}/src/configure; then\n  export CONFIGURE_ROOT=${SRCROOT}/src\nelse\n  echo \"error: could not find configure script\" >&2\n  exit 1\nfi\n\nexport CONFIGURE_SCRIPT=${CONFIGURE_ROOT}/configure\nexport CONFIG_STATUS=${CONFIGURE_ROOT}/config.status\nexport CONFIG_HEADER=${CONFIGURE_ROOT}/config.h\n\nset -ex\n\nif test -x \"${CONFIGURE_SCRIPT}\" -a ! -e \"${CONFIG_STATUS}\"; then\n  unset APPLE_INTERNAL_DIR\n  ${CONFIGURE_SCRIPT} --with-x --disable-werror --enable-carbon-framework --enable-debug-symbols-framework --disable-opts-test --enable-64-bit-bfd\nelif test -x \"${CONFIG_STATUS}\" -a ! -e \"${CONFIG_HEADER}\"; then\n  ${CONFIG_STATUS}\nelif test -e \"${CONFIG_HEADER}\"; then\n  echo \"ok\"\nfi\n\nexit 0\n";
+			shellScript = "#!/bin/sh\n# shell script goes here:\n\nenv | uniq | sort | uniq\n\ncd ${SRCROOT} && pwd\n\nstat ${SRCROOT}/configure 2>&1 || echo \"stderr should have been redirected...\"\n\nif test -e ${SRCROOT}/configure; then\n  export CONFIGURE_ROOT=${SRCROOT}\nelif test -e ${SRCROOT}/src/configure; then\n  export CONFIGURE_ROOT=${SRCROOT}/src\nelif test -n ${SRC_SRCROOT} -a -e ${SRC_SRCROOT}/configure; then\n  export CONFIGURE_ROOT=${SRC_SRCROOT}\nelif test -n ${BFD_SRCROOT} -a -e ${BFD_SRCROOT}/configure; then\n  export CONFIGURE_ROOT=${BFD_SRCROOT}\nelse\n  echo \"error: could not find configure script\" >&2\n  exit 1\nfi\n\nexport CONFIGURE_SCRIPT=${CONFIGURE_ROOT}/configure\nexport CONFIG_STATUS=${CONFIGURE_ROOT}/config.status\nexport CONFIG_HEADER=${CONFIGURE_ROOT}/config.h\n\nset -ex\n\nif test -x \"${CONFIGURE_SCRIPT}\" -a ! -e \"${CONFIG_STATUS}\"; then\n  unset APPLE_INTERNAL_DIR\n  ${CONFIGURE_SCRIPT} --with-x --disable-werror --enable-carbon-framework --enable-debug-symbols-framework --disable-opts-test --enable-64-bit-bfd\nelif test -x \"${CONFIG_STATUS}\" -a ! -e \"${CONFIG_HEADER}\"; then\n  ${CONFIG_STATUS}\nelif test -e \"${CONFIG_HEADER}\"; then\n  echo \"ok\"\nfi\n\nexit 0\n";
 		};
 		61D2220F192D6D8100FA979E /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -12616,7 +12616,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\n\nif test -d \"${SRCROOT}\"; then\n  if test -d \"${SRCROOT}/src/bfd\"; then\n    stat ${SRCROOT}/src/bfd/config.h 2>&1\n  elif test -d \"${SRCROOT}/bfd\"; then\n    stat ${SRCROOT}/bfd/config.h 2>&1\n  else\n    echo \"Warning: no bfd subdir in ${SRCROOT}\" >&2\n  fi\nelif test -d \"${SRC_SRCROOT}\"; then\n  if test -d \"${SRC_SRCROOT}/bfd\"; then\n    stat ${SRC_SRCROOT}/bfd/config.h 2>&1\n  else\n    echo \"Warning: no bfd subdir in ${SRC_SRCROOT}\" >&2\n  fi\nelif test -d \"${TOP_SRCROOT}\"; then\n  if test -d \"${TOP_SRCROOT}/src/bfd\"; then\n    stat ${TOP_SRCROOT}/src/bfd/config.h 2>&1\n  elif test -d \"${TOP_SRCROOT}/bfd\"; then\n    stat ${TOP_SRCROOT}/bfd/config.h 2>&1\n  else\n    echo \"Warning: no bfd subdir in ${TOP_SRCROOT}\" >&2\n  fi\nfi\n\nexit 0\n";
+			shellScript = "#!/bin/sh\n\nif test -d \"${SRCROOT}\"; then\n  if test -d \"${SRCROOT}/src/bfd\"; then\n    stat ${SRCROOT}/src/bfd/config.h 2>&1 || echo \"stderr should have been redirected...\"\n  elif test -d \"${SRCROOT}/bfd\"; then\n    stat ${SRCROOT}/bfd/config.h 2>&1 || echo \"stderr should have been redirected...\"\n  else\n    echo \"Warning: no bfd subdir in ${SRCROOT}\" >&2\n  fi\nelif test -d \"${SRC_SRCROOT}\"; then\n  if test -d \"${SRC_SRCROOT}/bfd\"; then\n    stat ${SRC_SRCROOT}/bfd/config.h 2>&1 || echo \"stderr should have been redirected...\"\n  else\n    echo \"Warning: no bfd subdir in ${SRC_SRCROOT}\" >&2\n  fi\nelif test -d \"${TOP_SRCROOT}\"; then\n  if test -d \"${TOP_SRCROOT}/src/bfd\"; then\n    stat ${TOP_SRCROOT}/src/bfd/config.h 2>&1 || echo \"stderr should have been redirected...\"\n  elif test -d \"${TOP_SRCROOT}/bfd\"; then\n    stat ${TOP_SRCROOT}/bfd/config.h 2>&1 || echo \"stderr should have been redirected...\"\n  else\n    echo \"Warning: no bfd subdir in ${TOP_SRCROOT}\" >&2\n  fi\nelif test -d \"${BFD_SRCROOT}\"; then\n  stat ${BFD_SRCROOT}/config.h 2>&1 || echo \"stderr should have been redirected...\"\nfi\n\nexit 0\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -13214,6 +13214,7 @@
 					i386,
 					x86_64,
 				);
+				BFD_SRCROOT = "$(SRC_SRCROOT)/bfd";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				EXECUTABLE_PREFIX = lib;

@@ -83,7 +83,7 @@ int print_closure = 1;
 static void
 do_restore_print_closure(void *in_oldval)
 {
-  print_closure = (int)in_oldval;
+  print_closure = (int)(intptr_t)in_oldval;
 }
 
 struct cleanup *
@@ -91,7 +91,7 @@ make_cleanup_set_restore_print_closure(int newval)
 {
   int oldval = print_closure;
   print_closure = newval;
-  return make_cleanup(do_restore_print_closure, (void *)oldval);
+  return make_cleanup(do_restore_print_closure, (void *)(intptr_t)oldval);
 }
 
 static struct value *

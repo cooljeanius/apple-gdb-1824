@@ -72,5 +72,17 @@ clean-local:
 	rm -f *.o *${SHLIB_SUFFIX} config.cache config.log config.status
 	rm -f lib.exp ../dltest.marker
 
-distclean-local: clean-local
+distclean-local: @MAINT@ clean-local
 	rm -f Makefile Makefile*orig
+	-rm -rf autom4te.cache || rmdir autom4te.cache
+
+## automake will only generate this rule depending on the directory from
+## which it was run:
+am--refresh:
+	@if test "x$(subdir)" != "xdltest"; then \
+	  echo "warning: autoreconf screwed up..." >&2; \
+	else \
+	  echo "making '$@'"; \
+	fi
+.PHONY: am--refresh
+## (a case study in "recursive automake considered harmful")

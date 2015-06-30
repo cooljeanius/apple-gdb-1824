@@ -1054,6 +1054,7 @@ elf_s390_check_relocs (abfd, info, sec, relocs)
 	      if (!create_got_section (htab->elf.dynobj, info))
 		return FALSE;
 	    }
+        default:;
 	}
 
       switch (r_type)

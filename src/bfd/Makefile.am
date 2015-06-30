@@ -7,20 +7,19 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; see the file COPYING3.  If not see
 # <http://www.gnu.org/licenses/>.
 #
 
-## "-Wportability" warns about rules that we just stole from automake
-## itself, so disable those warnings for being hypocritical:
-AUTOMAKE_OPTIONS = 1.11.6 no-dist gnits dejagnu -Wall -Wno-portability
+## might have to add back -Wno-portability, if I screwed up:
+AUTOMAKE_OPTIONS = 1.11.6 no-dist gnits dejagnu -Wall -Wno-override
 ## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
@@ -902,18 +901,18 @@ HFILES = $(SOURCE_HFILES) $(BUILD_HFILES)
 noinst_HEADERS = $(HFILES)
 
 ## hacks to extend the verbosity control:
-AM_V_redir = $(am__v_redir_$(V))
-am__v_redir_ = $(am__v_redir_$(AM_DEFAULT_VERBOSITY))
+AM_V_redir = $(am__v_redir_@AM_V@)
+am__v_redir_ = $(am__v_redir_@AM_DEFAULT_V@)
 am__v_redir_0 = >
 am__v_redir_1 = | tee
 
-AM_V_redir_a = $(am__v_redir_a_$(V))
-am__v_redir_a_ = $(am__v_redir_a_$(AM_DEFAULT_VERBOSITY))
+AM_V_redir_a = $(am__v_redir_a_@AM_V@)
+am__v_redir_a_ = $(am__v_redir_a_@AM_DEFAULT_V@)
 am__v_redir_a_0 = >>
 am__v_redir_a_1 = | tee -a
 
-AM_V_v = $(am__v_v_$(V))
-am__v_v_ = $(am__v_v_$(AM_DEFAULT_VERBOSITY))
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
 am__v_v_0 =
 am__v_v_1 = -v
 
@@ -1361,9 +1360,11 @@ gen-aout: $(srcdir)/gen-aout.c @MAINT@ Makefile
 
 $(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h bfd-in3.h $(srcdir)/libbfd.h \
   $(srcdir)/libcoff.h @MAINT@ $(srcdir)/Makefile
-	if test -e $(srcdir)/Makefile; then \
+	if test -e $(srcdir)/Makefile -a -d $(srcdir)/.deps; then \
+	  echo "making headers in $(srcdir)"; \
 	  (cd $(srcdir) && $(MAKE) headers $(FLAGS_TO_PASS)); \
-	elif test -e ./Makefile; then \
+	elif test -e ./Makefile -a -d ./.deps; then \
+	  echo "making headers in the current directory"; \
 	  (cd . && $(MAKE) headers $(FLAGS_TO_PASS)); \
 	fi
 	-if test ! -e $(BFD_H); then \
@@ -1417,7 +1418,7 @@ stamp-framework-headers: bfd.h headers
 	cp -p $(AM_V_v) $(BFD_H_DEPS) $(FRAMEWORK).framework/Versions/Current/Headers/
 	$(AM_V_at)touch stamp-framework-headers
 
-stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES) 
+stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES)
 	$(MAKE) $(FRAMEWORK_OFILES)
 	rm -f stamp-framework-headers
 	$(MAKE) stamp-framework-headers
@@ -1477,7 +1478,9 @@ $(sdocdir)/Makefile: $(sdocdir)/Makefile.in $(top_builddir)/config.status
 	    $(SHELL) $(top_builddir)/config.status; \
 	  fi; \
 	fi
-	if test ! -e $(srcdir)/Makefile; then $(MAKE) $(srcdir)/Makefile; fi
+	if test -e Makefile -a ! -e $(srcdir)/Makefile -a -d .deps; then \
+	  $(MAKE) $(srcdir)/Makefile; \
+	fi
 
 @ifGNUmake@ifneq ($(srcdir),.)
 @ifGNUmake@$(srcdir)/Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
@@ -1537,7 +1540,7 @@ stmp-lcoff-h: $(LIBCOFF_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 
 MOSTLYCLEANFILES = tofiles ofiles stamp-ofiles
 MOSTLYCLEANFILES += tlofiles lofiles stamp-lofiles
-MOSTLYCLEANFILES += tplistfiles plistfiles stamp-plistfiles 
+MOSTLYCLEANFILES += tplistfiles plistfiles stamp-plistfiles
 
 CLEANFILES = dep.sed stmp-bfd-h DEP DEPA DEP1 DEP2 libbfd.a stamp-lib \
   stamp-staticlib stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ bfd.h

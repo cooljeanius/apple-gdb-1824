@@ -161,8 +161,8 @@ const bfd_arch_info_type bfd_arm_arch =
 bfd_boolean
 bfd_arm_merge_machines(bfd *ibfd, bfd *obfd)
 {
-  unsigned int in = bfd_get_mach(ibfd);
-  unsigned int out = bfd_get_mach(obfd);
+  unsigned int in = (unsigned int)bfd_get_mach(ibfd);
+  unsigned int out = (unsigned int)bfd_get_mach(obfd);
 
   /* If the output architecture is unknown, we now have a value to set.  */
   if (out == bfd_mach_arm_unknown)
@@ -388,9 +388,9 @@ architectures[] =
   { "armv7k",   bfd_mach_arm_7k }
 };
 
-/* Extract the machine number stored in a note section.  */
+/* Extract the machine number stored in a note section: */
 unsigned int
-bfd_arm_get_mach_from_notes (bfd *abfd, const char *note_section)
+bfd_arm_get_mach_from_notes(bfd *abfd, const char *note_section)
 {
   asection *     arm_arch_section;
   bfd_size_type  buffer_size;
@@ -401,7 +401,7 @@ bfd_arm_get_mach_from_notes (bfd *abfd, const char *note_section)
   /* Look for a note section.  If one is present check the architecture
      string encoded in it, and set it to the current architecture if it is
      different.  */
-  arm_arch_section = bfd_get_section_by_name (abfd, note_section);
+  arm_arch_section = bfd_get_section_by_name(abfd, note_section);
 
   if (arm_arch_section == NULL)
     return bfd_mach_arm_unknown;
@@ -410,24 +410,24 @@ bfd_arm_get_mach_from_notes (bfd *abfd, const char *note_section)
   if (buffer_size == 0)
     return bfd_mach_arm_unknown;
 
-  if (!bfd_malloc_and_get_section (abfd, arm_arch_section, &buffer))
+  if (!bfd_malloc_and_get_section(abfd, arm_arch_section, &buffer))
     goto FAIL;
 
-  /* Parse the note.  */
-  if (! arm_check_note (abfd, buffer, buffer_size, NOTE_ARCH_STRING, & arch_string))
+  /* Parse the note: */
+  if (! arm_check_note(abfd, buffer, buffer_size, NOTE_ARCH_STRING, &arch_string))
     goto FAIL;
 
-  /* Interpret the architecture string.  */
-  for (i = ARRAY_SIZE (architectures); i--;)
-    if (strcmp (arch_string, architectures[i].string) == 0)
+  /* Interpret the architecture string: */
+  for (i = ARRAY_SIZE(architectures); i--;)
+    if (strcmp(arch_string, architectures[i].string) == 0)
       {
-	free (buffer);
+	free(buffer);
 	return architectures[i].mach;
       }
 
  FAIL:
   if (buffer != NULL)
-    free (buffer);
+    free(buffer);
   return bfd_mach_arm_unknown;
 }
 

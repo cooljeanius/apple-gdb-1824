@@ -161,17 +161,28 @@ all: config.status $(TARGETS)
 # Hack: should not be treated as targets in the first place
 .PHONY: -c -m 644
 
-everything: config.status all examples
+everything: config.status all @MAINT@ examples
 
 static: $(STATIC_LIBS)
 
 libreadline.a: $(OBJECTS) $(HISTOBJ) $(TILDEOBJ) $(XMALLOCOBJ) ${LIBOBJDIR}compat$U.o ${LIBOBJDIR}malloc$U.o ${LIBOBJDIR}realloc$U.o
 	$(RM) $@
+	test -e ./Makefile && $(MAKE) ./compat.o ./malloc.o ./realloc.o
+	if test -e $(srcdir)/compat.o -a ! -e compat.o; then \
+	  cp -v $(srcdir)/compat.o compat.o; \
+	fi
+	if test -e $(srcdir)/malloc.o -a ! -e malloc.o; then \
+	  cp -v $(srcdir)/malloc.o malloc.o; \
+	fi
+	if test -e $(srcdir)/realloc.o -a ! -e realloc.o; then \
+	  cp -v $(srcdir)/realloc.o realloc.o; \
+	fi
 	$(AR) $(ARFLAGS) $@ $(OBJECTS)
 	-test -n "$(RANLIB)" && $(RANLIB) $@
 
-libhistory.a: $(HISTOBJ) $(XMALLOCOBJ)
+libhistory.a: $(HISTOBJ) $(XMALLOCOBJ) ${LIBOBJDIR}malloc$U.o ${LIBOBJDIR}realloc$U.o @MAINT@ Makefile
 	$(RM) $@
+	test -e Makefile && test -w . && $(MAKE) ./malloc.o ./realloc.o
 	$(AR) $(ARFLAGS) $@ $(HISTOBJ) $(XMALLOCOBJ)
 	-test -n "$(RANLIB)" && $(RANLIB) $@
 

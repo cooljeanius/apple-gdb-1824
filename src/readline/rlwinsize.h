@@ -22,33 +22,33 @@
    have a copy of the license, write to the Free Software Foundation,
    59 Temple Place, Suite 330, Boston, MA 02111 USA. */
 
-#if !defined (_RLWINSIZE_H_)
+#if !defined(_RLWINSIZE_H_)
 #define _RLWINSIZE_H_
 
-#if defined (HAVE_CONFIG_H)
+#if defined(HAVE_CONFIG_H) && !defined(RL_READLINE_VERSION)
 #  include "config.h"
-#endif
+#endif /* HAVE_CONFIG_H && RL_READLINE_VERSION */
 
 /* Try to find the definitions of `struct winsize' and TIOGCWINSZ */
 
-#if defined (GWINSZ_IN_SYS_IOCTL) && !defined (TIOCGWINSZ)
+#if defined(GWINSZ_IN_SYS_IOCTL) && !defined(TIOCGWINSZ)
 #  include <sys/ioctl.h>
 #endif /* GWINSZ_IN_SYS_IOCTL && !TIOCGWINSZ */
 
-#if defined (STRUCT_WINSIZE_IN_TERMIOS) && !defined (STRUCT_WINSIZE_IN_SYS_IOCTL)
+#if defined(STRUCT_WINSIZE_IN_TERMIOS) && !defined(STRUCT_WINSIZE_IN_SYS_IOCTL)
 #  include <termios.h>
 #endif /* STRUCT_WINSIZE_IN_TERMIOS && !STRUCT_WINSIZE_IN_SYS_IOCTL */
 
 /* Not in either of the standard places, look around. */
-#if !defined (STRUCT_WINSIZE_IN_TERMIOS) && !defined (STRUCT_WINSIZE_IN_SYS_IOCTL)
-#  if defined (HAVE_SYS_STREAM_H)
+#if !defined(STRUCT_WINSIZE_IN_TERMIOS) && !defined(STRUCT_WINSIZE_IN_SYS_IOCTL)
+#  if defined(HAVE_SYS_STREAM_H)
 #    include <sys/stream.h>
 #  endif /* HAVE_SYS_STREAM_H */
-#  if defined (HAVE_SYS_PTEM_H) /* SVR4.2, at least, has it here */
+#  if defined(HAVE_SYS_PTEM_H) /* SVR4.2, at least, has it here */
 #    include <sys/ptem.h>
 #    define _IO_PTEM_H          /* work around SVR4.2 1.1.4 bug */
 #  endif /* HAVE_SYS_PTEM_H */
-#  if defined (HAVE_SYS_PTE_H)  /* ??? */
+#  if defined(HAVE_SYS_PTE_H)  /* ??? */
 #    include <sys/pte.h>
 #  endif /* HAVE_SYS_PTE_H */
 #endif /* !STRUCT_WINSIZE_IN_TERMIOS && !STRUCT_WINSIZE_IN_SYS_IOCTL */

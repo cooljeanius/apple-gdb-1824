@@ -930,23 +930,23 @@ char **argv;
 			tclWriteFile = Tcl_GetChannelFile(chan, TCL_WRITABLE);
 			wfd = (int)Tcl_GetFileInfo(tclWriteFile, (int *)0);
 #else
-			if (TCL_ERROR == Tcl_GetChannelHandle(chan, TCL_WRITABLE, (ClientData) &wfd)) {
+			if (TCL_ERROR == Tcl_GetChannelHandle(chan, TCL_WRITABLE, (ClientData)&wfd)) {
 				return TCL_ERROR;
 			}
 #endif /* TCL_MAJOR_VERSION < 8 */
 		}
 
-		master = (int)((mode & TCL_READABLE)?rfd:wfd);
+		master = (int)(intptr_t)((mode & TCL_READABLE) ? rfd : wfd);
 
-		/* make a new copy of file descriptor */
+		/* make a new copy of file descriptor: */
 		if (-1 == (write_master = master = dup(master))) {
-			exp_error(interp,"fdopen: %s",Tcl_PosixError(interp));
+			exp_error(interp, "fdopen: %s", Tcl_PosixError(interp));
 			return TCL_ERROR;
 		}
 
 		/* if writefilePtr is different, dup that too */
 		if ((mode & TCL_READABLE) && (mode & TCL_WRITABLE) && (wfd != rfd)) {
-			if (-1 == (write_master = dup((int)wfd))) {
+			if (-1 == (write_master = dup((int)(intptr_t)wfd))) {
 				exp_error(interp,"fdopen: %s",Tcl_PosixError(interp));
 				return TCL_ERROR;
 			}
@@ -3490,10 +3490,10 @@ char **argv;
 #if TCL_MAJOR_VERSION < 8
 			    (ClientData)m2,
 #endif /* TCL_MAJOR_VERSION < 8 */
-			    (ClientData)m2,
+			    (ClientData)(intptr_t)m2,
 			    TCL_READABLE|TCL_WRITABLE);
 	Tcl_RegisterChannel(interp, chan);
-	Tcl_AppendResult(interp, Tcl_GetChannelName(chan), (char *) NULL);
+	Tcl_AppendResult(interp, Tcl_GetChannelName(chan), (char *)NULL);
 	return TCL_OK;
 }
 

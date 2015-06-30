@@ -101,7 +101,7 @@ Tcl_MacOSXOpenBundleResources(
 
 	if (hasResourceFile) {
 	    short refNum;
-	    refNum = CFBundleOpenBundleResourceMap(bundleRef);
+	    refNum = (short)CFBundleOpenBundleResourceMap(bundleRef);
         if (refNum > 0) {
             ; /* ??? */
         }

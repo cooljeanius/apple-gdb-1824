@@ -341,6 +341,7 @@ GMSGFMT_015 = @GMSGFMT_015@
 GREP = @GREP@
 GT_NO = @GT_NO@
 GT_YES = @GT_YES@
+HAVE_ZLIB_SOURCE = @HAVE_ZLIB_SOURCE@
 HDEFINES = @HDEFINES@
 HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
 INCINTL = @INCINTL@
@@ -509,14 +510,18 @@ zlibdir = @zlibdir@
 zlibinc = @zlibinc@
 AUTOMAKE_OPTIONS = 1.9 gnits -Wno-override no-dependencies subdir-objects
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
-AM_V_redir = $(am__v_redir_$(V))
-am__v_redir_ = $(am__v_redir_$(AM_DEFAULT_VERBOSITY))
+AM_V_redir = $(am__v_redir_@AM_V@)
+am__v_redir_ = $(am__v_redir_@AM_DEFAULT_V@)
 am__v_redir_0 = >
 am__v_redir_1 = | tee
-AM_V_redir_a = $(am__v_redir_a_$(V))
-am__v_redir_a_ = $(am__v_redir_a_$(AM_DEFAULT_VERBOSITY))
+AM_V_redir_a = $(am__v_redir_a_@AM_V@)
+am__v_redir_a_ = $(am__v_redir_a_@AM_DEFAULT_V@)
 am__v_redir_a_0 = >>
 am__v_redir_a_1 = | tee -a
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
+am__v_v_0 = 
+am__v_v_1 = -v
 DOCFILES = aoutx.texi archive.texi archures.texi \
 	bfdt.texi cache.texi coffcode.texi \
 	core.texi elf.texi elfcode.texi format.texi \
@@ -572,9 +577,11 @@ info_TEXINFOS = bfd.texi
 bfd_TEXINFOS = $(DOCFILES) bfdsumm.texi
 MKDOC = chew$(EXEEXT_FOR_BUILD)
 src_MKDOC = $(srcdir)/$(MKDOC)
-chew_am_SOURCES = $(srcdir)/chew.c
+build_MKDOC = $(builddir)/$(MKDOC)
+chew_am_SOURCES = $(srcdir)/chew.c $(srcdir_high)/include/ansidecl.h
 chew_am_CFLAGS = $(AM_CFLAGS) $(CFLAGS_FOR_BUILD) $(H_CFLAGS)
 chew_am_LDFLAGS = -L$(srcdir_high)/intl -L../../intl $(LDFLAGS_FOR_BUILD)
+EXTRA_chew_am_DEPENDENCIES = Makefile $(srcdir_up)/config.h
 PATH_TO_MOVEIFCHANGE = $(srcdir_high)/move-if-change
 RUN_MOVEIFCHANGE = $(SHELL) $(PATH_TO_MOVEIFCHANGE)
 AM_CPPFLAGS = -I.. -I$(srcdir)/.. -I$(srcdir_high)/include \
@@ -981,7 +988,7 @@ check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU
 check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-am
-all-am: Makefile $(INFO_DEPS) $(PROGRAMS) $(HEADERS)
+all-am: Makefile $(INFO_DEPS) $(PROGRAMS) $(HEADERS) all-local
 installdirs:
 	for dir in "$(DESTDIR)$(infodir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -1025,7 +1032,7 @@ maintainer-clean-generic:
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-am
 
-clean-am: clean-aminfo clean-generic clean-libtool \
+clean-am: clean-aminfo clean-generic clean-libtool clean-local \
 	clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
@@ -1187,17 +1194,17 @@ uninstall-am: uninstall-dvi-am uninstall-html-am uninstall-info-am \
 
 .MAKE: all check check-am install install-am install-strip
 
-.PHONY: CTAGS GTAGS TAGS all all-am check check-DEJAGNU check-am clean \
-	clean-aminfo clean-generic clean-libtool clean-noinstPROGRAMS \
-	cscopelist-am ctags ctags-am dist-info distclean \
-	distclean-DEJAGNU distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+.PHONY: CTAGS GTAGS TAGS all all-am all-local check check-DEJAGNU \
+	check-am clean clean-aminfo clean-generic clean-libtool \
+	clean-local clean-noinstPROGRAMS cscopelist-am ctags ctags-am \
+	dist-info distclean distclean-DEJAGNU distclean-compile \
+	distclean-generic distclean-libtool distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-aminfo maintainer-clean-generic mostlyclean \
 	mostlyclean-aminfo mostlyclean-compile mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
@@ -1206,6 +1213,12 @@ uninstall-am: uninstall-dvi-am uninstall-html-am uninstall-info-am \
 
 .PRECIOUS: Makefile
 
+
+chew_am-chew.o: chew.c $(srcdir_high)/include/ansidecl.h Makefile
+	if test -e $(srcdir)/chew_am-chew.o -a -w $(srcdir); then \
+	  rm -f $(AM_V_v) $(srcdir)/chew_am-chew.o; \
+	fi
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(chew_am_CFLAGS) $(CFLAGS) -c -o chew_am-chew.o `test -f '$(srcdir)/chew.c' || echo '$(srcdir)/'`$(srcdir)/chew.c
 
 $(MKDOC): $(srcdir)/chew.c $(PATH_TO_MOVEIFCHANGE)
 	$(AM_V_CCLD)$(CC_FOR_BUILD) -o chew.$$$$ $(srcdir)/chew.c \
@@ -1506,8 +1519,18 @@ bfdver.texi: @MAINT@ $(srcdir)/Makefile.in
 .PHONY: info info-am
 
 apple-clean:
-	rm -rfv *.dSYM || rmdir *.dSYM
+	-rm -rf $(AM_V_v) *.dSYM || rmdir *.dSYM
+	-if test -w $(srcdir); then \
+	  rm -rf $(AM_V_v) $(srcdir)/*.dSYM || rmdir $(srcdir)/*.dSYM; \
+	fi
 .PHONY: apple-clean
+
+clean-local: Makefile @MAINT@ apple-clean
+	-if test -w $(srcdir); then rm -f $(AM_V_v) $(srcdir)/*.o; fi
+.PHONY: clean-local
+
+all-local: clean-local $(build_MKDOC) protos
+.PHONY: all-local
 
 # We want install to imply install-info as per GNU standards, despite the
 # (deprecated) cygnus option, hence this (renamed) target:

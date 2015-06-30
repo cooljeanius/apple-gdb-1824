@@ -641,6 +641,8 @@ WARN_LDFLAGS
 WARN_DEFS
 WARN_CFLAGS
 acl_cv_wl
+GUILE_VERSION
+GUILE
 BFD_MACHINES
 archdefs
 UNIQ_BIN
@@ -21977,6 +21979,100 @@ else
 fi
 
 
+if test "x${cgen_maint}" = "xyes" || test "x${using_cgen}" = "xyes"; then
+  for ac_prog in guile guile2 guile-2.0 guile18 guile-1.8
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_GUILE+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $GUILE in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_GUILE="$GUILE" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_GUILE="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+GUILE=$ac_cv_path_GUILE
+if test -n "$GUILE"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GUILE" >&5
+$as_echo "$GUILE" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$GUILE" && break
+done
+
+  if test "x${GUILE}" != "x"; then
+    if test -x "${GUILE}"; then
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the guile version" >&5
+$as_echo_n "checking whether the guile version... " >&6; }
+  if ${ag_cv_test_guile_version+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+    ag_cv_test_guile_version=`exec 2> /dev/null
+pkginfo=\`dpkg --list 2>/dev/null | egrep 'guile-0-9.-dev'\`
+if test -n "${pkginfo}"
+then echo ${pkginfo} | sed -e 's/.*guile-//' -e 's/-dev.*//'
+else
+  v=\`( guile-config --version 2>&1 ) | sed 's/.*Guile version *//'\`
+  test -z "${v}" && v=\`guile --version | sed 's/.*Guile *//;1q'\`
+  test -z "${v}" && exit 1
+  echo ${v}
+fi`
+    if test $? -ne 0 || test -z "$ag_cv_test_guile_version"
+    then ag_cv_test_guile_version=no
+    fi
+
+fi
+ # end of CACHE_VAL of ag_cv_test_guile_version
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${ag_cv_test_guile_version}" >&5
+$as_echo "${ag_cv_test_guile_version}" >&6; }
+  if test "X${ag_cv_test_guile_version}" != Xno
+  then
+    set -- `IFS=' .' ; echo ${ag_cv_test_guile_version}`
+i=${3}
+test -z "${i}" && i=0
+GUILE_VERSION=`expr ${1} \* 100000 + ${2} \* 1000 + ${i}`
+
+cat >>confdefs.h <<_ACEOF
+#define GUILE_VERSION ${GUILE_VERSION}
+_ACEOF
+
+
+  else
+    as_fn_error $? "[Cannot determine Guile version number]" "$LINENO" 5
+  fi
+
+
+    fi
+  fi
+fi
+
 if test "x${cgen_maint}" = "xyes" && test "x${using_cgen}" = "xno"; then
       { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Werror -Wunknown-warning-option" >&5
 $as_echo_n "checking whether C compiler handles -Werror -Wunknown-warning-option... " >&6; }
@@ -22022,7 +22118,8 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
 -Wmissing-parameter-type -Wshadow -Wabi -Wmissing-include-dirs \
 -Wconversion -Wfloat-conversion -Wsign-conversion -Wsign-compare \
--Wshorten-64-to-32 -Wshadow -Wdouble-promotion -Wmisleading-indentation"
+-Wshorten-64-to-32 -Wshadow -Wdouble-promotion -Wmisleading-indentation \
+-Wformat -Wmissing-format-attribute -Wswitch -Wswitch-default -Wpacked"
 # "-Wconversion" and friends are because of a comment in libbfd.c
 WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint"
 WARN_LDFLAGS=""

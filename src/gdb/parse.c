@@ -91,27 +91,27 @@ size_t namecopy_size;
 
 static int expressiondebug = 0;
 static void
-show_expressiondebug (struct ui_file *file, int from_tty,
-		      struct cmd_list_element *c, const char *value)
+show_expressiondebug(struct ui_file *file, int from_tty,
+		     struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("Expression debugging is %s.\n"), value);
+  fprintf_filtered(file, _("Expression debugging is %s.\n"), value);
 }
 
-static void free_funcalls (void *ignore);
+static void free_funcalls(void *ignore);
 
-static void prefixify_expression (struct expression *);
+static void prefixify_expression(struct expression *);
 
-static void prefixify_subexp (struct expression *, struct expression *, int,
-			      int);
+static void prefixify_subexp(struct expression *, struct expression *, int,
+			     int);
 
-static struct expression *parse_exp_in_context (char **, struct block *, int,
-						int);
+static struct expression *parse_exp_in_context(char **, struct block *,
+                                               int, int);
 
 /* APPLE LOCAL: Fix expressions containing references to variables the
    compiler optimzied away.  */
-static void fix_references_to_optimized_out_variables (void);
+static void fix_references_to_optimized_out_variables(void);
 
-void _initialize_parse (void);
+void _initialize_parse(void);
 
 /* Data structure for saving values of arglist_len for function calls whose
    arguments contain other function calls.  */
@@ -143,13 +143,13 @@ start_arglist(void)
    and restore the data for the containing function call.  */
 
 int
-end_arglist (void)
+end_arglist(void)
 {
   int val = arglist_len;
   struct funcall *call = funcall_chain;
   funcall_chain = call->next;
   arglist_len = call->arglist_len;
-  xfree (call);
+  xfree(call);
   return val;
 }
 
@@ -157,14 +157,14 @@ end_arglist (void)
    Used when there is an error inside parsing.  */
 
 static void
-free_funcalls (void *ignore)
+free_funcalls(void *ignore)
 {
   struct funcall *call, *next;
 
   for (call = funcall_chain; call; call = next)
     {
       next = call->next;
-      xfree (call);
+      xfree(call);
     }
 }
 
@@ -177,14 +177,14 @@ free_funcalls (void *ignore)
    a register through here */
 
 void
-write_exp_elt (union exp_element expelt)
+write_exp_elt(register union exp_element expelt)
 {
   if (expout_ptr >= expout_size)
     {
       expout_size *= 2;
-      expout = (struct expression *)
-	xrealloc((char *)expout, sizeof(struct expression)
-		 + EXP_ELEM_TO_BYTES(expout_size));
+      expout = ((struct expression *)
+                xrealloc((char *)expout, sizeof(struct expression)
+                         + EXP_ELEM_TO_BYTES(expout_size)));
     }
   expout->elts[expout_ptr++] = expelt;
 }

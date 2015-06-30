@@ -320,7 +320,7 @@ static gdb_event *
 create_file_event(int fd)
 {
   /* APPLE LOCAL async */
-  return gdb_create_event(handle_file_event, (void *)fd);
+  return gdb_create_event(handle_file_event, (void *)(intptr_t)fd);
 }
 
 /* APPLE LOCAL begin event queue printing */
@@ -345,14 +345,15 @@ print_event_queue(void)
   for (event_ptr = event_queue.first_event; event_ptr != NULL;
        event_ptr = event_ptr->next_event)
     {
-      printf ("    File Descriptor: %d, Handler: 0x%lx\n",
-	      (int) event_ptr->data, (unsigned long) event_ptr->proc);
-      if ((unsigned long) event_ptr->proc == (unsigned long) handle_file_event)
+      printf("    File Descriptor: %d, Handler: 0x%lx\n",
+	     (int)(intptr_t)event_ptr->data,
+             (unsigned long)event_ptr->proc);
+      if ((unsigned long)event_ptr->proc == (unsigned long)handle_file_event)
 	{
 	  for (file_ptr = gdb_notifier.first_file_handler; file_ptr != NULL;
 	       file_ptr = file_ptr->next_file)
 	    {
-	      if (file_ptr->fd == (int) event_ptr->data)
+	      if (file_ptr->fd == (int)(intptr_t)event_ptr->data)
 		{
 		  printf ("     - File Event, handler is 0x%lx\n",
 			  (unsigned long) file_ptr->proc);
@@ -749,7 +750,7 @@ static void
 handle_file_event(void *data)
 {
   /* APPLE LOCAL async */
-  int event_file_desc = (int)data;
+  int event_file_desc = (int)(intptr_t)data;
   file_handler *file_ptr;
   int mask;
 #ifdef HAVE_POLL
@@ -1344,7 +1345,7 @@ poll_timers(void)
 	  event_ptr = (gdb_event *)xmalloc(sizeof(gdb_event));
 	  event_ptr->proc = handle_timer_event;
 	  /* APPLE LOCAL async */
-	  event_ptr->data = (void *)timer_list.first_timer->timer_id;
+	  event_ptr->data = (void *)(intptr_t)timer_list.first_timer->timer_id;
 	  async_queue_event(event_ptr, TAIL);
 	}
 

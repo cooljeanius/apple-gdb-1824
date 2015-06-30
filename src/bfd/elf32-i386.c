@@ -2131,7 +2131,7 @@ elf_i386_relocate_section (bfd *output_bfd,
       bfd_vma relocation;
       bfd_boolean unresolved_reloc;
       bfd_reloc_status_type r;
-      unsigned int indx;
+      unsigned int uindx;
       int tls_type;
 
       r_type = ELF32_R_TYPE (rel->r_info);
@@ -2139,21 +2139,21 @@ elf_i386_relocate_section (bfd *output_bfd,
 	  || r_type == R_386_GNU_VTENTRY)
 	continue;
 
-      if ((indx = r_type) >= R_386_standard
-	  && ((indx = r_type - R_386_ext_offset) - R_386_standard
-	      >= R_386_ext - R_386_standard)
-	  && ((indx = r_type - R_386_tls_offset) - R_386_ext
-	      >= R_386_tls - R_386_ext))
+      if (((uindx = r_type) >= R_386_standard)
+	  && (((uindx = r_type - R_386_ext_offset) - R_386_standard)
+	      >= (R_386_ext - R_386_standard))
+	  && (((uindx = r_type - R_386_tls_offset) - R_386_ext)
+	      >= (R_386_tls - R_386_ext)))
 	{
 	  (*_bfd_error_handler)
 	    (_("%B: unrecognized relocation (0x%x) in section `%A'"),
 	     input_bfd, input_section, r_type);
-	  bfd_set_error (bfd_error_bad_value);
+	  bfd_set_error(bfd_error_bad_value);
 	  return FALSE;
 	}
-      howto = elf_howto_table + indx;
+      howto = (elf_howto_table + uindx);
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
 
       if (info->relocatable)
 	{
@@ -2167,8 +2167,8 @@ elf_i386_relocate_section (bfd *output_bfd,
 	  if (r_symndx >= symtab_hdr->sh_info)
 	    continue;
 
-	  sym = local_syms + r_symndx;
-	  if (ELF_ST_TYPE (sym->st_info) != STT_SECTION)
+	  sym = (local_syms + r_symndx);
+	  if (ELF_ST_TYPE(sym->st_info) != STT_SECTION)
 	    continue;
 
 	  sec = local_sections[r_symndx];
@@ -2769,66 +2769,67 @@ elf_i386_relocate_section (bfd *output_bfd,
 	    {
 	      Elf_Internal_Rela outrel;
 	      bfd_byte *loc;
-	      int dr_type, indx;
+	      int dr_type, sindx0;
 
 	      if (htab->srelgot == NULL)
-		abort ();
+		abort();
 
 	      outrel.r_offset = (htab->sgot->output_section->vma
 				 + htab->sgot->output_offset + off);
 
-	      indx = h && h->dynindx != -1 ? h->dynindx : 0;
+	      sindx0 = (h && (h->dynindx != -1) ? h->dynindx : 0);
 	      if (r_type == R_386_TLS_GD)
 		dr_type = R_386_TLS_DTPMOD32;
 	      else if (tls_type == GOT_TLS_IE_POS)
 		dr_type = R_386_TLS_TPOFF;
 	      else
 		dr_type = R_386_TLS_TPOFF32;
-	      if (dr_type == R_386_TLS_TPOFF && indx == 0)
-		bfd_put_32 (output_bfd, relocation - dtpoff_base (info),
-			    htab->sgot->contents + off);
-	      else if (dr_type == R_386_TLS_TPOFF32 && indx == 0)
-		bfd_put_32 (output_bfd, dtpoff_base (info) - relocation,
-			    htab->sgot->contents + off);
+	      if ((dr_type == R_386_TLS_TPOFF) && (sindx0 == 0))
+		bfd_put_32(output_bfd, (relocation - dtpoff_base(info)),
+			   (htab->sgot->contents + off));
+	      else if ((dr_type == R_386_TLS_TPOFF32) && (sindx0 == 0))
+		bfd_put_32(output_bfd, (dtpoff_base(info) - relocation),
+			   (htab->sgot->contents + off));
 	      else
-		bfd_put_32 (output_bfd, 0,
-			    htab->sgot->contents + off);
-	      outrel.r_info = ELF32_R_INFO (indx, dr_type);
+		bfd_put_32(output_bfd, 0,
+			   (htab->sgot->contents + off));
+	      outrel.r_info = ELF32_R_INFO(sindx0, dr_type);
 	      loc = htab->srelgot->contents;
-	      loc += htab->srelgot->reloc_count++ * sizeof (Elf32_External_Rel);
-	      bfd_elf32_swap_reloc_out (output_bfd, &outrel, loc);
+	      loc += (htab->srelgot->reloc_count++ * sizeof(Elf32_External_Rel));
+	      bfd_elf32_swap_reloc_out(output_bfd, &outrel, loc);
 
 	      if (r_type == R_386_TLS_GD)
 		{
-		  if (indx == 0)
+		  if (sindx0 == 0)
 		    {
-	    	      BFD_ASSERT (! unresolved_reloc);
-		      bfd_put_32 (output_bfd,
-				  relocation - dtpoff_base (info),
-				  htab->sgot->contents + off + 4);
+	    	      BFD_ASSERT(! unresolved_reloc);
+		      bfd_put_32(output_bfd,
+				 (relocation - dtpoff_base(info)),
+				 (htab->sgot->contents + off + 4));
 		    }
 		  else
 		    {
-		      bfd_put_32 (output_bfd, 0,
-				  htab->sgot->contents + off + 4);
-		      outrel.r_info = ELF32_R_INFO (indx,
-						    R_386_TLS_DTPOFF32);
+		      bfd_put_32(output_bfd, 0,
+				 (htab->sgot->contents + off + 4));
+		      outrel.r_info = ELF32_R_INFO(sindx0,
+						   R_386_TLS_DTPOFF32);
 		      outrel.r_offset += 4;
 		      htab->srelgot->reloc_count++;
-		      loc += sizeof (Elf32_External_Rel);
-		      bfd_elf32_swap_reloc_out (output_bfd, &outrel, loc);
+		      loc += sizeof(Elf32_External_Rel);
+		      bfd_elf32_swap_reloc_out(output_bfd, &outrel, loc);
 		    }
 		}
 	      else if (tls_type == GOT_TLS_IE_BOTH)
 		{
-		  bfd_put_32 (output_bfd,
-			      indx == 0 ? relocation - dtpoff_base (info) : 0,
-			      htab->sgot->contents + off + 4);
-		  outrel.r_info = ELF32_R_INFO (indx, R_386_TLS_TPOFF);
+		  bfd_put_32(output_bfd,
+			     ((sindx0 == 0)
+                              ? (relocation - dtpoff_base(info)) : 0),
+			     (htab->sgot->contents + off + 4));
+		  outrel.r_info = ELF32_R_INFO(sindx0, R_386_TLS_TPOFF);
 		  outrel.r_offset += 4;
 		  htab->srelgot->reloc_count++;
-		  loc += sizeof (Elf32_External_Rel);
-		  bfd_elf32_swap_reloc_out (output_bfd, &outrel, loc);
+		  loc += sizeof(Elf32_External_Rel);
+		  bfd_elf32_swap_reloc_out(output_bfd, &outrel, loc);
 		}
 
 	      if (h != NULL)
@@ -2837,14 +2838,14 @@ elf_i386_relocate_section (bfd *output_bfd,
 		local_got_offsets[r_symndx] |= 1;
 	    }
 
-	  if (off >= (bfd_vma) -2)
-	    abort ();
-	  if (r_type == ELF32_R_TYPE (rel->r_info))
+	  if (off >= (bfd_vma)(-2L))
+	    abort();
+	  if (r_type == ELF32_R_TYPE(rel->r_info))
 	    {
-	      bfd_vma g_o_t = htab->sgotplt->output_section->vma
-			      + htab->sgotplt->output_offset;
-	      relocation = htab->sgot->output_section->vma
-			   + htab->sgot->output_offset + off - g_o_t;
+	      bfd_vma g_o_t = (htab->sgotplt->output_section->vma
+                               + htab->sgotplt->output_offset);
+	      relocation = (htab->sgot->output_section->vma
+                            + htab->sgot->output_offset + off - g_o_t);
 	      if ((r_type == R_386_TLS_IE || r_type == R_386_TLS_GOTIE)
 		  && tls_type == GOT_TLS_IE_BOTH)
 		relocation += 4;
@@ -2994,31 +2995,31 @@ elf_i386_relocate_section (bfd *output_bfd,
 	      Elf_Internal_Rela outrel;
 	      asection *sreloc;
 	      bfd_byte *loc;
-	      int indx;
+	      int sindx1;
 
-	      outrel.r_offset = rel->r_offset
-				+ input_section->output_section->vma
-				+ input_section->output_offset;
-	      if (h != NULL && h->dynindx != -1)
-		indx = h->dynindx;
+	      outrel.r_offset = (rel->r_offset
+                                 + input_section->output_section->vma
+                                 + input_section->output_offset);
+	      if ((h != NULL) && (h->dynindx != -1))
+		sindx1 = h->dynindx;
 	      else
-		indx = 0;
+		sindx1 = 0;
 	      if (r_type == R_386_TLS_LE_32)
-		outrel.r_info = ELF32_R_INFO (indx, R_386_TLS_TPOFF32);
+		outrel.r_info = ELF32_R_INFO(sindx1, R_386_TLS_TPOFF32);
 	      else
-		outrel.r_info = ELF32_R_INFO (indx, R_386_TLS_TPOFF);
-	      sreloc = elf_section_data (input_section)->sreloc;
+		outrel.r_info = ELF32_R_INFO(sindx1, R_386_TLS_TPOFF);
+	      sreloc = elf_section_data(input_section)->sreloc;
 	      if (sreloc == NULL)
-		abort ();
+		abort();
 	      loc = sreloc->contents;
-	      loc += sreloc->reloc_count++ * sizeof (Elf32_External_Rel);
-	      bfd_elf32_swap_reloc_out (output_bfd, &outrel, loc);
-	      if (indx)
+	      loc += (sreloc->reloc_count++ * sizeof(Elf32_External_Rel));
+	      bfd_elf32_swap_reloc_out(output_bfd, &outrel, loc);
+	      if (sindx1)
 		continue;
 	      else if (r_type == R_386_TLS_LE_32)
-		relocation = dtpoff_base (info) - relocation;
+		relocation = (dtpoff_base(info) - relocation);
 	      else
-		relocation -= dtpoff_base (info);
+		relocation -= dtpoff_base(info);
 	    }
 	  else if (r_type == R_386_TLS_LE_32)
 	    relocation = tpoff (info, relocation);

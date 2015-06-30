@@ -762,7 +762,7 @@ static const CGEN_IBASE ms1_cgen_macro_insn_table[] =
 /* The macro instruction opcode table: */
 static const CGEN_OPCODE ms1_cgen_macro_insn_opcode_table[] =
 {
-  { 0 }
+  { { 0 } }
 };
 
 #undef A

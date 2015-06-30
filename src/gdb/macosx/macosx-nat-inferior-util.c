@@ -321,7 +321,8 @@ macosx_inferior_resume_ptrace(macosx_inferior_status *s, unsigned int thread,
       inferior_debug(2, "Calling ptrace (%s, 0x%x, 0x%x, %d).\n",
                      ptrace_request_unparse(PTRACE_THUPDATE),
                      s->pid, thread, nsignal);
-      if (call_ptrace(PTRACE_THUPDATE, s->pid, (PTRACE_ARG3_TYPE) thread, nsignal) != 0)
+      if (call_ptrace(PTRACE_THUPDATE, s->pid,
+                      (PTRACE_ARG3_TYPE)(uintptr_t)thread, nsignal) != 0)
         warning("Error calling ptrace (%s (0x%lx), %d, 0x%x, %d): %s",
                 ptrace_request_unparse(PTRACE_THUPDATE),
                 (unsigned long)PTRACE_THUPDATE, s->pid, thread, nsignal,

@@ -22,6 +22,14 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+/* in case these got re-defined on us: */
+#ifdef malloc
+# undef malloc
+#endif /* malloc */
+#ifdef realloc
+# undef realloc
+#endif /* realloc */
+
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -33,3 +33,4 @@ site.exp
 *.tar.gz
 libintl-*.*.*/*
 *.output
+tmpwrk*/archive/*

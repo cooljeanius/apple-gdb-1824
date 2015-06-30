@@ -21,39 +21,39 @@
    have a copy of the license, write to the Free Software Foundation,
    59 Temple Place, Suite 330, Boston, MA 02111 USA. */
 
-#if !defined (_RLTCAP_H_)
+#if !defined(_RLTCAP_H_)
 #define _RLTCAP_H_
 
-#if defined (HAVE_CONFIG_H)
+#if defined(HAVE_CONFIG_H) && !defined(RL_READLINE_VERSION)
 #  include "config.h"
-#endif
+#endif /* HAVE_CONFIG_H && !RL_READLINE_VERSION */
 
-#if defined (HAVE_TERMCAP_H)
-#  if defined (__linux__) && !defined (SPEED_T_IN_SYS_TYPES)
+#if defined(HAVE_TERMCAP_H)
+#  if defined(__linux__) && !defined(SPEED_T_IN_SYS_TYPES)
 #    include "rltty.h"
-#  endif
+#  endif /* __linux__ && !SPEED_T_IN_SYS_TYPES */
 #  include <termcap.h>
-#else
+#else /* HAVE_TERMCAP_H */
 
 /* On Solaris2, sys/types.h #includes sys/reg.h, which #defines PC.
    Unfortunately, PC is a global variable used by the termcap library. */
 #ifdef PC
 #  undef PC
-#endif
+#endif /* PC */
 
 extern char PC;
 extern char *UP, *BC;
 
 extern short ospeed;
 
-extern int tgetent ();
-extern int tgetflag ();
-extern int tgetnum ();
-extern char *tgetstr ();
+extern int tgetent();
+extern int tgetflag();
+extern int tgetnum();
+extern char *tgetstr();
 
-extern int tputs ();
+extern int tputs();
 
-extern char *tgoto ();
+extern char *tgoto();
 
 #endif /* HAVE_TERMCAP_H */
 

@@ -802,8 +802,8 @@ CLEANFILES = libtool libtoolize libtoolize.tmp $(auxdir)/ltmain.tmp \
 	$(m4dir)/ltversion.tmp libltdl/libltdl.la libltdl/libltdlc.la \
 	libltdl/libdlloader.la $(LIBOBJS) $(LTLIBOBJS)
 MOSTLYCLEANFILES = libltdl/argz.h libltdl/argz.h-t
-DISTCLEANFILES = *~ .DS_Store autoscan.log libtool.dvi tests/atconfig \
-	tests/defs
+DISTCLEANFILES = *~ .DS_Store autoscan.log config.log config.cache \
+	libtool.dvi tests/atconfig tests/defs
 MAINTAINERCLEANFILES = $(dist_man1_MANS)
 include_HEADERS = $(am__append_1)
 noinst_LTLIBRARIES = $(LT_DLLOADERS) $(am__append_3)
@@ -2964,9 +2964,10 @@ clean-local-legacy:
 	-for dir in $(CONF_SUBDIRS); do \
 	  if test -f $${dir}/Makefile; then \
 	    (cd $${dir} && $(MAKE) $(AM_MAKEFLAGS) distclean); \
-	  else echo "sorry"; fi; \
+	  else echo "sorry about $${dir}"; fi; \
 	done
 	rm -rf _inst _inst-*
+.PHONY: clean-local-legacy
 $(distclean_recursive): fake-distclean-legacy
 .PHONY: fake-distclean-legacy
 fake-distclean-legacy:
@@ -2974,13 +2975,14 @@ fake-distclean-legacy:
 	  if test ! -f $${dir}/Makefile; then \
 	    $(mkinstalldirs) $${dir}; \
 	    echo 'distclean: ; rm -f Makefile' > $${dir}/Makefile; \
-	  else echo "not applicable"; fi; \
+	  else echo "distclean is not applicable for $${dir}"; fi; \
 	done
 
 $(TESTS): tests/defs
 
 distclean-local:
-	rm -rf autom4te.cache || rmdir autom4te.cache
+	-rm -rf autom4te.cache || rmdir autom4te.cache
+.PHONY: distclean-local
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

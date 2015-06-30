@@ -641,6 +641,15 @@ fi
 AC_SUBST([archdefs])dnl
 AC_SUBST([BFD_MACHINES])dnl
 
+if test "x${cgen_maint}" = "xyes" || test "x${using_cgen}" = "xyes"; then
+  AC_PATH_PROGS([GUILE],[guile guile2 guile-2.0 guile18 guile-1.8])
+  if test "x${GUILE}" != "x"; then
+    if test -x "${GUILE}"; then
+      AG_TEST_GUILE_VERSION
+    fi
+  fi
+fi
+
 dnl# APPLE LOCAL change is to omit the following:
 if test "x${cgen_maint}" = "xyes" && test "x${using_cgen}" = "xno"; then
   dnl# only do warnings if we can regenerate cgen-erated sources, but are

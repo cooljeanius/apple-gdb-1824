@@ -4891,22 +4891,23 @@ static asection *
 ppc64_elf_gc_mark_hook(asection *sec, struct bfd_link_info *info,
                        Elf_Internal_Rela *rel,
                        struct elf_link_hash_entry *h,
-                       Elf_Internal_Sym *sym)
+                       Elf_Internal_Sym *elfsymp)
 {
   asection *rsec;
 
   /* First mark all our entry sym sections.  */
   if (info->gc_sym_list != NULL)
     {
-      struct ppc_link_hash_table *htab = ppc_hash_table (info);
-      struct bfd_sym_chain *sym = info->gc_sym_list;
+      struct ppc_link_hash_table *htab = ppc_hash_table(info);
+      struct bfd_sym_chain *bsym = info->gc_sym_list;
 
       info->gc_sym_list = NULL;
       do {
         struct ppc_link_hash_entry *eh;
 
-        eh = (struct ppc_link_hash_entry *)
-          elf_link_hash_lookup(&htab->elf, sym->name, FALSE, FALSE, FALSE);
+        eh = ((struct ppc_link_hash_entry *)
+              elf_link_hash_lookup(&htab->elf, bsym->name, FALSE, FALSE,
+                                   FALSE));
         if (eh == NULL)
           continue;
         if ((eh->elf.root.type != bfd_link_hash_defined)
@@ -4932,8 +4933,8 @@ ppc64_elf_gc_mark_hook(asection *sec, struct bfd_link_info *info,
 	  if (!rsec->gc_mark)
 	    _bfd_elf_gc_mark(info, rsec, ppc64_elf_gc_mark_hook);
 
-	  sym = sym->next;
-      } while (sym != NULL);
+	  bsym = bsym->next;
+      } while (bsym != NULL);
     }
 
   /* Syms return NULL if we're marking .opd, so we avoid marking all
@@ -5005,14 +5006,14 @@ ppc64_elf_gc_mark_hook(asection *sec, struct bfd_link_info *info,
     {
       asection **opd_sym_section;
 
-      rsec = bfd_section_from_elf_index(sec->owner, sym->st_shndx);
+      rsec = bfd_section_from_elf_index(sec->owner, elfsymp->st_shndx);
       opd_sym_section = (asection **)get_opd_info(rsec);
       if (opd_sym_section != NULL)
 	{
 	  if (!rsec->gc_mark)
 	    _bfd_elf_gc_mark(info, rsec, ppc64_elf_gc_mark_hook);
 
-	  rsec = opd_sym_section[(sym->st_value + rel->r_addend) / 8];
+	  rsec = opd_sym_section[(elfsymp->st_value + rel->r_addend) / 8];
 	}
     }
 
@@ -9630,18 +9631,20 @@ ppc64_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
 	case R_PPC64_GOT_TPREL16_DS:
 	case R_PPC64_GOT_TPREL16_LO_DS:
-	  if (tls_mask != 0
-	      && (tls_mask & TLS_TPREL) == 0)
+	  if ((tls_mask != 0)
+	      && ((tls_mask & TLS_TPREL) == 0))
 	    {
 	    toctprel:
-	      insn = bfd_get_32(output_bfd, contents + rel->r_offset - 2);
-	      insn &= 31 << 21;
+	      insn = ((unsigned long)
+                      bfd_get_32(output_bfd,
+                                 (contents + rel->r_offset - 2)));
+	      insn &= (31UL << 21UL);
 	      insn |= 0x3c0d0000;	/* addis 0,13,0 */
-	      bfd_put_32 (output_bfd, insn, contents + rel->r_offset - 2);
+	      bfd_put_32(output_bfd, insn, (contents + rel->r_offset - 2));
 	      r_type = R_PPC64_TPREL16_HA;
 	      if (toc_symndx != 0)
 		{
-		  rel->r_info = ELF64_R_INFO (toc_symndx, r_type);
+		  rel->r_info = ELF64_R_INFO(toc_symndx, r_type);
 		  /* We changed the symbol.  Start over in order to
 		     get h, sym, sec etc. right.  */
 		  rel--;
@@ -9657,7 +9660,8 @@ ppc64_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      && (tls_mask & TLS_TPREL) == 0)
 	    {
 	      bfd_vma rtra;
-	      insn = bfd_get_32(output_bfd, contents + rel->r_offset);
+	      insn = ((unsigned long)
+                      bfd_get_32(output_bfd, (contents + rel->r_offset)));
 	      if ((insn & ((0x3f << 26) | (31 << 11)))
 		  == ((31 << 26) | (13 << 11)))
 		rtra = insn & ((1 << 26) - (1 << 16));
@@ -9888,8 +9892,10 @@ ppc64_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  /* Branch not taken prediction relocations.  */
 	case R_PPC64_ADDR14_BRNTAKEN:
 	case R_PPC64_REL14_BRNTAKEN:
-	  insn |= bfd_get_32(output_bfd,
-			     contents + rel->r_offset) & ~(0x01 << 21);
+	  insn |= ((unsigned long)
+                   (bfd_get_32(output_bfd,
+                               (contents + rel->r_offset))
+                    & ~(0x01 << 21)));
 	  /* Fall thru.  */
 
 	case R_PPC64_REL14:
@@ -9924,7 +9930,9 @@ ppc64_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      if (rel->r_offset + 8 <= input_section->size)
 		{
 		  unsigned long nop;
-		  nop = bfd_get_32(input_bfd, contents + rel->r_offset + 4);
+		  nop = ((unsigned long)
+                         bfd_get_32(input_bfd,
+                                    (contents + rel->r_offset + 4)));
 		  if (nop == NOP
 		      || nop == CROR_151515 || nop == CROR_313131)
 		    {
@@ -9941,7 +9949,9 @@ ppc64_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		      /* If this is a plain branch rather than a branch
 			 and link, don't require a nop.  */
 		      unsigned long br;
-		      br = bfd_get_32(input_bfd, contents + rel->r_offset);
+		      br = ((unsigned long)
+                            bfd_get_32(input_bfd,
+                                       (contents + rel->r_offset)));
 		      if ((br & 1) == 0)
 			can_plt_call = TRUE;
 		      else

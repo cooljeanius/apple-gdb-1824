@@ -21,6 +21,10 @@ dnl# changes:
 LIBVERSION=4.3
 
 AC_CANONICAL_TARGET
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"
   AC_SUBST([HOST_ARCHITECTURE])
@@ -358,6 +362,28 @@ AM_MAINTAINER_MODE
 m4_ifdef([AC_REQUIRE_AUX_FILE],[
   AC_REQUIRE_AUX_FILE([compile])dnl
   AC_REQUIRE_AUX_FILE([missing])dnl
+])dnl
+
+AH_TOP([
+#ifndef HAVE_CONFIG_H
+# define HAVE_CONFIG_H 1
+#endif /* !HAVE_CONFIG_H */
+])dnl
+AH_VERBATIM([00_CONFIG_H_CHECK],[
+/* Check that config.h is #included before system headers
+ * (this works only for glibc, but that should be enough). */
+#if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "config.h should be #included before system headers"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
+#ifndef __CONFIG_H__
+# define __CONFIG_H__ 1
+# ifndef __READLINE_CONFIG_H__
+#  define __READLINE_CONFIG_H__ 1
+# endif /* __READLINE_CONFIG_H__ */])dnl
+AH_BOTTOM([
+#endif /* __CONFIG_H__ */
 ])dnl
 
 # shared library configuration section

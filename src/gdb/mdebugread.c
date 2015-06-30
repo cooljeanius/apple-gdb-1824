@@ -1929,13 +1929,13 @@ parse_procedure (PDR *pr, struct symtab *search_symtab,
 #endif
     }
 
-  i = mylookup_symbol (MDEBUG_EFI_SYMBOL_NAME, b, LABEL_DOMAIN, LOC_CONST);
+  i = mylookup_symbol(MDEBUG_EFI_SYMBOL_NAME, b, LABEL_DOMAIN, LOC_CONST);
 
   if (i)
     {
-      e = (struct mdebug_extra_func_info *) SYMBOL_VALUE (i);
+      e = (struct mdebug_extra_func_info *)(intptr_t)SYMBOL_VALUE(i);
       e->pdr = *pr;
-      e->pdr.isym = (long) s;
+      e->pdr.isym = (long)s;
 
       /* GDB expects the absolute function start address for the
          procedure descriptor in e->pdr.adr.

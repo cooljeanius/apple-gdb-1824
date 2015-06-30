@@ -189,19 +189,19 @@ TclpGetTimeZone (currentTime)
 # endif /* __GNUC__ && !__STRICT_ANSI__ && !__STDC__ */
 #endif /* HAVE_TM_TZADJ */
 
-#if defined(HAVE_TM_GMTOFF) && !defined (TCL_GOT_TIMEZONE)
+#if defined(HAVE_TM_GMTOFF) && !defined(TCL_GOT_TIMEZONE)
 #   define TCL_GOT_TIMEZONE
-    time_t     curTime = (time_t) currentTime;
+    time_t     curTime = (time_t)currentTime;
     struct tm *timeDataPtr = ThreadSafeLocalTime(&curTime);
     int        timeZone;
 
-    timeZone = -(timeDataPtr->tm_gmtoff / 60);
+    timeZone = (int)(-(timeDataPtr->tm_gmtoff / 60));
     if (timeDataPtr->tm_isdst) {
         timeZone += 60;
     }
 
     return timeZone;
-#endif
+#endif /* HAVE_TM_GMTOFF && !TCL_GOT_TIMEZONE */
 
 #if defined(USE_DELTA_FOR_TZ)
 #define TCL_GOT_TIMEZONE 1

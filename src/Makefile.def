@@ -450,6 +450,13 @@ dependencies = { module=configure-gdb; on=all-bfd; };
 // Depend on all-libiconv so that configure checks for iconv
 // functions will work.
 dependencies = { module=configure-gdb; on=all-libiconv; };
+dependencies = { module=configure-gdb; on=all-zlib; };
+dependencies = { module=configure-gdb; on=all-fixincludes; };
+dependencies = { module=configure-gdb; on=all-dejagnu; };
+dependencies = { module=configure-gdb; on=all-utils; };
+dependencies = { module=configure-gdb; on=all-mmalloc; };
+dependencies = { module=configure-gdb; on=all-libtermcap; };
+dependencies = { module=configure-gdb; on=all-libgui; };
 dependencies = { module=all-gdb; on=all-libiberty; };
 dependencies = { module=all-gdb; on=all-libiconv; };
 dependencies = { module=all-gdb; on=all-opcodes; };
@@ -462,6 +469,7 @@ dependencies = { module=all-gdb; on=all-electric-fence; };
 dependencies = { module=all-gdb; on=all-mmalloc; };
 dependencies = { module=all-gdb; on=all-libdecnumber; };
 dependencies = { module=all-gdb; on=all-libtermcap; };
+dependencies = { module=all-gdb; on=configure-zlib; };
 dependencies = { module=install-gdb; on=install-tcl; };
 dependencies = { module=install-gdb; on=install-tk; };
 dependencies = { module=install-gdb; on=install-itcl; };
@@ -540,12 +548,14 @@ dependencies = { module=all-gold; on=all-gas; };
 dependencies = { module=check-gold; on=all-binutils; };
 dependencies = { module=check-gold; on=all-gas; };
 
+dependencies = { module=configure-opcodes; on=all-guile; };
 dependencies = { module=configure-opcodes; on=configure-cgen; };
 dependencies = { module=configure-opcodes; on=configure-libiberty; hard=true; };
 dependencies = { module=configure-opcodes; on=configure-intl; };
 dependencies = { module=all-opcodes; on=all-bfd; };
 dependencies = { module=all-opcodes; on=all-libiberty; };
 dependencies = { module=all-opcodes; on=all-intl; };
+dependencies = { module=all-opcodes; on=all-libiconv; };
 
 // Other host modules in the 'src' repository.
 dependencies = { module=configure-dejagnu; on=configure-tcl; };
@@ -602,12 +612,14 @@ dependencies = { module=all-fastjar; on=all-libiberty; };
 // Warning, these are not well tested.
 dependencies = { module=all-autoconf; on=all-m4; };
 dependencies = { module=all-autoconf; on=all-build-texinfo; };
+dependencies = { module=configure-autogen; on=all-guile; };
 dependencies = { module=all-autogen; on=all-guile; };
 dependencies = { module=all-automake; on=all-m4; };
 dependencies = { module=all-automake; on=all-build-texinfo; };
 dependencies = { module=all-automake; on=all-autoconf; };
 dependencies = { module=all-bison; on=all-intl; };
 dependencies = { module=all-bison; on=all-build-texinfo; };
+dependencies = { module=configure-cgen; on=all-guile; };
 dependencies = { module=all-cgen; on=all-guile; };
 dependencies = { module=all-diff; on=all-intl; };
 dependencies = { module=all-diff; on=all-build-texinfo; };

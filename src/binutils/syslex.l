@@ -18,7 +18,9 @@ along with GLD; see the file COPYING.  If not, write to the Free
 Software Foundation, 51 Franklin St., 5th Floor, Boston, MA
 02110-1301, USA.  */
 
-#include "config.h"
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #ifdef HAVE_STRING_H
 # include <string.h>
 #else
@@ -27,6 +29,14 @@ Software Foundation, 51 Franklin St., 5th Floor, Boston, MA
 # endif /* HAVE_STRINGS_H */
 #endif /* HAVE_STRING_H */
 #include "sysinfo.h"
+
+/* in case these got re-defined on us: */
+#ifdef malloc
+# undef malloc
+#endif /* malloc */
+#ifdef realloc
+# undef realloc
+#endif /* realloc */
 
 #define YY_NO_UNPUT
 
@@ -47,13 +57,13 @@ extern int yylex(void);
 "\n" { ; }
 "\""[^\"]*"\"" {
 	yylval.s = (char *)malloc(yyleng - 1);
-	memcpy(yylval.s, yytext + 1, yyleng - 2);
+	memcpy(yylval.s, (yytext + 1), (yyleng - 2));
 	yylval.s[yyleng - 2] = '\0';
         return NAME;
 	}
 
 0x[0-9a-f]+ {
-        yylval.i = strtol(yytext, 0, 16);
+        yylval.i = (int)strtol(yytext, 0, 16);
 	return  NUMBER;
 	}
 

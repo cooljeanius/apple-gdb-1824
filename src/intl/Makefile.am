@@ -19,7 +19,7 @@ ACLOCAL_AMFLAGS = -I m4 --install
 
 AUTOMAKE_OPTIONS = 1.11.6 gnits dejagnu
 
-SUBDIRS = po
+SUBDIRS = . po
 
 PACKAGE = @PACKAGE@
 VERSION = @VERSION@
@@ -126,7 +126,7 @@ SUFFIXES = .c .y .o .lo
 .c.o:
 	$(COMPILE) $<
 .c.lo:
-	$(LIBTOOL) --mode=compile $(COMPILE) $<
+	$(LIBTOOL) --tag=CC --mode=compile $(COMPILE) $<
 
 .y.c:
 	$(YACC) $(YFLAGS) $(AM_YFLAGS) --output $@ $<
@@ -136,7 +136,7 @@ EXTRA_DIST += plural.c
 
 AM_INCLUDES = -I. -I$(srcdir)
 
-all: all-@USE_INCLUDED_LIBINTL@ @MAINT@ config.status
+all: all-@USE_INCLUDED_LIBINTL@ @MAINT@ config.status po/Makefile
 .PHONY: all all-@USE_INCLUDED_LIBINTL@
 
 all-yes: libintl.la intlh.inst libintl.a libintl.h config.intl @MAINT@ config.status
@@ -155,8 +155,8 @@ libintl.a: $(OBJECTS) $(LTOBJECTS)
 	$(RANLIB) $@
 
 libintl.la: $(LTOBJECTS) $(OBJECTS)
-	$(LIBTOOL) --mode=link $(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ \
-		   $(LTOBJECTS) -version-info 1:0 -rpath $(libdir)
+	$(LIBTOOL) --tag=CC --mode=link $(CC) $(LDFLAGS) $(AM_LDFLAGS) \
+		   -o $@ $(LTOBJECTS) -version-info 1:0 -rpath $(libdir)
 
 ../po/cat-id-tbl.lo: ../po/cat-id-tbl.c $(top_srcdir)/po/$(PACKAGE).pot
 	cd ../po && $(MAKE) cat-id-tbl.lo
@@ -324,6 +324,10 @@ dist-libc:
 Makefile-original: Makefile.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS="" $(SHELL) ./config.status
 .PHONY: Makefile-original
+
+po/Makefile: po/Makefile.in.in po/Makevars $(top_builddir)/config.status @POMAKEFILEDEPS@
+	cd $(top_builddir) \
+	  && @SHELL@ ./config.status $(subdir)/$@.in po-directories
 
 # The dependency for intlh.inst is different in gettext and all other
 # packages. Because we cannot you GNU make features we have to solve

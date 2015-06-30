@@ -29,6 +29,7 @@ AM_MAINTAINER_MODE
 
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_CPP
 AC_ARG_VAR([CLANG_ANALYZER],[Path to the clang static analyzer])dnl
 AC_CACHE_CHECK([for the clang static analyzer],[ac_cv_path_CLANG_ANALYZER],
   [AC_PATH_PROGS_FEATURE_CHECK([CLANG_ANALYZER],

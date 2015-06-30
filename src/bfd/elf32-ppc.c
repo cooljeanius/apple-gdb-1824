@@ -3205,8 +3205,8 @@ ppc_elf_check_relocs (bfd *abfd,
 	case R_PPC_PLT16_HI:
 	case R_PPC_PLT16_HA:
 #ifdef DEBUG
-	  fprintf (stderr, "Reloc requires a PLT entry\n");
-#endif
+	  fprintf(stderr, "Reloc requires a PLT entry\n");
+#endif /* DEBUG */
 	  /* This symbol requires a procedure linkage table entry.  We
 	     actually build the entry in finish_dynamic_symbol,
 	     because this might be a case of linking PIC code without
@@ -3217,13 +3217,11 @@ ppc_elf_check_relocs (bfd *abfd,
 	    {
 	      /* It does not make sense to have a procedure linkage
 		 table entry for a local symbol.  */
-	      (*_bfd_error_handler) (_("%B(%A+0x%lx): %s reloc against "
-				       "local symbol"),
-				     abfd,
-				     sec,
-				     (long) rel->r_offset,
-				     ppc_elf_howto_table[r_type]->name);
-	      bfd_set_error (bfd_error_bad_value);
+	      (*_bfd_error_handler)(_("%B(%A+0x%lx): %s reloc against "
+				      "local symbol"),
+				    abfd, sec, (long)rel->r_offset,
+				    ppc_elf_howto_table[r_type]->name);
+	      bfd_set_error(bfd_error_bad_value);
 	      return FALSE;
 	    }
 	  else
@@ -3320,11 +3318,9 @@ ppc_elf_check_relocs (bfd *abfd,
 	  goto dodyn;
 
 	case R_PPC_REL32:
-	  if (h == NULL
-	      && got2 != NULL
-	      && (sec->flags & SEC_CODE) != 0
-	      && (info->shared || info->pie)
-	      && !htab->old_plt)
+	  if ((h == NULL) && (got2 != NULL)
+              && ((sec->flags & SEC_CODE) != 0)
+	      && (info->shared || info->pie) && !htab->old_plt)
 	    {
 	      /* Old -fPIC gcc code has .long LCTOC1-LCFx just before
 		 the start of a function, which assembles to a REL32
@@ -3498,6 +3494,8 @@ ppc_elf_check_relocs (bfd *abfd,
 	    }
 
 	  break;
+
+        default:;
 	}
     }
 
@@ -5187,27 +5185,30 @@ ppc_elf_relax_section (bfd *abfd,
 	    }
 	}
 
-      /* Fix up the existing branch to hit the trampoline.  */
-      hit_addr = contents + roff;
+      /* Fix up the existing branch to hit the trampoline: */
+      hit_addr = (contents + roff);
       switch (r_type)
 	{
 	case R_PPC_REL24:
 	case R_PPC_LOCAL24PC:
 	case R_PPC_PLTREL24:
-	  t0 = bfd_get_32 (abfd, hit_addr);
+	  t0 = bfd_get_32(abfd, hit_addr);
 	  t0 &= ~0x3fffffc;
-	  t0 |= val & 0x3fffffc;
-	  bfd_put_32 (abfd, t0, hit_addr);
+	  t0 |= (val & 0x3fffffc);
+	  bfd_put_32(abfd, t0, hit_addr);
 	  break;
 
 	case R_PPC_REL14:
 	case R_PPC_REL14_BRTAKEN:
 	case R_PPC_REL14_BRNTAKEN:
-	  t0 = bfd_get_32 (abfd, hit_addr);
+	  t0 = bfd_get_32(abfd, hit_addr);
 	  t0 &= ~0xfffc;
-	  t0 |= val & 0xfffc;
-	  bfd_put_32 (abfd, t0, hit_addr);
+	  t0 |= (val & 0xfffc);
+	  bfd_put_32(abfd, t0, hit_addr);
 	  break;
+
+        default:
+          break;
 	}
     }
 
@@ -7525,5 +7526,8 @@ ppc_elf_vxworks_final_write_processing (bfd *abfd, bfd_boolean linker)
 #ifdef VXWORKS_PLTRESOLVE_RELOCS_SHLIB
 # undef VXWORKS_PLTRESOLVE_RELOCS_SHLIB
 #endif /* VXWORKS_PLTRESOLVE_RELOCS_SHLIB */
+#ifdef elf_backend_got_symbol_offset
+# undef elf_backend_got_symbol_offset
+#endif /* elf_backend_got_symbol_offset */
 
 /* EOF */

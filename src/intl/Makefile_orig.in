@@ -78,11 +78,11 @@ DISTFILES.gettext = libintl.glibc intlh.inst.in
 .c.o:
 	$(COMPILE) $<
 .c.lo:
-	$(LIBTOOL) --mode=compile $(COMPILE) $<
+	$(LIBTOOL) --tag=CC --mode=compile $(COMPILE) $<
 
 INCLUDES = -I. -I$(srcdir)
 
-all: all-@USE_INCLUDED_LIBINTL@ @MAINT@ config.status
+all: all-@USE_INCLUDED_LIBINTL@ @MAINT@ config.status po/Makefile
 
 all-yes: libintl.$la intlh.inst
 all-no:
@@ -94,7 +94,7 @@ libintl.a: $(OBJECTS)
 	$(RANLIB) $@
 
 libintl.la: $(OBJECTS)
-	$(LIBTOOL) --mode=link $(CC) $(LDFLAGS) -o $@ $(OBJECTS) \
+	$(LIBTOOL) --tag=CC --mode=link $(CC) $(LDFLAGS) -o $@ $(OBJECTS) \
 		   -version-info 1:0 -rpath $(libdir)
 
 ../po/cat-id-tbl.$lo: ../po/cat-id-tbl.c $(top_srcdir)/po/$(PACKAGE).pot
@@ -205,6 +205,10 @@ dist-libc: @MAINT@ config.status
 
 Makefile: Makefile.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS="" $(SHELL) ./config.status
+
+po/Makefile: po/Makefile.in.in po/Makevars $(top_builddir)/config.status @POMAKEFILEDEPS@
+	cd $(top_builddir) \
+	  && @SHELL@ ./config.status $(subdir)/$@.in po-directories
 
 # The dependency for intlh.inst is different in gettext and all other
 # packages.  Because we cannot you GNU make features we have to solve

@@ -24,9 +24,9 @@
 #if defined(HAVE_SYS_TYPES_H) && HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "config.h expects <sys/types.h> to be included for caddr_t."
-# endif /* __GNUC__ && !__STRICT_ANSI__ */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && defined(lint)
+ #  warning "config.h expects <sys/types.h> to be included for caddr_t."
+# endif /* __GNUC__ && !__STRICT_ANSI__ && lint */
 #endif /* HAVE_SYS_TYPES_H */
 
 

@@ -437,7 +437,7 @@ rl_redisplay(void)
       if (local_prompt_prefix && forced_display)
 	_rl_output_some_chars(local_prompt_prefix, strlen(local_prompt_prefix));
 
-      if (local_len > 0)
+      if (local_len > 0UL)
 	{
 	  temp = (local_len + (size_t)out + 2UL);
 	  if (temp >= line_size)
@@ -551,19 +551,20 @@ rl_redisplay(void)
          saying how many invisible characters there are per line, but that's
          probably too much work for the benefit gained.  How many people have
          prompts that exceed two physical lines? */
-      temp = ((newlines + 1) * _rl_screenwidth) +
+      temp = ((newlines + 1UL) * (size_t)_rl_screenwidth) +
 #if 0
-             ((newlines == 0) ? prompt_invis_chars_first_line : 0) +
+             ((newlines == 0UL) ? prompt_invis_chars_first_line : 0UL) +
 #else
-             ((newlines == 0 && local_prompt_prefix == 0) ? prompt_invis_chars_first_line : 0) +
+             ((newlines == 0UL && local_prompt_prefix == 0UL)
+              ? (size_t)prompt_invis_chars_first_line : 0UL) +
 #endif /* 0 */
-             ((newlines == 1) ? wrap_offset : 0);
+             ((newlines == 1UL) ? (size_t)wrap_offset : 0UL);
 
-      inv_lbreaks[++newlines] = temp;
+      inv_lbreaks[++newlines] = (int)temp;
       lpos -= _rl_screenwidth;
     }
 
-  prompt_last_screen_line = newlines;
+  prompt_last_screen_line = (int)newlines;
 
   /* Draw the rest of the line (after the prompt) into invisible_line, keeping
      track of where the cursor is (c_pos), the number of the line containing
@@ -573,7 +574,7 @@ rl_redisplay(void)
   lb_linenum = 0;
 #if defined(HANDLE_MULTIBYTE)
   in = 0;
-  if (MB_CUR_MAX > 1 && rl_byte_oriented == 0)
+  if ((MB_CUR_MAX > 1) && rl_byte_oriented == 0)
     {
       memset(&ps, 0, sizeof(mbstate_t));
       wc_bytes = mbrtowc(&wc, rl_line_buffer, (size_t)rl_end, &ps);
@@ -651,24 +652,24 @@ rl_redisplay(void)
 	      CHECK_LPOS();
 	    }
 	}
-#if defined (DISPLAY_TABS)
+#if defined(DISPLAY_TABS)
       else if (c == '\t')
 	{
 	  register int newout;
 
-#if 0
-	  newout = (out | (int)7) + 1;
-#else
-	  newout = out + 8 - lpos % 8;
-#endif
-	  temp = newout - out;
-	  if (lpos + temp >= _rl_screenwidth)
+# if 0
+	  newout = ((out | (int)7) + 1);
+# else
+	  newout = (out + 8 - lpos % 8);
+# endif /* 0 */
+	  temp = (size_t)(newout - out);
+	  if (((size_t)lpos + temp) >= (size_t)_rl_screenwidth)
 	    {
-	      register int temp2;
-	      temp2 = _rl_screenwidth - lpos;
-	      CHECK_INV_LBREAKS ();
-	      inv_lbreaks[++newlines] = out + temp2;
-	      lpos = temp - temp2;
+	      register size_t temp2;
+	      temp2 = (size_t)(_rl_screenwidth - lpos);
+	      CHECK_INV_LBREAKS();
+	      inv_lbreaks[++newlines] = (out + (int)temp2);
+	      lpos = (int)(temp - temp2);
 	      while (out < newout)
 		line[out++] = ' ';
 	    }
@@ -679,7 +680,7 @@ rl_redisplay(void)
 	      lpos += temp;
 	    }
 	}
-#endif
+#endif /* DISPLAY_TABS */
       else if (c == '\n' && _rl_horizontal_scroll_mode == 0 && _rl_term_up && *_rl_term_up)
 	{
 	  line[out++] = '\0';	/* XXX - sentinel */
@@ -696,8 +697,8 @@ rl_redisplay(void)
 	}
       else
 	{
-#if defined (HANDLE_MULTIBYTE)
-	  if (MB_CUR_MAX > 1 && rl_byte_oriented == 0)
+#if defined(HANDLE_MULTIBYTE)
+	  if ((MB_CUR_MAX > 1) && rl_byte_oriented == 0)
 	    {
 	      register int i;
 
@@ -714,33 +715,34 @@ rl_redisplay(void)
 	      if (in == rl_point)
 		{
 		  c_pos = out;
-		  lb_linenum = newlines;
+		  lb_linenum = (int)newlines;
 		}
-	      for (i = in; i < in+wc_bytes; i++)
+	      for (i = in; i < (in + (int)wc_bytes); i++)
 		line[out++] = rl_line_buffer[i];
 	      for (i = 0; i < wc_width; i++)
 		CHECK_LPOS();
 	    }
 	  else
 	    {
-	      line[out++] = c;
+	      line[out++] = (char)c;
 	      CHECK_LPOS();
 	    }
 #else
 	  line[out++] = c;
 	  CHECK_LPOS();
-#endif
+#endif /* HANDLE_MULTIBYTE */
 	}
 
-#if defined (HANDLE_MULTIBYTE)
-      if (MB_CUR_MAX > 1 && rl_byte_oriented == 0)
+#if defined(HANDLE_MULTIBYTE)
+      if ((MB_CUR_MAX > 1) && rl_byte_oriented == 0)
 	{
 	  in += wc_bytes;
-	  wc_bytes = mbrtowc (&wc, rl_line_buffer + in, rl_end - in, &ps);
+	  wc_bytes = mbrtowc(&wc, (rl_line_buffer + in),
+                             (size_t)(rl_end - in), &ps);
 	}
       else
         in++;
-#endif
+#endif /* HANDLE_MULTIBYTE */
 
     }
   line[out] = '\0';
@@ -751,8 +753,8 @@ rl_redisplay(void)
     }
 
   inv_botlin = lb_botlin = newlines;
-  CHECK_INV_LBREAKS ();
-  inv_lbreaks[newlines+1] = out;
+  CHECK_INV_LBREAKS();
+  inv_lbreaks[newlines + 1] = out;
   cursor_linenum = lb_linenum;
 
   /* C_POS == position in buffer where cursor should be placed.
@@ -832,11 +834,11 @@ rl_redisplay(void)
 	      char *tt;
 	      for (; linenum <= _rl_vis_botlin; linenum++)
 		{
-		  tt = VIS_CHARS (linenum);
-		  _rl_move_vert (linenum);
-		  _rl_move_cursor_relative (0, tt);
-		  _rl_clear_to_eol
-		    ((linenum == _rl_vis_botlin) ? strlen (tt) : _rl_screenwidth);
+		  tt = VIS_CHARS(linenum);
+		  _rl_move_vert(linenum);
+		  _rl_move_cursor_relative(0, tt);
+		  _rl_clear_to_eol((linenum == _rl_vis_botlin)
+                                   ? (int)strlen(tt) : _rl_screenwidth);
 		}
 	    }
 	  _rl_vis_botlin = inv_botlin;
@@ -865,13 +867,13 @@ rl_redisplay(void)
 	      _rl_last_c_pos <= prompt_last_invisible && local_prompt)
 	    {
 #if defined (__MSDOS__)
-	      putc ('\r', rl_outstream);
+	      putc('\r', rl_outstream);
 #else
 	      if (_rl_term_cr)
-		tputs (_rl_term_cr, 1, _rl_output_character_function);
-#endif
-	      _rl_output_some_chars (local_prompt, nleft);
-	      if (MB_CUR_MAX > 1 && rl_byte_oriented == 0)
+		tputs(_rl_term_cr, 1, _rl_output_character_function);
+#endif /* __MSDOS__ */
+	      _rl_output_some_chars(local_prompt, (size_t)nleft);
+	      if ((MB_CUR_MAX > 1) && rl_byte_oriented == 0)
 		_rl_last_c_pos = _rl_col_width(local_prompt, 0, nleft);
 	      else
 		_rl_last_c_pos = nleft;

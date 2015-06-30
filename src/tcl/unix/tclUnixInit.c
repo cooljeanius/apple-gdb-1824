@@ -874,7 +874,7 @@ TclpFindVariable(name, lengthPtr)
 	    /* NULL loop body. */
 	}
 	if ((*p1 == '=') && (*p2 == '\0')) {
-	    *lengthPtr = p2 - name;
+	    *lengthPtr = (int)(p2 - name);
 	    result = i;
 	    goto done;
 	}

@@ -141,27 +141,28 @@ set_unwind_on_signal (int new_val)
    sizeof int == sizeof void* assumptions.  */
 
 static void
-set_unwind_on_signal_cleanup (void *new_val)
+set_unwind_on_signal_cleanup(void *new_val)
 {
-  unwind_on_signal_p = (int) new_val;
+  unwind_on_signal_p = (int)(intptr_t)new_val;
 }
 
 struct cleanup *
-make_cleanup_set_restore_unwind_on_signal (int newval)
+make_cleanup_set_restore_unwind_on_signal(int newval)
 {
-  struct cleanup *cleanup
-    = make_cleanup (set_unwind_on_signal_cleanup, (void *) unwind_on_signal_p);
+  struct cleanup *cleanup =
+    make_cleanup(set_unwind_on_signal_cleanup,
+                 (void *)(intptr_t)unwind_on_signal_p);
   unwind_on_signal_p = newval;
   return cleanup;
 }
 
 static void
-show_unwind_on_signal_p (struct ui_file *file, int from_tty,
-			 struct cmd_list_element *c, const char *value)
+show_unwind_on_signal_p(struct ui_file *file, int from_tty,
+                        struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("\
+  fprintf_filtered(file, _("\
 Unwinding of stack if a signal is received while in a call dummy is %s.\n"),
-		    value);
+                   value);
 }
 
 

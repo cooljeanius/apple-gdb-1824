@@ -161,6 +161,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
 BUILD_DIR = .
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
@@ -637,8 +638,12 @@ rl: rl.o $(READLINE_LIB) $(HISTORY_LIB)
 rlcat: rlcat.o $(READLINE_LIB)
 	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlcat.o -lreadline $(READLINE_LIB) $(TERMCAP_LIB)
 
-fileman: fileman.o $(READLINE_LIB)
-	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ fileman.o $(LIBS) $(READLINE_LIB) $(TERMCAP_LIB)
+fileman: fileman.o $(READLINE_LIB) $(HISTORY_LIB)
+	test -e ./Makefile && test -w . && $(MAKE) ./fileman.o
+	if test -e $(srcdir)/fileman.o -a ! -e fileman.o; then \
+	  cp -v $(srcdir)/fileman.o fileman.o; \
+	fi
+	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ fileman.o $(LIBS) $(READLINE_LIB) $(HISTORY_LIB) $(TERMCAP_LIB)
 
 rltest: rltest.o $(READLINE_LIB) $(HISTORY_LIB)
 	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rltest.o -lreadline -lhistory $(TERMCAP_LIB)

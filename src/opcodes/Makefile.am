@@ -18,9 +18,8 @@
 # <http://www.gnu.org/licenses/>.
 #
 
-## "-Wportability" warns about rules that we just stole from automake
-## itself, so disable those warnings for being hypocritical:
-AUTOMAKE_OPTIONS = 1.11.6 gnits no-dist dejagnu -Wall -Wno-portability
+## might have to add back -Wno-portability, if I screwed up:
+AUTOMAKE_OPTIONS = 1.11.6 gnits no-dist dejagnu -Wall -Wno-override
 ## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
@@ -363,18 +362,18 @@ AM_CPPFLAGS = -D_GNU_SOURCE -I. -I$(srcdir) -I../bfd -I$(INCDIR) \
 -I$(BFDDIR) @HDEFINES@ -I$(INTLDIR) -I../intl
 
 ## hacks to extend the verbosity control:
-AM_V_redir = $(am__v_redir_$(V))
-am__v_redir_ = $(am__v_redir_$(AM_DEFAULT_VERBOSITY))
+AM_V_redir = $(am__v_redir_@AM_V@)
+am__v_redir_ = $(am__v_redir_@AM_DEFAULT_V@)
 am__v_redir_0 = >
 am__v_redir_1 = | tee
 
-AM_V_redir_a = $(am__v_redir_a_$(V))
-am__v_redir_a_ = $(am__v_redir_a_$(AM_DEFAULT_VERBOSITY))
+AM_V_redir_a = $(am__v_redir_a_@AM_V@)
+am__v_redir_a_ = $(am__v_redir_a_@AM_DEFAULT_V@)
 am__v_redir_a_0 = >>
 am__v_redir_a_1 = | tee -a
 
-AM_V_v = $(am__v_v_$(V))
-am__v_v_ = $(am__v_v_$(AM_DEFAULT_VERBOSITY))
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
 am__v_v_0 =
 am__v_v_1 = -v
 
@@ -1066,7 +1065,7 @@ or32-dis.lo: or32-dis.c $(INCDIR)/dis-asm.h $(BFD_H) \
   $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h $(INCDIR)/opcode/or32.h \
   $(INCDIR)/safe-ctype.h
 or32-opc.lo: or32-opc.c $(INCDIR)/safe-ctype.h $(INCDIR)/ansidecl.h \
-  $(INCDIR)/opcode/or32.h
+  $(INCDIR)/libiberty.h $(INCDIR)/opcode/or32.h
 pdp11-dis.lo: pdp11-dis.c sysdep.h config.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/dis-asm.h $(BFD_H) $(INCDIR)/symcat.h $(INCDIR)/opcode/pdp11.h
 pdp11-opc.lo: pdp11-opc.c $(INCDIR)/opcode/pdp11.h

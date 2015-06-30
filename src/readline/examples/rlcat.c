@@ -184,8 +184,8 @@ stdcat(argc, argv)
      int argc;
      char **argv;
 {
-  int  i, fd, r;
-  char *s;
+  int  i, fd = 0, r;
+  char *s = (char *)NULL;
   FILE *fp;
 
   if (argc == 0)

@@ -7,7 +7,8 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
 -Wmissing-parameter-type -Wshadow -Wabi -Wmissing-include-dirs \
 -Wconversion -Wfloat-conversion -Wsign-conversion -Wsign-compare \
--Wshorten-64-to-32 -Wshadow -Wdouble-promotion -Wmisleading-indentation"
+-Wshorten-64-to-32 -Wshadow -Wdouble-promotion -Wmisleading-indentation \
+-Wformat -Wmissing-format-attribute -Wswitch -Wswitch-default -Wpacked"
 # "-Wconversion" and friends are because of a comment in libbfd.c
 WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint"
 WARN_LDFLAGS=""

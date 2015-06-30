@@ -23,6 +23,9 @@
    language is requested. */
 #undef ENABLE_NLS
 
+/* define to Guile version expression */
+#undef GUILE_VERSION
+
 /* Define to 1 if you have `alloca', as a function or macro. */
 #undef HAVE_ALLOCA
 

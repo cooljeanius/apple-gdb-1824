@@ -1,4 +1,4 @@
-/* Intel 386 target-dependent stuff.
+/* i386-tdep.c: Intel 386 target-dependent stuff.
 
    Copyright 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996,
    1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software
@@ -63,11 +63,11 @@
 /* APPLE LOCAL get the prototype for macosx_skip_trampoline_code */
 #include "macosx-tdep.h"
 
-#ifndef __i386__
-# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#if !(defined(__i386) || defined(__i386__) || defined(_I386))
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && defined(__APPLE__)
 #  warning "i386-tdep.c is an i386-specific file but __i386__ is undefined"
-# endif /* __GNUC__ && !__STRICT_ANSI__ */
-#endif /* !__i386__ */
+# endif /* __GNUC__ && !__STRICT_ANSI__ && __APPLE__ */
+#endif /* !(__i386 || __i386__ || _I386) */
 
 /* Register names.  */
 

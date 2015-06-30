@@ -225,7 +225,7 @@ int set_trust_readonly(int newval)
 void
 set_trust_readonly_cleanup(void *newone)
 {
-  set_trust_readonly((int)newone);
+  set_trust_readonly((int)(intptr_t)newone);
 }
 
 /* Non-zero if we want to see trace of target level stuff.  */
@@ -1404,7 +1404,7 @@ target_async_mask (int mask)
 void
 gdb_set_async_override(void *on)
 {
-  gdb_override_async = (int)on;
+  gdb_override_async = (int)(intptr_t)on;
 }
 
 /* do_restore_target_async_mask is a convenience function to use

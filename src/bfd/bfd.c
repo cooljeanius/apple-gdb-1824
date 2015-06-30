@@ -405,8 +405,9 @@ SUBSECTION
 	The BFD error handler acts like printf.
 
 CODE_FRAGMENT
-.
-.typedef void (*bfd_error_handler_type) (const char *, ...);
+. {*FIXME: attaching a format attribute to this leads to new warnings:*}
+.typedef void (*bfd_error_handler_type)(const char *, ...)
+.  {*ATTRIBUTE_FPTR_PRINTF_1*};
 .
 */
 
@@ -568,7 +569,21 @@ _bfd_default_error_handler(const char *fmt, ...)
    function pointer permits a program linked against BFD to intercept
    the messages and deal with them itself.  */
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wmissing-format-attribute"
+#  pragma GCC diagnostic ignored "-Wsuggest-attribute=format"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 bfd_error_handler_type _bfd_error_handler = _bfd_default_error_handler;
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /*
 FUNCTION

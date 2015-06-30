@@ -39,7 +39,7 @@ BUILT_SOURCES		= libtool libtoolize config.h
 
 CLEANFILES		=
 MOSTLYCLEANFILES	=
-DISTCLEANFILES		= *~ .DS_Store autoscan.log
+DISTCLEANFILES		= *~ .DS_Store autoscan.log config.log config.cache
 MAINTAINERCLEANFILES	=
 
 include_HEADERS		=
@@ -941,9 +941,10 @@ clean-local-legacy:
 	-for dir in $(CONF_SUBDIRS); do \
 	  if test -f $${dir}/Makefile; then \
 	    (cd $${dir} && $(MAKE) $(AM_MAKEFLAGS) distclean); \
-	  else echo "sorry"; fi; \
+	  else echo "sorry about $${dir}"; fi; \
 	done
 	rm -rf _inst _inst-*
+.PHONY: clean-local-legacy
 
 # For distclean, we may have to fake Makefiles in the test directories
 # so that descending in DIST_SUBDIRS works.
@@ -956,11 +957,12 @@ fake-distclean-legacy:
 	  if test ! -f $${dir}/Makefile; then \
 	    $(mkinstalldirs) $${dir}; \
 	    echo 'distclean: ; rm -f Makefile' > $${dir}/Makefile; \
-	  else echo "not applicable"; fi; \
+	  else echo "distclean is not applicable for $${dir}"; fi; \
 	done
 
 $(TESTS): tests/defs
 DISTCLEANFILES += tests/defs
 
 distclean-local:
-	rm -rf autom4te.cache || rmdir autom4te.cache
+	-rm -rf autom4te.cache || rmdir autom4te.cache
+.PHONY: distclean-local

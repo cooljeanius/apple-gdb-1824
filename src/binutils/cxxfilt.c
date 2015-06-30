@@ -205,6 +205,8 @@ main(int argc, char **argv)
             }
           }
           break;
+        default:
+          break;
       } /* end "switch (c)" */
   } /* end while-loop */
 

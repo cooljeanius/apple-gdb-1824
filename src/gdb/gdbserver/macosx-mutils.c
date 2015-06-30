@@ -224,19 +224,20 @@ vm_size_t child_get_pagesize(void)
 
 static int
 mach_xfer_memory_remainder(CORE_ADDR memaddr, char *myaddr,
-                           int len, int write, task_t task)
+                           size_t len, int write, task_t task)
 {
-  vm_size_t pagesize = child_get_pagesize ();
+  vm_size_t pagesize = child_get_pagesize();
 
   vm_offset_t mempointer;       /* local copy of inferior's memory */
   mach_msg_type_number_t memcopied;     /* for vm_read to use */
 
-  CORE_ADDR pageaddr = memaddr - (memaddr % pagesize);
+  CORE_ADDR pageaddr = (memaddr - (memaddr % pagesize));
 
   kern_return_t kret;
 
-  CHECK_FATAL (((memaddr + len - 1) - ((memaddr + len - 1) % pagesize))
-               == pageaddr);
+  CHECK_FATAL((CORE_ADDR)((memaddr + len - 1UL)
+                          - ((memaddr + len - 1UL)
+                             % pagesize)) == pageaddr);
 
   if (!write)
     {

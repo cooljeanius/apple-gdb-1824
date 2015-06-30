@@ -561,12 +561,14 @@ get_char (FILE *stream, file_off *address, int *magiccount, char **magic)
       r = buf[0] | (buf[1] << 8);
       break;
     case 'B':
-      r = ((long) buf[0] << 24) | ((long) buf[1] << 16) |
-	((long) buf[2] << 8) | buf[3];
+      r = (((long)buf[0] << 24) | ((long)buf[1] << 16)
+           | ((long)buf[2] << 8) | buf[3]);
       break;
     case 'L':
-      r = buf[0] | ((long) buf[1] << 8) | ((long) buf[2] << 16) |
-	((long) buf[3] << 24);
+      r = (buf[0] | ((long)buf[1] << 8) | ((long)buf[2] << 16)
+           | ((long)buf[3] << 24));
+      break;
+    default:
       break;
     }
 
@@ -674,6 +676,9 @@ print_strings(const char *filename, FILE *stream, file_off address,
 #endif /* C99 || gcc 2+ */
 	      printf("%7lx ", (unsigned long)start);
 	    break;
+
+          default:
+            break;
 	  }
 
       buf[i] = '\0';

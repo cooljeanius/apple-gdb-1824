@@ -66,6 +66,10 @@ AC_PROG_OBJC
 if test "x${OBJCPP}" = "x" && test -e /lib/cpp; then
   test -z "${OBJCPP}" && test -x /lib/cpp
   AC_PROG_OBJCPP
+else
+  test -n "${OBJCPP}"
+  AC_SUBST([OBJCPP])dnl
+  ## just in case... I do something further here? idk...
 fi
 
 # Checks for typedefs, structures, and compiler characteristics.

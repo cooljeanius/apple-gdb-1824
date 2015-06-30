@@ -190,9 +190,9 @@ _bfd_ecoff_new_section_hook (bfd *abfd ATTRIBUTE_UNUSED,
    for each target, but there aren't all that many ECOFF targets.  */
 
 bfd_boolean
-_bfd_ecoff_set_arch_mach_hook (bfd *abfd, void * filehdr)
+_bfd_ecoff_set_arch_mach_hook(bfd *abfd, void * filehdr)
 {
-  struct internal_filehdr *internal_f = filehdr;
+  struct internal_filehdr *internal_f = (struct internal_filehdr *)filehdr;
   enum bfd_architecture arch;
   unsigned long mach;
 
@@ -349,13 +349,13 @@ ecoff_sec_to_styp_flags (const char *name, flagword flags)
 /* Get the BFD flags to use for a section.  */
 
 bfd_boolean
-_bfd_ecoff_styp_to_sec_flags (bfd *abfd ATTRIBUTE_UNUSED,
-			      void * hdr,
-			      const char *name ATTRIBUTE_UNUSED,
-			      asection *section ATTRIBUTE_UNUSED,
-			      flagword * flags_ptr)
+_bfd_ecoff_styp_to_sec_flags(bfd *abfd ATTRIBUTE_UNUSED,
+			     void *hdr,
+			     const char *name ATTRIBUTE_UNUSED,
+			     asection *section ATTRIBUTE_UNUSED,
+			     flagword *flags_ptr)
 {
-  struct internal_scnhdr *internal_s = hdr;
+  struct internal_scnhdr *internal_s = (struct internal_scnhdr *)hdr;
   long styp_flags = internal_s->s_flags;
   flagword sec_flags = 0;
 
@@ -628,33 +628,28 @@ static asection ecoff_scom_section;
 static asymbol ecoff_scom_symbol;
 static asymbol *ecoff_scom_symbol_ptr;
 
-/* Create an empty symbol.  */
-
+/* Create an empty symbol: */
 asymbol *
-_bfd_ecoff_make_empty_symbol (bfd *abfd)
+_bfd_ecoff_make_empty_symbol(bfd *abfd)
 {
-  ecoff_symbol_type *new;
-  bfd_size_type amt = sizeof (ecoff_symbol_type);
+  ecoff_symbol_type *newsym;
+  bfd_size_type amt = sizeof(ecoff_symbol_type);
 
-  new = bfd_zalloc (abfd, amt);
-  if (new == NULL)
+  newsym = (ecoff_symbol_type *)bfd_zalloc(abfd, amt);
+  if (newsym == NULL)
     return NULL;
-  new->symbol.section = NULL;
-  new->fdr = NULL;
-  new->local = FALSE;
-  new->native = NULL;
-  new->symbol.the_bfd = abfd;
-  return &new->symbol;
+  newsym->symbol.section = NULL;
+  newsym->fdr = NULL;
+  newsym->local = FALSE;
+  newsym->native = NULL;
+  newsym->symbol.the_bfd = abfd;
+  return &newsym->symbol;
 }
 
-/* Set the BFD flags and section for an ECOFF symbol.  */
-
+/* Set the BFD flags and section for an ECOFF symbol: */
 static bfd_boolean
-ecoff_set_symbol_info (bfd *abfd,
-		       SYMR *ecoff_sym,
-		       asymbol *asym,
-		       int ext,
-		       int weak)
+ecoff_set_symbol_info(bfd *abfd, SYMR *ecoff_sym, asymbol *asym,
+		      int ext, int weak)
 {
   asym->the_bfd = abfd;
   asym->value = ecoff_sym->value;
@@ -836,20 +831,19 @@ ecoff_set_symbol_info (bfd *abfd,
   return TRUE;
 }
 
-/* Read an ECOFF symbol table.  */
-
+/* Read an ECOFF symbol table: */
 bfd_boolean
-_bfd_ecoff_slurp_symbol_table (bfd *abfd)
+_bfd_ecoff_slurp_symbol_table(bfd *abfd)
 {
-  const struct ecoff_backend_data * const backend = ecoff_backend (abfd);
-  const bfd_size_type external_ext_size
-    = backend->debug_swap.external_ext_size;
-  const bfd_size_type external_sym_size
-    = backend->debug_swap.external_sym_size;
-  void (* const swap_ext_in) (bfd *, void *, EXTR *)
-    = backend->debug_swap.swap_ext_in;
-  void (* const swap_sym_in) (bfd *, void *, SYMR *)
-    = backend->debug_swap.swap_sym_in;
+  const struct ecoff_backend_data * const backend = ecoff_backend(abfd);
+  const bfd_size_type external_ext_size =
+    backend->debug_swap.external_ext_size;
+  const bfd_size_type external_sym_size =
+    backend->debug_swap.external_sym_size;
+  void (* const swap_ext_in)(bfd *, void *, EXTR *) =
+    backend->debug_swap.swap_ext_in;
+  void (* const swap_sym_in)(bfd *, void *, SYMR *) =
+    backend->debug_swap.swap_sym_in;
   bfd_size_type internal_size;
   ecoff_symbol_type *internal;
   ecoff_symbol_type *internal_ptr;
@@ -858,27 +852,27 @@ _bfd_ecoff_slurp_symbol_table (bfd *abfd)
   FDR *fdr_ptr;
   FDR *fdr_end;
 
-  /* If we've already read in the symbol table, do nothing.  */
-  if (ecoff_data (abfd)->canonical_symbols != NULL)
+  /* If we have already read in the symbol table, then do nothing: */
+  if (ecoff_data(abfd)->canonical_symbols != NULL)
     return TRUE;
 
-  /* Get the symbolic information.  */
-  if (! _bfd_ecoff_slurp_symbolic_info (abfd, NULL,
-					&ecoff_data (abfd)->debug_info))
+  /* Get the symbolic information: */
+  if (! _bfd_ecoff_slurp_symbolic_info(abfd, NULL,
+                                       &ecoff_data(abfd)->debug_info))
     return FALSE;
-  if (bfd_get_symcount (abfd) == 0)
+  if (bfd_get_symcount(abfd) == 0)
     return TRUE;
 
-  internal_size = bfd_get_symcount (abfd);
-  internal_size *= sizeof (ecoff_symbol_type);
-  internal = bfd_alloc (abfd, internal_size);
+  internal_size = bfd_get_symcount(abfd);
+  internal_size *= sizeof(ecoff_symbol_type);
+  internal = (ecoff_symbol_type *)bfd_alloc(abfd, internal_size);
   if (internal == NULL)
     return FALSE;
 
   internal_ptr = internal;
-  eraw_src = (char *) ecoff_data (abfd)->debug_info.external_ext;
+  eraw_src = (char *)ecoff_data(abfd)->debug_info.external_ext;
   eraw_end = (eraw_src
-	      + (ecoff_data (abfd)->debug_info.symbolic_header.iextMax
+	      + (ecoff_data(abfd)->debug_info.symbolic_header.iextMax
 		 * external_ext_size));
   for (; eraw_src < eraw_end; eraw_src += external_ext_size, internal_ptr++)
     {
@@ -1717,23 +1711,24 @@ _bfd_ecoff_find_nearest_line (bfd *abfd,
   struct ecoff_find_line *line_info;
 
   /* Make sure we have the FDR's.  */
-  if (! _bfd_ecoff_slurp_symbolic_info (abfd, NULL, debug_info)
-      || bfd_get_symcount (abfd) == 0)
+  if (! _bfd_ecoff_slurp_symbolic_info(abfd, NULL, debug_info)
+      || bfd_get_symcount(abfd) == 0)
     return FALSE;
 
   if (ecoff_data (abfd)->find_line_info == NULL)
     {
-      bfd_size_type amt = sizeof (struct ecoff_find_line);
+      bfd_size_type amt = sizeof(struct ecoff_find_line);
 
-      ecoff_data (abfd)->find_line_info = bfd_zalloc (abfd, amt);
-      if (ecoff_data (abfd)->find_line_info == NULL)
+      ecoff_data(abfd)->find_line_info = ((struct ecoff_find_line *)
+                                          bfd_zalloc(abfd, amt));
+      if (ecoff_data(abfd)->find_line_info == NULL)
 	return FALSE;
     }
-  line_info = ecoff_data (abfd)->find_line_info;
+  line_info = ecoff_data(abfd)->find_line_info;
 
-  return _bfd_ecoff_locate_line (abfd, section, offset, debug_info,
-				 debug_swap, line_info, filename_ptr,
-				 functionname_ptr, retline_ptr);
+  return _bfd_ecoff_locate_line(abfd, section, offset, debug_info,
+                                debug_swap, line_info, filename_ptr,
+                                functionname_ptr, retline_ptr);
 }
 
 /* Copy private BFD data.  This is called by objcopy and strip.  We
@@ -2933,46 +2928,45 @@ _bfd_ecoff_slurp_armap (bfd *abfd)
     hlog = 0;
     for (i = 1; i < count; i <<= 1)
       hlog++;
-    BFD_ASSERT (i == count);
+    BFD_ASSERT(i == count);
 
-    raw_ptr = raw_armap + 4;
+    raw_ptr = (raw_armap + 4);
     for (i = 0; i < count; i++, raw_ptr += 8)
       {
 	unsigned int name_offset, file_offset;
 	unsigned int hash, rehash, srch;
 
-	name_offset = H_GET_32 (abfd, raw_ptr);
-	file_offset = H_GET_32 (abfd, (raw_ptr + 4));
+	name_offset = H_GET_32(abfd, raw_ptr);
+	file_offset = H_GET_32(abfd, (raw_ptr + 4));
 	if (file_offset == 0)
 	  continue;
-	hash = ecoff_armap_hash (stringbase + name_offset, &rehash, count,
-				 hlog);
+	hash = ecoff_armap_hash(stringbase + name_offset, &rehash, count,
+                                hlog);
 	if (hash == i)
 	  continue;
 
-	/* See if we can rehash to this location.  */
+	/* See if we can rehash to this location: */
 	for (srch = (hash + rehash) & (count - 1);
 	     srch != hash && srch != i;
 	     srch = (srch + rehash) & (count - 1))
-	  BFD_ASSERT (H_GET_32 (abfd, (raw_armap + 8 + srch * 8)) != 0);
-	BFD_ASSERT (srch == i);
+	  BFD_ASSERT(H_GET_32(abfd, (raw_armap + 8 + srch * 8)) != 0);
+	BFD_ASSERT(srch == i);
       }
   }
-
 #endif /* CHECK_ARMAP_HASH */
 
-  raw_ptr = raw_armap + 4;
+  raw_ptr = (raw_armap + 4);
   for (i = 0; i < count; i++, raw_ptr += 8)
-    if (H_GET_32 (abfd, (raw_ptr + 4)) != 0)
+    if (H_GET_32(abfd, (raw_ptr + 4)) != 0)
       ++ardata->symdef_count;
 
   amt = ardata->symdef_count;
-  amt *= sizeof (struct symdef);
-  symdef_ptr = bfd_alloc (abfd, amt);
+  amt *= sizeof(struct symdef);
+  symdef_ptr = (struct symdef *)bfd_alloc(abfd, amt);
   if (!symdef_ptr)
     return FALSE;
 
-  ardata->symdefs = (carsym *) symdef_ptr;
+  ardata->symdefs = (carsym *)symdef_ptr;
 
   raw_ptr = raw_armap + 4;
   for (i = 0; i < count; i++, raw_ptr += 8)
@@ -3162,32 +3156,32 @@ _bfd_ecoff_write_armap (bfd *abfd,
    and the extended name table.  */
 
 const bfd_target *
-_bfd_ecoff_archive_p (bfd *abfd)
+_bfd_ecoff_archive_p(bfd *abfd)
 {
   struct artdata *tdata_hold;
   char armag[SARMAG + 1];
   bfd_size_type amt;
 
-  if (bfd_bread ((void *) armag, (bfd_size_type) SARMAG, abfd) != SARMAG)
+  if (bfd_bread((void *)armag, (bfd_size_type)SARMAG, abfd) != SARMAG)
     {
-      if (bfd_get_error () != bfd_error_system_call)
-	bfd_set_error (bfd_error_wrong_format);
+      if (bfd_get_error() != bfd_error_system_call)
+	bfd_set_error(bfd_error_wrong_format);
       return NULL;
     }
 
-  if (! strneq (armag, ARMAG, SARMAG))
+  if (! strneq(armag, ARMAG, SARMAG))
     {
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return NULL;
     }
 
-  tdata_hold = bfd_ardata (abfd);
+  tdata_hold = bfd_ardata(abfd);
 
-  amt = sizeof (struct artdata);
-  bfd_ardata (abfd) = bfd_zalloc (abfd, amt);
-  if (bfd_ardata (abfd) == NULL)
+  amt = sizeof(struct artdata);
+  bfd_ardata(abfd) = (struct artdata *)bfd_zalloc(abfd, amt);
+  if (bfd_ardata(abfd) == NULL)
     {
-      bfd_ardata (abfd) = tdata_hold;
+      bfd_ardata(abfd) = tdata_hold;
       return NULL;
     }
 
@@ -3273,26 +3267,25 @@ ecoff_link_hash_newfunc (struct bfd_hash_entry *entry,
       ret->written = 0;
       ret->small = 0;
     }
-  memset ((void *) &ret->esym, 0, sizeof ret->esym);
+  memset((void *)&ret->esym, 0, sizeof(ret->esym));
 
-  return (struct bfd_hash_entry *) ret;
+  return (struct bfd_hash_entry *)ret;
 }
 
-/* Create an ECOFF link hash table.  */
-
+/* Create an ECOFF link hash table: */
 struct bfd_link_hash_table *
-_bfd_ecoff_bfd_link_hash_table_create (bfd *abfd)
+_bfd_ecoff_bfd_link_hash_table_create(bfd *abfd)
 {
   struct ecoff_link_hash_table *ret;
-  bfd_size_type amt = sizeof (struct ecoff_link_hash_table);
+  bfd_size_type amt = sizeof(struct ecoff_link_hash_table);
 
-  ret = bfd_malloc (amt);
+  ret = (struct ecoff_link_hash_table *)bfd_malloc(amt);
   if (ret == NULL)
     return NULL;
-  if (! _bfd_link_hash_table_init (&ret->root, abfd,
-				   ecoff_link_hash_newfunc))
+  if (! _bfd_link_hash_table_init(&ret->root, abfd,
+				  ecoff_link_hash_newfunc))
     {
-      free (ret);
+      free(ret);
       return NULL;
     }
   return &ret->root;
@@ -3324,14 +3317,12 @@ _bfd_ecoff_bfd_link_hash_table_create (bfd *abfd)
    We do not want to read the external symbol information again.  */
 
 static bfd_boolean
-ecoff_link_add_externals (bfd *abfd,
-			  struct bfd_link_info *info,
-			  void * external_ext,
-			  char *ssext)
+ecoff_link_add_externals(bfd *abfd, struct bfd_link_info *info,
+			 void *external_ext, char *ssext)
 {
-  const struct ecoff_backend_data * const backend = ecoff_backend (abfd);
-  void (* const swap_ext_in) (bfd *, void *, EXTR *)
-    = backend->debug_swap.swap_ext_in;
+  const struct ecoff_backend_data * const backend = ecoff_backend(abfd);
+  void (* const swap_ext_in)(bfd *, void *, EXTR *) =
+    backend->debug_swap.swap_ext_in;
   bfd_size_type external_ext_size = backend->debug_swap.external_ext_size;
   unsigned long ext_count;
   struct bfd_link_hash_entry **sym_hash;
@@ -3339,17 +3330,17 @@ ecoff_link_add_externals (bfd *abfd,
   char *ext_end;
   bfd_size_type amt;
 
-  ext_count = ecoff_data (abfd)->debug_info.symbolic_header.iextMax;
+  ext_count = ecoff_data(abfd)->debug_info.symbolic_header.iextMax;
 
   amt = ext_count;
-  amt *= sizeof (struct bfd_link_hash_entry *);
-  sym_hash = bfd_alloc (abfd, amt);
+  amt *= sizeof(struct bfd_link_hash_entry *);
+  sym_hash = (struct bfd_link_hash_entry **)bfd_alloc(abfd, amt);
   if (!sym_hash)
     return FALSE;
-  ecoff_data (abfd)->sym_hashes = (struct ecoff_link_hash_entry **) sym_hash;
+  ecoff_data(abfd)->sym_hashes = (struct ecoff_link_hash_entry **)sym_hash;
 
-  ext_ptr = (char *) external_ext;
-  ext_end = ext_ptr + ext_count * external_ext_size;
+  ext_ptr = (char *)external_ext;
+  ext_end = (ext_ptr + ext_count * external_ext_size);
   for (; ext_ptr < ext_end; ext_ptr += external_ext_size, sym_hash++)
     {
       EXTR esym;

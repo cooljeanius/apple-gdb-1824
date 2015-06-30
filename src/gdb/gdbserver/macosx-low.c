@@ -702,15 +702,15 @@ macosx_service_event (struct macosx_process_info *inferior,
       inferior->stopped_thread = mssg->thread_port;
       if (event->type == MACOSX_TYPE_SIGNAL)
 	inferior->status->stopped_in_softexc = 1;
-      return macosx_translate_exception (mssg);
+      return macosx_translate_exception(mssg);
     }
   else if (event->source == MACOSX_SOURCE_STOPPED)
     {
-      return (int) event->data;
+      return (int)(intptr_t)event->data;
     }
   else
-    error ("Message of unknown source: %d passed to macosx_service_event.\n",
-	   event->source);
+    error("Message of unknown source: %d passed to macosx_service_event.\n",
+	  event->source);
 
   return (unsigned char)0;
 
@@ -1064,24 +1064,24 @@ macosx_wait_for_event (struct thread_info *child,
 	  return val;
 	case MACOSX_SOURCE_SIGNALED:
 	  *status = 'X';
-	  macosx_exception_release_write_lock (inferior->status);
+	  macosx_exception_release_write_lock(inferior->status);
 	  return val;
 	case MACOSX_SOURCE_STOPPED:
 	  {
 	    struct macosx_event *event;
-	    warning ("Got stopped on signal not from SOFTEXC.\n");
-	    event = macosx_add_to_events (inferior,
-					  MACOSX_SOURCE_STOPPED,
-					  (void *) val);
+	    warning("Got stopped on signal not from SOFTEXC.\n");
+	    event = macosx_add_to_events(inferior,
+					 MACOSX_SOURCE_STOPPED,
+					 (void *)(intptr_t)val);
 	    event_count++;
 	    break;
 	  }
 	case MACOSX_SOURCE_EXCEPTION:
 	  {
 	    struct macosx_event *event;
-	    event = macosx_add_to_events (inferior,
-					  MACOSX_SOURCE_EXCEPTION,
-					  buf);
+	    event = macosx_add_to_events(inferior,
+					 MACOSX_SOURCE_EXCEPTION,
+					 buf);
 	    event_count++;
 	    if (event->type == MACOSX_TYPE_SINGLESTEP)
 	      stepping_event = event;
@@ -1118,18 +1118,18 @@ macosx_wait_for_event (struct thread_info *child,
 	case MACOSX_SOURCE_EXCEPTION:
 	  {
 	    *status = 'T';
-	    retval = macosx_service_event (inferior, macosx_event_chain);
+	    retval = macosx_service_event(inferior, macosx_event_chain);
 	    break;
 	  }
 	case MACOSX_SOURCE_STOPPED:
 	  {
 	    *status = 'T';
 
-	    retval = (int) macosx_event_chain->data;
+	    retval = (int)(intptr_t)macosx_event_chain->data;
 	    break;
 	  }
 	default:
-	  error ("Only handling exceptions here");
+	  error("Only handling exceptions here");
 	}
     }
   else if (stepping_event != NULL)

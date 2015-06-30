@@ -136,6 +136,8 @@ unw_print_abreg (char *cp, unsigned int abreg)
     case 3: /* special */
       strcpy(cp, special_reg[abreg & 0xf]);
       break;
+    default:
+      break;
     }
 }
 
@@ -152,6 +154,8 @@ unw_print_xyreg(char *cp, unsigned int x, unsigned int ytreg)
       break;
     case 2: /* br */
       sprintf(cp, "b%u", (ytreg & 0x1f));
+      break;
+    default:
       break;
     }
 }

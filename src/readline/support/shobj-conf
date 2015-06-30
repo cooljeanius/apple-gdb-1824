@@ -146,7 +146,13 @@ darwin*|macosx*)
 	SHLIB_LIBSUFF='dylib'
 
 	SHOBJ_LDFLAGS='-dynamiclib'
-	SHLIB_XLDFLAGS='-arch_only `/usr/bin/arch` -install_name $(libdir)/$@ -current_version $(SHLIB_MAJOR)$(SHLIB_MINOR) -compatibility_version $(SHLIB_MAJOR)'
+    if test "x${HOST_ARCHITECTURE}" != "x"; then
+        test -n "${HOST_ARCHITECTURE}"
+        SHLIB_XLDFLAGS='-arch ${HOST_ARCHITECTURE} -install_name $(libdir)/$@ -current_version $(SHLIB_MAJOR)$(SHLIB_MINOR) -compatibility_version $(SHLIB_MAJOR)'
+    else
+        test -z "${HOST_ARCHITECTURE}"
+        SHLIB_XLDFLAGS='-arch_only `/usr/bin/arch` -install_name $(libdir)/$@ -current_version $(SHLIB_MAJOR)$(SHLIB_MINOR) -compatibility_version $(SHLIB_MAJOR)'
+    fi
 	SHLIB_EXTRA_XLDFLAGS='-v'
 
 	SHLIB_LIBS='-lSystem -lncurses'
@@ -289,7 +295,7 @@ hpux9*)
 #
 #	SHLIB_XLDFLAGS='+b $(libdir)'
 #	SHLIB_LIBSUFF='sl'
-#	SHLIB_LIBVERSION='$(SHLIB_LIBSUFF).$(SHLIB_MAJOR)'	
+#	SHLIB_LIBVERSION='$(SHLIB_LIBSUFF).$(SHLIB_MAJOR)'
 
 	;;
 
@@ -319,7 +325,7 @@ hpux10*)
 #
 #	SHLIB_XLDFLAGS='+b $(libdir)'
 #	SHLIB_LIBSUFF='sl'
-#	SHLIB_LIBVERSION='$(SHLIB_LIBSUFF).$(SHLIB_MAJOR)'	
+#	SHLIB_LIBVERSION='$(SHLIB_LIBSUFF).$(SHLIB_MAJOR)'
 
 	;;
 
@@ -350,7 +356,7 @@ hpux11*)
 #
 #	SHLIB_XLDFLAGS='+b $(libdir)'
 #	SHLIB_LIBSUFF='sl'
-#	SHLIB_LIBVERSION='$(SHLIB_LIBSUFF).$(SHLIB_MAJOR)'	
+#	SHLIB_LIBVERSION='$(SHLIB_LIBSUFF).$(SHLIB_MAJOR)'
 
 	;;
 
@@ -401,7 +407,7 @@ sysv5uw7*)
 
 	SHLIB_LIBVERSION='$(SHLIB_LIBSUFF).$(SHLIB_MAJOR)'
 	;;
-	
+
 dgux*-*gcc*)
 	SHOBJ_CFLAGS=-fpic
 	SHOBJ_LD='${CC}'

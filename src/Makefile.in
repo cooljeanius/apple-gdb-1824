@@ -186,6 +186,8 @@ BUILD_EXPORTS = \
 	LD="$(LD_FOR_BUILD)"; export LD; \
 	LDFLAGS="$(LDFLAGS_FOR_BUILD)"; export LDFLAGS; \
 	NM="$(NM_FOR_BUILD)"; export NM; \
+	OBJC="$(OBJC_FOR_BUILD)"; export OBJC; \
+	OBJCPP="$(OBJCPP_FOR_BUILD)"; export OBJCPP; \
 	RANLIB="$(RANLIB_FOR_BUILD)"; export RANLIB; \
 	WINDRES="$(WINDRES_FOR_BUILD)"; export WINDRES; \
 	WINDMC="$(WINDMC_FOR_BUILD)"; export WINDMC;
@@ -228,7 +230,11 @@ HOST_EXPORTS = \
 	RANLIB="$(RANLIB)"; export RANLIB; \
 	WINDRES="$(WINDRES)"; export WINDRES; \
 	WINDMC="$(WINDMC)"; export WINDMC; \
+	OBJC="$(OBJC)"; export OBJC; \
 	OBJCOPY="$(OBJCOPY)"; export OBJCOPY; \
+	OBJCPP="$(OBJCPP)"; export OBJCPP; \
+	OBJCXX="$(OBJCXX)"; export OBJCXX; \
+	OBJCXXCPP="$(OBJCXXCPP)"; export OBJCXXCPP; \
 	OBJDUMP="$(OBJDUMP)"; export OBJDUMP; \
 	READELF="$(READELF)"; export READELF; \
 	AR_FOR_TARGET="$(AR_FOR_TARGET)"; export AR_FOR_TARGET; \
@@ -236,7 +242,10 @@ HOST_EXPORTS = \
 	GCC_FOR_TARGET="$(GCC_FOR_TARGET)"; export GCC_FOR_TARGET; \
 	LD_FOR_TARGET="$(LD_FOR_TARGET)"; export LD_FOR_TARGET; \
 	NM_FOR_TARGET="$(NM_FOR_TARGET)"; export NM_FOR_TARGET; \
+	OBJC_FOR_TARGET="$(OBJC_FOR_TARGET)"; export OBJC_FOR_TARGET; \
 	OBJCOPY_FOR_TARGET="$(OBJCOPY_FOR_TARGET)"; export OBJCOPY_FOR_TARGET; \
+	OBJCPP_FOR_TARGET="$(OBJCPP_FOR_TARGET)"; export OBJCPP_FOR_TARGET; \
+	OBJCXX_FOR_TARGET="$(OBJCXX_FOR_TARGET)"; export OBJCXX_FOR_TARGET; \
 	OBJDUMP_FOR_TARGET="$(OBJDUMP_FOR_TARGET)"; export OBJDUMP_FOR_TARGET; \
 	RANLIB_FOR_TARGET="$(RANLIB_FOR_TARGET)"; export RANLIB_FOR_TARGET; \
 	READELF_FOR_TARGET="$(READELF_FOR_TARGET)"; export READELF_FOR_TARGET; \
@@ -295,7 +304,10 @@ BASE_TARGET_EXPORTS = \
 	LDFLAGS="$(LDFLAGS_FOR_TARGET)"; export LDFLAGS; \
 	LIPO="$(LIPO_FOR_TARGET)"; export LIPO; \
 	NM="$(NM_FOR_TARGET)"; export NM; \
+	OBJC="$(OBJC_FOR_TARGET)"; export OBJC; \
 	OBJCOPY="$(OBJCOPY_FOR_TARGET)"; export OBJCOPY; \
+	OBJCPP="$(OBJCPP_FOR_TARGET)"; export OBJCPP; \
+	OBJCXX="$(OBJCXX_FOR_TARGET)"; export OBJCXX; \
 	OBJDUMP="$(OBJDUMP_FOR_TARGET)"; export OBJDUMP; \
 	RANLIB="$(RANLIB_FOR_TARGET)"; export RANLIB; \
 	READELF="$(READELF_FOR_TARGET)"; export READELF; \
@@ -349,6 +361,8 @@ CC_FOR_BUILD = @CC_FOR_BUILD@
 CFLAGS_FOR_BUILD = @CFLAGS_FOR_BUILD@
 LIBCFLAGS_FOR_BUILD = $(CFLAGS_FOR_BUILD) $(C_BUILD_ARCHFLAGS)
 
+CPP_FOR_BUILD = @CPP_FOR_BUILD@
+
 CXX_FOR_BUILD = $(CXX)
 CXXFLAGS_FOR_BUILD = @CXXFLAGS_FOR_BUILD@
 LIBCXXFLAGS_FOR_BUILD = $(CXXFLAGS_FOR_BUILD) $(CXX_BUILD_ARCHFLAGS)
@@ -361,6 +375,8 @@ GOC_FOR_BUILD = @GOC_FOR_BUILD@
 LDFLAGS_FOR_BUILD = @LDFLAGS_FOR_BUILD@
 LD_FOR_BUILD = @LD_FOR_BUILD@
 NM_FOR_BUILD = @NM_FOR_BUILD@
+OBJC_FOR_BUILD = @OBJC_FOR_BUILD@
+OBJCPP_FOR_BUILD = @OBJCPP_FOR_BUILD@
 RANLIB_FOR_BUILD = @RANLIB_FOR_BUILD@
 WINDMC_FOR_BUILD = @WINDMC_FOR_BUILD@
 WINDRES_FOR_BUILD = @WINDRES_FOR_BUILD@
@@ -449,9 +465,25 @@ CFLAGS = @CFLAGS@
 LIBCFLAGS = $(CFLAGS) $(C_HOST_ARCHFLAGS)
 GOCFLAGS = $(CFLAGS)
 
+CCAS = @CCAS@
+CCASFLAGS = @CCASFLAGS@
+
+CPP = @CPP@
+CPPFLAGS = @CPPFLAGS@
+
 CXX = @CXX@
 CXXFLAGS = @CXXFLAGS@
 LIBCXXFLAGS = $(CXXFLAGS) $(CXX_HOST_ARCHFLAGS) -fno-implicit-templates
+
+CXXCPP = @CXXCPP@
+
+OBJC = @OBJC@
+OBJCFLAGS = @OBJCFLAGS@
+OBJCPP = @OBJCPP@
+
+OBJCXX = @OBJCXX@
+OBJCXXFLAGS = @OBJCXXFLAGS@
+OBJCXXCPP = @OBJCXXCPP@
 
 DLLTOOL = @DLLTOOL@
 
@@ -472,6 +504,8 @@ WINDMC = @WINDMC@
 
 GNATBIND = @GNATBIND@
 GNATMAKE = @GNATMAKE@
+
+YFLAGS = @YFLAGS@
 
 PICFLAG = 
 
@@ -662,6 +696,13 @@ USUAL_NM_FOR_TARGET = ` \
     fi; \
   fi`
 
+OBJC_FOR_TARGET=@OBJC_FOR_TARGET@
+CONFIGURED_OBJC_FOR_TARGET=@CONFIGURED_OBJC_FOR_TARGET@
+OBJCPP_FOR_TARGET=@OBJCPP_FOR_TARGET@
+CONFIGURED_OBJCPP_FOR_TARGET=@CONFIGURED_OBJCPP_FOR_TARGET@
+OBJCXX_FOR_TARGET=@OBJCXX_FOR_TARGET@
+CONFIGURED_OBJCXX_FOR_TARGET=@CONFIGURED_OBJCXX_FOR_TARGET@
+
 OBJCOPY_FOR_TARGET=@OBJCOPY_FOR_TARGET@
 OBJDUMP_FOR_TARGET=@OBJDUMP_FOR_TARGET@
 
@@ -711,7 +752,7 @@ PICFLAG_FOR_TARGET =
 # Miscellaneous targets and flag lists
 # ------------------------------------
 
-# The first rule in the file had better be this one.  Don't put any above it.
+# The 1st rule in the file had better be this one; do NOT put any above it.
 # This lives here to allow makefile fragments to contain dependencies.
 @default_target@:
 
@@ -916,12 +957,13 @@ BASE_FLAGS_TO_PASS = \
 # We leave this in just in case, but it is not needed anymore.
 RECURSE_FLAGS_TO_PASS = $(BASE_FLAGS_TO_PASS)
 
-# Flags to pass down to most sub-makes, in which we're building with
+# Flags to pass down to most sub-makes, in which we are building with
 # the host environment.
 EXTRA_HOST_FLAGS = \
 	'AR=$(AR)' \
 	'AS=$(AS)' \
 	'CC=$(CC)' \
+	'CPP=$(CPP)' \
 	'CXX=$(CXX)' \
 	'DLLTOOL=$(DLLTOOL)' \
 	'GCJ=$(GCJ)' \
@@ -930,6 +972,10 @@ EXTRA_HOST_FLAGS = \
 	'LD=$(LD)' \
 	'LIPO=$(LIPO)' \
 	'NM=$(NM)' \
+	'OBJC=$(OBJC)' \
+	'OBJCPP=$(OBJCPP)' \
+	'OBJCXX=$(OBJCXX)' \
+	'OBJCXXCPP=$(OBJCXXCPP)' \
 	'OBJDUMP=$(OBJDUMP)' \
 	'RANLIB=$(RANLIB)' \
 	'READELF=$(READELF)' \
@@ -971,7 +1017,10 @@ EXTRA_TARGET_FLAGS = \
 	'LIBCFLAGS=$$(LIBCFLAGS_FOR_TARGET)' \
 	'LIBCXXFLAGS=$$(LIBCXXFLAGS_FOR_TARGET)' \
 	'NM=$$(NM_FOR_TARGET)' \
+	'OBJC=$$(OBJC_FOR_TARGET)' \
 	'OBJCOPY=$$(OBJCOPY_FOR_TARGET)' \
+	'OBJCPP=$$(OBJCPP_FOR_TARGET)' \
+	'OBJCXX=$$(OBJCXX_FOR_TARGET)' \
 	'OBJDUMP=$$(OBJDUMP_FOR_TARGET)' \
 	'RANLIB=$$(RANLIB_FOR_TARGET)' \
 	'READELF=$$(READELF_FOR_TARGET)' \
@@ -58306,6 +58355,7 @@ STAGE1_FLAGS_TO_PASS = \
 # Flags to pass to stage2 and later makes:
 POSTSTAGE1_FLAGS_TO_PASS = \
 	CC="$${CC}" CC_FOR_BUILD="$${CC_FOR_BUILD}" \
+	CPP="$${CPP}" CPP_FOR_BUILD="$${CPP_FOR_BUILD}" \
 	CXX="$${CXX}" CXX_FOR_BUILD="$${CXX_FOR_BUILD}" \
 	STAGE_PREFIX=$${r}/prev-gcc/ \
 	GNATBIND="$${GNATBIND}" \
@@ -61408,6 +61458,13 @@ configure-gdb: maybe-configure-tk
 configure-gdb: maybe-configure-sim
 configure-gdb: maybe-all-bfd
 configure-gdb: maybe-all-libiconv
+configure-gdb: maybe-all-zlib
+configure-gdb: maybe-all-fixincludes
+configure-gdb: maybe-all-dejagnu
+configure-gdb: maybe-all-utils
+configure-gdb: maybe-all-mmalloc
+configure-gdb: maybe-all-libtermcap
+configure-gdb: maybe-all-libgui
 all-gdb: maybe-all-libiberty
 all-gdb: maybe-all-libiconv
 all-gdb: maybe-all-opcodes
@@ -61420,6 +61477,7 @@ all-gdb: maybe-all-electric-fence
 all-gdb: maybe-all-mmalloc
 all-gdb: maybe-all-libdecnumber
 all-gdb: maybe-all-libtermcap
+all-gdb: maybe-configure-zlib
 install-gdb: maybe-install-tcl
 install-gdb: maybe-install-tk
 install-gdb: maybe-install-itcl
@@ -61778,6 +61836,7 @@ check-stage3-gold: maybe-all-stage3-gas
 check-stage4-gold: maybe-all-stage4-gas
 check-stageprofile-gold: maybe-all-stageprofile-gas
 check-stagefeedback-gold: maybe-all-stagefeedback-gas
+configure-opcodes: maybe-all-guile
 configure-opcodes: maybe-configure-cgen
 configure-opcodes: configure-libiberty
 
@@ -61819,6 +61878,7 @@ all-stage3-opcodes: maybe-all-stage3-intl
 all-stage4-opcodes: maybe-all-stage4-intl
 all-stageprofile-opcodes: maybe-all-stageprofile-intl
 all-stagefeedback-opcodes: maybe-all-stagefeedback-intl
+all-opcodes: maybe-all-libiconv
 configure-dejagnu: maybe-configure-tcl
 all-dejagnu: maybe-all-tcl
 configure-dejagnu: maybe-configure-itcl
@@ -61863,12 +61923,14 @@ all-fastjar: maybe-all-build-texinfo
 all-fastjar: maybe-all-libiberty
 all-autoconf: maybe-all-m4
 all-autoconf: maybe-all-build-texinfo
+configure-autogen: maybe-all-guile
 all-autogen: maybe-all-guile
 all-automake: maybe-all-m4
 all-automake: maybe-all-build-texinfo
 all-automake: maybe-all-autoconf
 all-bison: maybe-all-intl
 all-bison: maybe-all-build-texinfo
+configure-cgen: maybe-all-guile
 all-cgen: maybe-all-guile
 all-diff: maybe-all-intl
 all-diff: maybe-all-build-texinfo

@@ -132,8 +132,8 @@ DESCRIPTION
 # include "config.h"
 #endif /* HAVE_CONFIG_H && !__CONFIG_H__ && !__BFD_CONFIG_H__ && !__BFD_H_SEEN__ && 0 */
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "libiberty.h"
 #include "libbfd.h"
 #include "aout/ar.h"

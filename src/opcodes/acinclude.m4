@@ -12,3 +12,6 @@ AC_DEFUN([AM_INSTALL_LIBBFD],["echo old bfd macro called"])dnl
 AC_SUBST([bfdlibdir])dnl
 AC_SUBST([bfdincludedir])dnl
 ])dnl
+
+dnl# this gets us some macros for checking for guile, which is for cgen:
+sinclude(../config/ag_macros.m4)

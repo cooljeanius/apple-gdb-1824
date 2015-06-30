@@ -4398,7 +4398,8 @@ const char *bfd_errmsg (bfd_error_type error_tag);
 
 void bfd_perror (const char *message);
 
-typedef void (*bfd_error_handler_type) (const char *, ...);
+typedef void (*bfd_error_handler_type)(const char *, ...)
+  /*ATTRIBUTE_FPTR_PRINTF_1*/;
 
 bfd_error_handler_type bfd_set_error_handler (bfd_error_handler_type);
 

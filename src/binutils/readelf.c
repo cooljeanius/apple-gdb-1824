@@ -596,27 +596,29 @@ print_vma (bfd_vma vma, print_mode mode)
       switch (mode)
 	{
 	case FULL_HEX:
-	  return printf ("0x%8.8lx", (unsigned long) vma);
+	  return printf("0x%8.8lx", (unsigned long)vma);
 
 	case LONG_HEX:
-	  return printf ("%8.8lx", (unsigned long) vma);
+	  return printf("%8.8lx", (unsigned long)vma);
 
 	case DEC_5:
 	  if (vma <= 99999)
-	    return printf ("%5ld", (long) vma);
+	    return printf("%5ld", (long) vma);
 	  /* Drop through.  */
 
 	case PREFIX_HEX:
-	  return printf ("0x%lx", (unsigned long) vma);
+	  return printf("0x%lx", (unsigned long)vma);
 
 	case HEX:
-	  return printf ("%lx", (unsigned long) vma);
+	  return printf("%lx", (unsigned long)vma);
 
 	case DEC:
-	  return printf ("%ld", (unsigned long) vma);
+	  return printf("%ld", (unsigned long)vma);
 
 	case UNSIGNED:
-	  return printf ("%lu", (unsigned long) vma);
+	  return printf("%lu", (unsigned long)vma);
+
+        default:;
 	}
     }
 #ifdef BFD64
@@ -627,50 +629,52 @@ print_vma (bfd_vma vma, print_mode mode)
       switch (mode)
 	{
 	case FULL_HEX:
-	  nc = printf ("0x");
+	  nc = printf("0x");
 	  /* Drop through.  */
 
 	case LONG_HEX:
-	  printf_vma (vma);
-	  return nc + 16;
+	  printf_vma(vma);
+	  return (nc + 16);
 
 	case PREFIX_HEX:
-	  nc = printf ("0x");
+	  nc = printf("0x");
 	  /* Drop through.  */
 
 	case HEX:
 # if BFD_HOST_64BIT_LONG
-	  return nc + printf ("%lx", vma);
+	  return (nc + printf("%lx", vma));
 # else
-	  return nc + print_hex_vma (vma);
+	  return (nc + print_hex_vma(vma));
 # endif /* BFD_HOST_64BIT_LONG */
 
 	case DEC:
 # if BFD_HOST_64BIT_LONG
-	  return printf ("%ld", vma);
+	  return printf("%ld", vma);
 # else
-	  return print_dec_vma (vma, 1);
+	  return print_dec_vma(vma, 1);
 # endif /* BFD_HOST_64BIT_LONG */
 
 	case DEC_5:
 # if BFD_HOST_64BIT_LONG
 	  if (vma <= 99999)
-	    return printf ("%5ld", vma);
+	    return printf("%5ld", vma);
 	  else
-	    return printf ("%#lx", vma);
+	    return printf("%#lx", vma);
 # else
 	  if (vma <= 99999)
-	    return printf ("%5ld", _bfd_int64_low (vma));
+	    return printf("%5ld", _bfd_int64_low(vma));
 	  else
-	    return print_hex_vma (vma);
+	    return print_hex_vma(vma);
 # endif /* BFD_HOST_64BIT_LONG */
 
 	case UNSIGNED:
 # if BFD_HOST_64BIT_LONG
-	  return printf ("%lu", vma);
+	  return printf("%lu", vma);
 # else
-	  return print_dec_vma (vma, 0);
+	  return print_dec_vma(vma, 0);
 # endif /* BFD_HOST_64BIT_LONG */
+
+        default:;
 	}
     }
 #endif /* BFD64 */
@@ -4081,9 +4085,11 @@ process_section_headers (FILE *file)
 	 earlier compilers provided no way of distinguishing ILP32 objects
 	 from LP64 objects, so if there is any doubt, we should assume that
 	 the official LP64 form is being used.  */
-      if ((elf_header.e_flags & EF_MIPS_ABI) == E_MIPS_ABI_EABI64
-	  && find_section (".gcc_compiled_long32") == NULL)
+      if (((elf_header.e_flags & EF_MIPS_ABI) == E_MIPS_ABI_EABI64)
+	  && (find_section(".gcc_compiled_long32") == NULL))
 	eh_addr_size = 8;
+      break;
+    default:
       break;
     }
 
@@ -4679,6 +4685,8 @@ process_relocs (FILE *file)
 		  case DT_RELA:
 		    is_rela = TRUE;
 		    break;
+                  default:
+                    break;
 		  }
 	    }
 
@@ -6044,24 +6052,27 @@ process_dynamic_section (FILE *file)
 	      switch (entry->d_tag)
 		{
 		case DT_AUXILIARY:
-		  printf (_("Auxiliary library"));
+		  printf(_("Auxiliary library"));
 		  break;
 
 		case DT_FILTER:
-		  printf (_("Filter library"));
+		  printf(_("Filter library"));
 		  break;
 
 		case DT_CONFIG:
-		  printf (_("Configuration file"));
+		  printf(_("Configuration file"));
 		  break;
 
 		case DT_DEPAUDIT:
-		  printf (_("Dependency audit library"));
+		  printf(_("Dependency audit library"));
 		  break;
 
 		case DT_AUDIT:
-		  printf (_("Audit library"));
+		  printf(_("Audit library"));
 		  break;
+
+                default:
+                  break;
 		}
 
 	      if (VALID_DYNAMIC_NAME (entry->d_un.d_val))
@@ -8933,24 +8944,25 @@ read_and_display_attr_value (unsigned long attribute,
     case DW_AT_calling_convention:
       switch (uvalue)
 	{
-	case DW_CC_normal:	printf ("(normal)"); break;
-	case DW_CC_program:	printf ("(program)"); break;
-	case DW_CC_nocall:	printf ("(nocall)"); break;
+	case DW_CC_normal:	printf("(normal)"); break;
+	case DW_CC_program:	printf("(program)"); break;
+	case DW_CC_nocall:	printf("(nocall)"); break;
 	default:
-	  if (uvalue >= DW_CC_lo_user
-	      && uvalue <= DW_CC_hi_user)
-	    printf ("(user defined)");
+	  if ((uvalue >= DW_CC_lo_user)
+	      && (uvalue <= DW_CC_hi_user))
+	    printf("(user defined)");
 	  else
-	    printf ("(unknown convention)");
+	    printf("(unknown convention)");
 	}
       break;
 
     case DW_AT_ordering:
       switch (uvalue)
 	{
-	case -1: printf ("(undefined)"); break;
-	case 0:  printf ("(row major)"); break;
-	case 1:  printf ("(column major)"); break;
+	case -1: printf("(undefined)"); break;
+	case 0: printf("(row major)"); break;
+	case 1: printf("(column major)"); break;
+        default: break;
 	}
       break;
 
@@ -9870,50 +9882,53 @@ display_debug_macinfo(Elf_Internal_Shdr *section, unsigned char *start,
 	  {
 	    unsigned int filenum;
 
-	    lineno = read_leb128 (curr, & bytes_read, 0);
+	    lineno = read_leb128(curr, & bytes_read, 0);
 	    curr += bytes_read;
-	    filenum = read_leb128 (curr, & bytes_read, 0);
+	    filenum = read_leb128(curr, & bytes_read, 0);
 	    curr += bytes_read;
 
-	    printf (_(" DW_MACINFO_start_file - lineno: %d filenum: %d\n"),
-		    lineno, filenum);
+	    printf(_(" DW_MACINFO_start_file - lineno: %d filenum: %d\n"),
+		   lineno, filenum);
 	  }
 	  break;
 
 	case DW_MACINFO_end_file:
-	  printf (_(" DW_MACINFO_end_file\n"));
+	  printf(_(" DW_MACINFO_end_file\n"));
 	  break;
 
 	case DW_MACINFO_define:
-	  lineno = read_leb128 (curr, & bytes_read, 0);
+	  lineno = read_leb128(curr, & bytes_read, 0);
 	  curr += bytes_read;
-	  string = (char *) curr;
-	  curr += strlen (string) + 1;
-	  printf (_(" DW_MACINFO_define - lineno : %d macro : %s\n"),
-		  lineno, string);
+	  string = (char *)curr;
+	  curr += (strlen(string) + 1UL);
+	  printf(_(" DW_MACINFO_define - lineno : %d macro : %s\n"),
+		 lineno, string);
 	  break;
 
 	case DW_MACINFO_undef:
-	  lineno = read_leb128 (curr, & bytes_read, 0);
+	  lineno = read_leb128(curr, & bytes_read, 0);
 	  curr += bytes_read;
-	  string = (char *) curr;
-	  curr += strlen (string) + 1;
-	  printf (_(" DW_MACINFO_undef - lineno : %d macro : %s\n"),
-		  lineno, string);
+	  string = (char *)curr;
+	  curr += (strlen(string) + 1UL);
+	  printf(_(" DW_MACINFO_undef - lineno : %d macro : %s\n"),
+		 lineno, string);
 	  break;
 
 	case DW_MACINFO_vendor_ext:
 	  {
 	    unsigned int constant;
 
-	    constant = read_leb128 (curr, & bytes_read, 0);
+	    constant = read_leb128(curr, & bytes_read, 0);
 	    curr += bytes_read;
-	    string = (char *) curr;
-	    curr += strlen (string) + 1;
-	    printf (_(" DW_MACINFO_vendor_ext - constant : %d string : %s\n"),
-		    constant, string);
+	    string = (char *)curr;
+	    curr += (strlen(string) + 1UL);
+	    printf(_(" DW_MACINFO_vendor_ext - constant : %d string : %s\n"),
+		   constant, string);
 	  }
 	  break;
+
+        default:
+          break;
 	}
     }
 

@@ -332,34 +332,31 @@ static int completion_changed_buffer;
 
 /* Complete the word at or before point.  You have supplied the function
    that does the initial simple matching selection algorithm (see
-   rl_completion_matches ()).  The default is to do filename completion. */
+   rl_completion_matches()).  The default is to do filename completion. */
 int
-rl_complete (ignore, invoking_key)
-     int ignore, invoking_key;
+rl_complete(int ignore, int invoking_key)
 {
   if (rl_inhibit_completion)
-    return (_rl_insert_char (ignore, invoking_key));
+    return (_rl_insert_char(ignore, invoking_key));
   else if (rl_last_func == rl_complete && !completion_changed_buffer)
-    return (rl_complete_internal ('?'));
+    return (rl_complete_internal('?'));
   else if (_rl_complete_show_all)
-    return (rl_complete_internal ('!'));
+    return (rl_complete_internal('!'));
   else
-    return (rl_complete_internal (TAB));
+    return (rl_complete_internal(TAB));
 }
 
-/* List the possible completions.  See description of rl_complete (). */
+/* List the possible completions.  See description of rl_complete(). */
 int
-rl_possible_completions (ignore, invoking_key)
-     int ignore, invoking_key;
+rl_possible_completions(int ignore, int invoking_key)
 {
-  return (rl_complete_internal ('?'));
+  return (rl_complete_internal('?'));
 }
 
 int
-rl_insert_completions (ignore, invoking_key)
-     int ignore, invoking_key;
+rl_insert_completions(int ignore, int invoking_key)
 {
-  return (rl_complete_internal ('*'));
+  return (rl_complete_internal('*'));
 }
 
 /* Return the correct value to pass to rl_complete_internal performing
@@ -368,10 +365,9 @@ rl_insert_completions (ignore, invoking_key)
    an application-specific completion function to honor the
    show-all-if-ambiguous readline variable. */
 int
-rl_completion_mode (cfunc)
-     rl_command_func_t *cfunc;
+rl_completion_mode(rl_command_func_t *cfunc)
 {
-  if (rl_last_func == cfunc && !completion_changed_buffer)
+  if ((rl_last_func == cfunc) && !completion_changed_buffer)
     return '?';
   else if (_rl_complete_show_all)
     return '!';
@@ -388,8 +384,7 @@ rl_completion_mode (cfunc)
 /* Set default values for readline word completion.  These are the variables
    that application completion functions can change or inspect. */
 static void
-set_completion_defaults (what_to_do)
-     int what_to_do;
+set_completion_defaults(int what_to_do)
 {
   /* Only the completion entry function can change these. */
   rl_filename_completion_desired = 0;
@@ -403,8 +398,7 @@ set_completion_defaults (what_to_do)
 
 /* The user must press "y" or "n". Non-zero return means "y" pressed. */
 static int
-get_y_or_n (for_pager)
-     int for_pager;
+get_y_or_n(int for_pager)
 {
   int c;
 
@@ -429,15 +423,14 @@ get_y_or_n (for_pager)
 }
 
 static int
-_rl_internal_pager (lines)
-     int lines;
+_rl_internal_pager(int lines)
 {
   int i;
 
-  fprintf (rl_outstream, "--More--");
-  fflush (rl_outstream);
-  i = get_y_or_n (1);
-  _rl_erase_entire_line ();
+  fprintf(rl_outstream, "--More--");
+  fflush(rl_outstream);
+  i = get_y_or_n(1);
+  _rl_erase_entire_line();
   if (i == 0)
     return -1;
   else if (i == 2)
@@ -456,16 +449,15 @@ _rl_internal_pager (lines)
      `%' for character special devices
      `#' for block special devices */
 static int
-stat_char (filename)
-     char *filename;
+stat_char(char *filename)
 {
   struct stat finfo;
   int character, r;
 
-#if defined (HAVE_LSTAT) && defined (S_ISLNK)
-  r = lstat (filename, &finfo);
+#if defined(HAVE_LSTAT) && defined(S_ISLNK)
+  r = lstat(filename, &finfo);
 #else
-  r = stat (filename, &finfo);
+  r = stat(filename, &finfo);
 #endif
 
   if (r == -1)
@@ -512,19 +504,18 @@ stat_char (filename)
    for the previous slash and return the portion following that.  If
    there's no previous slash, we just return what we were passed. */
 static char *
-printable_part (pathname)
-      char *pathname;
+printable_part(char *pathname)
 {
   char *temp, *x;
 
   if (rl_filename_completion_desired == 0)	/* don't need to do anything */
     return (pathname);
 
-  temp = strrchr (pathname, '/');
-#if defined (__MSDOS__)
-  if (temp == 0 && ISALPHA ((unsigned char)pathname[0]) && pathname[1] == ':')
+  temp = strrchr(pathname, '/');
+#if defined(__MSDOS__)
+  if (temp == 0 && ISALPHA((unsigned char)pathname[0]) && pathname[1] == ':')
     temp = pathname + 1;
-#endif
+#endif /* __MSDOS__ */
 
   if (temp == 0 || *temp == '\0')
     return (pathname);
@@ -569,8 +560,7 @@ printable_part (pathname)
     } while (0)
 
 static int
-print_filename (to_print, full_pathname)
-     char *to_print, *full_pathname;
+print_filename(char *to_print, char *full_pathname)
 {
   int printed_len = 0;
 #if !defined (VISIBLE_STATS)
@@ -578,11 +568,12 @@ print_filename (to_print, full_pathname)
 
   for (s = to_print; *s; s++)
     {
-      PUTX (*s);
+      PUTX(*s);
     }
 #else
   char *s, c, *new_full_pathname;
-  int extension_char, slen, tlen;
+  int extension_char;
+  size_t slen, tlen;
 
   for (s = to_print; *s; s++)
     {
@@ -609,28 +600,28 @@ print_filename (to_print, full_pathname)
 	  if (rl_directory_completion_hook)
 	    (*rl_directory_completion_hook) (&s);
 
-	  slen = strlen (s);
-	  tlen = strlen (to_print);
-	  new_full_pathname = (char *)xmalloc (slen + tlen + 2);
-	  strcpy (new_full_pathname, s);
+	  slen = strlen(s);
+	  tlen = strlen(to_print);
+	  new_full_pathname = (char *)xmalloc(slen + tlen + 2UL);
+	  strcpy(new_full_pathname, s);
 	  new_full_pathname[slen] = '/';
-	  strcpy (new_full_pathname + slen + 1, to_print);
+	  strcpy((new_full_pathname + slen + 1), to_print);
 
-	  extension_char = stat_char (new_full_pathname);
+	  extension_char = stat_char(new_full_pathname);
 
-	  free (new_full_pathname);
+	  free(new_full_pathname);
 	  to_print[-1] = c;
 	}
       else
 	{
-	  s = tilde_expand (full_pathname);
-	  extension_char = stat_char (s);
+	  s = tilde_expand(full_pathname);
+	  extension_char = stat_char(s);
 	}
 
-      free (s);
+      free(s);
       if (extension_char)
 	{
-	  putc (extension_char, rl_outstream);
+	  putc(extension_char, rl_outstream);
 	  printed_len++;
 	}
     }
@@ -639,16 +630,13 @@ print_filename (to_print, full_pathname)
 }
 
 static char *
-rl_quote_filename (s, rtype, qcp)
-     char *s;
-     int rtype;
-     char *qcp;
+rl_quote_filename(char *s, int rtype, char *qcp)
 {
   char *r;
 
-  r = (char *)xmalloc (strlen (s) + 2);
+  r = (char *)xmalloc(strlen(s) + 2UL);
   *r = *rl_completer_quote_characters;
-  strcpy (r + 1, s);
+  strcpy((r + 1UL), s);
   if (qcp)
     *qcp = *rl_completer_quote_characters;
   return r;
@@ -670,8 +658,7 @@ rl_quote_filename (s, rtype, qcp)
    the value of the delimiter character that caused a word break. */
 
 char
-_rl_find_completion_word (fp, dp)
-     int *fp, *dp;
+_rl_find_completion_word(int *fp, int *dp)
 {
   int scan, end, found_quote, delimiter, pass_next, isbrk;
   char quote_char;
@@ -802,11 +789,9 @@ _rl_find_completion_word (fp, dp)
 }
 
 static char **
-gen_completion_matches (text, start, end, our_func, found_quote, quote_char)
-     char *text;
-     int start, end;
-     rl_compentry_func_t *our_func;
-     int found_quote, quote_char;
+gen_completion_matches(char *text, int start, int end,
+                       rl_compentry_func_t *our_func,
+                       int found_quote, int quote_char)
 {
   char **matches, *temp;
 
@@ -845,8 +830,7 @@ gen_completion_matches (text, start, end, our_func, found_quote, quote_char)
 /* Filter out duplicates in MATCHES.  This frees up the strings in
    MATCHES. */
 static char **
-remove_duplicate_matches (matches)
-     char **matches;
+remove_duplicate_matches(char **matches)
 {
   char *lowest_common;
   int i, j, newlen;
@@ -860,16 +844,17 @@ remove_duplicate_matches (matches)
   /* Sort the array without matches[0], since we need it to
      stay in place no matter what. */
   if (i)
-    qsort (matches+1, i-1, sizeof (char *), (QSFUNC *)_rl_qsort_string_compare);
+    qsort((matches + 1), ((size_t)i - 1UL), sizeof(char *),
+          (QSFUNC *)_rl_qsort_string_compare);
 
   /* Remember the lowest common denominator for it may be unique. */
   lowest_common = savestring (matches[0]);
 
   for (i = newlen = 0; matches[i + 1]; i++)
     {
-      if (strcmp (matches[i], matches[i + 1]) == 0)
+      if (strcmp(matches[i], matches[i + 1]) == 0)
 	{
-	  free (matches[i]);
+	  free(matches[i]);
 	  matches[i] = (char *)&dead_slot;
 	}
       else
@@ -971,10 +956,10 @@ compute_lcd_of_matches(char **match_list, int matches, const char *text)
 	    if ((MB_CUR_MAX > 1) && (rl_byte_oriented == 0))
 	      {
 		mbstate_t ps_back = ps1;
-		if (!_rl_compare_chars(match_list[i], si, &ps1,
-                                       match_list[i + 1], si, &ps2))
+		if (!_rl_compare_chars(match_list[i], (int)si, &ps1,
+                                       match_list[i + 1], (int)si, &ps2))
 		  break;
-		else if ((v = _rl_get_char_len(&match_list[i][si], &ps_back)) > 1)
+		else if ((v = (size_t)_rl_get_char_len(&match_list[i][si], &ps_back)) > 1)
 		  si += (v - 1UL);
 	      }
 	    else
@@ -1036,9 +1021,7 @@ compute_lcd_of_matches(char **match_list, int matches, const char *text)
 }
 
 static int
-postprocess_matches (matchesp, matching_filenames)
-     char ***matchesp;
-     int matching_filenames;
+postprocess_matches(char ***matchesp, int matching_filenames)
 {
   char *t, **matches, **temp_matches;
   int nmatch, i;
@@ -1096,9 +1079,7 @@ postprocess_matches (matchesp, matching_filenames)
    of strings, in argv format, LEN is the number of strings in MATCHES,
    and MAX is the length of the longest string in MATCHES. */
 void
-rl_display_match_list (matches, len, max)
-     char **matches;
-     int len, max;
+rl_display_match_list(char **matches, int len, int max)
 {
   int count, limit, printed_len, lines;
   int i, j, k, l;
@@ -1106,8 +1087,8 @@ rl_display_match_list (matches, len, max)
 
   /* How many items of MAX length can we fit in the screen window? */
   max += 2;
-  limit = _rl_screenwidth / max;
-  if (limit != 1 && (limit * max == _rl_screenwidth))
+  limit = (_rl_screenwidth / max);
+  if ((limit != 1) && ((limit * max) == _rl_screenwidth))
     limit--;
 
   /* Avoid a possible floating exception.  If max > _rl_screenwidth,
@@ -1116,7 +1097,7 @@ rl_display_match_list (matches, len, max)
     limit = 1;
 
   /* How many iterations of the printing loop? */
-  count = (len + (limit - 1)) / limit;
+  count = ((len + (limit - 1)) / limit);
 
   /* Watch out for special case.  If LEN is less than LIMIT, then
      just do the inner printing loop.
@@ -1124,7 +1105,8 @@ rl_display_match_list (matches, len, max)
 
   /* Sort the items if they are not already sorted. */
   if (rl_ignore_completion_duplicates == 0)
-    qsort(matches + 1, len, sizeof(char *), (QSFUNC *)_rl_qsort_string_compare);
+    qsort((matches + 1), (size_t)len, sizeof(char *),
+          (QSFUNC *)_rl_qsort_string_compare);
 
   rl_crlf();
 
@@ -1201,8 +1183,7 @@ rl_display_match_list (matches, len, max)
    and ask the user if he wants to see the list if there are more matches
    than RL_COMPLETION_QUERY_ITEMS. */
 static void
-display_matches (matches)
-     char **matches;
+display_matches(char **matches)
 {
   int len, max, i;
   char *temp;
@@ -1262,17 +1243,15 @@ display_matches (matches)
 	}
     }
 
-  rl_display_match_list (matches, len, max);
+  rl_display_match_list(matches, len, max);
 
-  rl_forced_update_display ();
+  rl_forced_update_display();
   rl_display_fixed = 1;
 }
 
+/* 'qc' is a pointer to quoting character, if any. */
 static char *
-make_quoted_replacement (match, mtype, qc)
-     char *match;
-     int mtype;
-     char *qc;	/* Pointer to quoting character, if any */
+make_quoted_replacement(char *match, int mtype, char *qc)
 {
   int should_quote, do_replace;
   char *replacement;
@@ -1314,16 +1293,13 @@ make_quoted_replacement (match, mtype, qc)
 }
 
 static void
-insert_match (match, start, mtype, qc)
-     char *match;
-     int start, mtype;
-     char *qc;
+insert_match(char *match, int start, int mtype, char *qc)
 {
   char *replacement;
   char oqc;
 
   oqc = qc ? *qc : '\0';
-  replacement = make_quoted_replacement (match, mtype, qc);
+  replacement = make_quoted_replacement(match, mtype, qc);
 
   /* Now insert the match. */
   if (replacement)
@@ -1416,15 +1392,12 @@ append_to_match(char *text, int delimiter, int quote_char,
 }
 
 static void
-insert_all_matches (matches, point, qc)
-     char **matches;
-     int point;
-     char *qc;
+insert_all_matches(char **matches, int point, char *qc)
 {
   int i;
   char *rp;
 
-  rl_begin_undo_group ();
+  rl_begin_undo_group();
   /* remove any opening quote character; make_quoted_replacement will add
      it back. */
   if (qc && *qc && point && rl_line_buffer[point - 1] == *qc)
@@ -1445,18 +1418,17 @@ insert_all_matches (matches, point, qc)
     }
   else
     {
-      rp = make_quoted_replacement (matches[0], SINGLE_MATCH, qc);
-      rl_insert_text (rp);
-      rl_insert_text (" ");
+      rp = make_quoted_replacement(matches[0], SINGLE_MATCH, qc);
+      rl_insert_text(rp);
+      rl_insert_text(" ");
       if (rp != matches[0])
-	free (rp);
+	free(rp);
     }
-  rl_end_undo_group ();
+  rl_end_undo_group();
 }
 
 void
-_rl_free_match_list (matches)
-     char **matches;
+_rl_free_match_list(char **matches)
 {
   register int i;
 
@@ -1464,8 +1436,8 @@ _rl_free_match_list (matches)
     return;
 
   for (i = 0; matches[i]; i++)
-    free (matches[i]);
-  free (matches);
+    free(matches[i]);
+  free(matches);
 }
 
 /* Complete the word at or before point.
@@ -1476,8 +1448,7 @@ _rl_free_match_list (matches)
    `!' means to do standard completion, and list all possible completions if
    there is more than one. */
 int
-rl_complete_internal (what_to_do)
-     int what_to_do;
+rl_complete_internal(int what_to_do)
 {
   char **matches;
   rl_compentry_func_t *our_func;
@@ -1616,9 +1587,8 @@ rl_complete_internal (what_to_do)
      when there are no more matches.
  */
 char **
-rl_completion_matches (text, entry_function)
-     const char *text;
-     rl_compentry_func_t *entry_function;
+rl_completion_matches(const char *text,
+                      rl_compentry_func_t *entry_function)
 {
   /* Number of slots in match_list. */
   int match_list_size;

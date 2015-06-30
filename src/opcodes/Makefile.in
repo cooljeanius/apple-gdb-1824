@@ -119,7 +119,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/gettext-sister.m4 \
 	$(top_srcdir)/../config/acx.m4 $(top_srcdir)/../bfd/bfd.m4 \
 	$(top_srcdir)/../bfd/warning.m4 \
 	$(top_srcdir)/../config/zlib.m4 $(top_srcdir)/../libtool.m4 \
-	$(top_srcdir)/../gettext.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/../gettext.m4 \
+	$(top_srcdir)/../config/ag_macros.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -313,6 +315,8 @@ GMSGFMT_015 = @GMSGFMT_015@
 GREP = @GREP@
 GT_NO = @GT_NO@
 GT_YES = @GT_YES@
+GUILE = @GUILE@
+GUILE_VERSION = @GUILE_VERSION@
 HDEFINES = @HDEFINES@
 HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
 INCINTL = @INCINTL@
@@ -454,7 +458,7 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = 1.11.6 gnits no-dist dejagnu -Wall -Wno-portability
+AUTOMAKE_OPTIONS = 1.11.6 gnits no-dist dejagnu -Wall -Wno-override
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 ACLOCAL_AMFLAGS = -I m4 --install
 
@@ -775,16 +779,16 @@ CONFIG_STATUS_DEPENDENCIES = $(BFDDIR)/configure.ac
 AM_CPPFLAGS = -D_GNU_SOURCE -I. -I$(srcdir) -I../bfd -I$(INCDIR) \
 -I$(BFDDIR) @HDEFINES@ -I$(INTLDIR) -I../intl
 
-AM_V_redir = $(am__v_redir_$(V))
-am__v_redir_ = $(am__v_redir_$(AM_DEFAULT_VERBOSITY))
+AM_V_redir = $(am__v_redir_@AM_V@)
+am__v_redir_ = $(am__v_redir_@AM_DEFAULT_V@)
 am__v_redir_0 = >
 am__v_redir_1 = | tee
-AM_V_redir_a = $(am__v_redir_a_$(V))
-am__v_redir_a_ = $(am__v_redir_a_$(AM_DEFAULT_VERBOSITY))
+AM_V_redir_a = $(am__v_redir_a_@AM_V@)
+am__v_redir_a_ = $(am__v_redir_a_@AM_DEFAULT_V@)
 am__v_redir_a_0 = >>
 am__v_redir_a_1 = | tee -a
-AM_V_v = $(am__v_v_$(V))
-am__v_v_ = $(am__v_v_$(AM_DEFAULT_VERBOSITY))
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
 am__v_v_0 = 
 am__v_v_1 = -v
 libopcodes_la_SOURCES = dis-buf.c disassemble.c dis-init.c i386-opc.c
@@ -1862,7 +1866,7 @@ or32-dis.lo: or32-dis.c $(INCDIR)/dis-asm.h $(BFD_H) \
   $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h $(INCDIR)/opcode/or32.h \
   $(INCDIR)/safe-ctype.h
 or32-opc.lo: or32-opc.c $(INCDIR)/safe-ctype.h $(INCDIR)/ansidecl.h \
-  $(INCDIR)/opcode/or32.h
+  $(INCDIR)/libiberty.h $(INCDIR)/opcode/or32.h
 pdp11-dis.lo: pdp11-dis.c sysdep.h config.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/dis-asm.h $(BFD_H) $(INCDIR)/symcat.h $(INCDIR)/opcode/pdp11.h
 pdp11-opc.lo: pdp11-opc.c $(INCDIR)/opcode/pdp11.h

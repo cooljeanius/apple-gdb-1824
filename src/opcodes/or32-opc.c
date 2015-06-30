@@ -1,6 +1,6 @@
 /* or32-opc.c: Table of opcodes for the OpenRISC 1000 ISA.
    Copyright 2002, 2004, 2005 Free Software Foundation, Inc.
-   Contributed by Damjan Lampret (lampret@opencores.org).
+   Contributed by Damjan Lampret <lampret@opencores.org>.
 
    This file is part of gen_or1k_isa, or1k, GDB and GAS.
 
@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include "safe-ctype.h"
 #include "ansidecl.h"
+#include "libiberty.h"
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
@@ -732,20 +733,19 @@ parse_params (const struct or32_opcode * opcode,
   return cur;
 }
 
-/* Constructs new automata based on or32_opcodes array.  */
-
+/* Constructs new automata based on or32_opcodes array: */
 void
-build_automata (void)
+build_automata(void)
 {
   unsigned int i;
   unsigned long *end;
   struct insn_op_struct *cur;
 
-  automata = malloc (MAX_AUTOMATA_SIZE * sizeof (unsigned long));
-  ti = malloc (sizeof (struct temp_insn_struct) * or32_num_opcodes);
+  automata = xmalloc(MAX_AUTOMATA_SIZE * sizeof(unsigned long));
+  ti = xmalloc(sizeof(struct temp_insn_struct) * or32_num_opcodes);
 
   nuncovered = or32_num_opcodes;
-  printf ("Building automata... ");
+  printf("Building automata... ");
   /* Build temporary information about instructions.  */
   for (i = 0; i < or32_num_opcodes; i++)
     {
@@ -759,24 +759,26 @@ build_automata (void)
       ti[i].insn = ones;
       ti[i].in_pass = curpass = 0;
 
-      /*debug(9, "%s: %s %08X %08X\n", or32_opcodes[i].name,
-	or32_opcodes[i].encoding, ti[i].insn_mask, ti[i].insn);*/
+#if defined(debug)
+      debug(9, "%s: %s %08X %08X\n", or32_opcodes[i].name,
+            or32_opcodes[i].encoding, ti[i].insn_mask, ti[i].insn);
+#endif /* debug */
     }
 
   /* Until all are covered search for best criteria to separate them.  */
-  end = cover_insn (automata, curpass, 0xFFFFFFFF);
+  end = cover_insn(automata, curpass, 0xFFFFFFFF);
 
-  if (end - automata > MAX_AUTOMATA_SIZE)
+  if ((end - automata) > MAX_AUTOMATA_SIZE)
     {
-      fprintf (stderr, "Automata too large. Increase MAX_AUTOMATA_SIZE.");
-      exit (1);
+      fprintf(stderr, "Automata too large. Increase MAX_AUTOMATA_SIZE.");
+      exit(1);
     }
 
-  printf ("done, num uncovered: %i/%i.\n", nuncovered, or32_num_opcodes);
-  printf ("Parsing operands data... ");
+  printf("done, num uncovered: %i/%i.\n", nuncovered, or32_num_opcodes);
+  printf("Parsing operands data... ");
 
-  op_data = malloc (MAX_OP_TABLE_SIZE * sizeof (struct insn_op_struct));
-  op_start = malloc (or32_num_opcodes * sizeof (struct insn_op_struct *));
+  op_data = xmalloc(MAX_OP_TABLE_SIZE * sizeof(struct insn_op_struct));
+  op_start = xmalloc(or32_num_opcodes * sizeof(struct insn_op_struct *));
   cur = op_data;
 
   for (i = 0; i < or32_num_opcodes; i++)

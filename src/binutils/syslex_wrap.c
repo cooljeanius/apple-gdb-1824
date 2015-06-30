@@ -21,7 +21,14 @@
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif /* HAVE_CONFIG_H */
+/* in case these got re-defined on us: */
+#ifdef malloc
+# undef malloc
+#endif /* malloc */
+#ifdef realloc
+# undef realloc
+#endif /* realloc */
 
 #include "syslex.c"
 
-/* EOF */
+/* End of syslex_wrap.c */
