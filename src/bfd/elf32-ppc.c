@@ -1577,18 +1577,16 @@ ppc_elf_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
     }
 
   return ppc_elf_howto_table[r];
-};
+}
 
-/* Set the howto pointer for a PowerPC ELF reloc.  */
-
+/* Set the howto pointer for a PowerPC ELF reloc: */
 static void
-ppc_elf_info_to_howto (bfd *abfd ATTRIBUTE_UNUSED,
-		       arelent *cache_ptr,
-		       Elf_Internal_Rela *dst)
+ppc_elf_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+		      Elf_Internal_Rela *dst)
 {
-  /* Initialize howto table if not already done.  */
+  /* Initialize howto table if not already done: */
   if (!ppc_elf_howto_table[R_PPC_ADDR32])
-    ppc_elf_howto_init ();
+    ppc_elf_howto_init();
 
   BFD_ASSERT (ELF32_R_TYPE (dst->r_info) < (unsigned int) R_PPC_max);
   cache_ptr->howto = ppc_elf_howto_table[ELF32_R_TYPE (dst->r_info)];
@@ -2382,19 +2380,19 @@ struct ppc_elf_link_hash_table
 #define ppc_elf_hash_table(p) \
   ((struct ppc_elf_link_hash_table *) (p)->hash)
 
-/* Create an entry in a PPC ELF linker hash table.  */
-
+/* Create an entry in a PPC ELF linker hash table: */
 static struct bfd_hash_entry *
-ppc_elf_link_hash_newfunc (struct bfd_hash_entry *entry,
-			   struct bfd_hash_table *table,
-			   const char *string)
+ppc_elf_link_hash_newfunc(struct bfd_hash_entry *entry,
+			  struct bfd_hash_table *table,
+                          const char *string)
 {
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
   if (entry == NULL)
     {
-      entry = bfd_hash_allocate (table,
-				 sizeof (struct ppc_elf_link_hash_entry));
+      entry = ((struct bfd_hash_entry *)
+               bfd_hash_allocate(table,
+                                 sizeof(struct ppc_elf_link_hash_entry)));
       if (entry == NULL)
 	return entry;
     }
@@ -2411,14 +2409,14 @@ ppc_elf_link_hash_newfunc (struct bfd_hash_entry *entry,
   return entry;
 }
 
-/* Create a PPC ELF linker hash table.  */
-
+/* Create a PPC ELF linker hash table: */
 static struct bfd_link_hash_table *
-ppc_elf_link_hash_table_create (bfd *abfd)
+ppc_elf_link_hash_table_create(bfd *abfd)
 {
   struct ppc_elf_link_hash_table *ret;
 
-  ret = bfd_zmalloc (sizeof (struct ppc_elf_link_hash_table));
+  ret = ((struct ppc_elf_link_hash_table *)
+         bfd_zmalloc(sizeof(struct ppc_elf_link_hash_table)));
   if (ret == NULL)
     return NULL;
 
@@ -2825,22 +2823,22 @@ elf_create_pointer_linker_section (bfd *abfd,
     }
   else
     {
-      /* Allocation of a pointer to a local symbol.  */
-      elf_linker_section_pointers_t **ptr = elf_local_ptr_offsets (abfd);
+      /* Allocation of a pointer to a local symbol: */
+      elf_linker_section_pointers_t **ptr = elf_local_ptr_offsets(abfd);
 
-      /* Allocate a table to hold the local symbols if first time.  */
+      /* Allocate a table to hold the local symbols if first time: */
       if (!ptr)
 	{
-	  unsigned int num_symbols = elf_tdata (abfd)->symtab_hdr.sh_info;
+	  unsigned int num_symbols = elf_tdata(abfd)->symtab_hdr.sh_info;
 
 	  amt = num_symbols;
-	  amt *= sizeof (elf_linker_section_pointers_t *);
-	  ptr = bfd_zalloc (abfd, amt);
+	  amt *= sizeof(elf_linker_section_pointers_t *);
+	  ptr = (elf_linker_section_pointers_t **)bfd_zalloc(abfd, amt);
 
 	  if (!ptr)
 	    return FALSE;
 
-	  elf_local_ptr_offsets (abfd) = ptr;
+	  elf_local_ptr_offsets(abfd) = ptr;
 	}
 
       /* Has this symbol already been allocated?  If so, our work is done.  */
@@ -2854,9 +2852,10 @@ elf_create_pointer_linker_section (bfd *abfd,
 
   /* Allocate space for a pointer in the linker section, and allocate
      a new pointer record from internal memory.  */
-  BFD_ASSERT (ptr_linker_section_ptr != NULL);
-  amt = sizeof (elf_linker_section_pointers_t);
-  linker_section_ptr = bfd_alloc (abfd, amt);
+  BFD_ASSERT(ptr_linker_section_ptr != NULL);
+  amt = sizeof(elf_linker_section_pointers_t);
+  linker_section_ptr = ((elf_linker_section_pointers_t *)
+                        bfd_alloc(abfd, amt));
 
   if (!linker_section_ptr)
     return FALSE;
@@ -2904,8 +2903,8 @@ update_local_sym_info(bfd *abfd, Elf_Internal_Shdr *symtab_hdr,
 }
 
 static bfd_boolean
-update_plt_info (bfd *abfd, struct elf_link_hash_entry *h,
-		 asection *sec, bfd_vma addend)
+update_plt_info(bfd *abfd, struct elf_link_hash_entry *h,
+                asection *sec, bfd_vma addend)
 {
   struct plt_entry *ent;
 
@@ -2916,8 +2915,8 @@ update_plt_info (bfd *abfd, struct elf_link_hash_entry *h,
       break;
   if (ent == NULL)
     {
-      bfd_size_type amt = sizeof (*ent);
-      ent = bfd_alloc (abfd, amt);
+      bfd_size_type amt = sizeof(*ent);
+      ent = (struct plt_entry *)bfd_alloc(abfd, amt);
       if (ent == NULL)
 	return FALSE;
       ent->next = h->plt.plist;
@@ -4242,12 +4241,11 @@ allocate_got (struct ppc_elf_link_hash_table *htab, unsigned int need)
   return where;
 }
 
-/* Allocate space in associated reloc sections for dynamic relocs.  */
-
+/* Allocate space in associated reloc sections for dynamic relocs: */
 static bfd_boolean
-allocate_dynrelocs (struct elf_link_hash_entry *h, void *inf)
+allocate_dynrelocs(struct elf_link_hash_entry *h, void *inf)
 {
-  struct bfd_link_info *info = inf;
+  struct bfd_link_info *info = (struct bfd_link_info *)inf;
   struct ppc_elf_link_hash_entry *eh;
   struct ppc_elf_link_hash_table *htab;
   struct ppc_elf_dyn_relocs *p;
@@ -4900,10 +4898,8 @@ static const int stub_entry[] =
   };
 
 static bfd_boolean
-ppc_elf_relax_section (bfd *abfd,
-		       asection *isec,
-		       struct bfd_link_info *link_info,
-		       bfd_boolean *again)
+ppc_elf_relax_section(bfd *abfd, asection *isec,
+                      struct bfd_link_info *link_info, bfd_boolean *again)
 {
   struct one_fixup
   {
@@ -4933,25 +4929,25 @@ ppc_elf_relax_section (bfd *abfd,
       || isec->reloc_count == 0)
     return TRUE;
 
-  trampoff = (isec->size + 3) & (bfd_vma) -4;
-  /* Space for a branch around any trampolines.  */
+  trampoff = ((isec->size + 3) & (bfd_vma)(-4L));
+  /* Space for a branch around any trampolines: */
   trampoff += 4;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
 
-  /* Get a copy of the native relocations.  */
-  internal_relocs = _bfd_elf_link_read_relocs (abfd, isec, NULL, NULL,
-					       link_info->keep_memory);
+  /* Get a copy of the native relocations: */
+  internal_relocs = _bfd_elf_link_read_relocs(abfd, isec, NULL, NULL,
+					      link_info->keep_memory);
   if (internal_relocs == NULL)
     goto error_return;
 
-  htab = ppc_elf_hash_table (link_info);
-  got2 = bfd_get_section_by_name (abfd, ".got2");
+  htab = ppc_elf_hash_table(link_info);
+  got2 = bfd_get_section_by_name(abfd, ".got2");
 
-  irelend = internal_relocs + isec->reloc_count;
+  irelend = (internal_relocs + isec->reloc_count);
   for (irel = internal_relocs; irel < irelend; irel++)
     {
-      unsigned long r_type = ELF32_R_TYPE (irel->r_info);
+      unsigned long r_type = ELF32_R_TYPE(irel->r_info);
       bfd_vma symaddr, reladdr, toff, roff;
       asection *tsec;
       struct one_fixup *f;
@@ -5089,28 +5085,28 @@ ppc_elf_relax_section (bfd *abfd,
 	  if (sym_type == STT_SECTION)
 	    toff += irel->r_addend;
 
-	  toff = _bfd_merged_section_offset (abfd, &tsec,
-					     elf_section_data (tsec)->sec_info,
-					     toff);
+	  toff = _bfd_merged_section_offset(abfd, &tsec,
+					    elf_section_data(tsec)->sec_info,
+					    toff);
 
 	  if (sym_type != STT_SECTION)
 	    toff += irel->r_addend;
 	}
-      /* PLTREL24 addends are special.  */
+      /* PLTREL24 addends are special: */
       else if (r_type != R_PPC_PLTREL24)
 	toff += irel->r_addend;
 
-      symaddr = tsec->output_section->vma + tsec->output_offset + toff;
+      symaddr = (tsec->output_section->vma + tsec->output_offset + toff);
 
       roff = irel->r_offset;
-      reladdr = isec->output_section->vma + isec->output_offset + roff;
+      reladdr = (isec->output_section->vma + isec->output_offset + roff);
 
-      /* If the branch is in range, no need to do anything.  */
+      /* If the branch is in range, no need to do anything: */
       if (symaddr - reladdr + max_branch_offset < 2 * max_branch_offset)
 	continue;
 
-      /* Look for an existing fixup to this address.  */
-      for (f = fixups; f ; f = f->next)
+      /* Look for an existing fixup to this address: */
+      for (f = fixups; f; f = f->next)
 	if (f->tsec == tsec && f->toff == toff)
 	  break;
 
@@ -5119,7 +5115,7 @@ ppc_elf_relax_section (bfd *abfd,
 	  size_t size;
 	  unsigned long stub_rtype;
 
-	  val = trampoff - roff;
+	  val = (trampoff - roff);
 	  if (val >= max_branch_offset)
 	    /* Oh dear, we can't reach a trampoline.  Don't try to add
 	       one.  We'll report an error later.  */
@@ -5127,32 +5123,32 @@ ppc_elf_relax_section (bfd *abfd,
 
 	  if (link_info->shared)
 	    {
-	      size = 4 * ARRAY_SIZE (shared_stub_entry);
+	      size = (4 * ARRAY_SIZE(shared_stub_entry));
 	      insn_offset = 12;
 	      stub_rtype = R_PPC_RELAX32PC;
 	    }
 	  else
 	    {
-	      size = 4 * ARRAY_SIZE (stub_entry);
+	      size = (4 * ARRAY_SIZE(stub_entry));
 	      insn_offset = 0;
 	      stub_rtype = R_PPC_RELAX32;
 	    }
 
 	  if (R_PPC_RELAX32_PLT - R_PPC_RELAX32
 	      != R_PPC_RELAX32PC_PLT - R_PPC_RELAX32PC)
-	    abort ();
+	    abort();
 	  if (tsec == htab->plt
 	      || tsec == htab->glink)
-	    stub_rtype += R_PPC_RELAX32_PLT - R_PPC_RELAX32;
+	    stub_rtype += (R_PPC_RELAX32_PLT - R_PPC_RELAX32);
 
 	  /* Hijack the old relocation.  Since we need two
 	     relocations for this use a "composite" reloc.  */
-	  irel->r_info = ELF32_R_INFO (ELF32_R_SYM (irel->r_info),
-				       stub_rtype);
-	  irel->r_offset = trampoff + insn_offset;
+	  irel->r_info = ELF32_R_INFO(ELF32_R_SYM(irel->r_info),
+				      stub_rtype);
+	  irel->r_offset = (trampoff + insn_offset);
 
-	  /* Record the fixup so we don't do it again this section.  */
-	  f = bfd_malloc (sizeof (*f));
+	  /* Record the fixup so we do NOT do it again this section: */
+	  f = (struct one_fixup *)bfd_malloc(sizeof(*f));
 	  f->next = fixups;
 	  f->tsec = tsec;
 	  f->toff = toff;
@@ -5163,12 +5159,12 @@ ppc_elf_relax_section (bfd *abfd,
 	}
       else
 	{
-	  val = f->trampoff - roff;
+	  val = (f->trampoff - roff);
 	  if (val >= max_branch_offset)
 	    continue;
 
-	  /* Nop out the reloc, since we're finalizing things here.  */
-	  irel->r_info = ELF32_R_INFO (0, R_PPC_NONE);
+	  /* Nop out the reloc, since we are finalizing things here: */
+	  irel->r_info = ELF32_R_INFO(0, R_PPC_NONE);
 	}
 
       /* Get the section contents.  */
@@ -5490,7 +5486,7 @@ ppc_elf_relocate_section (bfd *output_bfd,
       reloc_howto_type *howto;
       unsigned long r_symndx;
       bfd_vma relocation;
-      bfd_vma branch_bit, insn, from;
+      bfd_vma branch_bit, insn0, from;
       bfd_boolean unresolved_reloc;
       bfd_boolean warned;
       unsigned int tls_type, tls_mask, tls_gd;
@@ -5559,11 +5555,12 @@ ppc_elf_relocate_section (bfd *output_bfd,
 	  if ((tls_mask != 0)
 	      && ((tls_mask & TLS_TPREL) == 0))
 	    {
-	      bfd_vma insn;
-	      insn = bfd_get_32(output_bfd, contents + rel->r_offset - 2);
-	      insn &= (31 << 21);
-	      insn |= 0x3c020000;	/* addis 0,2,0 */
-	      bfd_put_32(output_bfd, insn, contents + rel->r_offset - 2);
+	      bfd_vma insn1;
+	      insn1 = bfd_get_32(output_bfd,
+                                 (contents + rel->r_offset - 2));
+	      insn1 &= (31 << 21);
+	      insn1 |= 0x3c020000;	/* addis 0,2,0 */
+	      bfd_put_32(output_bfd, insn1, (contents + rel->r_offset - 2));
 	      r_type = R_PPC_TPREL16_HA;
 	      rel->r_info = ELF32_R_INFO(r_symndx, r_type);
 	    }
@@ -5573,40 +5570,40 @@ ppc_elf_relocate_section (bfd *output_bfd,
 	  if (tls_mask != 0
 	      && (tls_mask & TLS_TPREL) == 0)
 	    {
-	      bfd_vma insn, rtra;
-	      insn = bfd_get_32 (output_bfd, contents + rel->r_offset);
-	      if ((insn & ((31 << 26) | (31 << 11)))
+	      bfd_vma insn2, rtra;
+	      insn2 = bfd_get_32(output_bfd, (contents + rel->r_offset));
+	      if ((insn2 & ((31 << 26) | (31 << 11)))
 		  == ((31 << 26) | (2 << 11)))
-		rtra = insn & ((1 << 26) - (1 << 16));
-	      else if ((insn & ((31 << 26) | (31 << 16)))
+		rtra = insn2 & ((1 << 26) - (1 << 16));
+	      else if ((insn2 & ((31 << 26) | (31 << 16)))
 		       == ((31 << 26) | (2 << 16)))
-		rtra = (insn & (31 << 21)) | ((insn & (31 << 11)) << 5);
+		rtra = (insn2 & (31 << 21)) | ((insn2 & (31 << 11)) << 5);
 	      else
-		abort ();
-	      if ((insn & ((1 << 11) - (1 << 1))) == 266 << 1)
+		abort();
+	      if ((insn2 & ((1 << 11) - (1 << 1))) == 266 << 1)
 		/* add -> addi.  */
-		insn = 14 << 26;
-	      else if ((insn & (31 << 1)) == 23 << 1
-		       && ((insn & (31 << 6)) < 14 << 6
-			   || ((insn & (31 << 6)) >= 16 << 6
-			       && (insn & (31 << 6)) < 24 << 6)))
+		insn2 = 14 << 26;
+	      else if ((insn2 & (31 << 1)) == 23 << 1
+		       && ((insn2 & (31 << 6)) < 14 << 6
+			   || ((insn2 & (31 << 6)) >= 16 << 6
+			       && (insn2 & (31 << 6)) < 24 << 6)))
 		/* load and store indexed -> dform.  */
-		insn = (32 | ((insn >> 6) & 31)) << 26;
-	      else if ((insn & (31 << 1)) == 21 << 1
-		       && (insn & (0x1a << 6)) == 0)
+		insn2 = (32 | ((insn2 >> 6) & 31)) << 26;
+	      else if ((insn2 & (31 << 1)) == 21 << 1
+		       && (insn2 & (0x1a << 6)) == 0)
 		/* ldx, ldux, stdx, stdux -> ld, ldu, std, stdu.  */
-		insn = (((58 | ((insn >> 6) & 4)) << 26)
-			| ((insn >> 6) & 1));
-	      else if ((insn & (31 << 1)) == 21 << 1
-		       && (insn & ((1 << 11) - (1 << 1))) == 341 << 1)
+		insn2 = (((58 | ((insn2 >> 6) & 4)) << 26)
+			| ((insn2 >> 6) & 1));
+	      else if ((insn2 & (31 << 1)) == 21 << 1
+		       && (insn2 & ((1 << 11) - (1 << 1))) == 341 << 1)
 		/* lwax -> lwa.  */
-		insn = (58 << 26) | 2;
+		insn2 = (58 << 26) | 2;
 	      else
-		abort ();
-	      insn |= rtra;
-	      bfd_put_32 (output_bfd, insn, contents + rel->r_offset);
+		abort();
+	      insn2 |= rtra;
+	      bfd_put_32(output_bfd, insn2, (contents + rel->r_offset));
 	      r_type = R_PPC_TPREL16_LO;
-	      rel->r_info = ELF32_R_INFO (r_symndx, r_type);
+	      rel->r_info = ELF32_R_INFO(r_symndx, r_type);
 	      /* Was PPC_TLS which sits on insn boundary, now
 		 PPC_TPREL16_LO which is at insn+2.  */
 	      rel->r_offset += 2;
@@ -5740,19 +5737,19 @@ ppc_elf_relocate_section (bfd *output_bfd,
 	  /* Branch not taken prediction relocations.  */
 	case R_PPC_ADDR14_BRNTAKEN:
 	case R_PPC_REL14_BRNTAKEN:
-	  insn = bfd_get_32 (output_bfd, contents + rel->r_offset);
-	  insn &= ~BRANCH_PREDICT_BIT;
-	  insn |= branch_bit;
+	  insn0 = bfd_get_32(output_bfd, (contents + rel->r_offset));
+	  insn0 &= ~BRANCH_PREDICT_BIT;
+	  insn0 |= branch_bit;
 
 	  from = (rel->r_offset
 		  + input_section->output_offset
 		  + input_section->output_section->vma);
 
 	  /* Invert 'y' bit if not the default.  */
-	  if ((bfd_signed_vma) (relocation + rel->r_addend - from) < 0)
-	    insn ^= BRANCH_PREDICT_BIT;
+	  if ((bfd_signed_vma)(relocation + rel->r_addend - from) < 0L)
+	    insn0 ^= BRANCH_PREDICT_BIT;
 
-	  bfd_put_32 (output_bfd, insn, contents + rel->r_offset);
+	  bfd_put_32(output_bfd, insn0, (contents + rel->r_offset));
 	  break;
 	}
 
@@ -6133,11 +6130,11 @@ ppc_elf_relocate_section (bfd *output_bfd,
 	      int skip;
 
 #ifdef DEBUG
-	      fprintf (stderr, "ppc_elf_relocate_section needs to "
-		       "create relocation for %s\n",
-		       (h && h->root.root.string
-			? h->root.root.string : "<unknown>"));
-#endif
+	      fprintf(stderr, "ppc_elf_relocate_section needs to "
+		      "create relocation for %s\n",
+		      (h && h->root.root.string
+                       ? h->root.root.string : "<unknown>"));
+#endif /* DEBUG */
 
 	      /* When generating a shared object, these relocations
 		 are copied into the output file to be resolved at run
@@ -6208,23 +6205,23 @@ ppc_elf_relocate_section (bfd *output_bfd,
 			     osec->vma, from the emitted reloc addend,
 			     but ld.so expects buggy relocs.  */
 			  osec = sec->output_section;
-			  indx = elf_section_data (osec)->dynindx;
-			  BFD_ASSERT (indx > 0);
+			  indx = elf_section_data(osec)->dynindx;
+			  BFD_ASSERT(indx > 0);
 #ifdef DEBUG
 			  if (indx <= 0)
-			    printf ("indx=%d section=%s flags=%08x name=%s\n",
-				    indx, osec->name, osec->flags,
+			    printf("indx=%ld section=%s flags=%08x name=%s\n",
+				   indx, osec->name, osec->flags,
 				    h->root.root.string);
-#endif
+#endif /* DEBUG */
 			}
 
-		      outrel.r_info = ELF32_R_INFO (indx, r_type);
+		      outrel.r_info = ELF32_R_INFO(indx, r_type);
 		    }
 		}
 
 	      loc = sreloc->contents;
-	      loc += sreloc->reloc_count++ * sizeof (Elf32_External_Rela);
-	      bfd_elf32_swap_reloca_out (output_bfd, &outrel, loc);
+	      loc += (sreloc->reloc_count++ * sizeof(Elf32_External_Rela));
+	      bfd_elf32_swap_reloca_out(output_bfd, &outrel, loc);
 
 	      if (skip == -1)
 		continue;
@@ -6449,21 +6446,19 @@ ppc_elf_relocate_section (bfd *output_bfd,
 		(*_bfd_error_handler)
 		  (_("%B: the target (%s) of a %s relocation is "
 		     "in the wrong output section (%s)"),
-		   input_bfd,
-		   sym_name,
-		   howto->name,
-		   name);
+		   input_bfd, sym_name, howto->name, name);
 
-		bfd_set_error (bfd_error_bad_value);
+		bfd_set_error(bfd_error_bad_value);
 		ret = FALSE;
 		continue;
 	      }
 
 	    if (r_type == R_PPC_EMB_SDA21)
 	      {			/* fill in register field */
-		insn = bfd_get_32 (output_bfd, contents + rel->r_offset);
-		insn = (insn & ~RA_REGISTER_MASK) | (reg << RA_REGISTER_SHIFT);
-		bfd_put_32 (output_bfd, insn, contents + rel->r_offset);
+		insn0 = bfd_get_32(output_bfd, (contents + rel->r_offset));
+		insn0 = ((insn0 & ~RA_REGISTER_MASK)
+                         | (reg << RA_REGISTER_SHIFT));
+		bfd_put_32(output_bfd, insn0, (contents + rel->r_offset));
 	      }
 	  }
 	  break;

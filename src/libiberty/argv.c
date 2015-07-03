@@ -15,7 +15,7 @@ Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
 License along with libiberty; see the file COPYING.LIB.  If
-not, write to the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+not, write to the Free Software Foundation, Inc., 51 Franklin St., 5th Floor,
 Boston, MA 02110-1301, USA.  */
 
 
@@ -76,7 +76,7 @@ dupargv(char **argv)
 
   /* the vector */
   for (argc = 0; argv[argc] != NULL; argc++);
-  copy = (char **)malloc((argc + 1) * sizeof(char *));
+  copy = (char **)malloc(((size_t)argc + 1UL) * sizeof(char *));
   if (copy == NULL)
     return NULL;
 
@@ -199,13 +199,12 @@ char **buildargv(const char *input)
 
   if (input != NULL)
     {
-      copybuf = (char *)alloca(strlen(input) + 1);
+      copybuf = (char *)alloca(strlen(input) + 1UL);
       /* Is a do{}while to always execute the loop once.  Always return an
 	 argv, even for null strings.  See NOTES above, test case below. */
-      do
-	{
+      do {
 	  /* Pick off argv[argc] */
-	  while (ISBLANK (*input))
+	  while (ISBLANK(*input))
 	    {
 	      input++;
 	    }
@@ -215,12 +214,15 @@ char **buildargv(const char *input)
 	      if (argv == NULL)
 		{
 		  maxargc = INITIAL_MAXARGC;
-		  nargv = (char **)malloc(maxargc * sizeof(char *));
+		  nargv = (char **)malloc((size_t)maxargc
+                                          * sizeof(char *));
 		}
 	      else
 		{
 		  maxargc *= 2;
-		  nargv = (char **)realloc(argv, maxargc * sizeof(char *));
+		  nargv = (char **)realloc(argv,
+                                           ((size_t)maxargc
+                                            * sizeof(char *)));
 		}
 	      if (nargv == NULL)
 		{
@@ -308,8 +310,7 @@ char **buildargv(const char *input)
 	    {
 	      input++;
 	    }
-	}
-      while (*input != EOS);
+      } while (*input != EOS);
     }
   return (argv);
 }
@@ -327,7 +328,7 @@ if an error occurred while writing to FILE.
 */
 
 int
-writeargv (char **argv, FILE *f)
+writeargv(char **argv, FILE *f)
 {
   int status = 0;
 
@@ -401,7 +402,7 @@ expandargv(int *argcp, char ***argvp)
   int argv_dynamic = 0;
   /* Limit the number of response files that we parse in order
    * to prevent infinite recursion.  */
-  unsigned int iteration_limit = 2000;
+  unsigned int iteration_limit = 2000U;
   /* Loop over the arguments, handling response files.  We always skip
    * ARGVP[0], as that is the name of the program being run.  */
   while (++i < *argcp)
@@ -445,7 +446,7 @@ expandargv(int *argcp, char ***argvp)
         goto error;
       if (fseek(f, 0L, SEEK_SET) == -1)
         goto error;
-      buffer = (char *)xmalloc(pos * sizeof(char) + 1UL);
+      buffer = (char *)xmalloc(((size_t)pos * sizeof(char)) + 1UL);
       len = fread(buffer, sizeof(char), (size_t)pos, f);
       if ((len != (size_t)pos)
           /* On Windows, fread may return a value smaller than POS,
@@ -477,10 +478,11 @@ expandargv(int *argcp, char ***argvp)
          NULL terminator at the end of ARGV.  */
       *argvp = ((char **)
                 xrealloc(*argvp,
-                         (*argcp + file_argc + 1) * sizeof(char *)));
-      memmove(*argvp + i + file_argc, *argvp + i + 1,
-              (*argcp - i) * sizeof(char *));
-      memcpy(*argvp + i, file_argv, file_argc * sizeof(char *));
+                         (((size_t)(*argcp) + file_argc + 1UL)
+                          * sizeof(char *))));
+      memmove((*argvp + i + file_argc), (*argvp + i + 1),
+              ((size_t)(*argcp - i) * sizeof(char *)));
+      memcpy((*argvp + i), file_argv, (file_argc * sizeof(char *)));
       /* The original option has been replaced by all the new
          options.  */
       *argcp += (file_argc - 1);
@@ -546,9 +548,11 @@ main(void)
   char **argv;
   const char *const *test;
   char **targs;
+  int argc;
 
   for (test = tests; *test != NULL; test++)
     {
+      argc = 0;
       printf("buildargv(\"%s\")\n", *test);
       if ((argv = buildargv(*test)) == NULL)
 	{
@@ -558,9 +562,12 @@ main(void)
 	{
 	  for (targs = argv; *targs != NULL; targs++)
 	    {
-	      printf("\t\"%s\"\n", *targs);
+              argc++;
+	      printf("\targ %.2d: \"%s\"\n", argc, *targs);
 	    }
 	  printf("\n");
+          printf("(expanded into %d arg%s total)\n\n", argc,
+                 ((argc > 1) ? "s" : ""));
 	}
 # if defined(__STRICT_ANSI__) || defined(lint) || defined(__clang__) || \
      defined(DEBUG) || defined(TEST) || defined(MAIN)

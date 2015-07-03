@@ -34,7 +34,7 @@
 #include "elf-bfd.h"
 #include "elf/i370.h"
 
-static reloc_howto_type *i370_elf_howto_table[ (int)R_I370_max ];
+static reloc_howto_type *i370_elf_howto_table[(int)R_I370_max];
 
 static reloc_howto_type i370_elf_howto_raw[] =
 {
@@ -264,27 +264,26 @@ i370_elf_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
     case BFD_RELOC_I370_D12:	i370_reloc = R_I370_ADDR12;	break;
     }
 
-  return i370_elf_howto_table[ (int)i370_reloc ];
-};
+  return i370_elf_howto_table[(int)i370_reloc];
+}
 
 /* The name of the dynamic interpreter.  This is put in the .interp
     section.  */
 
 #define ELF_DYNAMIC_INTERPRETER "/lib/ld.so"
 
-/* Set the howto pointer for an i370 ELF reloc.  */
-
+/* Set the howto pointer for an i370 ELF reloc: */
 static void
-i370_elf_info_to_howto (bfd *abfd ATTRIBUTE_UNUSED,
-			arelent *cache_ptr,
-			Elf_Internal_Rela *dst)
+i370_elf_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED,
+                       arelent *cache_ptr,
+                       Elf_Internal_Rela *dst)
 {
-  if (!i370_elf_howto_table[ R_I370_ADDR31 ])
-    /* Initialize howto table.  */
-    i370_elf_howto_init ();
+  if (!i370_elf_howto_table[R_I370_ADDR31])
+    /* Initialize howto table: */
+    i370_elf_howto_init();
 
-  BFD_ASSERT (ELF32_R_TYPE (dst->r_info) < (unsigned int) R_I370_max);
-  cache_ptr->howto = i370_elf_howto_table[ELF32_R_TYPE (dst->r_info)];
+  BFD_ASSERT(ELF32_R_TYPE(dst->r_info) < (unsigned int)R_I370_max);
+  cache_ptr->howto = i370_elf_howto_table[ELF32_R_TYPE(dst->r_info)];
 }
 
 /* Hack alert --  the following several routines look generic to me ...
@@ -554,18 +553,18 @@ i370_elf_adjust_dynamic_symbol (struct bfd_link_info *info,
    just enough to allow glibc-2.1 ld.so to compile & link.  */
 
 static bfd_boolean
-i370_elf_adjust_dynindx (struct elf_link_hash_entry *h, void * cparg)
+i370_elf_adjust_dynindx(struct elf_link_hash_entry *h, void *cparg)
 {
-  int *cp = (int *) cparg;
+  int *cp = (int *)cparg;
 
 #ifdef DEBUG
-  fprintf (stderr,
-	   "i370_elf_adjust_dynindx called, h->dynindx = %d, *cp = %d\n",
-	   h->dynindx, *cp);
-#endif
+  fprintf(stderr,
+	  "i370_elf_adjust_dynindx called, h->dynindx = %d, *cp = %d\n",
+	  (int)h->dynindx, *cp);
+#endif /* DEBUG */
 
   if (h->root.type == bfd_link_hash_warning)
-    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 
   if (h->dynindx != -1)
     h->dynindx += *cp;
@@ -1074,51 +1073,51 @@ i370_elf_relocate_section (bfd *output_bfd,
     return TRUE;
 
 #ifdef DEBUG
-  _bfd_error_handler ("i370_elf_relocate_section called for %B section %A, %ld relocations%s",
-		      input_bfd, input_section,
-		      (long) input_section->reloc_count,
-		      (info->relocatable) ? " (relocatable)" : "");
-#endif
+  _bfd_error_handler("i370_elf_relocate_section called for %B section %A, %ld relocations%s",
+		     input_bfd, input_section,
+		     (long)input_section->reloc_count,
+		     ((info->relocatable) ? " (relocatable)" : ""));
+#endif /* DEBUG */
 
-  if (!i370_elf_howto_table[ R_I370_ADDR31 ])
-    /* Initialize howto table if needed.  */
-    i370_elf_howto_init ();
+  if (!i370_elf_howto_table[R_I370_ADDR31])
+    /* Initialize howto table if needed: */
+    i370_elf_howto_init();
 
-  local_got_offsets = elf_local_got_offsets (input_bfd);
+  local_got_offsets = elf_local_got_offsets(input_bfd);
 
   for (; rel < relend; rel++)
     {
-      enum i370_reloc_type r_type    = (enum i370_reloc_type) ELF32_R_TYPE (rel->r_info);
-      bfd_vma offset		     = rel->r_offset;
-      bfd_vma addend		     = rel->r_addend;
-      bfd_reloc_status_type r	     = bfd_reloc_other;
-      Elf_Internal_Sym *sym	     = NULL;
-      asection *sec		     = NULL;
-      struct elf_link_hash_entry * h = NULL;
-      const char *sym_name	     = NULL;
+      enum i370_reloc_type r_type = ((enum i370_reloc_type)
+                                     ELF32_R_TYPE(rel->r_info));
+      bfd_vma offset = rel->r_offset;
+      bfd_vma addend = rel->r_addend;
+      bfd_reloc_status_type r = bfd_reloc_other;
+      Elf_Internal_Sym *sym = NULL;
+      asection *sec = NULL;
+      struct elf_link_hash_entry *h = NULL;
+      const char *sym_name = NULL;
       reloc_howto_type *howto;
       unsigned long r_symndx;
       bfd_vma relocation;
 
-      /* Unknown relocation handling.  */
-      if ((unsigned) r_type >= (unsigned) R_I370_max
+      /* Unknown relocation handling: */
+      if (((unsigned int)r_type >= (unsigned int)R_I370_max)
 	  || !i370_elf_howto_table[(int)r_type])
 	{
-	  (*_bfd_error_handler) ("%B: unknown relocation type %d",
-				 input_bfd,
-				 (int) r_type);
+	  (*_bfd_error_handler)("%B: unknown relocation type %d",
+                                input_bfd, (int)r_type);
 
-	  bfd_set_error (bfd_error_bad_value);
+	  bfd_set_error(bfd_error_bad_value);
 	  ret = FALSE;
 	  continue;
 	}
 
-      howto = i370_elf_howto_table[(int) r_type];
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      howto = i370_elf_howto_table[(int)r_type];
+      r_symndx = ELF32_R_SYM(rel->r_info);
 
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
+	  sym = (local_syms + r_symndx);
 	  sec = local_sections[r_symndx];
 	  sym_name = "<local symbol>";
 
@@ -1284,20 +1283,20 @@ i370_elf_relocate_section (bfd *output_bfd,
 			  asection *osec;
 
 			  osec = sec->output_section;
-			  indx = elf_section_data (osec)->dynindx;
+			  indx = elf_section_data(osec)->dynindx;
 			  BFD_ASSERT(indx > 0);
 #ifdef DEBUG
 			  if (indx <= 0)
 			    {
-			      printf ("indx=%d section=%s flags=%08x name=%s\n",
-				      indx, osec->name, osec->flags,
-				      h->root.root.string);
+			      printf("indx=%d section=%s flags=%08x name=%s\n",
+				     (int)indx, osec->name, osec->flags,
+				     h->root.root.string);
 			    }
-#endif
+#endif /* DEBUG */
 			}
 
-		      outrel.r_info = ELF32_R_INFO (indx, r_type);
-		      outrel.r_addend = relocation + rel->r_addend;
+		      outrel.r_info = ELF32_R_INFO(indx, r_type);
+		      outrel.r_addend = (relocation + rel->r_addend);
 		    }
 		}
 

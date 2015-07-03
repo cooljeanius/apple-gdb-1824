@@ -25,7 +25,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
+   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
 /* This file implements a few interface functions which are provided
@@ -126,22 +126,21 @@ cplus_demangle_fill_component (struct demangle_component *p,
   return 1;
 }
 
-/* Fill in a DEMANGLE_COMPONENT_BUILTIN_TYPE.  */
-
+/* Fill in a DEMANGLE_COMPONENT_BUILTIN_TYPE: */
 int
-cplus_demangle_fill_builtin_type (struct demangle_component *p,
-                                  const char *type_name)
+cplus_demangle_fill_builtin_type(struct demangle_component *p,
+                                 const char *type_name)
 {
-  int len;
+  size_t len;
   unsigned int i;
 
   if (p == NULL || type_name == NULL)
     return 0;
-  len = strlen (type_name);
+  len = strlen(type_name);
   for (i = 0; i < D_BUILTIN_TYPE_COUNT; ++i)
     {
-      if (len == cplus_demangle_builtin_types[i].len
-	  && strcmp (type_name, cplus_demangle_builtin_types[i].name) == 0)
+      if (((const int)len == cplus_demangle_builtin_types[i].len)
+	  && strcmp(type_name, cplus_demangle_builtin_types[i].name) == 0)
 	{
 	  p->type = DEMANGLE_COMPONENT_BUILTIN_TYPE;
 	  p->u.s_builtin.type = &cplus_demangle_builtin_types[i];
@@ -151,23 +150,22 @@ cplus_demangle_fill_builtin_type (struct demangle_component *p,
   return 0;
 }
 
-/* Fill in a DEMANGLE_COMPONENT_OPERATOR.  */
-
+/* Fill in a DEMANGLE_COMPONENT_OPERATOR: */
 int
-cplus_demangle_fill_operator (struct demangle_component *p,
-                              const char *opname, int args)
+cplus_demangle_fill_operator(struct demangle_component *p,
+                             const char *opname, int args)
 {
-  int len;
+  size_t len;
   unsigned int i;
 
   if (p == NULL || opname == NULL)
     return 0;
-  len = strlen (opname);
+  len = strlen(opname);
   for (i = 0; cplus_demangle_operators[i].name != NULL; ++i)
     {
-      if (len == cplus_demangle_operators[i].len
+      if (((const int)len == cplus_demangle_operators[i].len)
 	  && args == cplus_demangle_operators[i].args
-	  && strcmp (opname, cplus_demangle_operators[i].name) == 0)
+	  && strcmp(opname, cplus_demangle_operators[i].name) == 0)
 	{
 	  p->type = DEMANGLE_COMPONENT_OPERATOR;
 	  p->u.s_operator.op = &cplus_demangle_operators[i];
@@ -198,37 +196,39 @@ cplus_demangle_v3_components (const char *mangled, int options, void **mem)
       type = 1;
     }
 
-  cplus_demangle_init_info (mangled, options, len, &di);
+  cplus_demangle_init_info(mangled, options, len, &di);
 
   di.comps = ((struct demangle_component *)
-	      malloc (di.num_comps * sizeof (struct demangle_component)));
+	      malloc((size_t)di.num_comps
+                     * sizeof(struct demangle_component)));
   di.subs = ((struct demangle_component **)
-	     malloc (di.num_subs * sizeof (struct demangle_component *)));
+	     malloc((size_t)di.num_subs
+                    * sizeof(struct demangle_component *)));
   if (di.comps == NULL || di.subs == NULL)
     {
       if (di.comps != NULL)
-	free (di.comps);
+	free(di.comps);
       if (di.subs != NULL)
-	free (di.subs);
+	free(di.subs);
       return NULL;
     }
 
   if (! type)
-    dc = cplus_demangle_mangled_name (&di, 1);
+    dc = cplus_demangle_mangled_name(&di, 1);
   else
-    dc = cplus_demangle_type (&di);
+    dc = cplus_demangle_type(&di);
 
   /* If DMGL_PARAMS is set, then if we didn't consume the entire
      mangled string, then we didn't successfully demangle it.  */
-  if ((options & DMGL_PARAMS) != 0 && d_peek_char (&di) != '\0')
+  if (((options & DMGL_PARAMS) != 0) && (d_peek_char(&di) != '\0'))
     dc = NULL;
 
-  free (di.subs);
+  free(di.subs);
 
   if (dc != NULL)
     *mem = di.comps;
   else
-    free (di.comps);
+    free(di.comps);
 
   return dc;
 }

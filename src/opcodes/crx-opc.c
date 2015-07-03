@@ -586,16 +586,16 @@ const inst crx_instruction[] =
 
 const int crx_num_opcodes = ARRAY_SIZE(crx_instruction);
 
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && 0
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6)) && 0
  #  pragma GCC diagnostic push
  #  pragma GCC diagnostic warning "-Wtraditional"
-# endif /* gcc 4.6+ */
+# endif /* gcc 4.6+ && 0 */
 #else
 # if defined(__clang__)
  #  pragma GCC diagnostic ignored "-Wenum-conversion"
 # endif /* __clang__ */
-#endif /* GCC */
+#endif /* GCC && 0 */
 
 /* Macro to build a reg_entry, which have an opcode image :
    For example :
@@ -665,11 +665,11 @@ const reg_entry crx_copregtab[] =
 const int crx_num_copregs = ARRAY_SIZE(crx_copregtab);
 
 /* keep condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && 0
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6)) && 0
  #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* GCC */
+# endif /* gcc 4.6+ && 0 */
+#endif /* GCC && 0 */
 
 /* in case the popping failed: */
 #if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)

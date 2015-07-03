@@ -25,7 +25,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA
 */
 
 #ifdef HAVE_CONFIG_H
@@ -146,11 +146,11 @@ hook_char_replace(char *string, size_t len, char replacethis, char withthis)
      should be handled with care. */
 
 void
-run_replaces(char * string)
+run_replaces(char *string)
 {
   /* Store original string size */
   size_t len = strlen(string);
-  hook_char_replace(string, len, '\b', '\0');
+  hook_char_replace(string, len, (char)'\b', (char)'\0');
 }
 
 /* write_test:
@@ -207,41 +207,44 @@ int
 run_tests(const char **test_data_buf)
 {
   int argc_after, argc_before;
-  char ** argv_before, ** argv_after;
+  char **argv_before, **argv_after;
   int i, j, k, fails, failed;
 
   i = j = fails = 0;
-  /* Loop over all the tests */
+  /* Loop over all the tests: */
   while (test_data_buf[j])
     {
-      /* Write test data */
+      /* Write test data: */
       writeout_test(i, test_data_buf[j++]);
-      /* Copy argv before */
+      /* Copy argv before: */
       argv_before = dupargv((char **)&test_data_buf[j]);
 
-      /* Count argc before/after */
+      /* Count argc before/after: */
       argc_before = 0;
       argc_after = 0;
       while (test_data_buf[j + argc_before])
         argc_before++;
-      j += argc_before + 1; /* Skip null */
+      if (test_data_buf[j + argc_before] == '\0')
+        j += (argc_before + 1); /* Skip null terminator */
+      else
+        j += argc_before;
       while (test_data_buf[j + argc_after])
         argc_after++;
 
-      /* Copy argv after */
+      /* Copy argv after: */
       argv_after = dupargv((char **)&test_data_buf[j]);
 
-      /* Run all possible replaces */
+      /* Run all possible replaces: */
       for (k = 0; k < argc_before; k++)
         run_replaces(argv_before[k]);
       for (k = 0; k < argc_after; k++)
         run_replaces(argv_after[k]);
 
-      /* Run test: Expand arguments */
+      /* Run test: Expand arguments: */
       expandargv(&argc_before, &argv_before);
 
       failed = 0;
-      /* Compare size first */
+      /* Compare size first: */
       if (argc_before != argc_after)
         {
           printf("FAIL: test-expandargv-%d. Number of arguments don't match (%d vs. %d).\n",
@@ -264,8 +267,8 @@ run_tests(const char **test_data_buf)
 
       freeargv(argv_before);
       freeargv(argv_after);
-      /* Advance to next test */
-      j += argc_after + 1;
+      /* Advance to next test: */
+      j += (argc_after + 1);
       /* Erase test file */
       erase_test(i);
       i++;

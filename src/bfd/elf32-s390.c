@@ -3513,7 +3513,7 @@ elf_s390_plt_sym_val (bfd_vma i, const asection *plt,
 #endif /* !elf_backend_reloc_type_class */
 #define elf_backend_relocate_section	      elf_s390_relocate_section
 #define elf_backend_size_dynamic_sections     elf_s390_size_dynamic_sections
-#define elf_backend_reloc_type_class	      elf_s390_reloc_type_class
+/* elf_backend_reloc_type_class is already defined a few lines above */
 #define elf_backend_grok_prstatus	      elf_s390_grok_prstatus
 #define elf_backend_plt_sym_val		      elf_s390_plt_sym_val
 

@@ -60,12 +60,13 @@ not be allocated, minus one is returned and @code{NULL} is stored in
 
 */
 
-static int int_vasprintf (char **, const char *, va_list);
+static int int_vasprintf(char **, const char *, va_list)
+  ATTRIBUTE_PRINTF(2,0);
 
 static int
-int_vasprintf (char **result, const char *format, va_list args)
+int_vasprintf(char **result, const char *format, va_list args)
 {
-  int total_width = libiberty_vprintf_buffer_size (format, args);
+  size_t total_width = libiberty_vprintf_buffer_size(format, args);
 #ifdef TEST
   global_total_width = total_width;
 #endif /* TEST */
@@ -76,49 +77,51 @@ int_vasprintf (char **result, const char *format, va_list args)
     return -1;
 }
 
-int
-vasprintf (char **result, const char *format,
+int ATTRIBUTE_PRINTF(2,0)
+vasprintf(char **result, const char *format,
 #if defined(_BSD_VA_LIST_) && defined(__FreeBSD__)
-           _BSD_VA_LIST_ args)
+          _BSD_VA_LIST_ args)
 #else
-           va_list args)
+          va_list args)
 #endif /* _BSD_VA_LIST_ && __FreeBSD__ */
 {
-  return int_vasprintf (result, format, args);
+  return int_vasprintf(result, format, args);
 }
 
 #ifdef TEST
 static void ATTRIBUTE_PRINTF_1
-checkit (const char *format, ...)
+checkit(const char *format, ...)
 {
   char *result;
-  VA_OPEN (args, format);
-  VA_FIXEDARG (args, const char *, format);
-  vasprintf (&result, format, args);
-  VA_CLOSE (args);
+  VA_OPEN(args, format);
+  VA_FIXEDARG(args, const char *, format);
+  vasprintf(&result, format, args);
+  VA_CLOSE(args);
 
-  if (strlen (result) < (size_t) global_total_width)
-    printf ("PASS: ");
+  if (strlen(result) < (size_t)global_total_width)
+    printf("PASS: ");
   else
-    printf ("FAIL: ");
-  printf ("%d %s\n", global_total_width, result);
+    printf("FAIL: ");
+  printf("%d %s\n", global_total_width, result);
 
-  free (result);
+  free(result);
 }
 
-extern int main (void);
+extern int main(void);
 
 int
-main (void)
+main(void)
 {
-  checkit ("%d", 0x12345678);
-  checkit ("%200d", 5);
-  checkit ("%.300d", 6);
-  checkit ("%100.150d", 7);
-  checkit ("%s", "jjjjjjjjjiiiiiiiiiiiiiiioooooooooooooooooppppppppppppaa\n\
+  checkit("%d", 0x12345678);
+  checkit("%200d", 5);
+  checkit("%.300d", 6);
+  checkit("%100.150d", 7);
+  checkit("%s", "jjjjjjjjjiiiiiiiiiiiiiiioooooooooooooooooppppppppppppaa\n\
 777777777777777777333333333333366666666666622222222222777777777777733333");
-  checkit ("%f%s%d%s", 1.0, "foo", 77, "asdjffffffffffffffiiiiiiiiiiixxxxx");
+  checkit("%f%s%d%s", 1.0, "foo", 77, "asdjffffffffffffffiiiiiiiiiiixxxxx");
 
   return 0;
 }
 #endif /* TEST */
+
+/* EOF */

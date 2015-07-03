@@ -1134,11 +1134,12 @@ bfd_sym_fetch_contained_types_table_entry(bfd *abfd,
   unsigned long offset;
   unsigned long entry_size = 0UL;
 #if defined(__GNUC__) && defined(__GNUC_MINOR__) && \
-    !defined(__STRICT_ANSI__) && !defined(__clang__)
-  unsigned char buf[0];
+    !defined(__STRICT_ANSI__) && !defined(__clang__) && \
+    defined(__extension__)
+  unsigned char __extension__ buf[0];
 #else
   unsigned char buf[1];
-#endif /* __GNUC__ && __GNUC_MINOR__ && !__STRICT_ANSI__ && !__clang__ */
+#endif /* __GNUC__ && __GNUC_MINOR__ && !__STRICT_ANSI__ && !__clang__ && __extension__ */
   bfd_sym_data_struct *sdata = NULL;
 
   parser = NULL;
@@ -1215,11 +1216,12 @@ bfd_sym_fetch_file_references_index_table_entry(bfd *abfd,
   unsigned long offset;
   unsigned long entry_size = 0UL;
 #if defined(__GNUC__) && defined(__GNUC_MINOR__) && \
-    !defined(__STRICT_ANSI__) && !defined(__clang__)
-  unsigned char buf[0];
+    !defined(__STRICT_ANSI__) && !defined(__clang__) && \
+    defined(__extension__)
+  unsigned char __extension__ buf[0];
 #else
   unsigned char buf[1];
-#endif /* __GNUC__ && __GNUC_MINOR__ && !__STRICT_ANSI__ && !__clang__ */
+#endif /* __GNUC__ && __GNUC_MINOR__ && !__STRICT_ANSI__ && !__clang__ && __extension__ */
   bfd_sym_data_struct *sdata = (bfd_sym_data_struct *)NULL;
 
   parser = NULL;
@@ -1275,11 +1277,12 @@ bfd_sym_fetch_constant_pool_entry(bfd *abfd,
   unsigned long offset;
   unsigned long entry_size = 0UL;
 #if defined(__GNUC__) && defined(__GNUC_MINOR__) && \
-    !defined(__STRICT_ANSI__) && !defined(__clang__)
-  unsigned char buf[0];
+    !defined(__STRICT_ANSI__) && !defined(__clang__) && \
+    defined(__extension__)
+  unsigned char __extension__ buf[0];
 #else
   unsigned char buf[1];
-#endif /* __GNUC__ && __GNUC_MINOR__ && !__STRICT_ANSI__ && !__clang__ */
+#endif /* __GNUC__ && __GNUC_MINOR__ && !__STRICT_ANSI__ && !__clang__ && __extension__ */
   bfd_sym_data_struct *sdata = NULL;
 
   parser = NULL;

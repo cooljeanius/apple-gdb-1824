@@ -684,7 +684,7 @@ _rl_dispatch_subseq (key, map, got_subseq)
     case ISMACR:
       if (map[key].function != 0)
 	{
-	  macro = savestring((char *)map[key].function);
+	  macro = savestring(__extension__ (char *)map[key].function);
 	  _rl_with_macro_input(macro);
 	  return 0;
 	}

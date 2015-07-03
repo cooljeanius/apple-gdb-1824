@@ -73,8 +73,8 @@ putenv(const char *string)
 
   if (name_end)
     {
-      char *name = (char *)alloca(name_end - string + 1);
-      memcpy(name, string, name_end - string);
+      char *name = (char *)alloca((size_t)(name_end - string) + 1UL);
+      memcpy(name, string, (size_t)(name_end - string));
       name[name_end - string] = '\0';
       return setenv(name, (name_end + 1), 1);
     }

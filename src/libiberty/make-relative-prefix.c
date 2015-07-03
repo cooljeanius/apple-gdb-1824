@@ -48,17 +48,21 @@ relative prefix can be found, return @code{NULL}.
 */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
 
 #include <string.h>
+
+#ifdef HAVE_ASSERT_H
+# include <assert.h>
+#endif /* HAVE_ASSERT_H */
 
 #include "ansidecl.h"
 #include "libiberty.h"
@@ -100,19 +104,18 @@ static char **split_directories	(const char *, int *);
 static void free_split_directories (char **);
 
 static char *
-save_string (const char *s, int len)
+save_string(const char *s, int len)
 {
-  char *result = (char *) malloc (len + 1);
+  char *result = (char *)malloc((size_t)len + 1UL);
 
-  memcpy (result, s, len);
+  memcpy(result, s, (size_t)len);
   result[len] = 0;
   return result;
 }
 
-/* Split a filename into component directories.  */
-
+/* Split a filename into component directories: */
 static char **
-split_directories (const char *name, int *ptr_num_dirs)
+split_directories(const char *name, int *ptr_num_dirs)
 {
   int num_dirs = 0;
   char **dirs;
@@ -132,15 +135,15 @@ split_directories (const char *name, int *ptr_num_dirs)
 
   while ((ch = *p++) != '\0')
     {
-      if (IS_DIR_SEPARATOR (ch))
+      if (IS_DIR_SEPARATOR(ch))
 	{
 	  num_dirs++;
-	  while (IS_DIR_SEPARATOR (*p))
+	  while (IS_DIR_SEPARATOR(*p))
 	    p++;
 	}
     }
 
-  dirs = (char **) malloc (sizeof (char *) * (num_dirs + 2));
+  dirs = (char **)malloc(sizeof(char *) * ((size_t)num_dirs + 2UL));
   if (dirs == NULL)
     return NULL;
 
@@ -163,29 +166,29 @@ split_directories (const char *name, int *ptr_num_dirs)
   q = p;
   while ((ch = *p++) != '\0')
     {
-      if (IS_DIR_SEPARATOR (ch))
+      if (IS_DIR_SEPARATOR(ch))
 	{
-	  while (IS_DIR_SEPARATOR (*p))
+	  while (IS_DIR_SEPARATOR(*p))
 	    p++;
 
-	  dirs[num_dirs++] = save_string (q, p - q);
+	  dirs[num_dirs++] = save_string(q, (int)(p - q));
 	  if (dirs[num_dirs - 1] == NULL)
 	    {
 	      dirs[num_dirs] = NULL;
-	      free_split_directories (dirs);
+	      free_split_directories(dirs);
 	      return NULL;
 	    }
 	  q = p;
 	}
     }
 
-  if (p - 1 - q > 0)
-    dirs[num_dirs++] = save_string (q, p - 1 - q);
+  if ((p - 1 - q) > 0)
+    dirs[num_dirs++] = save_string(q, (int)(p - 1 - q));
   dirs[num_dirs] = NULL;
 
   if (dirs[num_dirs - 1] == NULL)
     {
-      free_split_directories (dirs);
+      free_split_directories(dirs);
       return NULL;
     }
 
@@ -224,7 +227,7 @@ make_relative_prefix (const char *progname,
   char **prog_dirs, **bin_dirs, **prefix_dirs;
   int prog_num, bin_num, prefix_num;
   int i, n, common;
-  int needed_len;
+  size_t needed_len;
   char *ret, *ptr, *full_progname = NULL;
 
   if (progname == NULL || bin_prefix == NULL || prefix == NULL)
@@ -240,7 +243,7 @@ make_relative_prefix (const char *progname,
       if (temp)
 	{
 	  char *startp, *endp, *nstore;
-	  size_t prefixlen = strlen (temp) + 1;
+	  size_t prefixlen = (strlen(temp) + 1UL);
 	  if (prefixlen < 2)
 	    prefixlen = 2;
 
@@ -259,8 +262,8 @@ make_relative_prefix (const char *progname,
 		    }
 		  else
 		    {
-		      strncpy (nstore, startp, endp - startp);
-		      if (! IS_DIR_SEPARATOR (endp[-1]))
+		      strncpy(nstore, startp, (size_t)(endp - startp));
+		      if (! IS_DIR_SEPARATOR(endp[-1]))
 			{
 			  nstore[endp - startp] = DIR_SEPARATOR;
 			  nstore[endp - startp + 1] = 0;
@@ -272,7 +275,7 @@ make_relative_prefix (const char *progname,
 		  if (! access (nstore, X_OK)
 #ifdef HAVE_HOST_EXECUTABLE_SUFFIX
                       || ! access (strcat (nstore, HOST_EXECUTABLE_SUFFIX), X_OK)
-#endif
+#endif /* HAVE_HOST_EXECUTABLE_SUFFIX */
 		      )
 		    {
 		      progname = nstore;
@@ -316,9 +319,16 @@ make_relative_prefix (const char *progname,
 
       if (prog_num <= 0 || i == bin_num)
 	{
-	  free_split_directories (prog_dirs);
-	  free_split_directories (bin_dirs);
-	  prog_dirs = bin_dirs = (char **) 0;
+	  free_split_directories(prog_dirs);
+	  free_split_directories(bin_dirs);
+	  prog_dirs = bin_dirs = (char **)0;
+#if defined(HAVE_ASSERT_H) && defined(assert) && !defined(NDEBUG)
+          assert(prog_dirs == bin_dirs);
+#else
+# if defined(NDEBUG) && defined(__clang_analyzer__)
+          (void)prog_dirs; (void)bin_dirs;
+# endif /* NDEBUG && __clang_analyzer__ */
+#endif /* HAVE_ASSERT_H && assert && !NDEBUG */
 	  return NULL;
 	}
     }
@@ -353,37 +363,37 @@ make_relative_prefix (const char *progname,
   needed_len = 0;
   for (i = 0; i < prog_num; i++)
     needed_len += strlen (prog_dirs[i]);
-  needed_len += sizeof (DIR_UP) * (bin_num - common);
+  needed_len += (sizeof(DIR_UP) * (size_t)(bin_num - common));
   for (i = common; i < prefix_num; i++)
     needed_len += strlen (prefix_dirs[i]);
   needed_len += 1; /* Trailing NUL.  */
 
-  ret = (char *) malloc (needed_len);
+  ret = (char *)malloc(needed_len);
   if (ret == NULL)
     return NULL;
 
   /* Build up the pathnames in argv[0].  */
   *ret = '\0';
   for (i = 0; i < prog_num; i++)
-    strcat (ret, prog_dirs[i]);
+    strcat(ret, prog_dirs[i]);
 
   /* Now build up the ..'s.  */
-  ptr = ret + strlen(ret);
+  ptr = (ret + strlen(ret));
   for (i = common; i < bin_num; i++)
     {
-      strcpy (ptr, DIR_UP);
-      ptr += sizeof (DIR_UP) - 1;
+      strcpy(ptr, DIR_UP);
+      ptr += (sizeof(DIR_UP) - 1UL);
       *(ptr++) = DIR_SEPARATOR;
     }
   *ptr = '\0';
 
-  /* Put in directories to move over to prefix.  */
+  /* Put in directories to move over to prefix: */
   for (i = common; i < prefix_num; i++)
-    strcat (ret, prefix_dirs[i]);
+    strcat(ret, prefix_dirs[i]);
 
-  free_split_directories (prog_dirs);
-  free_split_directories (bin_dirs);
-  free_split_directories (prefix_dirs);
+  free_split_directories(prog_dirs);
+  free_split_directories(bin_dirs);
+  free_split_directories(prefix_dirs);
 
   return ret;
 }

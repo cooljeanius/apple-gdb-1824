@@ -82,6 +82,8 @@ top:  {
       printf("# include <stdlib.h>\n");
       printf("# include <ansidecl.h>\n");
       break;
+    default:
+      break;
     }
  }
 it_list {
@@ -94,6 +96,7 @@ it_list {
     break;
   case 'd':
     break;
+  default:;
   }
 }
 
@@ -155,6 +158,9 @@ it:
 
 	  case 't':
 	    break;
+
+          default:
+            break;
 	  }
       }
 	it_field_list
@@ -172,6 +178,8 @@ it:
   case 'o':
   case 'c':
     printf("}\n");
+
+  default:;
   }
 }
 ;
@@ -205,8 +213,8 @@ repeat_it_field: '(' REPEAT NAME
 	      if (rdepth == 2) {
                 printf("\t{ int m; for (m = 0; m < %s[n]; m++) {\n",   $3);
               }
-
 	      break;
+            default:;
 	    }
 
 	  oldrepeat = repeat;
@@ -226,6 +234,7 @@ repeat_it_field: '(' REPEAT NAME
 	    case 'o':
 	    case 'c':
               printf("\t}\n\t}\n");
+            default:;
             }
 	}
        ;
@@ -241,6 +250,8 @@ cond_it_field: '(' COND NAME
 	    case 'c':
 	      printf("\tif (%s) {\n", $3);
 	      break;
+            default:
+              break;
 	    }
 	}
 
@@ -253,6 +264,7 @@ cond_it_field: '(' COND NAME
 	    case 'o':
 	    case 'c':
               printf("\t}\n");
+            default:;
             }
 	}
        ;
@@ -338,6 +350,8 @@ it_field:
                 abort();
               }
               break;
+            default:
+              break;
             }
 	}
 
@@ -379,6 +393,7 @@ enum_list:
 	    case 'c':
               printf("\tif (ptr->%s%s == %s) { tabout(); printf(\"%s\\n\");}\n",
                      name, names[rdepth], $4, $3);
+            default:;
 	    }
 	}
 
@@ -394,9 +409,9 @@ enum_list:
    -o write functions to swap into sysroff format out
    -c write code to print info in human form */
 
-#ifndef __cplusplus
+#if !defined(__cplusplus) && defined(ALLOW_DUPLICATE_DECLARATIONS)
 int yydebug;
-#endif /* !__cplusplus */
+#endif /* !__cplusplus && ALLOW_DUPLICATE_DECLARATIONS */
 
 int
 main(int ac, char **av)

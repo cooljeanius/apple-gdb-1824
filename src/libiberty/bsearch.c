@@ -75,8 +75,8 @@ bsearch(register const void *key, const void *base0,
   register int lim, cmp;
   register const void *p;
 
-  for (lim = nmemb; lim != 0; lim >>= 1) {
-    p = (base + (lim >> 1) * size);
+  for (lim = (int)nmemb; lim != 0; lim >>= 1) {
+    p = (base + ((size_t)(lim >> 1) * size));
     cmp = (*compar)(key, p);
     if (cmp == 0)
       return (void *)p;

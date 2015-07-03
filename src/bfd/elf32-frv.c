@@ -4250,12 +4250,12 @@ _frvfdpic_link_omit_section_dynsym (bfd *output_bfd ATTRIBUTE_UNUSED,
    elflink.c:_bfd_elf_create_got_section().  */
 
 static bfd_boolean
-_frv_create_got_section (bfd *abfd, struct bfd_link_info *info)
+_frv_create_got_section(bfd *abfd, struct bfd_link_info *info)
 {
   flagword flags, pltflags;
   asection *s;
-  struct elf_link_hash_entry *h;
-  struct bfd_link_hash_entry *bh;
+  struct elf_link_hash_entry *h0;
+  struct bfd_link_hash_entry *bh0;
   const struct elf_backend_data *bed = get_elf_backend_data (abfd);
   int ptralign;
   int offset;
@@ -4294,25 +4294,29 @@ _frv_create_got_section (bfd *abfd, struct bfd_link_info *info)
 	 (or .got.plt) section.  We don't do this in the linker script
 	 because we don't want to define the symbol if we are not creating
 	 a global offset table.  */
-      bh = NULL;
-      if (!(_bfd_generic_link_add_one_symbol
-	    (info, abfd, "_GLOBAL_OFFSET_TABLE_", BSF_GLOBAL, s,
-	     0, (const char *) NULL, FALSE, bed->collect, &bh)))
+      bh0 = NULL;
+      if (!(_bfd_generic_link_add_one_symbol(info, abfd,
+                                             "_GLOBAL_OFFSET_TABLE_",
+                                             BSF_GLOBAL, s, 0,
+                                             (const char *)NULL, FALSE,
+                                             bed->collect, &bh0)))
 	return FALSE;
-      h = (struct elf_link_hash_entry *) bh;
-      h->def_regular = 1;
-      h->type = STT_OBJECT;
-      /* h->other = STV_HIDDEN; */ /* Should we?  */
+      h0 = (struct elf_link_hash_entry *)bh0;
+      h0->def_regular = 1;
+      h0->type = STT_OBJECT;
+#ifdef WE_SHOULD
+      h0->other = STV_HIDDEN; /* Should we?  */
+#endif /* WE_SHOULD */
 
       /* Machine-specific: we want the symbol for executables as
 	 well.  */
-      if (! bfd_elf_link_record_dynamic_symbol (info, h))
+      if (! bfd_elf_link_record_dynamic_symbol(info, h0))
 	return FALSE;
 
-      elf_hash_table (info)->hgot = h;
+      elf_hash_table(info)->hgot = h0;
     }
 
-  /* The first bit of the global offset table is the header.  */
+  /* The first bit of the global offset table is the header: */
   s->size += bed->got_header_size;
 
   /* This is the machine-specific part.  Create and initialize section
@@ -4349,27 +4353,29 @@ _frv_create_got_section (bfd *abfd, struct bfd_link_info *info)
   else
     {
       offset = 2048;
-      flags = BSF_GLOBAL | BSF_WEAK;
+      flags = (BSF_GLOBAL | BSF_WEAK);
     }
 
   /* Define _gp in .rofixup, for FDPIC, or .got otherwise.  If it
      turns out that we're linking with a different linker script, the
      linker script will override it.  */
-  bh = NULL;
-  if (!(_bfd_generic_link_add_one_symbol
-	(info, abfd, "_gp", flags, s, offset, (const char *) NULL, FALSE,
-	 bed->collect, &bh)))
+  bh0 = NULL;
+  if (!(_bfd_generic_link_add_one_symbol(info, abfd, "_gp", flags, s,
+                                         offset, (const char *)NULL, FALSE,
+                                         bed->collect, &bh0)))
     return FALSE;
-  h = (struct elf_link_hash_entry *) bh;
-  h->def_regular = 1;
-  h->type = STT_OBJECT;
-  /* h->other = STV_HIDDEN; */ /* Should we?  */
+  h0 = (struct elf_link_hash_entry *)bh0;
+  h0->def_regular = 1;
+  h0->type = STT_OBJECT;
+#ifdef WE_SHOULD
+  h0->other = STV_HIDDEN; /* Should we?  */
+#endif /* WE_SHOULD */
 
-  /* Machine-specific: we want the symbol for executables as well.  */
-  if (IS_FDPIC (abfd) && ! bfd_elf_link_record_dynamic_symbol (info, h))
+  /* Machine-specific: we want the symbol for executables as well: */
+  if (IS_FDPIC(abfd) && ! bfd_elf_link_record_dynamic_symbol(info, h0))
     return FALSE;
 
-  if (!IS_FDPIC (abfd))
+  if (!IS_FDPIC(abfd))
     return TRUE;
 
   /* FDPIC supports Thread Local Storage, and this may require a
@@ -4385,42 +4391,46 @@ _frv_create_got_section (bfd *abfd, struct bfd_link_info *info)
   if (bed->plt_readonly)
     pltflags |= SEC_READONLY;
 
-  s = bfd_make_section_with_flags (abfd, ".plt", pltflags);
+  s = bfd_make_section_with_flags(abfd, ".plt", pltflags);
   if (s == NULL
-      || ! bfd_set_section_alignment (abfd, s, bed->plt_alignment))
+      || ! bfd_set_section_alignment(abfd, s, bed->plt_alignment))
     return FALSE;
-  /* FRV-specific: remember it.  */
-  frvfdpic_plt_section (info) = s;
+  /* FRV-specific: remember it: */
+  frvfdpic_plt_section(info) = s;
 
   if (bed->want_plt_sym)
     {
       /* Define the symbol _PROCEDURE_LINKAGE_TABLE_ at the start of the
 	 .plt section.  */
-      struct elf_link_hash_entry *h;
-      struct bfd_link_hash_entry *bh = NULL;
+      struct elf_link_hash_entry *h1;
+      struct bfd_link_hash_entry *bh1 = NULL;
 
-      if (! (_bfd_generic_link_add_one_symbol
-	     (info, abfd, "_PROCEDURE_LINKAGE_TABLE_", BSF_GLOBAL, s, 0, NULL,
-	      FALSE, get_elf_backend_data (abfd)->collect, &bh)))
+      if (!(_bfd_generic_link_add_one_symbol(info, abfd,
+                                             "_PROCEDURE_LINKAGE_TABLE_",
+                                             BSF_GLOBAL, s, 0, NULL, FALSE,
+                                             get_elf_backend_data(abfd)->collect,
+                                             &bh1)))
 	return FALSE;
-      h = (struct elf_link_hash_entry *) bh;
-      h->def_regular = 1;
-      h->type = STT_OBJECT;
-      /* h->other = STV_HIDDEN; */ /* Should we?  */
+      h1 = (struct elf_link_hash_entry *)bh1;
+      h1->def_regular = 1;
+      h1->type = STT_OBJECT;
+#ifdef WE_SHOULD
+      h1->other = STV_HIDDEN; /* Should we?  */
+#endif /* WE_SHOULD */
 
       if (! info->executable
-	  && ! bfd_elf_link_record_dynamic_symbol (info, h))
+	  && ! bfd_elf_link_record_dynamic_symbol(info, h1))
 	return FALSE;
     }
 
-  /* FRV-specific: we want rel relocations for the plt.  */
-  s = bfd_make_section_with_flags (abfd, ".rel.plt",
-				   flags | SEC_READONLY);
+  /* FRV-specific: we want rel relocations for the plt: */
+  s = bfd_make_section_with_flags(abfd, ".rel.plt",
+				  (flags | SEC_READONLY));
   if (s == NULL
-      || ! bfd_set_section_alignment (abfd, s, bed->s->log_file_align))
+      || ! bfd_set_section_alignment(abfd, s, bed->s->log_file_align))
     return FALSE;
-  /* FRV-specific: remember it.  */
-  frvfdpic_pltrel_section (info) = s;
+  /* FRV-specific: remember it: */
+  frvfdpic_pltrel_section(info) = s;
 
   return TRUE;
 }

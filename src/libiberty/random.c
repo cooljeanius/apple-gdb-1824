@@ -320,12 +320,12 @@ initstate (unsigned int seed, PTR arg_state, unsigned long n)
    Returns a pointer to the old state information.  */
 
 PTR
-setstate (PTR arg_state)
+setstate(PTR arg_state)
 {
-  register long int *new_state = (long int *) arg_state;
-  register int type = new_state[0] % MAX_TYPES;
-  register int rear = new_state[0] / MAX_TYPES;
-  PTR ostate = (PTR) &state[-1];
+  register long int *new_state = (long int *)arg_state;
+  register long int type = (new_state[0] % MAX_TYPES);
+  register long int rear = (new_state[0] / MAX_TYPES);
+  PTR ostate = (PTR)&state[-1];
 
   if (rand_type == TYPE_0)
     state[-1] = rand_type;
@@ -339,7 +339,7 @@ setstate (PTR arg_state)
     case TYPE_2:
     case TYPE_3:
     case TYPE_4:
-      rand_type = type;
+      rand_type = (int)type;
       rand_deg = degrees[type];
       rand_sep = seps[type];
       break;

@@ -74,9 +74,15 @@ clock (void)
 #ifdef HAVE_GETRUSAGE
   struct rusage rusage;
 
-  getrusage (0, &rusage);
-  return (rusage.ru_utime.tv_sec * 1000000 + rusage.ru_utime.tv_usec
-	  + rusage.ru_stime.tv_sec * 1000000 + rusage.ru_stime.tv_usec);
+  getrusage(0, &rusage);
+  return
+#if defined(HAVE_CLOCK_T) || defined(_CLOCK_T)
+    (clock_t)
+#else
+    (long)
+#endif /* HAVE_CLOCK_T || _CLOCK_T */
+    (((rusage.ru_utime.tv_sec * 1000000L) + rusage.ru_utime.tv_usec)
+     + ((rusage.ru_stime.tv_sec * 1000000L) + rusage.ru_stime.tv_usec));
 #else
 # ifdef HAVE_TIMES
   struct tms tms;

@@ -226,16 +226,16 @@ void obstack_ptr_grow_fast (struct obstack *obstack, void *data);
 void obstack_int_grow_fast (struct obstack *obstack, int data);
 void obstack_blank_fast (struct obstack *obstack, int size);
 
-void * obstack_base (struct obstack *obstack);
-void * obstack_next_free (struct obstack *obstack);
-int obstack_alignment_mask (struct obstack *obstack);
-int obstack_chunk_size (struct obstack *obstack);
-int obstack_memory_used (struct obstack *obstack);
+void *obstack_base(struct obstack *obstack);
+void *obstack_next_free(struct obstack *obstack);
+int obstack_alignment_mask(struct obstack *obstack);
+int obstack_chunk_size(struct obstack *obstack);
+int obstack_memory_used(struct obstack *obstack);
 
 /* Error handler called when `obstack_chunk_alloc' failed to allocate
    more memory.  This can be set to a user defined function.  The
    default action is to print a message and abort.  */
-extern void (*obstack_alloc_failed_handler) (void);
+extern void (*obstack_alloc_failed_handler)(void) ATTRIBUTE_NORETURN;
 
 /* Exit value used when `print_and_abort' is used.  */
 extern int obstack_exit_failure;

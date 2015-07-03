@@ -468,9 +468,9 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    65,    65,    65,   103,   104,   109,   108,   182,   183,
-     184,   185,   189,   188,   235,   234,   262,   261,   348,   349,
-     353,   358,   364,   365,   368,   369,   371,   373
+       0,    65,    65,    65,   106,   107,   112,   111,   190,   191,
+     192,   193,   197,   196,   244,   243,   274,   273,   362,   363,
+     367,   372,   378,   379,   382,   383,   385,   387
 };
 #endif
 
@@ -1288,13 +1288,15 @@ yyreduce:
       printf("# include <stdlib.h>\n");
       printf("# include <ansidecl.h>\n");
       break;
+    default:
+      break;
     }
  }
-#line 1294 "sysinfo.c" /* yacc.c:1646  */
+#line 1296 "sysinfo.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 87 "sysinfo.y" /* yacc.c:1646  */
+#line 89 "sysinfo.y" /* yacc.c:1646  */
     {
   switch (writecode) {
   case 'i':
@@ -1305,13 +1307,14 @@ yyreduce:
     break;
   case 'd':
     break;
+  default:;
   }
 }
-#line 1311 "sysinfo.c" /* yacc.c:1646  */
+#line 1314 "sysinfo.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 109 "sysinfo.y" /* yacc.c:1646  */
+#line 112 "sysinfo.y" /* yacc.c:1646  */
     {
 	it = (yyvsp[-1].s); code = (yyvsp[0].i);
 	switch (writecode)
@@ -1361,13 +1364,16 @@ yyreduce:
 
 	  case 't':
 	    break;
+
+          default:
+            break;
 	  }
       }
-#line 1367 "sysinfo.c" /* yacc.c:1646  */
+#line 1373 "sysinfo.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 162 "sysinfo.y" /* yacc.c:1646  */
+#line 168 "sysinfo.y" /* yacc.c:1646  */
     {
   switch (writecode) {
   case 'd':
@@ -1381,13 +1387,15 @@ yyreduce:
   case 'o':
   case 'c':
     printf("}\n");
+
+  default:;
   }
 }
-#line 1387 "sysinfo.c" /* yacc.c:1646  */
+#line 1395 "sysinfo.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 189 "sysinfo.y" /* yacc.c:1646  */
+#line 197 "sysinfo.y" /* yacc.c:1646  */
     {
 	  rdepth++;
 	  switch (writecode)
@@ -1407,18 +1415,18 @@ yyreduce:
 	      if (rdepth == 2) {
                 printf("\t{ int m; for (m = 0; m < %s[n]; m++) {\n",   (yyvsp[0].s));
               }
-
 	      break;
+            default:;
 	    }
 
 	  oldrepeat = repeat;
          repeat = (yyvsp[0].s);
 	}
-#line 1418 "sysinfo.c" /* yacc.c:1646  */
+#line 1426 "sysinfo.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 218 "sysinfo.y" /* yacc.c:1646  */
+#line 226 "sysinfo.y" /* yacc.c:1646  */
     {
 	  repeat = oldrepeat;
 	  oldrepeat =0;
@@ -1430,13 +1438,14 @@ yyreduce:
 	    case 'o':
 	    case 'c':
               printf("\t}\n\t}\n");
+            default:;
             }
 	}
-#line 1436 "sysinfo.c" /* yacc.c:1646  */
+#line 1445 "sysinfo.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 235 "sysinfo.y" /* yacc.c:1646  */
+#line 244 "sysinfo.y" /* yacc.c:1646  */
     {
 	  switch (writecode)
 	    {
@@ -1446,13 +1455,15 @@ yyreduce:
 	    case 'c':
 	      printf("\tif (%s) {\n", (yyvsp[0].s));
 	      break;
+            default:
+              break;
 	    }
 	}
-#line 1452 "sysinfo.c" /* yacc.c:1646  */
+#line 1463 "sysinfo.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 248 "sysinfo.y" /* yacc.c:1646  */
+#line 259 "sysinfo.y" /* yacc.c:1646  */
     {
 	  switch (writecode)
 	    {
@@ -1461,19 +1472,20 @@ yyreduce:
 	    case 'o':
 	    case 'c':
               printf("\t}\n");
+            default:;
             }
 	}
-#line 1467 "sysinfo.c" /* yacc.c:1646  */
+#line 1479 "sysinfo.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 262 "sysinfo.y" /* yacc.c:1646  */
+#line 274 "sysinfo.y" /* yacc.c:1646  */
     {name = (yyvsp[0].s); }
-#line 1473 "sysinfo.c" /* yacc.c:1646  */
+#line 1485 "sysinfo.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 264 "sysinfo.y" /* yacc.c:1646  */
+#line 276 "sysinfo.y" /* yacc.c:1646  */
     {
 	  char *desc = (yyvsp[-8].s);
 	  char *type = (yyvsp[-6].s);
@@ -1551,49 +1563,51 @@ yyreduce:
                 abort();
               }
               break;
+            default:
+              break;
             }
 	}
-#line 1557 "sysinfo.c" /* yacc.c:1646  */
+#line 1571 "sysinfo.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 348 "sysinfo.y" /* yacc.c:1646  */
+#line 362 "sysinfo.y" /* yacc.c:1646  */
     { (yyval.s) = (yyvsp[0].s); }
-#line 1563 "sysinfo.c" /* yacc.c:1646  */
+#line 1577 "sysinfo.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 349 "sysinfo.y" /* yacc.c:1646  */
+#line 363 "sysinfo.y" /* yacc.c:1646  */
     { (yyval.s) = "INT";}
-#line 1569 "sysinfo.c" /* yacc.c:1646  */
+#line 1583 "sysinfo.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 354 "sysinfo.y" /* yacc.c:1646  */
+#line 368 "sysinfo.y" /* yacc.c:1646  */
     { (yyval.s) = (yyvsp[-1].s); }
-#line 1575 "sysinfo.c" /* yacc.c:1646  */
+#line 1589 "sysinfo.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 359 "sysinfo.y" /* yacc.c:1646  */
+#line 373 "sysinfo.y" /* yacc.c:1646  */
     { (yyval.i) = (yyvsp[-1].i) * (yyvsp[0].i); }
-#line 1581 "sysinfo.c" /* yacc.c:1646  */
+#line 1595 "sysinfo.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 364 "sysinfo.y" /* yacc.c:1646  */
+#line 378 "sysinfo.y" /* yacc.c:1646  */
     { (yyval.s) = (yyvsp[-1].s); }
-#line 1587 "sysinfo.c" /* yacc.c:1646  */
+#line 1601 "sysinfo.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 365 "sysinfo.y" /* yacc.c:1646  */
+#line 379 "sysinfo.y" /* yacc.c:1646  */
     { (yyval.s) = "dummy";}
-#line 1593 "sysinfo.c" /* yacc.c:1646  */
+#line 1607 "sysinfo.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 373 "sysinfo.y" /* yacc.c:1646  */
+#line 387 "sysinfo.y" /* yacc.c:1646  */
     {
 	  switch (writecode)
 	    {
@@ -1603,13 +1617,14 @@ yyreduce:
 	    case 'c':
               printf("\tif (ptr->%s%s == %s) { tabout(); printf(\"%s\\n\");}\n",
                      name, names[rdepth], (yyvsp[-1].s), (yyvsp[-2].s));
+            default:;
 	    }
 	}
-#line 1609 "sysinfo.c" /* yacc.c:1646  */
+#line 1624 "sysinfo.c" /* yacc.c:1646  */
     break;
 
 
-#line 1613 "sysinfo.c" /* yacc.c:1646  */
+#line 1628 "sysinfo.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1837,7 +1852,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 389 "sysinfo.y" /* yacc.c:1906  */
+#line 404 "sysinfo.y" /* yacc.c:1906  */
 
 /* four modes
 
@@ -1846,9 +1861,9 @@ yyreturn:
    -o write functions to swap into sysroff format out
    -c write code to print info in human form */
 
-#ifndef __cplusplus
+#if !defined(__cplusplus) && defined(ALLOW_DUPLICATE_DECLARATIONS)
 int yydebug;
-#endif /* !__cplusplus */
+#endif /* !__cplusplus && ALLOW_DUPLICATE_DECLARATIONS */
 
 int
 main(int ac, char **av)

@@ -95,15 +95,14 @@ mcore_elf_unsupported_reloc (bfd * abfd,
 {
   BFD_ASSERT (reloc_entry->howto != (reloc_howto_type *)0);
 
-  _bfd_error_handler (_("%B: Relocation %s (%d) is not currently supported.\n"),
-		      abfd,
-		      reloc_entry->howto->name,
-		      reloc_entry->howto->type);
+  _bfd_error_handler(_("%B: Relocation %s (%d) is not currently supported.\n"),
+		     abfd, reloc_entry->howto->name,
+		     reloc_entry->howto->type);
 
   return bfd_reloc_notsupported;
 }
 
-static reloc_howto_type * mcore_elf_howto_table [(int) R_MCORE_max];
+static reloc_howto_type * mcore_elf_howto_table[(int)R_MCORE_max];
 
 static reloc_howto_type mcore_elf_howto_raw[] =
 {
@@ -272,19 +271,19 @@ static reloc_howto_type mcore_elf_howto_raw[] =
 
 /* Initialize the mcore_elf_howto_table, so that linear accesses can be done.  */
 static void
-mcore_elf_howto_init (void)
+mcore_elf_howto_init(void)
 {
   unsigned int i;
 
-  for (i = NUM_ELEM (mcore_elf_howto_raw); i--;)
+  for (i = NUM_ELEM(mcore_elf_howto_raw); i--;)
     {
       unsigned int type;
 
       type = mcore_elf_howto_raw[i].type;
 
-      BFD_ASSERT (type < NUM_ELEM (mcore_elf_howto_table));
+      BFD_ASSERT(type < NUM_ELEM(mcore_elf_howto_table));
 
-      mcore_elf_howto_table [type] = & mcore_elf_howto_raw [i];
+      mcore_elf_howto_table[type] = &mcore_elf_howto_raw[i];
     }
 }
 
@@ -310,27 +309,25 @@ mcore_elf_reloc_type_lookup (bfd * abfd ATTRIBUTE_UNUSED,
       return NULL;
     }
 
-  if (! mcore_elf_howto_table [R_MCORE_PCRELIMM8BY4])
-    /* Initialize howto table if needed.  */
-    mcore_elf_howto_init ();
+  if (! mcore_elf_howto_table[R_MCORE_PCRELIMM8BY4])
+    /* Initialize howto table if needed: */
+    mcore_elf_howto_init();
 
-  return mcore_elf_howto_table [(int) mcore_reloc];
-};
+  return mcore_elf_howto_table[(int)mcore_reloc];
+}
 
-/* Set the howto pointer for a RCE ELF reloc.  */
-
+/* Set the howto pointer for a RCE ELF reloc: */
 static void
-mcore_elf_info_to_howto (bfd * abfd ATTRIBUTE_UNUSED,
-			 arelent * cache_ptr,
-			 Elf_Internal_Rela * dst)
+mcore_elf_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED,
+                        arelent *cache_ptr, Elf_Internal_Rela *dst)
 {
-  if (! mcore_elf_howto_table [R_MCORE_PCRELIMM8BY4])
+  if (! mcore_elf_howto_table[R_MCORE_PCRELIMM8BY4])
     /* Initialize howto table if needed.  */
-    mcore_elf_howto_init ();
+    mcore_elf_howto_init();
 
-  BFD_ASSERT (ELF32_R_TYPE (dst->r_info) < (unsigned int) R_MCORE_max);
+  BFD_ASSERT(ELF32_R_TYPE(dst->r_info) < (unsigned int)R_MCORE_max);
 
-  cache_ptr->howto = mcore_elf_howto_table [ELF32_R_TYPE (dst->r_info)];
+  cache_ptr->howto = mcore_elf_howto_table[ELF32_R_TYPE(dst->r_info)];
 }
 
 /* The RELOCATE_SECTION function is called by the ELF backend linker
@@ -372,73 +369,70 @@ mcore_elf_relocate_section (bfd * output_bfd,
 			    Elf_Internal_Sym * local_syms,
 			    asection ** local_sections)
 {
-  Elf_Internal_Shdr * symtab_hdr = & elf_tdata (input_bfd)->symtab_hdr;
-  struct elf_link_hash_entry ** sym_hashes = elf_sym_hashes (input_bfd);
-  Elf_Internal_Rela * rel = relocs;
-  Elf_Internal_Rela * relend = relocs + input_section->reloc_count;
+  Elf_Internal_Shdr *symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  struct elf_link_hash_entry ** sym_hashes = elf_sym_hashes(input_bfd);
+  Elf_Internal_Rela *rel = relocs;
+  Elf_Internal_Rela *relend = (relocs + input_section->reloc_count);
   bfd_boolean ret = TRUE;
 
 #ifdef DEBUG
-  _bfd_error_handler
-    ("mcore_elf_relocate_section called for %B section %A, %ld relocations%s",
-     input_bfd,
-     input_section,
-     (long) input_section->reloc_count,
-     (info->relocatable) ? " (relocatable)" : "");
-#endif
+  _bfd_error_handler("mcore_elf_relocate_section called for %B section %A,"
+                     " %ld relocations%s", input_bfd, input_section,
+                     (long)input_section->reloc_count,
+                     ((info->relocatable) ? " (relocatable)" : ""));
+#endif /* DEBUG */
 
   if (info->relocatable)
     return TRUE;
 
-  if (! mcore_elf_howto_table [R_MCORE_PCRELIMM8BY4])	/* Initialize howto table if needed */
-    mcore_elf_howto_init ();
+  if (! mcore_elf_howto_table[R_MCORE_PCRELIMM8BY4]) /* Initialize howto table if needed */
+    mcore_elf_howto_init();
 
   for (; rel < relend; rel++)
     {
-      enum elf_mcore_reloc_type    r_type = (enum elf_mcore_reloc_type) ELF32_R_TYPE (rel->r_info);
-      bfd_vma                      offset = rel->r_offset;
-      bfd_vma                      addend = rel->r_addend;
-      bfd_reloc_status_type        r = bfd_reloc_other;
-      asection *                   sec = NULL;
-      reloc_howto_type *           howto;
-      bfd_vma                      relocation;
-      Elf_Internal_Sym *           sym = NULL;
-      unsigned long                r_symndx;
-      struct elf_link_hash_entry * h = NULL;
-      unsigned short               oldinst = 0;
+      enum elf_mcore_reloc_type r_type = ((enum elf_mcore_reloc_type)
+                                          ELF32_R_TYPE(rel->r_info));
+      bfd_vma offset = rel->r_offset;
+      bfd_vma addend = rel->r_addend;
+      bfd_reloc_status_type r = bfd_reloc_other;
+      asection *sec = NULL;
+      reloc_howto_type *howto;
+      bfd_vma relocation;
+      Elf_Internal_Sym *sym = NULL;
+      unsigned long r_symndx;
+      struct elf_link_hash_entry *h = NULL;
+      unsigned short oldinst = 0U;
 
-      /* Unknown relocation handling.  */
-      if ((unsigned) r_type >= (unsigned) R_MCORE_max
-	  || ! mcore_elf_howto_table [(int)r_type])
+      /* Unknown relocation handling: */
+      if (((unsigned int)r_type >= (unsigned int)R_MCORE_max)
+	  || ! mcore_elf_howto_table[(int)r_type])
 	{
-	  _bfd_error_handler (_("%B: Unknown relocation type %d\n"),
-			      input_bfd, (int) r_type);
+	  _bfd_error_handler(_("%B: Unknown relocation type %d\n"),
+			     input_bfd, (int)r_type);
 
-	  bfd_set_error (bfd_error_bad_value);
+	  bfd_set_error(bfd_error_bad_value);
 	  ret = FALSE;
 	  continue;
 	}
 
-      howto = mcore_elf_howto_table [(int) r_type];
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      howto = mcore_elf_howto_table[(int)r_type];
+      r_symndx = ELF32_R_SYM(rel->r_info);
 
-      /* Complain about known relocation that are not yet supported.  */
+      /* Complain about known relocation that are not yet supported: */
       if (howto->special_function == mcore_elf_unsupported_reloc)
 	{
-	  _bfd_error_handler (_("%B: Relocation %s (%d) is not currently supported.\n"),
-			      input_bfd,
-			      howto->name,
-			      (int)r_type);
+	  _bfd_error_handler(_("%B: Relocation %s (%d) is not currently supported.\n"),
+			     input_bfd, howto->name, (int)r_type);
 
-	  bfd_set_error (bfd_error_bad_value);
+	  bfd_set_error(bfd_error_bad_value);
 	  ret = FALSE;
 	  continue;
 	}
 
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
-	  sec = local_sections [r_symndx];
+	  sym = (local_syms + r_symndx);
+	  sec = local_sections[r_symndx];
 	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
 	  addend = rel->r_addend;
 	}
@@ -575,43 +569,42 @@ mcore_elf_gc_sweep_hook (bfd * abfd ATTRIBUTE_UNUSED,
    virtual table relocs for gc.  */
 
 static bfd_boolean
-mcore_elf_check_relocs (bfd * abfd,
-			struct bfd_link_info * info,
-			asection * sec,
-			const Elf_Internal_Rela * relocs)
+mcore_elf_check_relocs(bfd *abfd, struct bfd_link_info *info,
+                       asection *sec, const Elf_Internal_Rela *relocs)
 {
-  Elf_Internal_Shdr * symtab_hdr;
-  struct elf_link_hash_entry ** sym_hashes;
-  struct elf_link_hash_entry ** sym_hashes_end;
-  const Elf_Internal_Rela * rel;
-  const Elf_Internal_Rela * rel_end;
+  Elf_Internal_Shdr *symtab_hdr;
+  struct elf_link_hash_entry **sym_hashes;
+  struct elf_link_hash_entry **sym_hashes_end;
+  const Elf_Internal_Rela *rel;
+  const Elf_Internal_Rela *rel_end;
 
   if (info->relocatable)
     return TRUE;
 
-  symtab_hdr = & elf_tdata (abfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (abfd);
-  sym_hashes_end = sym_hashes + symtab_hdr->sh_size / sizeof (Elf32_External_Sym);
-  if (!elf_bad_symtab (abfd))
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(abfd);
+  sym_hashes_end = (sym_hashes + (symtab_hdr->sh_size
+                                  / sizeof(Elf32_External_Sym)));
+  if (!elf_bad_symtab(abfd))
     sym_hashes_end -= symtab_hdr->sh_info;
 
-  rel_end = relocs + sec->reloc_count;
+  rel_end = (relocs + sec->reloc_count);
 
   for (rel = relocs; rel < rel_end; rel++)
     {
       struct elf_link_hash_entry * h;
       unsigned long r_symndx;
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
 
       if (r_symndx < symtab_hdr->sh_info)
         h = NULL;
       else
 	{
-	  h = sym_hashes [r_symndx - symtab_hdr->sh_info];
+	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
 	  while (h->root.type == bfd_link_hash_indirect
 		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 	}
 
       switch (ELF32_R_TYPE(rel->r_info))

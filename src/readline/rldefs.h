@@ -107,8 +107,8 @@ extern char *_rl_strpbrk PARAMS((const char *, const char *));
 #  define FUNCTION_TO_KEYMAP(map, key)	(Keymap)((int)map[key].function)
 #  define KEYMAP_TO_FUNCTION(data)	(rl_command_func_t *)((int)(data))
 #else
-#  define FUNCTION_TO_KEYMAP(map, key)	(Keymap)(map[key].function)
-#  define KEYMAP_TO_FUNCTION(data)	(rl_command_func_t *)(data)
+#  define FUNCTION_TO_KEYMAP(map, key)	__extension__ (Keymap)(map[key].function)
+#  define KEYMAP_TO_FUNCTION(data)	__extension__ (rl_command_func_t *)(data)
 #endif /* CRAY */
 
 #ifndef savestring

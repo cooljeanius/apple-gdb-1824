@@ -57,10 +57,12 @@ KEYMAP_ENTRY_ARRAY emacs_standard_keymap = {
   { ISFUNC, rl_unix_line_discard },		/* Control-u */
   { ISFUNC, rl_quoted_insert },			/* Control-v */
   { ISFUNC, rl_unix_word_rubout },		/* Control-w */
-  { ISKMAP, (rl_command_func_t *)emacs_ctlx_keymap },	/* Control-x */
+  { ISKMAP,
+    __extension__ (rl_command_func_t *)emacs_ctlx_keymap }, /* Control-x */
   { ISFUNC, rl_yank },				/* Control-y */
   { ISFUNC, (rl_command_func_t *)0x0 },		/* Control-z */
-  { ISKMAP, (rl_command_func_t *)emacs_meta_keymap }, /* Control-[ */
+  { ISKMAP,
+    __extension__ (rl_command_func_t *)emacs_meta_keymap }, /* Control-[ */
   { ISFUNC, (rl_command_func_t *)0x0 },		/* Control-\ */
   { ISFUNC, rl_char_search },			/* Control-] */
   { ISFUNC, (rl_command_func_t *)0x0 },		/* Control-^ */
@@ -83,7 +85,7 @@ KEYMAP_ENTRY_ARRAY emacs_standard_keymap = {
   { ISFUNC, rl_insert },		/* - */
   { ISFUNC, rl_insert },		/* . */
   { ISFUNC, rl_insert },		/* / */
-	
+
 	  /* Regular digits. */
   { ISFUNC, rl_insert },		/* 0 */
   { ISFUNC, rl_insert },		/* 1 */

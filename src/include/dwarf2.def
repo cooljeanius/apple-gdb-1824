@@ -1,16 +1,16 @@
-/* -*- c -*-
+/* -*- C -*-
    Declarations and definitions of codes relating to the DWARF2 and
    DWARF3 symbolic debugging information formats.
    Copyright (C) 1992, 1993, 1995, 1996, 1997, 1999, 2000, 2001, 2002,
    2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012
    Free Software Foundation, Inc.
 
-   Written by Gary Funck (gary@intrepid.com) The Ada Joint Program
+   Written by Gary Funck <gary@intrepid.com> The Ada Joint Program
    Office (AJPO), Florida State University and Silicon Graphics Inc.
    provided support for this effort -- June 21, 1995.
 
    Derived from the DWARF 1 implementation written by Ron Guilmette
-   (rfg@netcom.com), November 1990.
+   <rfg@netcom.com>, November 1990.
 
    This file is part of GCC.
 
@@ -47,27 +47,27 @@
 
 /* This file declares various DWARF-related constants using a set of
    macros which can be redefined by the including file.
-   
+
    The macros are in sections.  Each section corresponds to a single
    set of DWARF constants and has a corresponding key.  The key is
    used in all the macro names.
-   
+
    The sections are TAG (for DW_TAG_ constants), FORM (DW_FORM_), AT
    (DW_AT_), OP (DW_OP_), ATE (DW_ATE_), and CFA (DW_CFA_).
-   
+
    Using TAG as an example, the following macros may be used for each
    key:
-   
+
    DW_FIRST_TAG(name, value) - Introduce the first DW_TAG constant.
-   
+
    DW_TAG(name, value) - Define a subsequent constant.
-   
+
    DW_TAG_DUP(name, value) - Define a subsequent constant whose value
    is a duplicate of some other constant.  Not all keys use the _DUP
    macro form.  If more than one name shares a value, then the base
    (DW_TAG) form will be the preferred name and DW_TAG_DUP will hold
    any alternate names.
-   
+
    DW_END_TAG - Invoked at the end of the DW_TAG constants.  */
 
 DW_FIRST_TAG (DW_TAG_padding, 0x00)

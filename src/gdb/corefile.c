@@ -570,7 +570,7 @@ No arg means have no core file.  This command has been superseded by the\n\
 #endif /* FIXMES_ARE_FIXED */
 
   add_setshow_string_noescape_cmd("gnutarget", class_files,
-				  &gnutarget_string, _("(\
+				  &gnutarget_string, _("\
 Set the current BFD target."), _("\
 Show the current BFD target."), _("\
 Use `set gnutarget auto' to specify automatic detection."),

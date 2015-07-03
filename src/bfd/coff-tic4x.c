@@ -1,8 +1,8 @@
-/* BFD back-end for TMS320C4X coff binaries.
+/* coff-tic4x.c: BFD back-end for TMS320C4X coff binaries.
    Copyright 1996, 1997, 1998, 1999, 2000, 2002, 2003, 2005
    Free Software Foundation, Inc.
 
-   Contributed by Michael Hayes (m.hayes@elec.canterbury.ac.nz)
+   Contributed by Michael Hayes <m.hayes@elec.canterbury.ac.nz>
 
    This file is part of BFD, the Binary File Descriptor library.
 
@@ -238,21 +238,33 @@ tic4x_reloc_processing(arelent *relent, struct internal_reloc *reloc,
 
 
 /* TI COFF v0, DOS tools (little-endian headers).  */
-CREATE_LITTLE_COFF_TARGET_VEC(tic4x_coff0_vec, "coff0-tic4x", HAS_LOAD_PAGE, 0, '_', NULL, (PTR)&ticoff0_swap_table);
+CREATE_LITTLE_COFF_TARGET_VEC(tic4x_coff0_vec, "coff0-tic4x",
+                              HAS_LOAD_PAGE, 0, '_', NULL,
+                              (PTR)&ticoff0_swap_table)
 
 /* TI COFF v0, SPARC tools (big-endian headers).  */
-CREATE_BIGHDR_COFF_TARGET_VEC(tic4x_coff0_beh_vec, "coff0-beh-tic4x", HAS_LOAD_PAGE, 0, '_', &tic4x_coff0_vec, (PTR)&ticoff0_swap_table);
+CREATE_BIGHDR_COFF_TARGET_VEC(tic4x_coff0_beh_vec, "coff0-beh-tic4x",
+                              HAS_LOAD_PAGE, 0, '_', &tic4x_coff0_vec,
+                              (PTR)&ticoff0_swap_table)
 
 /* TI COFF v1, DOS tools (little-endian headers).  */
-CREATE_LITTLE_COFF_TARGET_VEC(tic4x_coff1_vec, "coff1-tic4x", HAS_LOAD_PAGE, 0, '_', &tic4x_coff0_beh_vec, (PTR)&ticoff1_swap_table);
+CREATE_LITTLE_COFF_TARGET_VEC(tic4x_coff1_vec, "coff1-tic4x",
+                              HAS_LOAD_PAGE, 0, '_', &tic4x_coff0_beh_vec,
+                              (PTR)&ticoff1_swap_table)
 
 /* TI COFF v1, SPARC tools (big-endian headers).  */
-CREATE_BIGHDR_COFF_TARGET_VEC(tic4x_coff1_beh_vec, "coff1-beh-tic4x", HAS_LOAD_PAGE, 0, '_', &tic4x_coff1_vec, (PTR)&ticoff1_swap_table);
+CREATE_BIGHDR_COFF_TARGET_VEC(tic4x_coff1_beh_vec, "coff1-beh-tic4x",
+                              HAS_LOAD_PAGE, 0, '_', &tic4x_coff1_vec,
+                              (PTR)&ticoff1_swap_table)
 
 /* TI COFF v2, TI DOS tools output (little-endian headers).  */
-CREATE_LITTLE_COFF_TARGET_VEC(tic4x_coff2_vec, "coff2-tic4x", HAS_LOAD_PAGE, 0, '_', &tic4x_coff1_beh_vec, COFF_SWAP_TABLE);
+CREATE_LITTLE_COFF_TARGET_VEC(tic4x_coff2_vec, "coff2-tic4x",
+                              HAS_LOAD_PAGE, 0, '_', &tic4x_coff1_beh_vec,
+                              COFF_SWAP_TABLE)
 
 /* TI COFF v2, TI SPARC tools output (big-endian headers).  */
-CREATE_BIGHDR_COFF_TARGET_VEC(tic4x_coff2_beh_vec, "coff2-beh-tic4x", HAS_LOAD_PAGE, 0, '_', &tic4x_coff2_vec, COFF_SWAP_TABLE);
+CREATE_BIGHDR_COFF_TARGET_VEC(tic4x_coff2_beh_vec, "coff2-beh-tic4x",
+                              HAS_LOAD_PAGE, 0, '_', &tic4x_coff2_vec,
+                              COFF_SWAP_TABLE)
 
 /* EOF */

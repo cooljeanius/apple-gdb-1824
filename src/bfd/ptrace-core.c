@@ -226,6 +226,10 @@ const bfd_target ptrace_core_vec =
 # undef core_upage
 #endif /* core_upage */
 
+#else
+/* Prevent file from being empty: */
+typedef int ptrace_core_c_dummy_t;
+extern ptrace_core_c_dummy_t ptrace_core_c_dummy_var;
 #endif /* PTRACE_CORE */
 
 /* EOF */

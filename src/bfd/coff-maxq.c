@@ -454,7 +454,7 @@ maxq_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
 
 /* Forward declaration for use initialising alternative_target field: */
 CREATE_LITTLE_COFF_TARGET_VEC(maxqcoff_vec, "coff-maxq", 0, EXTRA_S_FLAGS,
-                              TARGET_UNDERSCORE, NULL, COFF_SWAP_TABLE);
+                              TARGET_UNDERSCORE, NULL, COFF_SWAP_TABLE)
 
 #ifdef MAXQ20
 # undef MAXQ20

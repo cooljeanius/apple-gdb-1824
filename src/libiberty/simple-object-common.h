@@ -14,7 +14,7 @@ Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
 License along with libiberty; see the file COPYING.LIB.  If not,
-write to the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+write to the Free Software Foundation, Inc., 51 Franklin St., 5th Floor,
 Boston, MA 02110-1301, USA.  */
 
 /* Forward reference.  */
@@ -177,26 +177,25 @@ __extension__ typedef UNSIGNED_64BIT_TYPE ulong_type;
 typedef unsigned long ulong_type;
 #endif /* UNSIGNED_64BIT_TYPE */
 
-/* Fetch a big-endian 16-bit value.  */
-
+/* Fetch a big-endian 16-bit value: */
 static inline unsigned short
-simple_object_fetch_big_16 (const unsigned char *buf)
+simple_object_fetch_big_16(const unsigned char *buf)
 {
-  return ((unsigned short) buf[0] << 8) | (unsigned short) buf[1];
+  return (unsigned short)(((unsigned short)buf[0] << 8)
+                          | (unsigned short)buf[1]);
 }
 
-/* Fetch a little-endian 16-bit value.  */
-
+/* Fetch a little-endian 16-bit value: */
 static inline unsigned short
-simple_object_fetch_little_16 (const unsigned char *buf)
+simple_object_fetch_little_16(const unsigned char *buf)
 {
-  return ((unsigned short) buf[1] << 8) | (unsigned short) buf[0];
+  return (unsigned short)(((unsigned short)buf[1] << 8)
+                          | (unsigned short)buf[0]);
 }
 
 /* Fetch a big-endian 32-bit value.  */
-
 static inline unsigned int
-simple_object_fetch_big_32 (const unsigned char *buf)
+simple_object_fetch_big_32(const unsigned char *buf)
 {
   return (((unsigned int) buf[0] << 24)
 	  | ((unsigned int) buf[1] << 16)

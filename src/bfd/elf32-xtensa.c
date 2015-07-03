@@ -4557,7 +4557,6 @@ add_value_map (value_map_hash_table *map,
 
 typedef struct text_action_struct text_action;
 typedef struct text_action_list_struct text_action_list;
-typedef enum text_action_enum_t text_action_t;
 
 enum text_action_enum_t
 {
@@ -4571,6 +4570,8 @@ enum text_action_enum_t
   ta_remove_literal,
   ta_add_literal
 };
+
+typedef enum text_action_enum_t text_action_t;
 
 
 /* Structure for a text action record.  */

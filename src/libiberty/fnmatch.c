@@ -1,4 +1,4 @@
-/* Copyright (C) 1991, 1992, 1993 Free Software Foundation, Inc.
+/* fnmatch.c: Copyright (C) 1991-1993 Free Software Foundation, Inc.
 
 NOTE: This source is derived from an old version taken from the GNU C
 Library (glibc).
@@ -19,33 +19,37 @@ Foundation, 51 Franklin Street - Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_CONFIG_H
-#if defined (CONFIG_BROKETS)
+# if defined(CONFIG_BROKETS)
 /* We use <config.h> instead of "config.h" so that a compilation
    using -I. -I$srcdir will use ./config.h rather than $srcdir/config.h
    (which it would do because it found this file in $srcdir).  */
-#include <config.h>
-#else
-#include "config.h"
-#endif
-#endif
+#  include <config.h>
+# else
+#  include "config.h"
+# endif /* CONFIG_BROKETS */
+#endif /* HAVE_CONFIG_H */
 
 
 #ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
+# define _GNU_SOURCE
+#endif /* !_GNU_SOURCE */
 
 /* This code to undef const added in libiberty.  */
 #ifndef __STDC__
 /* This is a separate conditional since some stdc systems
    reject `defined (const)'.  */
-#ifndef const
-#define const
-#endif
-#endif
+# ifndef const
+#  define const
+# endif /* !const */
+#endif /* !__STDC__ */
 
 #include <errno.h>
 #include <fnmatch.h>
 #include <safe-ctype.h>
+
+#ifdef HAVE_ASSERT_H
+# include <assert.h>
+#endif /* HAVE_ASSERT_H */
 
 /* Comment out all this code if we are using the GNU C Library, and are not
    actually compiling the library itself.  This code is part of the GNU C
@@ -55,26 +59,26 @@ Boston, MA 02110-1301, USA.  */
    program understand `configure --with-gnu-libc' and omit the object files,
    it is simpler to just do this in the source for each such file.  */
 
-#if defined (_LIBC) || !defined (__GNU_LIBRARY__)
+#if defined(_LIBC) || !defined(__GNU_LIBRARY__)
 
 
 #if !defined(__GNU_LIBRARY__) && !defined(STDC_HEADERS)
 extern int errno;
-#endif
+#endif /* !__GNU_LIBRARY__ && !STDC_HEADERS */
 
 /* Match STRING against the filename pattern PATTERN, returning zero if
    it matches, nonzero if not.  */
 int
-fnmatch (const char *pattern, const char *string, int flags)
+fnmatch(const char *pattern, const char *string, int flags)
 {
   register const char *p = pattern, *n = string;
   register unsigned char c;
 
-#define FOLD(c)	((flags & FNM_CASEFOLD) ? TOLOWER (c) : (c))
+#define FOLD(c)	((flags & FNM_CASEFOLD) ? TOLOWER(c) : (c))
 
-  while ((c = *p++) != '\0')
+  while ((c = (unsigned char)(*p++)) != '\0')
     {
-      c = FOLD (c);
+      c = FOLD(c);
 
       switch (c)
 	{
@@ -91,10 +95,10 @@ fnmatch (const char *pattern, const char *string, int flags)
 	case '\\':
 	  if (!(flags & FNM_NOESCAPE))
 	    {
-	      c = *p++;
-	      c = FOLD (c);
+	      c = (unsigned char)(*p++);
+	      c = FOLD(c);
 	    }
-	  if (FOLD ((unsigned char)*n) != c)
+	  if (FOLD((unsigned char)*n) != c)
 	    return FNM_NOMATCH;
 	  break;
 
@@ -103,7 +107,8 @@ fnmatch (const char *pattern, const char *string, int flags)
 	      (n == string || ((flags & FNM_FILE_NAME) && n[-1] == '/')))
 	    return FNM_NOMATCH;
 
-	  for (c = *p++; c == '?' || c == '*'; c = *p++, ++n)
+	  for (c = (unsigned char)(*p++); (c == '?') || (c == '*');
+               c = (unsigned char)(*p++), ++n)
 	    if (((flags & FNM_FILE_NAME) && *n == '/') ||
 		(c == '?' && *n == '\0'))
 	      return FNM_NOMATCH;
@@ -112,11 +117,13 @@ fnmatch (const char *pattern, const char *string, int flags)
 	    return 0;
 
 	  {
-	    unsigned char c1 = (!(flags & FNM_NOESCAPE) && c == '\\') ? *p : c;
+	    unsigned char c1 =
+              ((!(flags & FNM_NOESCAPE) && (c == '\\'))
+               ? (unsigned char)(*p) : c);
 	    c1 = FOLD (c1);
 	    for (--p; *n != '\0'; ++n)
-	      if ((c == '[' || FOLD ((unsigned char)*n) == c1) &&
-		  fnmatch (p, n, flags & ~FNM_PERIOD) == 0)
+	      if ((c == '[' || FOLD((unsigned char)*n) == c1) &&
+		  fnmatch(p, n, flags & ~FNM_PERIOD) == 0)
 		return 0;
 	    return FNM_NOMATCH;
 	  }
@@ -137,22 +144,38 @@ fnmatch (const char *pattern, const char *string, int flags)
 	    if (negate)
 	      ++p;
 
-	    c = *p++;
+	    c = (unsigned char)(*p++);
 	    for (;;)
 	      {
 		register unsigned char cstart = c, cend = c;
 
-		if (!(flags & FNM_NOESCAPE) && c == '\\')
-		  cstart = cend = *p++;
+#if defined(HAVE_ASSERT_H) && defined(assert) && !defined(NDEBUG)
+                assert(cstart == cend);
+#else
+# if defined(NDEBUG) && defined(__clang_analyzer__)
+                (void)cend;
+# endif /* NDEBUG && __clang_analyzer__ */
+#endif /* HAVE_ASSERT_H && assert && !NDEBUG */
 
-		cstart = cend = FOLD (cstart);
+		if (!(flags & FNM_NOESCAPE) && c == '\\')
+		  cstart = cend = (unsigned char)(*p++);
+
+#if defined(HAVE_ASSERT_H) && defined(assert) && !defined(NDEBUG)
+                assert(cstart == cend);
+#else
+# if defined(NDEBUG) && defined(__clang_analyzer__)
+                (void)cend;
+# endif /* NDEBUG && __clang_analyzer__ */
+#endif /* HAVE_ASSERT_H && assert && !NDEBUG */
+
+		cstart = cend = FOLD(cstart);
 
 		if (c == '\0')
 		  /* [ (unterminated) loses.  */
 		  return FNM_NOMATCH;
 
-		c = *p++;
-		c = FOLD (c);
+		c = (unsigned char)(*p++);
+		c = FOLD(c);
 
 		if ((flags & FNM_FILE_NAME) && c == '/')
 		  /* [/] can never match.  */
@@ -160,18 +183,18 @@ fnmatch (const char *pattern, const char *string, int flags)
 
 		if (c == '-' && *p != ']')
 		  {
-		    cend = *p++;
+		    cend = (unsigned char)(*p++);
 		    if (!(flags & FNM_NOESCAPE) && cend == '\\')
-		      cend = *p++;
+		      cend = (unsigned char)(*p++);
 		    if (cend == '\0')
 		      return FNM_NOMATCH;
-		    cend = FOLD (cend);
+		    cend = FOLD(cend);
 
-		    c = *p++;
+		    c = (unsigned char)(*p++);
 		  }
 
-		if (FOLD ((unsigned char)*n) >= cstart
-		    && FOLD ((unsigned char)*n) <= cend)
+		if (FOLD((unsigned char)*n) >= cstart
+		    && FOLD((unsigned char)*n) <= cend)
 		  goto matched;
 
 		if (c == ']')
@@ -189,7 +212,7 @@ fnmatch (const char *pattern, const char *string, int flags)
 		  /* [... (unterminated) loses.  */
 		  return FNM_NOMATCH;
 
-		c = *p++;
+		c = (unsigned char)(*p++);
 		if (!(flags & FNM_NOESCAPE) && c == '\\')
 		  /* XXX 1003.2d11 is unclear if this is right.  */
 		  ++p;

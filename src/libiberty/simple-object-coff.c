@@ -540,16 +540,16 @@ simple_object_coff_write_filehdr (simple_object_write *sobj, int descriptor,
 /* Write out a COFF section header.  */
 
 static int
-simple_object_coff_write_scnhdr (simple_object_write *sobj, int descriptor,
-				 const char *name, size_t *name_offset,
-				 off_t scnhdr_offset, size_t scnsize,
-				 off_t offset, unsigned int align,
-				 const char **errmsg, int *err)
+simple_object_coff_write_scnhdr(simple_object_write *sobj, int descriptor,
+                                const char *name, size_t *name_offset,
+                                off_t scnhdr_offset, size_t scnsize,
+                                off_t offset, unsigned int align,
+                                const char **errmsg, int *err)
 {
   struct simple_object_coff_attributes *attrs =
-    (struct simple_object_coff_attributes *) sobj->data;
-  void (*set_32) (unsigned char *, unsigned int);
-  unsigned char hdrbuf[sizeof (struct external_scnhdr)];
+    (struct simple_object_coff_attributes *)sobj->data;
+  void (*set_32)(unsigned char *, unsigned int);
+  unsigned char hdrbuf[sizeof(struct external_scnhdr)];
   unsigned char *hdr;
   size_t namelen;
   unsigned int flags;
@@ -558,24 +558,26 @@ simple_object_coff_write_scnhdr (simple_object_write *sobj, int descriptor,
 	    ? simple_object_set_big_32
 	    : simple_object_set_little_32);
 
-  memset (hdrbuf, 0, sizeof hdrbuf);
+  memset(hdrbuf, 0, sizeof(hdrbuf));
   hdr = &hdrbuf[0];
 
-  namelen = strlen (name);
+  namelen = strlen(name);
   if (namelen <= SCNNMLEN)
-    strncpy ((char *) hdr + offsetof (struct external_scnhdr, s_name), name,
-	     SCNNMLEN);
+    strncpy((char *)hdr + offsetof(struct external_scnhdr, s_name), name,
+	    SCNNMLEN);
   else
     {
-      snprintf ((char *) hdr + offsetof (struct external_scnhdr, s_name),
-		SCNNMLEN, "/%lu", (unsigned long) *name_offset);
-      *name_offset += namelen + 1;
+      snprintf((char *)hdr + offsetof(struct external_scnhdr, s_name),
+               SCNNMLEN, "/%lu", (unsigned long)*name_offset);
+      *name_offset += (namelen + 1);
     }
 
   /* s_paddr left as zero.  */
   /* s_vaddr left as zero.  */
-  set_32 (hdr + offsetof (struct external_scnhdr, s_size), scnsize);
-  set_32 (hdr + offsetof (struct external_scnhdr, s_scnptr), offset);
+  set_32((hdr + offsetof(struct external_scnhdr, s_size)),
+         (unsigned int)scnsize);
+  set_32((hdr + offsetof(struct external_scnhdr, s_scnptr)),
+         (unsigned int)offset);
   /* s_relptr left as zero.  */
   /* s_lnnoptr left as zero.  */
   /* s_nreloc left as zero.  */
@@ -593,14 +595,13 @@ simple_object_coff_write_scnhdr (simple_object_write *sobj, int descriptor,
 				       errmsg, err);
 }
 
-/* Write out a complete COFF file.  */
-
+/* Write out a complete COFF file: */
 static const char *
-simple_object_coff_write_to_file (simple_object_write *sobj, int descriptor,
-				  int *err)
+simple_object_coff_write_to_file(simple_object_write *sobj, int descriptor,
+				 int *err)
 {
   struct simple_object_coff_attributes *attrs =
-    (struct simple_object_coff_attributes *) sobj->data;
+    (struct simple_object_coff_attributes *)sobj->data;
   unsigned int nscns, secnum;
   simple_object_write_section *section;
   off_t scnhdr_offset;
@@ -621,8 +622,8 @@ simple_object_coff_write_to_file (simple_object_write *sobj, int descriptor,
     struct external_syment sym;
     union external_auxent aux;
   } syms[2];
-  void (*set_16) (unsigned char *, unsigned short);
-  void (*set_32) (unsigned char *, unsigned int);
+  void (*set_16)(unsigned char *, unsigned short);
+  void (*set_32)(unsigned char *, unsigned int);
 
   set_16 = (attrs->is_big_endian
 	    ? simple_object_set_big_16
@@ -635,8 +636,9 @@ simple_object_coff_write_to_file (simple_object_write *sobj, int descriptor,
   for (section = sobj->sections; section != NULL; section = section->next)
     ++nscns;
 
-  scnhdr_offset = sizeof (struct external_filehdr);
-  offset = scnhdr_offset + nscns * sizeof (struct external_scnhdr);
+  scnhdr_offset = sizeof(struct external_filehdr);
+  offset = ((size_t)scnhdr_offset
+            + (nscns * sizeof(struct external_scnhdr)));
   name_offset = 4;
   for (section = sobj->sections; section != NULL; section = section->next)
     {
@@ -651,14 +653,15 @@ simple_object_coff_write_to_file (simple_object_write *sobj, int descriptor,
       while (new_offset > offset)
 	{
 	  unsigned char zeroes[16];
-	  size_t write;
+	  size_t write_amt;
 
-	  memset (zeroes, 0, sizeof zeroes);
-	  write = new_offset - offset;
-	  if (write > sizeof zeroes)
-	    write = sizeof zeroes;
-	  if (!simple_object_internal_write (descriptor, offset, zeroes, write,
-					     &errmsg, err))
+	  memset(zeroes, 0, sizeof(zeroes));
+	  write_amt = (new_offset - offset);
+	  if (write_amt > sizeof(zeroes))
+	    write_amt = sizeof(zeroes);
+	  if (!simple_object_internal_write(descriptor, (off_t)offset,
+                                            zeroes, write_amt, &errmsg,
+                                            err))
 	    return errmsg;
 	}
 
@@ -691,18 +694,18 @@ simple_object_coff_write_to_file (simple_object_write *sobj, int descriptor,
   symtab_offset = offset;
   /* Advance across space reserved for symbol table to locate
      start of string table.  */
-  offset += nsyms * sizeof (struct external_syment);
+  offset += (nsyms * sizeof(struct external_syment));
 
-  /* Write out file symbol.  */
-  memset (&syms[0], 0, sizeof (syms));
-  strcpy ((char *)&syms[0].sym.e.e_name[0], ".file");
-  set_16 (&syms[0].sym.e_scnum[0], IMAGE_SYM_DEBUG);
-  set_16 (&syms[0].sym.e_type[0], IMAGE_SYM_TYPE);
+  /* Write out file symbol: */
+  memset(&syms[0], 0, sizeof(syms));
+  strcpy((char *)&syms[0].sym.e.e_name[0], ".file");
+  set_16(&syms[0].sym.e_scnum[0], (unsigned short)IMAGE_SYM_DEBUG);
+  set_16(&syms[0].sym.e_type[0], (unsigned short)IMAGE_SYM_TYPE);
   syms[0].sym.e_sclass[0] = IMAGE_SYM_CLASS_FILE;
   syms[0].sym.e_numaux[0] = 1;
   /* The name need not be nul-terminated if it fits into the x_fname field
      directly, but must be if it has to be placed into the string table.  */
-  sflen = strlen (source_filename);
+  sflen = strlen(source_filename);
   if (sflen <= E_FILNMLEN)
     memcpy (&syms[1].aux.x_file.x_fname[0], source_filename, sflen);
   else

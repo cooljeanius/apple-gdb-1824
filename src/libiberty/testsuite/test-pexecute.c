@@ -172,10 +172,9 @@ check_line (int line, FILE *e, const char *str)
 
 #define CHECK_LINE(E, STR) check_line (__LINE__, E, STR)
 
-/* Main function for the pexecute tester.  Run the tests.  */
-
+/* Main function for the pexecute tester.  Run the tests: */
 int
-main (int argc, char **argv)
+main(int argc, char **argv)
 {
   int trace;
   struct pex_obj *test_pex_tmp;
@@ -342,44 +341,44 @@ main (int argc, char **argv)
   fclose (e);
   e = fopen ("temp.y", "r");
   if (e == NULL)
-    FATAL_ERROR ("fopen temp.y failed in copy temp", errno);
-  CHECK_LINE (e, "quux");
-  fclose (e);
-  pex_free (pex1);
-  remove ("temp.x");
-  remove ("temp.y");
+    FATAL_ERROR("fopen temp.y failed in copy temp", errno);
+  CHECK_LINE(e, "quux");
+  fclose(e);
+  pex_free(pex1);
+  remove("temp.x");
+  remove("temp.y");
 
   pex1 = (struct pex_obj *)TEST_PEX_INIT(PEX_USE_PIPES, "temp");
   subargv[1] = (char *)"echoerr";
   subargv[2] = (char *)"one";
   subargv[3] = (char *)"two";
   subargv[4] = (char *)NULL;
-  TEST_PEX_RUN (pex1, PEX_SUFFIX, "./test-pexecute", subargv, ".x", "temp2.x");
+  TEST_PEX_RUN(pex1, PEX_SUFFIX, "./test-pexecute", subargv, ".x", "temp2.x");
   subargv[1] = (char *)"write";
   subargv[2] = (char *)"temp2.y";
   subargv[3] = (char *)NULL;
   TEST_PEX_RUN (pex1, PEX_SUFFIX, "./test-pexecute", subargv, ".y", NULL);
-  TEST_PEX_GET_STATUS (pex1, 2, statuses);
-  if (!WIFEXITED (statuses[0]) || WEXITSTATUS (statuses[0]) != EXIT_SUCCESS
-      || !WIFEXITED (statuses[1]) || WEXITSTATUS (statuses[1]) != EXIT_SUCCESS)
-    ERROR ("echoerr exit status failed");
-  pex_free (pex1);
-  if (fopen ("temp.x", "r") != NULL || fopen ("temp.y", "r") != NULL)
-    ERROR ("temporary files exist");
-  e = fopen ("temp2.x", "r");
+  TEST_PEX_GET_STATUS(pex1, 2, statuses);
+  if (!WIFEXITED(statuses[0]) || WEXITSTATUS(statuses[0]) != EXIT_SUCCESS
+      || !WIFEXITED(statuses[1]) || WEXITSTATUS(statuses[1]) != EXIT_SUCCESS)
+    ERROR("echoerr exit status failed");
+  pex_free(pex1);
+  if (fopen("temp.x", "r") != NULL || fopen("temp.y", "r") != NULL)
+    ERROR("temporary files exist");
+  e = fopen("temp2.x", "r");
   if (e == NULL)
-    FATAL_ERROR ("fopen temp2.x failed in echoerr", errno);
-  CHECK_LINE (e, "two");
-  fclose (e);
-  e = fopen ("temp2.y", "r");
+    FATAL_ERROR("fopen temp2.x failed in echoerr", errno);
+  CHECK_LINE(e, "two");
+  fclose(e);
+  e = fopen("temp2.y", "r");
   if (e == NULL)
-    FATAL_ERROR ("fopen temp2.y failed in echoerr", errno);
-  CHECK_LINE (e, "one");
-  fclose (e);
-  remove ("temp2.x");
-  remove ("temp2.y");
+    FATAL_ERROR("fopen temp2.y failed in echoerr", errno);
+  CHECK_LINE(e, "one");
+  fclose(e);
+  remove("temp2.x");
+  remove("temp2.y");
 
-  /* Test the old pexecute interface.  */
+  /* Test the old pexecute interface: */
   {
     int pid1, pid2;
     char *errmsg_fmt;
@@ -387,59 +386,72 @@ main (int argc, char **argv)
     char errbuf1[1000];
     char errbuf2[1000];
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wformat-nonliteral"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
     subargv[1] = (char *)"echo";
     subargv[2] = (char *)"oldpexecute";
     subargv[3] = (char *)NULL;
-    pid1 = pexecute ("./test-pexecute", subargv, "test-pexecute", "temp",
-		     &errmsg_fmt, &errmsg_arg, PEXECUTE_FIRST);
+    pid1 = pexecute("./test-pexecute", subargv, "test-pexecute", "temp",
+		    &errmsg_fmt, &errmsg_arg, PEXECUTE_FIRST);
     if (pid1 < 0)
       {
-	snprintf (errbuf1, sizeof errbuf1, errmsg_fmt, errmsg_arg);
-	snprintf (errbuf2, sizeof errbuf2, "pexecute 1 failed: %s", errbuf1);
-	FATAL_ERROR (errbuf2, 0);
+	snprintf(errbuf1, sizeof(errbuf1), errmsg_fmt, errmsg_arg);
+	snprintf(errbuf2, sizeof(errbuf2), "pexecute 1 failed: %s", errbuf1);
+	FATAL_ERROR(errbuf2, 0);
       }
 
     subargv[1] = (char *)"write";
     subargv[2] = (char *)"temp.y";
     subargv[3] = (char *)NULL;
-    pid2 = pexecute ("./test-pexecute", subargv, "test-pexecute", "temp",
-		     &errmsg_fmt, &errmsg_arg, PEXECUTE_LAST);
+    pid2 = pexecute("./test-pexecute", subargv, "test-pexecute", "temp",
+		    &errmsg_fmt, &errmsg_arg, PEXECUTE_LAST);
     if (pid2 < 0)
       {
-	snprintf (errbuf1, sizeof errbuf1, errmsg_fmt, errmsg_arg);
-	snprintf (errbuf2, sizeof errbuf2, "pexecute 2 failed: %s", errbuf1);
-	FATAL_ERROR (errbuf2, 0);
+	snprintf(errbuf1, sizeof(errbuf1), errmsg_fmt, errmsg_arg);
+	snprintf(errbuf2, sizeof(errbuf2), "pexecute 2 failed: %s",
+                 errbuf1);
+	FATAL_ERROR(errbuf2, 0);
       }
 
-    if (pwait (pid1, &status, 0) < 0)
-      FATAL_ERROR ("write pwait 1 failed", errno);
-    if (!WIFEXITED (status) || WEXITSTATUS (status) != EXIT_SUCCESS)
-      ERROR ("write exit status 1 failed");
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
-    if (pwait (pid2, &status, 0) < 0)
-      FATAL_ERROR ("write pwait 1 failed", errno);
-    if (!WIFEXITED (status) || WEXITSTATUS (status) != EXIT_SUCCESS)
-      ERROR ("write exit status 2 failed");
+    if (pwait(pid1, &status, 0) < 0)
+      FATAL_ERROR("write pwait 1 failed", errno);
+    if (!WIFEXITED(status) || (WEXITSTATUS(status) != EXIT_SUCCESS))
+      ERROR("write exit status 1 failed");
 
-    e = fopen ("temp.y", "r");
+    if (pwait(pid2, &status, 0) < 0)
+      FATAL_ERROR("write pwait 1 failed", errno);
+    if (!WIFEXITED(status) || (WEXITSTATUS(status) != EXIT_SUCCESS))
+      ERROR("write exit status 2 failed");
+
+    e = fopen("temp.y", "r");
     if (e == NULL)
-      FATAL_ERROR ("fopen temp.y failed in copy temp", errno);
-    CHECK_LINE (e, "oldpexecute");
-    fclose (e);
+      FATAL_ERROR("fopen temp.y failed in copy temp", errno);
+    CHECK_LINE(e, "oldpexecute");
+    fclose(e);
 
-    remove ("temp.y");
+    remove("temp.y");
   }
 
   if (trace)
-    fprintf (stderr, "Exiting with status %d\n", error_count);
+    fprintf(stderr, "Exiting with status %d\n", error_count);
 
   return error_count;
 }
 
-/* Execute one of the special testing commands.  */
-
+/* Execute one of the special testing commands: */
 static void
-do_cmd (int argc, char **argv)
+do_cmd(int argc, char **argv)
 {
   const char *s;
 

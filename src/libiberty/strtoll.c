@@ -142,8 +142,8 @@ strtoll(const char *nptr, char **endptr, register int base)
 	 * Set any if any `digits' consumed; make it negative to indicate
 	 * overflow.
 	 */
-	cutoff = neg ? -(ullong_type)LLONG_MIN : LLONG_MAX;
-	cutlim = cutoff % (ullong_type)base;
+	cutoff = (neg ? -(ullong_type)LLONG_MIN : LLONG_MAX);
+	cutlim = (int)(cutoff % (ullong_type)base);
 	cutoff /= (ullong_type)base;
 	for (acc = 0, any = 0;; c = *s++) {
 		if (ISDIGIT(c))
@@ -158,18 +158,18 @@ strtoll(const char *nptr, char **endptr, register int base)
 			any = -1;
 		else {
 			any = 1;
-			acc *= base;
-			acc += c;
+			acc *= (ullong_type)base;
+			acc += (ullong_type)c;
 		}
 	}
 	if (any < 0) {
-		acc = neg ? LLONG_MIN : LLONG_MAX;
+		acc = (neg ? (ullong_type)LLONG_MIN : LLONG_MAX);
 		errno = ERANGE;
 	} else if (neg)
 		acc = -acc;
 	if (endptr != 0)
-		*endptr = (char *) (any ? s - 1 : nptr);
-	return (acc);
+		*endptr = (char *)(any ? (s - 1) : nptr);
+	return (llong_type)(acc);
 }
 
 #endif /* ifdef HAVE_LONG_LONG */

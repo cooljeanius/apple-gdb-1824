@@ -531,7 +531,7 @@ init_error_tables(void)
 
   if (error_names == NULL)
     {
-      nbytes = (num_error_names * sizeof(char *));
+      nbytes = ((size_t)num_error_names * sizeof(char *));
       if ((error_names = (const char **)malloc(nbytes)) != NULL)
 	{
 	  memset(error_names, 0, nbytes);

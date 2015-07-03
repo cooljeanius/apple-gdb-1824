@@ -1094,6 +1094,12 @@ bfd_mach_o_scan_write_symtab(bfd *abfd, bfd_mach_o_load_command *command)
   return 0;
 }
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if ((__GNUC__ == 4) && (__GNUC_MINOR__ == 2)) && !defined(__clang__)
+#  pragma GCC diagnostic ignored "-pedantic"
+# endif /* gcc 4.2 (non-clang) */
+#endif /* any gcc */
+
 static bfd_boolean
 bfd_mach_o_write_contents(bfd *abfd)
 {
@@ -1152,9 +1158,9 @@ bfd_mach_o_write_contents(bfd *abfd)
       bfd_mach_o_load_command *cur = &mdata->commands[i];
       unsigned long typeflag;
 
-      typeflag = (unsigned long)(cur->type_required
-                                 ? (cur->type & BFD_MACH_O_LC_REQ_DYLD)
-                                 : cur->type);
+      typeflag = (cur->type_required
+                  ? (unsigned long)(cur->type & BFD_MACH_O_LC_REQ_DYLD)
+                  : (unsigned long)cur->type);
 
       bfd_h_put_32(abfd, (bfd_vma)typeflag, buf);
       bfd_h_put_32(abfd, cur->len, (buf + 4));
@@ -1191,9 +1197,9 @@ bfd_mach_o_write_contents(bfd *abfd)
 	case BFD_MACH_O_LC_PREPAGE:
 	case BFD_MACH_O_LC_DYSYMTAB:
 	case BFD_MACH_O_LC_LOAD_DYLIB:
-        case BFD_MACH_O_LC_LOAD_UPWARD_DYLIB:
-	case BFD_MACH_O_LC_LOAD_WEAK_DYLIB:
-	case BFD_MACH_O_LC_REEXPORT_DYLIB:
+        case __extension__ BFD_MACH_O_LC_LOAD_UPWARD_DYLIB:
+	case __extension__ BFD_MACH_O_LC_LOAD_WEAK_DYLIB:
+	case __extension__ BFD_MACH_O_LC_REEXPORT_DYLIB:
 	case BFD_MACH_O_LC_ID_DYLIB:
 	case BFD_MACH_O_LC_LOAD_DYLINKER:
 	case BFD_MACH_O_LC_ID_DYLINKER:
@@ -1203,8 +1209,8 @@ bfd_mach_o_write_contents(bfd *abfd)
 	case BFD_MACH_O_LC_LAZY_LOAD_DYLIB:
 	case BFD_MACH_O_LC_ENCRYPTION_INFO:
 	case BFD_MACH_O_LC_DYLD_INFO:
-	case BFD_MACH_O_LC_DYLD_INFO_ONLY:
-	case BFD_MACH_O_LC_MAIN:
+	case __extension__ BFD_MACH_O_LC_DYLD_INFO_ONLY:
+	case __extension__ BFD_MACH_O_LC_MAIN:
 	  break;
         case BFD_MACH_O_LC_SUB_UMBRELLA: /* fall through (for now): */
         case BFD_MACH_O_LC_SUB_CLIENT: /* fall through (for now): */
@@ -1214,7 +1220,7 @@ bfd_mach_o_write_contents(bfd *abfd)
         case BFD_MACH_O_LC_ROUTINES_64: /* fall through (for now): */
         case BFD_MACH_O_LC_DYLIB_CODE_SIGN_DRS: /* fall through for now: */
         case BFD_MACH_O_LC_UUID: /* fall through (for now): */
-        case BFD_MACH_O_LC_RPATH: /* fall through (for now): */
+        case __extension__ BFD_MACH_O_LC_RPATH: /* fall through to: */
         case BFD_MACH_O_LC_CODE_SIGNATURE: /* fall through (for now): */
         case BFD_MACH_O_LC_SEGMENT_SPLIT_INFO: /* fall through, for now: */
         case BFD_MACH_O_LC_VERSION_MIN_MACOSX: /* fall through, for now: */

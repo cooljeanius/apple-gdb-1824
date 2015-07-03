@@ -1608,7 +1608,7 @@ pe_print_pdata (bfd * abfd, void * vfile)
       int em_data;
       int tmp_i = i;  /* (loop counter may overflow otherwise) */
 
-      if ((tmp_i + PDATA_ROW_SIZE) > stop) {
+      if (((bfd_size_type)tmp_i + PDATA_ROW_SIZE) > stop) {
 	break;
       } else {
         ; /* (check if using 'tmp_i' over 'i' affected anything here) */

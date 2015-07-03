@@ -137,11 +137,11 @@ rl_discard_keymap(Keymap map)
 	  break;
 
 	case ISKMAP:
-	  rl_discard_keymap((Keymap)map[i].function);
+	  rl_discard_keymap(__extension__ (Keymap)map[i].function);
 	  break;
 
 	case ISMACR:
-	  free((char *)map[i].function);
+	  free(__extension__ (char *)map[i].function);
 	  break;
 
         default:

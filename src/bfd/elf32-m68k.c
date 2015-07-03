@@ -342,23 +342,21 @@ elf_m68k_link_hash_newfunc(struct bfd_hash_entry *entry,
   return ret;
 }
 
-/* Create an m68k ELF linker hash table.  */
-
+/* Create an m68k ELF linker hash table: */
 static struct bfd_link_hash_table *
-elf_m68k_link_hash_table_create (abfd)
-     bfd *abfd;
+elf_m68k_link_hash_table_create(bfd *abfd)
 {
   struct elf_m68k_link_hash_table *ret;
-  bfd_size_type amt = sizeof (struct elf_m68k_link_hash_table);
+  bfd_size_type amt = sizeof(struct elf_m68k_link_hash_table);
 
-  ret = (struct elf_m68k_link_hash_table *) bfd_malloc (amt);
-  if (ret == (struct elf_m68k_link_hash_table *) NULL)
+  ret = (struct elf_m68k_link_hash_table *)bfd_malloc(amt);
+  if (ret == (struct elf_m68k_link_hash_table *)NULL)
     return NULL;
 
-  if (! _bfd_elf_link_hash_table_init (&ret->root, abfd,
-				       elf_m68k_link_hash_newfunc))
+  if (! _bfd_elf_link_hash_table_init(&ret->root, abfd,
+				      elf_m68k_link_hash_newfunc))
     {
-      free (ret);
+      free(ret);
       return NULL;
     }
 
@@ -367,23 +365,19 @@ elf_m68k_link_hash_table_create (abfd)
   return &ret->root.root;
 }
 
-/* Keep m68k-specific flags in the ELF header.  */
+/* Keep m68k-specific flags in the ELF header: */
 static bfd_boolean
-elf32_m68k_set_private_flags (abfd, flags)
-     bfd *abfd;
-     flagword flags;
+elf32_m68k_set_private_flags(bfd *abfd, flagword flags)
 {
-  elf_elfheader (abfd)->e_flags = flags;
-  elf_flags_init (abfd) = TRUE;
+  elf_elfheader(abfd)->e_flags = flags;
+  elf_flags_init(abfd) = TRUE;
   return TRUE;
 }
 
 /* Merge backend specific data from an object file to the output
    object file when linking.  */
 static bfd_boolean
-elf32_m68k_merge_private_bfd_data (ibfd, obfd)
-     bfd *ibfd;
-     bfd *obfd;
+elf32_m68k_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
   flagword out_flags;
   flagword in_flags;
@@ -404,18 +398,16 @@ elf32_m68k_merge_private_bfd_data (ibfd, obfd)
   return TRUE;
 }
 
-/* Display the flags field.  */
+/* Display the flags field: */
 static bfd_boolean
-elf32_m68k_print_private_bfd_data (abfd, ptr)
-     bfd *abfd;
-     PTR ptr;
+elf32_m68k_print_private_bfd_data(bfd *abfd, PTR ptr)
 {
-  FILE *file = (FILE *) ptr;
+  FILE *file = (FILE *)ptr;
 
-  BFD_ASSERT (abfd != NULL && ptr != NULL);
+  BFD_ASSERT((abfd != NULL) && (ptr != NULL));
 
-  /* Print normal ELF private data.  */
-  _bfd_elf_print_private_bfd_data (abfd, ptr);
+  /* Print normal ELF private data: */
+  _bfd_elf_print_private_bfd_data(abfd, ptr);
 
   /* Ignore init flag - it may not be set, despite the flags field containing valid data.  */
 
@@ -437,11 +429,8 @@ elf32_m68k_print_private_bfd_data (abfd, ptr)
    table.  */
 
 static bfd_boolean
-elf_m68k_check_relocs (abfd, info, sec, relocs)
-     bfd *abfd;
-     struct bfd_link_info *info;
-     asection *sec;
-     const Elf_Internal_Rela *relocs;
+elf_m68k_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
+                      const Elf_Internal_Rela *relocs)
 {
   bfd *dynobj;
   Elf_Internal_Shdr *symtab_hdr;
@@ -798,16 +787,15 @@ elf_m68k_check_relocs (abfd, info, sec, relocs)
    relocation.  */
 
 static asection *
-elf_m68k_gc_mark_hook (sec, info, rel, h, sym)
-     asection *sec;
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
-     Elf_Internal_Rela *rel;
-     struct elf_link_hash_entry *h;
-     Elf_Internal_Sym *sym;
+elf_m68k_gc_mark_hook(asection *sec,
+                      struct bfd_link_info *info ATTRIBUTE_UNUSED,
+                      Elf_Internal_Rela *rel,
+                      struct elf_link_hash_entry *h,
+                      Elf_Internal_Sym *sym)
 {
   if (h != NULL)
     {
-      switch (ELF32_R_TYPE (rel->r_info))
+      switch (ELF32_R_TYPE(rel->r_info))
 	{
 	case R_68K_GNU_VTINHERIT:
 	case R_68K_GNU_VTENTRY:
@@ -829,19 +817,15 @@ elf_m68k_gc_mark_hook (sec, info, rel, h, sym)
 	}
     }
   else
-    return bfd_section_from_elf_index (sec->owner, sym->st_shndx);
+    return bfd_section_from_elf_index(sec->owner, sym->st_shndx);
 
   return NULL;
 }
 
-/* Update the got entry reference counts for the section being removed.  */
-
+/* Update the got entry reference counts for the section being removed: */
 static bfd_boolean
-elf_m68k_gc_sweep_hook (abfd, info, sec, relocs)
-     bfd *abfd;
-     struct bfd_link_info *info;
-     asection *sec;
-     const Elf_Internal_Rela *relocs;
+elf_m68k_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info,
+                       asection *sec, const Elf_Internal_Rela *relocs)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
@@ -851,7 +835,7 @@ elf_m68k_gc_sweep_hook (abfd, info, sec, relocs)
   asection *sgot;
   asection *srelgot;
 
-  dynobj = elf_hash_table (info)->dynobj;
+  dynobj = elf_hash_table(info)->dynobj;
   if (dynobj == NULL)
     return TRUE;
 
@@ -948,17 +932,16 @@ elf_m68k_gc_sweep_hook (abfd, info, sec, relocs)
    understand.  */
 
 static bfd_boolean
-elf_m68k_adjust_dynamic_symbol (info, h)
-     struct bfd_link_info *info;
-     struct elf_link_hash_entry *h;
+elf_m68k_adjust_dynamic_symbol(struct bfd_link_info *info,
+                               struct elf_link_hash_entry *h)
 {
   bfd *dynobj;
   asection *s;
   unsigned int power_of_two;
 
-  dynobj = elf_hash_table (info)->dynobj;
+  dynobj = elf_hash_table(info)->dynobj;
 
-  /* Make sure we know what is going on here.  */
+  /* Make sure we know what is going on here: */
   BFD_ASSERT (dynobj != NULL
 	      && (h->needs_plt
 		  || h->u.weakdef != NULL
@@ -1127,24 +1110,22 @@ elf_m68k_adjust_dynamic_symbol (info, h)
   return TRUE;
 }
 
-/* Set the sizes of the dynamic sections.  */
-
+/* Set the sizes of the dynamic sections: */
 static bfd_boolean
-elf_m68k_size_dynamic_sections (output_bfd, info)
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info;
+elf_m68k_size_dynamic_sections(bfd *output_bfd ATTRIBUTE_UNUSED,
+                               struct bfd_link_info *info)
 {
   bfd *dynobj;
   asection *s;
   bfd_boolean plt;
   bfd_boolean relocs;
 
-  dynobj = elf_hash_table (info)->dynobj;
-  BFD_ASSERT (dynobj != NULL);
+  dynobj = elf_hash_table(info)->dynobj;
+  BFD_ASSERT(dynobj != NULL);
 
-  if (elf_hash_table (info)->dynamic_sections_created)
+  if (elf_hash_table(info)->dynamic_sections_created)
     {
-      /* Set the contents of the .interp section to the interpreter.  */
+      /* Set the contents of the .interp section to the interpreter: */
       if (info->executable)
 	{
 	  s = bfd_get_section_by_name (dynobj, ".interp");
@@ -1302,15 +1283,13 @@ elf_m68k_size_dynamic_sections (output_bfd, info)
    case.  */
 
 static bfd_boolean
-elf_m68k_discard_copies (h, inf)
-     struct elf_link_hash_entry *h;
-     PTR inf;
+elf_m68k_discard_copies(struct elf_link_hash_entry *h, PTR inf)
 {
-  struct bfd_link_info *info = (struct bfd_link_info *) inf;
+  struct bfd_link_info *info = (struct bfd_link_info *)inf;
   struct elf_m68k_pcrel_relocs_copied *s;
 
   if (h->root.type == bfd_link_hash_warning)
-    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 
   if (!h->def_regular
       || (!info->symbolic
@@ -1340,19 +1319,13 @@ elf_m68k_discard_copies (h, inf)
   return TRUE;
 }
 
-/* Relocate an M68K ELF section.  */
-
+/* Relocate an M68K ELF section: */
 static bfd_boolean
-elf_m68k_relocate_section (output_bfd, info, input_bfd, input_section,
-			   contents, relocs, local_syms, local_sections)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     Elf_Internal_Rela *relocs;
-     Elf_Internal_Sym *local_syms;
-     asection **local_sections;
+elf_m68k_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+                          bfd *input_bfd, asection *input_section,
+			  bfd_byte *contents, Elf_Internal_Rela *relocs,
+                          Elf_Internal_Sym *local_syms,
+                          asection **local_sections)
 {
   bfd *dynobj;
   Elf_Internal_Shdr *symtab_hdr;
@@ -1775,18 +1748,16 @@ elf_m68k_relocate_section (output_bfd, info, input_bfd, input_section,
    dynamic sections here.  */
 
 static bfd_boolean
-elf_m68k_finish_dynamic_symbol (output_bfd, info, h, sym)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
-     struct elf_link_hash_entry *h;
-     Elf_Internal_Sym *sym;
+elf_m68k_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
+                               struct elf_link_hash_entry *h,
+                               Elf_Internal_Sym *sym)
 {
   bfd *dynobj;
   int plt_off1, plt_off2, plt_off3;
 
-  dynobj = elf_hash_table (info)->dynobj;
+  dynobj = elf_hash_table(info)->dynobj;
 
-  if (h->plt.offset != (bfd_vma) -1)
+  if (h->plt.offset != (bfd_vma)(-1L))
     {
       asection *splt;
       asection *sgot;
@@ -1969,40 +1940,38 @@ elf_m68k_finish_dynamic_symbol (output_bfd, info, h, sym)
   return TRUE;
 }
 
-/* Finish up the dynamic sections.  */
-
+/* Finish up the dynamic sections: */
 static bfd_boolean
-elf_m68k_finish_dynamic_sections (output_bfd, info)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
+elf_m68k_finish_dynamic_sections(bfd *output_bfd,
+                                 struct bfd_link_info *info)
 {
   bfd *dynobj;
   asection *sgot;
   asection *sdyn;
 
-  dynobj = elf_hash_table (info)->dynobj;
+  dynobj = elf_hash_table(info)->dynobj;
 
-  sgot = bfd_get_section_by_name (dynobj, ".got.plt");
-  BFD_ASSERT (sgot != NULL);
-  sdyn = bfd_get_section_by_name (dynobj, ".dynamic");
+  sgot = bfd_get_section_by_name(dynobj, ".got.plt");
+  BFD_ASSERT(sgot != NULL);
+  sdyn = bfd_get_section_by_name(dynobj, ".dynamic");
 
-  if (elf_hash_table (info)->dynamic_sections_created)
+  if (elf_hash_table(info)->dynamic_sections_created)
     {
       asection *splt;
       Elf32_External_Dyn *dyncon, *dynconend;
 
-      splt = bfd_get_section_by_name (dynobj, ".plt");
-      BFD_ASSERT (splt != NULL && sdyn != NULL);
+      splt = bfd_get_section_by_name(dynobj, ".plt");
+      BFD_ASSERT((splt != NULL) && (sdyn != NULL));
 
-      dyncon = (Elf32_External_Dyn *) sdyn->contents;
-      dynconend = (Elf32_External_Dyn *) (sdyn->contents + sdyn->size);
+      dyncon = (Elf32_External_Dyn *)sdyn->contents;
+      dynconend = (Elf32_External_Dyn *)(sdyn->contents + sdyn->size);
       for (; dyncon < dynconend; dyncon++)
 	{
 	  Elf_Internal_Dyn dyn;
 	  const char *name;
 	  asection *s;
 
-	  bfd_elf32_swap_dyn_in (dynobj, dyncon, &dyn);
+	  bfd_elf32_swap_dyn_in(dynobj, dyncon, &dyn);
 
 	  switch (dyn.d_tag)
 	    {
@@ -2124,12 +2093,10 @@ elf_m68k_finish_dynamic_sections (output_bfd, info)
    objects, and before the final_link entry point is called.  */
 
 bfd_boolean
-bfd_m68k_elf32_create_embedded_relocs (abfd, info, datasec, relsec, errmsg)
-     bfd *abfd;
-     struct bfd_link_info *info;
-     asection *datasec;
-     asection *relsec;
-     char **errmsg;
+bfd_m68k_elf32_create_embedded_relocs(bfd *abfd,
+                                      struct bfd_link_info *info,
+                                      asection *datasec, asection *relsec,
+                                      char **errmsg)
 {
   Elf_Internal_Shdr *symtab_hdr;
   Elf_Internal_Sym *isymbuf = NULL;
@@ -2231,19 +2198,18 @@ bfd_m68k_elf32_create_embedded_relocs (abfd, info, datasec, relsec, errmsg)
   return TRUE;
 
 error_return:
-  if (isymbuf != NULL && symtab_hdr->contents != (unsigned char *) isymbuf)
-    free (isymbuf);
+  if (isymbuf != NULL && symtab_hdr->contents != (unsigned char *)isymbuf)
+    free(isymbuf);
   if (internal_relocs != NULL
-      && elf_section_data (datasec)->relocs != internal_relocs)
-    free (internal_relocs);
+      && elf_section_data(datasec)->relocs != internal_relocs)
+    free(internal_relocs);
   return FALSE;
 }
 
 static enum elf_reloc_type_class
-elf32_m68k_reloc_type_class (rela)
-     const Elf_Internal_Rela *rela;
+elf32_m68k_reloc_type_class(const Elf_Internal_Rela *rela)
 {
-  switch ((int) ELF32_R_TYPE (rela->r_info))
+  switch ((int)ELF32_R_TYPE(rela->r_info))
     {
     case R_68K_RELATIVE:
       return reloc_class_relative;

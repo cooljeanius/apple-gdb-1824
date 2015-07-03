@@ -1,6 +1,6 @@
 /* d-demangle.c: Demangler for the D programming language
    Copyright 2014 Free Software Foundation, Inc.
-   Written by Iain Buclaw (ibuclaw@gdcproject.org)
+   Written by Iain Buclaw <ibuclaw@gdcproject.org>
 
 This file is part of the libiberty library.
 Libiberty is free software; you can redistribute it and/or
@@ -120,38 +120,38 @@ string_setlength (string *s, int n)
 }
 
 static void
-string_append (string *p, const char *s)
+string_append(string *p, const char *s)
 {
-  int n = strlen (s);
-  string_need (p, n);
-  memcpy (p->p, s, n);
+  size_t n = strlen(s);
+  string_need(p, (int)n);
+  memcpy(p->p, s, n);
   p->p += n;
 }
 
 static void
-string_appendn (string *p, const char *s, int n)
+string_appendn(string *p, const char *s, int n)
 {
   if (n != 0)
     {
-      string_need (p, n);
-      memcpy (p->p, s, n);
+      string_need(p, n);
+      memcpy(p->p, s, (size_t)n);
       p->p += n;
     }
 }
 
 static void
-string_prependn (string *p, const char *s, int n)
+string_prependn(string *p, const char *s, int n)
 {
   char *q;
 
   if (n != 0)
     {
-      string_need (p, n);
-      for (q = p->p - 1; q >= p->b; q--)
+      string_need(p, n);
+      for (q = (p->p - 1); q >= p->b; q--)
 	{
 	  q[n] = q[0];
 	}
-      memcpy (p->b, s, n);
+      memcpy(p->b, s, (size_t)n);
       p->p += n;
     }
 }
@@ -230,27 +230,27 @@ dlang_attributes (string *decl, const char *mangled)
 	{
 	case 'a': /* pure */
 	  mangled++;
-	  string_append (decl, "pure ");
+	  string_append(decl, "pure ");
 	  continue;
 	case 'b': /* nothrow */
 	  mangled++;
-	  string_append (decl, "nothrow ");
+	  string_append(decl, "nothrow ");
 	  continue;
 	case 'c': /* ref */
 	  mangled++;
-	  string_append (decl, "ref ");
+	  string_append(decl, "ref ");
 	  continue;
 	case 'd': /* @property */
 	  mangled++;
-	  string_append (decl, "@property ");
+	  string_append(decl, "@property ");
 	  continue;
 	case 'e': /* @trusted */
 	  mangled++;
-	  string_append (decl, "@trusted ");
+	  string_append(decl, "@trusted ");
 	  continue;
 	case 'f': /* @safe */
 	  mangled++;
-	  string_append (decl, "@safe ");
+	  string_append(decl, "@safe ");
 	  continue;
 	case 'g':
 	case 'h':
@@ -262,8 +262,10 @@ dlang_attributes (string *decl, const char *mangled)
 	  break;
 	case 'i': /* @nogc */
 	  mangled++;
-	  string_append (decl, "@nogc ");
+	  string_append(decl, "@nogc ");
 	  continue;
+        default:
+          continue;
 	}
       break;
     }
@@ -323,9 +325,9 @@ dlang_function_type (string *decl, const char *mangled)
 /* Demangle the argument list from MANGLED and append it to DECL.
    Return the remaining string on success or NULL on failure.  */
 static const char *
-dlang_function_args (string *decl, const char *mangled)
+dlang_function_args(string *decl, const char *mangled)
 {
-  size_t n = 0;
+  size_t n = 0UL;
 
   while (mangled && *mangled != '\0')
     {
@@ -333,42 +335,46 @@ dlang_function_args (string *decl, const char *mangled)
 	{
 	case 'X': /* (variadic T t...) style.  */
 	  mangled++;
-	  string_append (decl, "...");
+	  string_append(decl, "...");
 	  return mangled;
 	case 'Y': /* (variadic T t, ...) style.  */
 	  mangled++;
-	  string_append (decl, ", ...");
+	  string_append(decl, ", ...");
 	  return mangled;
 	case 'Z': /* Normal function.  */
 	  mangled++;
 	  return mangled;
+        default:
+          break;
 	}
 
       if (n++)
-	string_append (decl, ", ");
+	string_append(decl, ", ");
 
       if (*mangled == 'M') /* scope(T) */
 	{
 	  mangled++;
-	  string_append (decl, "scope ");
+	  string_append(decl, "scope ");
 	}
 
       switch (*mangled)
 	{
 	case 'J': /* out(T) */
 	  mangled++;
-	  string_append (decl, "out ");
+	  string_append(decl, "out ");
 	  break;
 	case 'K': /* ref(T) */
 	  mangled++;
-	  string_append (decl, "ref ");
+	  string_append(decl, "ref ");
 	  break;
 	case 'L': /* lazy(T) */
 	  mangled++;
-	  string_append (decl, "lazy ");
+	  string_append(decl, "lazy ");
 	  break;
+        default:
+          break;
 	}
-      mangled = dlang_type (decl, mangled);
+      mangled = dlang_type(decl, mangled);
     }
 
   return mangled;
@@ -724,17 +730,19 @@ dlang_parse_integer (string *decl, const char *mangled, char type)
 	  switch (type)
 	    {
 	    case 'a': /* char */
-	      string_append (decl, "\\x");
+	      string_append(decl, "\\x");
 	      width = 2;
 	      break;
 	    case 'u': /* wchar */
-	      string_append (decl, "\\u");
+	      string_append(decl, "\\u");
 	      width = 4;
 	      break;
 	    case 'w': /* dchar */
-	      string_append (decl, "\\U");
+	      string_append(decl, "\\U");
 	      width = 8;
 	      break;
+            default:
+              break;
 	    }
 
 	  while (val > 0)
@@ -776,12 +784,12 @@ dlang_parse_integer (string *decl, const char *mangled, char type)
       const char *numptr = mangled;
       size_t num = 0;
 
-      while (ISDIGIT (*mangled))
+      while (ISDIGIT(*mangled))
 	{
 	  num++;
 	  mangled++;
 	}
-      string_appendn (decl, numptr, num);
+      string_appendn(decl, numptr, num);
 
       /* Append suffix.  */
       switch (type)
@@ -789,14 +797,16 @@ dlang_parse_integer (string *decl, const char *mangled, char type)
 	case 'h': /* ubyte */
 	case 't': /* ushort */
 	case 'k': /* uint */
-	  string_append (decl, "u");
+	  string_append(decl, "u");
 	  break;
 	case 'l': /* long */
-	  string_append (decl, "L");
+	  string_append(decl, "L");
 	  break;
 	case 'm': /* ulong */
-	  string_append (decl, "uL");
+	  string_append(decl, "uL");
 	  break;
+        default:
+          break;
 	}
     }
 
@@ -1125,6 +1135,8 @@ dlang_call_convention_p (const char *mangled)
 	case 'F': case 'U': case 'V':
 	case 'W': case 'R':
 	  return 1;
+        default:
+          break;
 	}
 
     default:
@@ -1216,10 +1228,12 @@ dlang_template_args (string *decl, const char *mangled)
 	case 'Z': /* End of parameter list.  */
 	  mangled++;
 	  return mangled;
+        default:
+          break;
 	}
 
       if (n++)
-	string_append (decl, ", ");
+	string_append(decl, ", ");
 
       switch (*mangled)
 	{

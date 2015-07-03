@@ -65,10 +65,10 @@ typedef struct ppcboot_hdr {
   char			partition_name[32];	/* partition name */
   bfd_byte		reserved1[470];		/* reserved */
 }
-#if defined(__GNUC__) && defined(ATTRIBUTE_PACKED)
+#if defined(__GNUC__) && defined(ATTRIBUTE_PACKED) && defined(__ppc__)
 /* FIXME: '-Wpacked' says this is unnecessary: */
   ATTRIBUTE_PACKED
-#endif /* __GNUC__ && ATTRIBUTE_PACKED */
+#endif /* __GNUC__ && ATTRIBUTE_PACKED && __ppc__ */
 ppcboot_hdr_t;
 
 /* Signature bytes for last 2 bytes of the 512 byte record */

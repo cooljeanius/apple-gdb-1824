@@ -1,9 +1,9 @@
 /* A Fibonacci heap datatype.
    Copyright 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
    Contributed by Daniel Berlin (dan@cgsoftware.com).
-   
+
 This file is part of GNU CC.
-   
+
 GNU CC is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
@@ -220,37 +220,37 @@ fibheap_replace_key_data (fibheap_t heap, fibnode_t node,
   /* These two compares are specifically <= 0 to make sure that in the case
      of equality, a node we replaced the data on, becomes the new min.  This
      is needed so that delete's call to extractmin gets the right node.  */
-  if (y != NULL && fibheap_compare (heap, node, y) <= 0)
+  if ((y != NULL) && (fibheap_compare(heap, node, y) <= 0))
     {
-      fibheap_cut (heap, node, y);
-      fibheap_cascading_cut (heap, y);
+      fibheap_cut(heap, node, y);
+      fibheap_cascading_cut(heap, y);
     }
 
-  if (fibheap_compare (heap, node, heap->min) <= 0)
+  if (fibheap_compare(heap, node, heap->min) <= 0)
     heap->min = node;
 
   return odata;
 }
 
-/* Replace the DATA associated with NODE.  */
+/* Replace the DATA associated with NODE: */
 void *
 fibheap_replace_data (fibheap_t heap, fibnode_t node, void *data)
 {
   return fibheap_replace_key_data (heap, node, node->key, data);
 }
 
-/* Replace the KEY associated with NODE.  */
+/* Replace the KEY associated with NODE: */
 fibheapkey_t
-fibheap_replace_key (fibheap_t heap, fibnode_t node, fibheapkey_t key)
+fibheap_replace_key(fibheap_t heap, fibnode_t node, fibheapkey_t key)
 {
-  int okey = node->key;
-  fibheap_replace_key_data (heap, node, key, node->data);
+  int okey = (int)node->key;
+  fibheap_replace_key_data(heap, node, key, node->data);
   return okey;
 }
 
-/* Delete NODE from HEAP.  */
+/* Delete NODE from HEAP: */
 void *
-fibheap_delete_node (fibheap_t heap, fibnode_t node)
+fibheap_delete_node(fibheap_t heap, fibnode_t node)
 {
   void *ret = node->data;
 
@@ -343,11 +343,11 @@ fibheap_rem_root (fibheap_t heap, fibnode_t node)
     heap->root = fibnode_remove (node);
 }
 
-/* Consolidate the heap.  */
+/* Consolidate the heap: */
 static void
-fibheap_consolidate (fibheap_t heap)
+fibheap_consolidate(fibheap_t heap)
 {
-  fibnode_t a[1 + 8 * sizeof (long)];
+  fibnode_t a[1UL + (8UL * sizeof(long))];
   fibnode_t w;
   fibnode_t y;
   fibnode_t x;
@@ -355,14 +355,14 @@ fibheap_consolidate (fibheap_t heap)
   int d;
   int D;
 
-  D = 1 + 8 * sizeof (long);
+  D = (1UL + (8UL * sizeof(long)));
 
-  memset (a, 0, sizeof (fibnode_t) * D);
+  memset(a, 0, (sizeof(fibnode_t) * (size_t)D));
 
   while ((w = heap->root) != NULL)
     {
       x = w;
-      fibheap_rem_root (heap, w);
+      fibheap_rem_root(heap, w);
       d = x->degree;
       while (a[d] != NULL)
 	{

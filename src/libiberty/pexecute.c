@@ -92,15 +92,15 @@ pwait (int pid, int *status, int flags ATTRIBUTE_UNUSED)
 
   if (pid == 0 && idx == 1)
     {
-      if (!pex_get_status (pex, 1, status))
+      if (!pex_get_status(pex, 1, status))
 	return -1;
     }
   else
     {
       int *vector;
 
-      vector = XNEWVEC (int, idx);
-      if (!pex_get_status (pex, idx, vector))
+      vector = XNEWVEC(int, (size_t)idx);
+      if (!pex_get_status(pex, idx, vector))
 	return -1;
       *status = vector[pid];
       free (vector);

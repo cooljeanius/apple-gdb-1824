@@ -315,20 +315,20 @@ floatformat_to_double (const struct floatformat *fmt,
      do NOT try to preserve the type of NaN.  FIXME.  */
   if ((unsigned long) exponent == fmt->exp_nan)
     {
-      int nan;
+      int is_a_nan;
 
       mant_off = fmt->man_start;
       mant_bits_left = fmt->man_len;
-      nan = 0;
+      is_a_nan = 0;
       while (mant_bits_left > 0)
 	{
-	  mant_bits = min (mant_bits_left, 32);
+	  mant_bits = min((unsigned int)mant_bits_left, 32U);
 
-	  if (get_field (ufrom, fmt->byteorder, fmt->totalsize,
-			 mant_off, mant_bits) != 0)
+	  if (get_field(ufrom, fmt->byteorder, fmt->totalsize,
+                        mant_off, mant_bits) != 0)
 	    {
 	      /* This is a NaN.  */
-	      nan = 1;
+	      is_a_nan = 1;
 	      break;
 	    }
 
@@ -343,12 +343,12 @@ floatformat_to_double (const struct floatformat *fmt,
 	 conjunction with the GNU/C99 extension for hexadecimal
 	 floating point constants and will issue a warning when
 	 compiling with -pedantic.  */
-      if (nan)
+      if (is_a_nan)
 	dto = NAN;
       else
 	dto = INFINITY;
 
-      if (get_field (ufrom, fmt->byteorder, fmt->totalsize, fmt->sign_start, 1))
+      if (get_field(ufrom, fmt->byteorder, fmt->totalsize, fmt->sign_start, 1))
 	dto = -dto;
 
       *to = dto;

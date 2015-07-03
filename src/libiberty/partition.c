@@ -40,13 +40,14 @@ static int elem_compare (const void *, const void *);
    element is in a class by itself.  */
 
 partition
-partition_new (int num_elements)
+partition_new(int num_elements)
 {
   int e;
 
-  partition part = (partition)
-    xmalloc (sizeof (struct partition_def) +
-	     (num_elements - 1) * sizeof (struct partition_elem));
+  partition part = ((partition)
+                    xmalloc(sizeof(struct partition_def)
+                            + (((size_t)num_elements - 1UL)
+                               * sizeof(struct partition_elem))));
   part->num_elements = num_elements;
   for (e = 0; e < num_elements; ++e)
     {
@@ -157,15 +158,15 @@ partition_print(partition part, FILE *fp)
     /* If we haven't printed this element, print its entire class.  */
     if (! done[e])
       {
-	int c = e;
-	int count = elements[elements[e].class_element].class_count;
+	int c = (int)e;
+	int count = (int)elements[elements[e].class_element].class_count;
 	int i;
 
         /* Collect the elements in this class: */
 	for (i = 0; i < count; ++i) {
 	  class_elements[i] = c;
 	  done[c] = 1;
-	  c = (elements[c].next - elements);
+	  c = (int)(elements[c].next - elements);
 	}
 	/* Sort them: */
 	qsort((void *)class_elements, (size_t)count, sizeof(int),

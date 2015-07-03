@@ -187,7 +187,7 @@ aix386_core_file_p(bfd *abfd)
   int i, n;
   unsigned char longbuf[4]; /* Raw bytes of various header fields */
   /* try to work around -Wstack-protector warnings for building Release: */
-  char longerbuf[8L] ATTRIBUTE_UNUSED;
+  static char longerbuf[8L] ATTRIBUTE_USED;
   long *buf_of_longs[8L] ATTRIBUTE_UNUSED;
 #if defined(_AIX) || defined(HAVE_SYS_I386_COREDUMP_H)
   bfd_size_type core_size = sizeof(struct corehdr);

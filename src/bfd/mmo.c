@@ -875,6 +875,7 @@ static bfd_boolean
 mmo_write_loc_chunk(bfd *abfd, bfd_vma vma, const bfd_byte *loc,
 		    size_t len, bfd_vma *last_vmap)
 {
+  static const char unused_but_used_buf[8] ATTRIBUTE_USED;
   /* Find an initial and trailing section of zero tetras; we don't need to
      write out zeros.  FIXME: When we do this, we should emit section size
      and address specifiers, else objcopy can't always perform an identity
@@ -2034,11 +2035,9 @@ mmo_new_section_hook (bfd *abfd ATTRIBUTE_UNUSED, asection *newsect)
    contents.  */
 
 static bfd_boolean
-mmo_get_section_contents (bfd *abfd ATTRIBUTE_UNUSED,
-			  asection *sec,
-			  void * location,
-			  file_ptr offset,
-			  bfd_size_type bytes_to_do)
+mmo_get_section_contents(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
+			 void *location, file_ptr offset,
+			 bfd_size_type bytes_to_do)
 {
   /* Iterate over diminishing chunk sizes, copying contents, like
      mmo_set_section_contents.  */
@@ -2047,20 +2046,21 @@ mmo_get_section_contents (bfd *abfd ATTRIBUTE_UNUSED,
       /* A minor song-and-dance to make sure we're not bitten by the
 	 distant possibility of the cast from bfd_vma to int making the
 	 chunk zero-sized.  */
-      int chunk_size
-	= (int) bytes_to_do != 0 ? bytes_to_do : MMO_SEC_CONTENTS_CHUNK_SIZE;
+      intptr_t chunk_size =
+        (intptr_t)((bytes_to_do != 0)
+                   ? bytes_to_do : MMO_SEC_CONTENTS_CHUNK_SIZE);
       bfd_byte *loc;
 
-      do
-	loc = mmo_get_loc (sec, sec->vma + offset, chunk_size);
-      while (loc == NULL && (chunk_size /= 2) != 0);
+      do {
+	loc = mmo_get_loc(sec, (sec->vma + offset), chunk_size);
+      } while (loc == NULL && (chunk_size /= 2) != 0);
 
       if (chunk_size == 0)
 	return FALSE;
 
-      memcpy (location, loc, chunk_size);
+      memcpy(location, loc, chunk_size);
 
-      location += chunk_size;
+      location = (void *)((intptr_t)location + chunk_size);
       bytes_to_do -= chunk_size;
       offset += chunk_size;
     }
@@ -2235,20 +2235,19 @@ mmo_print_symbol (bfd *abfd, void *afile, asymbol *symbol,
    size of header information is irrelevant.  */
 
 static int
-mmo_sizeof_headers (bfd *abfd ATTRIBUTE_UNUSED,
-		    bfd_boolean exec ATTRIBUTE_UNUSED)
+mmo_sizeof_headers(bfd *abfd ATTRIBUTE_UNUSED,
+		   bfd_boolean exec ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
-/* Write the (section-neutral) file preamble.  */
-
+/* Write the (section-neutral) file preamble: */
 static bfd_boolean
-mmo_internal_write_header (bfd *abfd)
+mmo_internal_write_header(bfd *abfd)
 {
-  const char lop_pre_bfd[] = { LOP, LOP_PRE, 1, 1};
+  const char lop_pre_bfd[] = { (char)LOP, LOP_PRE, 1, 1 };
 
-  if (bfd_bwrite (lop_pre_bfd, 4, abfd) != 4)
+  if (bfd_bwrite(lop_pre_bfd, 4, abfd) != 4)
     return FALSE;
 
   /* Copy creation time of original file.  */
@@ -2570,12 +2569,11 @@ EXAMPLE
   return TRUE;
 }
 
-/* We save up all data before output.  */
-
+/* We save up all data before output: */
 static bfd_boolean
-mmo_set_section_contents (bfd *abfd ATTRIBUTE_UNUSED, sec_ptr sec,
-			  const void *location, file_ptr offset,
-			  bfd_size_type bytes_to_do)
+mmo_set_section_contents(bfd *abfd ATTRIBUTE_UNUSED, sec_ptr sec,
+			 const void *location, file_ptr offset,
+			 bfd_size_type bytes_to_do)
 {
   /* Iterate over diminishing chunk sizes, copying contents.  */
   while (bytes_to_do)
@@ -2583,20 +2581,21 @@ mmo_set_section_contents (bfd *abfd ATTRIBUTE_UNUSED, sec_ptr sec,
       /* A minor song-and-dance to make sure we're not bitten by the
 	 distant possibility of the cast from bfd_vma to int making the
 	 chunk zero-sized.  */
-      int chunk_size
-	= (int) bytes_to_do != 0 ? bytes_to_do : MMO_SEC_CONTENTS_CHUNK_SIZE;
+      intptr_t chunk_size =
+        (intptr_t)((bytes_to_do != 0)
+                   ? bytes_to_do : MMO_SEC_CONTENTS_CHUNK_SIZE);
       bfd_byte *loc;
 
-      do
-	loc = mmo_get_loc (sec, sec->vma + offset, chunk_size);
-      while (loc == NULL && (chunk_size /= 2) != 0);
+      do {
+	loc = mmo_get_loc(sec, (sec->vma + offset), chunk_size);
+      } while (loc == NULL && (chunk_size /= 2) != 0);
 
       if (chunk_size == 0)
 	return FALSE;
 
-      memcpy (loc, location, chunk_size);
+      memcpy(loc, location, chunk_size);
 
-      location += chunk_size;
+      location = (const void *)((intptr_t)location + chunk_size);
       bytes_to_do -= chunk_size;
       offset += chunk_size;
     }

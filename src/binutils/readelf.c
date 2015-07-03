@@ -492,16 +492,11 @@ byte_get_signed(unsigned char *field, int size)
 
   switch (size)
     {
-    case 1:
-      return ((x ^ 0x80) - 0x80);
-    case 2:
-      return ((x ^ 0x8000) - 0x8000);
-    case 4:
-      return ((x ^ 0x80000000) - 0x80000000);
-    case 8:
-      return x;
-    default:
-      abort();
+    case 1: return ((x ^ 0x80) - 0x80);
+    case 2: return ((x ^ 0x8000) - 0x8000);
+    case 4: return ((x ^ 0x80000000) - 0x80000000);
+    case 8: return x;
+    default: abort();
     }
 }
 
@@ -511,7 +506,7 @@ byte_put_little_endian(unsigned char *field, bfd_vma value, int size)
   switch (size)
     {
     case 8:
-      field[7] = ((((value >> 24) >> 24) >> 8) & 0xff);
+      field[7] = (unsigned char)((((value >> 24) >> 24) >> 8) & 0xff);
       field[6] = (((value >> 24) >> 24) & 0xff);
       field[5] = (((value >> 24) >> 16) & 0xff);
       field[4] = (((value >> 24) >> 8) & 0xff);
@@ -535,59 +530,55 @@ byte_put_little_endian(unsigned char *field, bfd_vma value, int size)
 
 #if defined BFD64 && !BFD_HOST_64BIT_LONG
 static int
-print_dec_vma (bfd_vma vma, int is_signed)
+print_dec_vma(bfd_vma vma, int is_signed)
 {
   char buf[40];
   char *bufp = buf;
   int nc = 0;
 
-  if (is_signed && (bfd_signed_vma) vma < 0)
+  if (is_signed && ((bfd_signed_vma)vma < 0L))
     {
       vma = -vma;
-      putchar ('-');
+      putchar('-');
       nc = 1;
     }
 
-  do
-    {
-      *bufp++ = '0' + vma % 10;
-      vma /= 10;
-    }
-  while (vma != 0);
-  nc += bufp - buf;
+  do {
+    *bufp++ = (char)('0' + (char)(vma % 10UL));
+    vma /= 10;
+  } while (vma != 0);
+  nc += (bufp - buf);
 
   while (bufp > buf)
-    putchar (*--bufp);
+    putchar(*--bufp);
   return nc;
 }
 
 static int
-print_hex_vma (bfd_vma vma)
+print_hex_vma(bfd_vma vma)
 {
   char buf[32];
   char *bufp = buf;
   int nc;
 
-  do
-    {
-      char digit = '0' + (vma & 0x0f);
-      if (digit > '9')
-	digit += 'a' - '0' - 10;
-      *bufp++ = digit;
-      vma >>= 4;
-    }
-  while (vma != 0);
-  nc = bufp - buf;
+  do {
+    char digit = (char)('0' + (char)(vma & 0x0f));
+    if (digit > '9')
+      digit = (char)(digit + (char)('a' - '0' - (char)10));
+    *bufp++ = digit;
+    vma >>= 4;
+  } while (vma != 0);
+  nc = (bufp - buf);
 
   while (bufp > buf)
-    putchar (*--bufp);
+    putchar(*--bufp);
   return nc;
 }
 #endif /* BFD64 && !BFD_HOST_64BIT_LONG */
 
 /* Print a VMA value: */
 static int
-print_vma (bfd_vma vma, print_mode mode)
+print_vma(bfd_vma vma, print_mode mode)
 {
 #ifdef BFD64
   if (is_32bit_elf)
@@ -595,29 +586,16 @@ print_vma (bfd_vma vma, print_mode mode)
     {
       switch (mode)
 	{
-	case FULL_HEX:
-	  return printf("0x%8.8lx", (unsigned long)vma);
-
-	case LONG_HEX:
-	  return printf("%8.8lx", (unsigned long)vma);
-
+	case FULL_HEX: return printf("0x%8.8lx", (unsigned long)vma);
+	case LONG_HEX: return printf("%8.8lx", (unsigned long)vma);
 	case DEC_5:
 	  if (vma <= 99999)
 	    return printf("%5ld", (long) vma);
 	  /* Drop through.  */
-
-	case PREFIX_HEX:
-	  return printf("0x%lx", (unsigned long)vma);
-
-	case HEX:
-	  return printf("%lx", (unsigned long)vma);
-
-	case DEC:
-	  return printf("%ld", (unsigned long)vma);
-
-	case UNSIGNED:
-	  return printf("%lu", (unsigned long)vma);
-
+	case PREFIX_HEX: return printf("0x%lx", (unsigned long)vma);
+	case HEX: return printf("%lx", (unsigned long)vma);
+	case DEC: return printf("%ld", (unsigned long)vma);
+	case UNSIGNED: return printf("%lu", (unsigned long)vma);
         default:;
 	}
     }
@@ -699,7 +677,7 @@ print_symbol (int width, const char *symbol)
 }
 
 static bfd_vma
-byte_get_big_endian (unsigned char *field, int size)
+byte_get_big_endian(unsigned char *field, int size)
 {
   switch (size)
     {
@@ -707,7 +685,8 @@ byte_get_big_endian (unsigned char *field, int size)
       return *field;
 
     case 2:
-      return ((unsigned int) (field[1])) | (((int) (field[0])) << 8);
+      return (bfd_vma)(((unsigned int)(field[1]))
+                       | (unsigned int)(((int)(field[0])) << 8));
 
 #ifndef BFD64
     case 8:
@@ -786,10 +765,9 @@ find_section (const char *name)
   return NULL;
 }
 
-/* Guess the relocation size commonly used by the specific machines.  */
-
+/* Guess the relocation size commonly used by the specific machines: */
 static int
-guess_is_rela (unsigned long e_machine)
+guess_is_rela(unsigned long e_machine)
 {
   switch (e_machine)
     {
@@ -1171,203 +1149,161 @@ dump_relocations(FILE *file, unsigned long rel_offset,
 	default:
 	  rtype = NULL;
 	  break;
-
 	case EM_M32R:
 	case EM_CYGNUS_M32R:
-	  rtype = elf_m32r_reloc_type (type);
+	  rtype = elf_m32r_reloc_type(type);
 	  break;
-
 	case EM_386:
 	case EM_486:
-	  rtype = elf_i386_reloc_type (type);
+	  rtype = elf_i386_reloc_type(type);
 	  break;
-
 	case EM_68HC11:
 	case EM_68HC12:
-	  rtype = elf_m68hc11_reloc_type (type);
+	  rtype = elf_m68hc11_reloc_type(type);
 	  break;
-
 	case EM_68K:
-	  rtype = elf_m68k_reloc_type (type);
+	  rtype = elf_m68k_reloc_type(type);
 	  break;
-
 	case EM_960:
-	  rtype = elf_i960_reloc_type (type);
+	  rtype = elf_i960_reloc_type(type);
 	  break;
-
 	case EM_AVR:
 	case EM_AVR_OLD:
-	  rtype = elf_avr_reloc_type (type);
+	  rtype = elf_avr_reloc_type(type);
 	  break;
-
 	case EM_OLD_SPARCV9:
 	case EM_SPARC32PLUS:
 	case EM_SPARCV9:
 	case EM_SPARC:
 	  rtype = elf_sparc_reloc_type (type);
 	  break;
-
 	case EM_V850:
 	case EM_CYGNUS_V850:
-	  rtype = v850_reloc_type (type);
+	  rtype = v850_reloc_type(type);
 	  break;
-
 	case EM_D10V:
 	case EM_CYGNUS_D10V:
-	  rtype = elf_d10v_reloc_type (type);
+	  rtype = elf_d10v_reloc_type(type);
 	  break;
-
 	case EM_D30V:
 	case EM_CYGNUS_D30V:
-	  rtype = elf_d30v_reloc_type (type);
+	  rtype = elf_d30v_reloc_type(type);
 	  break;
-
 	case EM_DLX:
-	  rtype = elf_dlx_reloc_type (type);
+	  rtype = elf_dlx_reloc_type(type);
 	  break;
-
 	case EM_SH:
-	  rtype = elf_sh_reloc_type (type);
+	  rtype = elf_sh_reloc_type(type);
 	  break;
-
 	case EM_MN10300:
 	case EM_CYGNUS_MN10300:
-	  rtype = elf_mn10300_reloc_type (type);
+	  rtype = elf_mn10300_reloc_type(type);
 	  break;
-
 	case EM_MN10200:
 	case EM_CYGNUS_MN10200:
-	  rtype = elf_mn10200_reloc_type (type);
+	  rtype = elf_mn10200_reloc_type(type);
 	  break;
-
 	case EM_FR30:
 	case EM_CYGNUS_FR30:
-	  rtype = elf_fr30_reloc_type (type);
+	  rtype = elf_fr30_reloc_type(type);
 	  break;
-
 	case EM_CYGNUS_FRV:
-	  rtype = elf_frv_reloc_type (type);
+	  rtype = elf_frv_reloc_type(type);
 	  break;
-
 	case EM_MCORE:
-	  rtype = elf_mcore_reloc_type (type);
+	  rtype = elf_mcore_reloc_type(type);
 	  break;
-
 	case EM_MMIX:
-	  rtype = elf_mmix_reloc_type (type);
+	  rtype = elf_mmix_reloc_type(type);
 	  break;
-
 	case EM_MSP430:
 	case EM_MSP430_OLD:
-	  rtype = elf_msp430_reloc_type (type);
+	  rtype = elf_msp430_reloc_type(type);
 	  break;
-
 	case EM_PPC:
-	  rtype = elf_ppc_reloc_type (type);
+	  rtype = elf_ppc_reloc_type(type);
 	  break;
-
 	case EM_PPC64:
-	  rtype = elf_ppc64_reloc_type (type);
+	  rtype = elf_ppc64_reloc_type(type);
 	  break;
-
 	case EM_MIPS:
 	case EM_MIPS_RS3_LE:
-	  rtype = elf_mips_reloc_type (type);
+	  rtype = elf_mips_reloc_type(type);
 	  if (!is_32bit_elf)
 	    {
-	      rtype2 = elf_mips_reloc_type (type2);
-	      rtype3 = elf_mips_reloc_type (type3);
+	      rtype2 = elf_mips_reloc_type(type2);
+	      rtype3 = elf_mips_reloc_type(type3);
 	    }
 	  break;
-
 	case EM_ALPHA:
-	  rtype = elf_alpha_reloc_type (type);
+	  rtype = elf_alpha_reloc_type(type);
 	  break;
-
 	case EM_ARM:
-	  rtype = elf_arm_reloc_type (type);
+	  rtype = elf_arm_reloc_type(type);
 	  break;
-
 	case EM_ARC:
-	  rtype = elf_arc_reloc_type (type);
+	  rtype = elf_arc_reloc_type(type);
 	  break;
-
 	case EM_PARISC:
-	  rtype = elf_hppa_reloc_type (type);
+	  rtype = elf_hppa_reloc_type(type);
 	  break;
-
 	case EM_H8_300:
 	case EM_H8_300H:
 	case EM_H8S:
-	  rtype = elf_h8_reloc_type (type);
+	  rtype = elf_h8_reloc_type(type);
 	  break;
-
 	case EM_OPENRISC:
 	case EM_OR32:
-	  rtype = elf_or32_reloc_type (type);
+	  rtype = elf_or32_reloc_type(type);
 	  break;
-
 	case EM_PJ:
 	case EM_PJ_OLD:
-	  rtype = elf_pj_reloc_type (type);
+	  rtype = elf_pj_reloc_type(type);
 	  break;
 	case EM_IA_64:
-	  rtype = elf_ia64_reloc_type (type);
+	  rtype = elf_ia64_reloc_type(type);
 	  break;
-
 	case EM_CRIS:
-	  rtype = elf_cris_reloc_type (type);
+	  rtype = elf_cris_reloc_type(type);
 	  break;
-
 	case EM_860:
-	  rtype = elf_i860_reloc_type (type);
+	  rtype = elf_i860_reloc_type(type);
 	  break;
-
 	case EM_X86_64:
-	  rtype = elf_x86_64_reloc_type (type);
+	  rtype = elf_x86_64_reloc_type(type);
 	  break;
-
 	case EM_S370:
-	  rtype = i370_reloc_type (type);
+	  rtype = i370_reloc_type(type);
 	  break;
-
 	case EM_S390_OLD:
 	case EM_S390:
-	  rtype = elf_s390_reloc_type (type);
+	  rtype = elf_s390_reloc_type(type);
 	  break;
-
 	case EM_XSTORMY16:
-	  rtype = elf_xstormy16_reloc_type (type);
+	  rtype = elf_xstormy16_reloc_type(type);
 	  break;
-
 	case EM_CRX:
-	  rtype = elf_crx_reloc_type (type);
+	  rtype = elf_crx_reloc_type(type);
 	  break;
-
 	case EM_VAX:
-	  rtype = elf_vax_reloc_type (type);
+	  rtype = elf_vax_reloc_type(type);
 	  break;
-
 	case EM_IP2K:
 	case EM_IP2K_OLD:
-	  rtype = elf_ip2k_reloc_type (type);
+	  rtype = elf_ip2k_reloc_type(type);
 	  break;
-
 	case EM_IQ2000:
-	  rtype = elf_iq2000_reloc_type (type);
+	  rtype = elf_iq2000_reloc_type(type);
 	  break;
-
 	case EM_XTENSA_OLD:
 	case EM_XTENSA:
-	  rtype = elf_xtensa_reloc_type (type);
+	  rtype = elf_xtensa_reloc_type(type);
 	  break;
-
 	case EM_M32C:
-	  rtype = elf_m32c_reloc_type (type);
+	  rtype = elf_m32c_reloc_type(type);
 	  break;
-
 	case EM_MS1:
-	  rtype = elf_ms1_reloc_type (type);
+	  rtype = elf_ms1_reloc_type(type);
 	  break;
 	}
 
@@ -1559,8 +1495,7 @@ get_mips_dynamic_type (unsigned long type)
     case DT_MIPS_COMPACT_SIZE: return "MIPS_COMPACT_SIZE";
     case DT_MIPS_GP_VALUE: return "MIPS_GP_VALUE";
     case DT_MIPS_AUX_DYNAMIC: return "MIPS_AUX_DYNAMIC";
-    default:
-      return NULL;
+    default: return NULL;
     }
 }
 
@@ -1570,8 +1505,7 @@ get_sparc64_dynamic_type (unsigned long type)
   switch (type)
     {
     case DT_SPARC_REGISTER: return "SPARC_REGISTER";
-    default:
-      return NULL;
+    default: return NULL;
     }
 }
 
@@ -1581,8 +1515,7 @@ get_ppc_dynamic_type (unsigned long type)
   switch (type)
     {
     case DT_PPC_GOT: return "PPC_GOT";
-    default:
-      return NULL;
+    default: return NULL;
     }
 }
 
@@ -1594,8 +1527,7 @@ get_ppc64_dynamic_type (unsigned long type)
     case DT_PPC64_GLINK: return "PPC64_GLINK";
     case DT_PPC64_OPD:   return "PPC64_OPD";
     case DT_PPC64_OPDSZ: return "PPC64_OPDSZ";
-    default:
-      return NULL;
+    default: return NULL;
     }
 }
 
@@ -1628,8 +1560,7 @@ get_parisc_dynamic_type (unsigned long type)
     case DT_PLT_SIZE:		return "PLT_SIZE";
     case DT_DLT:		return "DLT";
     case DT_DLT_SIZE:		return "DLT_SIZE";
-    default:
-      return NULL;
+    default: return NULL;
     }
 }
 
@@ -1639,8 +1570,7 @@ get_ia64_dynamic_type (unsigned long type)
   switch (type)
     {
     case DT_IA_64_PLT_RESERVE: return "IA_64_PLT_RESERVE";
-    default:
-      return NULL;
+    default: return NULL;
     }
 }
 
@@ -1650,8 +1580,7 @@ get_alpha_dynamic_type (unsigned long type)
   switch (type)
     {
     case DT_ALPHA_PLTRO: return "ALPHA_PLTRO";
-    default:
-      return NULL;
+    default: return NULL;
     }
 }
 
@@ -1743,26 +1672,18 @@ get_dynamic_type (unsigned long type)
 	    {
 	    case EM_MIPS:
 	    case EM_MIPS_RS3_LE:
-	      result = get_mips_dynamic_type (type);
-	      break;
+	      result = get_mips_dynamic_type(type); break;
 	    case EM_SPARCV9:
-	      result = get_sparc64_dynamic_type (type);
-	      break;
+	      result = get_sparc64_dynamic_type(type); break;
 	    case EM_PPC:
-	      result = get_ppc_dynamic_type (type);
-	      break;
+	      result = get_ppc_dynamic_type(type); break;
 	    case EM_PPC64:
-	      result = get_ppc64_dynamic_type (type);
-	      break;
+	      result = get_ppc64_dynamic_type(type); break;
 	    case EM_IA_64:
-	      result = get_ia64_dynamic_type (type);
-	      break;
+	      result = get_ia64_dynamic_type(type); break;
 	    case EM_ALPHA:
-	      result = get_alpha_dynamic_type (type);
-	      break;
-	    default:
-	      result = NULL;
-	      break;
+	      result = get_alpha_dynamic_type(type); break;
+	    default: result = NULL; break;
 	    }
 
 	  if (result != NULL)
@@ -1779,18 +1700,15 @@ get_dynamic_type (unsigned long type)
 	  switch (elf_header.e_machine)
 	    {
 	    case EM_PARISC:
-	      result = get_parisc_dynamic_type (type);
-	      break;
-	    default:
-	      result = NULL;
-	      break;
+	      result = get_parisc_dynamic_type(type); break;
+	    default: result = NULL; break;
 	    }
 
 	  if (result != NULL)
 	    return result;
 
-	  snprintf (buff, sizeof (buff), _("Operating System specific: %lx"),
-		    type);
+	  snprintf(buff, sizeof(buff), _("Operating System specific: %lx"),
+		   type);
 	}
       else
 	snprintf (buff, sizeof (buff), _("<unknown>: %lx"), type);
@@ -1958,13 +1876,12 @@ decode_ARM_machine_flags (unsigned e_flags, char buf[])
   switch (eabi)
     {
     default:
-      strcat (buf, ", <unrecognized EABI>");
+      strcat(buf, ", <unrecognized EABI>");
       if (e_flags)
 	unknown = 1;
       break;
-
     case EF_ARM_EABI_VER1:
-      strcat (buf, ", Version1 EABI");
+      strcat(buf, ", Version1 EABI");
       while (e_flags)
 	{
 	  unsigned flag;
@@ -1985,9 +1902,8 @@ decode_ARM_machine_flags (unsigned e_flags, char buf[])
 	    }
 	}
       break;
-
     case EF_ARM_EABI_VER2:
-      strcat (buf, ", Version2 EABI");
+      strcat(buf, ", Version2 EABI");
       while (e_flags)
 	{
 	  unsigned flag;
@@ -2016,13 +1932,11 @@ decode_ARM_machine_flags (unsigned e_flags, char buf[])
 	    }
 	}
       break;
-
     case EF_ARM_EABI_VER3:
-      strcat (buf, ", Version3 EABI");
+      strcat(buf, ", Version3 EABI");
       break;
-
     case EF_ARM_EABI_VER4:
-      strcat (buf, ", Version4 EABI");
+      strcat(buf, ", Version4 EABI");
       while (e_flags)
 	{
 	  unsigned flag;
@@ -2047,9 +1961,8 @@ decode_ARM_machine_flags (unsigned e_flags, char buf[])
 	    }
 	}
       break;
-
     case EF_ARM_EABI_UNKNOWN:
-      strcat (buf, ", GNU EABI");
+      strcat(buf, ", GNU EABI");
       while (e_flags)
 	{
 	  unsigned flag;
@@ -2108,7 +2021,7 @@ decode_ARM_machine_flags (unsigned e_flags, char buf[])
     }
 
   if (unknown)
-    strcat (buf,", <unknown>");
+    strcat(buf,", <unknown>");
 }
 
 static char *
@@ -2122,51 +2035,21 @@ get_machine_flags (unsigned e_flags, unsigned e_machine)
     {
       switch (e_machine)
 	{
-	default:
-	  break;
-
-	case EM_ARM:
-	  decode_ARM_machine_flags (e_flags, buf);
-	  break;
-
+	default: break;
+	case EM_ARM: decode_ARM_machine_flags(e_flags, buf); break;
 	case EM_CYGNUS_FRV:
 	  switch (e_flags & EF_FRV_CPU_MASK)
 	    {
-	    case EF_FRV_CPU_GENERIC:
-	      break;
-
-	    default:
-	      strcat (buf, ", fr???");
-	      break;
-
-	    case EF_FRV_CPU_FR300:
-	      strcat (buf, ", fr300");
-	      break;
-
-	    case EF_FRV_CPU_FR400:
-	      strcat (buf, ", fr400");
-	      break;
-	    case EF_FRV_CPU_FR405:
-	      strcat (buf, ", fr405");
-	      break;
-
-	    case EF_FRV_CPU_FR450:
-	      strcat (buf, ", fr450");
-	      break;
-
-	    case EF_FRV_CPU_FR500:
-	      strcat (buf, ", fr500");
-	      break;
-	    case EF_FRV_CPU_FR550:
-	      strcat (buf, ", fr550");
-	      break;
-
-	    case EF_FRV_CPU_SIMPLE:
-	      strcat (buf, ", simple");
-	      break;
-	    case EF_FRV_CPU_TOMCAT:
-	      strcat (buf, ", tomcat");
-	      break;
+	    case EF_FRV_CPU_GENERIC: break;
+	    default: strcat(buf, ", fr???"); break;
+	    case EF_FRV_CPU_FR300: strcat(buf, ", fr300"); break;
+	    case EF_FRV_CPU_FR400: strcat(buf, ", fr400"); break;
+	    case EF_FRV_CPU_FR405: strcat(buf, ", fr405"); break;
+	    case EF_FRV_CPU_FR450: strcat(buf, ", fr450"); break;
+	    case EF_FRV_CPU_FR500: strcat(buf, ", fr500"); break;
+	    case EF_FRV_CPU_FR550: strcat(buf, ", fr550"); break;
+	    case EF_FRV_CPU_SIMPLE: strcat(buf, ", simple"); break;
+	    case EF_FRV_CPU_TOMCAT: strcat(buf, ", tomcat"); break;
 	    }
 	  break;
 
@@ -2192,17 +2075,10 @@ get_machine_flags (unsigned e_flags, unsigned e_machine)
 	case EM_CYGNUS_V850:
 	  switch (e_flags & EF_V850_ARCH)
 	    {
-	    case E_V850E1_ARCH:
-	      strcat (buf, ", v850e1");
-	      break;
-	    case E_V850E_ARCH:
-	      strcat (buf, ", v850e");
-	      break;
-	    case E_V850_ARCH:
-	      strcat (buf, ", v850");
-	      break;
-	    default:
-	      strcat (buf, ", unknown v850 architecture variant");
+	    case E_V850E1_ARCH: strcat(buf, ", v850e1"); break;
+	    case E_V850E_ARCH: strcat(buf, ", v850e"); break;
+	    case E_V850_ARCH: strcat(buf, ", v850"); break;
+	    default: strcat(buf, ", unknown v850 architecture variant");
 	      break;
 	    }
 	  break;
@@ -2346,17 +2222,10 @@ get_machine_flags (unsigned e_flags, unsigned e_machine)
 	case EM_PARISC:
 	  switch (e_flags & EF_PARISC_ARCH)
 	    {
-	    case EFA_PARISC_1_0:
-	      strcpy (buf, ", PA-RISC 1.0");
-	      break;
-	    case EFA_PARISC_1_1:
-	      strcpy (buf, ", PA-RISC 1.1");
-	      break;
-	    case EFA_PARISC_2_0:
-	      strcpy (buf, ", PA-RISC 2.0");
-	      break;
-	    default:
-	      break;
+	    case EFA_PARISC_1_0: strcpy(buf, ", PA-RISC 1.0"); break;
+	    case EFA_PARISC_1_1: strcpy(buf, ", PA-RISC 1.1"); break;
+	    case EFA_PARISC_2_0: strcpy(buf, ", PA-RISC 2.0"); break;
+	    default: break;
 	    }
 	  if (e_flags & EF_PARISC_TRAPNIL)
 	    strcat (buf, ", trapnil");
@@ -2445,10 +2314,8 @@ get_arm_segment_type (unsigned long type)
 {
   switch (type)
     {
-    case PT_ARM_EXIDX:
-      return "EXIDX";
-    default:
-      break;
+    case PT_ARM_EXIDX: return "EXIDX";
+    default: break;
     }
 
   return NULL;
@@ -2459,14 +2326,10 @@ get_mips_segment_type (unsigned long type)
 {
   switch (type)
     {
-    case PT_MIPS_REGINFO:
-      return "REGINFO";
-    case PT_MIPS_RTPROC:
-      return "RTPROC";
-    case PT_MIPS_OPTIONS:
-      return "OPTIONS";
-    default:
-      break;
+    case PT_MIPS_REGINFO: return "REGINFO";
+    case PT_MIPS_RTPROC: return "RTPROC";
+    case PT_MIPS_OPTIONS: return "OPTIONS";
+    default: break;
     }
 
   return NULL;
@@ -2496,8 +2359,7 @@ get_parisc_segment_type (unsigned long type)
     case PT_PARISC_ARCHEXT:	return "PARISC_ARCHEXT";
     case PT_PARISC_UNWIND:	return "PARISC_UNWIND";
     case PT_PARISC_WEAKORDER:	return "PARISC_WEAKORDER";
-    default:
-      break;
+    default: break;
     }
 
   return NULL;
@@ -2514,8 +2376,7 @@ get_ia64_segment_type (unsigned long type)
     case PT_IA_64_HP_OPT_ANOT:	return "HP_OPT_ANNOT";
     case PT_IA_64_HP_HSL_ANOT:	return "HP_HSL_ANNOT";
     case PT_IA_64_HP_STACK:	return "HP_STACK";
-    default:
-      break;
+    default: break;
     }
 
   return NULL;
@@ -2645,8 +2506,7 @@ get_mips_section_type_name (unsigned int sh_type)
     case SHT_MIPS_EH_REGION:	 return "MIPS_EH_REGION";
     case SHT_MIPS_XLATE_OLD:	 return "MIPS_XLATE_OLD";
     case SHT_MIPS_PDR_EXCEPTION: return "MIPS_PDR_EXCEPTION";
-    default:
-      break;
+    default: break;
     }
   return NULL;
 }
@@ -2663,8 +2523,7 @@ get_parisc_section_type_name (unsigned int sh_type)
     case SHT_PARISC_SYMEXTN:	return "PARISC_SYMEXTN";
     case SHT_PARISC_STUBS:	return "PARISC_STUBS";
     case SHT_PARISC_DLKM:	return "PARISC_DLKM";
-    default:
-      break;
+    default: break;
     }
   return NULL;
 }
@@ -2681,8 +2540,7 @@ get_ia64_section_type_name (unsigned int sh_type)
     case SHT_IA_64_EXT:		  return "IA_64_EXT";
     case SHT_IA_64_UNWIND:	  return "IA_64_UNWIND";
     case SHT_IA_64_PRIORITY_INIT: return "IA_64_PRIORITY_INIT";
-    default:
-      break;
+    default: break;
     }
   return NULL;
 }
@@ -2693,8 +2551,7 @@ get_x86_64_section_type_name (unsigned int sh_type)
   switch (sh_type)
     {
     case SHT_X86_64_UNWIND:	return "X86_64_UNWIND";
-    default:
-      break;
+    default: break;
     }
   return NULL;
 }
@@ -2704,10 +2561,8 @@ get_arm_section_type_name (unsigned int sh_type)
 {
   switch (sh_type)
     {
-    case SHT_ARM_EXIDX:
-      return "ARM_EXIDX";
-    default:
-      break;
+    case SHT_ARM_EXIDX: return "ARM_EXIDX";
+    default: break;
     }
   return NULL;
 }
@@ -2754,23 +2609,17 @@ get_section_type_name (unsigned int sh_type)
 	    {
 	    case EM_MIPS:
 	    case EM_MIPS_RS3_LE:
-	      result = get_mips_section_type_name (sh_type);
-	      break;
+	      result = get_mips_section_type_name(sh_type); break;
 	    case EM_PARISC:
-	      result = get_parisc_section_type_name (sh_type);
-	      break;
+	      result = get_parisc_section_type_name(sh_type); break;
 	    case EM_IA_64:
-	      result = get_ia64_section_type_name (sh_type);
-	      break;
+	      result = get_ia64_section_type_name(sh_type); break;
 	    case EM_X86_64:
-	      result = get_x86_64_section_type_name (sh_type);
-	      break;
+	      result = get_x86_64_section_type_name(sh_type); break;
 	    case EM_ARM:
-	      result = get_arm_section_type_name (sh_type);
-	      break;
+	      result = get_arm_section_type_name(sh_type); break;
 	    default:
-	      result = NULL;
-	      break;
+	      result = NULL; break;
 	    }
 
 	  if (result != NULL)
@@ -2918,84 +2767,35 @@ parse_args (int argc, char **argv)
 
       switch (c)
 	{
-	case 0:
-	  /* Long options.  */
-	  break;
-	case 'H':
-	  usage ();
-	  break;
-
-	case 'a':
-	  do_syms++;
-	  do_reloc++;
-	  do_unwind++;
-	  do_dynamic++;
-	  do_header++;
-	  do_sections++;
-	  do_section_groups++;
-	  do_segments++;
-	  do_version++;
-	  do_histogram++;
-	  do_arch++;
-	  do_notes++;
-	  break;
-	case 'g':
-	  do_section_groups++;
-	  break;
-	case 't':
-	case 'N':
-	  do_sections++;
-	  do_section_details++;
-	  break;
-	case 'e':
-	  do_header++;
-	  do_sections++;
-	  do_segments++;
-	  break;
-	case 'A':
-	  do_arch++;
-	  break;
-	case 'D':
-	  do_using_dynamic++;
-	  break;
-	case 'r':
-	  do_reloc++;
-	  break;
-	case 'u':
-	  do_unwind++;
-	  break;
-	case 'h':
-	  do_header++;
-	  break;
-	case 'l':
-	  do_segments++;
-	  break;
-	case 's':
-	  do_syms++;
-	  break;
-	case 'S':
-	  do_sections++;
-	  break;
-	case 'd':
-	  do_dynamic++;
-	  break;
-	case 'I':
-	  do_histogram++;
-	  break;
-	case 'n':
-	  do_notes++;
-	  break;
-	case 'x':
-	  do_dump++;
-	  section = strtoul (optarg, & cp, 0);
+	case 0: /* Long options.  */ break;
+	case 'H': usage(); break;
+	case 'a': do_syms++; do_reloc++; do_unwind++; do_dynamic++;
+	  do_header++; do_sections++; do_section_groups++; do_segments++;
+	  do_version++; do_histogram++; do_arch++; do_notes++; break;
+	case 'g': do_section_groups++; break;
+	case 't': /* fall through to: */
+	case 'N': do_sections++; do_section_details++; break;
+	case 'e': do_header++; do_sections++; do_segments++; break;
+	case 'A': do_arch++; break;
+	case 'D': do_using_dynamic++; break;
+	case 'r': do_reloc++; break;
+	case 'u': do_unwind++; break;
+	case 'h': do_header++; break;
+	case 'l': do_segments++; break;
+	case 's': do_syms++; break;
+	case 'S': do_sections++; break;
+	case 'd': do_dynamic++; break;
+	case 'I': do_histogram++; break;
+	case 'n': do_notes++; break;
+	case 'x': do_dump++;
+	  section = strtoul(optarg, & cp, 0);
 	  if (! *cp && section >= 0)
 	    {
-	      request_dump (section, HEX_DUMP);
+	      request_dump(section, HEX_DUMP);
 	      break;
 	    }
 	  goto oops;
-	case 'w':
-	  do_dump++;
+	case 'w': do_dump++;
 	  if (optarg == 0)
 	    do_debugging = 1;
 	  else
@@ -3007,63 +2807,31 @@ parse_args (int argc, char **argv)
 	      while (optarg[index])
 		switch (optarg[index++])
 		  {
-		  case 'i':
-		  case 'I':
-		    do_debug_info = 1;
-		    break;
-
-		  case 'a':
-		  case 'A':
-		    do_debug_abbrevs = 1;
-		    break;
-
-		  case 'l':
-		  case 'L':
-		    do_debug_lines = 1;
-		    break;
-
-		  case 'p':
-		  case 'P':
-		    do_debug_pubnames = 1;
-		    break;
-
-		  case 'r':
-		    do_debug_aranges = 1;
-		    break;
-
-		  case 'R':
-		    do_debug_ranges = 1;
-		    break;
-
-		  case 'F':
-		    do_debug_frames_interp = 1;
-		  case 'f':
-		    do_debug_frames = 1;
-		    break;
-
-		  case 'm':
-		  case 'M':
-		    do_debug_macinfo = 1;
-		    break;
-
-		  case 's':
-		  case 'S':
-		    do_debug_str = 1;
-		    break;
-
-		  case 'o':
-		  case 'O':
-		    do_debug_loc = 1;
-		    break;
-
+		  case 'i': /* fall through to: */
+		  case 'I': do_debug_info = 1; break;
+		  case 'a': /* fall through to: */
+		  case 'A': do_debug_abbrevs = 1; break;
+		  case 'l': /* fall through to: */
+		  case 'L': do_debug_lines = 1; break;
+		  case 'p': /* fall through to: */
+		  case 'P': do_debug_pubnames = 1;  break;
+		  case 'r': do_debug_aranges = 1; break;
+		  case 'R': do_debug_ranges = 1; break;
+		  case 'F': do_debug_frames_interp = 1;
+		  case 'f': do_debug_frames = 1; break;
+		  case 'm': /* fall through to: */
+		  case 'M': do_debug_macinfo = 1; break;
+		  case 's': /* fall through to: */
+		  case 'S': do_debug_str = 1; break;
+		  case 'o': /* fall through to: */
+		  case 'O': do_debug_loc = 1; break;
 		  default:
-		    warn (_("Unrecognized debug option '%s'\n"), optarg);
+		    warn(_("Unrecognized debug option '%s'\n"), optarg);
 		    break;
 		  }
 	    }
 	  break;
-	case OPTION_DEBUG_DUMP:
-	  do_dump++;
+	case OPTION_DEBUG_DUMP: do_dump++;
 	  if (optarg == 0)
 	    do_debugging = 1;
 	  else
@@ -3137,8 +2905,7 @@ parse_args (int argc, char **argv)
 	    }
 	  break;
 #ifdef SUPPORT_DISASSEMBLY
-	case 'i':
-	  do_dump++;
+	case 'i': do_dump++;
 	  section = strtoul (optarg, & cp, 0);
 	  if (! *cp && section >= 0)
 	    {
@@ -3147,22 +2914,15 @@ parse_args (int argc, char **argv)
 	    }
 	  goto oops;
 #endif /* SUPPORT_DISASSEMBLY */
-	case 'v':
-	  print_version (program_name);
-	  break;
-	case 'V':
-	  do_version++;
-	  break;
-	case 'W':
-	  do_wide++;
-	  break;
+	case 'v': print_version(program_name); break;
+	case 'V': do_version++; break;
+	case 'W': do_wide++; break;
 	default:
 	oops:
 	  /* xgettext:c-format */
 	  error (_("Invalid option '-%c'\n"), c);
 	  /* Drop through.  */
-	case '?':
-	  usage ();
+	case '?': usage();
 	}
     }
 
@@ -3170,16 +2930,16 @@ parse_args (int argc, char **argv)
       && !do_segments && !do_header && !do_dump && !do_version
       && !do_histogram && !do_debugging && !do_arch && !do_notes
       && !do_section_groups)
-    usage ();
+    usage();
   else if (argc < 3)
     {
-      warn (_("Nothing to do.\n"));
-      usage ();
+      warn(_("Nothing to do.\n"));
+      usage();
     }
 }
 
 static const char *
-get_elf_class (unsigned int elf_class)
+get_elf_class(unsigned int elf_class)
 {
   static char buff[32];
 
@@ -3189,7 +2949,7 @@ get_elf_class (unsigned int elf_class)
     case ELFCLASS32:   return "ELF32";
     case ELFCLASS64:   return "ELF64";
     default:
-      snprintf (buff, sizeof (buff), _("<unknown: %x>"), elf_class);
+      snprintf(buff, sizeof(buff), _("<unknown: %x>"), elf_class);
       return buff;
     }
 }
@@ -3205,7 +2965,7 @@ get_data_encoding (unsigned int encoding)
     case ELFDATA2LSB: return _("2's complement, little endian");
     case ELFDATA2MSB: return _("2's complement, big endian");
     default:
-      snprintf (buff, sizeof (buff), _("<unknown: %x>"), encoding);
+      snprintf(buff, sizeof(buff), _("<unknown: %x>"), encoding);
       return buff;
     }
 }
@@ -3220,8 +2980,7 @@ process_file_header (void)
       || elf_header.e_ident[EI_MAG2] != ELFMAG2
       || elf_header.e_ident[EI_MAG3] != ELFMAG3)
     {
-      error
-	(_("Not an ELF file - it has the wrong magic bytes at the start\n"));
+      error(_("Not an ELF file - it has the wrong magic bytes at the start\n"));
       return 0;
     }
 
@@ -5370,15 +5129,15 @@ slurp_hppa_unwind_table(FILE *file, struct hppa_unw_aux_info *aux,
       tep->start.section = SHN_UNDEF;
       tep->end.section   = SHN_UNDEF;
 
-      tep->start.offset = byte_get ((unsigned char *) tp + 0, 4);
-      tep->end.offset = byte_get ((unsigned char *) tp + 4, 4);
-      tmp1 = byte_get ((unsigned char *) tp + 8, 4);
-      tmp2 = byte_get ((unsigned char *) tp + 12, 4);
+      tep->start.offset = byte_get((unsigned char *)tp + 0, 4);
+      tep->end.offset = byte_get((unsigned char *)tp + 4, 4);
+      tmp1 = byte_get((unsigned char *)tp + 8, 4);
+      tmp2 = byte_get((unsigned char *)tp + 12, 4);
 
       tep->start.offset += aux->seg_base;
       tep->end.offset   += aux->seg_base;
 
-      tep->Cannot_unwind = (tmp1 >> 31) & 0x1;
+      tep->Cannot_unwind = ((tmp1 >> 31) & 0x1); /*GCC PR 39170*/
       tep->Millicode = (tmp1 >> 30) & 0x1;
       tep->Millicode_save_sr0 = (tmp1 >> 29) & 0x1;
       tep->Region_description = (tmp1 >> 27) & 0x3;
@@ -5403,7 +5162,7 @@ slurp_hppa_unwind_table(FILE *file, struct hppa_unw_aux_info *aux,
       tep->extn_ptr_defined = (tmp1 >> 1) & 0x1;
       tep->Cleanup_defined = tmp1 & 0x1;
 
-      tep->MPE_XL_interrupt_marker = (tmp2 >> 31) & 0x1;
+      tep->MPE_XL_interrupt_marker = ((tmp2 >> 31) & 0x1); /*GCC PR 39170*/
       tep->HP_UX_interrupt_marker = (tmp2 >> 30) & 0x1;
       tep->Large_frame = (tmp2 >> 29) & 0x1;
       tep->Pseudo_SP_Set = (tmp2 >> 28) & 0x1;
@@ -5561,13 +5320,13 @@ process_unwind (FILE *file)
 }
 
 static void
-dynamic_section_mips_val (Elf_Internal_Dyn *entry)
+dynamic_section_mips_val(Elf_Internal_Dyn *entry)
 {
   switch (entry->d_tag)
     {
     case DT_MIPS_FLAGS:
       if (entry->d_un.d_val == 0)
-	printf ("NONE\n");
+	printf("NONE\n");
       else
 	{
 	  static const char * opts[] =
@@ -5583,18 +5342,18 @@ dynamic_section_mips_val (Elf_Internal_Dyn *entry)
 	  for (cnt = 0; cnt < NUM_ELEM (opts); ++cnt)
 	    if (entry->d_un.d_val & (1 << cnt))
 	      {
-		printf ("%s%s", first ? "" : " ", opts[cnt]);
+		printf("%s%s", first ? "" : " ", opts[cnt]);
 		first = 0;
 	      }
-	  puts ("");
+	  puts("");
 	}
       break;
 
     case DT_MIPS_IVERSION:
-      if (VALID_DYNAMIC_NAME (entry->d_un.d_val))
-	printf ("Interface Version: %s\n", GET_DYNAMIC_NAME (entry->d_un.d_val));
+      if (VALID_DYNAMIC_NAME(entry->d_un.d_val))
+	printf("Interface Version: %s\n", GET_DYNAMIC_NAME(entry->d_un.d_val));
       else
-	printf ("<corrupt: %ld>\n", (long) entry->d_un.d_ptr);
+	printf("<corrupt: %ld>\n", (long)entry->d_un.d_ptr);
       break;
 
     case DT_MIPS_TIME_STAMP:
@@ -5602,12 +5361,12 @@ dynamic_section_mips_val (Elf_Internal_Dyn *entry)
 	char timebuf[20];
 	struct tm *tmp;
 
-	time_t time = entry->d_un.d_val;
-	tmp = gmtime (&time);
-	snprintf (timebuf, sizeof (timebuf), "%04u-%02u-%02uT%02u:%02u:%02u",
-		  tmp->tm_year + 1900, tmp->tm_mon + 1, tmp->tm_mday,
-		  tmp->tm_hour, tmp->tm_min, tmp->tm_sec);
-	printf ("Time Stamp: %s\n", timebuf);
+	time_t time = (time_t)entry->d_un.d_val;
+	tmp = gmtime(&time);
+	snprintf(timebuf, sizeof(timebuf), "%04u-%02u-%02uT%02u:%02u:%02u",
+		 (tmp->tm_year + 1900), (tmp->tm_mon + 1), tmp->tm_mday,
+		 tmp->tm_hour, tmp->tm_min, tmp->tm_sec);
+	printf("Time Stamp: %s\n", timebuf);
       }
       break;
 
@@ -6095,7 +5854,7 @@ process_dynamic_section (FILE *file)
 		printf (_(" None\n"));
 	      else
 		{
-		  unsigned long int val = entry->d_un.d_val;
+		  unsigned long int val = (unsigned long int)entry->d_un.d_val;
 
 		  if (val & DTF_1_PARINIT)
 		    {
@@ -6123,7 +5882,7 @@ process_dynamic_section (FILE *file)
 		printf (_(" None\n"));
 	      else
 		{
-		  unsigned long int val = entry->d_un.d_val;
+		  unsigned long int val = (unsigned long int)entry->d_un.d_val;
 
 		  if (val & DF_P1_LAZYLOAD)
 		    {
@@ -6150,7 +5909,7 @@ process_dynamic_section (FILE *file)
 		printf (_(" None\n"));
 	      else
 		{
-		  unsigned long int val = entry->d_un.d_val;
+		  unsigned long int val = (unsigned long int)entry->d_un.d_val;
 
 		  if (val & DF_1_NOW)
 		    {
@@ -6366,7 +6125,7 @@ process_dynamic_section (FILE *file)
 	  if (do_dynamic)
 	    {
 	      struct tm *tmp;
-	      time_t time = entry->d_un.d_val;
+	      time_t time = (time_t)entry->d_un.d_val;
 
 	      tmp = gmtime (&time);
 	      printf ("%04u-%02u-%02uT%02u:%02u:%02u\n",
@@ -7572,17 +7331,14 @@ read_leb128 (unsigned char *data, unsigned int *length_return, int sign)
   unsigned int shift = 0;
   unsigned char byte;
 
-  do
-    {
-      byte = *data++;
-      num_read++;
+  do {
+    byte = *data++;
+    num_read++;
 
-      result |= ((unsigned long int) (byte & 0x7f)) << shift;
+    result |= ((unsigned long int)(byte & 0x7f)) << shift;
 
-      shift += 7;
-
-    }
-  while (byte & 0x80);
+    shift += 7;
+  } while (byte & 0x80);
 
   if (length_return != NULL)
     *length_return = num_read;
@@ -8038,27 +7794,25 @@ process_abbrev_section (unsigned char *start, unsigned char *end)
       if (entry == 0)
 	return start == end ? NULL : start;
 
-      tag = read_leb128 (start, & bytes_read, 0);
+      tag = read_leb128(start, &bytes_read, 0);
       start += bytes_read;
 
       children = *start++;
 
-      add_abbrev (entry, tag, children);
+      add_abbrev(entry, tag, children);
 
-      do
-	{
-	  unsigned long form;
+      do {
+        unsigned long form;
 
-	  attribute = read_leb128 (start, & bytes_read, 0);
-	  start += bytes_read;
+        attribute = read_leb128(start, &bytes_read, 0);
+        start += bytes_read;
 
-	  form = read_leb128 (start, & bytes_read, 0);
-	  start += bytes_read;
+        form = read_leb128(start, &bytes_read, 0);
+        start += bytes_read;
 
-	  if (attribute != 0)
-	    add_abbrev_attr (attribute, form);
-	}
-      while (attribute != 0);
+        if (attribute != 0)
+          add_abbrev_attr(attribute, form);
+      } while (attribute != 0);
     }
 
   return NULL;
@@ -8192,10 +7946,8 @@ display_block (unsigned char *data, unsigned long length)
 }
 
 static int
-decode_location_expression (unsigned char * data,
-			    unsigned int pointer_size,
-			    unsigned long length,
-			    unsigned long cu_offset)
+decode_location_expression(unsigned char *data, unsigned int pointer_size,
+			   unsigned long length, unsigned long cu_offset)
 {
   unsigned op;
   unsigned int bytes_read;
@@ -8556,15 +8308,11 @@ static unsigned int   last_pointer_size = 0;
 static int            warned_about_missing_comp_units = FALSE;
 
 static unsigned char *
-read_and_display_attr_value (unsigned long attribute,
-			     unsigned long form,
-			     unsigned char *data,
-			     unsigned long cu_offset,
-			     unsigned long pointer_size,
-			     unsigned long offset_size,
-			     int dwarf_version,
-			     debug_info *debug_info_p,
-			     int do_loc)
+read_and_display_attr_value(unsigned long attribute, unsigned long form,
+			    unsigned char *data, unsigned long cu_offset,
+			    unsigned long pointer_size,
+                            unsigned long offset_size, int dwarf_version,
+			    debug_info *debug_info_p, int do_loc)
 {
   unsigned long uvalue = 0;
   unsigned char *block_start = NULL;
@@ -9117,22 +8865,18 @@ get_AT_name (unsigned long attribute)
 }
 
 static unsigned char *
-read_and_display_attr (unsigned long attribute,
-		       unsigned long form,
-		       unsigned char *data,
-		       unsigned long cu_offset,
-		       unsigned long pointer_size,
-		       unsigned long offset_size,
-		       int dwarf_version,
-		       debug_info *debug_info_p,
-		       int do_loc)
+read_and_display_attr(unsigned long attribute, unsigned long form,
+		      unsigned char *data, unsigned long cu_offset,
+		      unsigned long pointer_size,
+                      unsigned long offset_size, int dwarf_version,
+		      debug_info *debug_info_p, int do_loc)
 {
   if (!do_loc)
-    printf ("     %-18s:", get_AT_name (attribute));
-  data = read_and_display_attr_value (attribute, form, data, cu_offset,
-				      pointer_size, offset_size,
-				      dwarf_version, debug_info_p,
-				      do_loc);
+    printf("     %-18s:", get_AT_name(attribute));
+  data = read_and_display_attr_value(attribute, form, data, cu_offset,
+				     pointer_size, offset_size,
+				     dwarf_version, debug_info_p,
+				     do_loc);
   if (!do_loc)
     printf("\n");
   return data;
@@ -10653,8 +10397,8 @@ display_debug_frames (Elf_Internal_Shdr *section,
       Frame_Chunk *cie;
       int need_col_headers = 1;
       unsigned char *augmentation_data = NULL;
-      unsigned long augmentation_data_len = 0;
-      int encoded_ptr_size = eh_addr_size;
+      unsigned long augmentation_data_len = 0UL;
+      int encoded_ptr_size = (int)eh_addr_size;
       int offset_size;
       int initial_length_size;
 
@@ -10827,7 +10571,7 @@ display_debug_frames (Elf_Internal_Shdr *section,
 	      fc->ncols = 0;
 	      fc->col_type = (short int *)xmalloc(sizeof(short int));
 	      fc->col_offset = (int *)xmalloc(sizeof(int));
-	      frame_need_space(fc, max_regs - 1);
+	      frame_need_space(fc, (max_regs - 1));
 	      cie = fc;
 	      fc->augmentation = "";
 	      fc->fde_encoding = 0;
@@ -10835,39 +10579,39 @@ display_debug_frames (Elf_Internal_Shdr *section,
 	  else
 	    {
 	      fc->ncols = cie->ncols;
-	      fc->col_type = (short int *)xcmalloc (fc->ncols,
-                                                    sizeof(short int));
+	      fc->col_type = (short int *)xcmalloc(fc->ncols,
+                                                   sizeof(short int));
 	      fc->col_offset = (int *)xcmalloc(fc->ncols, sizeof(int));
 	      memcpy(fc->col_type, cie->col_type,
-                     (fc->ncols * sizeof(short int)));
+                     ((size_t)fc->ncols * sizeof(short int)));
 	      memcpy(fc->col_offset, cie->col_offset,
-                     (fc->ncols * sizeof(int)));
+                     ((size_t)fc->ncols * sizeof(int)));
 	      fc->augmentation = cie->augmentation;
 	      fc->code_factor = cie->code_factor;
 	      fc->data_factor = cie->data_factor;
 	      fc->cfa_reg = cie->cfa_reg;
 	      fc->cfa_offset = cie->cfa_offset;
 	      fc->ra = cie->ra;
-	      frame_need_space (fc, max_regs-1);
+	      frame_need_space(fc, (max_regs - 1));
 	      fc->fde_encoding = cie->fde_encoding;
 	    }
 
 	  if (fc->fde_encoding)
-	    encoded_ptr_size = size_of_encoded_value (fc->fde_encoding);
+	    encoded_ptr_size = size_of_encoded_value(fc->fde_encoding);
 
-	  fc->pc_begin = get_encoded_value (start, fc->fde_encoding);
+	  fc->pc_begin = get_encoded_value(start, fc->fde_encoding);
 	  if ((fc->fde_encoding & 0x70) == DW_EH_PE_pcrel
 	      /* Do NOT adjust for ET_REL since there is invariably a pcrel
 	       * reloc here, which we have NOT applied.  */
 	      && elf_header.e_type != ET_REL)
 	    fc->pc_begin += section->sh_addr + (start - section_start);
 	  start += encoded_ptr_size;
-	  fc->pc_range = byte_get (start, encoded_ptr_size);
+	  fc->pc_range = byte_get(start, encoded_ptr_size);
 	  start += encoded_ptr_size;
 
 	  if (cie->augmentation[0] == 'z')
 	    {
-	      augmentation_data_len = LEB ();
+	      augmentation_data_len = LEB();
 	      augmentation_data = start;
 	      start += augmentation_data_len;
 	    }
@@ -11328,13 +11072,10 @@ display_debug_not_supported (Elf_Internal_Shdr *section,
 
 /* A structure containing the name of a debug section
    and a pointer to a function that can decode it.  */
-static struct
-{
+static struct {
   const char *const name;
-  int (*display) (Elf_Internal_Shdr *, unsigned char *, FILE *);
-}
-debug_displays[] =
-{
+  int (*display)(Elf_Internal_Shdr *, unsigned char *, FILE *);
+} debug_displays[] = {
   { ".debug_abbrev",		display_debug_abbrev },
   { ".debug_aranges",		display_debug_aranges },
   { ".debug_frame",		display_debug_frames },
@@ -11354,9 +11095,9 @@ debug_displays[] =
 };
 
 static int
-display_debug_section (Elf_Internal_Shdr *section, FILE *file)
+display_debug_section(Elf_Internal_Shdr *section, FILE *file)
 {
-  char *name = SECTION_NAME (section);
+  char *name = SECTION_NAME(section);
   bfd_size_type length;
   int result = 1;
   int i;
@@ -11364,7 +11105,7 @@ display_debug_section (Elf_Internal_Shdr *section, FILE *file)
   length = section->sh_size;
   if (length == 0)
     {
-      printf (_("\nSection '%s' has no debugging data.\n"), name);
+      printf(_("\nSection '%s' has no debugging data.\n"), name);
       return 0;
     }
 
@@ -11377,9 +11118,9 @@ display_debug_section (Elf_Internal_Shdr *section, FILE *file)
       {
 	unsigned char *start;
 
-	start = (unsigned char *)get_data(NULL, file, section->sh_offset,
-                                          1, length,
-                                          _("debug section data"));
+	start = ((unsigned char *)
+                 get_data(NULL, file, (long)section->sh_offset, 1UL,
+                          (size_t)length, _("debug section data")));
 	if (start == NULL)
 	  {
 	    result = 0;
@@ -11391,14 +11132,14 @@ display_debug_section (Elf_Internal_Shdr *section, FILE *file)
 
 	/* If we loaded in the abbrev section
 	   at some point, we must release it here.  */
-	free_abbrevs ();
+	free_abbrevs();
 
 	break;
       }
 
   if (i == -1)
     {
-      printf (_("Unrecognized debug section: %s\n"), name);
+      printf(_("Unrecognized debug section: %s\n"), name);
       result = 0;
     }
 
@@ -11406,7 +11147,7 @@ display_debug_section (Elf_Internal_Shdr *section, FILE *file)
 }
 
 static void
-process_section_contents (FILE *file)
+process_section_contents(FILE *file)
 {
   Elf_Internal_Shdr *section;
   unsigned int i;
@@ -11415,7 +11156,7 @@ process_section_contents (FILE *file)
     return;
 
   for (i = 0, section = section_headers;
-       i < elf_header.e_shnum && i < num_dump_sects;
+       (i < elf_header.e_shnum) && (i < num_dump_sects);
        i++, section++)
     {
 #ifdef SUPPORT_DISASSEMBLY
@@ -11423,96 +11164,93 @@ process_section_contents (FILE *file)
 	disassemble_section (section, file);
 #endif /* SUPPORT_DISASSEMBLY */
       if (dump_sects[i] & HEX_DUMP)
-	dump_section (section, file);
+	dump_section(section, file);
 
       if (dump_sects[i] & DEBUG_DUMP)
-	display_debug_section (section, file);
+	display_debug_section(section, file);
     }
 
   /* Check to see if the user requested a
      dump of a section that does not exist.  */
   while (i++ < num_dump_sects)
     if (dump_sects[i])
-      warn (_("Section %d was not dumped because it does not exist!\n"), i);
+      warn(_("Section %d was not dumped because it does not exist!\n"), i);
 }
 
 static void
-process_mips_fpe_exception (int mask)
+process_mips_fpe_exception(int mask)
 {
   if (mask)
     {
       int first = 1;
-      if (mask & OEX_FPU_INEX)
-	fputs ("INEX", stdout), first = 0;
+      if (mask & OEX_FPU_INEX) fputs("INEX", stdout), first = 0;
       if (mask & OEX_FPU_UFLO)
-	printf ("%sUFLO", first ? "" : "|"), first = 0;
+        printf("%sUFLO", (first ? "" : "|")), first = 0;
       if (mask & OEX_FPU_OFLO)
-	printf ("%sOFLO", first ? "" : "|"), first = 0;
+	printf("%sOFLO", (first ? "" : "|")), first = 0;
       if (mask & OEX_FPU_DIV0)
-	printf ("%sDIV0", first ? "" : "|"), first = 0;
-      if (mask & OEX_FPU_INVAL)
-	printf ("%sINVAL", first ? "" : "|");
+	printf("%sDIV0", (first ? "" : "|")), first = 0;
+      if (mask & OEX_FPU_INVAL) printf("%sINVAL", first ? "" : "|");
     }
   else
-    fputs ("0", stdout);
+    fputs("0", stdout);
 }
 
 static int
-process_mips_specific (FILE *file)
+process_mips_specific(FILE *file)
 {
   Elf_Internal_Dyn *entry;
-  size_t liblist_offset = 0;
-  size_t liblistno = 0;
-  size_t conflictsno = 0;
-  size_t options_offset = 0;
-  size_t conflicts_offset = 0;
+  size_t liblist_offset = 0UL;
+  size_t liblistno = 0UL;
+  size_t conflictsno = 0UL;
+  size_t options_offset = 0UL;
+  size_t conflicts_offset = 0UL;
 
-  /* We have a lot of special sections.  Thanks SGI!  */
+  /* We have a lot of special sections; thanks SGI!  */
   if (dynamic_section == NULL)
-    /* No information available.  */
+    /* No information available: */
     return 0;
 
   for (entry = dynamic_section; entry->d_tag != DT_NULL; ++entry)
     switch (entry->d_tag)
       {
       case DT_MIPS_LIBLIST:
-	liblist_offset
-	  = offset_from_vma (file, entry->d_un.d_val,
-			     liblistno * sizeof (Elf32_External_Lib));
+	liblist_offset =
+          ((size_t)
+           offset_from_vma(file, entry->d_un.d_val,
+                           (liblistno * sizeof(Elf32_External_Lib))));
 	break;
-      case DT_MIPS_LIBLISTNO:
-	liblistno = entry->d_un.d_val;
-	break;
+      case DT_MIPS_LIBLISTNO: liblistno = (size_t)entry->d_un.d_val; break;
       case DT_MIPS_OPTIONS:
-	options_offset = offset_from_vma (file, entry->d_un.d_val, 0);
-	break;
+	options_offset =
+          (size_t)offset_from_vma(file, entry->d_un.d_val, 0);
+        break;
       case DT_MIPS_CONFLICT:
-	conflicts_offset
-	  = offset_from_vma (file, entry->d_un.d_val,
-			     conflictsno * sizeof (Elf32_External_Conflict));
+	conflicts_offset =
+          ((size_t)
+           offset_from_vma(file, entry->d_un.d_val,
+                           (conflictsno
+                            * sizeof(Elf32_External_Conflict))));
 	break;
       case DT_MIPS_CONFLICTNO:
-	conflictsno = entry->d_un.d_val;
-	break;
-      default:
-	break;
+        conflictsno = (size_t)entry->d_un.d_val; break;
+      default: break;
       }
 
-  if (liblist_offset != 0 && liblistno != 0 && do_dynamic)
+  if ((liblist_offset != 0) && (liblistno != 0) && do_dynamic)
     {
       Elf32_External_Lib *elib;
       size_t cnt;
 
-      elib = (Elf32_External_Lib *)get_data(NULL, file, liblist_offset,
-                                            liblistno,
-                                            sizeof(Elf32_External_Lib),
-                                            _("liblist"));
+      elib = ((Elf32_External_Lib *)
+              get_data(NULL, file, (long)liblist_offset, liblistno,
+                       sizeof(Elf32_External_Lib), _("liblist")));
       if (elib)
 	{
-	  printf ("\nSection '.liblist' contains %lu entries:\n",
-		  (unsigned long) liblistno);
-	  fputs ("     Library              Time Stamp          Checksum   Version Flags\n",
-		 stdout);
+	  printf("\nSection '.liblist' contains %lu entries:\n",
+		 (unsigned long)liblistno);
+	  fputs("     Library              Time Stamp          Checksum   Version Flags\n",
+                stdout);
 
 	  for (cnt = 0; cnt < liblistno; ++cnt)
 	    {
@@ -11521,37 +11259,34 @@ process_mips_specific (FILE *file)
 	      char timebuf[20];
 	      struct tm *tmp;
 
-	      liblist.l_name = BYTE_GET (elib[cnt].l_name);
-	      time = BYTE_GET (elib[cnt].l_time_stamp);
-	      liblist.l_checksum = BYTE_GET (elib[cnt].l_checksum);
-	      liblist.l_version = BYTE_GET (elib[cnt].l_version);
-	      liblist.l_flags = BYTE_GET (elib[cnt].l_flags);
+	      liblist.l_name = (unsigned long)BYTE_GET(elib[cnt].l_name);
+	      time = (time_t)BYTE_GET(elib[cnt].l_time_stamp);
+	      liblist.l_checksum = (unsigned long)BYTE_GET(elib[cnt].l_checksum);
+	      liblist.l_version = (unsigned long)BYTE_GET(elib[cnt].l_version);
+	      liblist.l_flags = (unsigned long)BYTE_GET(elib[cnt].l_flags);
 
-	      tmp = gmtime (&time);
-	      snprintf (timebuf, sizeof (timebuf),
-			"%04u-%02u-%02uT%02u:%02u:%02u",
-			tmp->tm_year + 1900, tmp->tm_mon + 1, tmp->tm_mday,
-			tmp->tm_hour, tmp->tm_min, tmp->tm_sec);
+	      tmp = gmtime(&time);
+	      snprintf(timebuf, sizeof(timebuf),
+                       "%04u-%02u-%02uT%02u:%02u:%02u",
+                       tmp->tm_year + 1900, tmp->tm_mon + 1, tmp->tm_mday,
+                       tmp->tm_hour, tmp->tm_min, tmp->tm_sec);
 
-	      printf ("%3lu: ", (unsigned long) cnt);
-	      if (VALID_DYNAMIC_NAME (liblist.l_name))
-		print_symbol (20, GET_DYNAMIC_NAME (liblist.l_name));
+	      printf("%3lu: ", (unsigned long)cnt);
+	      if (VALID_DYNAMIC_NAME(liblist.l_name))
+		print_symbol(20, GET_DYNAMIC_NAME(liblist.l_name));
 	      else
-		printf ("<corrupt: %9ld>", liblist.l_name);
-	      printf (" %s %#10lx %-7ld", timebuf, liblist.l_checksum,
-		      liblist.l_version);
+		printf("<corrupt: %9ld>", liblist.l_name);
+	      printf(" %s %#10lx %-7ld", timebuf, liblist.l_checksum,
+		     liblist.l_version);
 
 	      if (liblist.l_flags == 0)
-		puts (" NONE");
+		puts(" NONE");
 	      else
 		{
-		  static const struct
-		  {
+		  static const struct {
 		    const char *name;
 		    int bit;
-		  }
-		  l_flags_vals[] =
-		  {
+		  } l_flags_vals[] = {
 		    { " EXACT_MATCH", LL_EXACT_MATCH },
 		    { " IGNORE_INT_VER", LL_IGNORE_INT_VER },
 		    { " REQUIRE_MINOR", LL_REQUIRE_MINOR },
@@ -11559,25 +11294,25 @@ process_mips_specific (FILE *file)
 		    { " DELAY_LOAD", LL_DELAY_LOAD },
 		    { " DELTA", LL_DELTA }
 		  };
-		  int flags = liblist.l_flags;
+		  int flags = (int)liblist.l_flags;
 		  size_t fcnt;
 
 		  for (fcnt = 0;
-		       fcnt < sizeof (l_flags_vals) / sizeof (l_flags_vals[0]);
+		       fcnt < sizeof(l_flags_vals) / sizeof(l_flags_vals[0]);
 		       ++fcnt)
 		    if ((flags & l_flags_vals[fcnt].bit) != 0)
 		      {
-			fputs (l_flags_vals[fcnt].name, stdout);
+			fputs(l_flags_vals[fcnt].name, stdout);
 			flags ^= l_flags_vals[fcnt].bit;
 		      }
 		  if (flags != 0)
-		    printf (" %#x", (unsigned int) flags);
+		    printf(" %#x", (unsigned int)flags);
 
-		  puts ("");
+		  puts("");
 		}
 	    }
 
-	  free (elib);
+	  free(elib);
 	}
     }
 
@@ -11595,32 +11330,34 @@ process_mips_specific (FILE *file)
 	++sect;
       }
 
-      eopt = (Elf_External_Options *)get_data(NULL, file, options_offset,
-                                              1, sect->sh_size,
-                                              _("options"));
+      eopt = ((Elf_External_Options *)
+              get_data(NULL, file, (long)options_offset, 1UL,
+                       (size_t)sect->sh_size, _("options")));
       if (eopt)
 	{
-	  iopt = (Elf_Internal_Options *)cmalloc((sect->sh_size / sizeof(eopt)),
-                                                 sizeof(*iopt));
+	  iopt = ((Elf_Internal_Options *)
+                  cmalloc(((size_t)sect->sh_size / sizeof(eopt)),
+                          sizeof(*iopt)));
 	  if (iopt == NULL)
 	    {
 	      error(_("Out of memory"));
 	      return 0;
 	    }
 
-	  offset = cnt = 0;
+          cnt = 0;
+	  offset = (size_t)cnt;
 	  option = iopt;
 
 	  while (offset < sect->sh_size)
 	    {
 	      Elf_External_Options *eoption;
 
-	      eoption = (Elf_External_Options *) ((char *) eopt + offset);
+	      eoption = (Elf_External_Options *)((char *)eopt + offset);
 
-	      option->kind = BYTE_GET (eoption->kind);
-	      option->size = BYTE_GET (eoption->size);
-	      option->section = BYTE_GET (eoption->section);
-	      option->info = BYTE_GET (eoption->info);
+	      option->kind = (unsigned char)BYTE_GET(eoption->kind);
+	      option->size = (unsigned char)BYTE_GET(eoption->size);
+	      option->section = (unsigned short)BYTE_GET(eoption->section);
+	      option->info = (unsigned long)BYTE_GET(eoption->info);
 
 	      offset += option->size;
 
@@ -11628,8 +11365,8 @@ process_mips_specific (FILE *file)
 	      ++cnt;
 	    }
 
-	  printf (_("\nSection '%s' contains %d entries:\n"),
-		  SECTION_NAME (sect), cnt);
+	  printf(_("\nSection '%s' contains %d entries:\n"),
+		 SECTION_NAME(sect), cnt);
 
 	  option = iopt;
 
@@ -11640,31 +11377,31 @@ process_mips_specific (FILE *file)
 	      switch (option->kind)
 		{
 		case ODK_NULL:
-		  /* This shouldn't happen.  */
-		  printf (" NULL       %d %lx", option->section, option->info);
+		  /* This should NOT happen: */
+		  printf(" NULL       %d %lx", option->section, option->info);
 		  break;
 		case ODK_REGINFO:
-		  printf (" REGINFO    ");
+		  printf(" REGINFO    ");
 		  if (elf_header.e_machine == EM_MIPS)
 		    {
 		      /* 32bit form.  */
 		      Elf32_External_RegInfo *ereg;
 		      Elf32_RegInfo reginfo;
 
-		      ereg = (Elf32_External_RegInfo *) (option + 1);
-		      reginfo.ri_gprmask = BYTE_GET (ereg->ri_gprmask);
-		      reginfo.ri_cprmask[0] = BYTE_GET (ereg->ri_cprmask[0]);
-		      reginfo.ri_cprmask[1] = BYTE_GET (ereg->ri_cprmask[1]);
-		      reginfo.ri_cprmask[2] = BYTE_GET (ereg->ri_cprmask[2]);
-		      reginfo.ri_cprmask[3] = BYTE_GET (ereg->ri_cprmask[3]);
-		      reginfo.ri_gp_value = BYTE_GET (ereg->ri_gp_value);
+		      ereg = (Elf32_External_RegInfo *)(option + 1);
+		      reginfo.ri_gprmask = (unsigned long)BYTE_GET(ereg->ri_gprmask);
+		      reginfo.ri_cprmask[0] = (unsigned long)BYTE_GET(ereg->ri_cprmask[0]);
+		      reginfo.ri_cprmask[1] = (unsigned long)BYTE_GET(ereg->ri_cprmask[1]);
+		      reginfo.ri_cprmask[2] = (unsigned long)BYTE_GET(ereg->ri_cprmask[2]);
+		      reginfo.ri_cprmask[3] = (unsigned long)BYTE_GET(ereg->ri_cprmask[3]);
+		      reginfo.ri_gp_value = (long)BYTE_GET(ereg->ri_gp_value);
 
-		      printf ("GPR %08lx  GP 0x%lx\n",
-			      reginfo.ri_gprmask,
-			      (unsigned long) reginfo.ri_gp_value);
-		      printf ("            CPR0 %08lx  CPR1 %08lx  CPR2 %08lx  CPR3 %08lx\n",
-			      reginfo.ri_cprmask[0], reginfo.ri_cprmask[1],
-			      reginfo.ri_cprmask[2], reginfo.ri_cprmask[3]);
+		      printf("GPR %08lx  GP 0x%lx\n",
+			     reginfo.ri_gprmask,
+			     (unsigned long)reginfo.ri_gp_value);
+		      printf("            CPR0 %08lx  CPR1 %08lx  CPR2 %08lx  CPR3 %08lx\n",
+			     reginfo.ri_cprmask[0], reginfo.ri_cprmask[1],
+			     reginfo.ri_cprmask[2], reginfo.ri_cprmask[3]);
 		    }
 		  else
 		    {
@@ -11672,113 +11409,113 @@ process_mips_specific (FILE *file)
 		      Elf64_External_RegInfo *ereg;
 		      Elf64_Internal_RegInfo reginfo;
 
-		      ereg = (Elf64_External_RegInfo *) (option + 1);
-		      reginfo.ri_gprmask    = BYTE_GET (ereg->ri_gprmask);
-		      reginfo.ri_cprmask[0] = BYTE_GET (ereg->ri_cprmask[0]);
-		      reginfo.ri_cprmask[1] = BYTE_GET (ereg->ri_cprmask[1]);
-		      reginfo.ri_cprmask[2] = BYTE_GET (ereg->ri_cprmask[2]);
-		      reginfo.ri_cprmask[3] = BYTE_GET (ereg->ri_cprmask[3]);
-		      reginfo.ri_gp_value   = BYTE_GET (ereg->ri_gp_value);
+		      ereg = (Elf64_External_RegInfo *)(option + 1);
+		      reginfo.ri_gprmask = (unsigned long)BYTE_GET(ereg->ri_gprmask);
+		      reginfo.ri_cprmask[0] = (unsigned long)BYTE_GET(ereg->ri_cprmask[0]);
+		      reginfo.ri_cprmask[1] = (unsigned long)BYTE_GET(ereg->ri_cprmask[1]);
+		      reginfo.ri_cprmask[2] = (unsigned long)BYTE_GET(ereg->ri_cprmask[2]);
+		      reginfo.ri_cprmask[3] = (unsigned long)BYTE_GET(ereg->ri_cprmask[3]);
+		      reginfo.ri_gp_value = BYTE_GET(ereg->ri_gp_value);
 
-		      printf ("GPR %08lx  GP 0x",
-			      reginfo.ri_gprmask);
-		      printf_vma (reginfo.ri_gp_value);
-		      printf ("\n");
+		      printf("GPR %08lx  GP 0x",
+			     reginfo.ri_gprmask);
+		      printf_vma(reginfo.ri_gp_value);
+		      printf("\n");
 
-		      printf ("            CPR0 %08lx  CPR1 %08lx  CPR2 %08lx  CPR3 %08lx\n",
-			      reginfo.ri_cprmask[0], reginfo.ri_cprmask[1],
-			      reginfo.ri_cprmask[2], reginfo.ri_cprmask[3]);
+		      printf("            CPR0 %08lx  CPR1 %08lx  CPR2 %08lx  CPR3 %08lx\n",
+			     reginfo.ri_cprmask[0], reginfo.ri_cprmask[1],
+			     reginfo.ri_cprmask[2], reginfo.ri_cprmask[3]);
 		    }
 		  ++option;
 		  continue;
 		case ODK_EXCEPTIONS:
-		  fputs (" EXCEPTIONS fpe_min(", stdout);
-		  process_mips_fpe_exception (option->info & OEX_FPU_MIN);
-		  fputs (") fpe_max(", stdout);
-		  process_mips_fpe_exception ((option->info & OEX_FPU_MAX) >> 8);
-		  fputs (")", stdout);
+		  fputs(" EXCEPTIONS fpe_min(", stdout);
+		  process_mips_fpe_exception(option->info & OEX_FPU_MIN);
+		  fputs(") fpe_max(", stdout);
+		  process_mips_fpe_exception((int)((option->info & OEX_FPU_MAX) >> 8));
+		  fputs(")", stdout);
 
 		  if (option->info & OEX_PAGE0)
-		    fputs (" PAGE0", stdout);
+		    fputs(" PAGE0", stdout);
 		  if (option->info & OEX_SMM)
-		    fputs (" SMM", stdout);
+		    fputs(" SMM", stdout);
 		  if (option->info & OEX_FPDBUG)
-		    fputs (" FPDBUG", stdout);
+		    fputs(" FPDBUG", stdout);
 		  if (option->info & OEX_DISMISS)
-		    fputs (" DISMISS", stdout);
+		    fputs(" DISMISS", stdout);
 		  break;
 		case ODK_PAD:
-		  fputs (" PAD       ", stdout);
+		  fputs(" PAD       ", stdout);
 		  if (option->info & OPAD_PREFIX)
-		    fputs (" PREFIX", stdout);
+		    fputs(" PREFIX", stdout);
 		  if (option->info & OPAD_POSTFIX)
-		    fputs (" POSTFIX", stdout);
+		    fputs(" POSTFIX", stdout);
 		  if (option->info & OPAD_SYMBOL)
-		    fputs (" SYMBOL", stdout);
+		    fputs(" SYMBOL", stdout);
 		  break;
 		case ODK_HWPATCH:
-		  fputs (" HWPATCH   ", stdout);
+		  fputs(" HWPATCH   ", stdout);
 		  if (option->info & OHW_R4KEOP)
-		    fputs (" R4KEOP", stdout);
+		    fputs(" R4KEOP", stdout);
 		  if (option->info & OHW_R8KPFETCH)
-		    fputs (" R8KPFETCH", stdout);
+		    fputs(" R8KPFETCH", stdout);
 		  if (option->info & OHW_R5KEOP)
-		    fputs (" R5KEOP", stdout);
+		    fputs(" R5KEOP", stdout);
 		  if (option->info & OHW_R5KCVTL)
-		    fputs (" R5KCVTL", stdout);
+		    fputs(" R5KCVTL", stdout);
 		  break;
 		case ODK_FILL:
-		  fputs (" FILL       ", stdout);
+		  fputs(" FILL       ", stdout);
 		  /* XXX Print content of info word?  */
 		  break;
 		case ODK_TAGS:
-		  fputs (" TAGS       ", stdout);
+		  fputs(" TAGS       ", stdout);
 		  /* XXX Print content of info word?  */
 		  break;
 		case ODK_HWAND:
-		  fputs (" HWAND     ", stdout);
+		  fputs(" HWAND     ", stdout);
 		  if (option->info & OHWA0_R4KEOP_CHECKED)
-		    fputs (" R4KEOP_CHECKED", stdout);
+		    fputs(" R4KEOP_CHECKED", stdout);
 		  if (option->info & OHWA0_R4KEOP_CLEAN)
-		    fputs (" R4KEOP_CLEAN", stdout);
+		    fputs(" R4KEOP_CLEAN", stdout);
 		  break;
 		case ODK_HWOR:
-		  fputs (" HWOR      ", stdout);
+		  fputs(" HWOR      ", stdout);
 		  if (option->info & OHWA0_R4KEOP_CHECKED)
-		    fputs (" R4KEOP_CHECKED", stdout);
+		    fputs(" R4KEOP_CHECKED", stdout);
 		  if (option->info & OHWA0_R4KEOP_CLEAN)
-		    fputs (" R4KEOP_CLEAN", stdout);
+		    fputs(" R4KEOP_CLEAN", stdout);
 		  break;
 		case ODK_GP_GROUP:
-		  printf (" GP_GROUP  %#06lx  self-contained %#06lx",
-			  option->info & OGP_GROUP,
-			  (option->info & OGP_SELF) >> 16);
+		  printf(" GP_GROUP  %#06lx  self-contained %#06lx",
+			 (option->info & OGP_GROUP),
+			 ((option->info & OGP_SELF) >> 16));
 		  break;
 		case ODK_IDENT:
-		  printf (" IDENT     %#06lx  self-contained %#06lx",
-			  option->info & OGP_GROUP,
-			  (option->info & OGP_SELF) >> 16);
+		  printf(" IDENT     %#06lx  self-contained %#06lx",
+			 (option->info & OGP_GROUP),
+			 ((option->info & OGP_SELF) >> 16));
 		  break;
 		default:
-		  /* This shouldn't happen.  */
-		  printf (" %3d ???     %d %lx",
-			  option->kind, option->section, option->info);
+		  /* This should NOT happen: */
+		  printf(" %3d ???     %d %lx",
+			 option->kind, option->section, option->info);
 		  break;
 		}
 
-	      len = sizeof (*eopt);
+	      len = sizeof(*eopt);
 	      while (len < option->size)
-		if (((char *) option)[len] >= ' '
-		    && ((char *) option)[len] < 0x7f)
-		  printf ("%c", ((char *) option)[len++]);
+		if ((((char *)option)[len] >= ' ')
+		    && (((char *)option)[len] < 0x7f))
+		  printf("%c", ((char *)option)[len++]);
 		else
-		  printf ("\\%03o", ((char *) option)[len++]);
+		  printf("\\%03o", ((char *)option)[len++]);
 
-	      fputs ("\n", stdout);
+	      fputs("\n", stdout);
 	      ++option;
 	    }
 
-	  free (eopt);
+	  free(eopt);
 	}
     }
 
@@ -11794,7 +11531,7 @@ process_mips_specific (FILE *file)
 	}
 
       iconf = (Elf32_Conflict *)cmalloc(conflictsno, sizeof(*iconf));
-      if (iconf == NULL)
+      if (iconf == (Elf32_Conflict *)NULL)
 	{
 	  error(_("Out of memory"));
 	  return 0;
@@ -11804,63 +11541,61 @@ process_mips_specific (FILE *file)
 	{
 	  Elf32_External_Conflict *econf32;
 
-	  econf32 = (Elf32_External_Conflict *)get_data(NULL, file,
-                                                        conflicts_offset,
-                                                        conflictsno,
-                                                        sizeof(*econf32),
-                                                        _("conflict"));
+	  econf32 = ((Elf32_External_Conflict *)
+                     get_data(NULL, file, (long)conflicts_offset,
+                              conflictsno, sizeof(*econf32),
+                              _("conflict")));
 	  if (!econf32)
 	    return 0;
 
 	  for (cnt = 0; cnt < conflictsno; ++cnt)
-	    iconf[cnt] = BYTE_GET (econf32[cnt]);
+	    iconf[cnt] = (Elf32_Conflict)BYTE_GET(econf32[cnt]);
 
-	  free (econf32);
+	  free(econf32);
 	}
       else
 	{
 	  Elf64_External_Conflict *econf64;
 
-	  econf64 = (Elf64_External_Conflict *)get_data(NULL, file,
-                                                        conflicts_offset,
-                                                        conflictsno, sizeof
-                                                        (*econf64),
-                                                        _("conflict"));
+	  econf64 = ((Elf64_External_Conflict *)
+                     get_data(NULL, file, (long)conflicts_offset,
+                              conflictsno, sizeof(*econf64),
+                              _("conflict")));
 	  if (!econf64)
 	    return 0;
 
 	  for (cnt = 0; cnt < conflictsno; ++cnt)
-	    iconf[cnt] = BYTE_GET (econf64[cnt]);
+	    iconf[cnt] = (Elf32_Conflict)BYTE_GET(econf64[cnt]);
 
-	  free (econf64);
+	  free(econf64);
 	}
 
-      printf (_("\nSection '.conflict' contains %lu entries:\n"),
-	      (unsigned long) conflictsno);
-      puts (_("  Num:    Index       Value  Name"));
+      printf(_("\nSection '.conflict' contains %lu entries:\n"),
+	     (unsigned long)conflictsno);
+      puts(_("  Num:    Index       Value  Name"));
 
       for (cnt = 0; cnt < conflictsno; ++cnt)
 	{
-	  Elf_Internal_Sym *psym = & dynamic_symbols[iconf[cnt]];
+	  Elf_Internal_Sym *psym = &dynamic_symbols[iconf[cnt]];
 
-	  printf ("%5lu: %8lu  ", (unsigned long) cnt, iconf[cnt]);
-	  print_vma (psym->st_value, FULL_HEX);
-	  putchar (' ');
-	  if (VALID_DYNAMIC_NAME (psym->st_name))
-	    print_symbol (25, GET_DYNAMIC_NAME (psym->st_name));
+	  printf("%5lu: %8lu  ", (unsigned long)cnt, iconf[cnt]);
+	  print_vma(psym->st_value, FULL_HEX);
+	  putchar(' ');
+	  if (VALID_DYNAMIC_NAME(psym->st_name))
+	    print_symbol(25, GET_DYNAMIC_NAME(psym->st_name));
 	  else
-	    printf ("<corrupt: %14ld>", psym->st_name);
-	  putchar ('\n');
+	    printf("<corrupt: %14ld>", psym->st_name);
+	  putchar('\n');
 	}
 
-      free (iconf);
+      free(iconf);
     }
 
   return 1;
 }
 
 static int
-process_gnu_liblist (FILE *file)
+process_gnu_liblist(FILE *file)
 {
   Elf_Internal_Shdr *section, *string_sec;
   Elf32_External_Lib *elib;
@@ -11883,35 +11618,35 @@ process_gnu_liblist (FILE *file)
 	  if (SECTION_HEADER_INDEX(section->sh_link) >= elf_header.e_shnum)
 	    break;
 
-	  elib = (Elf32_External_Lib *)get_data(NULL, file,
-                                                section->sh_offset, 1,
-                                                section->sh_size,
-                                                _("liblist"));
+	  elib = ((Elf32_External_Lib *)
+                  get_data(NULL, file, (long)section->sh_offset, 1UL,
+                           (size_t)section->sh_size, _("liblist")));
 
           if (elib == NULL) {
 	    break;
           }
 	  string_sec = SECTION_HEADER(section->sh_link);
 
-	  strtab = (char *)get_data(NULL, file, string_sec->sh_offset, 1,
-                                    string_sec->sh_size,
+	  strtab = (char *)get_data(NULL, file,
+                                    (long)string_sec->sh_offset, 1UL,
+                                    (size_t)string_sec->sh_size,
                                     _("liblist string table"));
-	  strtab_size = string_sec->sh_size;
+	  strtab_size = (size_t)string_sec->sh_size;
 
 	  if (strtab == NULL
-	      || section->sh_entsize != sizeof (Elf32_External_Lib))
+	      || section->sh_entsize != sizeof(Elf32_External_Lib))
 	    {
-	      free (elib);
+	      free(elib);
 	      break;
 	    }
 
-	  printf (_("\nLibrary list section '%s' contains %lu entries:\n"),
-		  SECTION_NAME (section),
-		  (long) (section->sh_size / sizeof (Elf32_External_Lib)));
+	  printf(_("\nLibrary list section '%s' contains %lu entries:\n"),
+		 SECTION_NAME(section),
+		 (long)(section->sh_size / sizeof (Elf32_External_Lib)));
 
-	  puts ("     Library              Time Stamp          Checksum   Version Flags");
+	  puts("     Library              Time Stamp          Checksum   Version Flags");
 
-	  for (cnt = 0; cnt < section->sh_size / sizeof (Elf32_External_Lib);
+	  for (cnt = 0; cnt < (section->sh_size / sizeof(Elf32_External_Lib));
 	       ++cnt)
 	    {
 	      Elf32_Lib liblist;
@@ -11919,30 +11654,32 @@ process_gnu_liblist (FILE *file)
 	      char timebuf[20];
 	      struct tm *tmp;
 
-	      liblist.l_name = BYTE_GET (elib[cnt].l_name);
-	      time = BYTE_GET (elib[cnt].l_time_stamp);
-	      liblist.l_checksum = BYTE_GET (elib[cnt].l_checksum);
-	      liblist.l_version = BYTE_GET (elib[cnt].l_version);
-	      liblist.l_flags = BYTE_GET (elib[cnt].l_flags);
+	      liblist.l_name = (unsigned long)BYTE_GET(elib[cnt].l_name);
+	      time = (time_t)BYTE_GET(elib[cnt].l_time_stamp);
+	      liblist.l_checksum = (unsigned long)BYTE_GET(elib[cnt].l_checksum);
+	      liblist.l_version = (unsigned long)BYTE_GET(elib[cnt].l_version);
+	      liblist.l_flags = (unsigned long)BYTE_GET(elib[cnt].l_flags);
 
-	      tmp = gmtime (&time);
-	      snprintf (timebuf, sizeof (timebuf),
-			"%04u-%02u-%02uT%02u:%02u:%02u",
-			tmp->tm_year + 1900, tmp->tm_mon + 1, tmp->tm_mday,
-			tmp->tm_hour, tmp->tm_min, tmp->tm_sec);
+	      tmp = gmtime(&time);
+	      snprintf(timebuf, sizeof(timebuf),
+                       "%04u-%02u-%02uT%02u:%02u:%02u",
+                       tmp->tm_year + 1900, tmp->tm_mon + 1, tmp->tm_mday,
+                       tmp->tm_hour, tmp->tm_min, tmp->tm_sec);
 
-	      printf ("%3lu: ", (unsigned long) cnt);
+	      printf("%3lu: ", (unsigned long)cnt);
 	      if (do_wide)
-		printf ("%-20s", liblist.l_name < strtab_size
-				 ? strtab + liblist.l_name : "<corrupt>");
+		printf("%-20s", ((liblist.l_name < strtab_size)
+                                 ? strtab + liblist.l_name : "<corrupt>"));
 	      else
-		printf ("%-20.20s", liblist.l_name < strtab_size
-				    ? strtab + liblist.l_name : "<corrupt>");
-	      printf (" %s %#010lx %-7ld %-7ld\n", timebuf, liblist.l_checksum,
-		      liblist.l_version, liblist.l_flags);
+		printf("%-20.20s", ((liblist.l_name < strtab_size)
+                                    ? (strtab + liblist.l_name)
+                                    : "<corrupt>"));
+	      printf(" %s %#010lx %-7ld %-7ld\n", timebuf,
+                     liblist.l_checksum, liblist.l_version, liblist.l_flags);
 	    }
 
-	  free (elib);
+	  free(elib);
+        default:;
 	}
     }
 
@@ -11950,63 +11687,47 @@ process_gnu_liblist (FILE *file)
 }
 
 static const char *
-get_note_type (unsigned e_type)
+get_note_type(unsigned e_type)
 {
   static char buff[64];
 
   if (elf_header.e_type == ET_CORE)
     switch (e_type)
       {
-      case NT_AUXV:
-	return _("NT_AUXV (auxiliary vector)");
-      case NT_PRSTATUS:
-	return _("NT_PRSTATUS (prstatus structure)");
-      case NT_FPREGSET:
-	return _("NT_FPREGSET (floating point registers)");
-      case NT_PRPSINFO:
-	return _("NT_PRPSINFO (prpsinfo structure)");
-      case NT_TASKSTRUCT:
-	return _("NT_TASKSTRUCT (task structure)");
-      case NT_PRXFPREG:
-	return _("NT_PRXFPREG (user_xfpregs structure)");
-      case NT_PSTATUS:
-	return _("NT_PSTATUS (pstatus structure)");
-      case NT_FPREGS:
-	return _("NT_FPREGS (floating point registers)");
-      case NT_PSINFO:
-	return _("NT_PSINFO (psinfo structure)");
-      case NT_LWPSTATUS:
-	return _("NT_LWPSTATUS (lwpstatus_t structure)");
-      case NT_LWPSINFO:
-	return _("NT_LWPSINFO (lwpsinfo_t structure)");
-      case NT_WIN32PSTATUS:
-	return _("NT_WIN32PSTATUS (win32_pstatus structure)");
-      default:
-	break;
+      case NT_AUXV: return _("NT_AUXV (auxiliary vector)");
+      case NT_PRSTATUS: return _("NT_PRSTATUS (prstatus structure)");
+      case NT_FPREGSET: return _("NT_FPREGSET (floating point registers)");
+      case NT_PRPSINFO: return _("NT_PRPSINFO (prpsinfo structure)");
+      case NT_TASKSTRUCT: return _("NT_TASKSTRUCT (task structure)");
+      case NT_PRXFPREG: return _("NT_PRXFPREG (user_xfpregs structure)");
+      case NT_PSTATUS: return _("NT_PSTATUS (pstatus structure)");
+      case NT_FPREGS: return _("NT_FPREGS (floating point registers)");
+      case NT_PSINFO: return _("NT_PSINFO (psinfo structure)");
+      case NT_LWPSTATUS: return _("NT_LWPSTATUS (lwpstatus_t structure)");
+      case NT_LWPSINFO: return _("NT_LWPSINFO (lwpsinfo_t structure)");
+      case NT_WIN32PSTATUS: return _("NT_WIN32PSTATUS (win32_pstatus structure)");
+      default: break;
       }
   else
     switch (e_type)
       {
-      case NT_VERSION:
-	return _("NT_VERSION (version)");
-      case NT_ARCH:
-	return _("NT_ARCH (architecture)");
-      default:
-	break;
+      case NT_VERSION: return _("NT_VERSION (version)");
+      case NT_ARCH: return _("NT_ARCH (architecture)");
+      default: break;
       }
 
-  snprintf (buff, sizeof (buff), _("Unknown note type: (0x%08x)"), e_type);
+  snprintf(buff, sizeof(buff), _("Unknown note type: (0x%08x)"), e_type);
   return buff;
 }
 
 static const char *
-get_netbsd_elfcore_note_type (unsigned e_type)
+get_netbsd_elfcore_note_type(unsigned e_type)
 {
   static char buff[64];
 
   if (e_type == NT_NETBSDCORE_PROCINFO)
     {
-      /* NetBSD core "procinfo" structure.  */
+      /* NetBSD core "procinfo" structure: */
       return _("NetBSD procinfo structure");
     }
 
@@ -12017,7 +11738,7 @@ get_netbsd_elfcore_note_type (unsigned e_type)
 
   if (e_type < NT_NETBSDCORE_FIRSTMACH)
     {
-      snprintf (buff, sizeof (buff), _("Unknown note type: (0x%08x)"), e_type);
+      snprintf(buff, sizeof(buff), _("Unknown note type: (0x%08x)"), e_type);
       return buff;
     }
 
@@ -12025,7 +11746,6 @@ get_netbsd_elfcore_note_type (unsigned e_type)
     {
     /* On the Alpha, SPARC (32-bit and 64-bit), PT_GETREGS == mach+0
        and PT_GETFPREGS == mach+2.  */
-
     case EM_OLD_ALPHA:
     case EM_ALPHA:
     case EM_SPARC:
@@ -12033,12 +11753,9 @@ get_netbsd_elfcore_note_type (unsigned e_type)
     case EM_SPARCV9:
       switch (e_type)
 	{
-	case NT_NETBSDCORE_FIRSTMACH+0:
-	  return _("PT_GETREGS (reg structure)");
-	case NT_NETBSDCORE_FIRSTMACH+2:
-	  return _("PT_GETFPREGS (fpreg structure)");
-	default:
-	  break;
+	case NT_NETBSDCORE_FIRSTMACH+0: return _("PT_GETREGS (reg structure)");
+	case NT_NETBSDCORE_FIRSTMACH+2: return _("PT_GETFPREGS (fpreg structure)");
+	default: break;
 	}
       break;
 
@@ -12047,17 +11764,14 @@ get_netbsd_elfcore_note_type (unsigned e_type)
     default:
       switch (e_type)
 	{
-	case NT_NETBSDCORE_FIRSTMACH+1:
-	  return _("PT_GETREGS (reg structure)");
-	case NT_NETBSDCORE_FIRSTMACH+3:
-	  return _("PT_GETFPREGS (fpreg structure)");
-	default:
-	  break;
+	case NT_NETBSDCORE_FIRSTMACH+1: return _("PT_GETREGS (reg structure)");
+	case NT_NETBSDCORE_FIRSTMACH+3: return _("PT_GETFPREGS (fpreg structure)");
+	default: break;
 	}
     }
 
-  snprintf (buff, sizeof (buff), _("PT_FIRSTMACH+%d"),
-	    e_type - NT_NETBSDCORE_FIRSTMACH);
+  snprintf(buff, sizeof(buff), _("PT_FIRSTMACH+%d"),
+	   (e_type - NT_NETBSDCORE_FIRSTMACH));
   return buff;
 }
 
@@ -12067,27 +11781,25 @@ get_netbsd_elfcore_note_type (unsigned e_type)
 
    If the value of namesz is zero, there is no name present.  */
 static int
-process_note (Elf_Internal_Note *pnote)
+process_note(Elf_Internal_Note *pnote)
 {
   const char *nt;
 
   if (pnote->namesz == 0)
     /* If there is no note name, then use the default set of
-       note type strings.  */
-    nt = get_note_type (pnote->type);
-
-  else if (strneq (pnote->namedata, "NetBSD-CORE", 11))
-    /* NetBSD-specific core file notes.  */
-    nt = get_netbsd_elfcore_note_type (pnote->type);
-
+     * note type strings: */
+    nt = get_note_type(pnote->type);
+  else if (strneq(pnote->namedata, "NetBSD-CORE", 11))
+    /* NetBSD-specific core file notes: */
+    nt = get_netbsd_elfcore_note_type(pnote->type);
   else
     /* Do NOT recognize this note name; just use the default set of
-       note type strings.  */
-      nt = get_note_type (pnote->type);
+     * note type strings.  */
+    nt = get_note_type(pnote->type);
 
-  printf ("  %s\t\t0x%08lx\t%s\n",
-	  pnote->namesz ? pnote->namedata : "(NONE)",
-	  pnote->descsz, nt);
+  printf("  %s\t\t0x%08lx\t%s\n",
+	 (pnote->namesz ? pnote->namedata : "(NONE)"),
+	 pnote->descsz, nt);
   return 1;
 }
 
@@ -12103,8 +11815,8 @@ process_corefile_note_segment(FILE *file, bfd_vma offset, bfd_vma length)
     return 0;
   }
 
-  pnotes = (Elf_External_Note *)get_data(NULL, file, offset, 1, length,
-                                         _("notes"));
+  pnotes = (Elf_External_Note *)get_data(NULL, file, (long)offset, 1UL,
+                                         (size_t)length, _("notes"));
   if (!pnotes) {
     return 0;
   }
@@ -12121,14 +11833,14 @@ process_corefile_note_segment(FILE *file, bfd_vma offset, bfd_vma length)
       Elf_Internal_Note inote;
       char *temp = NULL;
 
-      inote.type = BYTE_GET(external->type);
-      inote.namesz = BYTE_GET(external->namesz);
+      inote.type = (unsigned long)BYTE_GET(external->type);
+      inote.namesz = (unsigned long)BYTE_GET(external->namesz);
       inote.namedata = external->name;
-      inote.descsz = BYTE_GET(external->descsz);
-      inote.descdata = inote.namedata + align_power(inote.namesz, 2);
-      inote.descpos = offset + (inote.descdata - (char *)pnotes);
+      inote.descsz = (unsigned long)BYTE_GET(external->descsz);
+      inote.descdata = (inote.namedata + align_power(inote.namesz, 2));
+      inote.descpos = (offset + (bfd_vma)(inote.descdata - (char*)pnotes));
 
-      next = (Elf_External_Note *)(inote.descdata + align_power (inote.descsz, 2));
+      next = (Elf_External_Note *)(inote.descdata + align_power(inote.descsz, 2));
 
       if (((char *)next) > (((char *)pnotes) + length))
 	{
@@ -12147,7 +11859,7 @@ process_corefile_note_segment(FILE *file, bfd_vma offset, bfd_vma length)
        * namesz.  */
       if (inote.namedata[inote.namesz] != '\0')
 	{
-	  temp = (char *)malloc(inote.namesz + 1);
+	  temp = (char *)malloc(inote.namesz + 1UL);
 
 	  if (temp == NULL)
 	    {
@@ -12165,76 +11877,74 @@ process_corefile_note_segment(FILE *file, bfd_vma offset, bfd_vma length)
 	  inote.namedata = temp;
 	}
 
-      res &= process_note (& inote);
+      res &= process_note(&inote);
 
       if (temp != NULL)
 	{
-	  free (temp);
+	  free(temp);
 	  temp = NULL;
 	}
     }
 
-  free (pnotes);
+  free(pnotes);
 
   return res;
 }
 
 static int
-process_corefile_note_segments (FILE *file)
+process_corefile_note_segments(FILE *file)
 {
   Elf_Internal_Phdr *segment;
   unsigned int i;
   int res = 1;
 
-  if (! get_program_headers (file))
+  if (! get_program_headers(file))
       return 0;
 
-  for (i = 0, segment = program_headers;
-       i < elf_header.e_phnum;
+  for (i = 0, segment = program_headers; i < elf_header.e_phnum;
        i++, segment++)
     {
       if (segment->p_type == PT_NOTE)
-	res &= process_corefile_note_segment (file,
-					      (bfd_vma) segment->p_offset,
-					      (bfd_vma) segment->p_filesz);
+	res &= process_corefile_note_segment(file,
+					     (bfd_vma)segment->p_offset,
+					     (bfd_vma)segment->p_filesz);
     }
 
   return res;
 }
 
 static int
-process_note_sections (FILE *file)
+process_note_sections(FILE *file)
 {
   Elf_Internal_Shdr *section;
   unsigned long i;
   int res = 1;
 
-  for (i = 0, section = section_headers;
-       i < elf_header.e_shnum;
+  for (i = 0, section = section_headers; i < elf_header.e_shnum;
        i++, section++)
     if (section->sh_type == SHT_NOTE)
-      res &= process_corefile_note_segment (file,
-					    (bfd_vma) section->sh_offset,
-					    (bfd_vma) section->sh_size);
+      res &= process_corefile_note_segment(file,
+                                           (bfd_vma)section->sh_offset,
+					   (bfd_vma)section->sh_size);
 
   return res;
 }
 
 static int
-process_notes (FILE *file)
+process_notes(FILE *file)
 {
-  /* If we have not been asked to display the notes then do nothing.  */
+  /* If we have not been asked to display the notes, then do nothing: */
   if (! do_notes)
     return 1;
 
   if (elf_header.e_type != ET_CORE)
-    return process_note_sections (file);
+    return process_note_sections(file);
 
-  /* No program headers means no NOTE segment.  */
+  /* No program headers means no NOTE segment: */
   if (elf_header.e_phnum > 0)
-    return process_corefile_note_segments (file);
+    return process_corefile_note_segments(file);
 
-  printf (_("No note segments present in the core file.\n"));
+  printf(_("No note segments present in the core file.\n"));
   return 1;
 }
 
@@ -12247,23 +11957,20 @@ process_arch_specific (FILE *file)
   switch (elf_header.e_machine)
     {
     case EM_MIPS:
-    case EM_MIPS_RS3_LE:
-      return process_mips_specific (file);
-      break;
-    default:
-      break;
+    case EM_MIPS_RS3_LE: return process_mips_specific(file); break;
+    default: break;
     }
   return 1;
 }
 
 static int
-get_file_header (FILE *file)
+get_file_header(FILE *file)
 {
-  /* Read in the identity array.  */
-  if (fread (elf_header.e_ident, EI_NIDENT, 1, file) != 1)
+  /* Read in the identity array: */
+  if (fread(elf_header.e_ident, EI_NIDENT, 1, file) != 1)
     return 0;
 
-  /* Determine how to read the rest of the header.  */
+  /* Determine how to read the rest of the header: */
   switch (elf_header.e_ident[EI_DATA])
     {
     default: /* fall through */
@@ -12278,30 +11985,30 @@ get_file_header (FILE *file)
       break;
     }
 
-  /* For now we only support 32 bit and 64 bit ELF files.  */
+  /* For now we only support 32 bit and 64 bit ELF files: */
   is_32bit_elf = (elf_header.e_ident[EI_CLASS] != ELFCLASS64);
 
-  /* Read in the rest of the header.  */
+  /* Read in the rest of the header: */
   if (is_32bit_elf)
     {
       Elf32_External_Ehdr ehdr32;
 
-      if (fread (ehdr32.e_type, sizeof (ehdr32) - EI_NIDENT, 1, file) != 1)
+      if (fread(ehdr32.e_type, (sizeof(ehdr32) - EI_NIDENT), 1, file) != 1)
 	return 0;
 
-      elf_header.e_type      = BYTE_GET (ehdr32.e_type);
-      elf_header.e_machine   = BYTE_GET (ehdr32.e_machine);
-      elf_header.e_version   = BYTE_GET (ehdr32.e_version);
-      elf_header.e_entry     = BYTE_GET (ehdr32.e_entry);
-      elf_header.e_phoff     = BYTE_GET (ehdr32.e_phoff);
-      elf_header.e_shoff     = BYTE_GET (ehdr32.e_shoff);
-      elf_header.e_flags     = BYTE_GET (ehdr32.e_flags);
-      elf_header.e_ehsize    = BYTE_GET (ehdr32.e_ehsize);
-      elf_header.e_phentsize = BYTE_GET (ehdr32.e_phentsize);
-      elf_header.e_phnum     = BYTE_GET (ehdr32.e_phnum);
-      elf_header.e_shentsize = BYTE_GET (ehdr32.e_shentsize);
-      elf_header.e_shnum     = BYTE_GET (ehdr32.e_shnum);
-      elf_header.e_shstrndx  = BYTE_GET (ehdr32.e_shstrndx);
+      elf_header.e_type = (unsigned short)BYTE_GET(ehdr32.e_type);
+      elf_header.e_machine = (unsigned short)BYTE_GET(ehdr32.e_machine);
+      elf_header.e_version = (unsigned long)BYTE_GET(ehdr32.e_version);
+      elf_header.e_entry = BYTE_GET(ehdr32.e_entry); /* already bfd_vma */
+      elf_header.e_phoff = (bfd_size_type)BYTE_GET(ehdr32.e_phoff);
+      elf_header.e_shoff = (bfd_size_type)BYTE_GET(ehdr32.e_shoff);
+      elf_header.e_flags = (unsigned long)BYTE_GET(ehdr32.e_flags);
+      elf_header.e_ehsize = (unsigned int)BYTE_GET(ehdr32.e_ehsize);
+      elf_header.e_phentsize = (unsigned int)BYTE_GET(ehdr32.e_phentsize);
+      elf_header.e_phnum = (unsigned int)BYTE_GET(ehdr32.e_phnum);
+      elf_header.e_shentsize = (unsigned int)BYTE_GET(ehdr32.e_shentsize);
+      elf_header.e_shnum = (unsigned int)BYTE_GET(ehdr32.e_shnum);
+      elf_header.e_shstrndx = (unsigned int)BYTE_GET(ehdr32.e_shstrndx);
     }
   else
     {
@@ -12311,29 +12018,29 @@ get_file_header (FILE *file)
 	 we will not be able to cope with the 64bit data found in
 	 64 ELF files. Detect this now and abort before we start
 	 overwriting things.  */
-      if (sizeof (bfd_vma) < 8)
+      if (sizeof(bfd_vma) < 8UL)
 	{
-	  error (_("This instance of readelf has been built without support for a\n\
+	  error(_("This instance of readelf has been built without support for a\n\
 64 bit data type and so it cannot read 64 bit ELF files.\n"));
 	  return 0;
 	}
 
-      if (fread (ehdr64.e_type, sizeof (ehdr64) - EI_NIDENT, 1, file) != 1)
+      if (fread(ehdr64.e_type, (sizeof(ehdr64) - EI_NIDENT), 1, file) != 1)
 	return 0;
 
-      elf_header.e_type      = BYTE_GET (ehdr64.e_type);
-      elf_header.e_machine   = BYTE_GET (ehdr64.e_machine);
-      elf_header.e_version   = BYTE_GET (ehdr64.e_version);
-      elf_header.e_entry     = BYTE_GET (ehdr64.e_entry);
-      elf_header.e_phoff     = BYTE_GET (ehdr64.e_phoff);
-      elf_header.e_shoff     = BYTE_GET (ehdr64.e_shoff);
-      elf_header.e_flags     = BYTE_GET (ehdr64.e_flags);
-      elf_header.e_ehsize    = BYTE_GET (ehdr64.e_ehsize);
-      elf_header.e_phentsize = BYTE_GET (ehdr64.e_phentsize);
-      elf_header.e_phnum     = BYTE_GET (ehdr64.e_phnum);
-      elf_header.e_shentsize = BYTE_GET (ehdr64.e_shentsize);
-      elf_header.e_shnum     = BYTE_GET (ehdr64.e_shnum);
-      elf_header.e_shstrndx  = BYTE_GET (ehdr64.e_shstrndx);
+      elf_header.e_type = (unsigned short)BYTE_GET(ehdr64.e_type);
+      elf_header.e_machine = (unsigned short)BYTE_GET(ehdr64.e_machine);
+      elf_header.e_version = (unsigned long)BYTE_GET(ehdr64.e_version);
+      elf_header.e_entry = BYTE_GET(ehdr64.e_entry); /* already bfd_vma */
+      elf_header.e_phoff = (bfd_size_type)BYTE_GET(ehdr64.e_phoff);
+      elf_header.e_shoff = (bfd_size_type)BYTE_GET(ehdr64.e_shoff);
+      elf_header.e_flags = (unsigned long)BYTE_GET(ehdr64.e_flags);
+      elf_header.e_ehsize = (unsigned int)BYTE_GET(ehdr64.e_ehsize);
+      elf_header.e_phentsize = (unsigned int)BYTE_GET(ehdr64.e_phentsize);
+      elf_header.e_phnum = (unsigned int)BYTE_GET(ehdr64.e_phnum);
+      elf_header.e_shentsize = (unsigned int)BYTE_GET(ehdr64.e_shentsize);
+      elf_header.e_shnum = (unsigned int)BYTE_GET(ehdr64.e_shnum);
+      elf_header.e_shstrndx = (unsigned int)BYTE_GET(ehdr64.e_shstrndx);
     }
 
   if (elf_header.e_shoff)
@@ -12530,7 +12237,7 @@ process_archive(char *file_name, FILE *file)
   size_t got;
   unsigned long size;
   char *longnames = NULL;
-  unsigned long longnames_size = 0;
+  unsigned long longnames_size = 0UL;
   size_t file_name_size;
   int ret;
 
@@ -12547,18 +12254,18 @@ process_archive(char *file_name, FILE *file)
       return 1;
     }
 
-  if (memcmp(arhdr.ar_name, "/               ", 16) == 0)
+  if (memcmp(arhdr.ar_name, "/               ", 16UL) == 0)
     {
       /* This is the archive symbol table. Skip it.
        * FIXME: We should have an option to dump it.  */
       size = strtoul(arhdr.ar_size, NULL, 10);
-      if (fseek(file, size + (size & 1), SEEK_CUR) != 0)
+      if (fseek(file, (long)(size + (size & 1L)), SEEK_CUR) != 0)
 	{
 	  error(_("%s: failed to skip archive symbol table\n"), file_name);
 	  return 1;
 	}
 
-      got = fread(&arhdr, 1, sizeof(arhdr), file);
+      got = fread(&arhdr, 1UL, sizeof(arhdr), file);
       if (got != sizeof(arhdr))
 	{
 	  if (got == 0) {
@@ -12572,8 +12279,7 @@ process_archive(char *file_name, FILE *file)
 
   if (memcmp(arhdr.ar_name, "//              ", 16) == 0)
     {
-      /* This is the archive string table holding long member
-       * names: */
+      /* This is the archive string table holding long member names: */
       longnames_size = strtoul(arhdr.ar_size, NULL, 10);
 
       longnames = (char *)malloc(longnames_size);
@@ -12583,7 +12289,7 @@ process_archive(char *file_name, FILE *file)
 	  return 1;
 	}
 
-      if (fread(longnames, longnames_size, 1, file) != 1)
+      if (fread(longnames, longnames_size, 1UL, file) != 1)
 	{
 	  free(longnames);
 	  error(_("%s: failed to read string table\n"), file_name);
@@ -12593,8 +12299,8 @@ process_archive(char *file_name, FILE *file)
       if ((longnames_size & 1) != 0)
 	getc(file);
 
-      got = fread(&arhdr, 1, sizeof arhdr, file);
-      if (got != sizeof arhdr)
+      got = fread(&arhdr, 1UL, sizeof(arhdr), file);
+      if (got != sizeof(arhdr))
 	{
 	  free(longnames);
 
@@ -12606,7 +12312,7 @@ process_archive(char *file_name, FILE *file)
 	}
     }
 
-  file_name_size = strlen (file_name);
+  file_name_size = strlen(file_name);
   ret = 0;
 
   while (1)
@@ -12644,7 +12350,8 @@ process_archive(char *file_name, FILE *file)
 	  break;
 	}
 
-      namealc = (char *)malloc(file_name_size + (nameend - name) + 3);
+      namealc = (char *)malloc(file_name_size + ((size_t)(nameend - name))
+                               + 3UL);
       if (namealc == NULL)
 	{
 	  error(_("Out of memory\n"));
@@ -12654,9 +12361,9 @@ process_archive(char *file_name, FILE *file)
 
       memcpy(namealc, file_name, file_name_size);
       namealc[file_name_size] = '(';
-      memcpy(namealc + file_name_size + 1, name, nameend - name);
-      namealc[file_name_size + 1 + (nameend - name)] = ')';
-      namealc[file_name_size + 2 + (nameend - name)] = '\0';
+      memcpy(namealc + file_name_size + 1, name, (size_t)(nameend - name));
+      namealc[file_name_size + 1UL + (size_t)(nameend - name)] = ')';
+      namealc[file_name_size + 2UL + (size_t)(nameend - name)] = '\0';
 
       archive_file_offset = ftell(file);
       archive_file_size = strtoul(arhdr.ar_size, NULL, 10);
@@ -12665,8 +12372,8 @@ process_archive(char *file_name, FILE *file)
 
       free(namealc);
 
-      if (fseek(file, (archive_file_offset + archive_file_size
-                       + (archive_file_size & 1)), SEEK_SET) != 0)
+      if (fseek(file, (archive_file_offset + (long)archive_file_size
+                       + ((long)archive_file_size & 1L)), SEEK_SET) != 0)
 	{
 	  error(_("%s: failed to seek to next archive header\n"),
                 file_name);
@@ -12674,8 +12381,8 @@ process_archive(char *file_name, FILE *file)
 	  break;
 	}
 
-      got = fread (&arhdr, 1, sizeof arhdr, file);
-      if (got != sizeof arhdr)
+      got = fread(&arhdr, 1UL, sizeof(arhdr), file);
+      if (got != sizeof(arhdr))
 	{
 	  if (got == 0) {
 	    break;
@@ -12712,21 +12419,21 @@ static int process_file(char *file_name)
 
   if (! S_ISREG (statbuf.st_mode))
     {
-      error (_("'%s' is not an ordinary file\n"), file_name);
+      error(_("'%s' is not an ordinary file\n"), file_name);
       return 1;
     }
 
-  file = fopen (file_name, "rb");
+  file = fopen(file_name, "rb");
   if (file == NULL)
     {
-      error (_("Input file '%s' is not readable.\n"), file_name);
+      error(_("Input file '%s' is not readable.\n"), file_name);
       return 1;
     }
 
-  if (fread (armag, SARMAG, 1, file) != 1)
+  if (fread(armag, SARMAG, 1, file) != 1)
     {
-      error (_("%s: Failed to read file header\n"), file_name);
-      fclose (file);
+      error(_("%s: Failed to read file header\n"), file_name);
+      fclose(file);
       return 1;
     }
 
@@ -12734,7 +12441,8 @@ static int process_file(char *file_name)
       ret = process_archive(file_name, file);
   } else {
       rewind(file);
-      archive_file_size = archive_file_offset = 0;
+      archive_file_offset = 0L;
+      archive_file_size = (unsigned long)archive_file_offset;
       ret = process_object(file_name, file);
   }
 

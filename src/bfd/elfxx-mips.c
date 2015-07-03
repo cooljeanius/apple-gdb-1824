@@ -2008,13 +2008,14 @@ mips_tls_got_relocs (struct bfd_link_info *info, unsigned char tls_type,
    ARG1, if it describes a local symbol.  */
 
 static int
-mips_elf_count_local_tls_relocs (void **arg1, void *arg2)
+mips_elf_count_local_tls_relocs(void **arg1, void *arg2)
 {
-  struct mips_got_entry *entry = * (struct mips_got_entry **) arg1;
-  struct mips_elf_count_tls_arg *arg = arg2;
+  struct mips_got_entry *entry = *(struct mips_got_entry **)arg1;
+  struct mips_elf_count_tls_arg *arg =
+    (struct mips_elf_count_tls_arg *)arg2;
 
-  if (entry->abfd != NULL && entry->symndx != -1)
-    arg->needed += mips_tls_got_relocs (arg->info, entry->tls_type, NULL);
+  if ((entry->abfd != NULL) && (entry->symndx != -1))
+    arg->needed += mips_tls_got_relocs(arg->info, entry->tls_type, NULL);
 
   return 1;
 }
@@ -2023,11 +2024,12 @@ mips_elf_count_local_tls_relocs (void **arg1, void *arg2)
    forced-local) symbol in ARG1.  */
 
 static int
-mips_elf_count_global_tls_entries (void *arg1, void *arg2)
+mips_elf_count_global_tls_entries(void *arg1, void *arg2)
 {
-  struct mips_elf_link_hash_entry *hm
-    = (struct mips_elf_link_hash_entry *) arg1;
-  struct mips_elf_count_tls_arg *arg = arg2;
+  struct mips_elf_link_hash_entry *hm =
+    (struct mips_elf_link_hash_entry *)arg1;
+  struct mips_elf_count_tls_arg *arg =
+    (struct mips_elf_count_tls_arg *)arg2;
 
   if (hm->tls_type & GOT_TLS_GD)
     arg->needed += 2;
@@ -2041,13 +2043,14 @@ mips_elf_count_global_tls_entries (void *arg1, void *arg2)
    forced-local) symbol in ARG1.  */
 
 static int
-mips_elf_count_global_tls_relocs (void *arg1, void *arg2)
+mips_elf_count_global_tls_relocs(void *arg1, void *arg2)
 {
-  struct mips_elf_link_hash_entry *hm
-    = (struct mips_elf_link_hash_entry *) arg1;
-  struct mips_elf_count_tls_arg *arg = arg2;
+  struct mips_elf_link_hash_entry *hm =
+    (struct mips_elf_link_hash_entry *)arg1;
+  struct mips_elf_count_tls_arg *arg =
+    (struct mips_elf_count_tls_arg *)arg2;
 
-  arg->needed += mips_tls_got_relocs (arg->info, hm->tls_type, &hm->root);
+  arg->needed += mips_tls_got_relocs(arg->info, hm->tls_type, &hm->root);
 
   return 1;
 }
@@ -2299,7 +2302,7 @@ mips_elf_global_got_index(bfd *abfd, bfd *ibfd, struct elf_link_hash_entry *h,
 	  e.d.h = (struct mips_elf_link_hash_entry *)h;
 	  e.tls_type = 0;
 
-	  p = htab_find(g->got_entries, &e);
+	  p = (struct mips_got_entry *)htab_find(g->got_entries, &e);
 
 	  BFD_ASSERT(p->gotidx > 0);
 
@@ -2534,38 +2537,37 @@ mips_elf_create_local_got_entry (bfd *abfd, bfd *ibfd,
    section symbols are added and the count is higher.  */
 
 static bfd_boolean
-mips_elf_sort_hash_table (struct bfd_link_info *info, unsigned long max_local)
+mips_elf_sort_hash_table(struct bfd_link_info *info, unsigned long max_local)
 {
   struct mips_elf_hash_sort_data hsd;
   struct mips_got_info *g;
   bfd *dynobj;
 
-  dynobj = elf_hash_table (info)->dynobj;
+  dynobj = elf_hash_table(info)->dynobj;
 
-  g = mips_elf_got_info (dynobj, NULL);
+  g = mips_elf_got_info(dynobj, NULL);
 
   hsd.low = NULL;
   hsd.max_unref_got_dynindx =
-  hsd.min_got_dynindx = elf_hash_table (info)->dynsymcount
+    hsd.min_got_dynindx = (elf_hash_table(info)->dynsymcount
     /* In the multi-got case, assigned_gotno of the master got_info
-       indicate the number of entries that aren't referenced in the
-       primary GOT, but that must have entries because there are
-       dynamic relocations that reference it.  Since they aren't
-       referenced, we move them to the end of the GOT, so that they
-       don't prevent other entries that are referenced from getting
-       too large offsets.  */
-    - (g->next ? g->assigned_gotno : 0);
+     * indicate the number of entries that are NOT referenced in the
+     * primary GOT, but that must have entries because there are dynamic
+     * relocations that reference it.  Since they are NOT referenced, we
+     * move them to the end of the GOT, so that they do NOT prevent other
+     * entries that are referenced from getting too large offsets: */
+                           - (g->next ? g->assigned_gotno : 0));
   hsd.max_non_got_dynindx = max_local;
-  mips_elf_link_hash_traverse (((struct mips_elf_link_hash_table *)
-				elf_hash_table (info)),
-			       mips_elf_sort_hash_table_f,
-			       &hsd);
+  mips_elf_link_hash_traverse(((struct mips_elf_link_hash_table *)
+                               elf_hash_table(info)),
+			      mips_elf_sort_hash_table_f,
+			      &hsd);
 
   /* There should have been enough room in the symbol table to
      accommodate both the GOT and non-GOT symbols.  */
-  BFD_ASSERT (hsd.max_non_got_dynindx <= hsd.min_got_dynindx);
-  BFD_ASSERT ((unsigned long)hsd.max_unref_got_dynindx
-	      <= elf_hash_table (info)->dynsymcount);
+  BFD_ASSERT(hsd.max_non_got_dynindx <= hsd.min_got_dynindx);
+  BFD_ASSERT((unsigned long)hsd.max_unref_got_dynindx
+	     <= elf_hash_table(info)->dynsymcount);
 
   /* Now we know which dynamic symbol has the lowest dynamic symbol
      table index in the GOT.  */
@@ -2579,9 +2581,10 @@ mips_elf_sort_hash_table (struct bfd_link_info *info, unsigned long max_local)
    index.  */
 
 static bfd_boolean
-mips_elf_sort_hash_table_f (struct mips_elf_link_hash_entry *h, void *data)
+mips_elf_sort_hash_table_f(struct mips_elf_link_hash_entry *h, void *data)
 {
-  struct mips_elf_hash_sort_data *hsd = data;
+  struct mips_elf_hash_sort_data *hsd =
+    (struct mips_elf_hash_sort_data *)data;
 
   if (h->root.root.type == bfd_link_hash_warning)
     h = (struct mips_elf_link_hash_entry *) h->root.root.u.i.link;
@@ -2773,7 +2776,7 @@ mips_elf_bfd2got_entry_eq (const void *entry1, const void *entry2)
    be the master GOT data.  */
 
 static struct mips_got_info *
-mips_elf_got_for_ibfd (struct mips_got_info *g, bfd *ibfd)
+mips_elf_got_for_ibfd(struct mips_got_info *g, bfd *ibfd)
 {
   struct mips_elf_bfd2got_hash e, *p;
 
@@ -2781,8 +2784,8 @@ mips_elf_got_for_ibfd (struct mips_got_info *g, bfd *ibfd)
     return g;
 
   e.bfd = ibfd;
-  p = htab_find (g->bfd2got, &e);
-  return p ? p->g : NULL;
+  p = (struct mips_elf_bfd2got_hash *)htab_find(g->bfd2got, &e);
+  return (p ? p->g : NULL);
 }
 
 /* Create one separate got for each bfd that has entries in the global
@@ -2980,15 +2983,14 @@ mips_elf_merge_gots (void **bfd2got_, void *p)
   return 1;
 }
 
-/* Set the TLS GOT index for the GOT entry in ENTRYP.  */
-
+/* Set the TLS GOT index for the GOT entry in ENTRYP: */
 static int
-mips_elf_initialize_tls_index (void **entryp, void *p)
+mips_elf_initialize_tls_index(void **entryp, void *p)
 {
-  struct mips_got_entry *entry = (struct mips_got_entry *)*entryp;
-  struct mips_got_info *g = p;
+  struct mips_got_entry *entry = (struct mips_got_entry *)(*entryp);
+  struct mips_got_info *g = (struct mips_got_info *)p;
 
-  /* We're only interested in TLS symbols.  */
+  /* We are only interested in TLS symbols: */
   if (entry->tls_type == 0)
     return 1;
 
@@ -3530,11 +3532,10 @@ mips_elf_create_compact_rel_section
   return TRUE;
 }
 
-/* Create the .got section to hold the global offset table.  */
-
+/* Create the .got section to hold the global offset table: */
 static bfd_boolean
-mips_elf_create_got_section (bfd *abfd, struct bfd_link_info *info,
-			     bfd_boolean maybe_exclude)
+mips_elf_create_got_section(bfd *abfd, struct bfd_link_info *info,
+			    bfd_boolean maybe_exclude)
 {
   flagword flags;
   register asection *s;
@@ -3543,8 +3544,8 @@ mips_elf_create_got_section (bfd *abfd, struct bfd_link_info *info,
   struct mips_got_info *g;
   bfd_size_type amt;
 
-  /* This function may be called more than once.  */
-  s = mips_elf_got_section (abfd, TRUE);
+  /* This function may be called more than once: */
+  s = mips_elf_got_section(abfd, TRUE);
   if (s)
     {
       if (! maybe_exclude)
@@ -3560,31 +3561,33 @@ mips_elf_create_got_section (bfd *abfd, struct bfd_link_info *info,
 
   /* We have to use an alignment of 2**4 here because this is hardcoded
      in the function stub generation and in the linker script.  */
-  s = bfd_make_section_with_flags (abfd, ".got", flags);
+  s = bfd_make_section_with_flags(abfd, ".got", flags);
   if (s == NULL
-      || ! bfd_set_section_alignment (abfd, s, 4))
+      || ! bfd_set_section_alignment(abfd, s, 4))
     return FALSE;
 
   /* Define the symbol _GLOBAL_OFFSET_TABLE_.  We don't do this in the
      linker script because we don't want to define the symbol if we
      are not creating a global offset table.  */
   bh = NULL;
-  if (! (_bfd_generic_link_add_one_symbol
-	 (info, abfd, "_GLOBAL_OFFSET_TABLE_", BSF_GLOBAL, s,
-	  0, NULL, FALSE, get_elf_backend_data (abfd)->collect, &bh)))
+  if (!(_bfd_generic_link_add_one_symbol(info, abfd,
+                                         "_GLOBAL_OFFSET_TABLE_",
+                                         BSF_GLOBAL, s, 0, NULL, FALSE,
+                                         get_elf_backend_data(abfd)->collect,
+                                         &bh)))
     return FALSE;
 
-  h = (struct elf_link_hash_entry *) bh;
+  h = (struct elf_link_hash_entry *)bh;
   h->non_elf = 0;
   h->def_regular = 1;
   h->type = STT_OBJECT;
 
   if (info->shared
-      && ! bfd_elf_link_record_dynamic_symbol (info, h))
+      && ! bfd_elf_link_record_dynamic_symbol(info, h))
     return FALSE;
 
-  amt = sizeof (struct mips_got_info);
-  g = bfd_alloc (abfd, amt);
+  amt = sizeof(struct mips_got_info);
+  g = (struct mips_got_info *)bfd_alloc(abfd, amt);
   if (g == NULL)
     return FALSE;
   g->global_gotsym = NULL;
@@ -8067,8 +8070,7 @@ _bfd_mips_elf_additional_program_headers (bfd *abfd)
   return ret;
 }
 
-/* Modify the segment map for an IRIX5 executable.  */
-
+/* Modify the segment map for an IRIX5 executable: */
 bfd_boolean
 _bfd_mips_elf_modify_segment_map(bfd *abfd,
 				 struct bfd_link_info *info ATTRIBUTE_UNUSED)
@@ -8079,16 +8081,16 @@ _bfd_mips_elf_modify_segment_map(bfd *abfd,
 
   /* If there is a .reginfo section, we need a PT_MIPS_REGINFO
      segment.  */
-  s = bfd_get_section_by_name (abfd, ".reginfo");
-  if (s != NULL && (s->flags & SEC_LOAD) != 0)
+  s = bfd_get_section_by_name(abfd, ".reginfo");
+  if ((s != NULL) && ((s->flags & SEC_LOAD) != 0))
     {
-      for (m = elf_tdata (abfd)->segment_map; m != NULL; m = m->next)
+      for (m = elf_tdata(abfd)->segment_map; m != NULL; m = m->next)
 	if (m->p_type == PT_MIPS_REGINFO)
 	  break;
       if (m == NULL)
 	{
-	  amt = sizeof *m;
-	  m = bfd_zalloc (abfd, amt);
+	  amt = sizeof(*m);
+	  m = (struct elf_segment_map *)bfd_zalloc(abfd, amt);
 	  if (m == NULL)
 	    return FALSE;
 
@@ -8097,7 +8099,7 @@ _bfd_mips_elf_modify_segment_map(bfd *abfd,
 	  m->sections[0] = s;
 
 	  /* We want to put it after the PHDR and INTERP segments.  */
-	  pm = &elf_tdata (abfd)->segment_map;
+	  pm = &elf_tdata(abfd)->segment_map;
 	  while (*pm != NULL
 		 && ((*pm)->p_type == PT_PHDR
 		     || (*pm)->p_type == PT_INTERP))
@@ -8112,29 +8114,29 @@ _bfd_mips_elf_modify_segment_map(bfd *abfd,
      .dynamic end up in PT_DYNAMIC.  However, we do have to insert a
      PT_MIPS_OPTIONS segment immediately following the program header
      table.  */
-  if (NEWABI_P (abfd)
+  if (NEWABI_P(abfd)
       /* On non-IRIX6 new abi, we'll have already created a segment
 	 for this section, so don't create another.  I'm not sure this
 	 is not also the case for IRIX 6, but I can't test it right
 	 now.  */
-      && IRIX_COMPAT (abfd) == ict_irix6)
+      && IRIX_COMPAT(abfd) == ict_irix6)
     {
       for (s = abfd->sections; s; s = s->next)
-	if (elf_section_data (s)->this_hdr.sh_type == SHT_MIPS_OPTIONS)
+	if (elf_section_data(s)->this_hdr.sh_type == SHT_MIPS_OPTIONS)
 	  break;
 
       if (s)
 	{
 	  struct elf_segment_map *options_segment;
 
-	  pm = &elf_tdata (abfd)->segment_map;
+	  pm = &elf_tdata(abfd)->segment_map;
 	  while (*pm != NULL
 		 && ((*pm)->p_type == PT_PHDR
 		     || (*pm)->p_type == PT_INTERP))
 	    pm = &(*pm)->next;
 
-	  amt = sizeof (struct elf_segment_map);
-	  options_segment = bfd_zalloc (abfd, amt);
+	  amt = sizeof(struct elf_segment_map);
+	  options_segment = (struct elf_segment_map*)bfd_zalloc(abfd, amt);
 	  options_segment->next = *pm;
 	  options_segment->p_type = PT_MIPS_OPTIONS;
 	  options_segment->p_flags = PF_R;
@@ -8146,27 +8148,27 @@ _bfd_mips_elf_modify_segment_map(bfd *abfd,
     }
   else
     {
-      if (IRIX_COMPAT (abfd) == ict_irix5)
+      if (IRIX_COMPAT(abfd) == ict_irix5)
 	{
 	  /* If there are .dynamic and .mdebug sections, we make a room
 	     for the RTPROC header.  FIXME: Rewrite without section names.  */
-	  if (bfd_get_section_by_name (abfd, ".interp") == NULL
-	      && bfd_get_section_by_name (abfd, ".dynamic") != NULL
-	      && bfd_get_section_by_name (abfd, ".mdebug") != NULL)
+	  if (bfd_get_section_by_name(abfd, ".interp") == NULL
+	      && bfd_get_section_by_name(abfd, ".dynamic") != NULL
+	      && bfd_get_section_by_name(abfd, ".mdebug") != NULL)
 	    {
-	      for (m = elf_tdata (abfd)->segment_map; m != NULL; m = m->next)
+	      for (m = elf_tdata(abfd)->segment_map; m != NULL; m = m->next)
 		if (m->p_type == PT_MIPS_RTPROC)
 		  break;
 	      if (m == NULL)
 		{
-		  amt = sizeof *m;
-		  m = bfd_zalloc (abfd, amt);
+		  amt = sizeof(*m);
+		  m = (struct elf_segment_map *)bfd_zalloc(abfd, amt);
 		  if (m == NULL)
 		    return FALSE;
 
 		  m->p_type = PT_MIPS_RTPROC;
 
-		  s = bfd_get_section_by_name (abfd, ".rtproc");
+		  s = bfd_get_section_by_name(abfd, ".rtproc");
 		  if (s == NULL)
 		    {
 		      m->count = 0;
@@ -8179,9 +8181,9 @@ _bfd_mips_elf_modify_segment_map(bfd *abfd,
 		      m->sections[0] = s;
 		    }
 
-		  /* We want to put it after the DYNAMIC segment.  */
-		  pm = &elf_tdata (abfd)->segment_map;
-		  while (*pm != NULL && (*pm)->p_type != PT_DYNAMIC)
+		  /* We want to put it after the DYNAMIC segment: */
+		  pm = &elf_tdata(abfd)->segment_map;
+		  while ((*pm != NULL) && ((*pm)->p_type != PT_DYNAMIC))
 		    pm = &(*pm)->next;
 		  if (*pm != NULL)
 		    pm = &(*pm)->next;
@@ -8194,25 +8196,26 @@ _bfd_mips_elf_modify_segment_map(bfd *abfd,
       /* On IRIX5, the PT_DYNAMIC segment includes the .dynamic,
 	 .dynstr, .dynsym, and .hash sections, and everything in
 	 between.  */
-      for (pm = &elf_tdata (abfd)->segment_map; *pm != NULL;
+      for (pm = &elf_tdata(abfd)->segment_map; *pm != NULL;
 	   pm = &(*pm)->next)
 	if ((*pm)->p_type == PT_DYNAMIC)
 	  break;
       m = *pm;
-      if (m != NULL && IRIX_COMPAT (abfd) == ict_none)
+      if ((m != NULL) && IRIX_COMPAT(abfd) == ict_none)
 	{
 	  /* For a normal mips executable the permissions for the PT_DYNAMIC
 	     segment are read, write and execute. We do that here since
 	     the code in elf.c sets only the read permission. This matters
 	     sometimes for the dynamic linker.  */
-	  if (bfd_get_section_by_name (abfd, ".dynamic") != NULL)
+	  if (bfd_get_section_by_name(abfd, ".dynamic") != NULL)
 	    {
-	      m->p_flags = PF_R | PF_W | PF_X;
+	      m->p_flags = (PF_R | PF_W | PF_X);
 	      m->p_flags_valid = 1;
 	    }
 	}
-      if (m != NULL
-	  && m->count == 1 && strcmp (m->sections[0]->name, ".dynamic") == 0)
+      if ((m != NULL)
+	  && ((m->count == 1)
+              && (strcmp(m->sections[0]->name, ".dynamic") == 0)))
 	{
 	  static const char *sec_names[] =
 	  {

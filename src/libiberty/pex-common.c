@@ -77,19 +77,18 @@ pex_init_common (int flags, const char *pname, const char *tempbase,
   return obj;
 }
 
-/* Add a file to be removed when we are done.  */
-
+/* Add a file to be removed when we are done: */
 static void
-pex_add_remove (struct pex_obj *obj, const char *name, int allocated)
+pex_add_remove(struct pex_obj *obj, const char *name, int allocated)
 {
   char *add;
 
   ++obj->remove_count;
-  obj->remove = XRESIZEVEC (char *, obj->remove, obj->remove_count);
+  obj->remove = XRESIZEVEC(char *, obj->remove, (size_t)obj->remove_count);
   if (allocated)
-    add = (char *) name;
+    add = (char *)name;
   else
-    add = xstrdup (name);
+    add = xstrdup(name);
   obj->remove[obj->remove_count - 1] = add;
 }
 
@@ -172,17 +171,17 @@ pex_run (struct pex_obj *obj, int flags, const char *executable,
 	    }
 	  else
 	    {
-	      int len = strlen (obj->tempbase);
+	      size_t len = strlen(obj->tempbase);
 
-	      if (len >= 6
-		  && strcmp (obj->tempbase + len - 6, "XXXXXX") == 0)
-		outname = xstrdup (obj->tempbase);
+	      if ((len >= 6UL)
+		  && strcmp((obj->tempbase + len - 6UL), "XXXXXX") == 0)
+		outname = xstrdup(obj->tempbase);
 	      else
-		outname = concat (obj->tempbase, "XXXXXX", NULL);
+		outname = concat(obj->tempbase, "XXXXXX", NULL);
 
 	      outname_allocated = 1;
 
-	      out = mkstemps (outname, 0);
+	      out = mkstemps(outname, 0);
 	      if (out < 0)
 		{
 		  *err = 0;
@@ -274,15 +273,14 @@ pex_run (struct pex_obj *obj, int flags, const char *executable,
 	}
     }
 
-  /* Run the program.  */
-
-  pid = obj->funcs->exec_child (obj, flags, executable, argv, in, out, errdes,
-				&errmsg, err);
+  /* Run the program: */
+  pid = obj->funcs->exec_child(obj, flags, executable, argv, in, out,
+                               errdes, &errmsg, err);
   if (pid < 0)
     goto error_exit;
 
   ++obj->count;
-  obj->children = XRESIZEVEC (long, obj->children, obj->count);
+  obj->children = XRESIZEVEC(long, obj->children, (size_t)obj->count);
   obj->children[obj->count - 1] = pid;
 
   return NULL;
@@ -345,8 +343,8 @@ pex_read_output (struct pex_obj *obj, int binary)
    the child processes.  Return 0 on failure, 1 on success.  */
 
 static int
-pex_get_status_and_time (struct pex_obj *obj, int done, const char **errmsg,
-			 int *err)
+pex_get_status_and_time(struct pex_obj *obj, int done, const char **errmsg,
+                        int *err)
 {
   int ret;
   int i;
@@ -354,9 +352,9 @@ pex_get_status_and_time (struct pex_obj *obj, int done, const char **errmsg,
   if (obj->number_waited == obj->count)
     return 1;
 
-  obj->status = XRESIZEVEC (int, obj->status, obj->count);
+  obj->status = XRESIZEVEC(int, obj->status, (size_t)obj->count);
   if ((obj->flags & PEX_RECORD_TIMES) != 0)
-    obj->time = XRESIZEVEC (struct pex_time, obj->time, obj->count);
+    obj->time = XRESIZEVEC(struct pex_time, obj->time, (size_t)obj->count);
 
   ret = 1;
   for (i = obj->number_waited; i < obj->count; ++i)
@@ -371,42 +369,41 @@ pex_get_status_and_time (struct pex_obj *obj, int done, const char **errmsg,
   return ret;
 }
 
-/* Get exit status of executed programs.  */
-
+/* Get exit status of executed programs: */
 int
-pex_get_status (struct pex_obj *obj, int count, int *vector)
+pex_get_status(struct pex_obj *obj, int count, int *vector)
 {
   if (obj->status == NULL)
     {
       const char *errmsg;
       int err;
 
-      if (!pex_get_status_and_time (obj, 0, &errmsg, &err))
+      if (!pex_get_status_and_time(obj, 0, &errmsg, &err))
 	return 0;
     }
 
   if (count > obj->count)
     {
-      memset (vector + obj->count, 0, (count - obj->count) * sizeof (int));
+      memset((vector + obj->count), 0,
+             ((size_t)(count - obj->count) * sizeof(int)));
       count = obj->count;
     }
 
-  memcpy (vector, obj->status, count * sizeof (int));
+  memcpy(vector, obj->status, ((size_t)count * sizeof(int)));
 
   return 1;
 }
 
-/* Get process times of executed programs.  */
-
+/* Get process times of executed programs: */
 int
-pex_get_times (struct pex_obj *obj, int count, struct pex_time *vector)
+pex_get_times(struct pex_obj *obj, int count, struct pex_time *vector)
 {
   if (obj->status == NULL)
     {
       const char *errmsg;
       int err;
 
-      if (!pex_get_status_and_time (obj, 0, &errmsg, &err))
+      if (!pex_get_status_and_time(obj, 0, &errmsg, &err))
 	return 0;
     }
 
@@ -415,12 +412,12 @@ pex_get_times (struct pex_obj *obj, int count, struct pex_time *vector)
 
   if (count > obj->count)
     {
-      memset (vector + obj->count, 0,
-	      (count - obj->count) * sizeof (struct pex_time));
+      memset((vector + obj->count), 0,
+	     ((size_t)(count - obj->count) * sizeof(struct pex_time)));
       count = obj->count;
     }
 
-  memcpy (vector, obj->time, count * sizeof (struct pex_time));
+  memcpy(vector, obj->time, ((size_t)count * sizeof(struct pex_time)));
 
   return 1;
 }

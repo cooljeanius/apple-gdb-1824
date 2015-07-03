@@ -195,32 +195,35 @@ md5_buffer (const char *buffer, size_t len, void *resblock)
 
 
 void
-md5_process_bytes (const void *buffer, size_t len, struct md5_ctx *ctx)
+md5_process_bytes(const void *buffer, size_t len, struct md5_ctx *ctx)
 {
   /* When we already have some bits in our internal buffer concatenate
      both inputs first.  */
   if (ctx->buflen != 0)
     {
       size_t left_over = ctx->buflen;
-      size_t add = 128 - left_over > len ? len : 128 - left_over;
+      size_t add = (((128UL - left_over) > len)
+                    ? len : (128UL - left_over));
 
-      memcpy (&ctx->buffer[left_over], buffer, add);
+      memcpy(&ctx->buffer[left_over], buffer, add);
       ctx->buflen += add;
 
-      if (left_over + add > 64)
+      if ((left_over + add) > 64UL)
 	{
-	  md5_process_block (ctx->buffer, (left_over + add) & ~63, ctx);
-	  /* The regions in the following copy operation cannot overlap.  */
-	  memcpy (ctx->buffer, &ctx->buffer[(left_over + add) & ~63],
-		  (left_over + add) & 63);
-	  ctx->buflen = (left_over + add) & 63;
+	  md5_process_block(ctx->buffer, (left_over + add) & (size_t)(~63),
+                            ctx);
+	  /* The regions in the following copy operation cannot overlap: */
+	  memcpy(ctx->buffer,
+                 &ctx->buffer[(left_over + add) & (size_t)(~63)],
+		 ((left_over + add) & 63UL));
+	  ctx->buflen = ((left_over + add) & 63);
 	}
 
-      buffer = (const void *) ((const char *) buffer + add);
+      buffer = (const void *)((const char *)buffer + add);
       len -= add;
     }
 
-  /* Process available complete blocks.  */
+  /* Process available complete blocks: */
   if (len > 64)
     {
 #if !defined(_STRING_ARCH_unaligned) || !_STRING_ARCH_unaligned
@@ -234,22 +237,23 @@ md5_process_bytes (const void *buffer, size_t len, struct md5_ctx *ctx)
       if (UNALIGNED_P (buffer))
         while (len > 64)
           {
-            md5_process_block (memcpy (ctx->buffer, buffer, 64), 64, ctx);
-            buffer = (const char *) buffer + 64;
-            len -= 64;
+            md5_process_block(memcpy(ctx->buffer, buffer, 64), 64, ctx);
+            buffer = ((const char *)buffer + 64);
+            len -= 64UL;
           }
       else
-#endif
-      md5_process_block (buffer, len & ~63, ctx);
-      buffer = (const void *) ((const char *) buffer + (len & ~63));
-      len &= 63;
+#endif /* !_STRING_ARCH_unaligned */
+      md5_process_block(buffer, (len & (size_t)(~63)), ctx);
+      buffer = (const void *)((const char *)buffer
+                              + (len & (size_t)(~63)));
+      len &= 63UL;
     }
 
-  /* Move remaining bytes in internal buffer.  */
+  /* Move remaining bytes in internal buffer: */
   if (len > 0)
     {
-      memcpy (ctx->buffer, buffer, len);
-      ctx->buflen = len;
+      memcpy(ctx->buffer, buffer, len);
+      ctx->buflen = (md5_uint32)len;
     }
 }
 

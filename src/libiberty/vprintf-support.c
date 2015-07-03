@@ -113,10 +113,12 @@ libiberty_vprintf_buffer_size(const char *format, va_list args)
             case 'n':
               (void)va_arg(ap, char *);
               break;
-      }
-      p++;
+            default:
+              break;
+            }
+          p++;
+        }
     }
-  }
 #ifdef va_copy
   va_end(ap);
 #endif /* va_copy */

@@ -28,7 +28,8 @@ MACOSX_FILES = \
 	macosx-nat.o \
 	$(MACH_EXC_SERVER_PREFACE)excServer.o \
 	$(MACH_EXC_SERVER_PREFACE)excUser.o \
-	darwin-kernel.o
+	darwin-kernel.o \
+	macosx-nat-utils.o
 
 IA86_FILES = i386-macosx-nat-exec.o i386-nat.o
 

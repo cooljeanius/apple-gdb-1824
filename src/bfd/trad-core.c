@@ -279,7 +279,7 @@ bfd_boolean
 trad_unix_core_file_matches_executable_p(bfd *core_bfd ATTRIBUTE_UNUSED,
                                          bfd *exec_bfd ATTRIBUTE_UNUSED)
 {
-  return TRUE;	 /* FIXME, We have no way of telling at this point */
+  return TRUE;	 /* FIXME: We have no way of telling at this point */
 }
 
 /* If somebody calls any byte-swapping routines, then shoot them: */

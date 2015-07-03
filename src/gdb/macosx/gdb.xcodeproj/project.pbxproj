@@ -31,7 +31,7 @@
 		61D22066192D611900FA979E /* aout0.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE600E82C407008125DE /* aout0.c */; };
 		61D22067192D611900FA979E /* aout32.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE610E82C407008125DE /* aout32.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D22068192D611900FA979E /* aout64.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE620E82C407008125DE /* aout64.c */; settings = {COMPILER_FLAGS = "-Wshorten-64-to-32"; }; };
-		61D22069192D613F00FA979E /* archive.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE650E82C407008125DE /* archive.c */; settings = {COMPILER_FLAGS = "-Wno-format-nonliteral -Wconversion -pedantic -Wshorten-64-to-32 -Wcast-align"; }; };
+		61D22069192D613F00FA979E /* archive.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE650E82C407008125DE /* archive.c */; settings = {COMPILER_FLAGS = "-Wno-format-nonliteral -Wconversion -Wshorten-64-to-32 -Wcast-align"; }; };
 		61D2206A192D613F00FA979E /* archive64.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE660E82C407008125DE /* archive64.c */; settings = {COMPILER_FLAGS = "-Wshorten-64-to-32 -Wconversion"; }; };
 		61D2206B192D613F00FA979E /* archures.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE670E82C407008125DE /* archures.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D2206C192D613F00FA979E /* armnetbsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE680E82C407008125DE /* armnetbsd.c */; };
@@ -174,12 +174,12 @@
 		61D220F7192D617D00FA979E /* elf32-d30v.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF100E82C407008125DE /* elf32-d30v.c */; };
 		61D220F8192D617D00FA979E /* elf32-dlx.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF110E82C407008125DE /* elf32-dlx.c */; };
 		61D220F9192D617D00FA979E /* elf32-fr30.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF120E82C407008125DE /* elf32-fr30.c */; };
-		61D220FA192D617D00FA979E /* elf32-frv.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF130E82C407008125DE /* elf32-frv.c */; };
+		61D220FA192D617D00FA979E /* elf32-frv.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF130E82C407008125DE /* elf32-frv.c */; settings = {COMPILER_FLAGS = "-DWE_SHOULD"; }; };
 		61D220FB192D617D00FA979E /* elf32-gen.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF140E82C407008125DE /* elf32-gen.c */; };
 		61D220FC192D617D00FA979E /* elf32-h8300.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF150E82C407008125DE /* elf32-h8300.c */; };
 		61D220FD192D617D00FA979E /* elf32-hppa.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF160E82C407008125DE /* elf32-hppa.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing"; }; };
 		61D220FE192D617D00FA979E /* elf32-hppa.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF170E82C407008125DE /* elf32-hppa.h */; };
-		61D220FF192D617D00FA979E /* elf32-i370.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF180E82C407008125DE /* elf32-i370.c */; };
+		61D220FF192D617D00FA979E /* elf32-i370.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF180E82C407008125DE /* elf32-i370.c */; settings = {COMPILER_FLAGS = "-DDEBUG"; }; };
 		61D22100192D617D00FA979E /* elf32-i386.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF190E82C407008125DE /* elf32-i386.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing"; }; };
 		61D22101192D617D00FA979E /* elf32-i860.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF1A0E82C407008125DE /* elf32-i860.c */; };
 		61D22102192D617D00FA979E /* elf32-i960.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF1B0E82C407008125DE /* elf32-i960.c */; };
@@ -193,14 +193,14 @@
 		61D2210A192D617D00FA979E /* elf32-m68hc1x.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF230E82C407008125DE /* elf32-m68hc1x.h */; };
 		61D2210B192D617D00FA979E /* elf32-m68k.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF240E82C407008125DE /* elf32-m68k.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing"; }; };
 		61D2210C192D617D00FA979E /* elf32-m88k.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF250E82C407008125DE /* elf32-m88k.c */; };
-		61D2210D192D617D00FA979E /* elf32-mcore.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF260E82C407008125DE /* elf32-mcore.c */; };
+		61D2210D192D617D00FA979E /* elf32-mcore.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF260E82C407008125DE /* elf32-mcore.c */; settings = {COMPILER_FLAGS = "-DDEBUG"; }; };
 		61D2210E192D617D00FA979E /* elf32-mips.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF270E82C407008125DE /* elf32-mips.c */; settings = {COMPILER_FLAGS = "-DTEST"; }; };
 		61D2210F192D617D00FA979E /* elf32-ms1.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF280E82C407008125DE /* elf32-ms1.c */; };
 		61D22110192D617D00FA979E /* elf32-msp430.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF290E82C407008125DE /* elf32-msp430.c */; };
 		61D22111192D617D00FA979E /* elf32-openrisc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF2A0E82C407008125DE /* elf32-openrisc.c */; };
 		61D22112192D617D00FA979E /* elf32-or32.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF2B0E82C407008125DE /* elf32-or32.c */; };
 		61D22113192D617D00FA979E /* elf32-pj.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF2C0E82C407008125DE /* elf32-pj.c */; };
-		61D22114192D617D00FA979E /* elf32-ppc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF2D0E82C407008125DE /* elf32-ppc.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing"; }; };
+		61D22114192D617D00FA979E /* elf32-ppc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF2D0E82C407008125DE /* elf32-ppc.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing -DDEBUG"; }; };
 		61D22115192D617D00FA979E /* elf32-ppc.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF2E0E82C407008125DE /* elf32-ppc.h */; };
 		61D22116192D617D00FA979E /* elf32-s390.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF2F0E82C407008125DE /* elf32-s390.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing"; }; };
 		61D22117192D617D00FA979E /* elf32-sh-symbian.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF300E82C407008125DE /* elf32-sh-symbian.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing"; }; };
@@ -274,7 +274,7 @@
 		61D22162192D61C300FA979E /* liboasys.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF950E82C408008125DE /* liboasys.h */; };
 		61D22163192D61C300FA979E /* libpei.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF960E82C408008125DE /* libpei.h */; };
 		61D22164192D61C300FA979E /* libxcoff.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF970E82C408008125DE /* libxcoff.h */; };
-		61D22165192D61C300FA979E /* linker.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF980E82C408008125DE /* linker.c */; settings = {COMPILER_FLAGS = "-Wconversion -Wswitch-enum -pedantic -Wcast-align"; }; };
+		61D22165192D61C300FA979E /* linker.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF980E82C408008125DE /* linker.c */; settings = {COMPILER_FLAGS = "-Wconversion -Wswitch-enum -Wcast-align"; }; };
 		61D22166192D61C300FA979E /* lynx-core.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF990E82C408008125DE /* lynx-core.c */; };
 		61D22167192D61C300FA979E /* m68k4knetbsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF9A0E82C408008125DE /* m68k4knetbsd.c */; };
 		61D22168192D61C300FA979E /* m68klinux.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF9B0E82C408008125DE /* m68klinux.c */; };
@@ -459,6 +459,142 @@
 		A53B87A41AE586140067328B /* vi_keymap.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DFCA0E82C412008125DE /* vi_keymap.c */; };
 		A53B87A51AE586140067328B /* vi_mode.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DFCB0E82C412008125DE /* vi_mode.c */; };
 		A53B87A61AE586140067328B /* xmalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DFCC0E82C412008125DE /* xmalloc.c */; };
+		A53F04981B45F7F6005B5360 /* cp-demangle.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609DE0C0E82C411008125DE /* cp-demangle.h */; };
+		A53F04991B45F7F6005B5360 /* malloca.h in Headers */ = {isa = PBXBuildFile; fileRef = A53AC2D61A40F312002F20B2 /* malloca.h */; };
+		A53F049A1B45F7F6005B5360 /* pex-common.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609DE3A0E82C411008125DE /* pex-common.h */; };
+		A53F049B1B45F7F6005B5360 /* simple-object-common.h in Headers */ = {isa = PBXBuildFile; fileRef = A53AC3391A4108C9002F20B2 /* simple-object-common.h */; };
+		A53F049C1B45F7F6005B5360 /* vprintf-support.h in Headers */ = {isa = PBXBuildFile; fileRef = A53AC17F1A3F44CF002F20B2 /* vprintf-support.h */; };
+		A53F049D1B45F823005B5360 /* libiberty.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609DD7F0E82C410008125DE /* libiberty.h */; };
+		A53F049E1B45F823005B5360 /* libiberty_deprecated.h in Headers */ = {isa = PBXBuildFile; fileRef = A5CA6A8D1AC081B100716574 /* libiberty_deprecated.h */; };
+		A53F049F1B45F84B005B5360 /* demangle.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609DD2D0E82C410008125DE /* demangle.h */; };
+		A53F04A01B45F84B005B5360 /* leb128.h in Headers */ = {isa = PBXBuildFile; fileRef = A5924B171ABB34AB00050903 /* leb128.h */; };
+		A53F04A11B45F84B005B5360 /* safe-ctype.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609DDC20E82C410008125DE /* safe-ctype.h */; };
+		A53F04A21B45F84B005B5360 /* timeval-utils.h in Headers */ = {isa = PBXBuildFile; fileRef = A5924B1F1ABB355A00050903 /* timeval-utils.h */; };
+		A53F04A31B45F8A7005B5360 /* _doprnt.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DDED0E82C411008125DE /* _doprnt.c */; settings = {COMPILER_FLAGS = "-Wno-format-nonliteral"; }; };
+		A53F04A41B45F8A7005B5360 /* alloca.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DDEF0E82C411008125DE /* alloca.c */; };
+		A53F04A51B45F8A7005B5360 /* argv.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DDF00E82C411008125DE /* argv.c */; };
+		A53F04A61B45F8A7005B5360 /* asprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DDF10E82C411008125DE /* asprintf.c */; };
+		A53F04A71B45F8A7005B5360 /* atexit.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DDF20E82C411008125DE /* atexit.c */; };
+		A53F04A81B45F8A7005B5360 /* basename.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DDF30E82C411008125DE /* basename.c */; };
+		A53F04A91B45F8A7005B5360 /* bcmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DDF40E82C411008125DE /* bcmp.c */; };
+		A53F04AA1B45F8A7005B5360 /* bcopy.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DDF50E82C411008125DE /* bcopy.c */; };
+		A53F04AB1B45F8A7005B5360 /* bsearch.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DDF60E82C411008125DE /* bsearch.c */; };
+		A53F04AC1B45F8A7005B5360 /* bzero.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DDF70E82C411008125DE /* bzero.c */; };
+		A53F04AD1B45F8A7005B5360 /* calloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DDF80E82C411008125DE /* calloc.c */; };
+		A53F04AE1B45F8A7005B5360 /* choose-temp.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DDFB0E82C411008125DE /* choose-temp.c */; };
+		A53F04AF1B45F8A7005B5360 /* clock.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DDFC0E82C411008125DE /* clock.c */; };
+		A53F04B01B45F8A7005B5360 /* concat.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DDFD0E82C411008125DE /* concat.c */; };
+		A53F04B11B45F8A7005B5360 /* copysign.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE0A0E82C411008125DE /* copysign.c */; };
+		A53F04B21B45F8A7005B5360 /* cp-demangle.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE0B0E82C411008125DE /* cp-demangle.c */; };
+		A53F04B31B45F8A7005B5360 /* cp-demint.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE0D0E82C411008125DE /* cp-demint.c */; };
+		A53F04B41B45F8A7005B5360 /* cplus-dem.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE0E0E82C411008125DE /* cplus-dem.c */; };
+		A53F04B51B45F8A7005B5360 /* crc32.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC23F1A40B3F0002F20B2 /* crc32.c */; };
+		A53F04B61B45F8A7005B5360 /* d-demangle.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC2401A40B3F6002F20B2 /* d-demangle.c */; };
+		A53F04B71B45F8A7005B5360 /* dwarfnames.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC2411A40B400002F20B2 /* dwarfnames.c */; settings = {COMPILER_FLAGS = "-Wno-switch-default"; }; };
+		A53F04B81B45F8A7005B5360 /* dyn-string.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE0F0E82C411008125DE /* dyn-string.c */; };
+		A53F04B91B45F8A7005B5360 /* fdmatch.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE100E82C411008125DE /* fdmatch.c */; };
+		A53F04BA1B45F8A7005B5360 /* ffs.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE110E82C411008125DE /* ffs.c */; };
+		A53F04BB1B45F8A7005B5360 /* fibheap.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE120E82C411008125DE /* fibheap.c */; };
+		A53F04BC1B45F8A7005B5360 /* filename_cmp.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC2421A40B44D002F20B2 /* filename_cmp.c */; };
+		A53F04BD1B45F8A7005B5360 /* floatformat.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE130E82C411008125DE /* floatformat.c */; };
+		A53F04BE1B45F8A7005B5360 /* fnmatch.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE140E82C411008125DE /* fnmatch.c */; };
+		A53F04BF1B45F8A7005B5360 /* fopen_unlocked.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE160E82C411008125DE /* fopen_unlocked.c */; };
+		A53F04C01B45F8A7005B5360 /* getcwd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE190E82C411008125DE /* getcwd.c */; };
+		A53F04C11B45F8A7005B5360 /* getopt.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE1A0E82C411008125DE /* getopt.c */; };
+		A53F04C21B45F8A7005B5360 /* getopt1.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE1B0E82C411008125DE /* getopt1.c */; };
+		A53F04C31B45F8A7005B5360 /* getpagesize.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE1C0E82C411008125DE /* getpagesize.c */; };
+		A53F04C41B45F8A7005B5360 /* getpwd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE1D0E82C411008125DE /* getpwd.c */; };
+		A53F04C51B45F8A7005B5360 /* getruntime.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE1E0E82C411008125DE /* getruntime.c */; };
+		A53F04C61B45F8A7005B5360 /* gettimeofday.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE1F0E82C411008125DE /* gettimeofday.c */; };
+		A53F04C71B45F8A7005B5360 /* hashtab.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE200E82C411008125DE /* hashtab.c */; };
+		A53F04C81B45F8A7005B5360 /* hex.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE210E82C411008125DE /* hex.c */; };
+		A53F04C91B45F8A7005B5360 /* index.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE220E82C411008125DE /* index.c */; };
+		A53F04CA1B45F8A7005B5360 /* insque.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE230E82C411008125DE /* insque.c */; };
+		A53F04CB1B45F8A7005B5360 /* lbasename.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE240E82C411008125DE /* lbasename.c */; };
+		A53F04CC1B45F8A7005B5360 /* lrealpath.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE260E82C411008125DE /* lrealpath.c */; };
+		A53F04CD1B45F8A7005B5360 /* make-relative-prefix.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE280E82C411008125DE /* make-relative-prefix.c */; };
+		A53F04CE1B45F8A7005B5360 /* make-temp-file.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE290E82C411008125DE /* make-temp-file.c */; };
+		A53F04CF1B45F8A7005B5360 /* malloca.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC2D51A40F312002F20B2 /* malloca.c */; };
+		A53F04D01B45F8A7005B5360 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE2C0E82C411008125DE /* md5.c */; };
+		A53F04D11B45F8A7005B5360 /* memchr.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE2D0E82C411008125DE /* memchr.c */; };
+		A53F04D21B45F8A7005B5360 /* memcmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE2E0E82C411008125DE /* memcmp.c */; };
+		A53F04D31B45F8A7005B5360 /* memcpy.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE2F0E82C411008125DE /* memcpy.c */; };
+		A53F04D41B45F8A7005B5360 /* memmem.c in Sources */ = {isa = PBXBuildFile; fileRef = A5CA6A8E1AC088E100716574 /* memmem.c */; };
+		A53F04D51B45F8A7005B5360 /* memmove.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE300E82C411008125DE /* memmove.c */; };
+		A53F04D61B45F8A7005B5360 /* mempcpy.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE310E82C411008125DE /* mempcpy.c */; };
+		A53F04D71B45F8A7005B5360 /* memset.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE320E82C411008125DE /* memset.c */; };
+		A53F04D81B45F8A7005B5360 /* mkstemps.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE330E82C411008125DE /* mkstemps.c */; };
+		A53F04D91B45F8A7005B5360 /* msdos.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE340E82C411008125DE /* msdos.c */; };
+		A53F04DA1B45F8A7005B5360 /* objalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE350E82C411008125DE /* objalloc.c */; };
+		A53F04DB1B45F8A7005B5360 /* obstack.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE360E82C411008125DE /* obstack.c */; };
+		A53F04DC1B45F8A7005B5360 /* partition.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE380E82C411008125DE /* partition.c */; };
+		A53F04DD1B45F8A7005B5360 /* pex-common.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE390E82C411008125DE /* pex-common.c */; };
+		A53F04E01B45F8A7005B5360 /* pex-one.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE3D0E82C411008125DE /* pex-one.c */; };
+		A53F04E11B45F8A7005B5360 /* pex-unix.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE3E0E82C411008125DE /* pex-unix.c */; };
+		A53F04E31B45F8A7005B5360 /* pexecute.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE400E82C411008125DE /* pexecute.c */; };
+		A53F04E41B45F8A7005B5360 /* physmem.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE420E82C411008125DE /* physmem.c */; };
+		A53F04E51B45F8A7005B5360 /* putenv.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE430E82C411008125DE /* putenv.c */; };
+		A53F04E61B45F8A7005B5360 /* random.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE440E82C411008125DE /* random.c */; };
+		A53F04E71B45F8A7005B5360 /* regex.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE460E82C411008125DE /* regex.c */; };
+		A53F04E81B45F8A7005B5360 /* rename.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE470E82C411008125DE /* rename.c */; };
+		A53F04E91B45F8A7005B5360 /* rindex.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE480E82C411008125DE /* rindex.c */; };
+		A53F04EA1B45F8A7005B5360 /* safe-ctype.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE490E82C411008125DE /* safe-ctype.c */; };
+		A53F04EB1B45F8A7005B5360 /* setenv.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE4A0E82C411008125DE /* setenv.c */; };
+		A53F04EC1B45F8A7005B5360 /* setproctitle.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC3361A4107D7002F20B2 /* setproctitle.c */; };
+		A53F04ED1B45F8A7005B5360 /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC3371A4107D7002F20B2 /* sha1.c */; };
+		A53F04EE1B45F8A7005B5360 /* sigsetmask.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE4B0E82C411008125DE /* sigsetmask.c */; };
+		A53F04EF1B45F8A7005B5360 /* simple-object-coff.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC3381A4108C9002F20B2 /* simple-object-coff.c */; };
+		A53F04F01B45F8A7005B5360 /* simple-object-elf.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC33A1A4108C9002F20B2 /* simple-object-elf.c */; };
+		A53F04F11B45F8A7005B5360 /* simple-object-mach-o.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC33B1A4108C9002F20B2 /* simple-object-mach-o.c */; };
+		A53F04F21B45F8A7005B5360 /* simple-object-xcoff.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC33C1A4108C9002F20B2 /* simple-object-xcoff.c */; };
+		A53F04F31B45F8A7005B5360 /* simple-object.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC33D1A4108C9002F20B2 /* simple-object.c */; };
+		A53F04F41B45F8A7005B5360 /* snprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE4C0E82C411008125DE /* snprintf.c */; };
+		A53F04F51B45F8A7005B5360 /* sort.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE4D0E82C411008125DE /* sort.c */; };
+		A53F04F61B45F8A7005B5360 /* spaces.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE4E0E82C411008125DE /* spaces.c */; };
+		A53F04F71B45F8A7005B5360 /* splay-tree.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE4F0E82C411008125DE /* splay-tree.c */; };
+		A53F04F81B45F8A7005B5360 /* stack-limit.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC33E1A410A35002F20B2 /* stack-limit.c */; };
+		A53F04F91B45F8A7005B5360 /* stpcpy.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE500E82C411008125DE /* stpcpy.c */; };
+		A53F04FA1B45F8A7005B5360 /* stpncpy.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE510E82C411008125DE /* stpncpy.c */; };
+		A53F04FB1B45F8A7005B5360 /* strcasecmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE520E82C411008125DE /* strcasecmp.c */; };
+		A53F04FC1B45F8A7005B5360 /* strchr.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE530E82C411008125DE /* strchr.c */; };
+		A53F04FD1B45F8A7005B5360 /* strdup.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE540E82C411008125DE /* strdup.c */; };
+		A53F04FE1B45F8A7005B5360 /* strerror.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE550E82C411008125DE /* strerror.c */; };
+		A53F04FF1B45F8A7005B5360 /* strncasecmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE560E82C411008125DE /* strncasecmp.c */; settings = {COMPILER_FLAGS = "-std=gnu99"; }; };
+		A53F05001B45F8A7005B5360 /* strncmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE570E82C411008125DE /* strncmp.c */; };
+		A53F05011B45F8A7005B5360 /* strndup.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE580E82C411008125DE /* strndup.c */; };
+		A53F05021B45F8A7005B5360 /* strnlen.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC33F1A410A4C002F20B2 /* strnlen.c */; };
+		A53F05031B45F8A7005B5360 /* strrchr.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE590E82C411008125DE /* strrchr.c */; };
+		A53F05041B45F8A7005B5360 /* strsignal.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE5A0E82C411008125DE /* strsignal.c */; };
+		A53F05051B45F8A7005B5360 /* strstr.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE5B0E82C411008125DE /* strstr.c */; };
+		A53F05061B45F8A7005B5360 /* strtod.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE5C0E82C411008125DE /* strtod.c */; };
+		A53F05071B45F8A7005B5360 /* strtol.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE5D0E82C411008125DE /* strtol.c */; };
+		A53F05081B45F8A7005B5360 /* strtoll.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC3401A410A5A002F20B2 /* strtoll.c */; settings = {COMPILER_FLAGS = "-std=gnu99"; }; };
+		A53F05091B45F8A7005B5360 /* strtoul.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE5E0E82C411008125DE /* strtoul.c */; };
+		A53F050A1B45F8A7005B5360 /* strtoull.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC3411A410A61002F20B2 /* strtoull.c */; settings = {COMPILER_FLAGS = "-std=gnu99"; }; };
+		A53F050B1B45F8A7005B5360 /* strverscmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE5F0E82C411008125DE /* strverscmp.c */; };
+		A53F050C1B45F8A7005B5360 /* ternary.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE600E82C411008125DE /* ternary.c */; };
+		A53F050D1B45F8A7005B5360 /* timeval-utils.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC3451A410AB0002F20B2 /* timeval-utils.c */; };
+		A53F050E1B45F8A7005B5360 /* tmpnam.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE660E82C411008125DE /* tmpnam.c */; };
+		A53F050F1B45F8A7005B5360 /* unlink-if-ordinary.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE670E82C411008125DE /* unlink-if-ordinary.c */; };
+		A53F05101B45F8A7005B5360 /* vasprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE680E82C411008125DE /* vasprintf.c */; };
+		A53F05111B45F8A7005B5360 /* vfork.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE690E82C411008125DE /* vfork.c */; };
+		A53F05121B45F8A7005B5360 /* vfprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE6A0E82C411008125DE /* vfprintf.c */; settings = {COMPILER_FLAGS = "-std=gnu99"; }; };
+		A53F05131B45F8A7005B5360 /* vprintf-support.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC17E1A3F430A002F20B2 /* vprintf-support.c */; };
+		A53F05141B45F8A7005B5360 /* vprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE6C0E82C411008125DE /* vprintf.c */; };
+		A53F05151B45F8A7005B5360 /* vsnprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE6D0E82C411008125DE /* vsnprintf.c */; };
+		A53F05161B45F8A7005B5360 /* vsprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE6E0E82C411008125DE /* vsprintf.c */; };
+		A53F05171B45F8A7005B5360 /* waitpid.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE6F0E82C411008125DE /* waitpid.c */; };
+		A53F05181B45F8A7005B5360 /* xatexit.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE700E82C411008125DE /* xatexit.c */; };
+		A53F05191B45F8A7005B5360 /* xexit.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE710E82C411008125DE /* xexit.c */; };
+		A53F051A1B45F8A7005B5360 /* xmalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE720E82C411008125DE /* xmalloc.c */; };
+		A53F051B1B45F8A7005B5360 /* xmalloca.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC3461A410AD6002F20B2 /* xmalloca.c */; };
+		A53F051C1B45F8A7005B5360 /* xmemdup.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE730E82C411008125DE /* xmemdup.c */; };
+		A53F051D1B45F8A7005B5360 /* xstrdup.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE740E82C411008125DE /* xstrdup.c */; };
+		A53F051E1B45F8A7005B5360 /* xstrerror.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE750E82C411008125DE /* xstrerror.c */; };
+		A53F051F1B45F8A7005B5360 /* xstrndup.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE760E82C411008125DE /* xstrndup.c */; };
+		A53F05201B45F8A7005B5360 /* xvasprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC1801A3F4517002F20B2 /* xvasprintf.c */; };
+		A53F07981B4636C9005B5360 /* libiberty.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A53F04941B45F52C005B5360 /* libiberty.a */; };
+		A53F07991B4636E1005B5360 /* test-expandargv.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC3431A410A84002F20B2 /* test-expandargv.c */; };
 		A589CB5B1A30F16700E717B9 /* cpcg.c in Sources */ = {isa = PBXBuildFile; fileRef = A589CB4F1A30EF6400E717B9 /* cpcg.c */; };
 		A589CB5C1A30F16700E717B9 /* cpfork.c in Sources */ = {isa = PBXBuildFile; fileRef = A589CB501A30EF6400E717B9 /* cpfork.c */; };
 		A589CB681A30F23F00E717B9 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A589CB671A30F23F00E717B9 /* ApplicationServices.framework */; };
@@ -486,6 +622,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 61D221C9192D63C200FA979E;
 			remoteInfo = configure;
+		};
+		A53F07961B4636BE005B5360 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A53F04931B45F52C005B5360 /* libiberty */;
+			remoteInfo = libiberty;
 		};
 		A589D5CA1A311DFF00E717B9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -3387,6 +3530,9 @@
 		A53B84271AE2F16B0067328B /* libintl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libintl.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A53B854B1AE418270067328B /* pei-arm-wince.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "pei-arm-wince.c"; path = "/Users/ericgallager/apple-gdb-1824/src/bfd/pei-arm-wince.c"; sourceTree = "<absolute>"; };
 		A53B876A1AE585030067328B /* libreadline.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libreadline.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A53F04941B45F52C005B5360 /* libiberty.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libiberty.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A53F05711B46029C005B5360 /* dwarf2.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = dwarf2.def; path = "/Users/ericgallager/apple-gdb-1824/src/include/dwarf2.def"; sourceTree = "<absolute>"; };
+		A53F07921B4636AE005B5360 /* test_expandargv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_expandargv; sourceTree = BUILT_PRODUCTS_DIR; };
 		A548D49A1836C60900FD4E8A /* DebuggerGDB_disasm.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = DebuggerGDB_disasm.s; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/XcodePlugins/DebuggerGDB/DebuggerGDB_disasm.s"; sourceTree = "<absolute>"; };
 		A548D49B1836C60900FD4E8A /* DebuggerGDB_symbols.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DebuggerGDB_symbols.csv; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/XcodePlugins/DebuggerGDB/DebuggerGDB_symbols.csv"; sourceTree = "<absolute>"; };
 		A548D49C1836C60900FD4E8A /* DebuggerGDB_symbols.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = DebuggerGDB_symbols.xml; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/XcodePlugins/DebuggerGDB/DebuggerGDB_symbols.xml"; sourceTree = "<absolute>"; };
@@ -5434,6 +5580,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A53F04921B45F52C005B5360 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A53F07901B4636AE005B5360 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A53F07981B4636C9005B5360 /* libiberty.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8196,6 +8357,7 @@
 				2609DD020E82C410008125DE /* coff */,
 				2609DD2D0E82C410008125DE /* demangle.h */,
 				2609DD2E0E82C410008125DE /* dis-asm.h */,
+				A53F05711B46029C005B5360 /* dwarf2.def */,
 				A5924AF51ABB334200050903 /* dwarf2.h */,
 				2609DD2F0E82C410008125DE /* dyn-string.h */,
 				2609DD300E82C410008125DE /* elf */,
@@ -8982,6 +9144,8 @@
 				A5D6C4BA1ADB410200E04E36 /* libefence.a */,
 				A53B84271AE2F16B0067328B /* libintl.a */,
 				A53B876A1AE585030067328B /* libreadline.a */,
+				A53F04941B45F52C005B5360 /* libiberty.a */,
+				A53F07921B4636AE005B5360 /* test_expandargv */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -12341,6 +12505,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A53F04901B45F52C005B5360 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A53F04981B45F7F6005B5360 /* cp-demangle.h in Headers */,
+				A53F049F1B45F84B005B5360 /* demangle.h in Headers */,
+				A53F04A01B45F84B005B5360 /* leb128.h in Headers */,
+				A53F049D1B45F823005B5360 /* libiberty.h in Headers */,
+				A53F049E1B45F823005B5360 /* libiberty_deprecated.h in Headers */,
+				A53F04991B45F7F6005B5360 /* malloca.h in Headers */,
+				A53F049A1B45F7F6005B5360 /* pex-common.h in Headers */,
+				A53F04A11B45F84B005B5360 /* safe-ctype.h in Headers */,
+				A53F049B1B45F7F6005B5360 /* simple-object-common.h in Headers */,
+				A53F04A21B45F84B005B5360 /* timeval-utils.h in Headers */,
+				A53F049C1B45F7F6005B5360 /* vprintf-support.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A589CB541A30F15100E717B9 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -12503,6 +12685,40 @@
 			productReference = A53B876A1AE585030067328B /* libreadline.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		A53F04931B45F52C005B5360 /* libiberty */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A53F04971B45F567005B5360 /* Build configuration list for PBXNativeTarget "libiberty" */;
+			buildPhases = (
+				A53F04901B45F52C005B5360 /* Headers */,
+				A53F04911B45F52C005B5360 /* Sources */,
+				A53F04921B45F52C005B5360 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libiberty;
+			productName = libiberty;
+			productReference = A53F04941B45F52C005B5360 /* libiberty.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		A53F07911B4636AE005B5360 /* test_expandargv */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A53F079E1B4637E6005B5360 /* Build configuration list for PBXNativeTarget "test_expandargv" */;
+			buildPhases = (
+				A53F078F1B4636AE005B5360 /* Sources */,
+				A53F07901B4636AE005B5360 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A53F07971B4636BE005B5360 /* PBXTargetDependency */,
+			);
+			name = test_expandargv;
+			productName = test_expandargv;
+			productReference = A53F07921B4636AE005B5360 /* test_expandargv */;
+			productType = "com.apple.product-type.tool";
+		};
 		A589CB571A30F15100E717B9 /* libcheckpoint */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A589CB5E1A30F16E00E717B9 /* Build configuration list for PBXNativeTarget "libcheckpoint" */;
@@ -12587,6 +12803,8 @@
 				A5D6C4B91ADB410200E04E36 /* efence */,
 				A53B84261AE2F16B0067328B /* intl */,
 				A53B87691AE585030067328B /* readline */,
+				A53F04931B45F52C005B5360 /* libiberty */,
+				A53F07911B4636AE005B5360 /* test_expandargv */,
 			);
 		};
 /* End PBXProject section */
@@ -12994,6 +13212,144 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A53F04911B45F52C005B5360 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A53F04A31B45F8A7005B5360 /* _doprnt.c in Sources */,
+				A53F04A41B45F8A7005B5360 /* alloca.c in Sources */,
+				A53F04A51B45F8A7005B5360 /* argv.c in Sources */,
+				A53F04A61B45F8A7005B5360 /* asprintf.c in Sources */,
+				A53F04A71B45F8A7005B5360 /* atexit.c in Sources */,
+				A53F04A81B45F8A7005B5360 /* basename.c in Sources */,
+				A53F04A91B45F8A7005B5360 /* bcmp.c in Sources */,
+				A53F04AA1B45F8A7005B5360 /* bcopy.c in Sources */,
+				A53F04AB1B45F8A7005B5360 /* bsearch.c in Sources */,
+				A53F04AC1B45F8A7005B5360 /* bzero.c in Sources */,
+				A53F04AD1B45F8A7005B5360 /* calloc.c in Sources */,
+				A53F04AE1B45F8A7005B5360 /* choose-temp.c in Sources */,
+				A53F04AF1B45F8A7005B5360 /* clock.c in Sources */,
+				A53F04B01B45F8A7005B5360 /* concat.c in Sources */,
+				A53F04B11B45F8A7005B5360 /* copysign.c in Sources */,
+				A53F04B21B45F8A7005B5360 /* cp-demangle.c in Sources */,
+				A53F04B31B45F8A7005B5360 /* cp-demint.c in Sources */,
+				A53F04B41B45F8A7005B5360 /* cplus-dem.c in Sources */,
+				A53F04B51B45F8A7005B5360 /* crc32.c in Sources */,
+				A53F04B61B45F8A7005B5360 /* d-demangle.c in Sources */,
+				A53F04B71B45F8A7005B5360 /* dwarfnames.c in Sources */,
+				A53F04B81B45F8A7005B5360 /* dyn-string.c in Sources */,
+				A53F04B91B45F8A7005B5360 /* fdmatch.c in Sources */,
+				A53F04BA1B45F8A7005B5360 /* ffs.c in Sources */,
+				A53F04BB1B45F8A7005B5360 /* fibheap.c in Sources */,
+				A53F04BC1B45F8A7005B5360 /* filename_cmp.c in Sources */,
+				A53F04BD1B45F8A7005B5360 /* floatformat.c in Sources */,
+				A53F04BE1B45F8A7005B5360 /* fnmatch.c in Sources */,
+				A53F04BF1B45F8A7005B5360 /* fopen_unlocked.c in Sources */,
+				A53F04C01B45F8A7005B5360 /* getcwd.c in Sources */,
+				A53F04C11B45F8A7005B5360 /* getopt.c in Sources */,
+				A53F04C21B45F8A7005B5360 /* getopt1.c in Sources */,
+				A53F04C31B45F8A7005B5360 /* getpagesize.c in Sources */,
+				A53F04C41B45F8A7005B5360 /* getpwd.c in Sources */,
+				A53F04C51B45F8A7005B5360 /* getruntime.c in Sources */,
+				A53F04C61B45F8A7005B5360 /* gettimeofday.c in Sources */,
+				A53F04C71B45F8A7005B5360 /* hashtab.c in Sources */,
+				A53F04C81B45F8A7005B5360 /* hex.c in Sources */,
+				A53F04C91B45F8A7005B5360 /* index.c in Sources */,
+				A53F04CA1B45F8A7005B5360 /* insque.c in Sources */,
+				A53F04CB1B45F8A7005B5360 /* lbasename.c in Sources */,
+				A53F04CC1B45F8A7005B5360 /* lrealpath.c in Sources */,
+				A53F04CD1B45F8A7005B5360 /* make-relative-prefix.c in Sources */,
+				A53F04CE1B45F8A7005B5360 /* make-temp-file.c in Sources */,
+				A53F04CF1B45F8A7005B5360 /* malloca.c in Sources */,
+				A53F04D01B45F8A7005B5360 /* md5.c in Sources */,
+				A53F04D11B45F8A7005B5360 /* memchr.c in Sources */,
+				A53F04D21B45F8A7005B5360 /* memcmp.c in Sources */,
+				A53F04D31B45F8A7005B5360 /* memcpy.c in Sources */,
+				A53F04D41B45F8A7005B5360 /* memmem.c in Sources */,
+				A53F04D51B45F8A7005B5360 /* memmove.c in Sources */,
+				A53F04D61B45F8A7005B5360 /* mempcpy.c in Sources */,
+				A53F04D71B45F8A7005B5360 /* memset.c in Sources */,
+				A53F04D81B45F8A7005B5360 /* mkstemps.c in Sources */,
+				A53F04D91B45F8A7005B5360 /* msdos.c in Sources */,
+				A53F04DA1B45F8A7005B5360 /* objalloc.c in Sources */,
+				A53F04DB1B45F8A7005B5360 /* obstack.c in Sources */,
+				A53F04DC1B45F8A7005B5360 /* partition.c in Sources */,
+				A53F04DD1B45F8A7005B5360 /* pex-common.c in Sources */,
+				A53F04E01B45F8A7005B5360 /* pex-one.c in Sources */,
+				A53F04E11B45F8A7005B5360 /* pex-unix.c in Sources */,
+				A53F04E31B45F8A7005B5360 /* pexecute.c in Sources */,
+				A53F04E41B45F8A7005B5360 /* physmem.c in Sources */,
+				A53F04E51B45F8A7005B5360 /* putenv.c in Sources */,
+				A53F04E61B45F8A7005B5360 /* random.c in Sources */,
+				A53F04E71B45F8A7005B5360 /* regex.c in Sources */,
+				A53F04E81B45F8A7005B5360 /* rename.c in Sources */,
+				A53F04E91B45F8A7005B5360 /* rindex.c in Sources */,
+				A53F04EA1B45F8A7005B5360 /* safe-ctype.c in Sources */,
+				A53F04EB1B45F8A7005B5360 /* setenv.c in Sources */,
+				A53F04EC1B45F8A7005B5360 /* setproctitle.c in Sources */,
+				A53F04ED1B45F8A7005B5360 /* sha1.c in Sources */,
+				A53F04EE1B45F8A7005B5360 /* sigsetmask.c in Sources */,
+				A53F04EF1B45F8A7005B5360 /* simple-object-coff.c in Sources */,
+				A53F04F01B45F8A7005B5360 /* simple-object-elf.c in Sources */,
+				A53F04F11B45F8A7005B5360 /* simple-object-mach-o.c in Sources */,
+				A53F04F21B45F8A7005B5360 /* simple-object-xcoff.c in Sources */,
+				A53F04F31B45F8A7005B5360 /* simple-object.c in Sources */,
+				A53F04F41B45F8A7005B5360 /* snprintf.c in Sources */,
+				A53F04F51B45F8A7005B5360 /* sort.c in Sources */,
+				A53F04F61B45F8A7005B5360 /* spaces.c in Sources */,
+				A53F04F71B45F8A7005B5360 /* splay-tree.c in Sources */,
+				A53F04F81B45F8A7005B5360 /* stack-limit.c in Sources */,
+				A53F04F91B45F8A7005B5360 /* stpcpy.c in Sources */,
+				A53F04FA1B45F8A7005B5360 /* stpncpy.c in Sources */,
+				A53F04FB1B45F8A7005B5360 /* strcasecmp.c in Sources */,
+				A53F04FC1B45F8A7005B5360 /* strchr.c in Sources */,
+				A53F04FD1B45F8A7005B5360 /* strdup.c in Sources */,
+				A53F04FE1B45F8A7005B5360 /* strerror.c in Sources */,
+				A53F04FF1B45F8A7005B5360 /* strncasecmp.c in Sources */,
+				A53F05001B45F8A7005B5360 /* strncmp.c in Sources */,
+				A53F05011B45F8A7005B5360 /* strndup.c in Sources */,
+				A53F05021B45F8A7005B5360 /* strnlen.c in Sources */,
+				A53F05031B45F8A7005B5360 /* strrchr.c in Sources */,
+				A53F05041B45F8A7005B5360 /* strsignal.c in Sources */,
+				A53F05051B45F8A7005B5360 /* strstr.c in Sources */,
+				A53F05061B45F8A7005B5360 /* strtod.c in Sources */,
+				A53F05071B45F8A7005B5360 /* strtol.c in Sources */,
+				A53F05081B45F8A7005B5360 /* strtoll.c in Sources */,
+				A53F05091B45F8A7005B5360 /* strtoul.c in Sources */,
+				A53F050A1B45F8A7005B5360 /* strtoull.c in Sources */,
+				A53F050B1B45F8A7005B5360 /* strverscmp.c in Sources */,
+				A53F050C1B45F8A7005B5360 /* ternary.c in Sources */,
+				A53F050D1B45F8A7005B5360 /* timeval-utils.c in Sources */,
+				A53F050E1B45F8A7005B5360 /* tmpnam.c in Sources */,
+				A53F050F1B45F8A7005B5360 /* unlink-if-ordinary.c in Sources */,
+				A53F05101B45F8A7005B5360 /* vasprintf.c in Sources */,
+				A53F05111B45F8A7005B5360 /* vfork.c in Sources */,
+				A53F05121B45F8A7005B5360 /* vfprintf.c in Sources */,
+				A53F05131B45F8A7005B5360 /* vprintf-support.c in Sources */,
+				A53F05141B45F8A7005B5360 /* vprintf.c in Sources */,
+				A53F05151B45F8A7005B5360 /* vsnprintf.c in Sources */,
+				A53F05161B45F8A7005B5360 /* vsprintf.c in Sources */,
+				A53F05171B45F8A7005B5360 /* waitpid.c in Sources */,
+				A53F05181B45F8A7005B5360 /* xatexit.c in Sources */,
+				A53F05191B45F8A7005B5360 /* xexit.c in Sources */,
+				A53F051A1B45F8A7005B5360 /* xmalloc.c in Sources */,
+				A53F051B1B45F8A7005B5360 /* xmalloca.c in Sources */,
+				A53F051C1B45F8A7005B5360 /* xmemdup.c in Sources */,
+				A53F051D1B45F8A7005B5360 /* xstrdup.c in Sources */,
+				A53F051E1B45F8A7005B5360 /* xstrerror.c in Sources */,
+				A53F051F1B45F8A7005B5360 /* xstrndup.c in Sources */,
+				A53F05201B45F8A7005B5360 /* xvasprintf.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A53F078F1B4636AE005B5360 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A53F07991B4636E1005B5360 /* test-expandargv.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A589CB551A30F15100E717B9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -13033,6 +13389,11 @@
 			isa = PBXTargetDependency;
 			target = 61D221C9192D63C200FA979E /* configure */;
 			targetProxy = 61D2221D192D6E2800FA979E /* PBXContainerItemProxy */;
+		};
+		A53F07971B4636BE005B5360 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A53F04931B45F52C005B5360 /* libiberty */;
+			targetProxy = A53F07961B4636BE005B5360 /* PBXContainerItemProxy */;
 		};
 		A589D5CB1A311DFF00E717B9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -13252,15 +13613,20 @@
 				);
 				GCC_STRICT_ALIASING = YES;
 				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = YES;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
 				GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
 				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
 				GCC_WARN_MISSING_PARENTHESES = YES;
 				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = YES;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_PEDANTIC = YES;
 				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
@@ -13953,6 +14319,305 @@
 			};
 			name = Release;
 		};
+		A53F04951B45F52D005B5360 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXECUTABLE_PREFIX = "";
+				"GCC_ALTIVEC_EXTENSIONS[arch=ppc64]" = YES;
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_CHECK_RETURN_VALUE_OF_OPERATOR_NEW = YES;
+				GCC_C_LANGUAGE_STANDARD = ansi;
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_ENABLE_SSE41_EXTENSIONS = YES;
+				GCC_ENABLE_SSE42_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_ENABLE_SYMBOL_SEPARATION = YES;
+				"GCC_MODEL_PPC64[arch=ppc64]" = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "HAVE_CONFIG_H=1";
+				GCC_STRICT_ALIASING = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = YES;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = YES;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_PROTOTYPE_CONVERSION = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				HEADER_SEARCH_PATHS = (
+					.,
+					./../include,
+					./../../libiberty,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				LD_GENERATE_MAP_FILE = YES;
+				OTHER_CFLAGS = "-ggdb";
+				PREBINDING = NO;
+				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+				PRODUCT_NAME = libiberty;
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				STRIP_INSTALLED_PRODUCT = NO;
+				STRIP_STYLE = "non-global";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wimplicit",
+					"-Wformat=2",
+					"-Wundef",
+					"-Wno-unused",
+					"-Wextra-tokens",
+					"-Wdeclaration-after-statement",
+					"-Wstrict-prototypes",
+					"-Wold-style-definition",
+					"-Wc++-compat",
+					"-Waggregate-return",
+					"-Wvolatile-register-var",
+					"-Winline",
+					"-Winvalid-pch",
+					"-Wnested-externs",
+					"-Wmissing-format-attribute",
+					"-Wmissing-include-dirs",
+					"-Wmissing-noreturn",
+					"-Woverlength-strings",
+					"-Wwrite-strings",
+					"-Wswitch-default",
+				);
+			};
+			name = Debug;
+		};
+		A53F04961B45F52D005B5360 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_POSTPROCESSING = YES;
+				EXECUTABLE_PREFIX = "";
+				"GCC_ALTIVEC_EXTENSIONS[arch=ppc64]" = YES;
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_C_LANGUAGE_STANDARD = ansi;
+				GCC_DEBUGGING_SYMBOLS = used;
+				GCC_ENABLE_EXCEPTIONS = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_ENABLE_SSE41_EXTENSIONS = YES;
+				GCC_ENABLE_SSE42_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				"GCC_MODEL_PPC64[arch=ppc64]" = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"HAVE_CONFIG_H=1",
+					NDEBUG,
+				);
+				GCC_STRICT_ALIASING = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				HEADER_SEARCH_PATHS = (
+					.,
+					./../include,
+					./../../libiberty,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				LD_GENERATE_MAP_FILE = YES;
+				OTHER_CFLAGS = (
+					"-fstrict-overflow",
+					"-fstack-protector",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = libiberty;
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				STRIP_INSTALLED_PRODUCT = YES;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				WARNING_CFLAGS = (
+					"-Wunsafe-loop-optimizations",
+					"-Wdisabled-optimization",
+					"-Wformat",
+					"-Wformat-security",
+					"-Winit-self",
+					"-Wstrict-aliasing=1",
+					"-Wstrict-overflow=2",
+					"-Wstrict-prototypes",
+					"-Wvolatile-register-var",
+					"-Wstack-protector",
+				);
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		A53F07941B4636AF005B5360 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				"GCC_ALTIVEC_EXTENSIONS[arch=ppc64]" = YES;
+				GCC_CHECK_RETURN_VALUE_OF_OPERATOR_NEW = YES;
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				"GCC_MODEL_PPC64[arch=ppc64]" = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"HAVE_CONFIG_H=1",
+					DEBUG,
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = YES;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = YES;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_PROTOTYPE_CONVERSION = NO;
+				"GCC_WARN_PROTOTYPE_CONVERSION[arch=x86_64]" = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				HEADER_SEARCH_PATHS = (
+					.,
+					./../include,
+					./../../libiberty,
+				);
+				INSTALL_PATH = /usr/local/bin;
+				LD_GENERATE_MAP_FILE = YES;
+				MACH_O_TYPE = mh_execute;
+				OTHER_CFLAGS = "-ggdb";
+				PREBINDING = NO;
+				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+				PRODUCT_NAME = test_expandargv;
+				VERSIONING_SYSTEM = "apple-generic";
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wimplicit",
+					"-Wformat=2",
+					"-Wundef",
+					"-Wno-unused",
+					"-Wextra-tokens",
+					"-Wdeclaration-after-statement",
+					"-Wstrict-prototypes",
+					"-Wold-style-definition",
+					"-Wc++-compat",
+					"-Waggregate-return",
+					"-Wvolatile-register-var",
+					"-Winline",
+					"-Winvalid-pch",
+					"-Wnested-externs",
+					"-Wmissing-noreturn",
+					"-Woverlength-strings",
+					"-Wwrite-strings",
+					"-Wswitch-default",
+				);
+			};
+			name = Debug;
+		};
+		A53F07951B4636AF005B5360 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				"GCC_ALTIVEC_EXTENSIONS[arch=ppc64]" = YES;
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_DEBUGGING_SYMBOLS = used;
+				GCC_ENABLE_EXCEPTIONS = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_ENABLE_SSE41_EXTENSIONS = YES;
+				GCC_ENABLE_SSE42_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				"GCC_MODEL_PPC64[arch=ppc64]" = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = "HAVE_CONFIG_H=1";
+				GCC_STRICT_ALIASING = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				HEADER_SEARCH_PATHS = (
+					.,
+					./../include,
+					./../../libiberty,
+				);
+				INSTALL_PATH = /usr/local/bin;
+				LD_GENERATE_MAP_FILE = YES;
+				MACH_O_TYPE = mh_execute;
+				OTHER_CFLAGS = (
+					"-fstrict-overflow",
+					"-fstack-protector",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = test_expandargv;
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				SEPARATE_STRIP = YES;
+				STRIP_INSTALLED_PRODUCT = YES;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				WARNING_CFLAGS = (
+					"-Wunsafe-loop-optimizations",
+					"-Wdisabled-optimization",
+					"-Wformat",
+					"-Wformat-security",
+					"-Winit-self",
+					"-Wstrict-aliasing=2",
+					"-Wstrict-overflow=5",
+					"-Wstrict-prototypes",
+					"-Wvolatile-register-var",
+					"-Wstack-protector",
+				);
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 		A589CB591A30F15200E717B9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -14507,6 +15172,24 @@
 			buildConfigurations = (
 				A53B876B1AE585030067328B /* Debug */,
 				A53B876C1AE585030067328B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A53F04971B45F567005B5360 /* Build configuration list for PBXNativeTarget "libiberty" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A53F04951B45F52D005B5360 /* Debug */,
+				A53F04961B45F52D005B5360 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A53F079E1B4637E6005B5360 /* Build configuration list for PBXNativeTarget "test_expandargv" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A53F07941B4636AF005B5360 /* Debug */,
+				A53F07951B4636AF005B5360 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

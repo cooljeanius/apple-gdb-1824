@@ -3039,9 +3039,9 @@ elf32_arm_final_link_relocate (reloc_howto_type *           howto,
 		 instruction instead ?  */
 	      if (sym_flags != STT_ARM_TFUNC)
 		(*_bfd_error_handler)
-		  (_("\%B: Warning: Arm BLX instruction targets Arm function '%s'."),
+		  (_("%B: Warning: Arm BLX instruction targets Arm function '%s'."),
 		   input_bfd,
-		   h ? h->root.root.string : "(local)");
+		   (h ? h->root.root.string : "(local)"));
 	    }
 	  else
 	    {

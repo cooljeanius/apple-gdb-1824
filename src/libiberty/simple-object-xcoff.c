@@ -315,37 +315,45 @@ simple_object_xcoff_match (unsigned char header[SIMPLE_OBJECT_MATCH_HEADER_LEN],
   fetch_32 = simple_object_fetch_big_32;
   fetch_64 = simple_object_fetch_big_64;
 
-  if (!simple_object_internal_read (descriptor, offset, hdrbuf, sizeof hdrbuf,
-				    errmsg, err))
+  if (!simple_object_internal_read(descriptor, offset, hdrbuf,
+                                   sizeof(hdrbuf), errmsg, err))
     return NULL;
 
-  u64 = magic == U64_TOCMAGIC;
+  u64 = (magic == U64_TOCMAGIC);
 
-  ocr = XNEW (struct simple_object_xcoff_read);
+  ocr = XNEW(struct simple_object_xcoff_read);
   ocr->magic = magic;
-  ocr->nscns = fetch_16 (hdrbuf + offsetof (struct external_filehdr, f_nscns));
+  ocr->nscns = fetch_16(hdrbuf + offsetof(struct external_filehdr,
+                                          f_nscns));
   if (u64)
     {
-      ocr->symptr = fetch_64 (hdrbuf
-			      + offsetof (struct external_filehdr,
-					  u.xcoff64.f_symptr));
-      ocr->nsyms = fetch_32 (hdrbuf + offsetof (struct external_filehdr,
-						u.xcoff64.f_nsyms));
-      ocr->scnhdr_offset = (sizeof (struct external_filehdr)
-			    + fetch_16 (hdrbuf + offsetof (struct external_filehdr,
-							   u.xcoff64.f_opthdr)));
+      ocr->symptr =
+        ((off_t)
+         fetch_64(hdrbuf + __extension__ offsetof(struct external_filehdr,
+                                                  u.xcoff64.f_symptr)));
+      ocr->nsyms = fetch_32(hdrbuf +
+                            __extension__ offsetof(struct external_filehdr,
+                                                   u.xcoff64.f_nsyms));
+      ocr->scnhdr_offset =
+        (sizeof(struct external_filehdr)
+         + fetch_16(hdrbuf +
+                    __extension__ offsetof(struct external_filehdr,
+                                           u.xcoff64.f_opthdr)));
 
     }
   else
     {
-      ocr->symptr = fetch_32 (hdrbuf
-			      + offsetof (struct external_filehdr,
-					  u.xcoff32.f_symptr));
-      ocr->nsyms = fetch_32 (hdrbuf + offsetof (struct external_filehdr,
-						u.xcoff32.f_nsyms));
-      ocr->scnhdr_offset = (sizeof (struct external_filehdr) - 4
-			    + fetch_16 (hdrbuf + offsetof (struct external_filehdr,
-							   u.xcoff32.f_opthdr)));
+      ocr->symptr =
+        fetch_32(hdrbuf + __extension__ offsetof(struct external_filehdr,
+                                                 u.xcoff32.f_symptr));
+      ocr->nsyms = fetch_32(hdrbuf +
+                            __extension__ offsetof(struct external_filehdr,
+                                                   u.xcoff32.f_nsyms));
+      ocr->scnhdr_offset =
+        ((sizeof(struct external_filehdr) - 4UL)
+         + fetch_16(hdrbuf +
+                    __extension__ offsetof(struct external_filehdr,
+                                           u.xcoff32.f_opthdr)));
 
     }
 
@@ -386,33 +394,32 @@ simple_object_xcoff_read_strtab (simple_object_read *sobj, size_t *strtab_size,
 /* Find all sections in a XCOFF file.  */
 
 static const char *
-simple_object_xcoff_find_sections (simple_object_read *sobj,
-				  int (*pfn) (void *, const char *,
-					      off_t offset, off_t length),
-				  void *data,
-				  int *err)
+simple_object_xcoff_find_sections(simple_object_read *sobj,
+				  int (*pfn)(void *, const char *,
+					     off_t offset, off_t length),
+				  void *data, int *err)
 {
   struct simple_object_xcoff_read *ocr =
-    (struct simple_object_xcoff_read *) sobj->data;
-  int u64 = ocr->magic == U64_TOCMAGIC;
+    (struct simple_object_xcoff_read *)sobj->data;
+  int u64 = (ocr->magic == U64_TOCMAGIC);
   size_t scnhdr_size;
   unsigned char *scnbuf;
   const char *errmsg;
-  unsigned int (*fetch_32) (const unsigned char *);
-  ulong_type (*fetch_64) (const unsigned char *);
+  unsigned int (*fetch_32)(const unsigned char *);
+  ulong_type (*fetch_64)(const unsigned char *);
   unsigned int nscns;
   char *strtab;
   size_t strtab_size;
   unsigned int i;
 
-  scnhdr_size = u64 ? SCNHSZ64 : SCNHSZ32;
-  scnbuf = XNEWVEC (unsigned char, scnhdr_size * ocr->nscns);
-  if (!simple_object_internal_read (sobj->descriptor,
-				    sobj->offset + ocr->scnhdr_offset,
-				    scnbuf, scnhdr_size * ocr->nscns, &errmsg,
-				    err))
+  scnhdr_size = (u64 ? SCNHSZ64 : SCNHSZ32);
+  scnbuf = XNEWVEC(unsigned char, scnhdr_size * ocr->nscns);
+  if (!simple_object_internal_read(sobj->descriptor,
+				   (sobj->offset + ocr->scnhdr_offset),
+				   scnbuf, (scnhdr_size * ocr->nscns),
+                                   &errmsg, err))
     {
-      XDELETEVEC (scnbuf);
+      XDELETEVEC(scnbuf);
       return errmsg;
     }
 
@@ -429,11 +436,11 @@ simple_object_xcoff_find_sections (simple_object_read *sobj,
       char namebuf[SCNNMLEN + 1];
       char *name;
       off_t scnptr;
-      unsigned int size;
+      size_t size;
 
-      scnhdr = scnbuf + i * scnhdr_size;
-      scnname = scnhdr + offsetof (struct external_scnhdr, s_name);
-      memcpy (namebuf, scnname, SCNNMLEN);
+      scnhdr = (scnbuf + (i * scnhdr_size));
+      scnname = (scnhdr + offsetof(struct external_scnhdr, s_name));
+      memcpy(namebuf, scnname, SCNNMLEN);
       namebuf[SCNNMLEN] = '\0';
       name = &namebuf[0];
       if (namebuf[0] == '/')
@@ -441,57 +448,65 @@ simple_object_xcoff_find_sections (simple_object_read *sobj,
 	  size_t strindex;
 	  char *end;
 
-	  strindex = strtol (namebuf + 1, &end, 10);
+	  strindex = (size_t)strtol((namebuf + 1), &end, 10);
 	  if (*end == '\0')
 	    {
 	      /* The real section name is found in the string
 		 table.  */
 	      if (strtab == NULL)
 		{
-		  strtab = simple_object_xcoff_read_strtab (sobj,
+		  strtab = simple_object_xcoff_read_strtab(sobj,
 							   &strtab_size,
 							   &errmsg, err);
 		  if (strtab == NULL)
 		    {
-		      XDELETEVEC (scnbuf);
+		      XDELETEVEC(scnbuf);
 		      return errmsg;
 		    }
 		}
 
 	      if (strindex < 4 || strindex >= strtab_size)
 		{
-		  XDELETEVEC (strtab);
-		  XDELETEVEC (scnbuf);
+		  XDELETEVEC(strtab);
+		  XDELETEVEC(scnbuf);
 		  *err = 0;
 		  return "section string index out of range";
 		}
 
-	      name = strtab + strindex;
+	      name = (strtab + strindex);
 	    }
 	}
 
       if (u64)
 	{
-	  scnptr = fetch_64 (scnhdr + offsetof (struct external_scnhdr,
-						u.xcoff64.s_scnptr));
-	  size = fetch_64 (scnhdr + offsetof (struct external_scnhdr,
-					      u.xcoff64.s_size));
+	  scnptr =
+            ((off_t)
+             fetch_64(scnhdr +
+                      __extension__ offsetof(struct external_scnhdr,
+                                             u.xcoff64.s_scnptr)));
+	  size =
+            ((size_t)
+             fetch_64(scnhdr +
+                      __extension__ offsetof(struct external_scnhdr,
+                                             u.xcoff64.s_size)));
 	}
       else
 	{
-	  scnptr = fetch_32 (scnhdr + offsetof (struct external_scnhdr,
-						u.xcoff32.s_scnptr));
-	  size = fetch_32 (scnhdr + offsetof (struct external_scnhdr,
-					      u.xcoff32.s_size));
+	  scnptr = fetch_32(scnhdr +
+                            __extension__ offsetof(struct external_scnhdr,
+                                                   u.xcoff32.s_scnptr));
+	  size = fetch_32(scnhdr +
+                          __extension__ offsetof(struct external_scnhdr,
+                                                 u.xcoff32.s_size));
 	}
 
-      if (!(*pfn) (data, name, scnptr, size))
+      if (!(*pfn)(data, name, scnptr, (off_t)size))
 	break;
     }
 
   if (strtab != NULL)
-    XDELETEVEC (strtab);
-  XDELETEVEC (scnbuf);
+    XDELETEVEC(strtab);
+  XDELETEVEC(scnbuf);
 
   return NULL;
 }
@@ -565,22 +580,21 @@ simple_object_xcoff_start_write (void *attributes_data,
   return ret;
 }
 
-/* Write out a XCOFF filehdr.  */
-
+/* Write out a XCOFF filehdr: */
 static int
-simple_object_xcoff_write_filehdr (simple_object_write *sobj, int descriptor,
+simple_object_xcoff_write_filehdr(simple_object_write *sobj, int descriptor,
 				  unsigned int nscns, size_t symtab_offset,
 				  unsigned int nsyms, const char **errmsg,
 				  int *err)
 {
   struct simple_object_xcoff_attributes *attrs =
-    (struct simple_object_xcoff_attributes *) sobj->data;
-  int u64 = attrs->magic == U64_TOCMAGIC;
-  unsigned char hdrbuf[sizeof (struct external_filehdr)];
+    (struct simple_object_xcoff_attributes *)sobj->data;
+  int u64 = (attrs->magic == U64_TOCMAGIC);
+  unsigned char hdrbuf[sizeof(struct external_filehdr)];
   unsigned char *hdr;
-  void (*set_16) (unsigned char *, unsigned short);
-  void (*set_32) (unsigned char *, unsigned int);
-  void (*set_64) (unsigned char *, ulong_type);
+  void (*set_16)(unsigned char *, unsigned short);
+  void (*set_32)(unsigned char *, unsigned int);
+  void (*set_64)(unsigned char *, ulong_type);
 
   hdr = &hdrbuf[0];
 
@@ -588,53 +602,67 @@ simple_object_xcoff_write_filehdr (simple_object_write *sobj, int descriptor,
   set_32 = simple_object_set_big_32;
   set_64 = simple_object_set_big_64;
 
-  memset (hdr, 0, sizeof (struct external_filehdr));
+  memset(hdr, 0, sizeof(struct external_filehdr));
 
-  set_16 (hdr + offsetof (struct external_filehdr, f_magic), attrs->magic);
-  set_16 (hdr + offsetof (struct external_filehdr, f_nscns), nscns);
+  set_16((hdr +
+          __extension__ offsetof(struct external_filehdr, f_magic)),
+         (unsigned short)attrs->magic);
+  set_16((hdr + offsetof(struct external_filehdr, f_nscns)),
+         (unsigned short)nscns);
   /* f_timdat left as zero.  */
   if (u64)
     {
-      set_64 (hdr + offsetof (struct external_filehdr, u.xcoff64.f_symptr),
-	      symtab_offset);
-      set_32 (hdr + offsetof (struct external_filehdr, u.xcoff64.f_nsyms),
-	      nsyms);
+      set_64((hdr +
+              __extension__ offsetof(struct external_filehdr,
+                                     u.xcoff64.f_symptr)),
+	     (ulong_type)symtab_offset);
+      set_32((hdr +
+              __extension__ offsetof(struct external_filehdr,
+                                     u.xcoff64.f_nsyms)),
+	     nsyms);
       /* f_opthdr left as zero.  */
-      set_16 (hdr + offsetof (struct external_filehdr, u.xcoff64.f_flags),
-	      attrs->flags);
+      set_16((hdr +
+              __extension__ offsetof(struct external_filehdr,
+                                     u.xcoff64.f_flags)),
+	     (unsigned short)attrs->flags);
     }
   else
     {
-      set_32 (hdr + offsetof (struct external_filehdr, u.xcoff64.f_symptr),
-	      symtab_offset);
-      set_32 (hdr + offsetof (struct external_filehdr, u.xcoff64.f_nsyms),
-	      nsyms);
+      set_32((hdr +
+              __extension__ offsetof(struct external_filehdr,
+                                     u.xcoff64.f_symptr)),
+	     (unsigned int)symtab_offset);
+      set_32((hdr +
+              __extension__ offsetof(struct external_filehdr,
+                                     u.xcoff64.f_nsyms)),
+	     nsyms);
       /* f_opthdr left as zero.  */
-      set_16 (hdr + offsetof (struct external_filehdr, u.xcoff64.f_flags),
-	      attrs->flags);
+      set_16((hdr +
+              __extension__ offsetof(struct external_filehdr,
+                                     u.xcoff64.f_flags)),
+	     (unsigned short)attrs->flags);
     }
 
-  return simple_object_internal_write (descriptor, 0, hdrbuf,
-				       sizeof (struct external_filehdr),
-				       errmsg, err);
+  return simple_object_internal_write(descriptor, (off_t)0L, hdrbuf,
+				      sizeof(struct external_filehdr),
+				      errmsg, err);
 }
 
-/* Write out a XCOFF section header.  */
-
+/* Write out a XCOFF section header: */
 static int
-simple_object_xcoff_write_scnhdr (simple_object_write *sobj,
-				  int descriptor,
-				  const char *name, size_t *name_offset,
-				  off_t scnhdr_offset, size_t scnsize,
-				  off_t offset, unsigned int align,
-				  const char **errmsg, int *err)
+simple_object_xcoff_write_scnhdr(simple_object_write *sobj,
+				 int descriptor,
+				 const char *name, size_t *name_offset,
+				 off_t scnhdr_offset, size_t scnsize,
+				 off_t offset, unsigned int align,
+				 const char **errmsg, int *err)
 {
   struct simple_object_xcoff_read *ocr =
-    (struct simple_object_xcoff_read *) sobj->data;
+    (struct simple_object_xcoff_read *)sobj->data;
   int u64 = ocr->magic == U64_TOCMAGIC;
-  void (*set_32) (unsigned char *, unsigned int);
-  void (*set_64) (unsigned char *, unsigned int);
-  unsigned char hdrbuf[sizeof (struct external_scnhdr)];
+  void (*set_32)(unsigned char *, unsigned int);
+  void (*set_64)(unsigned char *, unsigned int);
+  unsigned char hdrbuf[sizeof(struct external_scnhdr)];
   unsigned char *hdr;
   size_t namelen;
   unsigned int flags;
@@ -642,35 +670,39 @@ simple_object_xcoff_write_scnhdr (simple_object_write *sobj,
   set_32 = simple_object_set_big_32;
   set_64 = simple_object_set_big_32;
 
-  memset (hdrbuf, 0, sizeof hdrbuf);
+  memset(hdrbuf, 0, sizeof(hdrbuf));
   hdr = &hdrbuf[0];
 
-  namelen = strlen (name);
+  namelen = strlen(name);
   if (namelen <= SCNNMLEN)
-    strncpy ((char *) hdr + offsetof (struct external_scnhdr, s_name),
-	     name, SCNNMLEN);
+    strncpy((char *)hdr + offsetof(struct external_scnhdr, s_name),
+	    name, SCNNMLEN);
   else
     {
-      snprintf ((char *) hdr + offsetof (struct external_scnhdr, s_name),
-		SCNNMLEN, "/%lu", (unsigned long) *name_offset);
-      *name_offset += namelen + 1;
+      snprintf((char *)hdr + offsetof(struct external_scnhdr, s_name),
+               SCNNMLEN, "/%lu", (unsigned long)*name_offset);
+      *name_offset += (namelen + 1);
     }
 
   /* s_paddr left as zero.  */
   /* s_vaddr left as zero.  */
   if (u64)
     {
-      set_64 (hdr + offsetof (struct external_scnhdr, u.xcoff64.s_size),
-	      scnsize);
-      set_64 (hdr + offsetof (struct external_scnhdr, u.xcoff64.s_scnptr),
-	      offset);
+      set_64(hdr + __extension__ offsetof(struct external_scnhdr,
+                                          u.xcoff64.s_size),
+	     (unsigned int)scnsize);
+      set_64(hdr + __extension__ offsetof(struct external_scnhdr,
+                                          u.xcoff64.s_scnptr),
+	     (unsigned int)offset);
     }
   else
     {
-      set_32 (hdr + offsetof (struct external_scnhdr, u.xcoff32.s_size),
-	      scnsize);
-      set_32 (hdr + offsetof (struct external_scnhdr, u.xcoff32.s_scnptr),
-	      offset);
+      set_32(hdr + __extension__ offsetof(struct external_scnhdr,
+                                          u.xcoff32.s_size),
+	     (unsigned int)scnsize);
+      set_32(hdr + __extension__ offsetof(struct external_scnhdr,
+                                          u.xcoff32.s_scnptr),
+	     (unsigned int)offset);
     }
   /* s_relptr left as zero.  */
   /* s_lnnoptr left as zero.  */
@@ -680,24 +712,32 @@ simple_object_xcoff_write_scnhdr (simple_object_write *sobj,
   if (align > 13)
     align = 13;
   if (u64)
-    set_32 (hdr + offsetof (struct external_scnhdr, u.xcoff64.s_flags), flags);
+    set_32((hdr +
+            __extension__ offsetof(struct external_scnhdr,
+                                   u.xcoff64.s_flags)), flags);
   else
-    set_32 (hdr + offsetof (struct external_scnhdr, u.xcoff32.s_flags), flags);
+    set_32((hdr +
+            __extension__ offsetof(struct external_scnhdr,
+                                   u.xcoff32.s_flags)), flags);
 
-  return simple_object_internal_write (descriptor, scnhdr_offset, hdrbuf,
-				       u64 ? SCNHSZ64 : SCNHSZ32,
-				       errmsg, err);
+#ifdef __clang_analyzer__
+  (void)align;
+#endif /* __clang_analyzer__ */
+
+  return simple_object_internal_write(descriptor, scnhdr_offset, hdrbuf,
+				      (off_t)(u64 ? SCNHSZ64 : SCNHSZ32),
+				      errmsg, err);
 }
 
 /* Write out a complete XCOFF file.  */
 
 static const char *
-simple_object_xcoff_write_to_file (simple_object_write *sobj, int descriptor,
-				  int *err)
+simple_object_xcoff_write_to_file(simple_object_write *sobj,
+                                  int descriptor, int *err)
 {
   struct simple_object_xcoff_read *ocr =
-    (struct simple_object_xcoff_read *) sobj->data;
-  int u64 = ocr->magic == U64_TOCMAGIC;
+    (struct simple_object_xcoff_read *)sobj->data;
+  int u64 = (ocr->magic == U64_TOCMAGIC);
   unsigned int nscns, secnum;
   simple_object_write_section *section;
   off_t scnhdr_offset;
@@ -718,8 +758,8 @@ simple_object_xcoff_write_to_file (simple_object_write *sobj, int descriptor,
     struct external_syment sym;
     union external_auxent aux;
   } syms[2];
-  void (*set_16) (unsigned char *, unsigned short);
-  void (*set_32) (unsigned char *, unsigned int);
+  void (*set_16)(unsigned char *, unsigned short);
+  void (*set_32)(unsigned char *, unsigned int);
 
   set_16 = simple_object_set_big_16;
   set_32 = simple_object_set_big_32;
@@ -728,8 +768,8 @@ simple_object_xcoff_write_to_file (simple_object_write *sobj, int descriptor,
   for (section = sobj->sections; section != NULL; section = section->next)
     ++nscns;
 
-  scnhdr_offset = sizeof (struct external_filehdr) - (u64 ? 4 : 0);
-  offset = scnhdr_offset + nscns * (u64 ? SCNHSZ64 : SCNHSZ32);
+  scnhdr_offset = (sizeof(struct external_filehdr) - (u64 ? 4 : 0));
+  offset = ((size_t)scnhdr_offset + (nscns * (u64 ? SCNHSZ64 : SCNHSZ32)));
   name_offset = 4;
   for (section = sobj->sections; section != NULL; section = section->next)
     {
@@ -744,14 +784,14 @@ simple_object_xcoff_write_to_file (simple_object_write *sobj, int descriptor,
       while (new_offset > offset)
 	{
 	  unsigned char zeroes[16];
-	  size_t write;
+	  size_t write_amt;
 
-	  memset (zeroes, 0, sizeof zeroes);
-	  write = new_offset - offset;
-	  if (write > sizeof zeroes)
-	    write = sizeof zeroes;
-	  if (!simple_object_internal_write (descriptor, offset, zeroes, write,
-					     &errmsg, err))
+	  memset(zeroes, 0, sizeof(zeroes));
+	  write_amt = (new_offset - offset);
+	  if (write_amt > sizeof(zeroes))
+	    write_amt = sizeof(zeroes);
+	  if (!simple_object_internal_write(descriptor, offset, zeroes,
+                                            write_amt, &errmsg, err))
 	    return errmsg;
 	}
 
@@ -780,18 +820,18 @@ simple_object_xcoff_write_to_file (simple_object_write *sobj, int descriptor,
   offset += (offset & 1);
   /* There is a file symbol and a section symbol per section,
      and each of these has a single auxiliary symbol following.  */
-  nsyms = 2 * (nscns + 1);
+  nsyms = (2 * (nscns + 1));
   symtab_offset = offset;
   /* Advance across space reserved for symbol table to locate
      start of string table.  */
-  offset += nsyms * SYMESZ;
+  offset += (nsyms * SYMESZ);
 
-  /* Write out file symbol.  */
-  memset (&syms[0], 0, sizeof (syms));
+  /* Write out file symbol: */
+  memset(&syms[0], 0, sizeof(syms));
   if (!u64)
-    strcpy ((char *)&syms[0].sym.u.xcoff32.n.n_name[0], ".file");
-  set_16 (&syms[0].sym.n_scnum[0], N_DEBUG);
-  set_16 (&syms[0].sym.n_type[0], IMAGE_SYM_TYPE);
+    strcpy((char *)&syms[0].sym.u.xcoff32.n.n_name[0], ".file");
+  set_16(&syms[0].sym.n_scnum[0], (unsigned short)N_DEBUG);
+  set_16(&syms[0].sym.n_type[0], (unsigned short)IMAGE_SYM_TYPE);
   syms[0].sym.n_sclass[0] = C_FILE;
   syms[0].sym.n_numaux[0] = 1;
   /* The name need not be nul-terminated if it fits into the x_fname field

@@ -91,12 +91,27 @@ bfd_mach_o_arm_thread_flavour;
 #ifndef BFD_MACH_O_LC_REQ_DYLD
 # if defined(__STRICT_ANSI__) || defined(__clang__) || \
      (!defined(__GNUC__) || !defined(__GNUC_MINOR__)) || \
-     (!defined(__STDC_VERSION__) || (__STDC_VERSION__ < 199901L))
-#  define BFD_MACH_O_LC_REQ_DYLD (int)0x80000000
+     (!defined(__STDC_VERSION__) || (__STDC_VERSION__ < 199901L)) || \
+     defined(__extension__)
+#  define BFD_MACH_O_LC_REQ_DYLD __extension__ (int)0x80000000
 # else
 #  define BFD_MACH_O_LC_REQ_DYLD 0x80000000
 # endif /* __STRICT_ANSI__ || __clang__ || !gcc || pre-c99 */
 #endif /* !BFD_MACH_O_LC_REQ_DYLD */
+
+  /* We use __extension__ here to suppress -pedantic warnings about GCC
+   * extensions.  This feature did NOT work properly before gcc 2.8: */
+#if !defined(__extension__) && defined(GCC_VERSION)
+# if (GCC_VERSION < 2008)
+#  define __extension__
+# endif /* gcc pre-2.8 */
+#endif /* !__extension__ && GCC_VERSION */
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if ((__GNUC__ == 4) && (__GNUC_MINOR__ == 2)) && !defined(__clang__)
+#  pragma GCC diagnostic ignored "-pedantic"
+# endif /* gcc 4.2 (non-clang) */
+#endif /* any gcc */
 
 #ifndef _ENUM_BFD_MACH_O_LOAD_COMMAND_TYPE_DEFINED
 # define _ENUM_BFD_MACH_O_LOAD_COMMAND_TYPE_DEFINED 1
@@ -127,27 +142,33 @@ typedef enum bfd_mach_o_load_command_type
   BFD_MACH_O_LC_PREBIND_CKSUM = 0x17, /* Prebind checksum.  */
   /* Load a dynamically linked shared library that is allowed to be
        missing (weak).  */
-  BFD_MACH_O_LC_LOAD_WEAK_DYLIB = (0x18 | BFD_MACH_O_LC_REQ_DYLD),
+  BFD_MACH_O_LC_LOAD_WEAK_DYLIB =
+    __extension__ (0x18 | BFD_MACH_O_LC_REQ_DYLD),
   /* APPLE LOCAL 64-bit */
   BFD_MACH_O_LC_SEGMENT_64 = 0x19,  /* 64-bit segment of this file to be
                                      * mapped.  */
   BFD_MACH_O_LC_ROUTINES_64 = 0x1a, /* Address of the dyld init routine
                                      * in a dylib.  */
   BFD_MACH_O_LC_UUID = 0x1b,        /* 128-bit UUID of the executable.  */
-  BFD_MACH_O_LC_RPATH = (0x1c | BFD_MACH_O_LC_REQ_DYLD), /* runpath additions */
+  BFD_MACH_O_LC_RPATH =
+    __extension__ (0x1c | BFD_MACH_O_LC_REQ_DYLD), /* runpath additions */
   BFD_MACH_O_LC_CODE_SIGNATURE = 0x1d,
   BFD_MACH_O_LC_SEGMENT_SPLIT_INFO = 0x1e,
-  BFD_MACH_O_LC_REEXPORT_DYLIB = (0x1f | BFD_MACH_O_LC_REQ_DYLD),
+  BFD_MACH_O_LC_REEXPORT_DYLIB =
+    __extension__ (0x1f | BFD_MACH_O_LC_REQ_DYLD),
   BFD_MACH_O_LC_LAZY_LOAD_DYLIB = 0x20, /* delay load of dylib until first use */
   BFD_MACH_O_LC_ENCRYPTION_INFO = 0x21, /* encrypted segment information */
-  BFD_MACH_O_LC_DYLD_INFO = 0x22,        /* compressed dyld information */
-  BFD_MACH_O_LC_DYLD_INFO_ONLY = (0x22 | BFD_MACH_O_LC_REQ_DYLD), /* compressed dyld information only */
-  BFD_MACH_O_LC_LOAD_UPWARD_DYLIB = (0x23 | BFD_MACH_O_LC_REQ_DYLD), /* Same as LC_LOAD_DYLIB */
+  BFD_MACH_O_LC_DYLD_INFO = 0x22,         /* compressed dyld information */
+  BFD_MACH_O_LC_DYLD_INFO_ONLY =     /* compressed dyld information only */
+    __extension__ (0x22 | BFD_MACH_O_LC_REQ_DYLD),
+  BFD_MACH_O_LC_LOAD_UPWARD_DYLIB =             /* Same as LC_LOAD_DYLIB */
+    __extension__ (0x23 | BFD_MACH_O_LC_REQ_DYLD),
   BFD_MACH_O_LC_VERSION_MIN_MACOSX = 0x24, /* build for MacOSX min OS version */
   BFD_MACH_O_LC_VERSION_MIN_IPHONEOS = 0x25, /* build for iPhoneOS min OS version */
   BFD_MACH_O_LC_FUNCTION_STARTS = 0x26, /* table of function start addresses. */
   BFD_MACH_O_LC_DYLD_ENVIRONMENT = 0x27, /* string for dyld to treat like environment variable */
-  BFD_MACH_O_LC_MAIN = (0x28 | BFD_MACH_O_LC_REQ_DYLD), /* replacement for LC_UNIXTHREAD */
+  BFD_MACH_O_LC_MAIN =                  /* replacement for LC_UNIXTHREAD */
+    __extension__ (0x28 | BFD_MACH_O_LC_REQ_DYLD),
   BFD_MACH_O_LC_DATA_IN_CODE = 0x29, /* table of non-instructions in __text */
   BFD_MACH_O_LC_SOURCE_VERSION = 0x2a, /* source version used to build binary */
   BFD_MACH_O_LC_DYLIB_CODE_SIGN_DRS = 0x2b/*,*/ /* Code signing DRs copied from linked dylibs */

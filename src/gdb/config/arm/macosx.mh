@@ -28,7 +28,8 @@ MACOSX_FILES = \
 	macosx-nat.o \
 	excServer.o \
 	excUser.o \
-	macosx-nat-utils.o
+	macosx-nat-utils.o \
+	darwin-kernel.o
 
 
 ARM_FILES = arm-macosx-nat-exec.o 

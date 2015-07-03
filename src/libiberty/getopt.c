@@ -664,12 +664,12 @@ _getopt_internal (int argc, char *const *argv, const char *optstring,
       /* Test all long options for either exact match
 	 or abbreviated matches.  */
       for (p = longopts, option_index = 0; p->name; p++, option_index++)
-	if (!strncmp (p->name, nextchar, nameend - nextchar))
+	if (!strncmp(p->name, nextchar, (size_t)(nameend - nextchar)))
 	  {
-	    if ((unsigned int) (nameend - nextchar)
-		== (unsigned int) strlen (p->name))
+	    if ((unsigned int)(nameend - nextchar)
+		== (unsigned int)strlen(p->name))
 	      {
-		/* Exact match found.  */
+		/* Exact match found: */
 		pfound = p;
 		indfound = option_index;
 		exact = 1;
@@ -852,12 +852,13 @@ _getopt_internal (int argc, char *const *argv, const char *optstring,
 
 	/* Test all long options for either exact match
 	   or abbreviated matches.  */
-	for (p = longopts, option_index = 0; p->name; p++, option_index++)
-	  if (!strncmp (p->name, nextchar, nameend - nextchar))
+	for (p = longopts, option_index = 0; (p != NULL) && p->name;
+             p++, option_index++)
+	  if (!strncmp(p->name, nextchar, (size_t)(nameend - nextchar)))
 	    {
-	      if ((unsigned int) (nameend - nextchar) == strlen (p->name))
+	      if ((unsigned int)(nameend - nextchar) == strlen(p->name))
 		{
-		  /* Exact match found.  */
+		  /* Exact match found: */
 		  pfound = p;
 		  indfound = option_index;
 		  exact = 1;

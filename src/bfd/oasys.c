@@ -700,7 +700,7 @@ oasys_new_section_hook(bfd *abfd, asection *newsect)
   newsect->alignment_power = 1;
 
   /* Turn the section string into an index: */
-  sscanf(newsect->name, "%u", &newsect->target_index);
+  sscanf(newsect->name, "%u", (unsigned int *)&newsect->target_index);
 
   return TRUE;
 }

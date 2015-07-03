@@ -1972,7 +1972,7 @@ static struct demangle_component *d_function_type(struct d_info *di)
 
 /* <bare-function-type> ::= [J]<type>+  */
 static struct demangle_component *
-d_bare_function_type(struct d_info *di, int has_return_type)
+d_bare_function_type(struct d_info *di, int has_return_type_p)
 {
   struct demangle_component *return_type;
   struct demangle_component *tl;
@@ -1983,7 +1983,7 @@ d_bare_function_type(struct d_info *di, int has_return_type)
   peek = d_peek_char(di);
   if (peek == 'J') {
       d_advance(di, 1);
-      has_return_type = 1;
+      has_return_type_p = 1;
   }
 
   return_type = NULL;
@@ -2000,9 +2000,9 @@ d_bare_function_type(struct d_info *di, int has_return_type)
       if (type == NULL) {
 	  return NULL;
       }
-      if (has_return_type) {
+      if (has_return_type_p) {
 	  return_type = type;
-	  has_return_type = 0;
+	  has_return_type_p = 0;
       } else {
 	  *ptl = d_make_comp(di, DEMANGLE_COMPONENT_ARGLIST, type, NULL);
 	  if (*ptl == NULL) {
@@ -2799,10 +2799,10 @@ d_print_comp(struct d_print_info *dpi, const struct demangle_component *dc)
 	 * CV-qualifiers, which apply to the this parameter. */
 	hold_modifiers = dpi->modifiers;
 	i = 0;
-	typed_name = d_left (dc);
+	typed_name = d_left(dc);
 	while (typed_name != NULL) {
 	    if (i >= (sizeof(adpm) / sizeof(adpm[0]))) {
-		d_print_error (dpi);
+		d_print_error(dpi);
 		return;
 	    }
 
@@ -2824,16 +2824,20 @@ d_print_comp(struct d_print_info *dpi, const struct demangle_component *dc)
 
 	/* If typed_name is a template, then it applies to the function type
 	 * as well: */
-	if (typed_name->type == DEMANGLE_COMPONENT_TEMPLATE) {
+	if ((typed_name != NULL) &&
+            (typed_name->type == DEMANGLE_COMPONENT_TEMPLATE)) {
 	    dpt.next = dpi->templates;
 	    dpi->templates = &dpt;
 	    dpt.template_decl = typed_name;
-	}
+	} else {
+            dpt.next = (struct d_print_template *)NULL;
+        }
 
 	/* If typed_name is a DEMANGLE_COMPONENT_LOCAL_NAME, then there may be
 	 * CV-qualifiers on its right argument which really apply here;
 	 * this happens when parsing a class which is local to a function: */
-	if (typed_name->type == DEMANGLE_COMPONENT_LOCAL_NAME) {
+	if ((typed_name != NULL) &&
+            (typed_name->type == DEMANGLE_COMPONENT_LOCAL_NAME)) {
 	    struct demangle_component *local_name;
 
 	    local_name = d_right (typed_name);
@@ -2841,7 +2845,7 @@ d_print_comp(struct d_print_info *dpi, const struct demangle_component *dc)
 		   || (local_name->type == DEMANGLE_COMPONENT_VOLATILE_THIS)
 		   || (local_name->type == DEMANGLE_COMPONENT_CONST_THIS)) {
 		if (i >= (sizeof(adpm) / sizeof(adpm[0]))) {
-		    d_print_error (dpi);
+		    d_print_error(dpi);
 		    return;
 		}
 
@@ -2860,7 +2864,8 @@ d_print_comp(struct d_print_info *dpi, const struct demangle_component *dc)
 
 	d_print_comp(dpi, d_right(dc));
 
-	if (typed_name->type == DEMANGLE_COMPONENT_TEMPLATE) {
+	if ((typed_name != NULL) &&
+            (typed_name->type == DEMANGLE_COMPONENT_TEMPLATE)) {
 	    dpi->templates = dpt.next;
 	}
 

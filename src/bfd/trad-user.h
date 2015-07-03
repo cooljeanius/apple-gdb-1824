@@ -8,6 +8,11 @@
 #ifndef __TRAD_USER_H__
 #define __TRAD_USER_H__ 1
 
+#if defined(HAVE_STDINT_H) || \
+    (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L))
+# include <stdint.h>
+#endif /* HAVE_STDINT_H || c99+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif  /* __cplusplus */
@@ -41,6 +46,50 @@ struct trad_user_mips_regs_struct
   unsigned long long cause;
 };
 
+/* FIXME: This list of registers is just based on the information I could
+ * find (of the PowerPC 970FX, in "Mac OS X Internals: A Systems Approach"
+ * by Amit Singh, pages 188-197); I am not sure how many of them should
+ * actually be used in this struct, though... */
+struct trad_user_ppc64_regs_struct
+{
+  uint64_t GPR[32]; /* General-Purpose Registers, 64 bits wide */
+  uint64_t FPR[32]; /* Floating-Point Registers, 64 bits wide */
+  uint64_t VMX[32]; /* Vector Registers, 128 bits wide */
+  /* (FIXME: what to do for a 128-bit type?) */
+  uint32_t XER; /* Integer Exception Register */
+  uint32_t FPSCR; /* Floating-Point Status and Control Register */
+  uint32_t VSCR; /* Vector Status and Control Register */
+  uint32_t _CR; /* Condition Register */
+  uint32_t VRSAVE; /* Vector Save/Restore Register */
+  uint64_t _LR; /* Link Register */
+  uint64_t CTR; /* Count Register */
+  uint32_t _TBL; /* Timebase Register (first) */
+  uint32_t TBU; /* Timebase Register (second) */
+};
+
+/* Pages 223-224 of the aformentioned source say a lot of the registers
+ * are actually still the same in 32-bit mode: */
+struct trad_user_ppc32_regs_struct
+{
+  /* I assume the GPRs are 32-bit in this mode, as the book mentions
+   * explicitly which registers remain 64-bit in 32-bit mode, and the GPRs
+   * are not among those listed: */
+  uint32_t GPR[32];
+  uint64_t FPR[32]; /* Floating-Point Registers are still 64 bits wide */
+  uint64_t VMX[32]; /* Vector Registers are still 128 bits wide */
+  /* (FIXME: what to do for a 128-bit type?) */
+  uint32_t XER; /* Integer Exception Register, set in 32-bit-compatible
+                 * way in this mode */
+  uint32_t FPSCR; /* Floating-Point Status and Control Register */
+  uint32_t VSCR; /* Vector Status and Control Register */
+  uint32_t _CR; /* Condition Register */
+  uint32_t VRSAVE; /* Vector Save/Restore Register */
+  uint32_t _LR; /* Link Register (assuming 32-bit in this mode) */
+  uint32_t CTR; /* Count Register (assuming 32-bit in this mode) */
+  uint32_t _TBL; /* Timebase Register (first) */
+  uint32_t TBU; /* Timebase Register (second) */
+};
+
 #if defined(__i386) || defined(__i386__) || defined(__x86_64) || defined(__x86_64__)
 typedef struct trad_user_i386_regs_struct *trad_user_regs_ptr_t;
 #else
@@ -50,10 +99,18 @@ typedef struct trad_user_arm_regs *trad_user_regs_ptr_t;
 #  if defined(__mips__)
 typedef struct trad_user_mips_regs_struct *trad_user_regs_ptr_t;
 #  else
-#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
- #    warning "trad-user.h lacks support for the CPU ABI for which you are compiling."
-#   endif /* __GNUC__ && !__STRICT_ANSI__ */
+#   if defined(__ppc) || defined(__ppc__)
+typedef struct trad_user_ppc32_regs_struct *trad_user_regs_ptr_t;
+#   else
+#    if defined(__ppc64) || defined(__ppc64__)
+typedef struct trad_user_ppc64_regs_struct *trad_user_regs_ptr_t;
+#    else
+#     if defined(__GNUC__) && !defined(__STRICT_ANSI__) && defined(__extension__)
+ #      __extension__ warning "trad-user.h lacks support for the CPU ABI for which you are compiling."
+#     endif /* __GNUC__ && !__STRICT_ANSI__ && __extension__ */
 typedef void *trad_user_regs_ptr_t;
+#    endif /* __ppc64 || __ppc64__ */
+#   endif /* __ppc || __ppc__ */
 #  endif /* __mips__ */
 # endif /* __arm__ */
 #endif /* __i386 || __i386__ || __x86_64 || __x86_64__ */

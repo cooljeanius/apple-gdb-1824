@@ -2934,7 +2934,7 @@ _bfd_ecoff_slurp_armap (bfd *abfd)
     for (i = 0; i < count; i++, raw_ptr += 8)
       {
 	unsigned int name_offset, file_offset;
-	unsigned int hash, rehash, srch;
+	unsigned int hash, rehash = 0U, srch;
 
 	name_offset = H_GET_32(abfd, raw_ptr);
 	file_offset = H_GET_32(abfd, (raw_ptr + 4));

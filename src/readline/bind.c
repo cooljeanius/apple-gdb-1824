@@ -26,22 +26,22 @@
 
 #define READLINE_LIBRARY
 
-#if defined (HAVE_CONFIG_H)
+#if defined(HAVE_CONFIG_H)
 #  include <config.h>
 #endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#if defined (HAVE_SYS_FILE_H)
+#if defined(HAVE_SYS_FILE_H)
 #  include <sys/file.h>
 #endif /* HAVE_SYS_FILE_H */
 
-#if defined (HAVE_UNISTD_H)
+#if defined(HAVE_UNISTD_H)
 #  include <unistd.h>
 #endif /* HAVE_UNISTD_H */
 
-#if defined (HAVE_STDLIB_H)
+#if defined(HAVE_STDLIB_H)
 #  include <stdlib.h>
 #else
 #  include "ansi_stdlib.h"
@@ -49,7 +49,7 @@
 
 #include <errno.h>
 
-#if !defined (errno)
+#if !defined(errno)
 extern int errno;
 #endif /* !errno */
 
@@ -66,8 +66,8 @@ extern int errno;
 #include "rlshell.h"
 #include "xmalloc.h"
 
-#if !defined (strchr) && !defined (__STDC__)
-extern char *strchr (), *strrchr ();
+#if !defined(strchr) && !defined(__STDC__)
+extern char *strchr(), *strrchr();
 #endif /* !strchr && !__STDC__ */
 
 /* Variables exported by this file. */
@@ -195,7 +195,8 @@ rl_unbind_command_in_map(const char *command, Keymap map)
 int
 rl_set_key(const char *keyseq, rl_command_func_t *function, Keymap map)
 {
-  return (rl_generic_bind(ISFUNC, keyseq, (char *)function, map));
+  return (rl_generic_bind(ISFUNC, keyseq,
+                          __extension__ (char *)function, map));
 }
 
 /* Bind the key sequence represented by the string KEYSEQ to
@@ -302,7 +303,7 @@ rl_generic_bind(int type, const char *keyseq, char *data, Keymap map)
       else
 	{
 	  if (map[ic].type == ISMACR)
-	    free((char *)map[ic].function);
+	    free(__extension__ (char *)map[ic].function);
 	  else if (map[ic].type == ISKMAP)
 	    {
 	      map = FUNCTION_TO_KEYMAP(map, ic);
@@ -1901,7 +1902,7 @@ _rl_macro_dumper_internal(int print_readably, Keymap map, char *prefix)
 	{
 	case ISMACR:
 	  keyname = _rl_get_keyname(key);
-	  out = _rl_untranslate_macro_value((char *)map[key].function);
+	  out = _rl_untranslate_macro_value(__extension__ (char *)map[key].function);
 
 	  if (print_readably)
 	    fprintf(rl_outstream, "\"%s%s\": \"%s\"\n",

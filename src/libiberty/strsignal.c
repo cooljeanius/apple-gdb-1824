@@ -308,7 +308,7 @@ init_signal_tables(void)
 
   if (signal_names == NULL)
     {
-      nbytes = num_signal_names * sizeof(char *);
+      nbytes = ((size_t)num_signal_names * sizeof(char *));
       if ((signal_names = (const char **)malloc(nbytes)) != NULL)
 	{
 	  memset(signal_names, 0, nbytes);

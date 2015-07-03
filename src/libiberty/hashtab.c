@@ -264,7 +264,7 @@ htab_mod_1 (hashval_t x, hashval_t y, hashval_t inv, int shift)
     {
       hashval_t t1, t2, t3, t4, q, r;
 
-      t1 = ((ull)x * inv) >> 32;
+      t1 = (hashval_t)(((ull)x * inv) >> 32);
       t2 = x - t1;
       t3 = t2 >> 1;
       t4 = t1 + t3;
@@ -318,10 +318,14 @@ htab_create_alloc(size_t size, htab_hash hash_f, htab_eq eq_f,
   if (result->entries == NULL)
     {
       if (free_f != NULL)
-	(*free_f) (result);
+	(*free_f)(result);
       return NULL;
     }
-  result->size = size;
+#ifndef __clang_analyzer__
+  if (result->size != size) {
+    result->size = size;
+  }
+#endif /* !__clang_analyzer__ */
   result->size_prime_index = size_prime_index;
   result->hash_f = hash_f;
   result->eq_f = eq_f;
@@ -361,14 +365,18 @@ htab_create_alloc_ex (size_t size, htab_hash hash_f, htab_eq eq_f,
   if (result == NULL)
     return NULL;
   result->size = size;
-  result->entries = (PTR *) (*alloc_f) (alloc_arg, size, sizeof (PTR));
+  result->entries = (PTR *)(*alloc_f)(alloc_arg, size, sizeof(PTR));
   if (result->entries == NULL)
     {
       if (free_f != NULL)
-	(*free_f) (alloc_arg, result);
+	(*free_f)(alloc_arg, result);
       return NULL;
     }
-  result->size = size;
+#ifndef __clang_analyzer__
+  if (result->size != size) {
+    result->size = size;
+  }
+#endif /* !__clang_analyzer__ */
   result->size_prime_index = size_prime_index;
   result->hash_f = hash_f;
   result->eq_f = eq_f;
@@ -423,44 +431,46 @@ htab_try_create (size_t size, htab_hash hash_f, htab_eq eq_f, htab_del del_f)
    Naturally the hash table must already exist. */
 
 void
-htab_delete (htab_t htab)
+htab_delete(htab_t htab)
 {
-  size_t size = htab_size (htab);
+  size_t size = htab_size(htab);
   PTR *entries = htab->entries;
   int i;
 
   if (htab->del_f)
-    for (i = size - 1; i >= 0; i--)
-      if (entries[i] != HTAB_EMPTY_ENTRY && entries[i] != HTAB_DELETED_ENTRY)
-	(*htab->del_f) (entries[i]);
+    for (i = (int)(size - 1UL); i >= 0; i--)
+      if ((entries[i] != HTAB_EMPTY_ENTRY)
+          && (entries[i] != HTAB_DELETED_ENTRY))
+	(*htab->del_f)(entries[i]);
 
   if (htab->free_f != NULL)
     {
-      (*htab->free_f) (entries);
-      (*htab->free_f) (htab);
+      (*htab->free_f)(entries);
+      (*htab->free_f)(htab);
     }
   else if (htab->free_with_arg_f != NULL)
     {
-      (*htab->free_with_arg_f) (htab->alloc_arg, entries);
-      (*htab->free_with_arg_f) (htab->alloc_arg, htab);
+      (*htab->free_with_arg_f)(htab->alloc_arg, entries);
+      (*htab->free_with_arg_f)(htab->alloc_arg, htab);
     }
 }
 
 /* This function clears all entries in the given hash table.  */
 
 void
-htab_empty (htab_t htab)
+htab_empty(htab_t htab)
 {
-  size_t size = htab_size (htab);
+  size_t size = htab_size(htab);
   PTR *entries = htab->entries;
   int i;
 
   if (htab->del_f)
-    for (i = size - 1; i >= 0; i--)
-      if (entries[i] != HTAB_EMPTY_ENTRY && entries[i] != HTAB_DELETED_ENTRY)
-	(*htab->del_f) (entries[i]);
+    for (i = (int)(size - 1UL); i >= 0; i--)
+      if ((entries[i] != HTAB_EMPTY_ENTRY)
+          && (entries[i] != HTAB_DELETED_ENTRY))
+	(*htab->del_f)(entries[i]);
 
-  memset (entries, 0, size * sizeof (PTR));
+  memset(entries, 0, (size * sizeof(PTR)));
 }
 
 /* Similar to htab_find_slot, but without several unwanted side effects:
@@ -471,30 +481,30 @@ htab_empty (htab_t htab)
    HASH is the hash value for the element to be inserted.  */
 
 static PTR *
-find_empty_slot_for_expand (htab_t htab, hashval_t hash)
+find_empty_slot_for_expand(htab_t htab, hashval_t hash)
 {
-  hashval_t index = htab_mod (hash, htab);
-  size_t size = htab_size (htab);
-  PTR *slot = htab->entries + index;
+  hashval_t hindex = htab_mod(hash, htab);
+  size_t size = htab_size(htab);
+  PTR *slot = (htab->entries + hindex);
   hashval_t hash2;
 
   if (*slot == HTAB_EMPTY_ENTRY)
     return slot;
   else if (*slot == HTAB_DELETED_ENTRY)
-    abort ();
+    abort();
 
-  hash2 = htab_mod_m2 (hash, htab);
+  hash2 = htab_mod_m2(hash, htab);
   for (;;)
     {
-      index += hash2;
-      if (index >= size)
-	index -= size;
+      hindex += hash2;
+      if (hindex >= size)
+	hindex -= size;
 
-      slot = htab->entries + index;
+      slot = (htab->entries + hindex);
       if (*slot == HTAB_EMPTY_ENTRY)
 	return slot;
       else if (*slot == HTAB_DELETED_ENTRY)
-	abort ();
+	abort();
     }
 }
 
@@ -575,32 +585,32 @@ htab_expand (htab_t htab)
    element.  It cannot be used to insert or delete an element.  */
 
 PTR
-htab_find_with_hash (htab_t htab, const PTR element, hashval_t hash)
+htab_find_with_hash(htab_t htab, const PTR element, hashval_t hash)
 {
-  hashval_t index, hash2;
+  hashval_t hash_index, hash2;
   size_t size;
   PTR entry;
 
   htab->searches++;
-  size = htab_size (htab);
-  index = htab_mod (hash, htab);
+  size = htab_size(htab);
+  hash_index = htab_mod(hash, htab);
 
-  entry = htab->entries[index];
+  entry = htab->entries[hash_index];
   if (entry == HTAB_EMPTY_ENTRY
-      || (entry != HTAB_DELETED_ENTRY && (*htab->eq_f) (entry, element)))
+      || (entry != HTAB_DELETED_ENTRY && (*htab->eq_f)(entry, element)))
     return entry;
 
-  hash2 = htab_mod_m2 (hash, htab);
+  hash2 = htab_mod_m2(hash, htab);
   for (;;)
     {
       htab->collisions++;
-      index += hash2;
-      if (index >= size)
-	index -= size;
+      hash_index += hash2;
+      if (hash_index >= size)
+	hash_index -= size;
 
-      entry = htab->entries[index];
+      entry = htab->entries[hash_index];
       if (entry == HTAB_EMPTY_ENTRY
-	  || (entry != HTAB_DELETED_ENTRY && (*htab->eq_f) (entry, element)))
+	  || (entry != HTAB_DELETED_ENTRY && (*htab->eq_f)(entry, element)))
 	return entry;
     }
 }
@@ -623,11 +633,11 @@ htab_find (htab_t htab, const PTR element)
    allocation fails.  */
 
 PTR *
-htab_find_slot_with_hash (htab_t htab, const PTR element,
-                          hashval_t hash, enum insert_option insert)
+htab_find_slot_with_hash(htab_t htab, const PTR element,
+                         hashval_t hash, enum insert_option insert)
 {
   PTR *first_deleted_slot;
-  hashval_t index, hash2;
+  hashval_t arr_index, hash2;
   size_t size;
   PTR entry;
 
@@ -639,37 +649,37 @@ htab_find_slot_with_hash (htab_t htab, const PTR element,
       size = htab_size (htab);
     }
 
-  index = htab_mod (hash, htab);
+  arr_index = htab_mod (hash, htab);
 
   htab->searches++;
   first_deleted_slot = NULL;
 
-  entry = htab->entries[index];
+  entry = htab->entries[arr_index];
   if (entry == HTAB_EMPTY_ENTRY)
     goto empty_entry;
   else if (entry == HTAB_DELETED_ENTRY)
-    first_deleted_slot = &htab->entries[index];
+    first_deleted_slot = &htab->entries[arr_index];
   else if ((*htab->eq_f) (entry, element))
-    return &htab->entries[index];
+    return &htab->entries[arr_index];
 
   hash2 = htab_mod_m2 (hash, htab);
   for (;;)
     {
       htab->collisions++;
-      index += hash2;
-      if (index >= size)
-	index -= size;
+      arr_index += hash2;
+      if (arr_index >= size)
+	arr_index -= size;
 
-      entry = htab->entries[index];
+      entry = htab->entries[arr_index];
       if (entry == HTAB_EMPTY_ENTRY)
 	goto empty_entry;
       else if (entry == HTAB_DELETED_ENTRY)
 	{
 	  if (!first_deleted_slot)
-	    first_deleted_slot = &htab->entries[index];
+	    first_deleted_slot = &htab->entries[arr_index];
 	}
       else if ((*htab->eq_f) (entry, element))
-	return &htab->entries[index];
+	return &htab->entries[arr_index];
     }
 
  empty_entry:
@@ -684,7 +694,7 @@ htab_find_slot_with_hash (htab_t htab, const PTR element,
     }
 
   htab->n_elements++;
-  return &htab->entries[index];
+  return &htab->entries[arr_index];
 }
 
 /* Like htab_find_slot_with_hash, but compute the hash value from the
@@ -911,16 +921,16 @@ acceptable.  Do NOT use for cryptographic purposes.
 */
 
 hashval_t
-iterative_hash (const PTR k_in /* the key */,
-                register size_t  length /* the length of the key */,
-                register hashval_t initval /* the previous hash, or
-                                              an arbitrary value */)
+iterative_hash(const PTR k_in /* the key */,
+               register size_t length /* the length of the key */,
+               register hashval_t initval /* the previous hash, or
+                                             an arbitrary value */)
 {
   register const unsigned char *k = (const unsigned char *)k_in;
-  register hashval_t a,b,c,len;
+  register hashval_t a, b, c, len;
 
-  /* Set up the internal state */
-  len = length;
+  /* Set up the internal state: */
+  len = (hashval_t)length;
   a = b = 0x9e3779b9;  /* the golden ratio; an arbitrary value */
   c = initval;           /* the previous hash value */
 
@@ -929,18 +939,18 @@ iterative_hash (const PTR k_in /* the key */,
   /* On a little-endian machine, if the data is 4-byte aligned we can hash
      by word for better speed.  This gives nondeterministic results on
      big-endian machines.  */
-  if (sizeof (hashval_t) == 4 && (((size_t)k)&3) == 0)
-    while (len >= 12)    /* aligned */
+  if (sizeof(hashval_t) == 4 && (((size_t)k) & 3) == 0)
+    while ((len >= 12U) && (len > 0U) && (len < UINT_MAX))    /* aligned */
       {
-	a += *(hashval_t *)(k+0);
-	b += *(hashval_t *)(k+4);
-	c += *(hashval_t *)(k+8);
-	mix(a,b,c);
-	k += 12; len -= 12;
+	a += *(hashval_t *)(k + 0);
+	b += *(hashval_t *)(k + 4);
+	c += *(hashval_t *)(k + 8);
+	mix(a, b, c);
+	k += 12; len -= 12U;
       }
   else /* unaligned */
-#endif
-    while (len >= 12)
+#endif /* !WORDS_BIGENDIAN */
+    while ((len >= 12U) && (len > 0U) && (len < UINT_MAX))
       {
 	a += (k[0] +((hashval_t)k[1]<<8) +((hashval_t)k[2]<<16) +((hashval_t)k[3]<<24));
 	b += (k[4] +((hashval_t)k[5]<<8) +((hashval_t)k[6]<<16) +((hashval_t)k[7]<<24));
@@ -951,21 +961,22 @@ iterative_hash (const PTR k_in /* the key */,
 
   /*------------------------------------- handle the last 11 bytes */
   c += length;
-  switch(len)              /* all the case statements fall through */
+  switch (len)              /* all the case statements fall through */
     {
-    case 11: c+=((hashval_t)k[10]<<24);
-    case 10: c+=((hashval_t)k[9]<<16);
-    case 9 : c+=((hashval_t)k[8]<<8);
+    case 11: c += ((hashval_t)k[10] << 24);
+    case 10: c += ((hashval_t)k[9] << 16);
+    case 9: c += ((hashval_t)k[8] << 8);
       /* the first byte of c is reserved for the length */
-    case 8 : b+=((hashval_t)k[7]<<24);
-    case 7 : b+=((hashval_t)k[6]<<16);
-    case 6 : b+=((hashval_t)k[5]<<8);
-    case 5 : b+=k[4];
-    case 4 : a+=((hashval_t)k[3]<<24);
-    case 3 : a+=((hashval_t)k[2]<<16);
-    case 2 : a+=((hashval_t)k[1]<<8);
-    case 1 : a+=k[0];
-      /* case 0: nothing left to add */
+    case 8: b += ((hashval_t)k[7] << 24);
+    case 7: b += ((hashval_t)k[6] << 16);
+    case 6: b += ((hashval_t)k[5] << 8);
+    case 5: b += k[4];
+    case 4: a += ((hashval_t)k[3] << 24);
+    case 3: a += ((hashval_t)k[2] << 16);
+    case 2: a += ((hashval_t)k[1] << 8);
+    case 1: a += k[0];
+    case 0: a += 0; /* nothing left to add */
+    default:;
     }
   mix(a,b,c);
   /*-------------------------------------------- report the result */

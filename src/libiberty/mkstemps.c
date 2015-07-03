@@ -76,7 +76,7 @@ reading and writing.
 */
 
 int
-mkstemps (char *pattern, int suffix_len)
+mkstemps(char *pattern, int suffix_len)
 {
   static const char letters[]
     = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -88,22 +88,24 @@ mkstemps (char *pattern, int suffix_len)
   size_t len;
   int count;
 
-  len = strlen (pattern);
+  len = strlen(pattern);
 
-  if ((int) len < 6 + suffix_len
-      || strncmp (&pattern[len - 6 - suffix_len], "XXXXXX", 6))
+  if ((len < (6UL + (size_t)suffix_len))
+      || strncmp(&pattern[len - 6UL - (size_t)suffix_len], "XXXXXX", 6))
     {
       return -1;
     }
 
-  XXXXXX = &pattern[len - 6 - suffix_len];
+  XXXXXX = &pattern[len - 6UL - (size_t)suffix_len];
 
 #ifdef HAVE_GETTIMEOFDAY
-  /* Get some more or less random data.  */
-  gettimeofday (&tv, NULL);
-  value += ((gcc_uint64_t) tv.tv_usec << 16) ^ tv.tv_sec ^ getpid ();
+  /* Get some more-or-less random data: */
+  gettimeofday(&tv, NULL);
+  value += (((gcc_uint64_t)tv.tv_usec << 16)
+            ^ (gcc_uint64_t)tv.tv_sec
+            ^ (gcc_uint64_t)getpid());
 #else
-  value += getpid ();
+  value += getpid();
 #endif /* HAVE_GETTIMEOFDAY */
 
   for (count = 0; count < TMP_MAX; ++count)
@@ -111,7 +113,7 @@ mkstemps (char *pattern, int suffix_len)
       gcc_uint64_t v = value;
       int fd;
 
-      /* Fill in the random bits.  */
+      /* Fill in the random bits: */
       XXXXXX[0] = letters[v % 62];
       v /= 62;
       XXXXXX[1] = letters[v % 62];
@@ -124,9 +126,9 @@ mkstemps (char *pattern, int suffix_len)
       v /= 62;
       XXXXXX[5] = letters[v % 62];
 
-      fd = open (pattern, O_RDWR|O_CREAT|O_EXCL, 0600);
+      fd = open(pattern, (O_RDWR | O_CREAT | O_EXCL), 0600);
       if (fd >= 0)
-	/* The file does not exist.  */
+	/* The file does not exist: */
 	return fd;
 
       /* This is a "random" value.  It is only necessary that the next

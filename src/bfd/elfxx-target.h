@@ -645,8 +645,13 @@ static const struct elf_backend_data elfNN_bed =
   elf_backend_can_refcount,
   elf_backend_want_got_sym,
   elf_backend_want_dynbss,
-  elf_backend_want_p_paddr_set_to_zero
+  elf_backend_want_p_paddr_set_to_zero,
+  0U /* padding */
 };
+#else
+# ifdef elf_backend_reloc_type_class
+#  undef elf_backend_reloc_type_class
+# endif /* elf_backend_reloc_type_class */
 #endif /* !INCLUDED_TARGET_FILE */
 
 /* Forward declaration for use when initialising alternative_target field: */
@@ -849,6 +854,9 @@ const bfd_target TARGET_LITTLE_SYM =
 #ifdef elf_backend_can_gc_sections
 # undef elf_backend_can_gc_sections
 #endif /* elf_backend_can_gc_sections */
+#ifdef elf_backend_reloc_type_class
+# undef elf_backend_reloc_type_class
+#endif /* elf_backend_reloc_type_class */
 #ifdef M32R_NOP
 # undef M32R_NOP
 #endif /* M32R_NOP */

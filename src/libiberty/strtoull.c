@@ -89,9 +89,9 @@ strtoull(const char *nptr, char **endptr, register int base)
 		base = 16;
 	}
 	if (base == 0)
-		base = c == '0' ? 8 : 10;
-	cutoff = (ullong_type)ULLONG_MAX / (ullong_type)base;
-	cutlim = (ullong_type)ULLONG_MAX % (ullong_type)base;
+		base = ((c == '0') ? 8 : 10);
+	cutoff = ((ullong_type)ULLONG_MAX / (ullong_type)base);
+	cutlim = (int)((ullong_type)ULLONG_MAX % (ullong_type)base);
 	for (acc = 0, any = 0;; c = *s++) {
 		if (ISDIGIT(c))
 			c -= '0';
@@ -105,8 +105,8 @@ strtoull(const char *nptr, char **endptr, register int base)
 			any = -1;
 		else {
 			any = 1;
-			acc *= base;
-			acc += c;
+			acc *= (ullong_type)base;
+			acc += (ullong_type)c;
 		}
 	}
 	if (any < 0) {
