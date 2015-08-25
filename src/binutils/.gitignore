@@ -17,6 +17,7 @@ ar
 arlex.c
 arparse.c
 arparse.h
+binutils-*/*
 binutils.log
 binutils.sum
 config.h

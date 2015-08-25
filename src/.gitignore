@@ -24,6 +24,8 @@ bfd/doc/*.texi
 bfd/doc/chew
 bfd/po/*POTFILES
 blockit
+build/*
+build-*-*-*/*
 cfg-paper.info
 confdefs.h
 config.h
@@ -51,6 +53,7 @@ errs
 gcc/*/libgcc.a
 gcc/libgcc
 gcc/stmp-dirs
+gdb-fake-dist-root/*
 intl/po2tbl.sed
 libiberty/*-list
 libiberty/lib*.a
